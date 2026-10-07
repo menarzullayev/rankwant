@@ -438,6 +438,32 @@ export const es: Record<MessageKey, string> = {
     "Programa completo",
   "admin.label.value.functionOnly":
     "Función",
+  "answer.title":
+    "Archivos de respuesta",
+  "answer.hint":
+    "En este problema no se envía un programa. Descarga los archivos de entrada, halla las respuestas como prefieras y envía un archivo de texto por cada prueba.",
+  "answer.download":
+    "Descargar los archivos de entrada (zip)",
+  "answer.noFile":
+    "ningún archivo elegido",
+  "answer.pick":
+    "Elegir el archivo de respuesta de la prueba {order}",
+  "answer.zip":
+    "O todas las respuestas en un zip (el nombre de cada archivo debe llevar el número de la prueba: 1.out, 02.txt)",
+  "answer.kept":
+    "Para una prueba que no envíes se conserva tu última respuesta.",
+  "answer.submit":
+    "Enviar las respuestas",
+  "answer.count":
+    "Elegidos: {picked} de {total}",
+  "answer.tooLarge":
+    "Los archivos no deben superar 10 MB en total.",
+  "answer.failed":
+    "No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.",
+  "about.eval.answer":
+    "Problema de solo respuesta: no se envía un programa. Las entradas son públicas y envías un archivo de respuesta por cada prueba; lo califica el programa del autor. Para una prueba que no envíes se conserva tu última respuesta.",
+  "admin.label.value.answerFiles":
+    "Archivos de respuesta",
   "about.judge.title": "Cómo funciona la evaluación",
   "about.judge.body":
     "Cada envío se compila y se ejecuta en un sandbox aislado contra todos los tests ocultos (modo ACM: se detiene en el primer test fallido). Solo se acepta si pasan todos los tests. Los límites de tiempo y memoria se aplican por test.",

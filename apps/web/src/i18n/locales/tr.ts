@@ -438,6 +438,32 @@ export const tr: Record<MessageKey, string> = {
     "Tüm program",
   "admin.label.value.functionOnly":
     "Fonksiyon",
+  "answer.title":
+    "Cevap dosyaları",
+  "answer.hint":
+    "Bu problemde program gönderilmez. Girdi dosyalarını indirin, cevapları dilediğiniz yolla bulun ve her test için bir metin dosyası gönderin.",
+  "answer.download":
+    "Girdi dosyalarını indir (zip)",
+  "answer.noFile":
+    "dosya seçilmedi",
+  "answer.pick":
+    "{order}. test için cevap dosyasını seç",
+  "answer.zip":
+    "Ya da tüm cevaplar tek bir zip içinde (dosya adında test numarası olsun: 1.out, 02.txt)",
+  "answer.kept":
+    "Göndermediğiniz test için son gönderdiğiniz cevap saklanır.",
+  "answer.submit":
+    "Cevapları gönder",
+  "answer.count":
+    "Seçildi: {picked} / {total}",
+  "answer.tooLarge":
+    "Dosyalar toplamda 10 MB'ı geçmemeli.",
+  "answer.failed":
+    "Gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin.",
+  "about.eval.answer":
+    "Yalnızca cevap problemi: program gönderilmez. Girdi dosyaları açıktır, her test için bir cevap dosyası gönderirsiniz; onu yazarın programı puanlar. Göndermediğiniz test için son cevabınız saklanır.",
+  "admin.label.value.answerFiles":
+    "Cevap dosyaları",
   "about.judge.title": "Değerlendirme nasıl çalışır",
   "about.judge.body":
     "Her gönderim yalıtılmış bir korumalı ortamda (sandbox) derlenir ve tüm gizli testlerde çalıştırılır (ACM modu: ilk başarısız testte durur). Yalnızca her test geçilirse kabul edilir. Süre ve bellek sınırları her test için ayrı uygulanır.",

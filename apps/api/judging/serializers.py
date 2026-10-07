@@ -138,6 +138,9 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         return value
 
     def validate_language(self, value: str) -> str:
+        if self.context.get("answer_files"):
+            # An answer attempt has no language; the view passes the stand-in.
+            return value
         if not Language.objects.filter(code=value, is_active=True).exists():
             raise serializers.ValidationError("This language is not supported")
         return value
@@ -152,6 +155,20 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         # Masalaga xos til ro'yxati — RUXSAT. Interaktiv yoki freymwork
         # masalasi hamma tilda ma'noga ega emas; ro'yxat bo'sh bo'lsa
         # cheklov ham yo'q.
+        # An answer problem takes files, every other kind takes source: the
+        # two doors are not interchangeable.
+        takes_files = Problem.objects.filter(
+            slug=attrs["problem"], task_kind=Problem.TaskKind.ANSWER
+        ).exists()
+        if takes_files != bool(self.context.get("answer_files")):
+            raise serializers.ValidationError(
+                {
+                    "problem": "This problem takes answer files, not source code"
+                    if takes_files
+                    else "This problem takes source code, not answer files"
+                }
+            )
+
         rows = ProblemLanguage.objects.filter(problem__slug=attrs["problem"])
         function = Problem.objects.filter(
             slug=attrs["problem"], task_kind=Problem.TaskKind.FUNCTION

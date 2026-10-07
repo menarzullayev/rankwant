@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2249 strings.**
+**2262 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -430,6 +430,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.text.taskKind` | Masala turi | Másele túri |  |
 | `admin.label.value.wholeProgram` | Butun dastur | Pútin programma |  |
 | `admin.label.value.functionOnly` | Funksiya | Funkciya |  |
+| `answer.title` | Javob fayllari | Juwap faylları |  |
+| `answer.hint` | Bu masalada dastur yuborilmaydi. Kirish fayllarini yuklab oling, javoblarni istalgan usulda toping va har test uchun matnli fayl yuboring. | Bul máselede programma jiberilmeydi. Kirisiw fayllarin júklep alıń, juwaplardı qálegen usılda tabıń hám hár test ushın tekstli fayl jiberiń. |  |
+| `answer.download` | Kirish fayllarini yuklab olish (zip) | Kirisiw fayllarin júklep alıw (zip) |  |
+| `answer.noFile` | fayl tanlanmagan | fayl tańlanbaǵan |  |
+| `answer.pick` | {order}-test uchun javob faylini tanlash | {order}-test ushın juwap faylın tańlaw |  |
+| `answer.zip` | Yoki hamma javobni bitta zip faylda (fayl nomida test raqami bo'lsin: 1.out, 02.txt) | Yamasa barlıq juwaptı bir zip faylda (fayl atında test nomeri bolsın: 1.out, 02.txt) |  |
+| `answer.kept` | Yuborilmagan test uchun oxirgi yuborgan javobingiz saqlanadi. | Jiberilmegen test ushın sońǵı jibergen juwabıńız saqlanadı. |  |
+| `answer.submit` | Javoblarni yuborish | Juwaplardı jiberiw |  |
+| `answer.count` | Tanlandi: {picked} / {total} | Tańlandı: {picked} / {total} |  |
+| `answer.tooLarge` | Fayllar jami 10 MB dan oshmasin. | Fayllar jámi 10 MB tan aspasın. |  |
+| `answer.failed` | Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring. | Jiberip bolmadı. Baylanıstı tekserip, qayta urınıp kóriń. |  |
+| `about.eval.answer` | Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi. | Tek juwap máselesi: programma jiberilmeydi. Kirisiw faylları ashıq, siz hár test ushın juwap faylın jiberesiz; onı avtor programması bahalaydı. Jiberilmegen test ushın sońǵı juwabıńız saqlanadı. |  |
+| `admin.label.value.answerFiles` | Javob fayllari | Juwap faylları |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Tekseriw qalay isleydi |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı. |  |
 | `about.notes.title` | Muhim eslatmalar | Áhmiyetli eskertpeler |  |

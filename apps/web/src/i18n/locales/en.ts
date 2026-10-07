@@ -439,6 +439,32 @@ export const en: Record<MessageKey, string> = {
     "Whole program",
   "admin.label.value.functionOnly":
     "Function",
+  "answer.title":
+    "Answer files",
+  "answer.hint":
+    "No program is submitted here. Download the input files, find the answers any way you like and send a text file for each test.",
+  "answer.download":
+    "Download the input files (zip)",
+  "answer.noFile":
+    "no file chosen",
+  "answer.pick":
+    "Choose the answer file for test {order}",
+  "answer.zip":
+    "Or all the answers in one zip (put the test number in each file name: 1.out, 02.txt)",
+  "answer.kept":
+    "A test you do not send keeps the answer you last sent for it.",
+  "answer.submit":
+    "Send the answers",
+  "answer.count":
+    "Chosen: {picked} of {total}",
+  "answer.tooLarge":
+    "The files must not exceed 10 MB in total.",
+  "answer.failed":
+    "Could not send. Check your connection and try again.",
+  "about.eval.answer":
+    "Answer-only problem: no program is submitted. The inputs are public and you send an answer file for each test; the author's program grades it. A test you do not send keeps your last answer.",
+  "admin.label.value.answerFiles":
+    "Answer files",
   "about.judge.title": "How judging works",
   "about.judge.body":
     "Each submission is compiled and run in an isolated sandbox against all hidden tests (ACM mode: stop at the first failing test). Accepted only if every test passes. Time and memory limits apply per test.",

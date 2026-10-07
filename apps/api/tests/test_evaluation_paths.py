@@ -10,10 +10,13 @@ The same table is submitted to the real judge by `tools/e2e_evaluation_paths.py`
 
 from __future__ import annotations
 
+import io
 import json
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -21,7 +24,8 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from core.models import User
-from judging.models import Attempt
+from judging import answers
+from judging.models import Attempt, AttemptAnswer
 from judging.services import apply_result, build_job
 from problems import readiness, release, taskkinds
 from problems.evaluation import (
@@ -37,6 +41,7 @@ from problems.reference_problems import (
     GUESS,
     MAXPAIR,
     PAIR,
+    PALS,
     REFERENCES,
     Reference,
     install,
@@ -196,8 +201,15 @@ class TestInstall:
             "interactive",
             "scorer",
             "standard",
+            "scorer",
         ]
-        assert [p.task_kind for p in problems] == ["program", "program", "program", "function"]
+        assert [p.task_kind for p in problems] == [
+            "program",
+            "program",
+            "program",
+            "function",
+            "answer",
+        ]
         for problem in problems:
             assert problem.is_public, problem.slug
             assert problem.code, problem.slug
@@ -235,6 +247,8 @@ class TestInstall:
         python = Language.objects.get(code="py313")
         seen = {}
         for ref in REFERENCES:
+            if ref.task_kind == "answer":
+                continue  # no program is sent; covered by TestAnswerKind
             problem = Problem.objects.get(slug=ref.slug)
             attempt = Attempt.objects.create(
                 user=user, problem=problem, language=python, source_code=ref.reference
@@ -565,3 +579,210 @@ class TestFunctionKind:
             assert ("AC" if passed else "WA") == case.verdict, case.name
             ran += 1
         assert ran == 3
+
+
+# ── task kind: answer (ADR-0053) ─────────────────────────────────────────────
+
+
+def _zip(files: dict[str, bytes]) -> bytes:
+    packed = io.BytesIO()
+    with zipfile.ZipFile(packed, "w") as bundle:
+        for name, body in files.items():
+            bundle.writestr(name, body)
+    return packed.getvalue()
+
+
+def _upload(name: str, body: bytes) -> io.BytesIO:
+    handle = io.BytesIO(body)
+    handle.name = name
+    return handle
+
+
+class TestAnswerUpload:
+    ORDERS: ClassVar = [1, 2, 3]
+
+    @pytest.mark.parametrize(
+        ("name", "order"),
+        [("3.out", 3), ("03.txt", 3), ("test3.out", 3), ("out/7.ans", 7), ("answer.txt", None)],
+    )
+    def test_the_first_number_in_the_name_is_the_test(self, name: str, order: int | None) -> None:
+        assert answers.test_order(name) == order
+
+    def test_files_and_an_archive_are_read_together(self) -> None:
+        got = answers.read_upload(
+            self.ORDERS, _zip({"1.out": b"a", "2.out": b"b"}), [("2.out", b"mine")]
+        )
+        # A file sent on its own wins over the archive's for the same test.
+        assert got == {1: "a", 2: "mine"}
+
+    @pytest.mark.parametrize(
+        ("archive", "files", "message"),
+        [
+            (None, [], "No answer file"),
+            (None, [("notes.txt", b"x")], "test number"),
+            (None, [("9.out", b"x")], "no test 9"),
+            (None, [("1.out", b"x"), ("01.txt", b"y")], "sent twice"),
+            (None, [("1.out", b"\xff\xfe")], "UTF-8"),
+            (b"not a zip", [], "not a zip"),
+        ],
+    )
+    def test_what_an_upload_is_refused_for(
+        self, archive: bytes | None, files: list[tuple[str, bytes]], message: str
+    ) -> None:
+        with pytest.raises(answers.AnswerError, match=message):
+            answers.read_upload(self.ORDERS, archive, files)
+
+    def test_too_many_files_are_refused(self) -> None:
+        many = [(f"{i}.out", b"x") for i in range(1, answers.MAX_FILES + 2)]
+        with pytest.raises(answers.AnswerError, match="More than"):
+            answers.read_upload(list(range(1, 100)), None, many)
+
+    def test_an_archive_is_measured_unpacked(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # 4 KB of zeros zip to a few bytes: the limit is on what comes out.
+        monkeypatch.setattr(answers, "MAX_BYTES", 1024)
+        with pytest.raises(answers.AnswerError, match="unpacks to more"):
+            answers.read_upload(self.ORDERS, _zip({"1.out": b"0" * 4096}), [])
+
+
+class TestAnswerKind:
+    @pytest.mark.parametrize(
+        ("io_mode", "checker_type", "ok"),
+        [
+            ("stdio", "scorer", True),
+            ("stdio", "special", True),
+            ("stdio", "standard", False),
+            ("stdio", "interactive", False),
+            ("both", "scorer", False),
+        ],
+    )
+    def test_what_an_answer_problem_can_be_combined_with(
+        self, io_mode: str, checker_type: str, ok: bool
+    ) -> None:
+        assert (task_kind_error("answer", io_mode, checker_type) is None) is ok
+
+    def test_an_answer_problem_cannot_have_subtasks(self, stored: dict[str, str]) -> None:
+        install()
+        problem = Problem.objects.get(slug=PALS.slug)
+        assert evaluation_error(problem) is None
+        Problem.objects.filter(pk=problem.pk).update(checker_type="special")
+        Subtask.objects.create(problem=problem, order=1, points=100)
+        problem.refresh_from_db()
+        assert "subtasks" in (evaluation_error(problem) or "")
+
+    def test_source_code_is_refused_and_files_are_refused_elsewhere(
+        self, stored: dict[str, str], user: User
+    ) -> None:
+        install()
+        client = APIClient()
+        client.force_authenticate(user)
+        as_code = client.post(
+            reverse("attempt-list"),
+            {"problem": PALS.slug, "language": "py313", "source_code": "print(1)"},
+            format="json",
+        )
+        assert as_code.status_code == 400
+        assert "answer files" in json.dumps(as_code.json())
+        as_files = client.post(
+            reverse("attempt-answer-files"),
+            {"problem": PAIR.slug, "files": [_upload("1.out", b"1 1")]},
+            format="multipart",
+        )
+        assert as_files.status_code == 400
+        assert "source code" in json.dumps(as_files.json())
+
+    def test_a_test_left_out_keeps_the_last_answer(
+        self, stored: dict[str, str], user: User, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        install()
+        jobs: list[dict] = []
+        monkeypatch.setattr(
+            "judging.services.get_provider",
+            lambda: type(
+                "P", (), {"submit": lambda self, job: jobs.append(json.loads(job.to_json()))}
+            )(),
+        )
+        client = APIClient()
+        client.force_authenticate(user)
+
+        first = client.post(
+            reverse("attempt-answer-files"),
+            {
+                "problem": PALS.slug,
+                "files": [_upload("1.out", b"9 1\n"), _upload("5.out", b"999999\n")],
+            },
+            format="multipart",
+        )
+        assert first.status_code == 201, first.content
+        rows = AttemptAnswer.objects.filter(attempt_id=first.json()["id"])
+        assert [(r.order, r.carried) for r in rows] == [(1, False), (5, False)]
+        job = jobs[-1]
+        assert job["task"] == {"kind": "answer"}
+        assert [t["index"] for t in job["tests"] if t.get("answer_ref")] == [1, 5]
+        assert len(job["tests"]) == 5
+
+        second = client.post(
+            reverse("attempt-answer-files"),
+            {"problem": PALS.slug, "archive": _upload("a.zip", _zip({"2.out": b"121\n"}))},
+            format="multipart",
+        )
+        assert second.status_code == 201, second.content
+        rows = AttemptAnswer.objects.filter(attempt_id=second.json()["id"])
+        assert [(r.order, r.carried) for r in rows] == [(1, True), (2, False), (5, True)]
+        refs = {t["index"]: t.get("answer_ref") for t in jobs[-1]["tests"]}
+        assert stored[refs[1]] == "9 1\n" and stored[refs[2]] == "121\n" and refs[3] is None
+        attempt = Attempt.objects.get(pk=second.json()["id"])
+        assert attempt.language.code == answers.ANSWER_LANGUAGE
+        assert "(earlier attempt)" in attempt.source_code
+        assert "03  -" in attempt.source_code
+
+    def test_another_solver_starts_from_nothing(
+        self, stored: dict[str, str], user: User, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        install()
+        monkeypatch.setattr(
+            "judging.services.get_provider",
+            lambda: type("P", (), {"submit": lambda self, job: "id"})(),
+        )
+        other = User.objects.create_user("other-solver", password="x")
+        for who, name in ((user, "1.out"), (other, "2.out")):
+            client = APIClient()
+            client.force_authenticate(who)
+            response = client.post(
+                reverse("attempt-answer-files"),
+                {"problem": PALS.slug, "files": [_upload(name, b"121\n")]},
+                format="multipart",
+            )
+            assert response.status_code == 201, response.content
+        mine = AttemptAnswer.objects.filter(attempt__user=other)
+        assert [(r.order, r.carried) for r in mine] == [(2, False)]
+
+    def test_the_inputs_are_public_only_for_an_answer_problem(self, stored: dict[str, str]) -> None:
+        install()
+        client = APIClient()
+        body = client.get(reverse("problem-detail", args=[PALS.slug])).json()
+        assert body["task_kind"] == "answer"
+        assert body["answer_tests"] == [1, 2, 3, 4, 5]
+        response = client.get(reverse("problem-inputs", args=[PALS.slug]))
+        assert response.status_code == 200
+        with zipfile.ZipFile(io.BytesIO(response.content)) as bundle:
+            assert bundle.namelist() == ["01.in", "02.in", "03.in", "04.in", "05.in"]
+            assert bundle.read("04.in") == b"2026\n"
+        assert client.get(reverse("problem-inputs", args=[PAIR.slug])).status_code == 404
+        assert client.get(reverse("problem-detail", args=[PAIR.slug])).json()["answer_tests"] == []
+
+    def test_each_listed_attempt_earns_its_score(
+        self, stored: dict[str, str], tmp_path: Path
+    ) -> None:
+        """The real checker over each attempt's files, with the carry-over."""
+        current: dict[int, str] = {}
+        for case in PALS.cases:
+            current.update(dict(case.files))
+            total = 0
+            for order, (test_in, jury, _group) in enumerate(PALS.tests, start=1):
+                if order not in current:
+                    continue
+                ran = _checker(PALS, tmp_path, test_in, current[order], jury)
+                total += int(ran.stdout.split()[-1])
+            score = total // len(PALS.tests)
+            verdict = "AC" if score >= 100 else "PARTIAL" if score > 0 else "WA"
+            assert (verdict, score) == (case.verdict, case.score), case.name

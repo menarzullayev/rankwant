@@ -4142,6 +4142,56 @@ def neg_decisions_function_reference_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_answer_job_runs_as_a_program() -> tuple[bool, str]:
+    """The judge stops telling an answer job from a program."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "\tcase TaskAnswer:\n\t\tjudgeAnswers(ctx, work, job, tests, emit, res)\n",
+        "\tcase TaskAnswer:\n",
+        "javob fayllari kompilyatsiya qilinadi",
+    )
+
+
+def neg_decisions_unknown_task_kind_is_run() -> tuple[bool, str]:
+    """A task kind the judge does not know is no longer refused."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        '\t\tres.CompileOutput = "unsupported task kind: " + job.Task.Kind\n',
+        "",
+        "notanish `task.kind` rad etilmaydi",
+    )
+
+
+def neg_decisions_answer_job_without_task() -> tuple[bool, str]:
+    """The API sends an answer job without saying what it is."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        '        task = {"kind": "answer"}\n',
+        "        task = None\n",
+        "judge uni dastur deb o'qiydi",
+    )
+
+
+def neg_decisions_answer_doors_mix() -> tuple[bool, str]:
+    """Source code is accepted for an answer problem, or files elsewhere."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        '        if takes_files != bool(self.context.get("answer_files")):\n',
+        "        if False:\n",
+        "eshiklari aralashadi",
+    )
+
+
+def neg_decisions_answer_zip_unbounded() -> tuple[bool, str]:
+    """An archive is unpacked without looking at its unpacked size."""
+    return _decision_broken(
+        "apps/api/judging/answers.py",
+        "        if sum(info.file_size for info in entries) > MAX_BYTES:\n",
+        "        if False:\n",
+        "zip ochilgan hajmi bo'yicha cheklanmaydi",
+    )
+
+
 def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
     """The date helpers format in the zone of whatever machine renders."""
     return _decision_broken(
@@ -5856,6 +5906,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/judging/services.py",
     "apps/api/problems/evaluation.py",
     "apps/api/problems/reference_problems.py",
+    "apps/api/judging/answers.py",
 )
 
 
@@ -9157,6 +9208,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("hakam dasturisiz til qabul qilinsa tutilsin", neg_decisions_function_language_without_harness),
             ("hakam dasturisiz masala nashr qilinsa tutilsin", neg_decisions_function_problem_released_without_harness),
             ("funksiya etaloni ro'yxatdan chiqsa tutilsin", neg_decisions_function_reference_dropped),
+            ("javob ishi dastur bo'lib yursa tutilsin", neg_decisions_answer_job_runs_as_a_program),
+            ("notanish masala turi yurgizilsa tutilsin", neg_decisions_unknown_task_kind_is_run),
+            ("javob ishi tursiz ketsa tutilsin", neg_decisions_answer_job_without_task),
+            ("javob eshiklari aralashsa tutilsin", neg_decisions_answer_doors_mix),
+            ("zip chegarasiz ochilsa tutilsin", neg_decisions_answer_zip_unbounded),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),

@@ -93,6 +93,30 @@ class Attempt(models.Model):
         return int((self.judged_at - self.created_at).total_seconds() * 1000)
 
 
+class AttemptAnswer(models.Model):
+    """One answer file of an `answer` task attempt (ADR-0053).
+
+    The text lives in object storage; the row says which test it answers.
+    A carried row points at the file of an earlier attempt: the solver did
+    not send this test again, so their last answer for it still stands.
+    """
+
+    attempt = models.ForeignKey(Attempt, on_delete=models.CASCADE, related_name="answers")
+    order = models.PositiveIntegerField()
+    ref = models.CharField(max_length=255)
+    size = models.PositiveIntegerField(default=0)
+    carried = models.BooleanField(default=False)
+
+    class Meta:
+        ordering: ClassVar = ["order"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["attempt", "order"], name="uniq_attempt_answer")
+        ]
+
+    def __str__(self) -> str:
+        return f"attempt {self.attempt_id} answer #{self.order}"
+
+
 class AttemptTestResult(models.Model):
     """Per-test natija. Contest davomida boshqa foydalanuvchiga ko'rsatilmaydi."""
 

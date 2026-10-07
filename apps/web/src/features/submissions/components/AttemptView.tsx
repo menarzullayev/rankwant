@@ -33,6 +33,8 @@ const TOKEN_CLASS: Record<TokenKind, string> = {
 };
 
 const PASSED = "AC";
+/** The stand-in language of an answer-files attempt: nothing to edit. */
+const ANSWER_LANGUAGE = "answer";
 
 /** Bitta urinishning sahifasi.
  *
@@ -78,7 +80,7 @@ export function AttemptView({ id }: { id: number }) {
   const facts: [string, React.ReactNode][] = [
     [t(locale, "attempts.language"), data.language_name || data.language],
   ];
-  if (judged) {
+  if (judged && data.language !== ANSWER_LANGUAGE) {
     facts.push(
       [t(locale, "attempts.col.runTime"), `${data.time_ms} ms`],
       [t(locale, "col.memory"), `${Math.round(data.memory_kb / 1024)} MB`],
@@ -116,7 +118,7 @@ export function AttemptView({ id }: { id: number }) {
           <ButtonLink href={problemHref} variant="outline">
             {t(locale, "attempt.toProblem")}
           </ButtonLink>
-          {mine && data.source_code && (
+          {mine && data.source_code && data.language !== ANSWER_LANGUAGE && (
             <Button type="button" onClick={editAndResubmit}>
               {t(locale, "attempt.editResubmit")}
             </Button>

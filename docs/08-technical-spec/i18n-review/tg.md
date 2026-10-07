@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2249 strings.**
+**2262 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -430,6 +430,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.text.taskKind` | Masala turi | Навъи масъала |  |
 | `admin.label.value.wholeProgram` | Butun dastur | Барномаи пурра |  |
 | `admin.label.value.functionOnly` | Funksiya | Функсия |  |
+| `answer.title` | Javob fayllari | Файлҳои ҷавоб |  |
+| `answer.hint` | Bu masalada dastur yuborilmaydi. Kirish fayllarini yuklab oling, javoblarni istalgan usulda toping va har test uchun matnli fayl yuboring. | Дар ин масъала барнома фиристода намешавад. Файлҳои вурудро боргирӣ кунед, ҷавобҳоро бо ҳар роҳ ёбед ва барои ҳар тест файли матнӣ фиристед. |  |
+| `answer.download` | Kirish fayllarini yuklab olish (zip) | Боргирии файлҳои вуруд (zip) |  |
+| `answer.noFile` | fayl tanlanmagan | файл интихоб нашудааст |  |
+| `answer.pick` | {order}-test uchun javob faylini tanlash | Интихоби файли ҷавоб барои тести {order} |  |
+| `answer.zip` | Yoki hamma javobni bitta zip faylda (fayl nomida test raqami bo'lsin: 1.out, 02.txt) | Ё ҳамаи ҷавобҳо дар як файли zip (дар номи файл рақами тест бошад: 1.out, 02.txt) |  |
+| `answer.kept` | Yuborilmagan test uchun oxirgi yuborgan javobingiz saqlanadi. | Барои тести фиристоданашуда ҷавоби охирини шумо нигоҳ дошта мешавад. |  |
+| `answer.submit` | Javoblarni yuborish | Фиристодани ҷавобҳо |  |
+| `answer.count` | Tanlandi: {picked} / {total} | Интихоб шуд: {picked} / {total} |  |
+| `answer.tooLarge` | Fayllar jami 10 MB dan oshmasin. | Ҳаҷми умумии файлҳо аз 10 МБ зиёд набошад. |  |
+| `answer.failed` | Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring. | Фиристодан муяссар нашуд. Пайвастро санҷида, дубора кӯшиш кунед. |  |
+| `about.eval.answer` | Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi. | Масъалаи танҳо ҷавоб: барнома фиристода намешавад. Файлҳои вуруд кушодаанд, шумо барои ҳар тест файли ҷавоб мефиристед; онро барномаи муаллиф баҳо медиҳад. Барои тести фиристоданашуда ҷавоби охирин нигоҳ дошта мешавад. |  |
+| `admin.label.value.answerFiles` | Javob fayllari | Файлҳои ҷавоб |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Санҷиш чӣ гуна кор мекунад |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ҳар ҳали фиристодашуда дар sandbox-и ҷудошуда компилятсия ва бо ҳамаи тестҳои пинҳон иҷро мешавад (реҷаи ACM: дар аввалин тести ноком санҷиш қатъ мешавад). Ҳал танҳо вақте қабул мешавад, ки ҳамаи тестҳо гузаранд. Маҳдудиятҳои вақт ва хотира барои ҳар тест алоҳида амал мекунанд. |  |
 | `about.notes.title` | Muhim eslatmalar | Эзоҳҳои муҳим |  |

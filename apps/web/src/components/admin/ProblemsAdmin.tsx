@@ -32,7 +32,7 @@ type StaffProblem = {
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: "standard" | "special" | "interactive" | "scorer";
-  task_kind: "program" | "function";
+  task_kind: "program" | "function" | "answer";
   interactor_source: string;
   interactor_language: string | null;
   checker_source: string;
@@ -147,6 +147,7 @@ const PROBLEM_FIELDS: FieldDef[] = [
     options: [
       { value: "program", labelKey: "admin.label.value.wholeProgram" },
       { value: "function", labelKey: "admin.label.value.functionOnly" },
+      { value: "answer", labelKey: "admin.label.value.answerFiles" },
     ],
   },
   {

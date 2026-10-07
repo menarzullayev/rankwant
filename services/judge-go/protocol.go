@@ -50,6 +50,10 @@ type Test struct {
 	// ballashda shu testning o'z bali.
 	Subtask int `json:"subtask,omitempty"`
 	Points  int `json:"points,omitempty"`
+	// Task kind "answer": what the solver submitted for this test — inline
+	// (bake-off) or as a storage reference. Both empty: no file was sent.
+	Answer    string `json:"answer,omitempty"`
+	AnswerRef string `json:"answer_ref,omitempty"`
 }
 
 // Subtask — IOI ballash guruhi.
@@ -111,6 +115,15 @@ type IO struct {
 	OutputFile string `json:"output_file,omitempty"`
 }
 
+// Task says what the solver submitted (ADR-0053). Empty kind: a program,
+// which is everything the judge did before the field existed.
+type Task struct {
+	Kind string `json:"kind,omitempty"`
+}
+
+// Task kinds this judge can grade.
+const TaskAnswer = "answer"
+
 type Job struct {
 	JobID     string `json:"job_id"`
 	AttemptID int64  `json:"attempt_id"`
@@ -123,6 +136,7 @@ type Job struct {
 	Checker     Checker   `json:"checker"`
 	Subtasks    []Subtask `json:"subtasks,omitempty"`
 	IO          IO        `json:"io,omitempty"`
+	Task        Task      `json:"task,omitempty"`
 	// acm | ioi | custom.
 	// custom: chiqish kutilgan javob bilan SOLISHTIRILMAYDI — foydalanuvchi
 	// o'z stdin'i bilan kodini sinab ko'ryapti (PRD P0-4).

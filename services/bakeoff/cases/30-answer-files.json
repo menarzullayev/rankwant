@@ -1,0 +1,67 @@
+{
+  "id": "30-answer-files",
+  "title": "Faqat javob — kod yurmaydi, har faylni checker baholaydi",
+  "measures": "task.kind = answer: kompilyatsiya va sandbox yo'q; yuborilmagan test 0 ball",
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "source": "raise SystemExit('an answer task must never run the submission')\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "a\n",
+      "expected": "x\n",
+      "answer": "100\n"
+    },
+    {
+      "index": 2,
+      "input": "b\n",
+      "expected": "x\n",
+      "answer": "50\n"
+    },
+    {
+      "index": 3,
+      "input": "c\n",
+      "expected": "x\n"
+    }
+  ],
+  "task": {
+    "kind": "answer"
+  },
+  "expect_verdict": "PARTIAL",
+  "must_hold": [
+    "ball: (100 + 50 + 0) / 3 = 50",
+    "`source` hech qachon ishga tushmaydi: tushsa hukm RE bo'lardi",
+    "3-test uchun fayl yo'q - checker chaqirilmaydi, 0 ball"
+  ],
+  "mode": "acm",
+  "implemented": true,
+  "checker": {
+    "type": "scorer",
+    "program": {
+      "code": "py312",
+      "compile": null,
+      "run": [
+        "python3",
+        "{src}"
+      ],
+      "source": "\"\"\"Scorer: the score is the number the answer file holds.\"\"\"\nimport sys\n\nprint(int(open(sys.argv[2]).read().split()[0]))\n"
+    }
+  },
+  "expect_score": 50,
+  "expect_by_worker": {
+    "judge-py": "IE"
+  }
+}

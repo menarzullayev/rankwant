@@ -63,6 +63,19 @@ def build_standalone_job(
         .order_by("order")
     ]
 
+    task: dict[str, Any] | None = None
+    if problem.task_kind == Problem.TaskKind.ANSWER:
+        # Nothing is compiled or run: each test travels with the file the
+        # solver sent for it, and the checker grades the pair. A test with
+        # no `answer_ref` was not answered and scores zero.
+        from judging.answers import job_answers
+
+        task = {"kind": "answer"}
+        refs = job_answers(attempt_id) if attempt_id else {}
+        for test in tests:
+            if test["index"] in refs:
+                test["answer_ref"] = refs[test["index"]]
+
     subtasks = [
         {"id": st.pk, "points": st.points, "scoring": st.scoring}
         for st in problem.subtasks.order_by("order")
@@ -147,6 +160,7 @@ def build_standalone_job(
         validator=validator,
         validate_input=validate_input,
         io=io,
+        task=task,
     )
 
 
