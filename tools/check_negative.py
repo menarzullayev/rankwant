@@ -4252,6 +4252,70 @@ def neg_decisions_shell_inset_ignores_side_menu() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_judge_binary_in_toolchain_layer() -> tuple[bool, str]:
+    """The worker binary goes back into the flattened toolchain layer."""
+    return _decision_broken(
+        "services/judge-go/Dockerfile",
+        "COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail\n",
+        "COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail\n"
+        "COPY --from=go-build /out/judge-go /usr/local/bin/judge-go\n",
+        "toolchain qatlami ichida",
+    )
+
+
+def neg_decisions_judge_built_without_base() -> tuple[bool, str]:
+    """CI builds the judge image whole again."""
+    return _decision_broken(
+        "tools/ci_stack.sh",
+        'resolve_one judge-base services/judge-go "$base_hash" --target base\n',
+        'resolve_one judge-base services/judge-go "$base_hash"\n',
+        "base ustiga qurmaydi",
+    )
+
+
+def neg_decisions_second_job_pushes_images() -> tuple[bool, str]:
+    """A second Nightly job uploads the image cache."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "      - name: k6 — bounded load\n",
+        "      - name: Push image cache\n"
+        "        run: bash tools/ci_stack.sh --push-only\n"
+        "      - name: k6 — bounded load\n",
+        "faqat `images` job'i",
+    )
+
+
+def neg_decisions_coverage_shard_count_drifts() -> tuple[bool, str]:
+    """The matrix gets a fourth shard the script calls do not know about."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        shard: [1, 2, 3]\n",
+        "        shard: [1, 2, 3, 4]\n",
+        "shardlar to'liqligini tekshirmaydi",
+    )
+
+
+def neg_decisions_shard_left_empty() -> tuple[bool, str]:
+    """More shards than test files: a shard that runs nothing passes green."""
+    import importlib.util
+    import tempfile
+
+    spec = importlib.util.spec_from_file_location("pytest_shard", ROOT / "tools/pytest_shard.py")
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    with tempfile.TemporaryDirectory() as tmp:
+        tests = Path(tmp)
+        (tests / "test_only.py").write_text("def test_x():\n    pass\n", encoding="utf-8")
+        whole = module.check(1, tests)
+        split = module.check(2, tests)
+    if whole:
+        return False, f"bitta shard ham rad etildi: {whole}"
+    if not any("is empty" in problem for problem in split):
+        return False, f"bo'sh shard tutilmadi: {split}"
+    return True, "bo'sh shard rad etildi"
+
+
 def neg_decisions_sql_query_pasted_raw() -> tuple[bool, str]:
     """The query is pasted into the runner as code, not as a string literal."""
     return _decision_broken(
@@ -6013,6 +6077,8 @@ _DECISIONS_SANDBOX_FILES = (
     "services/judge-go/twopass.go",
     "services/bakeoff/cases/32-two-pass-no-carry.json",
     "apps/api/problems/sqltasks.py",
+    "services/judge-go/Dockerfile",
+    "tools/ci_stack.sh",
 )
 
 
@@ -9323,6 +9389,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ikki bosqichli ish bir marta yursa tutilsin", neg_decisions_two_pass_runs_once),
             ("ikki bosqichli ish tursiz ketsa tutilsin", neg_decisions_two_pass_job_without_task),
             ("manager'siz masala nashr qilinsa tutilsin", neg_decisions_two_pass_released_without_manager),
+            ("judge binari toolchain qatlamiga qaytsa tutilsin", neg_decisions_judge_binary_in_toolchain_layer),
+            ("judge base'siz qurilsa tutilsin", neg_decisions_judge_built_without_base),
+            ("ikkinchi job obraz keshini yozsa tutilsin", neg_decisions_second_job_pushes_images),
+            ("coverage shard soni ajralsa tutilsin", neg_decisions_coverage_shard_count_drifts),
+            ("bo'sh shard tutilsin", neg_decisions_shard_left_empty),
             ("SQL so'rovi kod bo'lib joylansa tutilsin", neg_decisions_sql_query_pasted_raw),
             ("SQL authorizer olib tashlansa tutilsin", neg_decisions_sql_authorizer_removed),
             ("SQL so'rovi xom ketsa tutilsin", neg_decisions_sql_query_sent_raw),

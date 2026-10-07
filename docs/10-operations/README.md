@@ -747,8 +747,11 @@ kamayadi. Nightly (smoke/E2E/pytest) ham hosted; `docker-compose.ci.yml` dagi
 Deploy self-hosted da qoladi va jonli stack'ga tegadi.
 
 Hosted VM qatlam keshi yo'qoladi, shuning uchun Nightly
-`tools/ci_stack.sh` orqali `ghcr.io/<repo>/ci-{api,web,judge}:main`
-dan `--cache-from` qiladi va faqat `main` ga yozadi. pip/npm/mypy/
+`tools/ci_stack.sh` orqali `ghcr.io/<repo>/ci-{api,web,judge,judge-base}:main`
+dan `--cache-from` qiladi. Keshni faqat bitta job — `images` — yozadi;
+qolgan job'lar o'qiydi va registrda yo'g'ini o'zi quradi. Judge obrazi
+ikki qism: `judge-base` (til toolchain'lari) va uning ustidagi yupqa
+qatlam (Go binari) — Go o'zgarsa faqat ikkinchisi qayta quriladi. pip/npm/mypy/
 Next kesh — Actions cache (10 GB). API pytest Nightly `coverage` da.
 Docker `type=gha` kesh ishlatilmaydi — judge obrazi
 pip/npm ni siqib chiqaradi.
