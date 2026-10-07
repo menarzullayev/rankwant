@@ -62,7 +62,14 @@ jobs:
         if: always()
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
+        # The judge image is one flattened 11.6 GB layer: any change under
+        # `services/judge-go` makes a new one, and every job that pushed it
+        # uploaded its own copy to the same tag (measured 2026-10-07: five
+        # jobs, 312-389 s each, and Latency cancelled at its 15-minute cap).
+        # Only the Language matrix job pushes the judge.
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        env:
+          CI_PUSH_SERVICES: api,web
         run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
@@ -334,6 +341,8 @@ jobs:
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        env:
+          CI_PUSH_SERVICES: api,web
         run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
@@ -391,6 +400,8 @@ jobs:
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        env:
+          CI_PUSH_SERVICES: api,web
         run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
@@ -573,6 +584,8 @@ jobs:
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        env:
+          CI_PUSH_SERVICES: api,web
         run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one

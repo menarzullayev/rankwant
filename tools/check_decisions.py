@@ -2151,6 +2151,40 @@ def guest_header_fits_every_locale() -> str | None:
     return None
 
 
+def judge_cache_has_one_pusher() -> str | None:
+    """2026-10-07: Nightly'da judge obrazini GHCR'ga faqat bitta job yuklaydi.
+
+    Judge obrazi bitta yassilangan 11.6 GB qatlam: `services/judge-go` dagi
+    har o'zgarish yangi qatlam yaratadi. Besh job uni bitta tegga
+    parallel yuklardi (312-389 s) va `Latency` 15 daqiqalik chegarada
+    bekor bo'ldi (run 37589829221).
+    """
+    stack = read("tools/ci_stack.sh")
+    if 'push_services="${CI_PUSH_SERVICES:-$services}"' not in stack:
+        return "ci_stack.sh: `CI_PUSH_SERVICES` o'qilmaydi — har job hamma obrazni yuklaydi"
+    if 'done < <(wanted_names "$push_services")' not in stack:
+        return "ci_stack.sh: `--push-only` `CI_PUSH_SERVICES` ro'yxatidan yurmaydi"
+    nightly = read(".github/workflows/nightly.yml")
+    pushes = nightly.count("run: bash tools/ci_stack.sh --push-only")
+    narrowed = len(
+        re.findall(
+            r"env:\n\s+CI_PUSH_SERVICES: api,web\n\s+run: bash tools/ci_stack\.sh --push-only",
+            nightly,
+        )
+    )
+    if pushes - narrowed != 1:
+        return (
+            f"nightly.yml: judge obrazini {pushes - narrowed} ta job yuklaydi (1 kerak) — "
+            "11.6 GB qatlam parallel yuklanadi"
+        )
+    block = re.search(r"^  compatibility:\n(.*?)(?=^  \S)", nightly, re.S | re.M)
+    if not block or "CI_STACK_SERVICES: judge" not in block.group(1):
+        return "nightly.yml: `compatibility` jobi judge obrazini qurmaydi"
+    if "CI_PUSH_SERVICES" in block.group(1) or "--push-only" not in block.group(1):
+        return "nightly.yml: judge obrazining yagona yuklovchisi `compatibility` emas"
+    return None
+
+
 def nightly_stack_matches_production() -> str | None:
     """2026-10-05: Nightly'ni qizartirgan uch nuqson qaytmasin.
 
@@ -3348,6 +3382,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
+    ("judge keshini bitta job yuklaydi", judge_cache_has_one_pusher),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),

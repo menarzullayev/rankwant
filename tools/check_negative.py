@@ -4232,6 +4232,26 @@ def neg_decisions_two_pass_released_without_manager() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_judge_cache_pushed_by_every_job() -> tuple[bool, str]:
+    """A stack job pushes the judge image again, next to the Language matrix."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        env:\n          CI_PUSH_SERVICES: api,web\n        run: bash tools/ci_stack.sh --push-only\n",
+        "        run: bash tools/ci_stack.sh --push-only\n",
+        "judge obrazini 2 ta job yuklaydi",
+    )
+
+
+def neg_decisions_push_list_ignored() -> tuple[bool, str]:
+    """`--push-only` pushes every built image, whatever the job asked for."""
+    return _decision_broken(
+        "tools/ci_stack.sh",
+        'done < <(wanted_names "$push_services")',
+        "done < <(wanted_names)",
+        "ro'yxatidan yurmaydi",
+    )
+
+
 def neg_decisions_sql_query_pasted_raw() -> tuple[bool, str]:
     """The query is pasted into the runner as code, not as a string literal."""
     return _decision_broken(
@@ -5788,6 +5808,9 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/kick_auto_deploy.sh",
     "tools/rollback.sh",
     "tools/prune_docker_disk.sh",
+    # Judge cache has one pusher (2026-10-07): the script that reads the
+    # push list. `nightly.yml` is already listed.
+    "tools/ci_stack.sh",
     "tools/docker-daemon.json",
     # TypeScript 7 side-by-side (2026-09-20): native tsc via
     # `@typescript/native`, JS API via the `typescript` alias.
@@ -9304,6 +9327,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("SQL authorizer olib tashlansa tutilsin", neg_decisions_sql_authorizer_removed),
             ("SQL so'rovi xom ketsa tutilsin", neg_decisions_sql_query_sent_raw),
             ("SQL tili hamma masalada ochilsa tutilsin", neg_decisions_sql_language_everywhere),
+            ("judge keshini har job yuklasa tutilsin", neg_decisions_judge_cache_pushed_by_every_job),
+            ("yuklash ro'yxati e'tiborsiz qolsa tutilsin", neg_decisions_push_list_ignored),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),

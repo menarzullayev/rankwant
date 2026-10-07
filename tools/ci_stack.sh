@@ -14,6 +14,7 @@
 #   GITHUB_ACTOR, GITHUB_REPOSITORY, GITHUB_SHA  — Actions defaults
 #   CI_PUSH_IMAGE_CACHE   unused during build; `--push-only` reads it
 #   CI_STACK_SERVICES     comma list, default api,web,judge
+#   CI_PUSH_SERVICES      comma list for `--push-only`, default CI_STACK_SERVICES
 #   CI_STACK_UP           1 (default) compose up --no-build --wait; 0 skip
 #   CI_STACK_UP_SERVICES  optional compose service list (bake-off: redis,judge)
 #   NEXT_PUBLIC_API_BASE  web build-arg (same default as docker-compose.yml)
@@ -37,6 +38,7 @@ registry="ghcr.io/${repo_lc}"
 sha="${GITHUB_SHA:-unknown}"
 built_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 services="${CI_STACK_SERVICES:-api,web,judge}"
+push_services="${CI_PUSH_SERVICES:-$services}"
 stack_up="${CI_STACK_UP:-1}"
 up_services="${CI_STACK_UP_SERVICES:-}"
 next_api="${NEXT_PUBLIC_API_BASE:-http://localhost:8000/api/v1}"
@@ -84,9 +86,13 @@ image_context_hash() {
   docker image inspect -f '{{index .Config.Labels "org.rankwant.context-hash"}}' "$1" 2>/dev/null || true
 }
 
+image_id() {
+  docker image inspect -f '{{.Id}}' "$1" 2>/dev/null || true
+}
+
 wanted_names() {
   local name
-  IFS=',' read -r -a raw <<<"$services"
+  IFS=',' read -r -a raw <<<"${1:-$services}"
   for name in "${raw[@]}"; do
     name="$(printf '%s' "$name" | tr -d '[:space:]')"
     [ -n "$name" ] || continue
@@ -99,6 +105,12 @@ push_one() {
   local local_tag="${project}-${name}"
   local remote
   remote="$(remote_for "$name")"
+  # Reused as pulled (`resolve_one` tagged the GHCR image): both names are
+  # one image, and a push would only walk its layers to learn that.
+  if [ -n "$(image_id "$local_tag")" ] && [ "$(image_id "$local_tag")" = "$(image_id "$remote")" ]; then
+    echo "--> skip push $name (unchanged since pull)"
+    return 0
+  fi
   docker tag "$local_tag" "$remote"
   docker push "$remote"
 }
@@ -209,7 +221,7 @@ if [ "$mode" = "--push-only" ]; then
   while IFS= read -r name; do
     push_one "$name" &
     pids+=("$!")
-  done < <(wanted_names)
+  done < <(wanted_names "$push_services")
   wait_all "${pids[@]}"
   exit 0
 fi
