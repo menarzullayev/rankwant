@@ -37,6 +37,13 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
     )
 
 
+def _trusted(lang: Language | None, source: str) -> dict[str, Any] | None:
+    """One of the author's programs as the judge takes it, or `None`."""
+    if lang is None or not source:
+        return None
+    return {**lang.judge_spec(), "source": source}
+
+
 def build_standalone_job(
     problem: Problem,
     source: str,
@@ -76,15 +83,22 @@ def build_standalone_job(
             if test["index"] in refs:
                 test["answer_ref"] = refs[test["index"]]
 
+    if problem.task_kind == Problem.TaskKind.TWO_PASS:
+        # The same source runs twice per test; the manager turns the output
+        # of the first run into the input of the second. Sent without the
+        # manager when it is missing: the judge refuses that job (IE) rather
+        # than grading one run as if it were the whole task.
+        task = {
+            "kind": "two_pass",
+            "manager": _trusted(problem.manager_language, problem.manager_source),
+        }
+
     subtasks = [
         {"id": st.pk, "points": st.points, "scoring": st.scoring}
         for st in problem.subtasks.order_by("order")
     ]
 
-    def _program(lang: Language | None, source: str) -> dict[str, Any] | None:
-        if lang is None or not source:
-            return None
-        return {**lang.judge_spec(), "source": source}
+    _program = _trusted
 
     checker: dict[str, Any] = {"type": problem.checker_type}
     if problem.checker_type == Problem.Checker.INTERACTIVE:

@@ -58,6 +58,9 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
     checker_language = serializers.SlugRelatedField[Language](
         slug_field="code", queryset=Language.objects.all(), allow_null=True, required=False
     )
+    manager_language = serializers.SlugRelatedField[Language](
+        slug_field="code", queryset=Language.objects.all(), allow_null=True, required=False
+    )
     test_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -80,6 +83,8 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "memory_limit_kb",
             "checker_type",
             "task_kind",
+            "manager_source",
+            "manager_language",
             "interactor_source",
             "interactor_language",
             "checker_source",

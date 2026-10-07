@@ -46,6 +46,7 @@ const EVALUATION: MessageKey[] = [
   "about.eval.scorer",
   "about.eval.function",
   "about.eval.answer",
+  "about.eval.twoPass",
 ];
 
 /** The page is shared under its own title, sentence and address. It used

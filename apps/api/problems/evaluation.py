@@ -40,6 +40,13 @@ Every rule here is read off the judge (`services/judge-go`), not assumed:
       at most `MAX_FILES` files — a problem with more tests than that could
       never be answered in full.
 
+  `two_pass` task kind
+      The program runs twice on each test and the author's manager turns
+      the output of run 1 into the input of run 2 (`twoPass`). The judge
+      refuses such a job without a manager, with file I/O, or with an
+      interactive or scorer checker: the final answer is graded by
+      comparison or by a special checker only.
+
 The rules are checked where a problem is edited (staff API, `clean()`),
 where its readiness advances (S2) and where it is released — the earliest
 points at which each can be known.
@@ -99,6 +106,17 @@ def task_kind_error(task_kind: str, io_mode: str, checker_type: str) -> str | No
                 "with the jury's answer"
             )
         return None
+    if task_kind == "two_pass":
+        if io_mode == _FILE_IO:
+            return (
+                "a 'two_pass' problem cannot use io_mode 'both': both runs talk over stdin/stdout"
+            )
+        if checker_type not in (_STANDARD, "special"):
+            return (
+                f"a 'two_pass' problem cannot use a '{checker_type}' checker: the answer "
+                "of the second run is compared or given to a special checker"
+            )
+        return None
     if task_kind != "function":
         return None
     if io_mode == _FILE_IO:
@@ -150,6 +168,15 @@ def answer_task_error(problem: Problem) -> str | None:
     return None
 
 
+def two_pass_error(problem: Problem) -> str | None:
+    """A two-pass problem is nothing without the program between its runs."""
+    if problem.task_kind != "two_pass":
+        return None
+    if not problem.manager_source.strip() or problem.manager_language_id is None:
+        return "a 'two_pass' problem needs a manager program and its language"
+    return None
+
+
 def evaluation_error(problem: Problem) -> str | None:
     """The first rule a saved problem breaks, or `None` when it can be graded."""
     return (
@@ -158,4 +185,5 @@ def evaluation_error(problem: Problem) -> str | None:
         or task_kind_error(problem.task_kind, problem.io_mode, problem.checker_type)
         or harnesses_error(problem)
         or answer_task_error(problem)
+        or two_pass_error(problem)
     )

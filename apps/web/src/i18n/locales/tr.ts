@@ -464,6 +464,16 @@ export const tr: Record<MessageKey, string> = {
     "Yalnızca cevap problemi: program gönderilmez. Girdi dosyaları açıktır, her test için bir cevap dosyası gönderirsiniz; onu yazarın programı puanlar. Göndermediğiniz test için son cevabınız saklanır.",
   "admin.label.value.answerFiles":
     "Cevap dosyaları",
+  "about.eval.twoPass":
+    "İki aşamalı problem: programınız her testte iki kez çalışır. İkinci çalıştırma yalnızca hakem programının ilk çalıştırmanın çıktısından ürettiği girdiyi görür — ne bellek ne de dosya kalır.",
+  "admin.label.value.twoPass":
+    "İki aşamalı",
+  "admin.label.tech.managerLanguage":
+    "Ara program dili (kod, örneğin py313)",
+  "admin.label.tech.managerSource":
+    "Ara program kaynağı",
+  "admin.help.managerOnlyTwoPass":
+    "Yalnızca iki aşamalı problemler için: manager <girdi> <1. çalıştırmanın çıktısı> <cevap>; çıktısı 2. çalıştırmanın girdisi olur, sıfırdan farklı kod reddeder.",
   "about.judge.title": "Değerlendirme nasıl çalışır",
   "about.judge.body":
     "Her gönderim yalıtılmış bir korumalı ortamda (sandbox) derlenir ve tüm gizli testlerde çalıştırılır (ACM modu: ilk başarısız testte durur). Yalnızca her test geçilirse kabul edilir. Süre ve bellek sınırları her test için ayrı uygulanır.",

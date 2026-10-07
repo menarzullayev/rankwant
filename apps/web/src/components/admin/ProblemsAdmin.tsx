@@ -32,7 +32,9 @@ type StaffProblem = {
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: "standard" | "special" | "interactive" | "scorer";
-  task_kind: "program" | "function" | "answer";
+  task_kind: "program" | "function" | "answer" | "two_pass";
+  manager_source: string;
+  manager_language: string | null;
   interactor_source: string;
   interactor_language: string | null;
   checker_source: string;
@@ -148,6 +150,7 @@ const PROBLEM_FIELDS: FieldDef[] = [
       { value: "program", labelKey: "admin.label.value.wholeProgram" },
       { value: "function", labelKey: "admin.label.value.functionOnly" },
       { value: "answer", labelKey: "admin.label.value.answerFiles" },
+      { value: "two_pass", labelKey: "admin.label.value.twoPass" },
     ],
   },
   {
@@ -162,6 +165,17 @@ const PROBLEM_FIELDS: FieldDef[] = [
       // Modelda bor edi, ro'yxatda esa yo'q — ya'ni tanlab bo'lmasdi.
       { value: "scorer", labelKey: "admin.label.value.scoring" },
     ],
+  },
+  {
+    name: "manager_language",
+    labelKey: "admin.label.tech.managerLanguage",
+    helpKey: "admin.help.managerOnlyTwoPass",
+  },
+  {
+    name: "manager_source",
+    labelKey: "admin.label.tech.managerSource",
+    type: "textarea",
+    rows: 8,
   },
   {
     name: "interactor_language",
@@ -455,6 +469,7 @@ export function ProblemsAdmin() {
           ...values,
           statement_locale: values.statement_locale || "uz",
           interactor_language: values.interactor_language || null,
+          manager_language: values.manager_language || null,
           time_limit_ms: values.time_limit_ms ?? 1000,
           memory_limit_kb: values.memory_limit_kb ?? 262144,
         })}

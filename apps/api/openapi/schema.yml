@@ -16465,6 +16465,12 @@ components:
             * `program` - Whole program
             * `function` - Function
             * `answer` - Answer files
+            * `two_pass` - Two passes
+        manager_source:
+          type: string
+        manager_language:
+          type: string
+          nullable: true
         interactor_source:
           type: string
         interactor_language:
@@ -17521,6 +17527,7 @@ components:
             * `program` - Whole program
             * `function` - Function
             * `answer` - Answer files
+            * `two_pass` - Two passes
         answer_tests:
           type: array
           items:
@@ -19303,6 +19310,12 @@ components:
             * `program` - Whole program
             * `function` - Function
             * `answer` - Answer files
+            * `two_pass` - Two passes
+        manager_source:
+          type: string
+        manager_language:
+          type: string
+          nullable: true
         interactor_source:
           type: string
         interactor_language:
@@ -20640,11 +20653,13 @@ components:
       - program
       - function
       - answer
+      - two_pass
       type: string
       description: |-
         * `program` - Whole program
         * `function` - Function
         * `answer` - Answer files
+        * `two_pass` - Two passes
     Team:
       type: object
       properties:

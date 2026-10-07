@@ -463,6 +463,16 @@ export const zh: Record<MessageKey, string> = {
     "提交答案题：不提交程序。输入文件公开，你为每个测试点提交一个答案文件，由出题人的程序评分。未提交的测试点保留上次的答案。",
   "admin.label.value.answerFiles":
     "答案文件",
+  "about.eval.twoPass":
+    "两阶段题：你的程序在每个测试点上运行两次。第二次运行只能看到评测程序根据第一次输出生成的输入——内存和文件都不会保留。",
+  "admin.label.value.twoPass":
+    "两阶段",
+  "admin.label.tech.managerLanguage":
+    "中间程序语言（代码，例如 py313）",
+  "admin.label.tech.managerSource":
+    "中间程序源码",
+  "admin.help.managerOnlyTwoPass":
+    "仅用于两阶段题：manager <输入> <第一次运行的输出> <答案>；其输出作为第二次运行的输入，非零退出码表示拒绝。",
   "about.judge.title": "评测方式",
   "about.judge.body":
     "每次提交都会在隔离的沙箱中编译，并在全部隐藏测试点上运行（ACM 模式：遇到第一个未通过的测试点即停止）。只有通过所有测试点才算通过。时间和内存限制按每个测试点分别计算。",

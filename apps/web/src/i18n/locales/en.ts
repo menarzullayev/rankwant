@@ -465,6 +465,16 @@ export const en: Record<MessageKey, string> = {
     "Answer-only problem: no program is submitted. The inputs are public and you send an answer file for each test; the author's program grades it. A test you do not send keeps your last answer.",
   "admin.label.value.answerFiles":
     "Answer files",
+  "about.eval.twoPass":
+    "Two-pass problem: your program runs twice on every test. The second run sees only the input the judge's program made from the first run's output — no memory and no file survives.",
+  "admin.label.value.twoPass":
+    "Two passes",
+  "admin.label.tech.managerLanguage":
+    "Manager language (a code, such as py313)",
+  "admin.label.tech.managerSource":
+    "Manager source",
+  "admin.help.managerOnlyTwoPass":
+    "Two-pass problems only: manager <input> <output of run 1> <jury>; its output becomes the input of run 2, a non-zero exit rejects.",
   "about.judge.title": "How judging works",
   "about.judge.body":
     "Each submission is compiled and run in an isolated sandbox against all hidden tests (ACM mode: stop at the first failing test). Accepted only if every test passes. Time and memory limits apply per test.",

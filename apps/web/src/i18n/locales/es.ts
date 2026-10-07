@@ -464,6 +464,16 @@ export const es: Record<MessageKey, string> = {
     "Problema de solo respuesta: no se envía un programa. Las entradas son públicas y envías un archivo de respuesta por cada prueba; lo califica el programa del autor. Para una prueba que no envíes se conserva tu última respuesta.",
   "admin.label.value.answerFiles":
     "Archivos de respuesta",
+  "about.eval.twoPass":
+    "Problema de dos pasadas: tu programa se ejecuta dos veces en cada prueba. La segunda ejecución solo ve la entrada que el programa del juez construyó con la salida de la primera; no se conserva ni memoria ni archivos.",
+  "admin.label.value.twoPass":
+    "Dos pasadas",
+  "admin.label.tech.managerLanguage":
+    "Lenguaje del programa intermedio (código, por ejemplo py313)",
+  "admin.label.tech.managerSource":
+    "Fuente del programa intermedio",
+  "admin.help.managerOnlyTwoPass":
+    "Solo para problemas de dos pasadas: manager <entrada> <salida de la 1.ª ejecución> <respuesta>; su salida es la entrada de la 2.ª ejecución y un código distinto de cero rechaza.",
   "about.judge.title": "Cómo funciona la evaluación",
   "about.judge.body":
     "Cada envío se compila y se ejecuta en un sandbox aislado contra todos los tests ocultos (modo ACM: se detiene en el primer test fallido). Solo se acepta si pasan todos los tests. Los límites de tiempo y memoria se aplican por test.",

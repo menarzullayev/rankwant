@@ -1,0 +1,55 @@
+{
+  "id": "31-two-pass",
+  "title": "Ikki bosqichli — ikkinchi yurish faqat manager chiqishini ko'radi",
+  "measures": "task.kind = two_pass: dastur ikki marta yuradi, orada manager",
+  "source": "mode = input()\nvalue = int(input())\nprint(value + 1 if mode == \"first\" else value * 2)\n",
+  "tests": [
+    {
+      "index": 1,
+      "input": "first\n20\n",
+      "expected": "42\n"
+    },
+    {
+      "index": 2,
+      "input": "first\n0\n",
+      "expected": "2\n"
+    }
+  ],
+  "expect_verdict": "AC",
+  "must_hold": [
+    "1-yurish 20 -> 21, manager `second / 21` beradi, 2-yurish 21 -> 42",
+    "bitta yurish bilan javob chiqmaydi: 20 + 1 = 21, 42 emas"
+  ],
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "mode": "acm",
+  "implemented": true,
+  "task": {
+    "kind": "two_pass",
+    "manager": {
+      "code": "py312",
+      "compile": null,
+      "run": [
+        "python3",
+        "{src}"
+      ],
+      "source": "\"\"\"Manager: hands the first run's line on to the second, after a header.\"\"\"\nimport sys\n\nmessage = open(sys.argv[2]).read().split()\nif len(message) != 1:\n    sys.exit(1)\nprint(\"second\")\nprint(message[0])\n"
+    }
+  },
+  "expect_by_worker": {
+    "judge-py": "IE"
+  }
+}

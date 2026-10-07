@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2262 strings.**
+**2267 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -443,6 +443,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `answer.failed` | Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring. | Жөнөтүү мүмкүн болгон жок. Байланышты текшерип, кайра аракет кылыңыз. |  |
 | `about.eval.answer` | Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi. | Жооп гана берилүүчү маселе: программа жөнөтүлбөйт. Киргизүү файлдары ачык, сиз ар бир тест үчүн жооп файлын жөнөтөсүз; аны автордун программасы баалайт. Жөнөтүлбөгөн тест үчүн акыркы жообуңуз сакталат. |  |
 | `admin.label.value.answerFiles` | Javob fayllari | Жооп файлдары |  |
+| `about.eval.twoPass` | Ikki bosqichli masala: dasturingiz har testda ikki marta ishga tushadi. Ikkinchi yurish faqat hakam dasturi birinchisining chiqishidan yasagan kirishni ko'radi — xotira ham, fayl ham saqlanmaydi. | Эки баскычтуу маселе: программаңыз ар бир тестте эки жолу иштейт. Экинчи жүрүш калыс программасы биринчисинин чыгаруусунан түзгөн киргизүүнү гана көрөт — эс да, файл да сакталбайт. |  |
+| `admin.label.value.twoPass` | Ikki bosqichli | Эки баскычтуу |  |
+| `admin.label.tech.managerLanguage` | Oraliq dastur tili (kod, masalan py313) | Аралык программанын тили (код, мисалы py313) |  |
+| `admin.label.tech.managerSource` | Oraliq dastur manbasi | Аралык программанын булагы |  |
+| `admin.help.managerOnlyTwoPass` | Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi. | Эки баскычтуу маселе үчүн гана: manager <киргизүү> <1-жүрүштүн чыгаруусу> <жооп>; чыгаруусу 2-жүрүштүн киргизүүсү болот, нөлдөн башка код четке кагат. |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Текшерүү кантип иштейт |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ар бир жөнөтүлгөн чечим обочолонгон sandbox ичинде компиляцияланып, бардык жашыруун тесттерде иштетилет (ACM режими: биринчи өтпөгөн тестте текшерүү токтойт). Бардык тесттер өткөндө гана чечим кабыл алынат. Убакыт жана эс тутум чектөөлөрү ар бир тестке өзүнчө колдонулат. |  |
 | `about.notes.title` | Muhim eslatmalar | Маанилүү эскертүүлөр |  |

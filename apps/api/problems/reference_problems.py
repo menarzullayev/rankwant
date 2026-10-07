@@ -235,6 +235,8 @@ class Reference:
     reference: str
     checker: str = ""
     interactor: str = ""
+    #: `two_pass` problems: the program between the two runs.
+    manager: str = ""
     cases: tuple[Case, ...] = field(default_factory=tuple)
     task_kind: str = "program"
     #: `function` problems only; the problem is open in exactly these.
@@ -751,7 +753,121 @@ PALS = Reference(
     ),
 )
 
-REFERENCES: tuple[Reference, ...] = (PAIR, GUESS, COINS, MAXPAIR, PALS)
+# ── two_pass: the program runs twice, only the manager's output travels ─────
+
+CARDS_TOTAL = 40
+CARDS_MAX = 20
+
+CARDS_MANAGER = f'''"""Manager: checks the cards chosen in run 1 and hands them on SORTED.
+
+Usage: manager <input> <output of run 1> <jury>. Exit 1 rejects the choice;
+otherwise stdout is the whole input of run 2. Sorting is the point of the
+problem: the order the cards were printed in does not survive.
+"""
+import sys
+
+try:
+    cards = list(map(int, open(sys.argv[2]).read().split()))
+except ValueError:
+    sys.exit(1)
+if len(cards) > {CARDS_MAX} or len(set(cards)) != len(cards):
+    sys.exit(1)
+if any(card < 1 or card > {CARDS_TOTAL} for card in cards):
+    sys.exit(1)
+cards.sort()
+print("decode")
+print(len(cards))
+print(*cards)
+'''
+
+CARDS_REFERENCE = """mode = input().strip()
+if mode == "encode":
+    x = int(input())
+    print(*[bit + 1 for bit in range(20) if x >> bit & 1])
+else:
+    count = int(input())
+    cards = list(map(int, input().split())) if count else []
+    print(sum(1 << (card - 1) for card in cards))
+"""
+#: Writes the number in base 40, most significant digit first: the order
+#: of the cards carries the value, and the manager sorts it away.
+CARDS_ORDERED = """mode = input().strip()
+if mode == "encode":
+    x = int(input())
+    digits = []
+    while True:
+        digits.append(x % 39 + 1)
+        x //= 39
+        if not x:
+            break
+    print(*reversed(digits))
+else:
+    count = int(input())
+    x = 0
+    for card in map(int, input().split()) if count else []:
+        x = x * 39 + card - 1
+    print(x)
+"""
+#: Twenty-one cards: one more than allowed, so the manager rejects them.
+CARDS_TOO_MANY = """mode = input().strip()
+if mode == "encode":
+    input()
+    print(*range(1, 22))
+else:
+    print(0)
+"""
+#: Tries to hand the number to the second run in a file, past the manager.
+CARDS_SMUGGLE = """mode = input().strip()
+if mode == "encode":
+    open("note.txt", "w").write(input())
+    print(1)
+else:
+    print(open("note.txt").read())
+"""
+
+CARDS = Reference(
+    slug="ref-kartalar-xabari",
+    title="Kartalar bilan xabar (ikki bosqichli)",
+    checker_type="standard",
+    difficulty=1200,
+    task_kind="two_pass",
+    statement=(
+        "Dasturingiz har testda **ikki marta** ishga tushadi.\n\n"
+        "**1-yurish.** Birinchi qatorda `encode`, ikkinchisida butun son $X$. Dastur "
+        f"$1 \\ldots {CARDS_TOTAL}$ raqamli kartalardan ko'pi bilan {CARDS_MAX} tasini tanlab, "
+        "ularning raqamlarini chiqaradi (har karta ko'pi bilan bir marta).\n\n"
+        "Shundan keyin hakam dasturi kartalarni **o'sish tartibida saralaydi** — ya'ni siz "
+        "ularni qaysi tartibda chiqarganingiz yo'qoladi.\n\n"
+        "**2-yurish.** Birinchi qatorda `decode`, ikkinchisida kartalar soni $k$, uchinchisida "
+        "saralangan $k$ ta raqam. Dastur $X$ ni chiqarishi kerak.\n\n"
+        "Ikki yurish orasida xotira ham, fayl ham saqlanmaydi: ikkinchi yurish faqat "
+        "kartalarni ko'radi."
+    ),
+    input_format="1-yurishda: `encode` va $X$ ($0 \\le X < 2^{20}$). 2-yurishda: `decode`, $k$ va kartalar.",
+    output_format="1-yurishda — tanlangan kartalar raqamlari; 2-yurishda — $X$.",
+    note=(
+        "Namunada 1-yurishning kirishi va 2-yurish chiqarishi kerak bo'lgan javob "
+        "ko'rsatilgan. Vaqt va xotira chegarasi har yurish uchun alohida."
+    ),
+    tests=(
+        ("encode\n5\n", "5\n", "sample"),
+        ("encode\n0\n", "0\n", "boundary"),
+        ("encode\n699050\n", "699050\n", "special"),
+        ("encode\n123456\n", "123456\n", "random"),
+        ("encode\n1048575\n", "1048575\n", "maximum"),
+    ),
+    samples=1,
+    reference=CARDS_REFERENCE,
+    manager=CARDS_MANAGER,
+    cases=(
+        Case("reference: one card per bit", CARDS_REFERENCE, "AC", 100),
+        Case("the value is in the order of the cards", CARDS_ORDERED, "WA", 0),
+        Case("more cards than allowed", CARDS_TOO_MANY, "WA", 0),
+        Case("a file left for the second run", CARDS_SMUGGLE, "RE_EXIT", 0),
+    ),
+)
+
+REFERENCES: tuple[Reference, ...] = (PAIR, GUESS, COINS, MAXPAIR, PALS, CARDS)
 
 
 def install(*, publish: bool = True) -> list[Any]:
@@ -800,6 +916,8 @@ def install(*, publish: bool = True) -> list[Any]:
                 "checker_language": python if ref.checker else None,
                 "interactor_source": ref.interactor,
                 "interactor_language": python if ref.interactor else None,
+                "manager_source": ref.manager,
+                "manager_language": python if ref.manager else None,
                 "partial_scoring": ref.checker_type == Problem.Checker.SCORER,
                 "source": "RankWant reference",
             },

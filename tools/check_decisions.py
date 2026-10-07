@@ -2500,6 +2500,30 @@ def answer_problems_run_no_code() -> str | None:
     return None
 
 
+def two_pass_runs_share_nothing() -> str | None:
+    """2026-10-07: ikki bosqichli masala - ikki yurish orasida faqat manager chiqishi o'tadi (ADR-0053).
+
+    O'lchandi (bake-off `32-two-pass-no-carry`): ish katalogi sandbox'ga
+    yoziladigan qilib ulanadi - birinchi yurish fayl yoza OLADI. Har yurish
+    toza nusxada ishlamasa, o'sha fayl ikkinchi yurishga yetadi va masalaning
+    butun ma'nosi (xabar faqat manager orqali o'tadi) yo'qoladi.
+    """
+    if "\t\tdir, err := cloneForRun(work)\n" not in read("services/judge-go/twopass.go"):
+        return "twopass.go: yurishlar bitta katalogda ishlaydi - birinchisi qoldirgan fayl ikkinchisiga yetadi"
+    if "\t\t\tout, decided, err = twoPass(ctx, work, runCmd, managerCmd, test, job.Limits, wallLimit)\n" not in read(
+        "services/judge-go/judge.go"
+    ):
+        return "judge.go: `two_pass` ishi bir marta yuritiladi"
+    if '            "kind": "two_pass",\n' not in read("apps/api/judging/services.py"):
+        return "judging/services.py: `two_pass` masalasining ishida `task` yo'q - dastur bir marta yuradi"
+    if "        or two_pass_error(problem)\n" not in read("apps/api/problems/evaluation.py"):
+        return "evaluation.py: manager'siz ikki bosqichli masala nashr darvozasidan o'tadi"
+    cases = ROOT / "services/bakeoff/cases/32-two-pass-no-carry.json"
+    if not cases.exists():
+        return "bake-off: `32-two-pass-no-carry` yo'q - yurishlar orasidagi izolyatsiya sinalmaydi"
+    return None
+
+
 def dates_are_written_in_the_site_zone() -> str | None:
     """2026-10-06: sana yordamchilari standart holatda sayt zonasida yozadi.
 
@@ -3293,6 +3317,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
+    ("ikki bosqichli yurishlar hech narsa bo'lishmaydi", two_pass_runs_share_nothing),
     ("faqat javob masalasida kod yurmaydi", answer_problems_run_no_code),
     ("funksiya masalasi hakam dasturi bilan yuriladi", function_problems_are_composed),
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),

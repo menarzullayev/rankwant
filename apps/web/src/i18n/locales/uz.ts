@@ -469,6 +469,16 @@ export const uz = {
     "Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi.",
   "admin.label.value.answerFiles":
     "Javob fayllari",
+  "about.eval.twoPass":
+    "Ikki bosqichli masala: dasturingiz har testda ikki marta ishga tushadi. Ikkinchi yurish faqat hakam dasturi birinchisining chiqishidan yasagan kirishni ko'radi — xotira ham, fayl ham saqlanmaydi.",
+  "admin.label.value.twoPass":
+    "Ikki bosqichli",
+  "admin.label.tech.managerLanguage":
+    "Oraliq dastur tili (kod, masalan py313)",
+  "admin.label.tech.managerSource":
+    "Oraliq dastur manbasi",
+  "admin.help.managerOnlyTwoPass":
+    "Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi.",
   "about.judge.title": "Tizim qanday ishlaydi",
   "about.judge.body":
     "Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi.",

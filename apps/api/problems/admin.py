@@ -54,6 +54,8 @@ class ProblemAdmin(admin.ModelAdmin):
                     "memory_limit_kb",
                     "checker_type",
                     "task_kind",
+                    "manager_language",
+                    "manager_source",
                     "interactor_language",
                     "interactor_source",
                 )

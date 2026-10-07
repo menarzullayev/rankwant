@@ -464,6 +464,16 @@ export const kaa: Record<MessageKey, string> = {
     "Tek juwap máselesi: programma jiberilmeydi. Kirisiw faylları ashıq, siz hár test ushın juwap faylın jiberesiz; onı avtor programması bahalaydı. Jiberilmegen test ushın sońǵı juwabıńız saqlanadı.",
   "admin.label.value.answerFiles":
     "Juwap faylları",
+  "about.eval.twoPass":
+    "Eki basqıshlı másele: programmańız hár testte eki ret iske túsedi. Ekinshi júriw tek tóreshi programması birinshisiniń shıǵısınan jasaǵan kirisiwdi kóredi — yad ta, fayl da saqlanbaydı.",
+  "admin.label.value.twoPass":
+    "Eki basqıshlı",
+  "admin.label.tech.managerLanguage":
+    "Aralıq programma tili (kod, mısalı py313)",
+  "admin.label.tech.managerSource":
+    "Aralıq programma deregi",
+  "admin.help.managerOnlyTwoPass":
+    "Tek eki basqıshlı másele ushın: manager <kirisiw> <1-júriw shıǵısı> <juwap>; shıǵısı 2-júriwdiń kirisiwi boladı, nolden ózge kod biykarlaydı.",
   "about.judge.title": "Tekseriw qalay isleydi",
   "about.judge.body":
     "Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı.",

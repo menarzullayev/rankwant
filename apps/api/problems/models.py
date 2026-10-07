@@ -263,12 +263,22 @@ class Problem(TimeStampedModel):
         FUNCTION = "function", "Function"
         #: The solver sends the answers themselves; no program is run.
         ANSWER = "answer", "Answer files"
+        #: The program runs twice per test; the manager stands between.
+        TWO_PASS = "two_pass", "Two passes"
 
     task_kind = models.CharField(
         max_length=16,
         choices=TaskKind.choices,
         default=TaskKind.PROGRAM,
         help_text="function: the submission is inserted into the per-language harness.",
+    )
+    #: `task_kind = two_pass`: the author's program between the two runs,
+    #: called as `manager <input> <output of run 1> <jury>`; its stdout is the
+    #: input of run 2 and a non-zero exit rejects the message. Trusted, like
+    #: the checker.
+    manager_source = models.TextField(blank=True)
+    manager_language = models.ForeignKey(
+        Language, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
     interactor_source = models.TextField(blank=True)
     interactor_language = models.ForeignKey(
