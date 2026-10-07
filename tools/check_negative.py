@@ -4192,6 +4192,46 @@ def neg_decisions_answer_zip_unbounded() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_two_pass_runs_share_a_directory() -> tuple[bool, str]:
+    """Both runs of a two-pass test use the work directory itself."""
+    return _decision_broken(
+        "services/judge-go/twopass.go",
+        "\t\tdir, err := cloneForRun(work)\n",
+        "\t\tdir, err := work, error(nil)\n",
+        "birinchisi qoldirgan fayl ikkinchisiga yetadi",
+    )
+
+
+def neg_decisions_two_pass_runs_once() -> tuple[bool, str]:
+    """A two-pass job is run like any program: once."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "\t\t\tout, decided, err = twoPass(ctx, work, runCmd, managerCmd, test, job.Limits, wallLimit)\n",
+        "\t\t\tout, err = sandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)\n",
+        "bir marta yuritiladi",
+    )
+
+
+def neg_decisions_two_pass_job_without_task() -> tuple[bool, str]:
+    """The API sends a two-pass job as a plain program."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        '            "kind": "two_pass",\n',
+        '            "kind": "",\n',
+        "dastur bir marta yuradi",
+    )
+
+
+def neg_decisions_two_pass_released_without_manager() -> tuple[bool, str]:
+    """The release gate stops asking for the manager."""
+    return _decision_broken(
+        "apps/api/problems/evaluation.py",
+        "        or two_pass_error(problem)\n",
+        "",
+        "manager'siz ikki bosqichli masala",
+    )
+
+
 def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
     """The date helpers format in the zone of whatever machine renders."""
     return _decision_broken(
@@ -5907,6 +5947,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/evaluation.py",
     "apps/api/problems/reference_problems.py",
     "apps/api/judging/answers.py",
+    "services/judge-go/twopass.go",
+    "services/bakeoff/cases/32-two-pass-no-carry.json",
 )
 
 
@@ -9213,6 +9255,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("javob ishi tursiz ketsa tutilsin", neg_decisions_answer_job_without_task),
             ("javob eshiklari aralashsa tutilsin", neg_decisions_answer_doors_mix),
             ("zip chegarasiz ochilsa tutilsin", neg_decisions_answer_zip_unbounded),
+            ("ikki yurish bitta katalogda ishlasa tutilsin", neg_decisions_two_pass_runs_share_a_directory),
+            ("ikki bosqichli ish bir marta yursa tutilsin", neg_decisions_two_pass_runs_once),
+            ("ikki bosqichli ish tursiz ketsa tutilsin", neg_decisions_two_pass_job_without_task),
+            ("manager'siz masala nashr qilinsa tutilsin", neg_decisions_two_pass_released_without_manager),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),

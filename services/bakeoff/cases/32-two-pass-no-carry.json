@@ -1,0 +1,50 @@
+{
+  "id": "32-two-pass-no-carry",
+  "title": "Ikki bosqichli — birinchi yurish qoldirgan fayl ikkinchisiga yetmaydi",
+  "measures": "har yurish kompilyatsiya qilingan katalogning TOZA nusxasida ishlaydi",
+  "source": "import os\n\nmode = input()\nwrote = input()\nif mode == \"first\":\n    try:\n        open(\"note.txt\", \"w\").write(\"secret\")\n        print(1)\n    except OSError:\n        print(0)\nelse:\n    print(wrote, \"leaked\" if os.path.exists(\"note.txt\") else \"clean\")\n",
+  "tests": [
+    {
+      "index": 1,
+      "input": "first\n0\n",
+      "expected": "1 clean\n"
+    }
+  ],
+  "expect_verdict": "AC",
+  "must_hold": [
+    "birinchi yurish faylni YOZA OLADI (javobdagi `1`): ish katalogi sandbox'ga yoziladigan qilib ulanadi",
+    "ikkinchi yurishda u fayl yo'q: `clean`, `leaked` emas"
+  ],
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "mode": "acm",
+  "implemented": true,
+  "task": {
+    "kind": "two_pass",
+    "manager": {
+      "code": "py312",
+      "compile": null,
+      "run": [
+        "python3",
+        "{src}"
+      ],
+      "source": "\"\"\"Manager: hands the first run's line on to the second, after a header.\"\"\"\nimport sys\n\nmessage = open(sys.argv[2]).read().split()\nif len(message) != 1:\n    sys.exit(1)\nprint(\"second\")\nprint(message[0])\n"
+    }
+  },
+  "expect_by_worker": {
+    "judge-py": "IE"
+  }
+}

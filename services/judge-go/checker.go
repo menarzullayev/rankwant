@@ -34,15 +34,22 @@ type checkerVerdict struct {
 // qiladi. Job boshida BIR MARTA chaqiriladi: har testda qayta qurish
 // kompilyatsiya vaqtini test soniga ko'paytirardi.
 func prepareChecker(ctx context.Context, work string, prog *TrustedProgram) ([]string, error) {
+	return prepareTrusted(ctx, work, prog, "checker")
+}
+
+// prepareTrusted writes and, if needed, compiles one of the author's
+// programs. `role` keeps their files apart in the work directory: a
+// two-pass job has both a checker and a manager.
+func prepareTrusted(ctx context.Context, work string, prog *TrustedProgram, role string) ([]string, error) {
 	name, err := sourceName(prog.Code, prog.SourceFile)
 	if err != nil {
 		return nil, err
 	}
-	src := filepath.Join(work, "checker_"+name)
+	src := filepath.Join(work, role+"_"+name)
 	if err := os.WriteFile(src, []byte(prog.Source), 0o644); err != nil {
 		return nil, err
 	}
-	bin := filepath.Join(work, "checker_bin")
+	bin := filepath.Join(work, role+"_bin")
 
 	if len(prog.Compile) > 0 {
 		cctx, cancel := context.WithTimeout(ctx, 30*time.Second)
@@ -50,7 +57,7 @@ func prepareChecker(ctx context.Context, work string, prog *TrustedProgram) ([]s
 		cmd := subst(prog.Compile, src, bin)
 		out, err := exec.CommandContext(cctx, cmd[0], cmd[1:]...).CombinedOutput()
 		if err != nil {
-			return nil, fmt.Errorf("checker kompilyatsiyasi: %w: %s", err, string(out))
+			return nil, fmt.Errorf("%s kompilyatsiyasi: %w: %s", role, err, string(out))
 		}
 	}
 	return subst(prog.Run, src, bin), nil

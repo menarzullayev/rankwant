@@ -7825,8 +7825,11 @@ export interface components {
              *     * `program` - Whole program
              *     * `function` - Function
              *     * `answer` - Answer files
+             *     * `two_pass` - Two passes
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
+            manager_source?: string;
+            manager_language?: string | null;
             interactor_source?: string;
             interactor_language?: string | null;
             checker_source?: string;
@@ -8291,6 +8294,7 @@ export interface components {
              *     * `program` - Whole program
              *     * `function` - Function
              *     * `answer` - Answer files
+             *     * `two_pass` - Two passes
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
             readonly answer_tests: number[];
@@ -9020,8 +9024,11 @@ export interface components {
              *     * `program` - Whole program
              *     * `function` - Function
              *     * `answer` - Answer files
+             *     * `two_pass` - Two passes
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
+            manager_source?: string;
+            manager_language?: string | null;
             interactor_source?: string;
             interactor_language?: string | null;
             checker_source?: string;
@@ -9539,9 +9546,10 @@ export interface components {
          * @description * `program` - Whole program
          *     * `function` - Function
          *     * `answer` - Answer files
+         *     * `two_pass` - Two passes
          * @enum {string}
          */
-        TaskKindEnum: "program" | "function" | "answer";
+        TaskKindEnum: "program" | "function" | "answer" | "two_pass";
         Team: {
             readonly id: number;
             name: string;

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2262 strings.**
+**2267 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -443,6 +443,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `answer.failed` | Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring. | Фиристодан муяссар нашуд. Пайвастро санҷида, дубора кӯшиш кунед. |  |
 | `about.eval.answer` | Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi. | Масъалаи танҳо ҷавоб: барнома фиристода намешавад. Файлҳои вуруд кушодаанд, шумо барои ҳар тест файли ҷавоб мефиристед; онро барномаи муаллиф баҳо медиҳад. Барои тести фиристоданашуда ҷавоби охирин нигоҳ дошта мешавад. |  |
 | `admin.label.value.answerFiles` | Javob fayllari | Файлҳои ҷавоб |  |
+| `about.eval.twoPass` | Ikki bosqichli masala: dasturingiz har testda ikki marta ishga tushadi. Ikkinchi yurish faqat hakam dasturi birinchisining chiqishidan yasagan kirishni ko'radi — xotira ham, fayl ham saqlanmaydi. | Масъалаи думарҳилагӣ: барномаи шумо дар ҳар тест ду бор иҷро мешавад. Иҷрои дуюм танҳо вурудеро мебинад, ки барномаи довар аз баромади якум сохтааст — на хотира ва на файл боқӣ намемонад. |  |
+| `admin.label.value.twoPass` | Ikki bosqichli | Думарҳилагӣ |  |
+| `admin.label.tech.managerLanguage` | Oraliq dastur tili (kod, masalan py313) | Забони барномаи мобайнӣ (код, масалан py313) |  |
+| `admin.label.tech.managerSource` | Oraliq dastur manbasi | Манбаи барномаи мобайнӣ |  |
+| `admin.help.managerOnlyTwoPass` | Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi. | Танҳо барои масъалаи думарҳилагӣ: manager <вуруд> <баромади иҷрои 1> <ҷавоб>; баромадаш вуруди иҷрои 2 мешавад, рамзи ғайрисифр рад мекунад. |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Санҷиш чӣ гуна кор мекунад |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ҳар ҳали фиристодашуда дар sandbox-и ҷудошуда компилятсия ва бо ҳамаи тестҳои пинҳон иҷро мешавад (реҷаи ACM: дар аввалин тести ноком санҷиш қатъ мешавад). Ҳал танҳо вақте қабул мешавад, ки ҳамаи тестҳо гузаранд. Маҳдудиятҳои вақт ва хотира барои ҳар тест алоҳида амал мекунанд. |  |
 | `about.notes.title` | Muhim eslatmalar | Эзоҳҳои муҳим |  |

@@ -167,6 +167,16 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 	// with a compile error for the judge being out of date.
 	switch job.Task.Kind {
 	case "":
+	case TaskTwoPass:
+		// A program like any other, run twice per test (twopass.go). What
+		// the judge cannot do with it is refused here, before compiling.
+		if job.Task.Manager == nil || job.Checker.Type == "interactive" ||
+			job.Checker.Type == "scorer" || job.IO.Mode != "" || job.Mode == "custom" {
+			res.Verdict = VIE
+			res.CompileOutput = "a two-pass task needs a manager program, stdin/stdout and a standard or special checker"
+			res.Meta.TotalMS = time.Since(t0).Milliseconds()
+			return res
+		}
 	case TaskAnswer:
 		judgeAnswers(ctx, work, job, tests, emit, res)
 		res.Meta.TotalMS = time.Since(t0).Milliseconds()
@@ -294,6 +304,16 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		}
 	}
 
+	var managerCmd []string
+	if job.Task.Kind == TaskTwoPass {
+		var err error
+		if managerCmd, err = prepareTrusted(ctx, work, job.Task.Manager, "manager"); err != nil {
+			res.Verdict = VCheckerErr
+			res.CompileOutput = err.Error()
+			return res
+		}
+	}
+
 	// `scorer` da har test o'z bahosini beradi, o'rtachasi olinadi.
 	scoreSum := 0
 
@@ -312,12 +332,24 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 			worst = VIE
 			break
 		}
-		out, err := sandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)
+		var out *runOutcome
+		var err error
+		// A two-pass test may be decided before there is an answer to
+		// classify: run 1 failed, or the manager rejected its message.
+		decided := ""
+		if job.Task.Kind == TaskTwoPass {
+			out, decided, err = twoPass(ctx, work, runCmd, managerCmd, test, job.Limits, wallLimit)
+		} else {
+			out, err = sandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)
+		}
 		if err != nil {
 			worst = VIE
 			break
 		}
-		v := classifyAnswer(out, test, job.Limits, work, job.IO)
+		v := decided
+		if v == "" {
+			v = classifyAnswer(out, test, job.Limits, work, job.IO)
+		}
 
 		// ⚠️ `RE_SIGNAL` — kam uchraydigan va tushunarsiz holat: dastur
 		// kutilmaganda signal bilan o'ladi. 2026-09-17 da `04-idleness`
@@ -335,7 +367,7 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		}
 		// Chiqish to'g'ri kelgan bo'lsa (dastur normal tugadi), yakuniy
 		// so'z checkerniki: tenglik solishtiruvi maxsus masalada noto'g'ri.
-		if useChecker && checkerDecides(v) {
+		if useChecker && decided == "" && checkerDecides(v) {
 			cv, err := runChecker(ctx, work, checkerCmd, job.Checker.Type,
 				test.Input, out.Stdout, test.Expected)
 			if err != nil {

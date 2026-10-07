@@ -119,10 +119,16 @@ type IO struct {
 // which is everything the judge did before the field existed.
 type Task struct {
 	Kind string `json:"kind,omitempty"`
+	// Kind "two_pass": the author's program that turns the output of the
+	// first run into the input of the second (twopass.go).
+	Manager *TrustedProgram `json:"manager,omitempty"`
 }
 
 // Task kinds this judge can grade.
-const TaskAnswer = "answer"
+const (
+	TaskAnswer  = "answer"
+	TaskTwoPass = "two_pass"
+)
 
 type Job struct {
 	JobID     string `json:"job_id"`

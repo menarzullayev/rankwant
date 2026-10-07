@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2262 strings.**
+**2267 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -443,6 +443,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `answer.failed` | Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring. | Jiberip bolmadı. Baylanıstı tekserip, qayta urınıp kóriń. |  |
 | `about.eval.answer` | Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi. | Tek juwap máselesi: programma jiberilmeydi. Kirisiw faylları ashıq, siz hár test ushın juwap faylın jiberesiz; onı avtor programması bahalaydı. Jiberilmegen test ushın sońǵı juwabıńız saqlanadı. |  |
 | `admin.label.value.answerFiles` | Javob fayllari | Juwap faylları |  |
+| `about.eval.twoPass` | Ikki bosqichli masala: dasturingiz har testda ikki marta ishga tushadi. Ikkinchi yurish faqat hakam dasturi birinchisining chiqishidan yasagan kirishni ko'radi — xotira ham, fayl ham saqlanmaydi. | Eki basqıshlı másele: programmańız hár testte eki ret iske túsedi. Ekinshi júriw tek tóreshi programması birinshisiniń shıǵısınan jasaǵan kirisiwdi kóredi — yad ta, fayl da saqlanbaydı. |  |
+| `admin.label.value.twoPass` | Ikki bosqichli | Eki basqıshlı |  |
+| `admin.label.tech.managerLanguage` | Oraliq dastur tili (kod, masalan py313) | Aralıq programma tili (kod, mısalı py313) |  |
+| `admin.label.tech.managerSource` | Oraliq dastur manbasi | Aralıq programma deregi |  |
+| `admin.help.managerOnlyTwoPass` | Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi. | Tek eki basqıshlı másele ushın: manager <kirisiw> <1-júriw shıǵısı> <juwap>; shıǵısı 2-júriwdiń kirisiwi boladı, nolden ózge kod biykarlaydı. |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Tekseriw qalay isleydi |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı. |  |
 | `about.notes.title` | Muhim eslatmalar | Áhmiyetli eskertpeler |  |

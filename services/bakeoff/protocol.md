@@ -230,6 +230,24 @@ bo'ladi va har testga yechuvchi yuborgan fayl biriktiriladi — `answer_ref`
 - ball — testlar o'rtachasi: 100 — `AC`, 0 dan katta — `PARTIAL`, 0 — `WA`;
 - checker yiqilsa `CHECKER_ERROR` (nol ball emas).
 
+`two_pass` masalasida `task` = `{"kind": "two_pass", "manager": {…}}`; `manager`
+— `checker.program` shaklidagi ishonchli dastur. Har testda:
+
+1. 1-yurish: stdin — test kirishi. Resurs yoki ishga tushirish xatosi (TLE, MLE,
+   RE…) testni shu yerda hal qiladi.
+2. `manager <kirish> <1-yurish chiqishi> <jyuri javobi>`: stdout — 2-yurishning
+   **butun** kirishi. Noldan farqli chiqish kodi — xabar qoidani buzgan, `WA`;
+   manager signal bilan o'lsa yoki vaqti tugasa — `CHECKER_ERROR`.
+3. 2-yurish: stdin — manager chiqishi. Uning javobi odatdagidek baholanadi
+   (solishtiruv yoki `special` checker).
+
+Har yurish kompilyatsiya qilingan katalogning **toza nusxasida** ishlaydi:
+katalog sandbox'ga yoziladigan qilib ulanadi, ya'ni usiz 1-yurish qoldirgan
+fayl 2-yurishga yetib borardi (`32-two-pass-no-carry`). Muallif dasturlari
+(`checker_*`, `manager_*`) bu nusxaga ko'chirilmaydi. `time_ms` va `memory_kb` —
+ikki yurishning kattasi; chegara har yurishga alohida. `io`, `scorer`,
+interaktiv va `custom` rejim bilan birga kelsa — `IE`.
+
 ⚠️ YOPIQ YIQILISH: judge tanimaydigan `task.kind` ni `IE` bilan rad etadi —
 dastur sifatida yuritmaydi.
 

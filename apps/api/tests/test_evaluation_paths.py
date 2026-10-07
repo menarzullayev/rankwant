@@ -37,6 +37,7 @@ from problems.evaluation import (
 )
 from problems.models import Language, Problem, ProblemLanguage, ReferenceSolution, Subtask
 from problems.reference_problems import (
+    CARDS,
     COINS,
     GUESS,
     MAXPAIR,
@@ -202,6 +203,7 @@ class TestInstall:
             "scorer",
             "standard",
             "scorer",
+            "standard",
         ]
         assert [p.task_kind for p in problems] == [
             "program",
@@ -209,6 +211,7 @@ class TestInstall:
             "program",
             "function",
             "answer",
+            "two_pass",
         ]
         for problem in problems:
             assert problem.is_public, problem.slug
@@ -786,3 +789,117 @@ class TestAnswerKind:
             score = total // len(PALS.tests)
             verdict = "AC" if score >= 100 else "PARTIAL" if score > 0 else "WA"
             assert (verdict, score) == (case.verdict, case.score), case.name
+
+
+# ── task kind: two_pass (ADR-0053) ───────────────────────────────────────────
+
+
+def _two_pass(ref: Reference, source: str, test_in: str, tmp_path: Path) -> str | None:
+    """Run 1, the manager, run 2 - as the judge chains them. `None`: rejected."""
+    first = _run(source, test_in, tmp_path)
+    if first.returncode != 0:
+        return None
+    for name, body in (("in", test_in), ("out", first.stdout), ("ans", "")):
+        (tmp_path / f"manager.{name}").write_text(body, encoding="utf-8")
+    manager = tmp_path / "manager.py"
+    manager.write_text(ref.manager, encoding="utf-8")
+    between = subprocess.run(
+        [
+            sys.executable,
+            str(manager),
+            *(str(tmp_path / f"manager.{n}") for n in ("in", "out", "ans")),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+    if between.returncode != 0:
+        return None
+    second = _run(source, between.stdout, tmp_path)
+    return second.stdout if second.returncode == 0 else None
+
+
+class TestTwoPassKind:
+    @pytest.mark.parametrize(
+        ("io_mode", "checker_type", "ok"),
+        [
+            ("stdio", "standard", True),
+            ("stdio", "special", True),
+            ("stdio", "scorer", False),
+            ("stdio", "interactive", False),
+            ("both", "standard", False),
+        ],
+    )
+    def test_what_a_two_pass_problem_can_be_combined_with(
+        self, io_mode: str, checker_type: str, ok: bool
+    ) -> None:
+        assert (task_kind_error("two_pass", io_mode, checker_type) is None) is ok
+
+    def test_it_cannot_be_released_without_its_manager(
+        self, problem: Problem, python: Language
+    ) -> None:
+        Problem.objects.filter(pk=problem.pk).update(task_kind="two_pass")
+        problem.refresh_from_db()
+        assert "manager" in (evaluation_error(problem) or "")
+        assert not release.evaluation_gate(problem).passed
+        Problem.objects.filter(pk=problem.pk).update(manager_source="x", manager_language=python)
+        problem.refresh_from_db()
+        assert evaluation_error(problem) is None
+
+    def test_the_staff_api_takes_the_manager_and_refuses_a_scorer(
+        self, staff_client: APIClient, problem: Problem, python: Language
+    ) -> None:
+        url = reverse("staff-problem-detail", args=[problem.slug])
+        ok = staff_client.patch(
+            url,
+            {"task_kind": "two_pass", "manager_source": "print()", "manager_language": python.code},
+            format="json",
+        )
+        assert ok.status_code == 200, ok.content
+        problem.refresh_from_db()
+        assert (problem.task_kind, problem.manager_language) == ("two_pass", python)
+        refused = staff_client.patch(
+            url,
+            {"checker_type": "scorer", "checker_source": "x", "checker_language": python.code},
+            format="json",
+        )
+        assert refused.status_code == 400
+        assert EVALUATION_MODE_INVALID in json.dumps(refused.json())
+
+    def test_the_job_carries_the_manager(self, stored: dict[str, str], user: User) -> None:
+        install()
+        attempt = Attempt.objects.create(
+            user=user,
+            problem=Problem.objects.get(slug=CARDS.slug),
+            language=Language.objects.get(code="py313"),
+            source_code=CARDS.reference,
+        )
+        job = json.loads(build_job(attempt).to_json())
+        assert job["task"]["kind"] == "two_pass"
+        assert job["task"]["manager"]["source"] == CARDS.manager
+        assert job["task"]["manager"]["run"]
+        assert job["checker"] == {"type": "standard"}
+        # Every other kind sends no manager.
+        other = Attempt.objects.create(
+            user=user,
+            problem=Problem.objects.get(slug=PAIR.slug),
+            language=Language.objects.get(code="py313"),
+            source_code=PAIR.reference,
+        )
+        assert json.loads(build_job(other).to_json())["task"] is None
+
+    def test_each_listed_submission_earns_its_verdict(
+        self, stored: dict[str, str], tmp_path: Path
+    ) -> None:
+        """Both runs and the real manager between them.
+
+        The case that leaves a file behind is not simulated here: that the
+        second run cannot see it is the judge's doing (a fresh directory per
+        run), proven by the bake-off case and the end-to-end run.
+        """
+        for case in CARDS.cases[:3]:
+            passed = all(
+                (_two_pass(CARDS, case.source, test_in, tmp_path) or "").split() == expected.split()
+                for test_in, expected, _group in CARDS.tests
+            )
+            assert ("AC" if passed else "WA") == case.verdict, case.name
