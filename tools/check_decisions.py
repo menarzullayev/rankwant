@@ -2076,6 +2076,28 @@ def customizer_reachable_on_a_phone() -> str | None:
     return None
 
 
+def editor_sheet_clears_the_side_menu() -> str | None:
+    """2026-10-07: masala sahifasidagi muharrir varag'i yon menyu ostiga kirmaydi.
+
+    `xl` dan pastda muharrir pastki varaqda, `lg` dan esa yon menyu ko'rinadi
+    va varaqdan yuqorida turadi (z-50 > z-40). Varaq `fixed` — ustunning
+    `margin` i uni surmaydi, shuning uchun 1024–1279 px da u oyna chetidan
+    boshlanib, «Yuborish» tugmasi menyu havolasi ostida qolardi.
+    """
+    shell = read("apps/web/src/layout/AppShell.tsx")
+    if 'const SHELL_INSET = "--rw-shell-inset"' not in shell:
+        return "AppShell.tsx: `--rw-shell-inset` e'lon qilinmagan — fixed qutilar yon menyu kengligini bilmaydi"
+    if '[SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px"' not in shell:
+        return "AppShell.tsx: `--rw-shell-inset` yon menyu holatiga (260 / 86 / 0 px) bog'lanmagan"
+    side = read("apps/web/src/layout/AppSidebar.tsx")
+    if '"w-[260px] px-4" : "w-[86px] px-2"' not in side:
+        return "AppSidebar.tsx: yon menyu kengligi 260 / 86 px emas — `--rw-shell-inset` bilan ajralib ketadi"
+    sheet = read("apps/web/src/features/problems/components/ProblemWorkspace.tsx")
+    if "fixed inset-x-0 bottom-0 z-40" in sheet and "lg:left-[var(--rw-shell-inset,0px)]" not in sheet:
+        return "ProblemWorkspace.tsx: muharrir varag'i `lg` dan yon menyu ostida boshlanadi — «Yuborish» bosilmaydi"
+    return None
+
+
 def customizer_quick_row_first() -> str | None:
     """2026-10-05: sozlagichda tez qator va shablonlar akkordeonlardan oldin.
 
@@ -3341,6 +3363,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
+    ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),
     ("ikki bosqichli yurishlar hech narsa bo'lishmaydi", two_pass_runs_share_nothing),
     ("faqat javob masalasida kod yurmaydi", answer_problems_run_no_code),
