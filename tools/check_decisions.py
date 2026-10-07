@@ -2546,6 +2546,44 @@ def two_pass_runs_share_nothing() -> str | None:
     return None
 
 
+def nightly_builds_each_image_once() -> str | None:
+    # 2026-10-07, Nightly run of c3623d9 (19.9 min): the worker binary sat
+    # inside the judge image's one flattened layer, so a Go change made eight
+    # jobs rebuild every toolchain and five of them upload the result.
+    dockerfile = read("services/judge-go/Dockerfile")
+    code = [ln for ln in dockerfile.splitlines() if ln.strip() and not ln.lstrip().startswith("#")]
+    froms = [i for i, ln in enumerate(code) if ln.startswith("FROM ")]
+    if not froms or "ARG JUDGE_BASE=base" not in code[: froms[0]]:
+        return "judge Dockerfile: `ARG JUDGE_BASE=base` birinchi FROM dan oldin yo'q"
+    if "FROM scratch AS base" not in code:
+        return "judge Dockerfile: `base` bosqichi yo'q"
+    if code[froms[-1]] != "FROM ${JUDGE_BASE}":
+        return "judge Dockerfile: oxirgi bosqich `FROM ${JUDGE_BASE}` emas"
+    base_at = code.index("FROM scratch AS base")
+    binary = [i for i, ln in enumerate(code) if ln.startswith("COPY --from=go-build")]
+    if not binary or min(binary) < base_at:
+        return "judge binari toolchain qatlami ichida — Go o'zgarsa butun obraz qayta quriladi"
+    stack = read("tools/ci_stack.sh")
+    if "--target base" not in stack or "JUDGE_BASE=${project}-judge-base" not in stack:
+        return "ci_stack.sh judge'ni base ustiga qurmaydi"
+    nightly = read(".github/workflows/nightly.yml")
+    push = re.compile(r"(?m)^\s+run: .*ci_stack\.sh --push-only")
+    if len(push.findall(nightly)) != 1 or not push.search(_workflow_job(nightly, "images")):
+        return "obraz keshini faqat `images` job'i yozishi kerak"
+    coverage = _workflow_job(nightly, "coverage")
+    matrix = re.search(r"(?m)^\s+shard: \[([\d, ]+)\]", coverage)
+    if not matrix:
+        return "coverage shardlarga bo'linmagan"
+    count = str(len(matrix.group(1).split(",")))
+    if f"pytest_shard.py --check {count}" not in coverage:
+        return "coverage shardlar to'liqligini tekshirmaydi"
+    if f"pytest_shard.py ${{{{ matrix.shard }}}} {count}" not in coverage:
+        return "coverage shard soni matritsaga mos emas"
+    if "needs: coverage" not in _workflow_job(nightly, "coverage-report"):
+        return "coverage hisoboti shardlarni kutmaydi"
+    return None
+
+
 def sql_queries_only_read() -> str | None:
     """2026-10-07: SQL masalasi - so'rov mavjud sandbox ichida, faqat o'qish (ADR-0053).
 
@@ -3364,6 +3402,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
     ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
+    ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),
     ("ikki bosqichli yurishlar hech narsa bo'lishmaydi", two_pass_runs_share_nothing),
     ("faqat javob masalasida kod yurmaydi", answer_problems_run_no_code),

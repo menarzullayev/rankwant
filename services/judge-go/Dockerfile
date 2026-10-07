@@ -3,6 +3,21 @@
 # Ikki bosqich: (1) nsjail va worker quriladi, (2) ishga tushirish muhiti.
 # Ishga tushirish muhitida submission tillari bo'ladi, LEKIN DB mijozi YO'Q.
 
+# Two images come out of this file:
+#
+#   base   — nsjail and every language toolchain, flattened to one layer.
+#            Depends on this Dockerfile only, never on the Go sources.
+#   final  — `base` plus the worker binary: one more layer of a few MB.
+#
+# A plain `docker build .` builds both in one go (deploy, compose). CI
+# builds `--target base` once, keeps it in the registry, and then builds
+# the final image on top of it with `--build-arg JUDGE_BASE=<that image>`,
+# so a change to a `.go` file rebuilds and uploads megabytes, not the
+# toolchains. Measured 2026-10-07 (Nightly run of c3623d9): with the
+# binary inside the flattened layer, one Go change made eight jobs rebuild
+# the whole image (7-10 min each) and five of them push it (5-6 min each).
+ARG JUDGE_BASE=base
+
 # ── 1. nsjail ────────────────────────────────────────────────────────
 FROM debian:trixie AS nsjail-build
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -195,7 +210,8 @@ RUN cd /opt/rankwant/dotnet \
     && ln -s "$fsharp" fsharp
 
 COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail
-COPY --from=go-build     /out/judge-go /usr/local/bin/judge-go
+# The worker binary is NOT copied here: this stage must not depend on the
+# Go sources (see the top of the file). It is added in the last stage.
 
 # Hosted GHCR pull of this image is 40–80 s. A later `rm` does not shrink
 # earlier apt/COPY blobs; flatten so the published image is one slim layer.
@@ -216,11 +232,15 @@ RUN rm -rf \
     && find /opt/dotnet -name '*.pdb' -delete \
     && find /usr/share -type f -name '*.gz' -path '*/man/*' -delete || true
 
-# Flatten. GIT_SHA/BUILT_AT stay off the runtime stage so a new commit
-# does not bust the toolchain cache (same reason they used to sit after
-# the apt layers). `check_deploy.sh` reads these labels on the final image.
-FROM scratch
+# Flatten. Nothing below this stage may change it: a new commit, a new
+# binary and the labels all belong to the last stage.
+FROM scratch AS base
 COPY --from=runtime / /
+
+# The image that runs. GIT_SHA/BUILT_AT sit here so a new commit does not
+# bust the toolchain cache; `check_deploy.sh` reads these labels.
+FROM ${JUDGE_BASE}
+COPY --from=go-build /out/judge-go /usr/local/bin/judge-go
 ARG GIT_SHA=unknown
 LABEL org.rankwant.git-sha=$GIT_SHA
 ARG BUILT_AT=unknown
