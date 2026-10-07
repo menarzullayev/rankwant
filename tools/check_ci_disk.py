@@ -39,6 +39,9 @@ EXPECTED = [
     (DEPLOY, "deploy", [r"prune_docker_disk\.sh"]),
     # Nightly builds the whole stack. Build cache used to be pruned by
     # ci.yml's smoke job; that job is gone (2026-09-20), so e2e prunes.
+    # `images` (2026-10-07) pulls or builds all three images and is the
+    # first job of the file.
+    (NIGHTLY, "images", [r"docker\s+rmi"]),
     (NIGHTLY, "load", [r"docker\s+rmi"]),
     #: ⚠️ `e2e-browsers` (2026-09-28): brauzer matritsasi alohida jobga
     #: ko'chgach u ham to'liq stack qurади, ya'ni tozalash SHART. Ro'yxatga
