@@ -474,6 +474,10 @@ export const kaa: Record<MessageKey, string> = {
     "Aralıq programma deregi",
   "admin.help.managerOnlyTwoPass":
     "Tek eki basqıshlı másele ushın: manager <kirisiw> <1-júriw shıǵısı> <juwap>; shıǵısı 2-júriwdiń kirisiwi boladı, nolden ózge kod biykarlaydı.",
+  "about.eval.sql":
+    "SQL máselesi: bir SELECT sorawı jazıladı (SQLite 3). Hár test — tayar baza; soraw nátiyjesi qatarma-qatar salıstırıladı. Maǵlıwmattı ózgertiwshi buyrıqlar biykarlanadı.",
+  "admin.label.value.sqlQuery":
+    "SQL sorawı",
   "about.judge.title": "Tekseriw qalay isleydi",
   "about.judge.body":
     "Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı.",

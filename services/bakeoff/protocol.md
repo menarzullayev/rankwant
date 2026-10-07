@@ -248,6 +248,12 @@ fayl 2-yurishga yetib borardi (`32-two-pass-no-carry`). Muallif dasturlari
 ikki yurishning kattasi; chegara har yurishga alohida. `io`, `scorer`,
 interaktiv va `custom` rejim bilan birga kelsa — `IE`.
 
+`sql` masalasi ham judge uchun ko'rinmas (`function` kabi): API so'rovni kichik
+Python dasturiga satr sifatida joylaydi (`problems/sqltasks.py`) va oddiy ish
+yuboradi — `task` yo'q, til `python3`. Dastur test kirishidagi skript bilan
+xotiradagi SQLite bazasini quradi, so'rovni **faqat o'qish** rejimida bajaradi
+va qatorlarni chiqaradi; ular odatdagi solishtiruvdan o'tadi.
+
 ⚠️ YOPIQ YIQILISH: judge tanimaydigan `task.kind` ni `IE` bilan rad etadi —
 dastur sifatida yuritmaydi.
 

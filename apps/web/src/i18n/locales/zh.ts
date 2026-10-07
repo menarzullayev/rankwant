@@ -473,6 +473,10 @@ export const zh: Record<MessageKey, string> = {
     "中间程序源码",
   "admin.help.managerOnlyTwoPass":
     "仅用于两阶段题：manager <输入> <第一次运行的输出> <答案>；其输出作为第二次运行的输入，非零退出码表示拒绝。",
+  "about.eval.sql":
+    "SQL 题：编写一条 SELECT 查询（SQLite 3）。每个测试点是一个现成的数据库；结果逐行比对。修改数据的语句会被拒绝。",
+  "admin.label.value.sqlQuery":
+    "SQL 查询",
   "about.judge.title": "评测方式",
   "about.judge.body":
     "每次提交都会在隔离的沙箱中编译，并在全部隐藏测试点上运行（ACM 模式：遇到第一个未通过的测试点即停止）。只有通过所有测试点才算通过。时间和内存限制按每个测试点分别计算。",

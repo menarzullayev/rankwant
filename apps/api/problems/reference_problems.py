@@ -867,7 +867,91 @@ CARDS = Reference(
     ),
 )
 
-REFERENCES: tuple[Reference, ...] = (PAIR, GUESS, COINS, MAXPAIR, PALS, CARDS)
+# ── sql: one SELECT, each test is a small database ──────────────────────────
+#
+# The expected rows were produced by the runner itself from `SQL_REFERENCE`;
+# `test_evaluation_paths.py` runs it again and compares.
+
+SQL_REFERENCE = "SELECT u.name, COUNT(*) AS solved\nFROM users u JOIN solves s ON s.user_id = u.id\nGROUP BY u.id\nHAVING COUNT(*) >= 2\nORDER BY solved DESC, u.name;\n"
+#: Counts everyone with at least ONE solve.
+SQL_WRONG_FILTER = SQL_REFERENCE.replace(">= 2", ">= 1")
+#: Right rows, no order asked for: SQLite returns them in group order.
+SQL_NO_ORDER = SQL_REFERENCE.replace("ORDER BY solved DESC, u.name", "")
+
+SOLVERS = Reference(
+    slug="ref-faol-yechuvchilar",
+    title="Faol yechuvchilar (SQL)",
+    checker_type="standard",
+    difficulty=900,
+    task_kind="sql",
+    statement=(
+        "Bu masala **bitta SQL so'rovi** bilan yechiladi (SQLite 3 dialekti).\n\n"
+        "Ikki jadval bor:\n\n"
+        "- `users(id, name)` — foydalanuvchilar;\n"
+        "- `solves(user_id, problem_id)` — kim qaysi masalani yechgani (har juftlik bir marta).\n\n"
+        "Kamida **ikkita** masala yechgan foydalanuvchilarni chiqaring: ismi va yechgan "
+        "masalalari soni. Avval ko'p yechganlar; soni teng bo'lsa — ism bo'yicha alifbo tartibida."
+    ),
+    input_format=(
+        "Har test — jadvallarni yaratib, to'ldiradigan skript (namunada ko'rsatilgan). "
+        "Uni siz ishga tushirmaysiz: so'rovingiz tayyor bazada bajariladi."
+    ),
+    output_format=(
+        "So'rov natijasi ikki ustundan iborat bo'lsin: ism va son. Ustun nomlari ahamiyatsiz; "
+        "qatorlar tartibi ahamiyatli."
+    ),
+    note=(
+        "Faqat bitta `SELECT` (yoki `WITH ... SELECT`) yozing. Ma'lumotni o'zgartiruvchi "
+        "buyruqlar, `PRAGMA` va `ATTACH` rad etiladi."
+    ),
+    tests=(
+        (
+            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT NOT NULL);\nCREATE TABLE solves (user_id INTEGER NOT NULL, problem_id INTEGER NOT NULL);\nINSERT INTO users (id, name) VALUES (1, 'Aziza'), (2, 'Bobur'), (3, 'Dilnoza'), (4, 'Eldor');\nINSERT INTO solves (user_id, problem_id) VALUES (1, 1), (1, 2), (1, 3), (2, 1), (2, 4), (3, 2), (3, 3), (4, 1);\n",
+            "Aziza\t3\nBobur\t2\nDilnoza\t2\n",
+            "sample",
+        ),
+        (
+            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT NOT NULL);\nCREATE TABLE solves (user_id INTEGER NOT NULL, problem_id INTEGER NOT NULL);\nINSERT INTO users (id, name) VALUES (1, 'Aziza'), (2, 'Bobur');\nINSERT INTO solves (user_id, problem_id) VALUES (1, 1), (1, 2), (2, 1);\n",
+            "Aziza\t2\n",
+            "boundary",
+        ),
+        (
+            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT NOT NULL);\nCREATE TABLE solves (user_id INTEGER NOT NULL, problem_id INTEGER NOT NULL);\nINSERT INTO users (id, name) VALUES (1, 'Zafar'), (2, 'Malika'), (3, 'Anvar');\nINSERT INTO solves (user_id, problem_id) VALUES (1, 1), (1, 2), (2, 1), (2, 2), (2, 3), (3, 5), (3, 6);\n",
+            "Malika\t3\nAnvar\t2\nZafar\t2\n",
+            "special",
+        ),
+        (
+            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT NOT NULL);\nCREATE TABLE solves (user_id INTEGER NOT NULL, problem_id INTEGER NOT NULL);\nINSERT INTO users (id, name) VALUES (1, 'Sardor'), (2, 'Kamola'), (3, 'Jasur'), (4, 'Nodira'), (5, 'Otabek'), (6, 'Laylo');\nINSERT INTO solves (user_id, problem_id) VALUES (1, 1), (2, 1), (2, 2), (2, 3), (2, 4), (3, 9), (4, 2), (4, 3), (6, 1), (6, 2), (6, 5);\n",
+            "Kamola\t4\nLaylo\t3\nNodira\t2\n",
+            "random",
+        ),
+        (
+            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT NOT NULL);\nCREATE TABLE solves (user_id INTEGER NOT NULL, problem_id INTEGER NOT NULL);\nINSERT INTO users (id, name) VALUES (1, 'user01'), (2, 'user02'), (3, 'user03'), (4, 'user04'), (5, 'user05'), (6, 'user06'), (7, 'user07'), (8, 'user08'), (9, 'user09'), (10, 'user10'), (11, 'user11'), (12, 'user12');\nINSERT INTO solves (user_id, problem_id) VALUES (1, 1), (2, 1), (2, 2), (3, 1), (3, 2), (3, 3), (4, 1), (4, 2), (4, 3), (4, 4), (6, 1), (7, 1), (7, 2), (8, 1), (8, 2), (8, 3), (9, 1), (9, 2), (9, 3), (9, 4), (11, 1), (12, 1), (12, 2);\n",
+            "user04\t4\nuser09\t4\nuser03\t3\nuser08\t3\nuser02\t2\nuser07\t2\nuser12\t2\n",
+            "maximum",
+        ),
+    ),
+    samples=1,
+    reference=SQL_REFERENCE,
+    cases=(
+        Case("reference", SQL_REFERENCE, "AC", 100, "sql"),
+        Case("counts one solve as well", SQL_WRONG_FILTER, "WA", 0, "sql"),
+        Case("no ORDER BY", SQL_NO_ORDER, "WA", 0, "sql"),
+        Case("deletes rows", "DELETE FROM solves", "RE_EXIT", 0, "sql"),
+        Case("two statements", "SELECT 1; SELECT 2", "RE_EXIT", 0, "sql"),
+        Case("opens a file with ATTACH", "ATTACH DATABASE '/etc/passwd' AS x", "RE_EXIT", 0, "sql"),
+        Case(
+            "tries to break out of the string",
+            "'''); import os; os.system('id') #",
+            "RE_EXIT",
+            0,
+            "sql",
+        ),
+        Case("a Python program instead of a query", "print(1)", "RE_EXIT", 0, "sql"),
+    ),
+)
+
+REFERENCES: tuple[Reference, ...] = (PAIR, GUESS, COINS, MAXPAIR, PALS, CARDS, SOLVERS)
 
 
 def install(*, publish: bool = True) -> list[Any]:
@@ -934,8 +1018,13 @@ def install(*, publish: bool = True) -> list[Any]:
                 },
             )
         problem.tests.filter(order__gt=len(ref.tests)).delete()
+        solution_language = python
+        if ref.task_kind == Problem.TaskKind.SQL:
+            from problems.sqltasks import sql_language
+
+            solution_language = sql_language()
         ReferenceSolution.objects.update_or_create(
-            problem=problem, defaults={"language": python, "source": ref.reference}
+            problem=problem, defaults={"language": solution_language, "source": ref.reference}
         )
         # A function problem is open in exactly the languages it has a
         # harness for; a whole-program problem lists none (all are open).

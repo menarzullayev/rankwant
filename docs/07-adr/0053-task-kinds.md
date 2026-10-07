@@ -96,3 +96,21 @@ Qaror qilingan tafsilotlar:
   (S3) va saqlash muddati shu PR'da belgilanadi.
 - `sql`: bu yangi auditoriya va yangi xavfsizlik chegarasi — eng oxirgi va
   eng katta ish; boshlanishidan oldin o'lchov bilan qayta ko'riladi.
+
+## 6. Amalga oshirishda aniqlangani (2026-10-07)
+
+To'rt tur ham shu kuni yetkazildi; ikki joyda yechim shu hujjatdagidan farq qildi.
+
+- **`sql` — PostgreSQL emas, SQLite.** So'rov mavjud sandbox ichida, Python'ning
+  `sqlite3` moduli bilan, xotiradagi bazada bajariladi (o'lchandi: judge
+  obrazida Python 3.13.5, SQLite 3.46.1 — oyna funksiyalari va rekursiv CTE
+  ishlaydi). Sabab: har testga PostgreSQL serveri — platformaning o'z bazasi
+  turgan mashinada yangi, imtiyozli sirt (ADR-0046, tahdid modeli A-1); SQLite
+  esa judge'ga bitta qator ham qo'shmaydi va har Python yechimi bilan bir xil
+  qafasda ishlaydi. Narxi: dialekt SQLite (`ILIKE`, `DISTINCT ON`, `::` yo'q).
+  PostgreSQL kerak bo'lsa — alohida qaror va alohida sandbox.
+- **`answer` — «eng yaxshi» emas, oxirgi javob.** Yuborilmagan test uchun
+  yechuvchining oxirgi yuborgan fayli saqlanadi (CMS qoidasi): «eng yaxshi»
+  uchun har test balini saqlash kerak, u hozir saqlanmaydi.
+- `function` va `sql` judge shartnomasini o'zgartirmadi (API yechimni dasturga
+  joylaydi); `answer` va `two_pass` `job.task` ni qo'shdi.

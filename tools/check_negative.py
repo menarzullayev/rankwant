@@ -4232,6 +4232,46 @@ def neg_decisions_two_pass_released_without_manager() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_sql_query_pasted_raw() -> tuple[bool, str]:
+    """The query is pasted into the runner as code, not as a string literal."""
+    return _decision_broken(
+        "apps/api/problems/sqltasks.py",
+        '        _RUNNER.replace("__QUERY__", repr(query))\n',
+        '        _RUNNER.replace("__QUERY__", \'"""\' + query + \'"""\')\n',
+        "`repr` siz joylanadi",
+    )
+
+
+def neg_decisions_sql_authorizer_removed() -> tuple[bool, str]:
+    """The runner lets the query do more than read."""
+    return _decision_broken(
+        "apps/api/problems/sqltasks.py",
+        "db.set_authorizer(lambda action, *_: sqlite3.SQLITE_OK if action in READS else sqlite3.SQLITE_DENY)\n",
+        "",
+        "authorizer yo'q",
+    )
+
+
+def neg_decisions_sql_query_sent_raw() -> tuple[bool, str]:
+    """The query goes to the judge without its runner."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        "        source = sqltasks.compose(source)\n",
+        "",
+        "xom holda ketadi",
+    )
+
+
+def neg_decisions_sql_language_everywhere() -> tuple[bool, str]:
+    """The SQL language is accepted on any problem."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        '        if is_sql != (attrs["language"] == SQL_LANGUAGE):\n',
+        "        if False:\n",
+        "SQL tili boshqa masalada",
+    )
+
+
 def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
     """The date helpers format in the zone of whatever machine renders."""
     return _decision_broken(
@@ -5949,6 +5989,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/judging/answers.py",
     "services/judge-go/twopass.go",
     "services/bakeoff/cases/32-two-pass-no-carry.json",
+    "apps/api/problems/sqltasks.py",
 )
 
 
@@ -9259,6 +9300,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ikki bosqichli ish bir marta yursa tutilsin", neg_decisions_two_pass_runs_once),
             ("ikki bosqichli ish tursiz ketsa tutilsin", neg_decisions_two_pass_job_without_task),
             ("manager'siz masala nashr qilinsa tutilsin", neg_decisions_two_pass_released_without_manager),
+            ("SQL so'rovi kod bo'lib joylansa tutilsin", neg_decisions_sql_query_pasted_raw),
+            ("SQL authorizer olib tashlansa tutilsin", neg_decisions_sql_authorizer_removed),
+            ("SQL so'rovi xom ketsa tutilsin", neg_decisions_sql_query_sent_raw),
+            ("SQL tili hamma masalada ochilsa tutilsin", neg_decisions_sql_language_everywhere),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),

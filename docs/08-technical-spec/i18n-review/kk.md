@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2267 strings.**
+**2269 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -448,6 +448,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.tech.managerLanguage` | Oraliq dastur tili (kod, masalan py313) | Аралық бағдарлама тілі (код, мысалы py313) |  |
 | `admin.label.tech.managerSource` | Oraliq dastur manbasi | Аралық бағдарлама көзі |  |
 | `admin.help.managerOnlyTwoPass` | Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi. | Тек екі кезеңді есеп үшін: manager <кіріс> <1-жүріс шығысы> <жауап>; шығысы 2-жүрістің кірісі болады, нөлден өзге код қабылдамайды. |  |
+| `about.eval.sql` | SQL masalasi: bitta SELECT so'rovi yoziladi (SQLite 3). Har test — tayyor baza; so'rov natijasi qatorma-qator solishtiriladi. Ma'lumotni o'zgartiruvchi buyruqlar rad etiladi. | SQL есебі: бір SELECT сұрауы жазылады (SQLite 3). Әр тест — дайын база; сұрау нәтижесі жолма-жол салыстырылады. Деректі өзгертетін командалар қабылданбайды. |  |
+| `admin.label.value.sqlQuery` | SQL so'rovi | SQL сұрауы |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Тексеру қалай жүреді |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Әр жіберілген шешім оқшауланған ортада компиляцияланып, барлық жасырын тестте іске қосылады (ACM режимі: бірінші сәтсіз тестте тоқтайды). Барлық тест өткенде ғана шешім қабылданады. Уақыт пен жад шектеулері әр тестке бөлек қолданылады. |  |
 | `about.notes.title` | Muhim eslatmalar | Маңызды ескертпелер |  |

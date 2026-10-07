@@ -474,6 +474,10 @@ export const es: Record<MessageKey, string> = {
     "Fuente del programa intermedio",
   "admin.help.managerOnlyTwoPass":
     "Solo para problemas de dos pasadas: manager <entrada> <salida de la 1.ª ejecución> <respuesta>; su salida es la entrada de la 2.ª ejecución y un código distinto de cero rechaza.",
+  "about.eval.sql":
+    "Problema de SQL: se escribe una sola consulta SELECT (SQLite 3). Cada prueba es una base de datos ya preparada; el resultado se compara fila por fila. Las sentencias que modifican datos se rechazan.",
+  "admin.label.value.sqlQuery":
+    "Consulta SQL",
   "about.judge.title": "Cómo funciona la evaluación",
   "about.judge.body":
     "Cada envío se compila y se ejecuta en un sandbox aislado contra todos los tests ocultos (modo ACM: se detiene en el primer test fallido). Solo se acepta si pasan todos los tests. Los límites de tiempo y memoria se aplican por test.",

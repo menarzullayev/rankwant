@@ -9,6 +9,7 @@ from contests.models import Contest, ContestProblem, ContestRegistration
 from hacks.models import HackLock
 from judging.models import MAX_SOURCE_BYTES, Attempt, AttemptTestResult, CustomRun
 from problems.models import Language, Problem, ProblemLanguage
+from problems.sqltasks import SQL_LANGUAGE
 from profiles.titles import TitleField
 
 
@@ -141,6 +142,9 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         if self.context.get("answer_files"):
             # An answer attempt has no language; the view passes the stand-in.
             return value
+        if value == SQL_LANGUAGE:
+            # Inactive on purpose: `validate` allows it on SQL problems only.
+            return value
         if not Language.objects.filter(code=value, is_active=True).exists():
             raise serializers.ValidationError("This language is not supported")
         return value
@@ -166,6 +170,19 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
                     "problem": "This problem takes answer files, not source code"
                     if takes_files
                     else "This problem takes source code, not answer files"
+                }
+            )
+
+        # An SQL problem is solved in SQL and nothing else is.
+        is_sql = Problem.objects.filter(
+            slug=attrs["problem"], task_kind=Problem.TaskKind.SQL
+        ).exists()
+        if is_sql != (attrs["language"] == SQL_LANGUAGE):
+            raise serializers.ValidationError(
+                {
+                    "language": "This problem is solved with an SQL query"
+                    if is_sql
+                    else "This language is not supported"
                 }
             )
 

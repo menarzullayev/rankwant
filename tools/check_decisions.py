@@ -2524,6 +2524,30 @@ def two_pass_runs_share_nothing() -> str | None:
     return None
 
 
+def sql_queries_only_read() -> str | None:
+    """2026-10-07: SQL masalasi - so'rov mavjud sandbox ichida, faqat o'qish (ADR-0053).
+
+    So'rov Python dasturiga satr bo'lib joylanadi. Uch narsa uni xavfsiz
+    ushlab turadi: `repr` (matn kodga aylanmaydi), authorizer (o'qishdan
+    boshqa hamma narsa rad etiladi) va til eshigi (SQL faqat SQL masalasida).
+    """
+    runner = read("apps/api/problems/sqltasks.py")
+    if '        _RUNNER.replace("__QUERY__", repr(query))\n' not in runner:
+        return "sqltasks.py: so'rov dasturga `repr` siz joylanadi - matn Python kodiga aylanishi mumkin"
+    if (
+        "db.set_authorizer(lambda action, *_: sqlite3.SQLITE_OK if action in READS else sqlite3.SQLITE_DENY)\n"
+        not in runner
+    ):
+        return "sqltasks.py: authorizer yo'q - so'rov ma'lumotni o'zgartira oladi yoki fayl ocha oladi"
+    if "        source = sqltasks.compose(source)\n" not in read("apps/api/judging/services.py"):
+        return "judging/services.py: SQL so'rovi judge'ga xom holda ketadi - Python dasturi deb yuritiladi"
+    if '        if is_sql != (attrs["language"] == SQL_LANGUAGE):\n' not in read(
+        "apps/api/judging/serializers.py"
+    ):
+        return "judging/serializers.py: SQL tili boshqa masalada (yoki boshqa til SQL masalasida) qabul qilinadi"
+    return None
+
+
 def dates_are_written_in_the_site_zone() -> str | None:
     """2026-10-06: sana yordamchilari standart holatda sayt zonasida yozadi.
 
@@ -3317,6 +3341,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
+    ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),
     ("ikki bosqichli yurishlar hech narsa bo'lishmaydi", two_pass_runs_share_nothing),
     ("faqat javob masalasida kod yurmaydi", answer_problems_run_no_code),
     ("funksiya masalasi hakam dasturi bilan yuriladi", function_problems_are_composed),

@@ -11,6 +11,11 @@ import {
 const CATALOG = new URL("../../../api/problems/languages.py", import.meta.url);
 
 describe("editorLanguage", () => {
+  it("opens an SQL problem with the SQL grammar and a SELECT to start from", () => {
+    expect(editorLanguage("sql")).toBe("sql");
+    expect(starterSource("sql")).toBe("SELECT\n");
+  });
+
   it("gives each judge language its Monaco grammar", () => {
     const codes = ["c17", "cpp23", "csharp14", "go124", "java21"];
     expect(codes.map(editorLanguage)).toEqual(["c", "cpp", "csharp", "go", "java"]);
