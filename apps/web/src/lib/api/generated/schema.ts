@@ -7771,6 +7771,13 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /**
+             * @description function: the submission is inserted into the per-language harness.
+             *
+             *     * `program` - Whole program
+             *     * `function` - Function
+             */
+            task_kind?: components["schemas"]["TaskKindEnum"];
             interactor_source?: string;
             interactor_language?: string | null;
             checker_source?: string;
@@ -8229,6 +8236,13 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /**
+             * @description function: the submission is inserted into the per-language harness.
+             *
+             *     * `program` - Whole program
+             *     * `function` - Function
+             */
+            task_kind?: components["schemas"]["TaskKindEnum"];
             source?: string;
             source_url?: string;
         };
@@ -8246,6 +8260,7 @@ export interface components {
             time_limit_ms: number;
             memory_limit_kb: number;
             code_template: string;
+            harness: string;
         };
         ProblemList: {
             slug: string;
@@ -8948,6 +8963,13 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /**
+             * @description function: the submission is inserted into the per-language harness.
+             *
+             *     * `program` - Whole program
+             *     * `function` - Function
+             */
+            task_kind?: components["schemas"]["TaskKindEnum"];
             interactor_source?: string;
             interactor_language?: string | null;
             checker_source?: string;
@@ -9461,6 +9483,12 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        /**
+         * @description * `program` - Whole program
+         *     * `function` - Function
+         * @enum {string}
+         */
+        TaskKindEnum: "program" | "function";
         Team: {
             readonly id: number;
             name: string;

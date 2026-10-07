@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2243 strings.**
+**2249 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -424,6 +424,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.eval.special` | Maxsus tekshiruvchi: to'g'ri javob bir nechta bo'lishi mumkin bo'lgan masalada javobingizni muallif yozgan dastur tekshiradi. Shartga mos har qanday javob qabul qilinadi. | Arnawlı tekseriwshi: durıs juwap bir neshe bolıwı múmkin máselede juwabıńızdı avtor jazǵan programma tekseredi. Shártke sáykes hár qanday juwap qabıl etiledi. |  |
 | `about.eval.interactive` | Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi. | Interaktiv másele: programmańız tóreshi programması menen sóylesedi — soraw jazadı, juwabın oqıydı. Hár jazıwdan keyin shıǵıs buferin bosatıń (flush), bolmasa húkim IDLENESS boladı. |  |
 | `about.eval.scorer` | Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi). | Ballı másele: hár test 0 den 100 ge shekem bahalanadı, juwmaqlawshı ball — olardıń ortashası. 100 ball — AC; 100 den kem, biraq nolden úlken — PARTIAL (másele sheshilgen dep esaplanbaydı). |  |
+| `submit.function.hint` | Faqat funksiyani yozing: kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi. | Tek funkciyanı jazıń: kirisiwdi oqıw hám juwaptı shıǵarıwdı tóreshi programması orınlaydı. |  |
+| `submit.function.harness` | Hakam dasturi (o'zgartirib bo'lmaydi) | Tóreshi programması (ózgertip bolmaydı) |  |
+| `about.eval.function` | Funksiya masalasi: butun dastur emas, bitta funksiya yoziladi. Kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi — main yozilmaydi. | Funkciya máselesi: pútin programma emes, bir funkciya jazıladı. Kirisiwdi oqıw hám juwaptı shıǵarıwdı tóreshi programması orınlaydı — main jazılmaydı. |  |
+| `admin.label.text.taskKind` | Masala turi | Másele túri |  |
+| `admin.label.value.wholeProgram` | Butun dastur | Pútin programma |  |
+| `admin.label.value.functionOnly` | Funksiya | Funkciya |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Tekseriw qalay isleydi |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı. |  |
 | `about.notes.title` | Muhim eslatmalar | Áhmiyetli eskertpeler |  |

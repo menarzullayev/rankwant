@@ -4102,6 +4102,46 @@ def neg_decisions_evaluation_paths_leave_nightly() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_function_solution_not_composed() -> tuple[bool, str]:
+    """A function submission goes to the judge without its harness."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        "        source = taskkinds.compose(harness, source)\n",
+        "",
+        "hakam dasturiga qo'yilmaydi",
+    )
+
+
+def neg_decisions_function_language_without_harness() -> tuple[bool, str]:
+    """A function problem accepts a language that has no harness."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        '            rows = rows.exclude(harness="")\n',
+        "",
+        "hakam dasturi yo'q tilda yuborish qabul qilinadi",
+    )
+
+
+def neg_decisions_function_problem_released_without_harness() -> tuple[bool, str]:
+    """The release gate stops looking at the harnesses."""
+    return _decision_broken(
+        "apps/api/problems/evaluation.py",
+        "        or harnesses_error(problem)\n",
+        "",
+        "hakam dasturisiz funksiya masalasi",
+    )
+
+
+def neg_decisions_function_reference_dropped() -> tuple[bool, str]:
+    """The function reference problem leaves the end-to-end table."""
+    return _decision_broken(
+        "apps/api/problems/reference_problems.py",
+        "(PAIR, GUESS, COINS, MAXPAIR",
+        "(PAIR, GUESS, COINS",
+        "etalon masalasi ro'yxatda yo'q",
+    )
+
+
 def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
     """The date helpers format in the zone of whatever machine renders."""
     return _decision_broken(
@@ -5813,6 +5853,9 @@ _DECISIONS_SANDBOX_FILES = (
     "services/judge-go/interactive.go",
     "apps/api/problems/release.py",
     "apps/api/problems/staff_serializers.py",
+    "apps/api/judging/services.py",
+    "apps/api/problems/evaluation.py",
+    "apps/api/problems/reference_problems.py",
 )
 
 
@@ -9110,6 +9153,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tekshiruv turi darvozasi tushsa tutilsin", neg_decisions_evaluation_gate_dropped),
             ("yaroqsiz birikma saqlansa tutilsin", neg_decisions_invalid_combination_can_be_saved),
             ("tekshiruv yo'llari Nightly'dan chiqsa tutilsin", neg_decisions_evaluation_paths_leave_nightly),
+            ("funksiya yechimi hakam dasturisiz ketsa tutilsin", neg_decisions_function_solution_not_composed),
+            ("hakam dasturisiz til qabul qilinsa tutilsin", neg_decisions_function_language_without_harness),
+            ("hakam dasturisiz masala nashr qilinsa tutilsin", neg_decisions_function_problem_released_without_harness),
+            ("funksiya etaloni ro'yxatdan chiqsa tutilsin", neg_decisions_function_reference_dropped),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),

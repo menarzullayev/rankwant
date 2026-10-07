@@ -426,6 +426,18 @@ export const es: Record<MessageKey, string> = {
     "Problema interactivo: tu programa conversa con el programa del juez: escribe una pregunta y lee la respuesta. Vacía el búfer de salida (flush) tras cada escritura; de lo contrario el veredicto es IDLENESS.",
   "about.eval.scorer":
     "Problema con puntuación: cada prueba se califica de 0 a 100 y la nota final es la media. 100 es AC; menos de 100 pero más de cero es PARTIAL (el problema no cuenta como resuelto).",
+  "submit.function.hint":
+    "Escribe solo la función: el programa del juez lee la entrada e imprime la respuesta.",
+  "submit.function.harness":
+    "Programa del juez (no se puede cambiar)",
+  "about.eval.function":
+    "Problema de función: se escribe una función, no un programa completo. El programa del juez lee la entrada e imprime la respuesta; no escribas main.",
+  "admin.label.text.taskKind":
+    "Tipo de problema",
+  "admin.label.value.wholeProgram":
+    "Programa completo",
+  "admin.label.value.functionOnly":
+    "Función",
   "about.judge.title": "Cómo funciona la evaluación",
   "about.judge.body":
     "Cada envío se compila y se ejecuta en un sandbox aislado contra todos los tests ocultos (modo ACM: se detiene en el primer test fallido). Solo se acepta si pasan todos los tests. Los límites de tiempo y memoria se aplican por test.",

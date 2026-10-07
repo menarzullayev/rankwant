@@ -58,6 +58,8 @@ class ProblemLanguageSerializer(serializers.Serializer[dict[str, Any]]):
     time_limit_ms = serializers.IntegerField()
     memory_limit_kb = serializers.IntegerField()
     code_template = serializers.CharField(allow_blank=True)
+    #: `function` problems: the program the submission is inserted into.
+    harness = serializers.CharField(allow_blank=True)
 
 
 class SimilarProblemSerializer(serializers.Serializer[dict[str, Any]]):
@@ -231,6 +233,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
                     "time_limit_ms": problem.time_limit_ms,
                     "memory_limit_kb": problem.memory_limit_kb,
                     "code_template": "",
+                    "harness": "",
                 }
                 for language in Language.objects.filter(is_active=True)
             ]
@@ -242,6 +245,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
                 "time_limit_ms": row.time_limit_ms or problem.time_limit_ms,
                 "memory_limit_kb": row.memory_limit_kb or problem.memory_limit_kb,
                 "code_template": row.code_template,
+                "harness": row.harness,
             }
             for row in rows
             if row.language.is_active
@@ -340,6 +344,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "time_limit_ms",
             "memory_limit_kb",
             "checker_type",
+            "task_kind",
             "source",
             "source_url",
         ]

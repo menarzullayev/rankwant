@@ -597,11 +597,31 @@ export function SubmitPanel({
           onError={setError}
         />
 
+        {picked?.harness ? (
+          <p className="text-theme-xs rw-dim">{t(locale, "submit.function.hint")}</p>
+        ) : null}
+
         <CodeEditor
           language={editorLanguage(language)}
           value={source}
           onChange={setSource}
         />
+
+        {/* A function problem: the program around the submission is shown,
+            so a solver can see what calls the function and with what. */}
+        {picked?.harness ? (
+          <details className="rw-radius-sm border rw-line">
+            <summary className="cursor-pointer px-3 py-2 text-theme-xs rw-dim rw-focus-ring">
+              {t(locale, "submit.function.harness")}
+            </summary>
+            <pre
+              tabIndex={0}
+              className="rw-scroll-x rw-focus-ring border-t rw-divider px-3 py-2 font-mono text-theme-xs rw-dim"
+            >
+              {picked.harness}
+            </pre>
+          </details>
+        ) : null}
 
         <SampleTestConsole
           samples={samples}

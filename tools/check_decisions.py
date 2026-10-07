@@ -2453,6 +2453,25 @@ def evaluation_paths_are_proven() -> str | None:
     return None
 
 
+def function_problems_are_composed() -> str | None:
+    """2026-10-07: funksiya masalasi - yechim hakam dasturiga qo'yiladi (ADR-0053).
+
+    Judge bu tur haqida hech narsa bilmaydi: API yechimni tilning hakam
+    dasturiga qo'yib, oddiy dastur yuboradi. Shu uch joy tushsa, yechim
+    hakam dasturisiz yuriladi - har yuborish kompilyatsiya xatosi bo'ladi va
+    ayb yechuvchiga yoziladi.
+    """
+    if "        source = taskkinds.compose(harness, source)\n" not in read("apps/api/judging/services.py"):
+        return "judging/services.py: funksiya yechimi hakam dasturiga qo'yilmaydi"
+    if '            rows = rows.exclude(harness="")\n' not in read("apps/api/judging/serializers.py"):
+        return "judging/serializers.py: hakam dasturi yo'q tilda yuborish qabul qilinadi"
+    if "        or harnesses_error(problem)\n" not in read("apps/api/problems/evaluation.py"):
+        return "evaluation.py: hakam dasturisiz funksiya masalasi nashr darvozasidan o'tadi"
+    if "(PAIR, GUESS, COINS, MAXPAIR" not in read("apps/api/problems/reference_problems.py"):
+        return "reference_problems.py: funksiya turining etalon masalasi ro'yxatda yo'q - haqiqiy judge'da sinalmaydi"
+    return None
+
+
 def dates_are_written_in_the_site_zone() -> str | None:
     """2026-10-06: sana yordamchilari standart holatda sayt zonasida yozadi.
 
@@ -3246,6 +3265,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
+    ("funksiya masalasi hakam dasturi bilan yuriladi", function_problems_are_composed),
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),

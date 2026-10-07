@@ -79,6 +79,7 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "time_limit_ms",
             "memory_limit_kb",
             "checker_type",
+            "task_kind",
             "interactor_source",
             "interactor_language",
             "checker_source",
@@ -120,8 +121,13 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         )
         io_mode = getattr(self.instance, "io_mode", Problem.IoMode.STDIO)
         has_subtasks = self.instance is not None and self.instance.subtasks.exists()
-        error = evaluation.combination_error(io_mode, checker_type) or evaluation.subtask_error(
-            checker_type, has_subtasks
+        task_kind = attrs.get(
+            "task_kind", getattr(self.instance, "task_kind", Problem.TaskKind.PROGRAM)
+        )
+        error = (
+            evaluation.combination_error(io_mode, checker_type)
+            or evaluation.subtask_error(checker_type, has_subtasks)
+            or evaluation.task_kind_error(task_kind, io_mode, checker_type)
         )
         if error:
             raise serializers.ValidationError(

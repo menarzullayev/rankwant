@@ -32,6 +32,7 @@ type StaffProblem = {
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: "standard" | "special" | "interactive" | "scorer";
+  task_kind: "program" | "function";
   interactor_source: string;
   interactor_language: string | null;
   checker_source: string;
@@ -135,6 +136,18 @@ const PROBLEM_FIELDS: FieldDef[] = [
     labelKey: "admin.label.value.memoryLimit",
     type: "number",
     min: 1024,
+  },
+  {
+    // What the solver submits (ADR-0053). The per-language harness of a
+    // function problem is edited in the Django admin.
+    name: "task_kind",
+    labelKey: "admin.label.text.taskKind",
+    type: "select",
+    required: true,
+    options: [
+      { value: "program", labelKey: "admin.label.value.wholeProgram" },
+      { value: "function", labelKey: "admin.label.value.functionOnly" },
+    ],
   },
   {
     name: "checker_type",

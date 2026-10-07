@@ -24,6 +24,14 @@ Every rule here is read off the judge (`services/judge-go`), not assumed:
       is the mean of the per-test scores. Neither path reads the subtasks,
       so the points configured on them would silently never be awarded.
 
+  `function` task kind
+      The submission is a function; `judging.services` inserts it into the
+      author's harness for the chosen language and the judge runs the
+      result as an ordinary program. So: the harness does the I/O (stdio
+      only — a harness that also had to honour `output.txt` would be two
+      programs), a dialogue with an interactor belongs to a whole program,
+      and a language without a harness has nothing to be inserted into.
+
 The rules are checked where a problem is edited (staff API, `clean()`),
 where its readiness advances (S2) and where it is released — the earliest
 points at which each can be known.
@@ -71,8 +79,47 @@ def subtask_error(checker_type: str, has_subtasks: bool) -> str | None:
     )
 
 
+def task_kind_error(task_kind: str, io_mode: str, checker_type: str) -> str | None:
+    """Why this task kind cannot be combined with the other two axes, or `None`."""
+    if task_kind != "function":
+        return None
+    if io_mode == _FILE_IO:
+        return (
+            "a 'function' problem cannot use io_mode 'both': its harness reads "
+            "stdin and writes stdout"
+        )
+    if checker_type == "interactive":
+        return (
+            "a 'function' problem cannot be interactive: the dialogue is held "
+            "by a whole program, not by a function inside a harness"
+        )
+    return None
+
+
+def harnesses_error(problem: Problem) -> str | None:
+    """A function problem needs a usable harness for every language it lists."""
+    if problem.task_kind != "function":
+        return None
+    from problems.taskkinds import harness_error, supports_function
+
+    rows = list(problem.languages.select_related("language"))
+    if not rows:
+        return "a 'function' problem lists no languages: add a harness for at least one"
+    for row in rows:
+        code = row.language.code
+        if not supports_function(code):
+            return f"language '{code}' is not offered for 'function' problems"
+        error = harness_error(row.harness)
+        if error:
+            return f"language '{code}': {error}"
+    return None
+
+
 def evaluation_error(problem: Problem) -> str | None:
     """The first rule a saved problem breaks, or `None` when it can be graded."""
-    return combination_error(problem.io_mode, problem.checker_type) or subtask_error(
-        problem.checker_type, problem.subtasks.exists()
+    return (
+        combination_error(problem.io_mode, problem.checker_type)
+        or subtask_error(problem.checker_type, problem.subtasks.exists())
+        or task_kind_error(problem.task_kind, problem.io_mode, problem.checker_type)
+        or harnesses_error(problem)
     )
