@@ -47,6 +47,12 @@ Every rule here is read off the judge (`services/judge-go`), not assumed:
       interactive or scorer checker: the final answer is graded by
       comparison or by a special checker only.
 
+  `sql` task kind
+      The query is embedded in a runner that prints the result rows
+      (`problems/sqltasks.py`); the judge compares them like any output.
+      The runner writes stdout only and is not a dialogue, and a result
+      set is right or wrong as a whole: standard checker, stdin/stdout.
+
 The rules are checked where a problem is edited (staff API, `clean()`),
 where its readiness advances (S2) and where it is released — the earliest
 points at which each can be known.
@@ -104,6 +110,15 @@ def task_kind_error(task_kind: str, io_mode: str, checker_type: str) -> str | No
                 "an 'answer' problem needs a 'special' or 'scorer' checker: the "
                 "submitted files are graded by the checker program, never compared "
                 "with the jury's answer"
+            )
+        return None
+    if task_kind == "sql":
+        if io_mode == _FILE_IO:
+            return "an 'sql' problem cannot use io_mode 'both': the runner prints the rows"
+        if checker_type != _STANDARD:
+            return (
+                f"an 'sql' problem cannot use a '{checker_type}' checker: the result "
+                "rows are compared with the jury's"
             )
         return None
     if task_kind == "two_pass":

@@ -232,6 +232,21 @@ class ProblemDetailSerializer(ProblemListSerializer):
 
     @extend_schema_field(ProblemLanguageSerializer(many=True))
     def get_languages(self, problem: Problem) -> list[dict[str, Any]]:
+        if problem.task_kind == Problem.TaskKind.SQL:
+            from problems.sqltasks import sql_language
+
+            language = sql_language()
+            return [
+                {
+                    "code": language.code,
+                    "name": language.name,
+                    "version": language.version,
+                    "time_limit_ms": problem.time_limit_ms,
+                    "memory_limit_kb": problem.memory_limit_kb,
+                    "code_template": "SELECT\n",
+                    "harness": "",
+                }
+            ]
         rows = list(problem.languages.select_related("language"))
         if not rows:
             # Ro'yxat bo'sh — masala hech qanday tilni cheklamagan.

@@ -475,6 +475,10 @@ export const en: Record<MessageKey, string> = {
     "Manager source",
   "admin.help.managerOnlyTwoPass":
     "Two-pass problems only: manager <input> <output of run 1> <jury>; its output becomes the input of run 2, a non-zero exit rejects.",
+  "about.eval.sql":
+    "SQL problem: you write one SELECT (SQLite 3). Each test is a ready database; the result is compared row by row. Statements that change data are refused.",
+  "admin.label.value.sqlQuery":
+    "SQL query",
   "about.judge.title": "How judging works",
   "about.judge.body":
     "Each submission is compiled and run in an isolated sandbox against all hidden tests (ACM mode: stop at the first failing test). Accepted only if every test passes. Time and memory limits apply per test.",

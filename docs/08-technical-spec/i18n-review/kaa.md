@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2267 strings.**
+**2269 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -448,6 +448,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.tech.managerLanguage` | Oraliq dastur tili (kod, masalan py313) | Aralıq programma tili (kod, mısalı py313) |  |
 | `admin.label.tech.managerSource` | Oraliq dastur manbasi | Aralıq programma deregi |  |
 | `admin.help.managerOnlyTwoPass` | Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi. | Tek eki basqıshlı másele ushın: manager <kirisiw> <1-júriw shıǵısı> <juwap>; shıǵısı 2-júriwdiń kirisiwi boladı, nolden ózge kod biykarlaydı. |  |
+| `about.eval.sql` | SQL masalasi: bitta SELECT so'rovi yoziladi (SQLite 3). Har test — tayyor baza; so'rov natijasi qatorma-qator solishtiriladi. Ma'lumotni o'zgartiruvchi buyruqlar rad etiladi. | SQL máselesi: bir SELECT sorawı jazıladı (SQLite 3). Hár test — tayar baza; soraw nátiyjesi qatarma-qatar salıstırıladı. Maǵlıwmattı ózgertiwshi buyrıqlar biykarlanadı. |  |
+| `admin.label.value.sqlQuery` | SQL so'rovi | SQL sorawı |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Tekseriw qalay isleydi |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı. |  |
 | `about.notes.title` | Muhim eslatmalar | Áhmiyetli eskertpeler |  |

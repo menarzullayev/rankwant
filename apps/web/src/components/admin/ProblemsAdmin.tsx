@@ -32,7 +32,7 @@ type StaffProblem = {
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: "standard" | "special" | "interactive" | "scorer";
-  task_kind: "program" | "function" | "answer" | "two_pass";
+  task_kind: "program" | "function" | "answer" | "two_pass" | "sql";
   manager_source: string;
   manager_language: string | null;
   interactor_source: string;
@@ -151,6 +151,7 @@ const PROBLEM_FIELDS: FieldDef[] = [
       { value: "function", labelKey: "admin.label.value.functionOnly" },
       { value: "answer", labelKey: "admin.label.value.answerFiles" },
       { value: "two_pass", labelKey: "admin.label.value.twoPass" },
+      { value: "sql", labelKey: "admin.label.value.sqlQuery" },
     ],
   },
   {

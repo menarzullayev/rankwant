@@ -7826,6 +7826,7 @@ export interface components {
              *     * `function` - Function
              *     * `answer` - Answer files
              *     * `two_pass` - Two passes
+             *     * `sql` - SQL query
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
             manager_source?: string;
@@ -8295,6 +8296,7 @@ export interface components {
              *     * `function` - Function
              *     * `answer` - Answer files
              *     * `two_pass` - Two passes
+             *     * `sql` - SQL query
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
             readonly answer_tests: number[];
@@ -9025,6 +9027,7 @@ export interface components {
              *     * `function` - Function
              *     * `answer` - Answer files
              *     * `two_pass` - Two passes
+             *     * `sql` - SQL query
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
             manager_source?: string;
@@ -9547,9 +9550,10 @@ export interface components {
          *     * `function` - Function
          *     * `answer` - Answer files
          *     * `two_pass` - Two passes
+         *     * `sql` - SQL query
          * @enum {string}
          */
-        TaskKindEnum: "program" | "function" | "answer" | "two_pass";
+        TaskKindEnum: "program" | "function" | "answer" | "two_pass" | "sql";
         Team: {
             readonly id: number;
             name: string;

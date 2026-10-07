@@ -265,6 +265,8 @@ class Problem(TimeStampedModel):
         ANSWER = "answer", "Answer files"
         #: The program runs twice per test; the manager stands between.
         TWO_PASS = "two_pass", "Two passes"
+        #: The solver writes one SELECT; each test is a database.
+        SQL = "sql", "SQL query"
 
     task_kind = models.CharField(
         max_length=16,

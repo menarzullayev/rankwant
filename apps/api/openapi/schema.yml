@@ -16466,6 +16466,7 @@ components:
             * `function` - Function
             * `answer` - Answer files
             * `two_pass` - Two passes
+            * `sql` - SQL query
         manager_source:
           type: string
         manager_language:
@@ -17528,6 +17529,7 @@ components:
             * `function` - Function
             * `answer` - Answer files
             * `two_pass` - Two passes
+            * `sql` - SQL query
         answer_tests:
           type: array
           items:
@@ -19311,6 +19313,7 @@ components:
             * `function` - Function
             * `answer` - Answer files
             * `two_pass` - Two passes
+            * `sql` - SQL query
         manager_source:
           type: string
         manager_language:
@@ -20654,12 +20657,14 @@ components:
       - function
       - answer
       - two_pass
+      - sql
       type: string
       description: |-
         * `program` - Whole program
         * `function` - Function
         * `answer` - Answer files
         * `two_pass` - Two passes
+        * `sql` - SQL query
     Team:
       type: object
       properties:

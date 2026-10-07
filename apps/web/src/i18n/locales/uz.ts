@@ -479,6 +479,10 @@ export const uz = {
     "Oraliq dastur manbasi",
   "admin.help.managerOnlyTwoPass":
     "Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi.",
+  "about.eval.sql":
+    "SQL masalasi: bitta SELECT so'rovi yoziladi (SQLite 3). Har test — tayyor baza; so'rov natijasi qatorma-qator solishtiriladi. Ma'lumotni o'zgartiruvchi buyruqlar rad etiladi.",
+  "admin.label.value.sqlQuery":
+    "SQL so'rovi",
   "about.judge.title": "Tizim qanday ishlaydi",
   "about.judge.body":
     "Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi.",

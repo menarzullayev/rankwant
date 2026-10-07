@@ -27,7 +27,7 @@ from core.models import User
 from judging import answers
 from judging.models import Attempt, AttemptAnswer
 from judging.services import apply_result, build_job
-from problems import readiness, release, taskkinds
+from problems import readiness, release, sqltasks, taskkinds
 from problems.evaluation import (
     EVALUATION_MODE_INVALID,
     combination_error,
@@ -44,6 +44,7 @@ from problems.reference_problems import (
     PAIR,
     PALS,
     REFERENCES,
+    SOLVERS,
     Reference,
     install,
 )
@@ -204,6 +205,7 @@ class TestInstall:
             "standard",
             "scorer",
             "standard",
+            "standard",
         ]
         assert [p.task_kind for p in problems] == [
             "program",
@@ -212,6 +214,7 @@ class TestInstall:
             "function",
             "answer",
             "two_pass",
+            "sql",
         ]
         for problem in problems:
             assert problem.is_public, problem.slug
@@ -250,8 +253,8 @@ class TestInstall:
         python = Language.objects.get(code="py313")
         seen = {}
         for ref in REFERENCES:
-            if ref.task_kind == "answer":
-                continue  # no program is sent; covered by TestAnswerKind
+            if ref.task_kind in ("answer", "sql"):
+                continue  # not sent as a Python program; covered by their own classes
             problem = Problem.objects.get(slug=ref.slug)
             attempt = Attempt.objects.create(
                 user=user, problem=problem, language=python, source_code=ref.reference
@@ -903,3 +906,169 @@ class TestTwoPassKind:
                 for test_in, expected, _group in CARDS.tests
             )
             assert ("AC" if passed else "WA") == case.verdict, case.name
+
+
+# ── task kind: sql (ADR-0053) ────────────────────────────────────────────────
+
+
+def _query(query: str, setup: str, tmp_path: Path) -> subprocess.CompletedProcess[str]:
+    """The runner the judge is sent, executed here with the same input."""
+    return _run(sqltasks.compose(query), setup, tmp_path)
+
+
+class TestSqlRunner:
+    SETUP = (
+        "CREATE TABLE t (id INTEGER PRIMARY KEY, name TEXT, score REAL);\n"
+        "INSERT INTO t VALUES (1, 'b', 1.5), (2, 'a', NULL), (3, 'c', 2.0);\n"
+    )
+
+    def test_rows_are_printed_one_per_line_without_column_names(self, tmp_path: Path) -> None:
+        ran = _query("SELECT name AS anything, score FROM t ORDER BY id", self.SETUP, tmp_path)
+        assert ran.returncode == 0, ran.stderr
+        assert ran.stdout == "b\t1.5\na\tNULL\nc\t2\n"
+
+    def test_an_unordered_test_sorts_the_rows(self, tmp_path: Path) -> None:
+        setup = f"{sqltasks.UNORDERED_MARK}\n{self.SETUP}"
+        ran = _query("SELECT name FROM t ORDER BY id", setup, tmp_path)
+        assert ran.stdout == "a\nb\nc\n"
+        # Without the mark the order the query gave is kept.
+        assert _query("SELECT name FROM t ORDER BY id", self.SETUP, tmp_path).stdout == "b\na\nc\n"
+
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "DELETE FROM t",
+            "UPDATE t SET name = 'x'",
+            "INSERT INTO t VALUES (9, 'x', 1) RETURNING id",
+            "DROP TABLE t",
+            "CREATE TABLE u (x)",
+            "PRAGMA table_info(t)",
+            "ATTACH DATABASE '/etc/passwd' AS x",
+            "SELECT 1; SELECT 2",
+            "",
+            "print(1)",
+        ],
+    )
+    def test_anything_but_one_read_is_refused(self, query: str, tmp_path: Path) -> None:
+        ran = _query(query, self.SETUP, tmp_path)
+        assert ran.returncode == 1, (query, ran.stdout)
+        assert ran.stdout == ""
+        assert ran.stderr.startswith("SQL error:")
+
+    def test_a_refused_statement_changes_nothing(self, tmp_path: Path) -> None:
+        # The data a later read sees is the data the test set up.
+        ran = _query("SELECT COUNT(*) FROM t", self.SETUP, tmp_path)
+        assert ran.stdout == "3\n"
+
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "'''); import os; os.system('echo PWNED') #",
+            '"""); __import__("os").system("echo PWNED") #',
+            "\\'; print('PWNED') #",
+            "x\n__import__('os').system('echo PWNED')",
+        ],
+    )
+    def test_the_query_stays_data(self, query: str, tmp_path: Path) -> None:
+        """Whatever the text, it reaches SQLite as a string and nothing else runs."""
+        program = sqltasks.compose(query)
+        compile(program, "runner.py", "exec")  # still one valid program
+        ran = _run(program, self.SETUP, tmp_path)
+        assert "PWNED" not in ran.stdout + ran.stderr.replace(query, "")
+        assert ran.returncode == 1
+
+    def test_recursive_queries_and_window_functions_work(self, tmp_path: Path) -> None:
+        recursive = (
+            "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM c WHERE x < 3) "
+            "SELECT x FROM c"
+        )
+        assert _query(recursive, self.SETUP, tmp_path).stdout == "1\n2\n3\n"
+        window = "SELECT id, SUM(id) OVER (ORDER BY id) FROM t ORDER BY id"
+        assert _query(window, self.SETUP, tmp_path).stdout == "1\t1\n2\t3\n3\t6\n"
+
+
+class TestSqlKind:
+    @pytest.mark.parametrize(
+        ("io_mode", "checker_type", "ok"),
+        [
+            ("stdio", "standard", True),
+            ("stdio", "special", False),
+            ("stdio", "scorer", False),
+            ("stdio", "interactive", False),
+            ("both", "standard", False),
+        ],
+    )
+    def test_what_an_sql_problem_can_be_combined_with(
+        self, io_mode: str, checker_type: str, ok: bool
+    ) -> None:
+        assert (task_kind_error("sql", io_mode, checker_type) is None) is ok
+
+    def test_the_expected_rows_are_what_the_reference_query_returns(
+        self, stored: dict[str, str], tmp_path: Path
+    ) -> None:
+        for test_in, expected, _group in SOLVERS.tests:
+            ran = _query(SOLVERS.reference, test_in, tmp_path)
+            assert ran.returncode == 0, ran.stderr
+            assert ran.stdout == expected
+
+    def test_each_listed_submission_earns_its_verdict(
+        self, stored: dict[str, str], tmp_path: Path
+    ) -> None:
+        for case in SOLVERS.cases:
+            verdict = "AC"
+            for test_in, expected, _group in SOLVERS.tests:
+                ran = _query(case.source, test_in, tmp_path)
+                if ran.returncode != 0:
+                    verdict = "RE_EXIT"
+                    break
+                if ran.stdout.split() != expected.split():
+                    verdict = "WA"
+                    break
+            assert verdict == case.verdict, case.name
+
+    def test_the_problem_is_solved_in_sql_and_nothing_else_is(
+        self, stored: dict[str, str], user: User, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        install()
+        jobs: list[dict] = []
+        monkeypatch.setattr(
+            "judging.services.get_provider",
+            lambda: type(
+                "P", (), {"submit": lambda self, job: jobs.append(json.loads(job.to_json()))}
+            )(),
+        )
+        client = APIClient()
+        client.force_authenticate(user)
+        url = reverse("attempt-list")
+
+        body = client.get(reverse("problem-detail", args=[SOLVERS.slug])).json()
+        assert body["task_kind"] == "sql"
+        assert [row["code"] for row in body["languages"]] == ["sql"]
+
+        in_python = client.post(
+            url,
+            {"problem": SOLVERS.slug, "language": "py313", "source_code": "print(1)"},
+            format="json",
+        )
+        assert in_python.status_code == 400
+        sql_elsewhere = client.post(
+            url,
+            {"problem": PAIR.slug, "language": "sql", "source_code": "SELECT 1"},
+            format="json",
+        )
+        assert sql_elsewhere.status_code == 400
+
+        sent = client.post(
+            url,
+            {"problem": SOLVERS.slug, "language": "sql", "source_code": SOLVERS.reference},
+            format="json",
+        )
+        assert sent.status_code == 201, sent.content
+        job = jobs[-1]
+        # An ordinary job for the judge: a Python program, no task block.
+        assert job["task"] is None
+        assert job["language"]["run"] == ["python3", "{src}"]
+        stored_query = Attempt.objects.get(pk=sent.json()["id"]).source_code
+        assert job["source"] == sqltasks.compose(stored_query)
+        # The attempt keeps the query as the solver wrote it.
+        assert stored_query == SOLVERS.reference.strip()

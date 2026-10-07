@@ -13,7 +13,7 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, API_ONLY, Verdict
-from problems import taskkinds, testgroups
+from problems import sqltasks, taskkinds, testgroups
 from problems.models import Language, Problem, ProblemLanguage, TestCase, Validator
 
 log = logging.getLogger(__name__)
@@ -144,6 +144,12 @@ def build_standalone_job(
         if taskkinds.harness_error(harness):
             raise ValueError(f"{problem.slug}: no usable harness for language '{language.code}'")
         source = taskkinds.compose(harness, source)
+
+    if problem.task_kind == Problem.TaskKind.SQL:
+        # The submission is a query, the judge runs programs: the query is
+        # embedded in the runner as a string literal and travels as the
+        # source of an ordinary job in the SQL language.
+        source = sqltasks.compose(source)
 
     io: dict[str, Any] | None = None
     if problem.io_mode == Problem.IoMode.BOTH:

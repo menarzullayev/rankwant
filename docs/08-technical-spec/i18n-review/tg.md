@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2267 strings.**
+**2269 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -448,6 +448,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.tech.managerLanguage` | Oraliq dastur tili (kod, masalan py313) | Забони барномаи мобайнӣ (код, масалан py313) |  |
 | `admin.label.tech.managerSource` | Oraliq dastur manbasi | Манбаи барномаи мобайнӣ |  |
 | `admin.help.managerOnlyTwoPass` | Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi. | Танҳо барои масъалаи думарҳилагӣ: manager <вуруд> <баромади иҷрои 1> <ҷавоб>; баромадаш вуруди иҷрои 2 мешавад, рамзи ғайрисифр рад мекунад. |  |
+| `about.eval.sql` | SQL masalasi: bitta SELECT so'rovi yoziladi (SQLite 3). Har test — tayyor baza; so'rov natijasi qatorma-qator solishtiriladi. Ma'lumotni o'zgartiruvchi buyruqlar rad etiladi. | Масъалаи SQL: як дархости SELECT навишта мешавад (SQLite 3). Ҳар тест — пойгоҳи тайёр; натиҷа сатр ба сатр муқоиса мешавад. Фармонҳои тағйирдиҳандаи маълумот рад мешаванд. |  |
+| `admin.label.value.sqlQuery` | SQL so'rovi | Дархости SQL |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Санҷиш чӣ гуна кор мекунад |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ҳар ҳали фиристодашуда дар sandbox-и ҷудошуда компилятсия ва бо ҳамаи тестҳои пинҳон иҷро мешавад (реҷаи ACM: дар аввалин тести ноком санҷиш қатъ мешавад). Ҳал танҳо вақте қабул мешавад, ки ҳамаи тестҳо гузаранд. Маҳдудиятҳои вақт ва хотира барои ҳар тест алоҳида амал мекунанд. |  |
 | `about.notes.title` | Muhim eslatmalar | Эзоҳҳои муҳим |  |

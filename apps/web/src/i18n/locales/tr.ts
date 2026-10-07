@@ -474,6 +474,10 @@ export const tr: Record<MessageKey, string> = {
     "Ara program kaynağı",
   "admin.help.managerOnlyTwoPass":
     "Yalnızca iki aşamalı problemler için: manager <girdi> <1. çalıştırmanın çıktısı> <cevap>; çıktısı 2. çalıştırmanın girdisi olur, sıfırdan farklı kod reddeder.",
+  "about.eval.sql":
+    "SQL problemi: tek bir SELECT sorgusu yazılır (SQLite 3). Her test hazır bir veritabanıdır; sonuç satır satır karşılaştırılır. Veriyi değiştiren komutlar reddedilir.",
+  "admin.label.value.sqlQuery":
+    "SQL sorgusu",
   "about.judge.title": "Değerlendirme nasıl çalışır",
   "about.judge.body":
     "Her gönderim yalıtılmış bir korumalı ortamda (sandbox) derlenir ve tüm gizli testlerde çalıştırılır (ACM modu: ilk başarısız testte durur). Yalnızca her test geçilirse kabul edilir. Süre ve bellek sınırları her test için ayrı uygulanır.",
