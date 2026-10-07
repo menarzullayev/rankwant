@@ -64,6 +64,8 @@ const BARE = [
  *  redirect is in flight. */
 const FULL = ["/login", "/register", "/reset-password"];
 
+const SHELL_INSET = "--rw-shell-inset" as string;
+
 /** Sahifalar SERVER komponenti bo'lib qoladi — bu yerga `children` sifatida
  * uzatiladi, ya'ni SSR (ADR-0003 dagi SEO sababi) buzilmaydi. */
 function Shell({ children }: { children: React.ReactNode }) {
@@ -116,8 +118,16 @@ function Shell({ children }: { children: React.ReactNode }) {
       )}
       {/* A column as tall as the screen, with `main` taking the slack: on
           a short page the footer sits at the bottom of the window instead
-          of hanging under the content with empty ground below it. */}
+          of hanging under the content with empty ground below it.
+
+          `--rw-shell-inset` is the side menu's width, for anything inside
+          the column that is `position: fixed`: the column's margin does not
+          move a fixed box, so without it such a box starts at the window's
+          edge, under the menu (measured 2026-10-07: the problem page's
+          editor sheet, its Send button at x=36 beneath a menu link). It
+          applies from `lg`, where the menu stops being a drawer. */}
       <div
+        style={{ [SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px" }}
         className={`${full ? "" : "flex min-h-screen flex-col"} ${
           sidenav
             ? `transition-all duration-300 ${wide ? "lg:ml-[260px]" : "lg:ml-[86px]"}`

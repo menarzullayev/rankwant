@@ -4232,6 +4232,26 @@ def neg_decisions_two_pass_released_without_manager() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_editor_sheet_under_side_menu() -> tuple[bool, str]:
+    """The editor sheet starts at the window's edge again, under the side menu."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/ProblemWorkspace.tsx",
+        " lg:left-[var(--rw-shell-inset,0px)]",
+        "",
+        "yon menyu ostida boshlanadi",
+    )
+
+
+def neg_decisions_shell_inset_ignores_side_menu() -> tuple[bool, str]:
+    """The shell reports no inset although the side menu is on screen."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        '[SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px"',
+        '[SHELL_INSET]: "0px"',
+        "yon menyu holatiga",
+    )
+
+
 def neg_decisions_sql_query_pasted_raw() -> tuple[bool, str]:
     """The query is pasted into the runner as code, not as a string literal."""
     return _decision_broken(
@@ -9304,6 +9324,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("SQL authorizer olib tashlansa tutilsin", neg_decisions_sql_authorizer_removed),
             ("SQL so'rovi xom ketsa tutilsin", neg_decisions_sql_query_sent_raw),
             ("SQL tili hamma masalada ochilsa tutilsin", neg_decisions_sql_language_everywhere),
+            ("muharrir varag'i yon menyu ostiga qaytsa tutilsin", neg_decisions_editor_sheet_under_side_menu),
+            ("shell chekinishi yon menyuni hisobga olmasa tutilsin", neg_decisions_shell_inset_ignores_side_menu),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),

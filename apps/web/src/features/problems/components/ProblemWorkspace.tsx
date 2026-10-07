@@ -234,10 +234,13 @@ export function ProblemWorkspace({
 
       {!editorCollapsed && (
         <>
+          {/* From `lg` the side menu is on screen and above this sheet, so
+              the sheet starts where the menu ends (`--rw-shell-inset`, set
+              by AppShell) instead of at the window's edge. */}
           <div
             ref={sheetRef}
             style={sheetStyle}
-            className={`fixed inset-x-0 bottom-0 z-40 transform border-t rw-divider rw-panel-bg shadow-[0_-8px_32px_rgba(0,0,0,.12)] transition-transform duration-200 ${
+            className={`fixed inset-x-0 bottom-0 z-40 transform border-t rw-divider rw-panel-bg shadow-[0_-8px_32px_rgba(0,0,0,.12)] transition-[transform,left] duration-200 lg:left-[var(--rw-shell-inset,0px)] ${
               sheetOpen ? "translate-y-0" : "translate-y-full"
             }`}
             aria-hidden={!sheetOpen}
