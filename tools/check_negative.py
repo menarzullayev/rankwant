@@ -4232,6 +4232,26 @@ def neg_decisions_two_pass_released_without_manager() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_editor_sheet_under_side_menu() -> tuple[bool, str]:
+    """The editor sheet starts at the window's edge again, under the side menu."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/ProblemWorkspace.tsx",
+        " lg:left-[var(--rw-shell-inset,0px)]",
+        "",
+        "yon menyu ostida boshlanadi",
+    )
+
+
+def neg_decisions_shell_inset_ignores_side_menu() -> tuple[bool, str]:
+    """The shell reports no inset although the side menu is on screen."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        '[SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px"',
+        '[SHELL_INSET]: "0px"',
+        "yon menyu holatiga",
+    )
+
+
 def neg_decisions_judge_cache_pushed_by_every_job() -> tuple[bool, str]:
     """A stack job pushes the judge image again, next to the Language matrix."""
     return _decision_broken(
@@ -5737,6 +5757,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/layout/AppHeader.tsx",
     "apps/web/src/layout/AppShell.tsx",
     "apps/web/src/context/SidebarContext.tsx",
+    # Editor sheet clears the side menu (2026-10-07): the sheet that reads
+    # the inset `AppShell.tsx` publishes.
+    "apps/web/src/features/problems/components/ProblemWorkspace.tsx",
     # KPI grid 4-up from `lg` (2026-09-18): the card whose value steps down
     # while the columns are narrow. Without it the sandbox copy cannot be
     # read and the check exits 2 instead of testing anything.
@@ -9327,6 +9350,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("SQL authorizer olib tashlansa tutilsin", neg_decisions_sql_authorizer_removed),
             ("SQL so'rovi xom ketsa tutilsin", neg_decisions_sql_query_sent_raw),
             ("SQL tili hamma masalada ochilsa tutilsin", neg_decisions_sql_language_everywhere),
+            ("muharrir varag'i yon menyu ostiga qaytsa tutilsin", neg_decisions_editor_sheet_under_side_menu),
+            ("shell chekinishi yon menyuni hisobga olmasa tutilsin", neg_decisions_shell_inset_ignores_side_menu),
             ("judge keshini har job yuklasa tutilsin", neg_decisions_judge_cache_pushed_by_every_job),
             ("yuklash ro'yxati e'tiborsiz qolsa tutilsin", neg_decisions_push_list_ignored),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
