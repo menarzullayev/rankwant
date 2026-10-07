@@ -202,6 +202,10 @@ class Case:
     score: int
     #: Empty: the language the harness was started with (`PYTHON`).
     language: str = ""
+    #: `answer` problems: `(test order, file text)` instead of `source`.
+    files: tuple[tuple[int, str], ...] = ()
+    #: Send the files packed in one zip.
+    as_zip: bool = False
 
 
 @dataclass(frozen=True)
@@ -664,7 +668,90 @@ MAXPAIR = Reference(
     ),
 )
 
-REFERENCES: tuple[Reference, ...] = (PAIR, GUESS, COINS, MAXPAIR)
+# ── answer: the solver sends the answers, no program runs ───────────────────
+#
+# The cases are ONE solver's attempts in this order: a test left out of an
+# attempt keeps the answer that solver last sent for it, so what an attempt
+# scores depends on the ones before it.
+
+PAL_CHECKER = '''"""Scorer: the number as a sum of palindromes — fewer terms, more points.
+
+Usage: checker <input> <answer file> <jury>. The jury file holds the fewest
+terms known. Prints 0 for an invalid sum, else min(100, 100 * best // terms).
+"""
+import sys
+
+number = int(open(sys.argv[1]).read().split()[0])
+best = int(open(sys.argv[3]).read().split()[0])
+try:
+    terms = list(map(int, open(sys.argv[2]).read().split()))
+except ValueError:
+    print(0)
+    sys.exit(0)
+if not terms or sum(terms) != number or any(t < 1 or str(t) != str(t)[::-1] for t in terms):
+    print(0)
+    sys.exit(0)
+print(min(100, 100 * best // len(terms)))
+'''
+
+#: The fewest terms for each of the five tests.
+PAL_BEST = ((1, "9 1\n"), (2, "121\n"), (3, "999 1\n"), (4, "1441 585\n"), (5, "999999\n"))
+#: Valid, with one term more than needed: 50, 66 and 66 points.
+PAL_WORSE = ((2, "99 22\n"), (3, "505 494 1\n"), (4, "2002 22 2\n"))
+
+PALS = Reference(
+    slug="ref-palindrom-yigindi",
+    title="Palindromlar yig'indisi (faqat javob)",
+    checker_type="scorer",
+    difficulty=1000,
+    task_kind="answer",
+    statement=(
+        "Bu masalada **dastur yuborilmaydi**. Beshta son berilgan — kirish fayllarini yuklab "
+        "oling. Har bir sonni palindrom sonlar yig'indisi ko'rinishida yozing va har test "
+        "uchun javob faylini yuboring. Javobni qo'lda, o'z kompyuteringizdagi dastur bilan "
+        "yoki istalgan boshqa usulda topishingiz mumkin.\n\nQo'shiluvchilar qancha kam "
+        "bo'lsa, ball shuncha yuqori. Hamma faylni birdan yuborish shart emas: yuborilmagan "
+        "test uchun oxirgi yuborgan javobingiz saqlanadi."
+    ),
+    input_format="Har kirish faylida bitta butun son $N$ ($1 \\le N \\le 10^6$).",
+    output_format=(
+        "Javob faylida — yig'indisi $N$ ga teng bo'lgan musbat palindrom sonlar, probel yoki "
+        "yangi qator bilan ajratilgan. Fayl nomida test raqami bo'lsin: `1.out`, `02.txt`."
+    ),
+    note=(
+        "Ball har test uchun alohida: $100 \\cdot best / k$ (100 dan oshmaydi), bu yerda $k$ — "
+        "siz ishlatgan qo'shiluvchilar soni, $best$ — hakamga ma'lum eng kam son. Yig'indi "
+        "noto'g'ri yoki son palindrom bo'lmasa — 0. Yakuniy ball — beshta testning o'rtachasi."
+    ),
+    tests=(
+        ("10\n", "2\n", "sample"),
+        ("121\n", "1\n", "boundary"),
+        ("1000\n", "2\n", "special"),
+        ("2026\n", "2\n", "random"),
+        ("999999\n", "1\n", "maximum"),
+    ),
+    samples=1,
+    reference="".join(f"{order}: {text}" for order, text in PAL_BEST),
+    checker=PAL_CHECKER,
+    cases=(
+        # 100 + 0 + 0 + 0 + 100
+        Case("two files only", "", "PARTIAL", 40, files=(PAL_BEST[0], PAL_BEST[4])),
+        # 100 (kept) + 50 + 66 + 66 + 100 (kept)
+        Case("the other three, one term too many each", "", "PARTIAL", 76, files=PAL_WORSE),
+        Case("all five, fewest terms, as a zip", "", "AC", 100, files=PAL_BEST, as_zip=True),
+        # 0 + 100 x 4 (kept from the zip)
+        Case("one file with a wrong sum", "", "PARTIAL", 80, files=((1, "5 6\n"),)),
+        Case(
+            "every file is not a palindrome sum",
+            "",
+            "WA",
+            0,
+            files=tuple((order, "12\n") for order in range(1, 6)),
+        ),
+    ),
+)
+
+REFERENCES: tuple[Reference, ...] = (PAIR, GUESS, COINS, MAXPAIR, PALS)
 
 
 def install(*, publish: bool = True) -> list[Any]:

@@ -65,7 +65,8 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
   ],
   "mode": "acm",
   "validate_input": false,
-  "validator": null
+  "validator": null,
+  "task": null
 }
 ```
 
@@ -215,6 +216,22 @@ bitta til narxida ishlaydi.
 
 Oqibati: kompilyatsiya xatosidagi qator raqami hakam dasturining bosh qismi
 uzunligiga siljigan bo'ladi.
+
+`answer` masalasida esa judge ISHTIROK ETADI: `task` maydoni `{"kind": "answer"}`
+bo'ladi va har testga yechuvchi yuborgan fayl biriktiriladi — `answer_ref`
+(S3 havolasi) yoki `answer` (inline, bake-off uchun). Bu ishda:
+
+- hech narsa kompilyatsiya qilinmaydi va yuritilmaydi (`source`, `language` va
+  `limits` o'qilmaydi); `time_ms` va `memory_kb` 0;
+- `checker.type` `special` yoki `scorer` bo'lishi va dasturi berilishi shart,
+  aks holda `IE`;
+- har test alohida baholanadi, birinchi xatoda to'xtalmaydi; fayli yo'q test
+  0 ball oladi va checker'ga ko'rsatilmaydi;
+- ball — testlar o'rtachasi: 100 — `AC`, 0 dan katta — `PARTIAL`, 0 — `WA`;
+- checker yiqilsa `CHECKER_ERROR` (nol ball emas).
+
+⚠️ YOPIQ YIQILISH: judge tanimaydigan `task.kind` ni `IE` bilan rad etadi —
+dastur sifatida yuritmaydi.
 
 ## Vaqt o'lchash — muhim farq
 

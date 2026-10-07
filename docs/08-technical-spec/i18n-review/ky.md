@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2249 strings.**
+**2262 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -430,6 +430,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.text.taskKind` | Masala turi | Маселенин түрү |  |
 | `admin.label.value.wholeProgram` | Butun dastur | Бүтүн программа |  |
 | `admin.label.value.functionOnly` | Funksiya | Функция |  |
+| `answer.title` | Javob fayllari | Жооп файлдары |  |
+| `answer.hint` | Bu masalada dastur yuborilmaydi. Kirish fayllarini yuklab oling, javoblarni istalgan usulda toping va har test uchun matnli fayl yuboring. | Бул маселеде программа жөнөтүлбөйт. Киргизүү файлдарын жүктөп алыңыз, жоопторду каалаган ыкма менен табыңыз жана ар бир тест үчүн тексттик файл жөнөтүңүз. |  |
+| `answer.download` | Kirish fayllarini yuklab olish (zip) | Киргизүү файлдарын жүктөп алуу (zip) |  |
+| `answer.noFile` | fayl tanlanmagan | файл тандалган жок |  |
+| `answer.pick` | {order}-test uchun javob faylini tanlash | {order}-тест үчүн жооп файлын тандоо |  |
+| `answer.zip` | Yoki hamma javobni bitta zip faylda (fayl nomida test raqami bo'lsin: 1.out, 02.txt) | Же бардык жоопту бир zip файлда (файлдын атында тесттин номери болсун: 1.out, 02.txt) |  |
+| `answer.kept` | Yuborilmagan test uchun oxirgi yuborgan javobingiz saqlanadi. | Жөнөтүлбөгөн тест үчүн акыркы жөнөткөн жообуңуз сакталат. |  |
+| `answer.submit` | Javoblarni yuborish | Жоопторду жөнөтүү |  |
+| `answer.count` | Tanlandi: {picked} / {total} | Тандалды: {picked} / {total} |  |
+| `answer.tooLarge` | Fayllar jami 10 MB dan oshmasin. | Файлдар жалпысынан 10 МБдан ашпашы керек. |  |
+| `answer.failed` | Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring. | Жөнөтүү мүмкүн болгон жок. Байланышты текшерип, кайра аракет кылыңыз. |  |
+| `about.eval.answer` | Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi. | Жооп гана берилүүчү маселе: программа жөнөтүлбөйт. Киргизүү файлдары ачык, сиз ар бир тест үчүн жооп файлын жөнөтөсүз; аны автордун программасы баалайт. Жөнөтүлбөгөн тест үчүн акыркы жообуңуз сакталат. |  |
+| `admin.label.value.answerFiles` | Javob fayllari | Жооп файлдары |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Текшерүү кантип иштейт |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ар бир жөнөтүлгөн чечим обочолонгон sandbox ичинде компиляцияланып, бардык жашыруун тесттерде иштетилет (ACM режими: биринчи өтпөгөн тестте текшерүү токтойт). Бардык тесттер өткөндө гана чечим кабыл алынат. Убакыт жана эс тутум чектөөлөрү ар бир тестке өзүнчө колдонулат. |  |
 | `about.notes.title` | Muhim eslatmalar | Маанилүү эскертүүлөр |  |

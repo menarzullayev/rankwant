@@ -87,6 +87,8 @@ def submit(r: "redis.Redis", case: dict) -> str:
         # ketadi — shartnomadagi standart qiymatlar.
         "validate_input": case.get("validate_input", False),
         "validator": case.get("validator"),
+        # ADR-0053: what was submitted when it is not a program.
+        "task": case.get("task"),
     }
     r.lpush(JOBS_KEY, json.dumps(job))
     return job_id

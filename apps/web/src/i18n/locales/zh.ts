@@ -437,6 +437,32 @@ export const zh: Record<MessageKey, string> = {
     "完整程序",
   "admin.label.value.functionOnly":
     "函数",
+  "answer.title":
+    "答案文件",
+  "answer.hint":
+    "本题不提交程序。请下载输入文件，用任意方式求出答案，并为每个测试点提交一个文本文件。",
+  "answer.download":
+    "下载输入文件（zip）",
+  "answer.noFile":
+    "未选择文件",
+  "answer.pick":
+    "为测试点 {order} 选择答案文件",
+  "answer.zip":
+    "或将所有答案放在一个 zip 中（文件名需含测试点编号：1.out、02.txt）",
+  "answer.kept":
+    "未提交的测试点将保留你上次提交的答案。",
+  "answer.submit":
+    "提交答案",
+  "answer.count":
+    "已选择：{picked} / {total}",
+  "answer.tooLarge":
+    "文件总大小不得超过 10 MB。",
+  "answer.failed":
+    "提交失败。请检查网络后重试。",
+  "about.eval.answer":
+    "提交答案题：不提交程序。输入文件公开，你为每个测试点提交一个答案文件，由出题人的程序评分。未提交的测试点保留上次的答案。",
+  "admin.label.value.answerFiles":
+    "答案文件",
   "about.judge.title": "评测方式",
   "about.judge.body":
     "每次提交都会在隔离的沙箱中编译，并在全部隐藏测试点上运行（ACM 模式：遇到第一个未通过的测试点即停止）。只有通过所有测试点才算通过。时间和内存限制按每个测试点分别计算。",

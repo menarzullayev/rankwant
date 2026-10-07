@@ -5,8 +5,10 @@ from typing import Any
 
 from django.db import transaction
 from django.db.models import Avg, Count, Exists, F, Max, Min, OuterRef, Q
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -184,6 +186,27 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return ProblemDetailSerializer if self.action == "retrieve" else ProblemListSerializer
+
+    @extend_schema(
+        summary="Javob masalasining kirish fayllari (zip)",
+        responses={(200, "application/zip"): OpenApiTypes.BINARY},
+    )
+    @action(detail=True, methods=["get"], permission_classes=[AllowAny])
+    def inputs(self, request: Request, slug: str | None = None) -> HttpResponse:
+        """Every test input of an `answer` problem, zipped (ADR-0053).
+
+        The inputs are the task itself there: the solver works on them
+        offline and sends back the answers. For every other kind the
+        hidden tests stay hidden, so this answers 404.
+        """
+        problem = self.get_object()
+        if problem.task_kind != Problem.TaskKind.ANSWER:
+            raise Http404
+        from problems.answertasks import inputs_archive
+
+        response = HttpResponse(inputs_archive(problem), content_type="application/zip")
+        response["Content-Disposition"] = f'attachment; filename="{problem.slug}-inputs.zip"'
+        return response
 
     @extend_schema(request=None, responses={200: {"type": "object"}})
     @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])

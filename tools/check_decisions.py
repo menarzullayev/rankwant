@@ -2472,6 +2472,34 @@ def function_problems_are_composed() -> str | None:
     return None
 
 
+def answer_problems_run_no_code() -> str | None:
+    """2026-10-07: «faqat javob» masalasi - kod yurmaydi, fayllarni checker baholaydi (ADR-0053).
+
+    Uch joy birga ishlaydi: API ishga `task.kind = answer` ni qo'yadi, judge
+    uni dasturdan ajratadi, va ikki eshik (manba kod / fayllar) bir-birini
+    almashtirmaydi. Bittasi tushsa: javob arxivi dastur sifatida
+    kompilyatsiya qilinadi yoki zip chegarasiz ochiladi.
+    """
+    judge = read("services/judge-go/judge.go")
+    if "\tcase TaskAnswer:\n\t\tjudgeAnswers(ctx, work, job, tests, emit, res)\n" not in judge:
+        return "judge.go: `answer` ishi dastur yo'lidan ketadi - javob fayllari kompilyatsiya qilinadi"
+    if '\t\tres.CompileOutput = "unsupported task kind: " + job.Task.Kind\n' not in judge:
+        return "judge.go: notanish `task.kind` rad etilmaydi (yopiq yiqilish yo'q)"
+    if '        task = {"kind": "answer"}\n' not in read("apps/api/judging/services.py"):
+        return "judging/services.py: `answer` masalasining ishida `task` yo'q - judge uni dastur deb o'qiydi"
+    if '        if takes_files != bool(self.context.get("answer_files")):\n' not in read(
+        "apps/api/judging/serializers.py"
+    ):
+        return "judging/serializers.py: manba kod va javob fayllari eshiklari aralashadi"
+    if "        if sum(info.file_size for info in entries) > MAX_BYTES:\n" not in read(
+        "apps/api/judging/answers.py"
+    ):
+        return "judging/answers.py: zip ochilgan hajmi bo'yicha cheklanmaydi (zip bomba)"
+    if "MAXPAIR, PALS" not in read("apps/api/problems/reference_problems.py"):
+        return "reference_problems.py: «faqat javob» etaloni ro'yxatda yo'q - haqiqiy judge'da sinalmaydi"
+    return None
+
+
 def dates_are_written_in_the_site_zone() -> str | None:
     """2026-10-06: sana yordamchilari standart holatda sayt zonasida yozadi.
 
@@ -3265,6 +3293,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
+    ("faqat javob masalasida kod yurmaydi", answer_problems_run_no_code),
     ("funksiya masalasi hakam dasturi bilan yuriladi", function_problems_are_composed),
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),

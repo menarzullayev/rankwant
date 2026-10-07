@@ -261,6 +261,8 @@ class Problem(TimeStampedModel):
         PROGRAM = "program", "Whole program"
         #: The solver writes a function; the author's harness is the program.
         FUNCTION = "function", "Function"
+        #: The solver sends the answers themselves; no program is run.
+        ANSWER = "answer", "Answer files"
 
     task_kind = models.CharField(
         max_length=16,

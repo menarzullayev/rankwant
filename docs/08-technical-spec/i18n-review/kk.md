@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2249 strings.**
+**2262 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -430,6 +430,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.text.taskKind` | Masala turi | Есеп түрі |  |
 | `admin.label.value.wholeProgram` | Butun dastur | Тұтас бағдарлама |  |
 | `admin.label.value.functionOnly` | Funksiya | Функция |  |
+| `answer.title` | Javob fayllari | Жауап файлдары |  |
+| `answer.hint` | Bu masalada dastur yuborilmaydi. Kirish fayllarini yuklab oling, javoblarni istalgan usulda toping va har test uchun matnli fayl yuboring. | Бұл есепте бағдарлама жіберілмейді. Кіріс файлдарын жүктеп алыңыз, жауаптарды кез келген тәсілмен табыңыз және әр тест үшін мәтіндік файл жіберіңіз. |  |
+| `answer.download` | Kirish fayllarini yuklab olish (zip) | Кіріс файлдарын жүктеп алу (zip) |  |
+| `answer.noFile` | fayl tanlanmagan | файл таңдалмаған |  |
+| `answer.pick` | {order}-test uchun javob faylini tanlash | {order}-тест үшін жауап файлын таңдау |  |
+| `answer.zip` | Yoki hamma javobni bitta zip faylda (fayl nomida test raqami bo'lsin: 1.out, 02.txt) | Немесе барлық жауапты бір zip файлда (файл атауында тест нөмірі болсын: 1.out, 02.txt) |  |
+| `answer.kept` | Yuborilmagan test uchun oxirgi yuborgan javobingiz saqlanadi. | Жіберілмеген тест үшін соңғы жіберген жауабыңыз сақталады. |  |
+| `answer.submit` | Javoblarni yuborish | Жауаптарды жіберу |  |
+| `answer.count` | Tanlandi: {picked} / {total} | Таңдалды: {picked} / {total} |  |
+| `answer.tooLarge` | Fayllar jami 10 MB dan oshmasin. | Файлдар жалпы 10 МБ-тан аспауы керек. |  |
+| `answer.failed` | Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring. | Жіберу мүмкін болмады. Байланысты тексеріп, қайта көріңіз. |  |
+| `about.eval.answer` | Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi. | Тек жауап есебі: бағдарлама жіберілмейді. Кіріс файлдары ашық, сіз әр тест үшін жауап файлын жібересіз; оны автор бағдарламасы бағалайды. Жіберілмеген тест үшін соңғы жауабыңыз сақталады. |  |
+| `admin.label.value.answerFiles` | Javob fayllari | Жауап файлдары |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Тексеру қалай жүреді |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Әр жіберілген шешім оқшауланған ортада компиляцияланып, барлық жасырын тестте іске қосылады (ACM режимі: бірінші сәтсіз тестте тоқтайды). Барлық тест өткенде ғана шешім қабылданады. Уақыт пен жад шектеулері әр тестке бөлек қолданылады. |  |
 | `about.notes.title` | Muhim eslatmalar | Маңызды ескертпелер |  |

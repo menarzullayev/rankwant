@@ -454,6 +454,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/AttemptDetail'
           description: ''
+  /api/v1/attempts/answers/:
+    post:
+      operationId: attempts_answers_create
+      description: |-
+        Submit to an `answer` problem: one text file per test, or a zip.
+
+        A separate door from `create`: that one takes source code as JSON,
+        this one takes files. A test left out keeps the solver's last
+        answer for it (`judging/answers.py`).
+      summary: Javob fayllarini yuborish
+      tags:
+      - attempts
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                problem:
+                  type: string
+                contest:
+                  type: string
+                archive:
+                  type: string
+                  format: binary
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+              required:
+              - problem
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attempt'
+          description: ''
   /api/v1/attempts/counts/:
     get:
       operationId: attempts_counts_retrieve
@@ -4090,6 +4133,36 @@ paths:
             application/json:
               schema:
                 type: object
+          description: ''
+  /api/v1/problems/{slug}/inputs/:
+    get:
+      operationId: problems_inputs_retrieve
+      description: |-
+        Every test input of an `answer` problem, zipped (ADR-0053).
+
+        The inputs are the task itself there: the solver works on them
+        offline and sends back the answers. For every other kind the
+        hidden tests stay hidden, so this answers 404.
+      summary: Javob masalasining kirish fayllari (zip)
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
           description: ''
   /api/v1/problems/{slug}/rate/:
     post:
@@ -16391,6 +16464,7 @@ components:
 
             * `program` - Whole program
             * `function` - Function
+            * `answer` - Answer files
         interactor_source:
           type: string
         interactor_language:
@@ -17446,6 +17520,12 @@ components:
 
             * `program` - Whole program
             * `function` - Function
+            * `answer` - Answer files
+        answer_tests:
+          type: array
+          items:
+            type: integer
+          readOnly: true
         source:
           type: string
           maxLength: 100
@@ -17457,6 +17537,7 @@ components:
           - type: string
             maxLength: 0
       required:
+      - answer_tests
       - attachments
       - author
       - difficulty
@@ -19221,6 +19302,7 @@ components:
 
             * `program` - Whole program
             * `function` - Function
+            * `answer` - Answer files
         interactor_source:
           type: string
         interactor_language:
@@ -20557,10 +20639,12 @@ components:
       enum:
       - program
       - function
+      - answer
       type: string
       description: |-
         * `program` - Whole program
         * `function` - Function
+        * `answer` - Answer files
     Team:
       type: object
       properties:

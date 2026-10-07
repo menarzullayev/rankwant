@@ -443,6 +443,32 @@ export const uz = {
     "Butun dastur",
   "admin.label.value.functionOnly":
     "Funksiya",
+  "answer.title":
+    "Javob fayllari",
+  "answer.hint":
+    "Bu masalada dastur yuborilmaydi. Kirish fayllarini yuklab oling, javoblarni istalgan usulda toping va har test uchun matnli fayl yuboring.",
+  "answer.download":
+    "Kirish fayllarini yuklab olish (zip)",
+  "answer.noFile":
+    "fayl tanlanmagan",
+  "answer.pick":
+    "{order}-test uchun javob faylini tanlash",
+  "answer.zip":
+    "Yoki hamma javobni bitta zip faylda (fayl nomida test raqami bo'lsin: 1.out, 02.txt)",
+  "answer.kept":
+    "Yuborilmagan test uchun oxirgi yuborgan javobingiz saqlanadi.",
+  "answer.submit":
+    "Javoblarni yuborish",
+  "answer.count":
+    "Tanlandi: {picked} / {total}",
+  "answer.tooLarge":
+    "Fayllar jami 10 MB dan oshmasin.",
+  "answer.failed":
+    "Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring.",
+  "about.eval.answer":
+    "Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi.",
+  "admin.label.value.answerFiles":
+    "Javob fayllari",
   "about.judge.title": "Tizim qanday ishlaydi",
   "about.judge.body":
     "Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi.",

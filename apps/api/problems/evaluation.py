@@ -32,6 +32,14 @@ Every rule here is read off the judge (`services/judge-go`), not assumed:
       programs), a dialogue with an interactor belongs to a whole program,
       and a language without a harness has nothing to be inserted into.
 
+  `answer` task kind
+      The solver sends one file per test and no program runs
+      (`judgeAnswers`). The judge refuses such a job without a `special` or
+      `scorer` checker program: a hand-made file is not compared byte for
+      byte. It reads no subtasks and no `output.txt`, and a submission holds
+      at most `MAX_FILES` files — a problem with more tests than that could
+      never be answered in full.
+
 The rules are checked where a problem is edited (staff API, `clean()`),
 where its readiness advances (S2) and where it is released — the earliest
 points at which each can be known.
@@ -81,6 +89,16 @@ def subtask_error(checker_type: str, has_subtasks: bool) -> str | None:
 
 def task_kind_error(task_kind: str, io_mode: str, checker_type: str) -> str | None:
     """Why this task kind cannot be combined with the other two axes, or `None`."""
+    if task_kind == "answer":
+        if io_mode == _FILE_IO:
+            return "an 'answer' problem cannot use io_mode 'both': no program runs"
+        if checker_type not in ("special", "scorer"):
+            return (
+                "an 'answer' problem needs a 'special' or 'scorer' checker: the "
+                "submitted files are graded by the checker program, never compared "
+                "with the jury's answer"
+            )
+        return None
     if task_kind != "function":
         return None
     if io_mode == _FILE_IO:
@@ -115,6 +133,23 @@ def harnesses_error(problem: Problem) -> str | None:
     return None
 
 
+def answer_task_error(problem: Problem) -> str | None:
+    """An answer problem has no subtasks and no more tests than files allowed."""
+    if problem.task_kind != "answer":
+        return None
+    from judging.answers import MAX_FILES
+    from problems.answertasks import judged_orders
+
+    if problem.subtasks.exists():
+        return "an 'answer' problem cannot have subtasks: each file is scored on its own"
+    count = len(judged_orders(problem))
+    if count > MAX_FILES:
+        return (
+            f"an 'answer' problem has {count} tests; a submission holds at most {MAX_FILES} files"
+        )
+    return None
+
+
 def evaluation_error(problem: Problem) -> str | None:
     """The first rule a saved problem breaks, or `None` when it can be graded."""
     return (
@@ -122,4 +157,5 @@ def evaluation_error(problem: Problem) -> str | None:
         or subtask_error(problem.checker_type, problem.subtasks.exists())
         or task_kind_error(problem.task_kind, problem.io_mode, problem.checker_type)
         or harnesses_error(problem)
+        or answer_task_error(problem)
     )

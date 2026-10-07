@@ -289,6 +289,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/attempts/answers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Javob fayllarini yuborish
+         * @description Submit to an `answer` problem: one text file per test, or a zip.
+         *
+         *     A separate door from `create`: that one takes source code as JSON,
+         *     this one takes files. A test left out keeps the solver's last
+         *     answer for it (`judging/answers.py`).
+         */
+        post: operations["attempts_answers_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/attempts/counts/": {
         parameters: {
             query?: never;
@@ -2389,6 +2413,30 @@ export interface paths {
          *     Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
          */
         delete: operations["problems_favourite_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/problems/{slug}/inputs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Javob masalasining kirish fayllari (zip)
+         * @description Every test input of an `answer` problem, zipped (ADR-0053).
+         *
+         *     The inputs are the task itself there: the solver works on them
+         *     offline and sends back the answers. For every other kind the
+         *     hidden tests stay hidden, so this answers 404.
+         */
+        get: operations["problems_inputs_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -7776,6 +7824,7 @@ export interface components {
              *
              *     * `program` - Whole program
              *     * `function` - Function
+             *     * `answer` - Answer files
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
             interactor_source?: string;
@@ -8241,8 +8290,10 @@ export interface components {
              *
              *     * `program` - Whole program
              *     * `function` - Function
+             *     * `answer` - Answer files
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
+            readonly answer_tests: number[];
             source?: string;
             source_url?: string;
         };
@@ -8968,6 +9019,7 @@ export interface components {
              *
              *     * `program` - Whole program
              *     * `function` - Function
+             *     * `answer` - Answer files
              */
             task_kind?: components["schemas"]["TaskKindEnum"];
             interactor_source?: string;
@@ -9486,9 +9538,10 @@ export interface components {
         /**
          * @description * `program` - Whole program
          *     * `function` - Function
+         *     * `answer` - Answer files
          * @enum {string}
          */
-        TaskKindEnum: "program" | "function";
+        TaskKindEnum: "program" | "function" | "answer";
         Team: {
             readonly id: number;
             name: string;
@@ -10208,6 +10261,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AttemptDetail"];
+                };
+            };
+        };
+    };
+    attempts_answers_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    problem: string;
+                    contest?: string;
+                    /** Format: binary */
+                    archive?: string;
+                    files?: string[];
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Attempt"];
                 };
             };
         };
@@ -13183,6 +13265,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    problems_inputs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": string;
                 };
             };
         };

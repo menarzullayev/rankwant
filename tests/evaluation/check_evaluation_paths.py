@@ -30,6 +30,7 @@ Output: a table for a person and one line for a machine,
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import secrets
@@ -37,6 +38,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -81,6 +83,48 @@ def request(path: str, data: dict | None = None, cookie: str = "") -> tuple:
         return parsed, resp.headers.get_all("Set-Cookie") or []
 
 
+def post_files(
+    path: str, fields: dict[str, str], files: list[tuple[str, str, bytes]], cookie: str
+) -> dict:
+    """`multipart/form-data` by hand: the harness has no dependencies.
+
+    `files` — `(field, file name, content)`.
+    """
+    boundary = "----rankwant" + secrets.token_hex(12)
+    body = io.BytesIO()
+    for name, value in fields.items():
+        body.write(
+            f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"\r\n\r\n{value}\r\n'.encode()
+        )
+    for field, filename, content in files:
+        body.write(
+            (
+                f'--{boundary}\r\nContent-Disposition: form-data; name="{field}"; '
+                f'filename="{filename}"\r\nContent-Type: application/octet-stream\r\n\r\n'
+            ).encode()
+        )
+        body.write(content)
+        body.write(b"\r\n")
+    body.write(f"--{boundary}--\r\n".encode())
+
+    url = API + path
+    req = urllib.request.Request(url, data=body.getvalue(), method="POST")  # noqa: S310
+    req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
+    req.add_header("Cookie", cookie)
+    token = dict(c.split("=", 1) for c in cookie.split("; ") if "=" in c).get("csrftoken")
+    if token:
+        req.add_header("X-CSRFToken", token)
+        req.add_header("Referer", url)
+    try:
+        resp = urllib.request.urlopen(req, timeout=30)  # noqa: S310
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode(errors="replace")[:500]
+        print(f"✗ POST {path} → HTTP {error.code}: {detail}", file=sys.stderr)
+        raise
+    with resp:
+        return json.loads(resp.read().decode())
+
+
 def login() -> tuple[str, str]:
     suffix = f"{int(time.time())}{secrets.token_hex(3)}"
     creds = {
@@ -105,7 +149,24 @@ def submit(session: str, slug: str, source: str, language: str = "") -> dict:
         {"problem": slug, "language": language or LANGUAGE, "source_code": source},
         cookie=session,
     )
-    attempt_id = body["id"]
+    return wait(session, body["id"])
+
+
+def submit_files(session: str, slug: str, files: tuple, as_zip: bool) -> dict:
+    """An `answer` problem: one text file per test, or all of them in a zip."""
+    if as_zip:
+        packed = io.BytesIO()
+        with zipfile.ZipFile(packed, "w") as bundle:
+            for order, text in files:
+                bundle.writestr(f"{order:02d}.out", text)
+        parts = [("archive", "answers.zip", packed.getvalue())]
+    else:
+        parts = [("files", f"{order}.out", text.encode()) for order, text in files]
+    body = post_files("/attempts/answers/", {"problem": slug}, parts, session)
+    return wait(session, body["id"])
+
+
+def wait(session: str, attempt_id: int) -> dict:
     end = time.monotonic() + DEADLINE
     while time.monotonic() < end:
         body, _ = request(f"/attempts/{attempt_id}/", cookie=session)
@@ -129,15 +190,24 @@ def main() -> int:
         kind = ref.task_kind if ref.task_kind != "program" else ref.checker_type
         print(f"\n{kind}: {ref.slug} (#{problem.get('code')})")
         for case in ref.cases:
-            attempt = submit(session, ref.slug, case.source, case.language)
+            if case.files:
+                attempt = submit_files(session, ref.slug, case.files, case.as_zip)
+            else:
+                attempt = submit(session, ref.slug, case.source, case.language)
             got = (attempt.get("verdict"), attempt.get("score"))
             # The list a visitor sees must say the same as the detail page.
-            listed, _ = request(f"/attempts/?problem={ref.slug}&username={username}", cookie=session)
+            listed, _ = request(
+                f"/attempts/?problem={ref.slug}&username={username}", cookie=session
+            )
             in_list = next((r for r in listed["results"] if r["id"] == attempt["id"]), {})
-            ok = got == (case.verdict, case.score) and (
-                in_list.get("verdict"),
-                in_list.get("score"),
-            ) == got
+            ok = (
+                got == (case.verdict, case.score)
+                and (
+                    in_list.get("verdict"),
+                    in_list.get("score"),
+                )
+                == got
+            )
             rows.append(
                 {
                     "problem": ref.slug,
@@ -160,7 +230,9 @@ def main() -> int:
             )
 
     failed = [row for row in rows if not row["ok"]]
-    print(REPORT_MARKER + json.dumps({"api": API, "ok": not failed, "rows": rows}, ensure_ascii=False))
+    print(
+        REPORT_MARKER + json.dumps({"api": API, "ok": not failed, "rows": rows}, ensure_ascii=False)
+    )
     if failed:
         print(f"\n✗ {len(failed)} of {len(rows)} submissions were graded wrongly", file=sys.stderr)
         return 1

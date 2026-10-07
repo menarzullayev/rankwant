@@ -161,6 +161,23 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		return res
 	}
 
+	// ── Masala turi ─────────────────────────────────────────────────
+	// A kind this judge does not know is refused, not run as a program:
+	// grading an answer archive as source code would blame the solver
+	// with a compile error for the judge being out of date.
+	switch job.Task.Kind {
+	case "":
+	case TaskAnswer:
+		judgeAnswers(ctx, work, job, tests, emit, res)
+		res.Meta.TotalMS = time.Since(t0).Milliseconds()
+		return res
+	default:
+		res.Verdict = VIE
+		res.CompileOutput = "unsupported task kind: " + job.Task.Kind
+		res.Meta.TotalMS = time.Since(t0).Milliseconds()
+		return res
+	}
+
 	setupStart := time.Now()
 	src, err := sourceName(job.Language.Code, job.Language.SourceFile)
 	if err != nil {

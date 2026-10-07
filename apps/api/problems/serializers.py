@@ -196,6 +196,7 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
 
 class ProblemDetailSerializer(ProblemListSerializer):
     samples = serializers.SerializerMethodField()
+    answer_tests = serializers.SerializerMethodField()
 
     my_rating = serializers.SerializerMethodField()
     languages = serializers.SerializerMethodField()
@@ -219,6 +220,15 @@ class ProblemDetailSerializer(ProblemListSerializer):
 
     def get_samples(self, problem: Problem) -> list[dict[str, Any]]:
         return storage.sample_tests(problem)
+
+    @extend_schema_field(serializers.ListField(child=serializers.IntegerField()))
+    def get_answer_tests(self, problem: Problem) -> list[int]:
+        """`answer` problems: the tests a solver sends a file for. Empty otherwise."""
+        if problem.task_kind != Problem.TaskKind.ANSWER:
+            return []
+        from problems.answertasks import judged_orders
+
+        return judged_orders(problem)
 
     @extend_schema_field(ProblemLanguageSerializer(many=True))
     def get_languages(self, problem: Problem) -> list[dict[str, Any]]:
@@ -345,6 +355,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "memory_limit_kb",
             "checker_type",
             "task_kind",
+            "answer_tests",
             "source",
             "source_url",
         ]

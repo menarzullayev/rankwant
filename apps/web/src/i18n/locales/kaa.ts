@@ -438,6 +438,32 @@ export const kaa: Record<MessageKey, string> = {
     "Pútin programma",
   "admin.label.value.functionOnly":
     "Funkciya",
+  "answer.title":
+    "Juwap faylları",
+  "answer.hint":
+    "Bul máselede programma jiberilmeydi. Kirisiw fayllarin júklep alıń, juwaplardı qálegen usılda tabıń hám hár test ushın tekstli fayl jiberiń.",
+  "answer.download":
+    "Kirisiw fayllarin júklep alıw (zip)",
+  "answer.noFile":
+    "fayl tańlanbaǵan",
+  "answer.pick":
+    "{order}-test ushın juwap faylın tańlaw",
+  "answer.zip":
+    "Yamasa barlıq juwaptı bir zip faylda (fayl atında test nomeri bolsın: 1.out, 02.txt)",
+  "answer.kept":
+    "Jiberilmegen test ushın sońǵı jibergen juwabıńız saqlanadı.",
+  "answer.submit":
+    "Juwaplardı jiberiw",
+  "answer.count":
+    "Tańlandı: {picked} / {total}",
+  "answer.tooLarge":
+    "Fayllar jámi 10 MB tan aspasın.",
+  "answer.failed":
+    "Jiberip bolmadı. Baylanıstı tekserip, qayta urınıp kóriń.",
+  "about.eval.answer":
+    "Tek juwap máselesi: programma jiberilmeydi. Kirisiw faylları ashıq, siz hár test ushın juwap faylın jiberesiz; onı avtor programması bahalaydı. Jiberilmegen test ushın sońǵı juwabıńız saqlanadı.",
+  "admin.label.value.answerFiles":
+    "Juwap faylları",
   "about.judge.title": "Tekseriw qalay isleydi",
   "about.judge.body":
     "Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı.",
