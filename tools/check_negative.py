@@ -5737,6 +5737,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/layout/AppHeader.tsx",
     "apps/web/src/layout/AppShell.tsx",
     "apps/web/src/context/SidebarContext.tsx",
+    # Editor sheet clears the side menu (2026-10-07): the sheet that reads
+    # the inset `AppShell.tsx` publishes.
+    "apps/web/src/features/problems/components/ProblemWorkspace.tsx",
     # KPI grid 4-up from `lg` (2026-09-18): the card whose value steps down
     # while the columns are narrow. Without it the sandbox copy cannot be
     # read and the check exits 2 instead of testing anything.
