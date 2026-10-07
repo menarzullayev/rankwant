@@ -16383,6 +16383,14 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        task_kind:
+          allOf:
+          - $ref: '#/components/schemas/TaskKindEnum'
+          description: |-
+            function: the submission is inserted into the per-language harness.
+
+            * `program` - Whole program
+            * `function` - Function
         interactor_source:
           type: string
         interactor_language:
@@ -17430,6 +17438,14 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        task_kind:
+          allOf:
+          - $ref: '#/components/schemas/TaskKindEnum'
+          description: |-
+            function: the submission is inserted into the per-language harness.
+
+            * `program` - Whole program
+            * `function` - Function
         source:
           type: string
           maxLength: 100
@@ -17485,9 +17501,12 @@ components:
           type: integer
         code_template:
           type: string
+        harness:
+          type: string
       required:
       - code
       - code_template
+      - harness
       - memory_limit_kb
       - name
       - time_limit_ms
@@ -19194,6 +19213,14 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        task_kind:
+          allOf:
+          - $ref: '#/components/schemas/TaskKindEnum'
+          description: |-
+            function: the submission is inserted into the per-language harness.
+
+            * `program` - Whole program
+            * `function` - Function
         interactor_source:
           type: string
         interactor_language:
@@ -20526,6 +20553,14 @@ components:
       - locale
       - title
       - updated_at
+    TaskKindEnum:
+      enum:
+      - program
+      - function
+      type: string
+      description: |-
+        * `program` - Whole program
+        * `function` - Function
     Team:
       type: object
       properties:

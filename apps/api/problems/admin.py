@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from problems.models import Language, Problem, Subtask, TestCase, Topic
+from problems.models import Language, Problem, ProblemLanguage, Subtask, TestCase, Topic
 
 
 class TestCaseInline(admin.TabularInline):
@@ -14,6 +14,15 @@ class TestCaseInline(admin.TabularInline):
 class SubtaskInline(admin.TabularInline):
     model = Subtask
     extra = 0
+
+
+class ProblemLanguageInline(admin.StackedInline):
+    """Per-language rows: the allow-list, limit overrides and, for a
+    `function` problem, the harness the submission is inserted into."""
+
+    model = ProblemLanguage
+    extra = 0
+    fields = ("language", "time_limit_ms", "memory_limit_kb", "code_template", "harness")
 
 
 @admin.register(Problem)
@@ -32,7 +41,7 @@ class ProblemAdmin(admin.ModelAdmin):
     search_fields = ("slug", "title", "code")
     filter_horizontal = ("topics",)
     readonly_fields = ("code", "solved_count", "attempt_count", "created_at", "updated_at")
-    inlines = [SubtaskInline, TestCaseInline]
+    inlines = [SubtaskInline, TestCaseInline, ProblemLanguageInline]
     fieldsets = (
         (None, {"fields": ("slug", "title", "is_public", "author")}),
         ("Matn", {"fields": ("statement", "statement_locale")}),
@@ -44,6 +53,7 @@ class ProblemAdmin(admin.ModelAdmin):
                     "time_limit_ms",
                     "memory_limit_kb",
                     "checker_type",
+                    "task_kind",
                     "interactor_language",
                     "interactor_source",
                 )

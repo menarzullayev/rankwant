@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2243 strings.**
+**2249 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -424,6 +424,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.eval.special` | Maxsus tekshiruvchi: to'g'ri javob bir nechta bo'lishi mumkin bo'lgan masalada javobingizni muallif yozgan dastur tekshiradi. Shartga mos har qanday javob qabul qilinadi. | Атайын текшергич: туура жооп бир нече болушу мүмкүн болгон маселеде жообуңузду автор жазган программа текшерет. Шартка туура келген ар кандай жооп кабыл алынат. |  |
 | `about.eval.interactive` | Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi. | Интерактивдүү маселе: программаңыз калыс программасы менен сүйлөшөт — суроо жазат, жообун окуйт. Ар бир жазуудан кийин чыгаруу буферин бошотуңуз (flush), болбосо өкүм IDLENESS болот. |  |
 | `about.eval.scorer` | Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi). | Упайлуу маселе: ар бир тест 0дөн 100гө чейин бааланат, жыйынтык упай — алардын орточосу. 100 упай — AC; 100дөн аз, бирок нөлдөн көп — PARTIAL (маселе чечилген деп эсептелбейт). |  |
+| `submit.function.hint` | Faqat funksiyani yozing: kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi. | Функцияны гана жазыңыз: киргизүүнү окуу жана жоопту чыгарууну калыс программасы аткарат. |  |
+| `submit.function.harness` | Hakam dasturi (o'zgartirib bo'lmaydi) | Калыс программасы (өзгөртүүгө болбойт) |  |
+| `about.eval.function` | Funksiya masalasi: butun dastur emas, bitta funksiya yoziladi. Kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi — main yozilmaydi. | Функция маселеси: бүтүн программа эмес, бир функция жазылат. Киргизүүнү окуу жана жоопту чыгарууну калыс программасы аткарат — main жазылбайт. |  |
+| `admin.label.text.taskKind` | Masala turi | Маселенин түрү |  |
+| `admin.label.value.wholeProgram` | Butun dastur | Бүтүн программа |  |
+| `admin.label.value.functionOnly` | Funksiya | Функция |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Текшерүү кантип иштейт |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ар бир жөнөтүлгөн чечим обочолонгон sandbox ичинде компиляцияланып, бардык жашыруун тесттерде иштетилет (ACM режими: биринчи өтпөгөн тестте текшерүү токтойт). Бардык тесттер өткөндө гана чечим кабыл алынат. Убакыт жана эс тутум чектөөлөрү ар бир тестке өзүнчө колдонулат. |  |
 | `about.notes.title` | Muhim eslatmalar | Маанилүү эскертүүлөр |  |

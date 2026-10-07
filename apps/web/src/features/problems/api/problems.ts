@@ -46,6 +46,8 @@ export type ProblemLanguage = {
   time_limit_ms: number;
   memory_limit_kb: number;
   code_template: string;
+  /** `function` problems: the program the submission is inserted into. */
+  harness: string;
 };
 
 export type SimilarProblem = {
@@ -88,6 +90,7 @@ export type ProblemDetail = Problem & {
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: string;
+  task_kind: string;
   languages: ProblemLanguage[];
   similar: SimilarProblem[];
   attachments: Attachment[];

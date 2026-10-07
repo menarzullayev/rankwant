@@ -203,6 +203,19 @@ ishlaydi: checker va interactor faylga yozilgan javobni ko'rmaydi. API bu
 birikmani saqlashda ham, nashr darvozasida ham rad etadi
 (`problems/evaluation.py`).
 
+## Masala turi (`task_kind`) — judge uchun ko'rinmas
+
+`function` masalasida yechuvchi butun dasturni emas, funksiyani yuboradi
+([ADR-0053](../../docs/07-adr/0053-task-kinds.md)). Shartnoma **o'zgarmaydi**:
+API yechimni muallifning shu til uchun yozgan hakam dasturiga qo'yadi
+(`{{SOLUTION}}` qatori o'rniga — `problems/taskkinds.py`) va `source` da tayyor
+dastur keladi. Judge ikkinchi kompilyatsiya birligi, modul yo'li yoki til
+bo'yicha maxsus buyruq haqida hech narsa bilmaydi — shuning uchun o'n bir til
+bitta til narxida ishlaydi.
+
+Oqibati: kompilyatsiya xatosidagi qator raqami hakam dasturining bosh qismi
+uzunligiga siljigan bo'ladi.
+
 ## Vaqt o'lchash — muhim farq
 
 - `time_ms` — **CPU vaqti** (user + sys), wall clock emas.

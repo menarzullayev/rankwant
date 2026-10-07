@@ -152,12 +152,16 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         # Masalaga xos til ro'yxati — RUXSAT. Interaktiv yoki freymwork
         # masalasi hamma tilda ma'noga ega emas; ro'yxat bo'sh bo'lsa
         # cheklov ham yo'q.
-        allowed = set(
-            ProblemLanguage.objects.filter(problem__slug=attrs["problem"]).values_list(
-                "language__code", flat=True
-            )
-        )
-        if allowed and attrs["language"] not in allowed:
+        rows = ProblemLanguage.objects.filter(problem__slug=attrs["problem"])
+        function = Problem.objects.filter(
+            slug=attrs["problem"], task_kind=Problem.TaskKind.FUNCTION
+        ).exists()
+        if function:
+            # The submission is inserted into the harness of its language:
+            # a language without one cannot be judged at all.
+            rows = rows.exclude(harness="")
+        allowed = set(rows.values_list("language__code", flat=True))
+        if (allowed or function) and attrs["language"] not in allowed:
             raise serializers.ValidationError(
                 {"language": f"This problem is solved in {', '.join(sorted(allowed))}"}
             )

@@ -425,6 +425,18 @@ export const zh: Record<MessageKey, string> = {
     "交互题：你的程序与评测程序对话——写出询问并读取回复。每次输出后请刷新缓冲区（flush），否则结果为 IDLENESS。",
   "about.eval.scorer":
     "计分题：每个测试点按 0 到 100 评分，最终得分为平均值。100 分为 AC；低于 100 但大于零为 PARTIAL（不算通过该题）。",
+  "submit.function.hint":
+    "只需编写函数：读取输入和输出答案由评测程序完成。",
+  "submit.function.harness":
+    "评测程序（不可修改）",
+  "about.eval.function":
+    "函数题：只编写一个函数，而不是完整程序。读取输入和输出答案由评测程序完成——不要编写 main。",
+  "admin.label.text.taskKind":
+    "题目类型",
+  "admin.label.value.wholeProgram":
+    "完整程序",
+  "admin.label.value.functionOnly":
+    "函数",
   "about.judge.title": "评测方式",
   "about.judge.body":
     "每次提交都会在隔离的沙箱中编译，并在全部隐藏测试点上运行（ACM 模式：遇到第一个未通过的测试点即停止）。只有通过所有测试点才算通过。时间和内存限制按每个测试点分别计算。",

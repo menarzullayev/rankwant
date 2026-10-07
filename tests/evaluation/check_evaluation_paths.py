@@ -98,10 +98,12 @@ def login() -> tuple[str, str]:
     return "; ".join(c.split(";")[0] for c in cookies), creds["username"]
 
 
-def submit(session: str, slug: str, source: str) -> dict:
+def submit(session: str, slug: str, source: str, language: str = "") -> dict:
     """One submission to its final state, as the attempt endpoint returns it."""
     body, _ = request(
-        "/attempts/", {"problem": slug, "language": LANGUAGE, "source_code": source}, cookie=session
+        "/attempts/",
+        {"problem": slug, "language": language or LANGUAGE, "source_code": source},
+        cookie=session,
     )
     attempt_id = body["id"]
     end = time.monotonic() + DEADLINE
@@ -124,9 +126,10 @@ def main() -> int:
     print(f"Evaluation paths on {API} (as {username}):")
     for ref in REFERENCES:
         problem, _ = request(f"/problems/{ref.slug}/")
-        print(f"\n{ref.checker_type}: {ref.slug} (#{problem.get('code')})")
+        kind = ref.task_kind if ref.task_kind != "program" else ref.checker_type
+        print(f"\n{kind}: {ref.slug} (#{problem.get('code')})")
         for case in ref.cases:
-            attempt = submit(session, ref.slug, case.source)
+            attempt = submit(session, ref.slug, case.source, case.language)
             got = (attempt.get("verdict"), attempt.get("score"))
             # The list a visitor sees must say the same as the detail page.
             listed, _ = request(f"/attempts/?problem={ref.slug}&username={username}", cookie=session)
@@ -139,6 +142,8 @@ def main() -> int:
                 {
                     "problem": ref.slug,
                     "checker_type": ref.checker_type,
+                    "task_kind": ref.task_kind,
+                    "language": case.language or LANGUAGE,
                     "case": case.name,
                     "attempt": attempt["id"],
                     "expected": {"verdict": case.verdict, "score": case.score},

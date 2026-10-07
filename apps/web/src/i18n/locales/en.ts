@@ -427,6 +427,18 @@ export const en: Record<MessageKey, string> = {
     "Interactive problem: your program talks to the judge's program — it writes a question and reads the reply. Flush the output after every write, otherwise the verdict is IDLENESS.",
   "about.eval.scorer":
     "Scored problem: every test is graded from 0 to 100 and the final score is their mean. 100 is AC; less than 100 but more than zero is PARTIAL (the problem does not count as solved).",
+  "submit.function.hint":
+    "Write the function only: the judge's program reads the input and prints the answer.",
+  "submit.function.harness":
+    "The judge's program (cannot be changed)",
+  "about.eval.function":
+    "Function problem: you write one function, not a whole program. The judge's program reads the input and prints the answer — do not write main.",
+  "admin.label.text.taskKind":
+    "Task kind",
+  "admin.label.value.wholeProgram":
+    "Whole program",
+  "admin.label.value.functionOnly":
+    "Function",
   "about.judge.title": "How judging works",
   "about.judge.body":
     "Each submission is compiled and run in an isolated sandbox against all hidden tests (ACM mode: stop at the first failing test). Accepted only if every test passes. Time and memory limits apply per test.",

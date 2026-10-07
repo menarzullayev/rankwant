@@ -426,6 +426,18 @@ export const tr: Record<MessageKey, string> = {
     "Etkileşimli problem: programınız hakem programıyla konuşur — soru yazar, cevabını okur. Her yazmadan sonra çıktı tamponunu boşaltın (flush), yoksa karar IDLENESS olur.",
   "about.eval.scorer":
     "Puanlı problem: her test 0 ile 100 arasında değerlendirilir, sonuç bunların ortalamasıdır. 100 puan AC; 100'den az ama sıfırdan büyük puan PARTIAL olur (problem çözülmüş sayılmaz).",
+  "submit.function.hint":
+    "Yalnızca fonksiyonu yazın: girdiyi okumayı ve cevabı yazdırmayı hakem programı yapar.",
+  "submit.function.harness":
+    "Hakem programı (değiştirilemez)",
+  "about.eval.function":
+    "Fonksiyon problemi: tüm program değil, tek bir fonksiyon yazılır. Girdiyi okumayı ve cevabı yazdırmayı hakem programı yapar — main yazılmaz.",
+  "admin.label.text.taskKind":
+    "Problem türü",
+  "admin.label.value.wholeProgram":
+    "Tüm program",
+  "admin.label.value.functionOnly":
+    "Fonksiyon",
   "about.judge.title": "Değerlendirme nasıl çalışır",
   "about.judge.body":
     "Her gönderim yalıtılmış bir korumalı ortamda (sandbox) derlenir ve tüm gizli testlerde çalıştırılır (ACM modu: ilk başarısız testte durur). Yalnızca her test geçilirse kabul edilir. Süre ve bellek sınırları her test için ayrı uygulanır.",

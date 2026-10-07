@@ -23,15 +23,24 @@ from rest_framework.test import APIClient
 from core.models import User
 from judging.models import Attempt
 from judging.services import apply_result, build_job
-from problems import readiness, release
+from problems import readiness, release, taskkinds
 from problems.evaluation import (
     EVALUATION_MODE_INVALID,
     combination_error,
     evaluation_error,
     subtask_error,
+    task_kind_error,
 )
-from problems.models import Language, Problem, ReferenceSolution, Subtask
-from problems.reference_problems import COINS, GUESS, PAIR, REFERENCES, Reference, install
+from problems.models import Language, Problem, ProblemLanguage, ReferenceSolution, Subtask
+from problems.reference_problems import (
+    COINS,
+    GUESS,
+    MAXPAIR,
+    PAIR,
+    REFERENCES,
+    Reference,
+    install,
+)
 from ratings.models import UserSolvedProblem
 
 pytestmark = pytest.mark.django_db
@@ -182,7 +191,13 @@ def stored(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
 class TestInstall:
     def test_installs_one_problem_for_each_way_of_grading(self, stored: dict[str, str]) -> None:
         problems = install()
-        assert [p.checker_type for p in problems] == ["special", "interactive", "scorer"]
+        assert [p.checker_type for p in problems] == [
+            "special",
+            "interactive",
+            "scorer",
+            "standard",
+        ]
+        assert [p.task_kind for p in problems] == ["program", "program", "program", "function"]
         for problem in problems:
             assert problem.is_public, problem.slug
             assert problem.code, problem.slug
@@ -208,7 +223,7 @@ class TestInstall:
         first = {p.slug: (p.pk, p.code, p.tests.count()) for p in install()}
         second = {p.slug: (p.pk, p.code, p.tests.count()) for p in install()}
         assert first == second
-        assert Problem.objects.filter(slug__startswith="ref-").count() == 3
+        assert Problem.objects.filter(slug__startswith="ref-").count() == len(REFERENCES)
 
     def test_a_draft_install_stays_private(self, stored: dict[str, str]) -> None:
         assert not any(p.is_public for p in install(publish=False))
@@ -406,3 +421,147 @@ class TestResultIsStored:
         client = APIClient()
         client.force_authenticate(user)
         assert client.get(reverse("attempt-detail", args=[attempt.pk])).json()["tests_total"] == 0
+
+
+# ── task kind: function (ADR-0053) ───────────────────────────────────────────
+
+
+class TestFunctionKind:
+    def test_a_family_covers_every_version_of_a_language(self) -> None:
+        assert taskkinds.family("cpp23") == "cpp"
+        assert taskkinds.supports_function("pypy73")
+        assert taskkinds.supports_function("csharp14")
+        assert not taskkinds.supports_function("pascal322")
+
+    def test_a_harness_needs_the_marker_once_on_its_own_line(self) -> None:
+        marker = taskkinds.SOLUTION_MARKER
+        assert taskkinds.harness_error(f"a\n{marker}\nb\n") is None
+        assert taskkinds.harness_error("") is not None
+        assert taskkinds.harness_error("int main() {}\n") is not None
+        assert taskkinds.harness_error(f"{marker}\n{marker}\n") is not None
+        assert taskkinds.harness_error(f"x = '{marker}'\n") is not None
+
+    def test_the_submission_replaces_the_marker_line_and_is_not_expanded(self) -> None:
+        marker = taskkinds.SOLUTION_MARKER
+        program = taskkinds.compose(f"head\n{marker}\ntail\n", f"f()  # {marker}\n")
+        assert program == f"head\nf()  # {marker}\ntail\n"
+
+    @pytest.mark.parametrize(
+        ("io_mode", "checker_type", "ok"),
+        [
+            ("stdio", "standard", True),
+            ("stdio", "special", True),
+            ("stdio", "scorer", True),
+            ("stdio", "interactive", False),
+            ("both", "standard", False),
+        ],
+    )
+    def test_what_a_function_problem_can_be_combined_with(
+        self, io_mode: str, checker_type: str, ok: bool
+    ) -> None:
+        assert (task_kind_error("function", io_mode, checker_type) is None) is ok
+        assert task_kind_error("program", io_mode, checker_type) is None
+
+    def test_the_staff_api_refuses_an_interactive_function_problem(
+        self, staff_client: APIClient, problem: Problem, python: Language
+    ) -> None:
+        Problem.objects.filter(pk=problem.pk).update(
+            checker_type="interactive", interactor_source="x", interactor_language=python
+        )
+        response = staff_client.patch(
+            reverse("staff-problem-detail", args=[problem.slug]),
+            {"task_kind": "function"},
+            format="json",
+        )
+        assert response.status_code == 400, response.content
+        assert EVALUATION_MODE_INVALID in json.dumps(response.json())
+
+    def test_the_model_refuses_a_function_problem_with_file_io(self, problem: Problem) -> None:
+        problem.task_kind, problem.io_mode = "function", BOTH
+        with pytest.raises(ValidationError):
+            problem.clean()
+
+    def test_a_function_problem_without_a_harness_cannot_be_released(
+        self, problem: Problem, python: Language
+    ) -> None:
+        Problem.objects.filter(pk=problem.pk).update(task_kind="function")
+        problem.refresh_from_db()
+        assert "lists no languages" in (evaluation_error(problem) or "")
+        row = ProblemLanguage.objects.create(problem=problem, language=python)
+        assert "harness is empty" in (evaluation_error(problem) or "")
+        row.harness = f"{taskkinds.SOLUTION_MARKER}\nmain()\n"
+        row.save()
+        assert evaluation_error(problem) is None
+        assert release.evaluation_gate(problem).passed
+        pascal, _ = Language.objects.get_or_create(
+            code="pascal322", defaults={"name": "Pascal", "run_cmd": ["x"]}
+        )
+        ProblemLanguage.objects.create(problem=problem, language=pascal, harness=row.harness)
+        assert "not offered" in (evaluation_error(problem) or "")
+
+    def test_the_reference_problem_is_open_in_eleven_languages(
+        self, stored: dict[str, str]
+    ) -> None:
+        install()
+        problem = Problem.objects.get(slug=MAXPAIR.slug)
+        assert problem.languages.count() == len(MAXPAIR.languages) == 11
+        body = APIClient().get(reverse("problem-detail", args=[problem.slug])).json()
+        assert body["task_kind"] == "function"
+        by_code = {row["code"]: row for row in body["languages"]}
+        assert set(by_code) == {lang.code for lang in MAXPAIR.languages}
+        for lang in MAXPAIR.languages:
+            assert by_code[lang.code]["harness"] == lang.harness
+            assert by_code[lang.code]["code_template"] == lang.stub
+            assert taskkinds.harness_error(lang.harness) is None
+
+    def test_the_job_carries_the_composed_program(self, stored: dict[str, str], user: User) -> None:
+        install()
+        problem = Problem.objects.get(slug=MAXPAIR.slug)
+        for lang in MAXPAIR.languages:
+            attempt = Attempt.objects.create(
+                user=user,
+                problem=problem,
+                language=Language.objects.get(code=lang.code),
+                source_code=lang.solution,
+            )
+            source = json.loads(build_job(attempt).to_json())["source"]
+            assert lang.solution.strip() in source
+            assert taskkinds.SOLUTION_MARKER not in source
+            assert source == taskkinds.compose(lang.harness, lang.solution)
+            # What the solver sent is what is stored - not the composed program.
+            assert attempt.source_code == lang.solution
+
+    def test_a_language_without_a_harness_is_refused_at_submission(
+        self, stored: dict[str, str], user: User
+    ) -> None:
+        install()
+        Language.objects.get_or_create(
+            code="lua54", defaults={"name": "Lua", "run_cmd": ["lua", "{src}"]}
+        )
+        client = APIClient()
+        client.force_authenticate(user)
+        response = client.post(
+            reverse("attempt-list"),
+            {"problem": MAXPAIR.slug, "language": "lua54", "source_code": "x"},
+            format="json",
+        )
+        assert response.status_code == 400, response.content
+        assert "language" in json.dumps(response.json())
+
+    def test_each_python_submission_earns_its_listed_verdict(
+        self, stored: dict[str, str], tmp_path: Path
+    ) -> None:
+        """The harness and the submission, joined and actually run."""
+        harness = next(lang.harness for lang in MAXPAIR.languages if lang.code == "py313")
+        ran = 0
+        for case in MAXPAIR.cases:
+            if (case.language or "py313") != "py313":
+                continue
+            program = taskkinds.compose(harness, case.source)
+            passed = all(
+                _run(program, test_in, tmp_path).stdout.split() == expected.split()
+                for test_in, expected, _group in MAXPAIR.tests
+            )
+            assert ("AC" if passed else "WA") == case.verdict, case.name
+            ran += 1
+        assert ran == 3

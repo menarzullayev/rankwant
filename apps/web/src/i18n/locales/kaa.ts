@@ -426,6 +426,18 @@ export const kaa: Record<MessageKey, string> = {
     "Interaktiv másele: programmańız tóreshi programması menen sóylesedi — soraw jazadı, juwabın oqıydı. Hár jazıwdan keyin shıǵıs buferin bosatıń (flush), bolmasa húkim IDLENESS boladı.",
   "about.eval.scorer":
     "Ballı másele: hár test 0 den 100 ge shekem bahalanadı, juwmaqlawshı ball — olardıń ortashası. 100 ball — AC; 100 den kem, biraq nolden úlken — PARTIAL (másele sheshilgen dep esaplanbaydı).",
+  "submit.function.hint":
+    "Tek funkciyanı jazıń: kirisiwdi oqıw hám juwaptı shıǵarıwdı tóreshi programması orınlaydı.",
+  "submit.function.harness":
+    "Tóreshi programması (ózgertip bolmaydı)",
+  "about.eval.function":
+    "Funkciya máselesi: pútin programma emes, bir funkciya jazıladı. Kirisiwdi oqıw hám juwaptı shıǵarıwdı tóreshi programması orınlaydı — main jazılmaydı.",
+  "admin.label.text.taskKind":
+    "Másele túri",
+  "admin.label.value.wholeProgram":
+    "Pútin programma",
+  "admin.label.value.functionOnly":
+    "Funkciya",
   "about.judge.title": "Tekseriw qalay isleydi",
   "about.judge.body":
     "Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı.",

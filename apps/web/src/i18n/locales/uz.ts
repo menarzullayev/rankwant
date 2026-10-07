@@ -431,6 +431,18 @@ export const uz = {
     "Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi.",
   "about.eval.scorer":
     "Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi).",
+  "submit.function.hint":
+    "Faqat funksiyani yozing: kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi.",
+  "submit.function.harness":
+    "Hakam dasturi (o'zgartirib bo'lmaydi)",
+  "about.eval.function":
+    "Funksiya masalasi: butun dastur emas, bitta funksiya yoziladi. Kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi — main yozilmaydi.",
+  "admin.label.text.taskKind":
+    "Masala turi",
+  "admin.label.value.wholeProgram":
+    "Butun dastur",
+  "admin.label.value.functionOnly":
+    "Funksiya",
   "about.judge.title": "Tizim qanday ishlaydi",
   "about.judge.body":
     "Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi.",

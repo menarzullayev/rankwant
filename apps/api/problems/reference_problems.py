@@ -16,6 +16,7 @@ interactor, the reference solution — so `install()` is reproducible on an
 empty database.
 """
 
+# ruff: noqa: E501 - the harnesses are source code in other languages; wrapping them changes them.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -199,6 +200,19 @@ class Case:
     source: str
     verdict: str
     score: int
+    #: Empty: the language the harness was started with (`PYTHON`).
+    language: str = ""
+
+
+@dataclass(frozen=True)
+class FunctionLanguage:
+    """One language of a `function` problem: the program around the
+    submission, what the editor opens with, and a correct submission."""
+
+    code: str
+    harness: str
+    stub: str
+    solution: str
 
 
 @dataclass(frozen=True)
@@ -218,6 +232,9 @@ class Reference:
     checker: str = ""
     interactor: str = ""
     cases: tuple[Case, ...] = field(default_factory=tuple)
+    task_kind: str = "program"
+    #: `function` problems only; the problem is open in exactly these.
+    languages: tuple[FunctionLanguage, ...] = field(default_factory=tuple)
 
 
 PAIR = Reference(
@@ -346,7 +363,308 @@ COINS = Reference(
     ),
 )
 
-REFERENCES: tuple[Reference, ...] = (PAIR, GUESS, COINS)
+# ── function: the solver writes one function, in any of eleven languages ─────
+#
+# `{{SOLUTION}}` is where the submission goes (`problems/taskkinds.py`). Each
+# harness reads `n` and `n` integers, calls the function and prints what it
+# returns. None of them holds an expected answer: solvers can read them.
+
+_M = "{{SOLUTION}}"
+
+MAXPAIR_LANGUAGES: tuple[FunctionLanguage, ...] = (
+    FunctionLanguage(
+        "cpp23",
+        f"""#include <bits/stdc++.h>
+using namespace std;
+
+{_M}
+
+int main() {{
+    int n;
+    if (scanf("%d", &n) != 1) return 1;
+    vector<int> a(n);
+    for (int &x : a) scanf("%d", &x);
+    printf("%lld\\n", max_pair(a));
+    return 0;
+}}
+""",
+        "long long max_pair(vector<int> a) {\n    // yechimingiz\n    return 0;\n}\n",
+        """long long max_pair(vector<int> a) {
+    long long hi = LLONG_MIN, lo = LLONG_MIN;
+    for (int x : a) {
+        if (x > hi) { lo = hi; hi = x; }
+        else if (x > lo) lo = x;
+    }
+    return hi + lo;
+}
+""",
+    ),
+    FunctionLanguage(
+        "c17",
+        f"""#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+{_M}
+
+int main(void) {{
+    int n;
+    if (scanf("%d", &n) != 1) return 1;
+    int *a = malloc(sizeof(int) * (size_t)n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    printf("%lld\\n", max_pair(a, n));
+    return 0;
+}}
+""",
+        "long long max_pair(const int *a, int n) {\n    /* yechimingiz */\n    return 0;\n}\n",
+        """long long max_pair(const int *a, int n) {
+    long long hi = LLONG_MIN, lo = LLONG_MIN;
+    for (int i = 0; i < n; i++) {
+        if (a[i] > hi) { lo = hi; hi = a[i]; }
+        else if (a[i] > lo) lo = a[i];
+    }
+    return hi + lo;
+}
+""",
+    ),
+    FunctionLanguage(
+        "py313",
+        f"""import sys
+
+{_M}
+
+
+def _main():
+    data = sys.stdin.read().split()
+    n = int(data[0])
+    print(max_pair([int(x) for x in data[1 : 1 + n]]))
+
+
+_main()
+""",
+        "def max_pair(a: list[int]) -> int:\n    # yechimingiz\n    return 0\n",
+        "def max_pair(a):\n    b = sorted(a)\n    return b[-1] + b[-2]\n",
+    ),
+    FunctionLanguage(
+        "java21",
+        f"""import java.io.*;
+import java.util.*;
+
+{_M}
+
+public class Main {{
+    public static void main(String[] args) throws IOException {{
+        StreamTokenizer in = new StreamTokenizer(new BufferedReader(new InputStreamReader(System.in)));
+        in.nextToken();
+        int n = (int) in.nval;
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) {{
+            in.nextToken();
+            a[i] = (int) in.nval;
+        }}
+        System.out.println(new Solution().maxPair(a));
+    }}
+}}
+""",
+        "class Solution {\n    long maxPair(int[] a) {\n        // yechimingiz\n        return 0;\n    }\n}\n",
+        """class Solution {
+    long maxPair(int[] a) {
+        long hi = Long.MIN_VALUE, lo = Long.MIN_VALUE;
+        for (int x : a) {
+            if (x > hi) { lo = hi; hi = x; }
+            else if (x > lo) lo = x;
+        }
+        return hi + lo;
+    }
+}
+""",
+    ),
+    FunctionLanguage(
+        "kotlin24",
+        f"""import java.io.*
+import java.util.*
+
+{_M}
+
+fun main() {{
+    val st = StringTokenizer(System.`in`.bufferedReader().readText())
+    val n = st.nextToken().toInt()
+    val a = IntArray(n) {{ st.nextToken().toInt() }}
+    println(maxPair(a))
+}}
+""",
+        "fun maxPair(a: IntArray): Long {\n    // yechimingiz\n    return 0\n}\n",
+        "fun maxPair(a: IntArray): Long {\n    val b = a.sortedDescending()\n    return b[0].toLong() + b[1]\n}\n",
+    ),
+    FunctionLanguage(
+        "csharp14",
+        f"""using System;
+using System.Collections.Generic;
+using System.Linq;
+
+{_M}
+
+public class Program {{
+    public static void Main() {{
+        var data = Console.In.ReadToEnd().Split(new[] {{ ' ', '\\n', '\\r', '\\t' }}, StringSplitOptions.RemoveEmptyEntries);
+        int n = int.Parse(data[0]);
+        var a = new int[n];
+        for (int i = 0; i < n; i++) a[i] = int.Parse(data[i + 1]);
+        Console.WriteLine(new Solution().MaxPair(a));
+    }}
+}}
+""",
+        "public class Solution {\n    public long MaxPair(int[] a) {\n        // yechimingiz\n        return 0;\n    }\n}\n",
+        """public class Solution {
+    public long MaxPair(int[] a) {
+        var b = a.OrderByDescending(x => x).ToArray();
+        return (long)b[0] + b[1];
+    }
+}
+""",
+    ),
+    FunctionLanguage(
+        "js24",
+        f"""{_M}
+
+const data = require("fs").readFileSync(0, "utf8").split(/\\s+/).filter(Boolean).map(Number);
+console.log(String(maxPair(data.slice(1, 1 + data[0]))));
+""",
+        "function maxPair(a) {\n    // yechimingiz\n    return 0;\n}\n",
+        "function maxPair(a) {\n    const b = [...a].sort((x, y) => y - x);\n    return b[0] + b[1];\n}\n",
+    ),
+    FunctionLanguage(
+        "ts24",
+        f"""declare const require: any;
+
+{_M}
+
+const data: number[] = require("fs").readFileSync(0, "utf8").split(/\\s+/).filter(Boolean).map(Number);
+console.log(String(maxPair(data.slice(1, 1 + data[0]))));
+""",
+        "function maxPair(a: number[]): number {\n    // yechimingiz\n    return 0;\n}\n",
+        "function maxPair(a: number[]): number {\n    const b = [...a].sort((x, y) => y - x);\n    return b[0] + b[1];\n}\n",
+    ),
+    FunctionLanguage(
+        "go124",
+        f"""package main
+
+import (
+\t"bufio"
+\t"fmt"
+\t"os"
+)
+
+{_M}
+
+func main() {{
+\tin := bufio.NewReader(os.Stdin)
+\tvar n int
+\tfmt.Fscan(in, &n)
+\ta := make([]int, n)
+\tfor i := range a {{
+\t\tfmt.Fscan(in, &a[i])
+\t}}
+\tfmt.Println(maxPair(a))
+}}
+""",
+        "func maxPair(a []int) int64 {\n\t// yechimingiz\n\treturn 0\n}\n",
+        """func maxPair(a []int) int64 {
+\thi, lo := a[0], a[1]
+\tif lo > hi {
+\t\thi, lo = lo, hi
+\t}
+\tfor _, x := range a[2:] {
+\t\tif x > hi {
+\t\t\tlo, hi = hi, x
+\t\t} else if x > lo {
+\t\t\tlo = x
+\t\t}
+\t}
+\treturn int64(hi) + int64(lo)
+}
+""",
+    ),
+    FunctionLanguage(
+        "rust185",
+        f"""use std::io::{{self, Read}};
+
+{_M}
+
+fn main() {{
+    let mut s = String::new();
+    io::stdin().read_to_string(&mut s).unwrap();
+    let mut it = s.split_ascii_whitespace();
+    let n: usize = it.next().unwrap().parse().unwrap();
+    let a: Vec<i32> = (0..n).map(|_| it.next().unwrap().parse().unwrap()).collect();
+    println!("{{}}", max_pair(&a));
+}}
+""",
+        "fn max_pair(a: &[i32]) -> i64 {\n    // yechimingiz\n    0\n}\n",
+        """fn max_pair(a: &[i32]) -> i64 {
+    let mut b = a.to_vec();
+    b.sort_unstable_by(|x, y| y.cmp(x));
+    b[0] as i64 + b[1] as i64
+}
+""",
+    ),
+)
+# PyPy runs the Python harness unchanged.
+_PY = next(lang for lang in MAXPAIR_LANGUAGES if lang.code == PYTHON)
+MAXPAIR_LANGUAGES += (FunctionLanguage("pypy73", _PY.harness, _PY.stub, _PY.solution),)
+
+#: Returns twice the largest element: right only when the two largest are equal.
+MAXPAIR_WRONG = "def max_pair(a):\n    return 2 * max(a)\n"
+#: A whole program where a function was asked for: two `main`s do not link.
+MAXPAIR_OWN_MAIN = "long long max_pair(vector<int> a) { return 0; }\nint main() { return 0; }\n"
+#: Prints as well as returns: the harness's output is no longer the answer alone.
+MAXPAIR_PRINTS = "def max_pair(a):\n    b = sorted(a)\n    print(b)\n    return b[-1] + b[-2]\n"
+
+MAXPAIR = Reference(
+    slug="ref-eng-katta-juftlik",
+    title="Eng katta juftlik (funksiya)",
+    checker_type="standard",
+    difficulty=800,
+    task_kind="function",
+    statement=(
+        "Bu masalada butun dastur emas, **bitta funksiya** yoziladi. Funksiya butun sonlar "
+        "massivini oladi va undagi ikkita **turli o'rindagi** elementning eng katta "
+        "yig'indisini qaytaradi.\n\nKirishni o'qish va javobni chiqarish kerak emas — buni "
+        "hakamning dasturi bajaradi; u muharrir ostida ko'rsatilgan. Funksiyaning nomi va "
+        "imzosi tanlangan tilning qolipida berilgan: uni o'zgartirmang va `main` yozmang."
+    ),
+    input_format=(
+        "Funksiyaga $n$ ta butun sondan iborat massiv beriladi "
+        "($2 \\le n \\le 2 \\cdot 10^5$, $|a_i| \\le 10^9$)."
+    ),
+    output_format="Funksiya bitta butun sonni qaytaradi — eng katta yig'indini.",
+    note=(
+        "Namunalarda hakam dasturi o'qiydigan kirish ko'rsatilgan: birinchi qatorda $n$, "
+        "ikkinchisida massiv. Javob 32 bitli songa sig'masligi mumkin."
+    ),
+    tests=(
+        ("3\n1 2 3\n", "5\n", "sample"),
+        ("4\n-5 -2 -9 -1\n", "-3\n", "sample"),
+        ("2\n-1000000000 -1000000000\n", "-2000000000\n", "boundary"),
+        ("5\n7 7 7 7 7\n", "14\n", "special"),
+        ("6\n3 -1 10 2 10 0\n", "20\n", "random"),
+        ("2\n1000000000 1000000000\n", "2000000000\n", "maximum"),
+    ),
+    samples=2,
+    reference=_PY.solution,
+    languages=MAXPAIR_LANGUAGES,
+    cases=(
+        *(
+            Case(f"reference in {lang.code}", lang.solution, "AC", 100, lang.code)
+            for lang in MAXPAIR_LANGUAGES
+        ),
+        Case("wrong: twice the largest", MAXPAIR_WRONG, "WA", 0),
+        Case("prints inside the function", MAXPAIR_PRINTS, "WA", 0),
+        Case("a whole program instead of a function", MAXPAIR_OWN_MAIN, "CE", 0, "cpp23"),
+    ),
+)
+
+REFERENCES: tuple[Reference, ...] = (PAIR, GUESS, COINS, MAXPAIR)
 
 
 def install(*, publish: bool = True) -> list[Any]:
@@ -360,10 +678,19 @@ def install(*, publish: bool = True) -> list[Any]:
     from problems import storage
     from problems.evaluation import evaluation_error
     from problems.languages import LANGUAGES, row_values
-    from problems.models import Language, Problem, ReferenceSolution, TestCase
+    from problems.models import (
+        Language,
+        Problem,
+        ProblemLanguage,
+        ReferenceSolution,
+        TestCase,
+    )
 
-    spec = next(item for item in LANGUAGES if item["code"] == PYTHON)
-    python, _ = Language.objects.update_or_create(code=PYTHON, defaults=row_values(spec))
+    def language(code: str) -> Any:
+        spec = next(item for item in LANGUAGES if item["code"] == code)
+        return Language.objects.update_or_create(code=code, defaults=row_values(spec))[0]
+
+    python = language(PYTHON)
     storage.ensure_bucket()
 
     installed = []
@@ -381,6 +708,7 @@ def install(*, publish: bool = True) -> list[Any]:
                 "memory_limit_kb": 262144,
                 "io_mode": Problem.IoMode.STDIO,
                 "checker_type": ref.checker_type,
+                "task_kind": ref.task_kind,
                 "checker_source": ref.checker,
                 "checker_language": python if ref.checker else None,
                 "interactor_source": ref.interactor,
@@ -404,6 +732,18 @@ def install(*, publish: bool = True) -> list[Any]:
         ReferenceSolution.objects.update_or_create(
             problem=problem, defaults={"language": python, "source": ref.reference}
         )
+        # A function problem is open in exactly the languages it has a
+        # harness for; a whole-program problem lists none (all are open).
+        for lang in ref.languages:
+            ProblemLanguage.objects.update_or_create(
+                problem=problem,
+                language=language(lang.code),
+                defaults={"harness": lang.harness, "code_template": lang.stub},
+            )
+        if ref.languages:
+            problem.languages.exclude(
+                language__code__in=[lang.code for lang in ref.languages]
+            ).delete()
         cache_delete(storage.samples_cache_key(ref.slug))
 
         error = evaluation_error(problem)

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2243 strings.**
+**2249 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -424,6 +424,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.eval.special` | Maxsus tekshiruvchi: to'g'ri javob bir nechta bo'lishi mumkin bo'lgan masalada javobingizni muallif yozgan dastur tekshiradi. Shartga mos har qanday javob qabul qilinadi. | Санҷишгари махсус: дар масъалае, ки якчанд ҷавоби дуруст дорад, ҷавоби шуморо барномаи навиштаи муаллиф месанҷад. Ҳар ҷавобе, ки ба шарт мувофиқ аст, қабул мешавад. |  |
 | `about.eval.interactive` | Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi. | Масъалаи интерактивӣ: барномаи шумо бо барномаи довар гуфтугӯ мекунад — савол менависад ва ҷавобро мехонад. Пас аз ҳар навиштан буфери баромадро холӣ кунед (flush), вагарна ҳукм IDLENESS мешавад. |  |
 | `about.eval.scorer` | Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi). | Масъалаи холдор: ҳар тест аз 0 то 100 баҳо мегирад, холи ниҳоӣ — миёнаи онҳо. 100 хол — AC; аз 100 кам, вале аз сифр зиёд — PARTIAL (масъала ҳалшуда ҳисоб намешавад). |  |
+| `submit.function.hint` | Faqat funksiyani yozing: kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi. | Танҳо функсияро нависед: хондани вуруд ва чопи ҷавобро барномаи довар иҷро мекунад. |  |
+| `submit.function.harness` | Hakam dasturi (o'zgartirib bo'lmaydi) | Барномаи довар (тағйир дода намешавад) |  |
+| `about.eval.function` | Funksiya masalasi: butun dastur emas, bitta funksiya yoziladi. Kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi — main yozilmaydi. | Масъалаи функсия: на барномаи пурра, балки як функсия навишта мешавад. Хондани вуруд ва чопи ҷавобро барномаи довар иҷро мекунад — main навишта намешавад. |  |
+| `admin.label.text.taskKind` | Masala turi | Навъи масъала |  |
+| `admin.label.value.wholeProgram` | Butun dastur | Барномаи пурра |  |
+| `admin.label.value.functionOnly` | Funksiya | Функсия |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Санҷиш чӣ гуна кор мекунад |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ҳар ҳали фиристодашуда дар sandbox-и ҷудошуда компилятсия ва бо ҳамаи тестҳои пинҳон иҷро мешавад (реҷаи ACM: дар аввалин тести ноком санҷиш қатъ мешавад). Ҳал танҳо вақте қабул мешавад, ки ҳамаи тестҳо гузаранд. Маҳдудиятҳои вақт ва хотира барои ҳар тест алоҳида амал мекунанд. |  |
 | `about.notes.title` | Muhim eslatmalar | Эзоҳҳои муҳим |  |

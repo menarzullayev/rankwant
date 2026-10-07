@@ -13,7 +13,7 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, API_ONLY, Verdict
-from problems import testgroups
+from problems import taskkinds, testgroups
 from problems.models import Language, Problem, ProblemLanguage, TestCase, Validator
 
 log = logging.getLogger(__name__)
@@ -106,6 +106,17 @@ def build_standalone_job(
     override = ProblemLanguage.objects.filter(problem=problem, language=language).first()
     time_ms = (override.time_limit_ms if override else None) or problem.time_limit_ms
     memory_kb = (override.memory_limit_kb if override else None) or problem.memory_limit_kb
+
+    if problem.task_kind == Problem.TaskKind.FUNCTION:
+        # The solver wrote a function; the judge runs programs. The author's
+        # harness for this language is that program, with the submission in
+        # place of its marker line. Refused loudly when there is none: an
+        # attempt judged without the harness would be a compile error blamed
+        # on the solver.
+        harness = override.harness if override else ""
+        if taskkinds.harness_error(harness):
+            raise ValueError(f"{problem.slug}: no usable harness for language '{language.code}'")
+        source = taskkinds.compose(harness, source)
 
     io: dict[str, Any] | None = None
     if problem.io_mode == Problem.IoMode.BOTH:
