@@ -2425,6 +2425,12 @@ export const uz = {
   "session.expiredTitle": "Sessiya tugadi.",
   "session.expiredBody": "Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan.",
   "auth.continueNote": "Davom etish uchun tizimga kiring — keyin o'sha sahifaga qaytasiz.",
+  "contest.gate.registerTitle": "Bu masala «{contest}» musobaqasida",
+  "contest.gate.registerBody": "Yechim yuborish uchun musobaqaga yoziling. Shartni o'qish hammaga ochiq.",
+  "contest.gate.endedTitle": "Musobaqa tugadi",
+  "contest.gate.endedBody": "Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi.",
+  "contest.gate.cta": "Musobaqa sahifasi",
+  "contest.problemsAtStart": "{count} ta masala — musobaqa boshlanganda ochiladi.",
 } as const;
 
 export type MessageKey = keyof typeof uz;

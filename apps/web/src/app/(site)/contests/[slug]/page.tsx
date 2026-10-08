@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { getLocale } from "@/i18n/server";
 import { Countdown, TimeStamp } from "@/components/kit/TimeStamp";
-import { t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import { StandingsTable } from "@/features/contests";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -110,6 +110,12 @@ export default async function ContestPage({ params }: Props) {
       {contest.is_finished && (
         <div className="rw-radius border rw-line rw-surface p-5 text-theme-sm rw-dim">
           {t(locale, "contest.finishedNote")}
+        </div>
+      )}
+
+      {contest.problems.length === 0 && contest.problem_count > 0 && (
+        <div className="rw-radius border rw-line rw-surface p-5 text-theme-sm rw-dim" data-problems-hidden="">
+          {fill(t(locale, "contest.problemsAtStart"), { count: contest.problem_count })}
         </div>
       )}
 

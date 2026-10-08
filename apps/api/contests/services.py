@@ -324,6 +324,65 @@ def virtual_deadline(reg: ContestRegistration) -> datetime:
 
 
 @transaction.atomic
+def release_problems(contest: Contest) -> list[str]:
+    """Move the contest's problems to the archive (ADR-0055).
+
+    Called when the contest is finalized — after the hack phase, when
+    the tests can no longer change. A problem stays held when another
+    contest that has not been finalized uses it too, and when it has no
+    tests (the archive cannot judge it). Returns the slugs released.
+    """
+    released: list[str] = []
+    entries = contest.problems.select_related("problem").filter(problem__is_public=False)
+    for entry in entries:
+        problem = entry.problem
+        elsewhere = (
+            ContestProblem.objects.filter(problem=problem, contest__ratings_applied_at__isnull=True)
+            .exclude(contest=contest)
+            .exists()
+        )
+        if elsewhere:
+            log.info(
+                "contest %s: %s boshqa musobaqada ham bor — arxivga o'tmadi",
+                contest.slug,
+                problem.slug,
+            )
+            continue
+        if not problem.tests.exists():
+            log.warning("contest %s: %s testsiz — arxivga o'tmadi", contest.slug, problem.slug)
+            continue
+        # `save()` gives the problem its public number and moves its
+        # solvers' counters; an `update()` would do neither.
+        problem.is_public = True
+        problem.save()
+        released.append(problem.slug)
+    if released:
+        log.info("contest %s: arxivga o'tdi — %s", contest.slug, ", ".join(released))
+    return released
+
+
+def frozen_windows(now: datetime | None = None) -> list[tuple[int, datetime]]:
+    """(contest id, freeze time) of every contest whose freeze is on.
+
+    The freeze is the scoreboard's own: the last `freeze_minutes` of a
+    running contest (`Contest.is_frozen`). While it lasts, attempts made
+    after it are shown to their authors only — the feed and a problem's
+    attempt list would otherwise tell what the frozen scoreboard hides.
+    It ends with the contest, as the scoreboard's does: the hack phase
+    that may follow needs those attempts in the open.
+    """
+    now = now or timezone.now()
+    windows: list[tuple[int, datetime]] = []
+    held = Contest.objects.filter(
+        is_public=True, start_at__lte=now, end_at__gt=now, freeze_minutes__gt=0
+    )
+    for contest in held:
+        freeze_at = contest.freeze_at
+        if freeze_at is not None and now >= freeze_at:
+            windows.append((contest.pk, freeze_at))
+    return windows
+
+
 def finalize_contest(contest: Contest) -> int:
     """Musobaqa tugagach: standings + Contests reytingi.
 
@@ -386,6 +445,10 @@ def finalize_contest(contest: Contest) -> int:
         log.exception("contest %s uchun sertifikatlar berilmadi", contest.slug)
     contest.ratings_applied_at = timezone.now()
     contest.save(update_fields=["ratings_applied_at"])
+    try:
+        release_problems(contest)
+    except Exception:
+        log.exception("contest %s: masalalar arxivga o'tmadi", contest.slug)
 
     # Bu contest chempionat bosqichi bo'lsa — yig'ma jadval yangilanadi.
     # Import ichkarida: tournaments contests'ga bog'liq, teskarisi emas.

@@ -2376,4 +2376,10 @@ export const kk: Record<MessageKey, string> = {
   "session.expiredTitle": "Сессия аяқталды.",
   "session.expiredBody": "Қайта кіріңіз — осы бетке ораласыз, жазған кодыңыз сақталған.",
   "auth.continueNote": "Жалғастыру үшін жүйеге кіріңіз — содан кейін сол бетке ораласыз.",
+  "contest.gate.registerTitle": "Бұл есеп «{contest}» жарысында",
+  "contest.gate.registerBody": "Шешім жіберу үшін жарысқа тіркеліңіз. Шартты оқу бәріне ашық.",
+  "contest.gate.endedTitle": "Жарыс аяқталды",
+  "contest.gate.endedBody": "Нәтижелер қорытындыланған соң есеп мұрағатқа өтеді және жіберу қайта ашылады.",
+  "contest.gate.cta": "Жарыс беті",
+  "contest.problemsAtStart": "{count} есеп — жарыс басталғанда ашылады.",
 };

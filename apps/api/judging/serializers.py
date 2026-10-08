@@ -128,7 +128,9 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         return value
 
     def validate_problem(self, value: str) -> str:
-        problem = Problem.objects.filter(slug=value, is_public=True).first()
+        from problems import visibility
+
+        problem = visibility.openable(value)
         if problem is None:
             raise serializers.ValidationError("Problem not found")
         # Testsiz masalada judge IE qaytaradi. Tugmani frontendda
@@ -202,6 +204,13 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
 
         slug = attrs.get("contest")
         if not slug:
+            # A contest problem is not in the archive yet: a solution sent
+            # outside the contest would be a free check of the answer from
+            # a second account (ADR-0055).
+            if not Problem.objects.filter(slug=attrs["problem"], is_public=True).exists():
+                raise serializers.ValidationError(
+                    {"contest": "This problem belongs to a contest — submit it there"}
+                )
             return attrs
 
         contest = Contest.objects.filter(slug=slug, is_public=True).first()
