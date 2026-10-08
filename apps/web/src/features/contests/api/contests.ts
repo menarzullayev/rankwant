@@ -33,7 +33,9 @@ export type ContestProblem = {
 
 export type ContestDetail = Contest & {
   description: string;
+  /** Empty until the contest starts — a title is a hint (ADR-0055). */
   problems: ContestProblem[];
+  problem_count: number;
 };
 
 export type Standing = {

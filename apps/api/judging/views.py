@@ -60,6 +60,24 @@ class AttemptCursorPagination(SortableCursorPagination):
     ordering_fields = ATTEMPT_ORDERINGS
 
 
+def _outside_the_freeze(qs: QuerySet[Attempt], viewer: Any) -> QuerySet[Attempt]:
+    """Drop what a frozen contest hides from this viewer (ADR-0055).
+
+    Attempts made after a contest's scoreboard froze are shown to their
+    authors only, until the contest ends. Staff see everything.
+    """
+    if viewer.is_authenticated and viewer.is_staff:
+        return qs
+    from contests.services import frozen_windows
+
+    for contest_id, freeze_at in frozen_windows():
+        hidden = Q(contest_id=contest_id, created_at__gte=freeze_at)
+        if viewer.is_authenticated:
+            hidden &= ~Q(user=viewer)
+        qs = qs.exclude(hidden)
+    return qs
+
+
 @crud_summaries(one="urinish", many="urinishlar", only=("list", "retrieve", "create"))
 @extend_schema_view(
     list=extend_schema(
@@ -139,6 +157,8 @@ class AttemptViewSet(
         # `contest` ham SHU YERDA: serializer uning slug'ini beradi va
         # usiz har qator uchun alohida so'rov ketardi (N+1).
         qs = Attempt.objects.select_related("user", "problem", "language", "contest")
+
+        qs = _outside_the_freeze(qs, self.request.user)
 
         problem = params.get("problem")
         if problem:
@@ -245,7 +265,10 @@ class AttemptViewSet(
         return AttemptDetailSerializer if self.action == "retrieve" else AttemptSerializer
 
     def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        attempt = get_object_or_404(Attempt, pk=kwargs["pk"])
+        # The same freeze as the list: an attempt's number is easy to guess.
+        attempt = get_object_or_404(
+            _outside_the_freeze(Attempt.objects.all(), request.user), pk=kwargs["pk"]
+        )
         data = AttemptDetailSerializer(attempt).data
         # Manba faqat egasiga va adminlarga ko'rinadi (IDOR himoyasi).
         if not (

@@ -4252,6 +4252,66 @@ def neg_decisions_shell_inset_ignores_side_menu() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_contest_problem_opens_early() -> tuple[bool, str]:
+    """A contest problem opens before its contest has started."""
+    return _decision_broken(
+        "apps/api/problems/visibility.py",
+        "        contest_entries__contest__start_at__lte=now,\n",
+        "",
+        "boshlanishdan oldin ham ochiladi",
+    )
+
+
+def neg_decisions_contest_problem_in_the_archive_list() -> tuple[bool, str]:
+    """The archive list uses the wider "may be opened" scope."""
+    return _decision_broken(
+        "apps/api/problems/views.py",
+        'scope = Q(is_public=True) if self.action == "list" else visibility.openable_q()',
+        "scope = visibility.openable_q()",
+        "arxiv ro'yxati musobaqa masalasini ham beradi",
+    )
+
+
+def neg_decisions_contest_problem_takes_outside_solutions() -> tuple[bool, str]:
+    """A solution to a contest problem is accepted outside the contest."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        '{"contest": "This problem belongs to a contest — submit it there"}',
+        '{"contest": "Not here"}',
+        "musobaqadan tashqari yechim qabul qilinadi",
+    )
+
+
+def neg_decisions_single_attempt_ignores_the_freeze() -> tuple[bool, str]:
+    """One attempt, fetched by its number, is shown through the freeze."""
+    return _decision_broken(
+        "apps/api/judging/views.py",
+        '            _outside_the_freeze(Attempt.objects.all(), request.user), pk=kwargs["pk"]\n',
+        '            Attempt.objects.all(), pk=kwargs["pk"]\n',
+        "bitta urinish sahifasida ishlamaydi",
+    )
+
+
+def neg_decisions_contest_page_names_problems_early() -> tuple[bool, str]:
+    """The contest page lists its problems before the start."""
+    return _decision_broken(
+        "apps/api/contests/serializers.py",
+        "        if timezone.now() < contest.start_at:\n",
+        "        if False:\n",
+        "boshlanishdan oldin ko'rsatadi",
+    )
+
+
+def neg_decisions_contest_problems_never_released() -> tuple[bool, str]:
+    """Finalizing a contest leaves its problems held."""
+    return _decision_broken(
+        "apps/api/contests/services.py",
+        "        release_problems(contest)\n",
+        "        pass\n",
+        "arxivga o'tmaydi",
+    )
+
+
 def neg_decisions_guest_gets_the_editor() -> tuple[bool, str]:
     """The solve panel is sent to a guest again."""
     return _decision_broken(
@@ -6217,6 +6277,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/quizzes/components/QuizPlayer.tsx",
     "apps/web/src/features/arena/components/ArenaPlayer.tsx",
     "apps/web/src/lib/api/client.ts",
+    "apps/api/problems/visibility.py",
+    "apps/api/problems/views.py",
+    "apps/api/problems/serializers.py",
+    "apps/api/contests/serializers.py",
+    "apps/api/contests/services.py",
 )
 
 
@@ -9538,6 +9603,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ikki bosqichli ish bir marta yursa tutilsin", neg_decisions_two_pass_runs_once),
             ("ikki bosqichli ish tursiz ketsa tutilsin", neg_decisions_two_pass_job_without_task),
             ("manager'siz masala nashr qilinsa tutilsin", neg_decisions_two_pass_released_without_manager),
+            ("musobaqa masalasi erta ochilsa tutilsin", neg_decisions_contest_problem_opens_early),
+            ("musobaqa masalasi arxiv ro'yxatiga tushsa tutilsin", neg_decisions_contest_problem_in_the_archive_list),
+            ("musobaqadan tashqari yechim qabul qilinsa tutilsin", neg_decisions_contest_problem_takes_outside_solutions),
+            ("bitta urinish muzlatishni chetlasa tutilsin", neg_decisions_single_attempt_ignores_the_freeze),
+            ("musobaqa sahifasi masalani erta aytsa tutilsin", neg_decisions_contest_page_names_problems_early),
+            ("masalalar arxivga o'tmasa tutilsin", neg_decisions_contest_problems_never_released),
             ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
             ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),
             ("401 e'lon qilinmasa tutilsin", neg_decisions_session_end_goes_unnoticed),

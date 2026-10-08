@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.utils import timezone
 from rest_framework import serializers
 
 from contests.models import Certificate, Contest, ContestProblem, ContestRegistration, Standing
@@ -52,9 +53,22 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
 
 class ContestDetailSerializer(ContestSerializer):
     problems = ContestProblemSerializer(many=True, read_only=True)
+    problem_count = serializers.SerializerMethodField()
 
     class Meta(ContestSerializer.Meta):
-        fields = [*ContestSerializer.Meta.fields, "description", "problems"]
+        fields = [*ContestSerializer.Meta.fields, "description", "problems", "problem_count"]
+
+    def get_problem_count(self, contest: Contest) -> int:
+        return len(contest.problems.all())
+
+    def to_representation(self, contest: Contest) -> dict[str, Any]:
+        data = super().to_representation(contest)
+        # Until the start a title is a hint and a slug is an address:
+        # only the number of problems is told (ADR-0055). The people who
+        # prepare the contest read it through the staff and organizer APIs.
+        if timezone.now() < contest.start_at:
+            data["problems"] = []
+        return data
 
 
 class StandingSerializer(serializers.ModelSerializer[Standing]):

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2291 strings.**
+**2297 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2312,3 +2312,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `session.expiredTitle` | Sessiya tugadi. | Сессия аяқталды. |  |
 | `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Қайта кіріңіз — осы бетке ораласыз, жазған кодыңыз сақталған. |  |
 | `auth.continueNote` | Davom etish uchun tizimga kiring — keyin o'sha sahifaga qaytasiz. | Жалғастыру үшін жүйеге кіріңіз — содан кейін сол бетке ораласыз. |  |
+| `contest.gate.registerTitle` | Bu masala «{contest}» musobaqasida | Бұл есеп «{contest}» жарысында |  |
+| `contest.gate.registerBody` | Yechim yuborish uchun musobaqaga yoziling. Shartni o'qish hammaga ochiq. | Шешім жіберу үшін жарысқа тіркеліңіз. Шартты оқу бәріне ашық. |  |
+| `contest.gate.endedTitle` | Musobaqa tugadi | Жарыс аяқталды |  |
+| `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Нәтижелер қорытындыланған соң есеп мұрағатқа өтеді және жіберу қайта ашылады. |  |
+| `contest.gate.cta` | Musobaqa sahifasi | Жарыс беті |  |
+| `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} есеп — жарыс басталғанда ашылады. |  |
