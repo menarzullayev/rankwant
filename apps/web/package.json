@@ -81,7 +81,6 @@
     "@typescript/typescript-win32-x64": "7.0.2"
   },
   "overrides": {
-    "dompurify": "^3.4.15",
     "openapi-typescript": {
       "typescript": "$typescript"
     }
