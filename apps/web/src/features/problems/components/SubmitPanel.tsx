@@ -85,7 +85,10 @@ const MAX_SOURCE_BYTES = SOURCE_MAX_BYTES;
 // yuboradi. O'lchandi: 412 px li telefonda masala sahifasi 600 px
 // bo'lib, yon tomonga siljirdi va tab tugmalarini bosib bo'lmasdi.
 const PANEL =
-  "min-w-0 space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:rw-scroll-y";
+  // The editor takes what the screen leaves: 100vh minus the header and
+  // everything else in the panel (35.25rem, measured). The panel then
+  // fits without a scrollbar of its own on a laptop screen.
+  "min-w-0 space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:rw-scroll-y xl:[--rw-editor-h:clamp(240px,calc(100vh-35.25rem),640px)]";
 
 /** Verdikt uchun SSE (ADR-0029) + polling zaxirasi — oqim uzilsa ham yangilanadi.
  * Birinchi soniyalarda tez, keyin siyrak: kompilyatsiya + testlar odatda
@@ -594,11 +597,31 @@ export function SubmitPanel({
           onError={setError}
         />
 
+        {picked?.harness ? (
+          <p className="text-theme-xs rw-dim">{t(locale, "submit.function.hint")}</p>
+        ) : null}
+
         <CodeEditor
           language={editorLanguage(language)}
           value={source}
           onChange={setSource}
         />
+
+        {/* A function problem: the program around the submission is shown,
+            so a solver can see what calls the function and with what. */}
+        {picked?.harness ? (
+          <details className="rw-radius-sm border rw-line">
+            <summary className="cursor-pointer px-3 py-2 text-theme-xs rw-dim rw-focus-ring">
+              {t(locale, "submit.function.harness")}
+            </summary>
+            <pre
+              tabIndex={0}
+              className="rw-scroll-x rw-focus-ring border-t rw-divider px-3 py-2 font-mono text-theme-xs rw-dim"
+            >
+              {picked.harness}
+            </pre>
+          </details>
+        ) : null}
 
         <SampleTestConsole
           samples={samples}

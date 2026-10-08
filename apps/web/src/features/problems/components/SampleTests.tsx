@@ -43,7 +43,7 @@ export function SampleTests({ samples }: { samples: Sample[] }) {
           scroll box and widen the PAGE - measured 2026-10-05 at 375 px:
           document 553 px wide, one 1 px span at x=552. */}
       <div className="relative min-w-0 rw-scroll-x">
-        <table className="w-full min-w-[34rem] table-fixed">
+        <table className="w-full table-fixed">
           <thead>
             <tr className="border-b rw-divider">
               <th className="w-10 px-3 py-2 text-left text-theme-xs font-medium rw-faint">

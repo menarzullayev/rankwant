@@ -417,6 +417,68 @@ export const en: Record<MessageKey, string> = {
     "Read two integers from input.txt and write the sum to output.txt (no extra spaces or lines).",
   "about.sampleMissing":
     "No sample snippet for this language yet. Follow the problem's I/O format.",
+  "about.eval.title":
+    "How an answer is checked",
+  "about.eval.standard":
+    "Standard check: your output is compared with the expected answer. A difference only in spaces or line breaks is PE, any other difference is WA.",
+  "about.eval.special":
+    "Custom checker: when a problem has more than one correct answer, a program written by the author checks yours. Any answer that satisfies the statement is accepted.",
+  "about.eval.interactive":
+    "Interactive problem: your program talks to the judge's program — it writes a question and reads the reply. Flush the output after every write, otherwise the verdict is IDLENESS.",
+  "about.eval.scorer":
+    "Scored problem: every test is graded from 0 to 100 and the final score is their mean. 100 is AC; less than 100 but more than zero is PARTIAL (the problem does not count as solved).",
+  "submit.function.hint":
+    "Write the function only: the judge's program reads the input and prints the answer.",
+  "submit.function.harness":
+    "The judge's program (cannot be changed)",
+  "about.eval.function":
+    "Function problem: you write one function, not a whole program. The judge's program reads the input and prints the answer — do not write main.",
+  "admin.label.text.taskKind":
+    "Task kind",
+  "admin.label.value.wholeProgram":
+    "Whole program",
+  "admin.label.value.functionOnly":
+    "Function",
+  "answer.title":
+    "Answer files",
+  "answer.hint":
+    "No program is submitted here. Download the input files, find the answers any way you like and send a text file for each test.",
+  "answer.download":
+    "Download the input files (zip)",
+  "answer.noFile":
+    "no file chosen",
+  "answer.pick":
+    "Choose the answer file for test {order}",
+  "answer.zip":
+    "Or all the answers in one zip (put the test number in each file name: 1.out, 02.txt)",
+  "answer.kept":
+    "A test you do not send keeps the answer you last sent for it.",
+  "answer.submit":
+    "Send the answers",
+  "answer.count":
+    "Chosen: {picked} of {total}",
+  "answer.tooLarge":
+    "The files must not exceed 10 MB in total.",
+  "answer.failed":
+    "Could not send. Check your connection and try again.",
+  "about.eval.answer":
+    "Answer-only problem: no program is submitted. The inputs are public and you send an answer file for each test; the author's program grades it. A test you do not send keeps your last answer.",
+  "admin.label.value.answerFiles":
+    "Answer files",
+  "about.eval.twoPass":
+    "Two-pass problem: your program runs twice on every test. The second run sees only the input the judge's program made from the first run's output — no memory and no file survives.",
+  "admin.label.value.twoPass":
+    "Two passes",
+  "admin.label.tech.managerLanguage":
+    "Manager language (a code, such as py313)",
+  "admin.label.tech.managerSource":
+    "Manager source",
+  "admin.help.managerOnlyTwoPass":
+    "Two-pass problems only: manager <input> <output of run 1> <jury>; its output becomes the input of run 2, a non-zero exit rejects.",
+  "about.eval.sql":
+    "SQL problem: you write one SELECT (SQLite 3). Each test is a ready database; the result is compared row by row. Statements that change data are refused.",
+  "admin.label.value.sqlQuery":
+    "SQL query",
   "about.judge.title": "How judging works",
   "about.judge.body":
     "Each submission is compiled and run in an isolated sandbox against all hidden tests (ACM mode: stop at the first failing test). Accepted only if every test passes. Time and memory limits apply per test.",
@@ -444,9 +506,9 @@ export const en: Record<MessageKey, string> = {
   "about.practices.fastIo": "Use fast I/O for large input in your language.",
   "about.practices.debug": "Debug locally, then submit clean code.",
   "about.practices.readAll": "Read the full statement, notes, and limits.",
-  "about.verdicts.title": "Verdict codes (24)",
+  "about.verdicts.title": "Verdict codes ({count})",
   "about.verdicts.intro":
-    "The platform defines 24 verdict codes. Each row explains the meaning, what to do, and a simple example.",
+    "The platform defines {count} verdict codes. Each row explains the meaning, what to do, and a simple example.",
   "about.verdicts.col.num": "#",
   "about.verdicts.col.status": "Status",
   "about.verdicts.col.event": "Meaning",
@@ -2262,4 +2324,32 @@ export const en: Record<MessageKey, string> = {
   "attempt.testsPassed": "{passed} of {total} passed",
   "attempt.toProblem": "Go to problem",
   "attempt.editResubmit": "Edit and resubmit",
+  "footer.resources": "Resources",
+  "footer.telegram": "Telegram channel",
+  "footer.opensNewTab": "(opens in a new tab)",
+  "nav.badge.todo": "{count} waiting for you",
+  "nav.badge.unread": "{count} unread",
+  "nav.badge.new": "{count} new",
+  "nav.badge.live": "live now",
+  "nav.badge.liveShort": "live",
+  "about.journey.title": "The platform in five steps",
+  "about.toc.label": "Contents",
+  "about.toc.submit": "Submitting",
+  "about.toc.languages": "Languages",
+  "about.toc.verdicts": "Verdict codes",
+  "about.toc.practices": "Practices",
+  "about.toc.judge": "The system",
+  "about.cta.solve": "Solve your first problem",
+  "about.anchor": "Link to this section",
+  "about.lang.other": "Another language ({count})",
+  "about.lang.count": "{count} languages",
+  "about.verdicts.search": "A code or a word: TLE, memory…",
+  "about.verdicts.searchLabel": "Search verdict codes",
+  "about.verdicts.groupLabel": "Filter by group",
+  "about.verdicts.group.all": "All",
+  "about.verdicts.group.common": "Common",
+  "about.verdicts.group.flow": "In progress",
+  "about.verdicts.group.system": "Rare and system",
+  "about.verdicts.found": "{count} codes",
+  "about.verdicts.none": "No such code.",
 };

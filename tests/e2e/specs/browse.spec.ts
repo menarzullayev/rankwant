@@ -45,9 +45,16 @@ test("reyting formulalari ochiq", async ({ page }) => {
 test("leaderboard to'rtala reytingni ko'rsatadi", async ({ page }) => {
   await page.goto("/leaderboard");
   // ADR-0006 fazali ochilish: Challenges Phase 3 da (duel) ochildi
+  // A wide table has a column per rating. A narrow one keeps Skills as a
+  // column and writes the other three under the name ("Contests 1200 ·
+  // Activity 5 · …"), so there the name is part of a longer line.
+  const narrow = (page.viewportSize()?.width ?? 0) < 768;
   for (const name of ["Skills", "Contests", "Activity", "Challenges"]) {
+    const exact = !narrow || name === "Skills";
+    // `visible`: on a narrow table the column header is still in the DOM,
+    // hidden, and comes first — the line under the name is the one to find.
     await expect(
-      page.locator("main").getByText(name, { exact: true }),
+      page.locator("main").getByText(name, { exact }).filter({ visible: true }).first(),
     ).toBeVisible();
   }
 });
@@ -189,8 +196,9 @@ test("arxiv qatorida masala raqami va statistikasi ko'rinadi", async ({
   // Raqam sahifadagi o'rin emas — barqaror identifikator.
   await expect(page.getByText(/^#\d{4}$/).first()).toBeVisible();
 
-  // Statistika ustunlari tor ekranda ATAYIN yig'iladi (`hidden md:table-cell`),
-  // shuning uchun ular faqat keng ekranda kutiladi.
+  // Statistika ustunlari tor JADVALDA atayin yig'iladi (`hidden @xl:table-cell`
+  // — jadvalning o'z kengligi bo'yicha), shuning uchun ular faqat keng ekranda
+  // kutiladi.
   const wide = (page.viewportSize()?.width ?? 0) >= 768;
   await expect(page.getByRole("columnheader", { name: "%" })).toHaveCount(
     wide ? 1 : 0,

@@ -4,10 +4,7 @@ import { useEffect } from "react";
 
 import { usePathname } from "next/navigation";
 
-import {
-  CustomizerProvider,
-  useCustomizer,
-} from "@/context/CustomizerContext";
+import { CustomizerProvider, useCustomizer } from "@/context/CustomizerContext";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { clampNavMode, clampNavShape } from "./nav-config";
 import { PrefsSync } from "@/context/PrefsSync";
@@ -16,6 +13,7 @@ import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { UpdatesProvider } from "@/context/UpdatesContext";
+import { NavBadgesProvider } from "@/context/NavBadgesContext";
 import type { AppearancePrefs, Me } from "@/lib/api";
 import { OverlayProvider } from "@/components/overlay/OverlayHost";
 import { startChiziq } from "@/lib/chiziq";
@@ -65,6 +63,8 @@ const BARE = [
  *  as in `BARE`: `usePathname()` still reports the old path while the
  *  redirect is in flight. */
 const FULL = ["/login", "/register", "/reset-password"];
+
+const SHELL_INSET = "--rw-shell-inset" as string;
 
 /** Sahifalar SERVER komponenti bo'lib qoladi — bu yerga `children` sifatida
  * uzatiladi, ya'ni SSR (ADR-0003 dagi SEO sababi) buzilmaydi. */
@@ -116,12 +116,23 @@ function Shell({ children }: { children: React.ReactNode }) {
           onClick={closeMobileSidebar}
         />
       )}
+      {/* A column as tall as the screen, with `main` taking the slack: on
+          a short page the footer sits at the bottom of the window instead
+          of hanging under the content with empty ground below it.
+
+          `--rw-shell-inset` is the side menu's width, for anything inside
+          the column that is `position: fixed`: the column's margin does not
+          move a fixed box, so without it such a box starts at the window's
+          edge, under the menu (measured 2026-10-07: the problem page's
+          editor sheet, its Send button at x=36 beneath a menu link). It
+          applies from `lg`, where the menu stops being a drawer. */}
       <div
-        className={
+        style={{ [SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px" }}
+        className={`${full ? "" : "flex min-h-screen flex-col"} ${
           sidenav
             ? `transition-all duration-300 ${wide ? "lg:ml-[260px]" : "lg:ml-[86px]"}`
             : ""
-        }
+        }`}
       >
         {full ? null : navMode === "topnav" && !bare ? (
           <AppTopNav shape={navShape} />
@@ -140,7 +151,9 @@ function Shell({ children }: { children: React.ReactNode }) {
             odam o'qish uchun tor/keng qilib o'zgartira olmasdi. */}
         <main
           id="main"
-          className={full ? undefined : "rw-content mx-auto p-4 md:p-6"}
+          className={
+            full ? undefined : "rw-content mx-auto w-full flex-1 p-4 md:p-6"
+          }
         >
           {children}
         </main>
@@ -185,11 +198,13 @@ export default function AppShell({
                   Kit fayli qoladi — clipboard toast shartnomasi uchun. */}
               <PrefsSync />
               <UpdatesProvider>
-                <NotificationsProvider>
-                  <SidebarProvider>
-                    <Shell>{children}</Shell>
-                  </SidebarProvider>
-                </NotificationsProvider>
+                <NavBadgesProvider>
+                  <NotificationsProvider>
+                    <SidebarProvider>
+                      <Shell>{children}</Shell>
+                    </SidebarProvider>
+                  </NotificationsProvider>
+                </NavBadgesProvider>
               </UpdatesProvider>
               {/* Suzuvchi tugma va panel — `Shell` dan tashqarida, chunki
                   ular sahifa tuzilishiga bog'liq emas va `bare` sahifalarda

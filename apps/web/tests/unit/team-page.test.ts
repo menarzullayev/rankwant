@@ -24,6 +24,10 @@ describe("team page", () => {
       expect(text.count, code).toContain("{roles}");
       expect(text.count, code).toContain("{people}");
       expect(text.photoAlt, code).toContain("{name}");
+      expect(text.showMore, code).toContain("{count}");
+      expect(text.ownerCardTitle, code).toContain("{name}");
+      expect(text.metaTitle, code).toContain("{roles}");
+      expect(text.metaDescription, code).toContain("{departments}");
     }
   });
 

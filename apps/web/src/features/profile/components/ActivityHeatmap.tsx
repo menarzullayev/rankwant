@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Dropdown } from "@/components/ui/Dropdown";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -45,8 +45,31 @@ export function ActivityHeatmap({
     solved: number;
   } | null>(null);
 
+  // The year is 53 columns, 768 px. A phone has room for about twenty,
+  // so the box used to scroll sideways (450 px hidden, measured
+  // 2026-10-06). It now shows the weeks that fit — the latest ones first
+  // — and two buttons move the window. `null`: not measured yet (server
+  // render and first paint), draw the whole year.
+  const box = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState<number | null>(null);
+  const [shift, setShift] = useState(0);
+  useEffect(() => {
+    const element = box.current;
+    if (!element) return;
+    const measure = () => setFit(Math.max(4, Math.floor((element.clientWidth - LEFT) / (CELL + GAP))));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
   async function choose(year: number) {
     setBusy(true);
+    setShift(0);
     try {
       setData(await getJson<Calendar>(`/users/${username}/calendar/?year=${year}`));
     } catch {
@@ -74,6 +97,26 @@ export function ActivityHeatmap({
       name: kit.months[month],
     };
   });
+
+  // The window: `shown` columns ending at the current week (this year)
+  // or at the year's end, moved back by `shift`.
+  const shown = fit === null ? columns : Math.min(fit, columns);
+  const today = new Date();
+  const latest =
+    today.getUTCFullYear() === data.year
+      ? Math.min(
+          columns,
+          Math.floor(
+            (Math.round((Date.UTC(data.year, today.getUTCMonth(), today.getUTCDate()) - first.getTime()) / 86_400_000) +
+              offset) /
+              7,
+          ) + 1,
+        )
+      : columns;
+  const end = Math.max(shown, Math.min(columns, latest - shift));
+  const start = end - shown;
+  const windowed = shown < columns;
+  const visible = (col: number) => col >= start && col < end;
 
   return (
     <div className="space-y-3">
@@ -105,21 +148,26 @@ export function ActivityHeatmap({
         )}
       </div>
       <div
-        className="relative rw-scroll-x"
+        ref={box}
+        // `contain: inline-size`: the box takes the width it is given and
+        // never the width of the drawing inside it. Without it the SVG
+        // widened its own measuring box and the count of weeks that "fit"
+        // was whatever had been drawn last.
+        className="relative w-full overflow-hidden [contain:inline-size]"
         data-tip={busy ? "…" : undefined}
         data-tip-kind={busy ? SKELETON_TIP : undefined}
       >
         <svg
-          width={LEFT + columns * (CELL + GAP)}
+          width={LEFT + shown * (CELL + GAP)}
           height={TOP + 7 * (CELL + GAP)}
           role="img"
           aria-label={t(locale, "profile.heatmapTitle")}
           className={busy ? "opacity-60" : undefined}
         >
-          {months.map((month) => (
+          {months.filter((month) => visible(month.col)).map((month) => (
             <text
               key={month.name + month.col}
-              x={LEFT + month.col * (CELL + GAP)}
+              x={LEFT + (month.col - start) * (CELL + GAP)}
               y={10}
               className="fill-[var(--rw-faint)] text-[10px]"
             >
@@ -136,10 +184,10 @@ export function ActivityHeatmap({
               {kit.weekdays[row]}
             </text>
           ))}
-          {cells.map((cell) => (
+          {cells.filter((cell) => visible(Math.floor(cell.index / 7))).map((cell) => (
             <rect
               key={cell.iso}
-              x={LEFT + Math.floor(cell.index / 7) * (CELL + GAP)}
+              x={LEFT + (Math.floor(cell.index / 7) - start) * (CELL + GAP)}
               y={TOP + (cell.index % 7) * (CELL + GAP)}
               width={CELL}
               height={CELL}
@@ -170,6 +218,26 @@ export function ActivityHeatmap({
           </div>
         ) : null}
       </div>
+      {windowed && (
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            disabled={start === 0}
+            onClick={() => setShift((value) => value + shown)}
+            className="inline-flex min-h-11 items-center rw-radius-sm px-2 text-theme-xs rw-dim rw-hover-bg rw-focus-ring disabled:opacity-40"
+          >
+            {t(locale, "problem.previousPage")}
+          </button>
+          <button
+            type="button"
+            disabled={end >= latest}
+            onClick={() => setShift((value) => Math.max(0, value - shown))}
+            className="inline-flex min-h-11 items-center rw-radius-sm px-2 text-theme-xs rw-dim rw-hover-bg rw-focus-ring disabled:opacity-40"
+          >
+            {t(locale, "problem.nextPage")}
+          </button>
+        </div>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3 text-theme-xs rw-dim">
         <p>
           {fill(t(locale, "profile.streakCurrent"), { n: data.streak.current })} ·{" "}

@@ -454,6 +454,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/AttemptDetail'
           description: ''
+  /api/v1/attempts/answers/:
+    post:
+      operationId: attempts_answers_create
+      description: |-
+        Submit to an `answer` problem: one text file per test, or a zip.
+
+        A separate door from `create`: that one takes source code as JSON,
+        this one takes files. A test left out keeps the solver's last
+        answer for it (`judging/answers.py`).
+      summary: Javob fayllarini yuborish
+      tags:
+      - attempts
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                problem:
+                  type: string
+                contest:
+                  type: string
+                archive:
+                  type: string
+                  format: binary
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+              required:
+              - problem
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attempt'
+          description: ''
   /api/v1/attempts/counts/:
     get:
       operationId: attempts_counts_retrieve
@@ -2684,6 +2727,61 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/me/nav-badges/:
+    get:
+      operationId: me_nav_badges_retrieve
+      description: |-
+        What the side menu marks for the signed-in user (`core.nav_badges`).
+
+        One request for every section: work waiting (`todo`), something
+        running now (`live`), entries published since the section was last
+        opened (`unread`, `new`). A section with nothing to show is absent.
+      summary: Yon menyu belgilari
+      tags:
+      - me
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NavBadges'
+          description: ''
+  /api/v1/me/nav-badges/seen/:
+    post:
+      operationId: me_nav_badges_seen_create
+      description: |-
+        The user opened a section: its `unread` / `new` badge starts over.
+
+        `todo` and `live` badges are not cleared by looking - they follow the
+        work and the clock - so naming one of those sections is a 400.
+      summary: Yon menyu bo'limi ko'rildi
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NavBadgeSeen'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NavBadgeSeen'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NavBadgeSeen'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NavBadges'
+          description: ''
   /api/v1/me/password/:
     post:
       operationId: me_password_create
@@ -4035,6 +4133,36 @@ paths:
             application/json:
               schema:
                 type: object
+          description: ''
+  /api/v1/problems/{slug}/inputs/:
+    get:
+      operationId: problems_inputs_retrieve
+      description: |-
+        Every test input of an `answer` problem, zipped (ADR-0053).
+
+        The inputs are the task itself there: the solver works on them
+        offline and sends back the answers. For every other kind the
+        hidden tests stay hidden, so this answers 404.
+      summary: Javob masalasining kirish fayllari (zip)
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
           description: ''
   /api/v1/problems/{slug}/rate/:
     post:
@@ -14148,6 +14276,39 @@ components:
         * `content` - Kontent
         * `design` - Dizayn
         * `core` - Umumiy
+    NavBadge:
+      type: object
+      description: One side-menu badge. Sections with nothing to show are left out.
+      properties:
+        section:
+          type: string
+        kind:
+          type: string
+          description: todo | live | unread | new
+        count:
+          type: integer
+      required:
+      - count
+      - kind
+      - section
+    NavBadgeSeen:
+      type: object
+      properties:
+        section:
+          type: string
+          maxLength: 24
+      required:
+      - section
+    NavBadges:
+      type: object
+      description: '`/me/nav-badges/` — what the side menu marks for this user.'
+      properties:
+        badges:
+          type: array
+          items:
+            $ref: '#/components/schemas/NavBadge'
+      required:
+      - badges
     Notification:
       type: object
       properties:
@@ -16295,6 +16456,22 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        task_kind:
+          allOf:
+          - $ref: '#/components/schemas/TaskKindEnum'
+          description: |-
+            function: the submission is inserted into the per-language harness.
+
+            * `program` - Whole program
+            * `function` - Function
+            * `answer` - Answer files
+            * `two_pass` - Two passes
+            * `sql` - SQL query
+        manager_source:
+          type: string
+        manager_language:
+          type: string
+          nullable: true
         interactor_source:
           type: string
         interactor_language:
@@ -17342,6 +17519,22 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        task_kind:
+          allOf:
+          - $ref: '#/components/schemas/TaskKindEnum'
+          description: |-
+            function: the submission is inserted into the per-language harness.
+
+            * `program` - Whole program
+            * `function` - Function
+            * `answer` - Answer files
+            * `two_pass` - Two passes
+            * `sql` - SQL query
+        answer_tests:
+          type: array
+          items:
+            type: integer
+          readOnly: true
         source:
           type: string
           maxLength: 100
@@ -17353,6 +17546,7 @@ components:
           - type: string
             maxLength: 0
       required:
+      - answer_tests
       - attachments
       - author
       - difficulty
@@ -17397,9 +17591,12 @@ components:
           type: integer
         code_template:
           type: string
+        harness:
+          type: string
       required:
       - code
       - code_template
+      - harness
       - memory_limit_kb
       - name
       - time_limit_ms
@@ -19106,6 +19303,22 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        task_kind:
+          allOf:
+          - $ref: '#/components/schemas/TaskKindEnum'
+          description: |-
+            function: the submission is inserted into the per-language harness.
+
+            * `program` - Whole program
+            * `function` - Function
+            * `answer` - Answer files
+            * `two_pass` - Two passes
+            * `sql` - SQL query
+        manager_source:
+          type: string
+        manager_language:
+          type: string
+          nullable: true
         interactor_source:
           type: string
         interactor_language:
@@ -20438,6 +20651,20 @@ components:
       - locale
       - title
       - updated_at
+    TaskKindEnum:
+      enum:
+      - program
+      - function
+      - answer
+      - two_pass
+      - sql
+      type: string
+      description: |-
+        * `program` - Whole program
+        * `function` - Function
+        * `answer` - Answer files
+        * `two_pass` - Two passes
+        * `sql` - SQL query
     Team:
       type: object
       properties:

@@ -2,14 +2,47 @@ import type { Metadata } from "next";
 
 import { PersonCard } from "@/components/team/Person";
 import { TeamDirectory } from "@/components/team/TeamDirectory";
+import { TeamHeader } from "@/components/team/TeamHeader";
+import { readTeamView } from "@/components/team/state";
 import type { TeamMember, TeamPayload } from "@/components/team/types";
 import { TEAM_TEXT, pickTeam, type TeamLocale, type TeamText } from "@/content/team";
+import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
+type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+
+/** The page says who it is about when it is shared: its own title, a
+ *  sentence counted from the list, and the founder's photo. It used to
+ *  go out under the site's name and description, pointing at the home page
+ *  (measured 2026-10-06: `og:url` was `https://rankwant.uz`). */
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: t(await getLocale(), "team.title") };
+  const locale = await getLocale();
+  const text = TEAM_TEXT[pickTeam(locale)];
+  const team = await api.team().catch(() => null);
+  const owner = team?.members.find((member) => member.holds_all_roles);
+  const alternates = await localeAlternatesFor("/team");
+  if (!team || !owner) return { title: t(locale, "team.title"), alternates };
+  const roles = String(team.roles.length);
+  const title = text.metaTitle.replace("{roles}", roles);
+  const description = text.metaDescription
+    .replace("{roles}", roles)
+    .replace("{departments}", String(team.departments.length));
+  return {
+    title,
+    description,
+    alternates,
+    openGraph: {
+      title,
+      description,
+      url: alternates.canonical,
+      type: "website",
+      // A page's `openGraph` replaces the layout's, it is not merged.
+      siteName: "RankWant",
+      ...(owner.photo_url ? { images: [{ url: owner.photo_url, alt: owner.name }] } : {}),
+    },
+  };
 }
 
 /** Where a visitor can write. The founder's own Telegram if there is one. */
@@ -57,7 +90,7 @@ function People({
  *  People, departments and titles come from the API and are managed in
  *  `/admin/team`; the page's own sentences are content (`content/team.ts`).
  *  The numbers in the header are counted from what was loaded. */
-export default async function TeamPage() {
+export default async function TeamPage({ searchParams }: Props) {
   const locale = pickTeam(await getLocale());
   const text = TEAM_TEXT[locale];
   // The page must not turn into an error screen because one request failed.
@@ -68,33 +101,16 @@ export default async function TeamPage() {
   const contributors = team?.members.filter((m) => m.section === "contributor") ?? [];
   const roles = owner ? (team?.roles ?? []) : [];
   const stats = [roles.length, team?.departments.length ?? 0, owner ? 1 : 0, 0];
+  const initial = readTeamView(
+    await searchParams,
+    (team?.departments ?? []).map((item) => item.id),
+  );
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <header className="space-y-4">
-        <p className="font-mono text-theme-xs tracking-wide rw-accent-ink uppercase">{text.eyebrow}</p>
-        <h1 className="max-w-[18ch] text-title-md leading-tight font-bold text-balance rw-strong">
-          {text.heading}
-        </h1>
-        <p className="max-w-prose text-theme-base rw-dim">{text.lede}</p>
-        {owner ? (
-          <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {stats.map((value, index) => (
-              <div key={text.stats[index]} className="rw-radius border rw-line rw-surface px-4 py-3">
-                <dd className="text-title-sm leading-tight font-bold rw-strong tabular-nums">{value}</dd>
-                <dt className="text-theme-xs rw-dim">{text.stats[index]}</dt>
-              </div>
-            ))}
-          </dl>
-        ) : null}
-      </header>
-
-      {team === null ? (
-        <p role="status" className="rw-radius border rw-line rw-surface p-5 text-theme-sm rw-dim">
-          {text.unavailable}
-        </p>
-      ) : null}
-
+    // The sentences are Uzbek, Russian or English whatever the site's
+    // language is; saying so keeps a Turkish page from upper-casing an
+    // Uzbek "i" as "İ" (measured 2026-10-06: «RAHBARİYAT»).
+    <div lang={locale} className="mx-auto max-w-6xl space-y-8">
       {owner && team ? (
         <TeamDirectory
           text={text}
@@ -102,7 +118,17 @@ export default async function TeamPage() {
           owner={owner}
           departments={team.departments}
           roles={roles}
+          stats={stats}
+          initial={initial}
         />
+      ) : (
+        <TeamHeader text={text} heading={text.heading} lede={text.lede} stats={null} />
+      )}
+
+      {team === null ? (
+        <p role="status" className="rw-radius border rw-line rw-surface p-5 text-theme-sm rw-dim">
+          {text.unavailable}
+        </p>
       ) : null}
 
       <People title={text.coreTitle} members={core} locale={locale} text={text} />

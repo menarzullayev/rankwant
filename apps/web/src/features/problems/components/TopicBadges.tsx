@@ -30,7 +30,13 @@ export function TopicBadges({
   const rest = topics.length - shown.length;
 
   return (
-    <p data-topics className="mt-0.5 truncate text-theme-xs rw-faint">
+    <p
+      data-topics
+      // In a table cell `truncate` alone cannot shorten anything: the
+      // unbroken line IS the cell's minimum width. The cap gives it one
+      // on a phone (the 320 px archive scrolled 47 px sideways).
+      className="mt-0.5 max-w-[56vw] truncate text-theme-xs rw-faint sm:max-w-none"
+    >
       {shown.join(" · ")}
       {rest > 0 && (
         <span title={topics.slice(VISIBLE).join(", ")}> +{rest}</span>

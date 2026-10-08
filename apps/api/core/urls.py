@@ -97,6 +97,8 @@ urlpatterns = [
         name="password-reset-confirm",
     ),
     path("me/", views.MeView.as_view(), name="me"),
+    path("me/nav-badges/", views.NavBadgesView.as_view(), name="me-nav-badges"),
+    path("me/nav-badges/seen/", views.NavBadgesSeenView.as_view(), name="me-nav-badges-seen"),
     path("me/export/", views.MeExportView.as_view(), name="me-export"),
     path("me/restore/", views.MeRestoreView.as_view(), name="me-restore"),
     path("me/password/", account_views.PasswordChangeView.as_view(), name="me-password"),

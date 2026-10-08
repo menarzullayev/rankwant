@@ -13,7 +13,7 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, API_ONLY, Verdict
-from problems import testgroups
+from problems import sqltasks, taskkinds, testgroups
 from problems.models import Language, Problem, ProblemLanguage, TestCase, Validator
 
 log = logging.getLogger(__name__)
@@ -35,6 +35,13 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
         attempt_id=attempt.pk,
         validate_input=validate_input,
     )
+
+
+def _trusted(lang: Language | None, source: str) -> dict[str, Any] | None:
+    """One of the author's programs as the judge takes it, or `None`."""
+    if lang is None or not source:
+        return None
+    return {**lang.judge_spec(), "source": source}
 
 
 def build_standalone_job(
@@ -63,15 +70,35 @@ def build_standalone_job(
         .order_by("order")
     ]
 
+    task: dict[str, Any] | None = None
+    if problem.task_kind == Problem.TaskKind.ANSWER:
+        # Nothing is compiled or run: each test travels with the file the
+        # solver sent for it, and the checker grades the pair. A test with
+        # no `answer_ref` was not answered and scores zero.
+        from judging.answers import job_answers
+
+        task = {"kind": "answer"}
+        refs = job_answers(attempt_id) if attempt_id else {}
+        for test in tests:
+            if test["index"] in refs:
+                test["answer_ref"] = refs[test["index"]]
+
+    if problem.task_kind == Problem.TaskKind.TWO_PASS:
+        # The same source runs twice per test; the manager turns the output
+        # of the first run into the input of the second. Sent without the
+        # manager when it is missing: the judge refuses that job (IE) rather
+        # than grading one run as if it were the whole task.
+        task = {
+            "kind": "two_pass",
+            "manager": _trusted(problem.manager_language, problem.manager_source),
+        }
+
     subtasks = [
         {"id": st.pk, "points": st.points, "scoring": st.scoring}
         for st in problem.subtasks.order_by("order")
     ]
 
-    def _program(lang: Language | None, source: str) -> dict[str, Any] | None:
-        if lang is None or not source:
-            return None
-        return {**lang.judge_spec(), "source": source}
+    _program = _trusted
 
     checker: dict[str, Any] = {"type": problem.checker_type}
     if problem.checker_type == Problem.Checker.INTERACTIVE:
@@ -107,6 +134,23 @@ def build_standalone_job(
     time_ms = (override.time_limit_ms if override else None) or problem.time_limit_ms
     memory_kb = (override.memory_limit_kb if override else None) or problem.memory_limit_kb
 
+    if problem.task_kind == Problem.TaskKind.FUNCTION:
+        # The solver wrote a function; the judge runs programs. The author's
+        # harness for this language is that program, with the submission in
+        # place of its marker line. Refused loudly when there is none: an
+        # attempt judged without the harness would be a compile error blamed
+        # on the solver.
+        harness = override.harness if override else ""
+        if taskkinds.harness_error(harness):
+            raise ValueError(f"{problem.slug}: no usable harness for language '{language.code}'")
+        source = taskkinds.compose(harness, source)
+
+    if problem.task_kind == Problem.TaskKind.SQL:
+        # The submission is a query, the judge runs programs: the query is
+        # embedded in the runner as a string literal and travels as the
+        # source of an ordinary job in the SQL language.
+        source = sqltasks.compose(source)
+
     io: dict[str, Any] | None = None
     if problem.io_mode == Problem.IoMode.BOTH:
         io = {
@@ -136,6 +180,7 @@ def build_standalone_job(
         validator=validator,
         validate_input=validate_input,
         io=io,
+        task=task,
     )
 
 

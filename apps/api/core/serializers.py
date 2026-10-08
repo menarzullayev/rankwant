@@ -1029,6 +1029,27 @@ class PresenceSerializer(serializers.Serializer[Any]):
     results = PresenceUserSerializer(many=True)
 
 
+class NavBadgeSerializer(serializers.Serializer[Any]):
+    """One side-menu badge. Sections with nothing to show are left out."""
+
+    #: The menu entry's path without the slash: `duels`, `blog`, `problems`.
+    section = serializers.CharField()
+    #: Not a ChoiceField: its enum would take the schema name `KindEnum`
+    #: from an existing component and rename that one.
+    kind = serializers.CharField(help_text="todo | live | unread | new")
+    count = serializers.IntegerField()
+
+
+class NavBadgesSerializer(serializers.Serializer[Any]):
+    """`/me/nav-badges/` — what the side menu marks for this user."""
+
+    badges = NavBadgeSerializer(many=True)
+
+
+class NavBadgeSeenSerializer(serializers.Serializer[Any]):
+    section = serializers.CharField(max_length=24)
+
+
 class SearchHitSerializer(serializers.Serializer[Any]):
     """One search result. Only `type`, `kind`, `key` and `title` are always there."""
 

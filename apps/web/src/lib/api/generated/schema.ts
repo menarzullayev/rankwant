@@ -289,6 +289,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/attempts/answers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Javob fayllarini yuborish
+         * @description Submit to an `answer` problem: one text file per test, or a zip.
+         *
+         *     A separate door from `create`: that one takes source code as JSON,
+         *     this one takes files. A test left out keeps the solver's last
+         *     answer for it (`judging/answers.py`).
+         */
+        post: operations["attempts_answers_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/attempts/counts/": {
         parameters: {
             query?: never;
@@ -1671,6 +1695,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/nav-badges/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Yon menyu belgilari
+         * @description What the side menu marks for the signed-in user (`core.nav_badges`).
+         *
+         *     One request for every section: work waiting (`todo`), something
+         *     running now (`live`), entries published since the section was last
+         *     opened (`unread`, `new`). A section with nothing to show is absent.
+         */
+        get: operations["me_nav_badges_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/nav-badges/seen/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Yon menyu bo'limi ko'rildi
+         * @description The user opened a section: its `unread` / `new` badge starts over.
+         *
+         *     `todo` and `live` badges are not cleared by looking - they follow the
+         *     work and the clock - so naming one of those sections is a 400.
+         */
+        post: operations["me_nav_badges_seen_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/password/": {
         parameters: {
             query?: never;
@@ -2342,6 +2413,30 @@ export interface paths {
          *     Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
          */
         delete: operations["problems_favourite_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/problems/{slug}/inputs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Javob masalasining kirish fayllari (zip)
+         * @description Every test input of an `answer` problem, zipped (ADR-0053).
+         *
+         *     The inputs are the task itself there: the solver works on them
+         *     offline and sends back the answers. For every other kind the
+         *     hidden tests stay hidden, so this answers 404.
+         */
+        get: operations["problems_inputs_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -6468,6 +6563,20 @@ export interface components {
          * @enum {string}
          */
         ModuleEnum: "problems" | "contests" | "arena" | "judge" | "ratings" | "qvant" | "profile" | "classroom" | "quizzes" | "content" | "design" | "core";
+        /** @description One side-menu badge. Sections with nothing to show are left out. */
+        NavBadge: {
+            section: string;
+            /** @description todo | live | unread | new */
+            kind: string;
+            count: number;
+        };
+        NavBadgeSeen: {
+            section: string;
+        };
+        /** @description `/me/nav-badges/` — what the side menu marks for this user. */
+        NavBadges: {
+            badges: components["schemas"]["NavBadge"][];
+        };
         Notification: {
             readonly id: number;
             kind: components["schemas"]["NotificationKindEnum"];
@@ -7710,6 +7819,18 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /**
+             * @description function: the submission is inserted into the per-language harness.
+             *
+             *     * `program` - Whole program
+             *     * `function` - Function
+             *     * `answer` - Answer files
+             *     * `two_pass` - Two passes
+             *     * `sql` - SQL query
+             */
+            task_kind?: components["schemas"]["TaskKindEnum"];
+            manager_source?: string;
+            manager_language?: string | null;
             interactor_source?: string;
             interactor_language?: string | null;
             checker_source?: string;
@@ -8168,6 +8289,17 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /**
+             * @description function: the submission is inserted into the per-language harness.
+             *
+             *     * `program` - Whole program
+             *     * `function` - Function
+             *     * `answer` - Answer files
+             *     * `two_pass` - Two passes
+             *     * `sql` - SQL query
+             */
+            task_kind?: components["schemas"]["TaskKindEnum"];
+            readonly answer_tests: number[];
             source?: string;
             source_url?: string;
         };
@@ -8185,6 +8317,7 @@ export interface components {
             time_limit_ms: number;
             memory_limit_kb: number;
             code_template: string;
+            harness: string;
         };
         ProblemList: {
             slug: string;
@@ -8887,6 +9020,18 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /**
+             * @description function: the submission is inserted into the per-language harness.
+             *
+             *     * `program` - Whole program
+             *     * `function` - Function
+             *     * `answer` - Answer files
+             *     * `two_pass` - Two passes
+             *     * `sql` - SQL query
+             */
+            task_kind?: components["schemas"]["TaskKindEnum"];
+            manager_source?: string;
+            manager_language?: string | null;
             interactor_source?: string;
             interactor_language?: string | null;
             checker_source?: string;
@@ -9400,6 +9545,15 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        /**
+         * @description * `program` - Whole program
+         *     * `function` - Function
+         *     * `answer` - Answer files
+         *     * `two_pass` - Two passes
+         *     * `sql` - SQL query
+         * @enum {string}
+         */
+        TaskKindEnum: "program" | "function" | "answer" | "two_pass" | "sql";
         Team: {
             readonly id: number;
             name: string;
@@ -10119,6 +10273,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AttemptDetail"];
+                };
+            };
+        };
+    };
+    attempts_answers_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    problem: string;
+                    contest?: string;
+                    /** Format: binary */
+                    archive?: string;
+                    files?: string[];
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Attempt"];
                 };
             };
         };
@@ -11974,6 +12157,50 @@ export interface operations {
             };
         };
     };
+    me_nav_badges_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NavBadges"];
+                };
+            };
+        };
+    };
+    me_nav_badges_seen_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NavBadgeSeen"];
+                "application/x-www-form-urlencoded": components["schemas"]["NavBadgeSeen"];
+                "multipart/form-data": components["schemas"]["NavBadgeSeen"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NavBadges"];
+                };
+            };
+        };
+    };
     me_password_create: {
         parameters: {
             query?: never;
@@ -13050,6 +13277,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    problems_inputs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": string;
                 };
             };
         };

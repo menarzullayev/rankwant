@@ -224,6 +224,7 @@ they are what the image is built from, and the lawyer decides.
 | `services/judge-go/Dockerfile` | `debian:trixie-slim` |
 | `services/judge-go/Dockerfile` | `debian:trixie-slim` |
 | `services/judge-go/Dockerfile` | `scratch` |
+| `services/judge-go/Dockerfile` | `${JUDGE_BASE}` |
 | `services/judge-py/Dockerfile` | `debian:bookworm` |
 | `services/judge-py/Dockerfile` | `debian:bookworm-slim` |
 | `tools/runner/Dockerfile` | `ghcr.io/actions/actions-runner:latest` |

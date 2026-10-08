@@ -87,6 +87,8 @@ def submit(r: "redis.Redis", case: dict) -> str:
         # ketadi — shartnomadagi standart qiymatlar.
         "validate_input": case.get("validate_input", False),
         "validator": case.get("validator"),
+        # ADR-0053: what was submitted when it is not a program.
+        "task": case.get("task"),
     }
     r.lpush(JOBS_KEY, json.dumps(job))
     return job_id
@@ -193,6 +195,12 @@ def judge_case(case: dict, res: dict | None, worker: str) -> tuple[str, list[str
             f"submission {len(res['per_test'])} ta testda ishga tushdi — "
             "validatsiya undan OLDIN tugashi shart"
         ]
+    # A scorer's verdict is not the whole answer: PARTIAL with the wrong
+    # number would pass a check on the verdict alone.
+    if "expect_score" in case and want == case["expect_verdict"]:
+        if res.get("score") != case["expect_score"]:
+            return "FAIL", notes + [f"score {res.get('score')}, kutilgan {case['expect_score']}"]
+        notes.append(f"score {res.get('score')}")
     if "expect_failed_test_index" in case and want == case["expect_verdict"]:
         got_index = res.get("failed_test_index")
         if got_index != case["expect_failed_test_index"]:

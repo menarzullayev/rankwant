@@ -6,7 +6,7 @@ from typing import Any
 
 from rest_framework import serializers
 
-from problems import readiness, release, testgroups
+from problems import evaluation, readiness, release, testgroups
 from problems.models import (
     DIFFICULTY_STEP,
     Language,
@@ -58,6 +58,9 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
     checker_language = serializers.SlugRelatedField[Language](
         slug_field="code", queryset=Language.objects.all(), allow_null=True, required=False
     )
+    manager_language = serializers.SlugRelatedField[Language](
+        slug_field="code", queryset=Language.objects.all(), allow_null=True, required=False
+    )
     test_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -79,6 +82,9 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "time_limit_ms",
             "memory_limit_kb",
             "checker_type",
+            "task_kind",
+            "manager_source",
+            "manager_language",
             "interactor_source",
             "interactor_language",
             "checker_source",
@@ -111,6 +117,28 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         javob masala sahifasida ochiq turadi, ya'ni uni bosib chiqargan
         dastur AC oladi. O'lchandi: `3-ta-son` ga `print('3 2 1')` — AC.
         """
+        # An `io_mode` / `checker_type` pair the judge cannot grade is refused
+        # here, when it is typed — not at the first submission. `io_mode` is
+        # not editable through this API, so it is read from the row (a new
+        # problem starts as `stdio`).
+        checker_type = attrs.get(
+            "checker_type", getattr(self.instance, "checker_type", Problem.Checker.STANDARD)
+        )
+        io_mode = getattr(self.instance, "io_mode", Problem.IoMode.STDIO)
+        has_subtasks = self.instance is not None and self.instance.subtasks.exists()
+        task_kind = attrs.get(
+            "task_kind", getattr(self.instance, "task_kind", Problem.TaskKind.PROGRAM)
+        )
+        error = (
+            evaluation.combination_error(io_mode, checker_type)
+            or evaluation.subtask_error(checker_type, has_subtasks)
+            or evaluation.task_kind_error(task_kind, io_mode, checker_type)
+        )
+        if error:
+            raise serializers.ValidationError(
+                {"checker_type": f"{evaluation.EVALUATION_MODE_INVALID}: {error}"}
+            )
+
         ommaviy = attrs.get("is_public", getattr(self.instance, "is_public", False))
         if not ommaviy or self.instance is None:
             # Yangi yozuv qoralama sifatida yaratiladi; ommaviy bo'lishi

@@ -7,8 +7,9 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import mixins, status, viewsets
+from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -19,6 +20,7 @@ from core.pagination import SortableCursorPagination
 from core.permissions import CanSubmit
 from core.throttling import ResilientScopedRateThrottle
 from hacks.services import can_view_source
+from judging import answers
 from judging.models import Attempt, CustomRun
 from judging.serializers import (
     AttemptCreateSerializer,
@@ -279,6 +281,67 @@ class AttemptViewSet(
         )
         # Attempt AVVAL saqlanadi, keyin navbatga — navbat yiqilsa ham
         # submission yo'qolmaydi (10-operations § recovery).
+        enqueue(attempt)
+        return Response(AttemptSerializer(attempt).data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        summary="Javob fayllarini yuborish",
+        request={
+            "multipart/form-data": {
+                "type": "object",
+                "properties": {
+                    "problem": {"type": "string"},
+                    "contest": {"type": "string"},
+                    "archive": {"type": "string", "format": "binary"},
+                    "files": {"type": "array", "items": {"type": "string", "format": "binary"}},
+                },
+                "required": ["problem"],
+            }
+        },
+        responses={201: AttemptSerializer},
+    )
+    @action(detail=False, methods=["post"], url_path="answers", parser_classes=[MultiPartParser])
+    def answer_files(self, request: Request) -> Response:
+        """Submit to an `answer` problem: one text file per test, or a zip.
+
+        A separate door from `create`: that one takes source code as JSON,
+        this one takes files. A test left out keeps the solver's last
+        answer for it (`judging/answers.py`).
+        """
+        form = request.POST
+        serializer = AttemptCreateSerializer(
+            data={
+                "problem": form.get("problem", ""),
+                "language": answers.ANSWER_LANGUAGE,
+                "source_code": "-",
+                **({"contest": form["contest"]} if form.get("contest") else {}),
+            },
+            context={"request": request, "answer_files": True},
+        )
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        problem = Problem.objects.get(slug=data["problem"])
+
+        archive = request.FILES.get("archive")
+        uploads = request.FILES.getlist("files")
+        # Refused by declared size before anything is read into memory.
+        if sum(item.size or 0 for item in [*uploads, *([archive] if archive else [])]) > (
+            answers.MAX_BYTES
+        ):
+            raise serializers.ValidationError(
+                {"files": f"The upload exceeds {answers.MAX_BYTES // 1024 // 1024} MB"}
+            )
+        try:
+            submitted = answers.read_upload(
+                answers.judged_orders(problem),
+                archive.read() if archive else None,
+                [(item.name or "", item.read()) for item in uploads],
+            )
+        except answers.AnswerError as error:
+            raise serializers.ValidationError({"files": str(error)}) from None
+
+        assert isinstance(request.user, User)
+        attempt = answers.submit(request.user, problem, submitted, contest=data.get("contest_obj"))
         enqueue(attempt)
         return Response(AttemptSerializer(attempt).data, status=status.HTTP_201_CREATED)
 

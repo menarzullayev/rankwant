@@ -161,6 +161,33 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		return res
 	}
 
+	// ── Masala turi ─────────────────────────────────────────────────
+	// A kind this judge does not know is refused, not run as a program:
+	// grading an answer archive as source code would blame the solver
+	// with a compile error for the judge being out of date.
+	switch job.Task.Kind {
+	case "":
+	case TaskTwoPass:
+		// A program like any other, run twice per test (twopass.go). What
+		// the judge cannot do with it is refused here, before compiling.
+		if job.Task.Manager == nil || job.Checker.Type == "interactive" ||
+			job.Checker.Type == "scorer" || job.IO.Mode != "" || job.Mode == "custom" {
+			res.Verdict = VIE
+			res.CompileOutput = "a two-pass task needs a manager program, stdin/stdout and a standard or special checker"
+			res.Meta.TotalMS = time.Since(t0).Milliseconds()
+			return res
+		}
+	case TaskAnswer:
+		judgeAnswers(ctx, work, job, tests, emit, res)
+		res.Meta.TotalMS = time.Since(t0).Milliseconds()
+		return res
+	default:
+		res.Verdict = VIE
+		res.CompileOutput = "unsupported task kind: " + job.Task.Kind
+		res.Meta.TotalMS = time.Since(t0).Milliseconds()
+		return res
+	}
+
 	setupStart := time.Now()
 	src, err := sourceName(job.Language.Code, job.Language.SourceFile)
 	if err != nil {
@@ -277,6 +304,16 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		}
 	}
 
+	var managerCmd []string
+	if job.Task.Kind == TaskTwoPass {
+		var err error
+		if managerCmd, err = prepareTrusted(ctx, work, job.Task.Manager, "manager"); err != nil {
+			res.Verdict = VCheckerErr
+			res.CompileOutput = err.Error()
+			return res
+		}
+	}
+
 	// `scorer` da har test o'z bahosini beradi, o'rtachasi olinadi.
 	scoreSum := 0
 
@@ -295,12 +332,24 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 			worst = VIE
 			break
 		}
-		out, err := sandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)
+		var out *runOutcome
+		var err error
+		// A two-pass test may be decided before there is an answer to
+		// classify: run 1 failed, or the manager rejected its message.
+		decided := ""
+		if job.Task.Kind == TaskTwoPass {
+			out, decided, err = twoPass(ctx, work, runCmd, managerCmd, test, job.Limits, wallLimit)
+		} else {
+			out, err = sandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)
+		}
 		if err != nil {
 			worst = VIE
 			break
 		}
-		v := classifyAnswer(out, test, job.Limits, work, job.IO)
+		v := decided
+		if v == "" {
+			v = classifyAnswer(out, test, job.Limits, work, job.IO)
+		}
 
 		// ⚠️ `RE_SIGNAL` — kam uchraydigan va tushunarsiz holat: dastur
 		// kutilmaganda signal bilan o'ladi. 2026-09-17 da `04-idleness`
@@ -318,7 +367,7 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		}
 		// Chiqish to'g'ri kelgan bo'lsa (dastur normal tugadi), yakuniy
 		// so'z checkerniki: tenglik solishtiruvi maxsus masalada noto'g'ri.
-		if useChecker && (v == VAC || v == VWA) {
+		if useChecker && decided == "" && checkerDecides(v) {
 			cv, err := runChecker(ctx, work, checkerCmd, job.Checker.Type,
 				test.Input, out.Stdout, test.Expected)
 			if err != nil {
@@ -372,6 +421,7 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		// Mutlaq ball: testlar bo'yicha o'rtacha. Boshqalarning yechimiga
 		// bog'liq emas, ya'ni qayta hisoblash zanjiri yo'q.
 		res.Score = scoreSum / len(job.Tests)
+		worst = scorerVerdict(worst, res.Score)
 	} else {
 		res.Score = score(job, passed, byGroup, failedGroup)
 	}
@@ -385,6 +435,37 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 	res.Verdict = worst
 	res.Meta.TotalMS = time.Since(t0).Milliseconds()
 	return res
+}
+
+// checkerDecides — with an external checker, which pre-verdicts go to it.
+//
+// `classify` compares the output with the jury's answer; on a `special` or
+// `scorer` problem that comparison is only a way to know the program ran
+// to the end, and the checker has the last word. `PE` belongs here too:
+// it means "the same tokens, laid out differently", and until 2026-10-07
+// it was returned as it stood, so a correct answer printed one number per
+// line instead of space-separated was rejected without the checker ever
+// seeing it. Resource and runtime verdicts (TLE, MLE, RE…) are not the
+// checker's business.
+func checkerDecides(v string) bool {
+	return v == VAC || v == VWA || v == VPE
+}
+
+// scorerVerdict — the verdict of a `scorer` run whose tests all returned
+// a positive score.
+//
+// A scorer grades quality from 0 to 100, and every test with a positive
+// score is "AC" on its own. Left at that, a solution scoring 30 on every
+// test came back `AC` with score 30 — and `AC` is what the platform counts
+// as solved. `AC` now means the full score; anything between is `PARTIAL`.
+func scorerVerdict(worst string, score int) string {
+	if worst != VAC || score >= 100 {
+		return worst
+	}
+	if score > 0 {
+		return VPartial
+	}
+	return VWA
 }
 
 // classify — bitta test natijasini verdictga aylantiradi.

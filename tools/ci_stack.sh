@@ -21,6 +21,15 @@
 # Usage:
 #   bash tools/ci_stack.sh              # pull / tag or build, then up
 #   bash tools/ci_stack.sh --push-only  # push local images to GHCR
+#
+# The judge image is two images (see services/judge-go/Dockerfile):
+# `ci-judge-base` (toolchains; hash = the Dockerfile) and `ci-judge` (base
+# plus the worker binary; hash = the whole directory). A Go change rebuilds
+# only the second, on top of the pulled base.
+#
+# Only ONE Nightly job pushes (`images`). Every job still builds what the
+# registry does not have yet, so no job waits for another; before, five
+# jobs each pushed the same multi-GB image.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -99,51 +108,70 @@ push_one() {
   local local_tag="${project}-${name}"
   local remote
   remote="$(remote_for "$name")"
+  # An image that was pulled and reused IS the remote one: nothing to send.
+  if [ "$(docker image inspect -f '{{.Id}}' "$remote" 2>/dev/null)" = \
+       "$(docker image inspect -f '{{.Id}}' "$local_tag")" ]; then
+    echo "--> $remote is current"
+    return 0
+  fi
   docker tag "$local_tag" "$remote"
   docker push "$remote"
 }
 
-# Pull GHCR `:main`. Tag it locally when the context hash matches.
-# Otherwise rebuild with `--cache-from` (still no `type=gha`).
-resolve_one() {
+# The base exists locally only when this run had to pull or build it, that
+# is, when the judge image was rebuilt. Otherwise there is nothing to push.
+push_judge() {
+  if docker image inspect "${project}-judge-base" >/dev/null 2>&1; then
+    push_one judge-base
+  fi
+  push_one judge
+}
+
+# Pull GHCR `:main` and tag it locally when the context hash matches.
+# Returns 1 when the image has to be built (absent, or built from other files).
+reuse_remote() {
+  local name="$1"
+  local hash="$2"
+  local remote remote_hash
+  remote="$(remote_for "$name")"
+  if ! docker pull "$remote"; then
+    echo "--> cold build $name (no $remote)"
+    return 1
+  fi
+  remote_hash="$(image_context_hash "$remote")"
+  if [ -n "$remote_hash" ] && [ "$remote_hash" = "$hash" ]; then
+    echo "--> reuse $remote (context $hash)"
+    docker tag "$remote" "${project}-${name}"
+    return 0
+  fi
+  echo "--> rebuild $name (GHCR hash=${remote_hash:-none} local=$hash)"
+  return 1
+}
+
+# Build one image; a pulled `:main` is offered as layer cache (no `type=gha`).
+build_one() {
   local name="$1"
   local context="$2"
   local hash="$3"
   shift 3
-  local local_tag="${project}-${name}"
   local remote
   remote="$(remote_for "$name")"
-  local -a extra=("$@")
-  local pulled=0
-  local remote_hash=""
-
-  if docker pull "$remote"; then
-    pulled=1
-    remote_hash="$(image_context_hash "$remote")"
-    if [ -n "$remote_hash" ] && [ "$remote_hash" = "$hash" ]; then
-      echo "--> reuse $remote (context $hash)"
-      docker tag "$remote" "$local_tag"
-      return 0
-    fi
-    echo "--> rebuild $name (GHCR hash=${remote_hash:-none} local=$hash)"
-  else
-    echo "--> cold build $name (no $remote)"
-  fi
-
   local -a cache=()
-  if [ "$pulled" = "1" ]; then
+  if docker image inspect "$remote" >/dev/null 2>&1; then
     cache+=(--cache-from "$remote")
   fi
 
-  docker build \
-    --build-arg BUILDKIT_INLINE_CACHE=1 \
-    --build-arg GIT_SHA="$sha" \
-    --build-arg BUILT_AT="$built_at" \
-    --label "org.rankwant.context-hash=${hash}" \
-    "${cache[@]}" \
-    "${extra[@]}" \
-    -t "$local_tag" \
-    "$context"
+  docker build     --build-arg BUILDKIT_INLINE_CACHE=1     --build-arg GIT_SHA="$sha"     --build-arg BUILT_AT="$built_at"     --label "org.rankwant.context-hash=${hash}"     "${cache[@]}"     "$@"     -t "${project}-${name}"     "$context"
+}
+
+resolve_one() {
+  local name="$1"
+  local context="$2"
+  local hash="$3"
+  if reuse_remote "$name" "$hash"; then
+    return 0
+  fi
+  build_one "$@"
 }
 
 build_wanted() {
@@ -183,7 +211,16 @@ build_wanted() {
       ;;
     judge)
       hash="$(context_hash services/judge-go)"
-      resolve_one judge services/judge-go "$hash"
+      if reuse_remote judge "$hash"; then
+        return 0
+      fi
+      # The binary changed, the toolchains most likely did not. The base
+      # shares its one big layer with the judge image pulled a moment ago,
+      # so this pull moves almost nothing.
+      local base_hash
+      base_hash="$(context_hash services/judge-go/Dockerfile)"
+      resolve_one judge-base services/judge-go "$base_hash" --target base
+      build_one judge services/judge-go "$hash"         --build-arg "JUDGE_BASE=${project}-judge-base"
       ;;
     *)
       echo "unknown CI_STACK_SERVICES entry: $name" >&2
@@ -207,7 +244,11 @@ ghcr_login
 if [ "$mode" = "--push-only" ]; then
   pids=()
   while IFS= read -r name; do
-    push_one "$name" &
+    if [ "$name" = "judge" ]; then
+      push_judge &
+    else
+      push_one "$name" &
+    fi
     pids+=("$!")
   done < <(wanted_names)
   wait_all "${pids[@]}"

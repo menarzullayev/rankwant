@@ -3538,6 +3538,106 @@ def neg_decisions_public_stack_falls_back() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_team_roles_dropped_from_page() -> tuple[bool, str]:
+    """The folded roles are cut out of the page instead of hidden."""
+    return _decision_broken(
+        "apps/web/src/components/team/TeamDirectory.tsx",
+        'if (!whole && index >= FIRST_WIDE) fold = "hidden";',
+        "if (!whole && index >= FIRST_WIDE) return null;",
+        "ro'yxat qisqartirilmagan yoki yashirin lavozimlar",
+    )
+
+
+def neg_decisions_team_card_heading_is_the_name() -> tuple[bool, str]:
+    """Every card is headed by the same name again."""
+    return _decision_broken(
+        "apps/web/src/components/team/TeamDirectory.tsx",
+        '{localized(role, "title", locale)}\n                          </h2>',
+        "{owner.name}\n                          </h2>",
+        "karta sarlavhasi lavozim emas",
+    )
+
+
+def neg_decisions_team_toolbar_sticks() -> tuple[bool, str]:
+    """The toolbar is pinned and covers the serious card again."""
+    return _decision_broken(
+        "apps/web/src/components/team/TeamDirectory.tsx",
+        '<div className="flex flex-wrap items-end gap-2 lg:items-center">',
+        '<div className="sticky top-16 flex flex-wrap items-end gap-2 lg:items-center">',
+        "boshqaruv paneli yana yopishqoq",
+    )
+
+
+def neg_decisions_team_text_language_unsaid() -> tuple[bool, str]:
+    """The page stops saying which language its sentences are in."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/team/page.tsx",
+        "<div lang={locale} ",
+        "<div ",
+        "matn tili aytilmagan",
+    )
+
+
+def neg_decisions_team_shared_as_the_home_page() -> tuple[bool, str]:
+    """A shared link no longer names the page it came from."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/team/page.tsx",
+        "      url: alternates.canonical,\n",
+        "",
+        "sahifa o'z manzilini aytmaydi",
+    )
+
+
+def neg_decisions_about_opens_on_the_first_language() -> tuple[bool, str]:
+    """The sample opens on whatever sorts first, which is Ada."""
+    return _decision_broken(
+        "apps/web/src/features/about/components/LanguageGuide.tsx",
+        "useState(() => defaultLanguage(sorted))",
+        'useState(() => sorted[0]?.code ?? "")',
+        "namuna alifbo bo'yicha birinchi tilda ochiladi",
+    )
+
+
+def neg_decisions_about_languages_are_tabs_again() -> tuple[bool, str]:
+    """The picker goes back to roles a keyboard cannot move through."""
+    return _decision_broken(
+        "apps/web/src/features/about/components/LanguageGuide.tsx",
+        "              aria-pressed={language.code === current.code}\n",
+        '              role="tab"\n              tabIndex={-1}\n',
+        "klaviatura bilan boshqa tilga o'tib bo'lmaydi",
+    )
+
+
+def neg_decisions_about_closed_verdicts_leave_the_page() -> tuple[bool, str]:
+    """A closed code is no longer in the document at all."""
+    return _decision_broken(
+        "apps/web/src/features/about/components/VerdictGuide.tsx",
+        '<details className="group">',
+        '<div className="group">',
+        "yopiq kodlar sahifadan chiqarilgan",
+    )
+
+
+def neg_decisions_about_anchor_renamed() -> tuple[bool, str]:
+    """A shared link to a section stops landing on it."""
+    return _decision_broken(
+        "apps/web/src/features/about/sections.ts",
+        '{ id: "verdicts", ',
+        '{ id: "holatlar", ',
+        "`#verdicts` langari o'zgargan",
+    )
+
+
+def neg_decisions_about_shared_as_the_home_page() -> tuple[bool, str]:
+    """A shared link no longer names the page it came from."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/about/page.tsx",
+        "      url: alternates.canonical,\n",
+        "",
+        "sahifa o'z manzilini aytmaydi",
+    )
+
+
 def neg_decisions_team_page_shows_drafts() -> tuple[bool, str]:
     """The public team page hands out unpublished members."""
     return _decision_broken(
@@ -3822,6 +3922,16 @@ def neg_scroll_utility_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_scroll_table_columns_out_of_step() -> tuple[bool, str]:
+    """A cell goes back to following the window while its header follows the table."""
+    return _scroll_broken(
+        "apps/web/src/app/(site)/problems/page.tsx",
+        'className="hidden rw-faint tabular-nums @xl:table-cell"',
+        'className="hidden rw-faint tabular-nums lg:table-cell"',
+        "table columns follow two rules at once",
+    )
+
+
 def neg_decisions_scroll_gate_unwired() -> tuple[bool, str]:
     """The scroll check no longer runs in CI."""
     return _decision_broken(
@@ -3836,8 +3946,8 @@ def neg_decisions_table_not_keyboard_scrollable() -> tuple[bool, str]:
     """The table box loses its tab stop."""
     return _decision_broken(
         "apps/web/src/components/ui/Table.tsx",
-        "    <div tabIndex={0} className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n",
-        "    <div className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n",
+        "    <div tabIndex={0} className=\"@container min-w-0 rw-scroll-x rw-focus-ring\">\n",
+        "    <div className=\"@container min-w-0 rw-scroll-x rw-focus-ring\">\n",
         "tab to'xtash joyi yo'q",
     )
 
@@ -3859,6 +3969,420 @@ def neg_decisions_not_found_unstyled() -> tuple[bool, str]:
         "import \"./globals.css\";\n",
         "",
         "uslub faylisiz chiziladi",
+    )
+
+
+def neg_decisions_side_menu_stops_adapting() -> tuple[bool, str]:
+    """The menu no longer reads the height of the screen."""
+    return _decision_broken(
+        "apps/web/src/app/theme.css",
+        "--rw-nav-spare: calc(100vh - 45.125rem);",
+        "--rw-nav-spare: 0rem;",
+        "ekran balandligiga moslashmaydi",
+    )
+
+
+def neg_decisions_side_menu_sections_collapse() -> tuple[bool, str]:
+    """Sections start 4 px apart again instead of 10."""
+    return _decision_broken(
+        "apps/web/src/app/theme.css",
+        "0.625rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem)",
+        "0.25rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem)",
+        "bo'limlar orasi 10 px dan boshlanmaydi",
+    )
+
+
+def neg_decisions_nav_badges_not_discovered() -> tuple[bool, str]:
+    """The apps' badge modules are never imported: every badge is silently gone."""
+    return _decision_broken(
+        "apps/api/core/apps.py",
+        'autodiscover_modules("nav_badges")',
+        "pass",
+        "belgilar bo'sh chiqadi",
+    )
+
+
+def neg_decisions_nav_badges_no_floor() -> tuple[bool, str]:
+    """An account from last year sees everything ever published as new."""
+    return _decision_broken(
+        "apps/api/core/nav_badges.py",
+        "floor = max(EPOCH, user.date_joined)",
+        "floor = user.date_joined",
+        "boshlang'ich nuqta yo'q",
+    )
+
+
+def neg_decisions_nav_badges_asked_for_a_guest() -> tuple[bool, str]:
+    """The provider requests badges before it knows there is a user."""
+    return _decision_broken(
+        "apps/web/src/context/NavBadgesContext.tsx",
+        "    if (!signedIn) return;\n    const section = sectionOf(pathname);",
+        "    const section = sectionOf(pathname);",
+        "mehmon uchun ham so'rov ketadi",
+    )
+
+
+def neg_decisions_nav_badge_todo_cleared_by_a_visit() -> tuple[bool, str]:
+    """An invitation stops being marked because its page was opened."""
+    return _decision_broken(
+        "apps/web/src/lib/nav-badges.ts",
+        'new Set([\n  "blog",\n',
+        'new Set([\n  "blog",\n  "duels",\n',
+        "`duels` belgisi bo'limni ochish bilan o'chadi",
+    )
+
+
+def neg_decisions_nav_badge_not_spoken() -> tuple[bool, str]:
+    """The chip is a number or a dot and nothing says what it means."""
+    return _decision_broken(
+        "apps/web/src/layout/AppSidebar.tsx",
+        '{said && <span className="sr-only">{said}</span>}',
+        "",
+        "belgi ekran o'quvchiga aytilmaydi",
+    )
+
+
+def neg_decisions_checker_never_sees_a_format_difference() -> tuple[bool, str]:
+    """A `PE` pre-verdict stops before the special checker again."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "	return v == VAC || v == VWA || v == VPE\n",
+        "	return v == VAC || v == VWA\n",
+        "`PE` dastlabki verdikti checker'ga yetmaydi",
+    )
+
+
+def neg_decisions_scorer_score_is_not_a_verdict() -> tuple[bool, str]:
+    """A scorer solution below 100 is accepted again."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "		worst = scorerVerdict(worst, res.Score)\n",
+        "",
+        "scorer balli verdiktga aylanmaydi",
+    )
+
+
+def neg_decisions_rejected_solution_left_running() -> tuple[bool, str]:
+    """The judge no longer stops a solution its interactor rejected."""
+    return _decision_broken(
+        "services/judge-go/interactive.go",
+        "			cancel()\n",
+        "",
+        "rad etilgan yechim to'xtatilmaydi",
+    )
+
+
+def neg_decisions_evaluation_gate_dropped() -> tuple[bool, str]:
+    """The release pipeline stops checking the evaluation mode."""
+    return _decision_broken(
+        "apps/api/problems/release.py",
+        "    evaluation_gate,\n",
+        "",
+        "tekshiruv turi darvozasi nashr zanjirida yo'q",
+    )
+
+
+def neg_decisions_invalid_combination_can_be_saved() -> tuple[bool, str]:
+    """The staff API accepts a checker on a file-I/O problem again."""
+    return _decision_broken(
+        "apps/api/problems/staff_serializers.py",
+        "evaluation.combination_error(io_mode, checker_type)",
+        "None",
+        "saqlashda rad etilmaydi",
+    )
+
+
+def neg_decisions_evaluation_paths_leave_nightly() -> tuple[bool, str]:
+    """The reference problems are no longer judged for real."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "            --profile evaluation run --rm evaluation\n",
+        "            --profile latency run --rm latency\n",
+        "tekshiruv yo'llari haqiqiy judge'da yurmaydi",
+    )
+
+
+def neg_decisions_function_solution_not_composed() -> tuple[bool, str]:
+    """A function submission goes to the judge without its harness."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        "        source = taskkinds.compose(harness, source)\n",
+        "",
+        "hakam dasturiga qo'yilmaydi",
+    )
+
+
+def neg_decisions_function_language_without_harness() -> tuple[bool, str]:
+    """A function problem accepts a language that has no harness."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        '            rows = rows.exclude(harness="")\n',
+        "",
+        "hakam dasturi yo'q tilda yuborish qabul qilinadi",
+    )
+
+
+def neg_decisions_function_problem_released_without_harness() -> tuple[bool, str]:
+    """The release gate stops looking at the harnesses."""
+    return _decision_broken(
+        "apps/api/problems/evaluation.py",
+        "        or harnesses_error(problem)\n",
+        "",
+        "hakam dasturisiz funksiya masalasi",
+    )
+
+
+def neg_decisions_function_reference_dropped() -> tuple[bool, str]:
+    """The function reference problem leaves the end-to-end table."""
+    return _decision_broken(
+        "apps/api/problems/reference_problems.py",
+        "(PAIR, GUESS, COINS, MAXPAIR",
+        "(PAIR, GUESS, COINS",
+        "etalon masalasi ro'yxatda yo'q",
+    )
+
+
+def neg_decisions_answer_job_runs_as_a_program() -> tuple[bool, str]:
+    """The judge stops telling an answer job from a program."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "\tcase TaskAnswer:\n\t\tjudgeAnswers(ctx, work, job, tests, emit, res)\n",
+        "\tcase TaskAnswer:\n",
+        "javob fayllari kompilyatsiya qilinadi",
+    )
+
+
+def neg_decisions_unknown_task_kind_is_run() -> tuple[bool, str]:
+    """A task kind the judge does not know is no longer refused."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        '\t\tres.CompileOutput = "unsupported task kind: " + job.Task.Kind\n',
+        "",
+        "notanish `task.kind` rad etilmaydi",
+    )
+
+
+def neg_decisions_answer_job_without_task() -> tuple[bool, str]:
+    """The API sends an answer job without saying what it is."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        '        task = {"kind": "answer"}\n',
+        "        task = None\n",
+        "judge uni dastur deb o'qiydi",
+    )
+
+
+def neg_decisions_answer_doors_mix() -> tuple[bool, str]:
+    """Source code is accepted for an answer problem, or files elsewhere."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        '        if takes_files != bool(self.context.get("answer_files")):\n',
+        "        if False:\n",
+        "eshiklari aralashadi",
+    )
+
+
+def neg_decisions_answer_zip_unbounded() -> tuple[bool, str]:
+    """An archive is unpacked without looking at its unpacked size."""
+    return _decision_broken(
+        "apps/api/judging/answers.py",
+        "        if sum(info.file_size for info in entries) > MAX_BYTES:\n",
+        "        if False:\n",
+        "zip ochilgan hajmi bo'yicha cheklanmaydi",
+    )
+
+
+def neg_decisions_two_pass_runs_share_a_directory() -> tuple[bool, str]:
+    """Both runs of a two-pass test use the work directory itself."""
+    return _decision_broken(
+        "services/judge-go/twopass.go",
+        "\t\tdir, err := cloneForRun(work)\n",
+        "\t\tdir, err := work, error(nil)\n",
+        "birinchisi qoldirgan fayl ikkinchisiga yetadi",
+    )
+
+
+def neg_decisions_two_pass_runs_once() -> tuple[bool, str]:
+    """A two-pass job is run like any program: once."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "\t\t\tout, decided, err = twoPass(ctx, work, runCmd, managerCmd, test, job.Limits, wallLimit)\n",
+        "\t\t\tout, err = sandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)\n",
+        "bir marta yuritiladi",
+    )
+
+
+def neg_decisions_two_pass_job_without_task() -> tuple[bool, str]:
+    """The API sends a two-pass job as a plain program."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        '            "kind": "two_pass",\n',
+        '            "kind": "",\n',
+        "dastur bir marta yuradi",
+    )
+
+
+def neg_decisions_two_pass_released_without_manager() -> tuple[bool, str]:
+    """The release gate stops asking for the manager."""
+    return _decision_broken(
+        "apps/api/problems/evaluation.py",
+        "        or two_pass_error(problem)\n",
+        "",
+        "manager'siz ikki bosqichli masala",
+    )
+
+
+def neg_decisions_editor_sheet_under_side_menu() -> tuple[bool, str]:
+    """The editor sheet starts at the window's edge again, under the side menu."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/ProblemWorkspace.tsx",
+        " lg:left-[var(--rw-shell-inset,0px)]",
+        "",
+        "yon menyu ostida boshlanadi",
+    )
+
+
+def neg_decisions_shell_inset_ignores_side_menu() -> tuple[bool, str]:
+    """The shell reports no inset although the side menu is on screen."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        '[SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px"',
+        '[SHELL_INSET]: "0px"',
+        "yon menyu holatiga",
+    )
+
+
+def neg_decisions_judge_binary_in_toolchain_layer() -> tuple[bool, str]:
+    """The worker binary goes back into the flattened toolchain layer."""
+    return _decision_broken(
+        "services/judge-go/Dockerfile",
+        "COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail\n",
+        "COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail\n"
+        "COPY --from=go-build /out/judge-go /usr/local/bin/judge-go\n",
+        "toolchain qatlami ichida",
+    )
+
+
+def neg_decisions_judge_built_without_base() -> tuple[bool, str]:
+    """CI builds the judge image whole again."""
+    return _decision_broken(
+        "tools/ci_stack.sh",
+        'resolve_one judge-base services/judge-go "$base_hash" --target base\n',
+        'resolve_one judge-base services/judge-go "$base_hash"\n',
+        "base ustiga qurmaydi",
+    )
+
+
+def neg_decisions_second_job_pushes_images() -> tuple[bool, str]:
+    """A second Nightly job uploads the image cache."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "      - name: k6 — bounded load\n",
+        "      - name: Push image cache\n"
+        "        run: bash tools/ci_stack.sh --push-only\n"
+        "      - name: k6 — bounded load\n",
+        "faqat `images` job'i",
+    )
+
+
+def neg_decisions_coverage_shard_count_drifts() -> tuple[bool, str]:
+    """The matrix gets a fourth shard the script calls do not know about."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        shard: [1, 2, 3]\n",
+        "        shard: [1, 2, 3, 4]\n",
+        "shardlar to'liqligini tekshirmaydi",
+    )
+
+
+def neg_decisions_shard_left_empty() -> tuple[bool, str]:
+    """More shards than test files: a shard that runs nothing passes green."""
+    import importlib.util
+    import tempfile
+
+    spec = importlib.util.spec_from_file_location("pytest_shard", ROOT / "tools/pytest_shard.py")
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    with tempfile.TemporaryDirectory() as tmp:
+        tests = Path(tmp)
+        (tests / "test_only.py").write_text("def test_x():\n    pass\n", encoding="utf-8")
+        whole = module.check(1, tests)
+        split = module.check(2, tests)
+    if whole:
+        return False, f"bitta shard ham rad etildi: {whole}"
+    if not any("is empty" in problem for problem in split):
+        return False, f"bo'sh shard tutilmadi: {split}"
+    return True, "bo'sh shard rad etildi"
+
+
+def neg_decisions_sql_query_pasted_raw() -> tuple[bool, str]:
+    """The query is pasted into the runner as code, not as a string literal."""
+    return _decision_broken(
+        "apps/api/problems/sqltasks.py",
+        '        _RUNNER.replace("__QUERY__", repr(query))\n',
+        '        _RUNNER.replace("__QUERY__", \'"""\' + query + \'"""\')\n',
+        "`repr` siz joylanadi",
+    )
+
+
+def neg_decisions_sql_authorizer_removed() -> tuple[bool, str]:
+    """The runner lets the query do more than read."""
+    return _decision_broken(
+        "apps/api/problems/sqltasks.py",
+        "db.set_authorizer(lambda action, *_: sqlite3.SQLITE_OK if action in READS else sqlite3.SQLITE_DENY)\n",
+        "",
+        "authorizer yo'q",
+    )
+
+
+def neg_decisions_sql_query_sent_raw() -> tuple[bool, str]:
+    """The query goes to the judge without its runner."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        "        source = sqltasks.compose(source)\n",
+        "",
+        "xom holda ketadi",
+    )
+
+
+def neg_decisions_sql_language_everywhere() -> tuple[bool, str]:
+    """The SQL language is accepted on any problem."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        '        if is_sql != (attrs["language"] == SQL_LANGUAGE):\n',
+        "        if False:\n",
+        "SQL tili boshqa masalada",
+    )
+
+
+def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
+    """The date helpers format in the zone of whatever machine renders."""
+    return _decision_broken(
+        "packages/shared/src/i18n/core.ts",
+        "  return { timeZone: DISPLAY_TIME_ZONE, ...options };\n",
+        "  return { ...options };\n",
+        "sana yordamchilari zonasiz",
+    )
+
+
+def neg_decisions_attempt_date_in_viewer_locale() -> tuple[bool, str]:
+    """The attempts table formats its date in the viewer's locale again."""
+    return _decision_broken(
+        "apps/web/src/features/submissions/components/AttemptTable.tsx",
+        "                  {numericStamp(row.created_at)}",
+        "                  {new Date(row.created_at).toLocaleString(locale)}",
+        "server va brauzer ICU'si har xil chizadi",
+    )
+
+
+def neg_decisions_one_date_helper_skips_the_zone() -> tuple[bool, str]:
+    """One of the three helpers goes back to raw options."""
+    return _decision_broken(
+        "packages/shared/src/i18n/core.ts",
+        "toLocaleTimeString(intlLocale(locale), zoned(options))",
+        "toLocaleTimeString(intlLocale(locale), options)",
+        "hammasi `zoned()` dan o'tmaydi",
     )
 
 
@@ -5277,6 +5801,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/layout/AppHeader.tsx",
     "apps/web/src/layout/AppShell.tsx",
     "apps/web/src/context/SidebarContext.tsx",
+    # Editor sheet clears the side menu (2026-10-07): the sheet that reads
+    # the inset `AppShell.tsx` publishes.
+    "apps/web/src/features/problems/components/ProblemWorkspace.tsx",
     # KPI grid 4-up from `lg` (2026-09-18): the card whose value steps down
     # while the columns are narrow. Without it the sandbox copy cannot be
     # read and the check exits 2 instead of testing anything.
@@ -5429,6 +5956,13 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/SampleTests.tsx",
     "apps/api/core/management/commands/seed_demo.py",
     "tools/ci.Dockerfile.dockerignore",
+    # Attempt dates (2026-10-06).
+    "apps/web/src/features/submissions/components/AttemptTable.tsx",
+    # Side-menu badges (2026-10-06).
+    "apps/api/core/nav_badges.py",
+    "apps/api/core/apps.py",
+    "apps/web/src/context/NavBadgesContext.tsx",
+    "apps/web/src/lib/nav-badges.ts",
     # Scroll (2026-10-06).
     "apps/web/src/components/ui/Table.tsx",
     "apps/web/src/features/submissions/components/AttemptFilters.tsx",
@@ -5526,6 +6060,25 @@ _DECISIONS_SANDBOX_FILES = (
     # Boundary record (2026-09-21): the `adminer` rule reads § 6 to prove the
     # divergence got a dated resolution rather than a silent deletion.
     "docs/research/2026-09-21-security-boundary/README.md",
+    "apps/web/src/components/team/TeamDirectory.tsx",
+    "apps/web/src/features/about/components/LanguageGuide.tsx",
+    "apps/web/src/features/about/components/VerdictGuide.tsx",
+    "apps/web/src/features/about/components/GuideSection.tsx",
+    "apps/web/src/features/about/sections.ts",
+    "apps/web/src/app/(site)/about/page.tsx",
+    "services/judge-go/judge.go",
+    "services/judge-go/interactive.go",
+    "apps/api/problems/release.py",
+    "apps/api/problems/staff_serializers.py",
+    "apps/api/judging/services.py",
+    "apps/api/problems/evaluation.py",
+    "apps/api/problems/reference_problems.py",
+    "apps/api/judging/answers.py",
+    "services/judge-go/twopass.go",
+    "services/bakeoff/cases/32-two-pass-no-carry.json",
+    "apps/api/problems/sqltasks.py",
+    "services/judge-go/Dockerfile",
+    "tools/ci_stack.sh",
 )
 
 
@@ -5886,8 +6439,28 @@ def neg_decisions_footer_single_column() -> tuple[bool, str]:
     # brand block — the 3-column structure the owner chose is gone.
     return _decision_broken(
         _FOOTER,
-        "lg:grid-cols-[1fr_auto_auto]",
+        "lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]",
         "lg:grid-cols-1",
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_wordmark_copied() -> tuple[bool, str]:
+    # The footer draws its own wordmark again instead of the single source.
+    return _decision_broken(
+        _FOOTER,
+        '<BrandMark variant="full" className={BRAND} />',
+        '<p className="text-lg font-bold">RankWant</p>',
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_links_too_small_to_tap() -> tuple[bool, str]:
+    # The 44 px row under a finger goes away: ten untappable links again.
+    return _decision_broken(
+        _FOOTER,
+        " [@media(pointer:coarse)]:min-h-11",
+        "",
         _BRAND_RULE,
     )
 
@@ -5897,9 +6470,9 @@ def neg_decisions_footer_privacy_link_lost() -> tuple[bool, str]:
     # reachable from the footer (ADR-0016), so the legal row is load-bearing.
     return _decision_broken(
         _FOOTER,
-        '        <IntentLink href="/privacy" className="rw-focus-ring hover:underline">\n'
-        '          {t(locale, "footer.privacy")}\n'
-        "        </IntentLink>\n",
+        '              <IntentLink href="/privacy" className={LINK}>\n'
+        '                {t(locale, "footer.privacy")}\n'
+        "              </IntentLink>\n",
         "",
         _BRAND_RULE,
     )
@@ -8622,6 +9195,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qo'lda sahifa qulfi tutilsin", neg_scroll_body_locked_by_hand),
             ("qo'lda scrollIntoView tutilsin", neg_scroll_into_view_by_hand),
             ("yo'qolgan utility tutilsin", neg_scroll_utility_dropped),
+            ("sarlavha va katak ikki qoidada bo'lsa tutilsin", neg_scroll_table_columns_out_of_step),
         ],
     ),
     (
@@ -8767,6 +9341,16 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("jamoa sahifasi qoralama bersa tutilsin", neg_decisions_team_page_shows_drafts),
             ("jamoa rasmi tekshirilmasa tutilsin", neg_decisions_team_photo_unchecked),
             ("jamoa xodim yo'li ochilsa tutilsin", neg_decisions_team_staff_route_opened),
+            ("namuna birinchi tilda ochilsa tutilsin", neg_decisions_about_opens_on_the_first_language),
+            ("tillar yana tab bo'lsa tutilsin", neg_decisions_about_languages_are_tabs_again),
+            ("yopiq hukmlar sahifadan chiqsa tutilsin", neg_decisions_about_closed_verdicts_leave_the_page),
+            ("langar o'zgarsa tutilsin", neg_decisions_about_anchor_renamed),
+            ("qanday ishlaydi bosh sahifa bo'lib ulashilsa tutilsin", neg_decisions_about_shared_as_the_home_page),
+            ("jamoa lavozimlari sahifadan chiqsa tutilsin", neg_decisions_team_roles_dropped_from_page),
+            ("jamoa kartasi ism bilan boshlansa tutilsin", neg_decisions_team_card_heading_is_the_name),
+            ("jamoa paneli yopishsa tutilsin", neg_decisions_team_toolbar_sticks),
+            ("jamoa matni tili aytilmasa tutilsin", neg_decisions_team_text_language_unsaid),
+            ("jamoa bosh sahifa bo'lib ulashilsa tutilsin", neg_decisions_team_shared_as_the_home_page),
             ("qidiruv dvigateldan o'tmasa tutilsin", neg_decisions_search_bypasses_engine),
             ("qidiruv foydalanuvchilarni skanerlasa tutilsin", neg_decisions_search_scans_users),
             ("qidiruv indeksi jadvalni qulflasa tutilsin", neg_decisions_search_index_locks_table),
@@ -8786,10 +9370,50 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tab «meniki»ni sessiyasiz so'rasa tutilsin", neg_decisions_attempts_tab_mine_without_session),
             ("mehmonga hammaning urinishi chiqsa tutilsin", neg_decisions_attempts_mine_for_a_guest),
             ("mehmon oqimga ulansa tutilsin", neg_decisions_attempts_guest_opens_the_stream),
+            ("checker format farqini ko'rmasa tutilsin", neg_decisions_checker_never_sees_a_format_difference),
+            ("scorer balli verdikt bo'lmasa tutilsin", neg_decisions_scorer_score_is_not_a_verdict),
+            ("rad etilgan yechim to'xtatilmasa tutilsin", neg_decisions_rejected_solution_left_running),
+            ("tekshiruv turi darvozasi tushsa tutilsin", neg_decisions_evaluation_gate_dropped),
+            ("yaroqsiz birikma saqlansa tutilsin", neg_decisions_invalid_combination_can_be_saved),
+            ("tekshiruv yo'llari Nightly'dan chiqsa tutilsin", neg_decisions_evaluation_paths_leave_nightly),
+            ("funksiya yechimi hakam dasturisiz ketsa tutilsin", neg_decisions_function_solution_not_composed),
+            ("hakam dasturisiz til qabul qilinsa tutilsin", neg_decisions_function_language_without_harness),
+            ("hakam dasturisiz masala nashr qilinsa tutilsin", neg_decisions_function_problem_released_without_harness),
+            ("funksiya etaloni ro'yxatdan chiqsa tutilsin", neg_decisions_function_reference_dropped),
+            ("javob ishi dastur bo'lib yursa tutilsin", neg_decisions_answer_job_runs_as_a_program),
+            ("notanish masala turi yurgizilsa tutilsin", neg_decisions_unknown_task_kind_is_run),
+            ("javob ishi tursiz ketsa tutilsin", neg_decisions_answer_job_without_task),
+            ("javob eshiklari aralashsa tutilsin", neg_decisions_answer_doors_mix),
+            ("zip chegarasiz ochilsa tutilsin", neg_decisions_answer_zip_unbounded),
+            ("ikki yurish bitta katalogda ishlasa tutilsin", neg_decisions_two_pass_runs_share_a_directory),
+            ("ikki bosqichli ish bir marta yursa tutilsin", neg_decisions_two_pass_runs_once),
+            ("ikki bosqichli ish tursiz ketsa tutilsin", neg_decisions_two_pass_job_without_task),
+            ("manager'siz masala nashr qilinsa tutilsin", neg_decisions_two_pass_released_without_manager),
+            ("judge binari toolchain qatlamiga qaytsa tutilsin", neg_decisions_judge_binary_in_toolchain_layer),
+            ("judge base'siz qurilsa tutilsin", neg_decisions_judge_built_without_base),
+            ("ikkinchi job obraz keshini yozsa tutilsin", neg_decisions_second_job_pushes_images),
+            ("coverage shard soni ajralsa tutilsin", neg_decisions_coverage_shard_count_drifts),
+            ("bo'sh shard tutilsin", neg_decisions_shard_left_empty),
+            ("SQL so'rovi kod bo'lib joylansa tutilsin", neg_decisions_sql_query_pasted_raw),
+            ("SQL authorizer olib tashlansa tutilsin", neg_decisions_sql_authorizer_removed),
+            ("SQL so'rovi xom ketsa tutilsin", neg_decisions_sql_query_sent_raw),
+            ("SQL tili hamma masalada ochilsa tutilsin", neg_decisions_sql_language_everywhere),
+            ("muharrir varag'i yon menyu ostiga qaytsa tutilsin", neg_decisions_editor_sheet_under_side_menu),
+            ("shell chekinishi yon menyuni hisobga olmasa tutilsin", neg_decisions_shell_inset_ignores_side_menu),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),
             ("404 uslubsiz chiqsa tutilsin", neg_decisions_not_found_unstyled),
+            ("yon menyu moslashmay qolsa tutilsin", neg_decisions_side_menu_stops_adapting),
+            ("yon menyu bo'limlari yopishsa tutilsin", neg_decisions_side_menu_sections_collapse),
+            ("belgi modullari yuklanmasa tutilsin", neg_decisions_nav_badges_not_discovered),
+            ("belgilarda boshlang'ich nuqta yo'qolsa tutilsin", neg_decisions_nav_badges_no_floor),
+            ("mehmonga belgi so'ralsa tutilsin", neg_decisions_nav_badges_asked_for_a_guest),
+            ("ish belgisi tashrif bilan o'chsa tutilsin", neg_decisions_nav_badge_todo_cleared_by_a_visit),
+            ("belgi aytilmasa tutilsin", neg_decisions_nav_badge_not_spoken),
+            ("sana zonasiz qolsa tutilsin", neg_decisions_dates_lose_their_zone),
+            ("bitta sana yordamchisi zonasiz qolsa tutilsin", neg_decisions_one_date_helper_skips_the_zone),
+            ("urinish sanasi til bo'yicha formatlansa tutilsin", neg_decisions_attempt_date_in_viewer_locale),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
@@ -9194,6 +9818,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sidebar brendi qaytsa tutilsin", neg_decisions_sidebar_brand_back),
             ("footer bitta ustunga tushsa tutilsin", neg_decisions_footer_single_column),
             ("footer privacy havolasi yo'qolsa tutilsin", neg_decisions_footer_privacy_link_lost),
+            ("footer wordmark nusxalansa tutilsin", neg_decisions_footer_wordmark_copied),
+            ("footer havolalari kichraysa tutilsin", neg_decisions_footer_links_too_small_to_tap),
             (
                 "footer Telegram o'zgarsa tutilsin",
                 neg_decisions_footer_telegram_changed,

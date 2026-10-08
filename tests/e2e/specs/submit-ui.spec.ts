@@ -69,6 +69,45 @@ test("mehmonga panel ko'rinadi, lekin yuborish kirishni talab qiladi", async ({
   await expect(page.getByRole("button", { name: "Yuborish" })).toHaveCount(0);
 });
 
+// Between `lg` and `xl` the side menu is on screen and the editor is still
+// a bottom sheet. The sheet used to start at the window's edge, under the
+// menu: a click meant for the submit control landed on a menu link
+// (measured on the live site, 2026-10-07, 1276 px). A guest's sign-in link
+// sits where the signed-in Send button does, so the guest view is enough —
+// and it runs on the CI stack, where a signed-in page cannot.
+for (const width of [1024, 1100, 1276]) {
+  test(`${width}px: yechim varag'i yon menyu ostiga kirmaydi`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto(PROBLEM);
+    await openSolvePanel(page);
+
+    const submit = page.getByRole("link", { name: "Yuborish uchun kiring" });
+    await submit.scrollIntoViewIfNeeded();
+
+    const found = await submit.evaluate((link) => {
+      const box = link.getBoundingClientRect();
+      const top = document.elementFromPoint(
+        box.left + box.width / 2,
+        box.top + box.height / 2,
+      );
+      const menu = document.querySelector("aside")?.getBoundingClientRect();
+      return {
+        onTop: link.contains(top),
+        left: Math.round(box.left),
+        menuRight: Math.round(menu?.right ?? 0),
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+      };
+    });
+
+    expect(found.menuRight).toBeGreaterThan(0);
+    expect(found.left).toBeGreaterThanOrEqual(found.menuRight);
+    expect(found.onTop).toBe(true);
+    expect(found.overflow).toBeLessThanOrEqual(0);
+  });
+}
+
 test("kirgan foydalanuvchi yuborish va sinab ko'rishni oladi", async ({
   page,
 }) => {

@@ -124,6 +124,30 @@ services:
       worker: { condition: service_started }
       judge: { condition: service_started }
 
+  # Special checker, interactive and scorer on a real judge: every listed
+  # submission of the three reference problems goes submit → queue → judge
+  # → checker / interactor → verdict, and the verdict and score are compared
+  # (`tests/evaluation/check_evaluation_paths.py`). Unit tests replace the
+  # sandbox, the checker process and the pipes, so none of this is visible
+  # to them. One-shot like `latency`; `worker` must be alive, and the
+  # problems installed first (`manage.py seed_reference_problems`).
+  #
+  # The table of submissions lives with the problems, so that one file is
+  # mounted next to the harness — to its own directory: a file mounted into
+  # the read-only harness directory would be created on the host as well.
+  evaluation:
+    logging: *default-logging
+    image: python:3.13-slim
+    profiles: ['evaluation']
+    volumes:
+      - "${HOST_REPO_ROOT:-.}/tests/evaluation:/evaluation:ro"
+      - "${HOST_REPO_ROOT:-.}/apps/api/problems/reference_problems.py:/reference/reference_problems.py:ro"
+    command: ['python', '/evaluation/check_evaluation_paths.py']
+    depends_on:
+      api: { condition: service_healthy }
+      worker: { condition: service_started }
+      judge: { condition: service_started }
+
   # Bake-off — sandbox xatti-harakatini HAQIQIY nsjail ostida tekshiradi:
   # validator (19–21), fork bomb, tarmoq, `/proc`, symlink, fayl yozish,
   # OLE/TLE/MLE. Birlik testlari `sandboxed` ni soxta ijrochi bilan

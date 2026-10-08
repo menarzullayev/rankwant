@@ -224,22 +224,22 @@ export default async function ProblemsPage({ searchParams }: Props) {
             <THead>
               <TH>#</TH>
               <TH>{t(locale, "problems.name")}</TH>
-              <TH>{t(locale, "problems.difficulty")}</TH>
+              <TH className="hidden @xl:table-cell">{t(locale, "problems.difficulty")}</TH>
               {/* Statistika ustunlari tor ekranda yig'iladi — nom, raqam va
                 qiyinlik telefonda ham ko'rinib turishi kerak. */}
-              <TH align="center" className="hidden md:table-cell">
+              <TH align="center" className="hidden @3xl:table-cell">
                 ★
               </TH>
-              <TH align="center" className="hidden lg:table-cell">
+              <TH align="center" className="hidden @3xl:table-cell">
                 {t(locale, "problems.likes")}
               </TH>
-              <TH className="hidden xl:table-cell">
+              <TH className="hidden @4xl:table-cell">
                 {t(locale, "problems.author")}
               </TH>
-              <TH align="right" className="hidden sm:table-cell">
+              <TH align="right" className="hidden @xl:table-cell">
                 {t(locale, "problems.solved")}
               </TH>
-              <TH align="right" className="hidden lg:table-cell">
+              <TH align="right" className="hidden @xl:table-cell">
                 %
               </TH>
               {me && (
@@ -305,8 +305,18 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       )}
                     </div>
                     <TopicBadges topics={p.topics} solved={p.is_solved} />
+                    {/* A narrow table is two columns: the number and this
+                        cell. What the hidden columns said comes down here,
+                        so a phone reads the row without scrolling sideways. */}
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 @xl:hidden">
+                      <DifficultyBadge value={p.difficulty} />
+                      <span className={`level-${p.level} text-theme-xs`}>{p.level_label}</span>
+                      <span className="text-theme-xs rw-faint tabular-nums">
+                        {t(locale, "problems.solved")} {p.solved_count}
+                      </span>
+                    </div>
                   </TD>
-                  <TD>
+                  <TD className="hidden @xl:table-cell">
                     <div className="flex items-center gap-2">
                       <DifficultyBadge value={p.difficulty} />
                       <span className={`level-${p.level} text-theme-xs`}>
@@ -314,7 +324,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       </span>
                     </div>
                   </TD>
-                  <TD align="center" className="hidden md:table-cell">
+                  <TD align="center" className="hidden @3xl:table-cell">
                     {p.rating.average === null ? (
                       <span className="rw-faint">—</span>
                     ) : (
@@ -331,13 +341,13 @@ export default async function ProblemsPage({ searchParams }: Props) {
                   </TD>
                   <TD
                     align="center"
-                    className="hidden tabular-nums text-theme-xs rw-dim-2 lg:table-cell"
+                    className="hidden tabular-nums text-theme-xs rw-dim-2 @3xl:table-cell"
                   >
                     <span title={`${p.likes_count} / ${p.dislikes_count}`}>
                       +{p.likes_count}
                     </span>
                   </TD>
-                  <TD className="hidden max-w-28 truncate text-theme-xs rw-faint xl:table-cell">
+                  <TD className="hidden max-w-28 truncate text-theme-xs rw-faint @4xl:table-cell">
                     {p.author ? (
                       p.author.has_profile ? (
                         <Link
@@ -355,13 +365,13 @@ export default async function ProblemsPage({ searchParams }: Props) {
                   </TD>
                   <TD
                     align="right"
-                    className="hidden rw-faint tabular-nums sm:table-cell"
+                    className="hidden rw-faint tabular-nums @xl:table-cell"
                   >
                     {p.solved_count}
                   </TD>
                   <TD
                     align="right"
-                    className="hidden rw-faint tabular-nums lg:table-cell"
+                    className="hidden rw-faint tabular-nums @xl:table-cell"
                   >
                     {p.success_rate === null ? "—" : `${p.success_rate}%`}
                   </TD>

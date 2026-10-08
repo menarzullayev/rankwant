@@ -14,6 +14,40 @@ permissions:
   packages: write
 
 jobs:
+  #: The ONLY job that writes the image cache (2026-10-07).
+  #:
+  #: Before, five jobs each ended with `--push-only`. On a day the judge
+  #: changed (run of c3623d9) each of them uploaded the same multi-GB image:
+  #: 5.2-6.5 minutes per job, and the `latency` job was cancelled by its
+  #: time limit inside that step, after its measurement had passed.
+  #:
+  #: No job `needs:` this one. Every job still resolves its own images
+  #: (pull when the registry has them, build when it does not), so a day
+  #: with a changed image costs each job its build and nobody a queue.
+  images:
+    name: Image cache
+    runs-on: ubuntu-latest
+    # A changed judge Dockerfile rebuilds every toolchain here (measured
+    # 7-10 min) and then uploads it; everything else is a pull.
+    timeout-minutes: 25
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      CI_STACK_UP: '0'
+      CI_ONLY_STACK: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Resolve images
+        run: bash tools/ci_stack.sh
+      - name: Push image cache
+        if: ${{ env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
+      - name: Clean images
+        if: always()
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}'             | grep -E "^${COMPOSE_PROJECT_NAME}-"             | xargs -r docker rmi -f || true
+
   load:
     name: Load — read capacity
     runs-on: ubuntu-latest
@@ -61,9 +95,6 @@ jobs:
       - name: Tear down
         if: always()
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      - name: Push image cache
-        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
-        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -332,9 +363,6 @@ jobs:
       - name: Tear down
         if: always()
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      - name: Push image cache
-        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
-        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -389,9 +417,6 @@ jobs:
       - name: Tear down
         if: always()
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      - name: Push image cache
-        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
-        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -441,9 +466,6 @@ jobs:
         # catches "shown as Python 3.12, actually 3.11" — that mismatch
         # looks like a confusing SyntaxError to the user.
         run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
-      - name: Push image cache
-        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
-        run: bash tools/ci_stack.sh --push-only
       - name: Tear down
         # The tag is per run now, so it has to go, like the smoke job's images.
         if: always()
@@ -553,12 +575,24 @@ jobs:
         # early), so a lost measurement can never look like a pass.
         if: always()
         run: python3 tools/latency_summary.py "${RUNNER_TEMP}/latency.log"
+      - name: Evaluation paths — special checker, interactive, scorer
+        # The three checker types nothing else exercises end to end: every
+        # listed submission of the reference problems goes through the real
+        # queue, judge and checker / interactor, and its verdict and score
+        # are compared (`tests/evaluation/check_evaluation_paths.py`). It
+        # shares this job's stack - the same full stack, already up.
+        # `always()`: a breached latency budget says nothing about whether
+        # answers are graded correctly.
+        if: always()
+        timeout-minutes: 6
+        run: |
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+            python manage.py seed_reference_problems
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml \
+            --profile evaluation run --rm evaluation
       - name: Tear down
         if: always()
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      - name: Push image cache
-        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
-        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -573,10 +607,19 @@ jobs:
             | grep -E "^${COMPOSE_PROJECT_NAME}-" \
             | xargs -r docker rmi -f || true
 
+  #: The suite runs in shards (2026-10-07): in one job it took 323 s and was
+  #: the longest job of a warm Nightly. `tools/pytest_shard.py` deals the
+  #: test FILES out; the count below, the matrix and the two calls of the
+  #: script must name the same number.
   coverage:
-    name: API coverage
+    name: API coverage (${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    strategy:
+      # One red shard must not hide what the other two would have said.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     services:
       postgres:
         image: postgres:16
@@ -602,6 +645,8 @@ jobs:
           cache-dependency-path: apps/api/requirements-dev.lock
       - run: pip install -r requirements-dev.lock
         working-directory: apps/api
+      - name: Every test file is in exactly one shard
+        run: python3 tools/pytest_shard.py --check 3
       - name: pytest --cov
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
@@ -609,7 +654,42 @@ jobs:
           CELERY_EAGER: '1'
           # Settings fail fast without it (ADR-0044); a throwaway value.
           DJANGO_SECRET_KEY: ci-django-secret
-        run: pytest -n 4 --cov --cov-report=term-missing
+          COVERAGE_FILE: .coverage.shard-${{ matrix.shard }}
+        # The report is printed once, over all shards, by `coverage-report`.
+        run: |
+          mapfile -t files < <(python3 ../../tools/pytest_shard.py ${{ matrix.shard }} 3)
+          pytest -n 4 --cov --cov-report= "${files[@]}"
+        working-directory: apps/api
+      - uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ matrix.shard }}
+          path: apps/api/.coverage.shard-*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  coverage-report:
+    name: API coverage — report
+    needs: coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: The same coverage the shards measured with
+        run: pip install "$(grep -i '^coverage==' requirements-dev.lock)"
+        working-directory: apps/api
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: coverage-*
+          merge-multiple: true
+          path: apps/api
+      - name: Combined report
+        run: |
+          coverage combine
+          coverage report --show-missing
         working-directory: apps/api
 
   #: Readiness gate (WP1 · D8 · D8-F · ADR-0037) — `check_negative.py` ning

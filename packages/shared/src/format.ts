@@ -78,6 +78,34 @@ const DAY_PARTS = new Intl.DateTimeFormat("en-US", {
   day: "2-digit",
 });
 
+const STAMP_PARTS = new Intl.DateTimeFormat("en-GB", {
+  timeZone: SITE_TZ,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hourCycle: "h23",
+});
+
+/** A date and time in digits only — `06.10.2026 18:32:06`, site zone.
+ *
+ *  For a CLIENT component that is also rendered on the server. A
+ *  locale-formatted date is not safe there: Node has date data for `uz`
+ *  and the browser does not, so the server wrote `06/10/2026, 18:32:06`
+ *  and Chrome redrew `2026-10-06 18:32:06` — a hydration error on every
+ *  attempts page in the site's default language (measured 2026-10-06).
+ *  Digits from a fixed locale read the same in all ten languages and
+ *  come out the same from every ICU.
+ */
+export function numericStamp(value: string | number | Date): string {
+  const parts = Object.fromEntries(
+    STAMP_PARTS.formatToParts(new Date(value)).map((part) => [part.type, part.value]),
+  );
+  return `${parts.day}.${parts.month}.${parts.year} ${parts.hour}:${parts.minute}:${parts.second}`;
+}
+
 /** Vaqt belgisining sayt zonasidagi kuni: «2026-09-09». */
 export function isoDay(value: string | Date): string {
   const parts = Object.fromEntries(

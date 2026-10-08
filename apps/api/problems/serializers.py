@@ -58,6 +58,8 @@ class ProblemLanguageSerializer(serializers.Serializer[dict[str, Any]]):
     time_limit_ms = serializers.IntegerField()
     memory_limit_kb = serializers.IntegerField()
     code_template = serializers.CharField(allow_blank=True)
+    #: `function` problems: the program the submission is inserted into.
+    harness = serializers.CharField(allow_blank=True)
 
 
 class SimilarProblemSerializer(serializers.Serializer[dict[str, Any]]):
@@ -194,6 +196,7 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
 
 class ProblemDetailSerializer(ProblemListSerializer):
     samples = serializers.SerializerMethodField()
+    answer_tests = serializers.SerializerMethodField()
 
     my_rating = serializers.SerializerMethodField()
     languages = serializers.SerializerMethodField()
@@ -218,8 +221,32 @@ class ProblemDetailSerializer(ProblemListSerializer):
     def get_samples(self, problem: Problem) -> list[dict[str, Any]]:
         return storage.sample_tests(problem)
 
+    @extend_schema_field(serializers.ListField(child=serializers.IntegerField()))
+    def get_answer_tests(self, problem: Problem) -> list[int]:
+        """`answer` problems: the tests a solver sends a file for. Empty otherwise."""
+        if problem.task_kind != Problem.TaskKind.ANSWER:
+            return []
+        from problems.answertasks import judged_orders
+
+        return judged_orders(problem)
+
     @extend_schema_field(ProblemLanguageSerializer(many=True))
     def get_languages(self, problem: Problem) -> list[dict[str, Any]]:
+        if problem.task_kind == Problem.TaskKind.SQL:
+            from problems.sqltasks import sql_language
+
+            language = sql_language()
+            return [
+                {
+                    "code": language.code,
+                    "name": language.name,
+                    "version": language.version,
+                    "time_limit_ms": problem.time_limit_ms,
+                    "memory_limit_kb": problem.memory_limit_kb,
+                    "code_template": "SELECT\n",
+                    "harness": "",
+                }
+            ]
         rows = list(problem.languages.select_related("language"))
         if not rows:
             # Ro'yxat bo'sh — masala hech qanday tilni cheklamagan.
@@ -231,6 +258,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
                     "time_limit_ms": problem.time_limit_ms,
                     "memory_limit_kb": problem.memory_limit_kb,
                     "code_template": "",
+                    "harness": "",
                 }
                 for language in Language.objects.filter(is_active=True)
             ]
@@ -242,6 +270,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
                 "time_limit_ms": row.time_limit_ms or problem.time_limit_ms,
                 "memory_limit_kb": row.memory_limit_kb or problem.memory_limit_kb,
                 "code_template": row.code_template,
+                "harness": row.harness,
             }
             for row in rows
             if row.language.is_active
@@ -340,6 +369,8 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "time_limit_ms",
             "memory_limit_kb",
             "checker_type",
+            "task_kind",
+            "answer_tests",
             "source",
             "source_url",
         ]

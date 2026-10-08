@@ -421,6 +421,68 @@ export const uz = {
     "input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz).",
   "about.sampleMissing":
     "Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling.",
+  "about.eval.title":
+    "Javob qanday tekshiriladi",
+  "about.eval.standard":
+    "Oddiy tekshiruv: chiqishingiz kutilgan javob bilan solishtiriladi. Farq faqat bo'shliq yoki qator bo'linishida bo'lsa — PE, boshqa farqda — WA.",
+  "about.eval.special":
+    "Maxsus tekshiruvchi: to'g'ri javob bir nechta bo'lishi mumkin bo'lgan masalada javobingizni muallif yozgan dastur tekshiradi. Shartga mos har qanday javob qabul qilinadi.",
+  "about.eval.interactive":
+    "Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi.",
+  "about.eval.scorer":
+    "Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi).",
+  "submit.function.hint":
+    "Faqat funksiyani yozing: kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi.",
+  "submit.function.harness":
+    "Hakam dasturi (o'zgartirib bo'lmaydi)",
+  "about.eval.function":
+    "Funksiya masalasi: butun dastur emas, bitta funksiya yoziladi. Kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi — main yozilmaydi.",
+  "admin.label.text.taskKind":
+    "Masala turi",
+  "admin.label.value.wholeProgram":
+    "Butun dastur",
+  "admin.label.value.functionOnly":
+    "Funksiya",
+  "answer.title":
+    "Javob fayllari",
+  "answer.hint":
+    "Bu masalada dastur yuborilmaydi. Kirish fayllarini yuklab oling, javoblarni istalgan usulda toping va har test uchun matnli fayl yuboring.",
+  "answer.download":
+    "Kirish fayllarini yuklab olish (zip)",
+  "answer.noFile":
+    "fayl tanlanmagan",
+  "answer.pick":
+    "{order}-test uchun javob faylini tanlash",
+  "answer.zip":
+    "Yoki hamma javobni bitta zip faylda (fayl nomida test raqami bo'lsin: 1.out, 02.txt)",
+  "answer.kept":
+    "Yuborilmagan test uchun oxirgi yuborgan javobingiz saqlanadi.",
+  "answer.submit":
+    "Javoblarni yuborish",
+  "answer.count":
+    "Tanlandi: {picked} / {total}",
+  "answer.tooLarge":
+    "Fayllar jami 10 MB dan oshmasin.",
+  "answer.failed":
+    "Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring.",
+  "about.eval.answer":
+    "Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi.",
+  "admin.label.value.answerFiles":
+    "Javob fayllari",
+  "about.eval.twoPass":
+    "Ikki bosqichli masala: dasturingiz har testda ikki marta ishga tushadi. Ikkinchi yurish faqat hakam dasturi birinchisining chiqishidan yasagan kirishni ko'radi — xotira ham, fayl ham saqlanmaydi.",
+  "admin.label.value.twoPass":
+    "Ikki bosqichli",
+  "admin.label.tech.managerLanguage":
+    "Oraliq dastur tili (kod, masalan py313)",
+  "admin.label.tech.managerSource":
+    "Oraliq dastur manbasi",
+  "admin.help.managerOnlyTwoPass":
+    "Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi.",
+  "about.eval.sql":
+    "SQL masalasi: bitta SELECT so'rovi yoziladi (SQLite 3). Har test — tayyor baza; so'rov natijasi qatorma-qator solishtiriladi. Ma'lumotni o'zgartiruvchi buyruqlar rad etiladi.",
+  "admin.label.value.sqlQuery":
+    "SQL so'rovi",
   "about.judge.title": "Tizim qanday ishlaydi",
   "about.judge.body":
     "Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi.",
@@ -449,9 +511,9 @@ export const uz = {
   "about.practices.fastIo": "Katta kiritmada tilning tez I/O usullaridan foydalaning.",
   "about.practices.debug": "Mantiqni lokal debug qiling; keyin tozalangan kodni yuboring.",
   "about.practices.readAll": "Shart, izohlar va cheklovlarni oxirigacha o'qing.",
-  "about.verdicts.title": "Yechim holati kodlari (24 ta)",
+  "about.verdicts.title": "Yechim holati kodlari ({count} ta)",
   "about.verdicts.intro":
-    "Platformada 24 ta verdict kodi bor. Jadvalda har biri: nima degani, nima qilish kerak va oddiy misol.",
+    "Platformada {count} ta verdict kodi bor. Jadvalda har biri: nima degani, nima qilish kerak va oddiy misol.",
   "about.verdicts.col.num": "№",
   "about.verdicts.col.status": "Holati",
   "about.verdicts.col.event": "Tushuntirish",
@@ -2313,6 +2375,34 @@ export const uz = {
   "attempt.testsPassed": "{passed} / {total} o'tdi",
   "attempt.toProblem": "Masalaga o'tish",
   "attempt.editResubmit": "Tahrirlab qayta yuborish",
+  "footer.resources": "Resurslar",
+  "footer.telegram": "Telegram kanali",
+  "footer.opensNewTab": "(yangi oynada ochiladi)",
+  "nav.badge.todo": "{count} ta ish kutyapti",
+  "nav.badge.unread": "{count} ta o'qilmagan",
+  "nav.badge.new": "{count} ta yangi",
+  "nav.badge.live": "hozir jonli",
+  "nav.badge.liveShort": "jonli",
+  "about.journey.title": "Platforma yo'li",
+  "about.toc.label": "Mundarija",
+  "about.toc.submit": "Yuborish",
+  "about.toc.languages": "Tillar",
+  "about.toc.verdicts": "Holat kodlari",
+  "about.toc.practices": "Amaliyotlar",
+  "about.toc.judge": "Tizim",
+  "about.cta.solve": "Birinchi masalani yechish",
+  "about.anchor": "Bo'lim havolasi",
+  "about.lang.other": "Boshqa til ({count})",
+  "about.lang.count": "{count} ta til",
+  "about.verdicts.search": "Kod yoki so'z: TLE, xotira…",
+  "about.verdicts.searchLabel": "Holat kodini qidirish",
+  "about.verdicts.groupLabel": "Guruh bo'yicha saralash",
+  "about.verdicts.group.all": "Hammasi",
+  "about.verdicts.group.common": "Ko'p uchraydigan",
+  "about.verdicts.group.flow": "Jarayon holatlari",
+  "about.verdicts.group.system": "Kam uchraydigan va tizim",
+  "about.verdicts.found": "{count} ta kod",
+  "about.verdicts.none": "Bunday kod topilmadi.",
 } as const;
 
 export type MessageKey = keyof typeof uz;

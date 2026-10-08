@@ -252,6 +252,36 @@ class Problem(TimeStampedModel):
         default=IoMode.STDIO,
         help_text="both: input.txt/output.txt ham, stdin/stdout ham qabul qilinadi.",
     )
+
+    class TaskKind(models.TextChoices):
+        """What a solver submits and how it is run (ADR-0053). The third
+        axis: `io_mode` says where the answer travels, `checker_type` who
+        grades it."""
+
+        PROGRAM = "program", "Whole program"
+        #: The solver writes a function; the author's harness is the program.
+        FUNCTION = "function", "Function"
+        #: The solver sends the answers themselves; no program is run.
+        ANSWER = "answer", "Answer files"
+        #: The program runs twice per test; the manager stands between.
+        TWO_PASS = "two_pass", "Two passes"
+        #: The solver writes one SELECT; each test is a database.
+        SQL = "sql", "SQL query"
+
+    task_kind = models.CharField(
+        max_length=16,
+        choices=TaskKind.choices,
+        default=TaskKind.PROGRAM,
+        help_text="function: the submission is inserted into the per-language harness.",
+    )
+    #: `task_kind = two_pass`: the author's program between the two runs,
+    #: called as `manager <input> <output of run 1> <jury>`; its stdout is the
+    #: input of run 2 and a non-zero exit rejects the message. Trusted, like
+    #: the checker.
+    manager_source = models.TextField(blank=True)
+    manager_language = models.ForeignKey(
+        Language, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
     interactor_source = models.TextField(blank=True)
     interactor_language = models.ForeignKey(
         Language, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
@@ -356,6 +386,16 @@ class Problem(TimeStampedModel):
 
         if self.difficulty % DIFFICULTY_STEP:
             raise ValidationError({"difficulty": f"Value must be a multiple of {DIFFICULTY_STEP}"})
+
+        # The Django admin can set `io_mode`; the staff API cannot. Both
+        # must refuse a pair of modes the judge does not implement.
+        from problems.evaluation import combination_error, task_kind_error
+
+        invalid = combination_error(self.io_mode, self.checker_type) or task_kind_error(
+            self.task_kind, self.io_mode, self.checker_type
+        )
+        if invalid:
+            raise ValidationError({"checker_type": invalid})
 
         # ADR 0049 — R10: readiness moves one step at a time, and every step
         # has a condition (S1/S2/S3). The previous value comes from the
@@ -484,6 +524,10 @@ class ProblemLanguage(models.Model):
     time_limit_ms = models.PositiveIntegerField(null=True, blank=True)
     memory_limit_kb = models.PositiveIntegerField(null=True, blank=True)
     code_template = models.TextField(blank=True)
+    #: `task_kind = function` only: the program around the submission, with
+    #: `{{SOLUTION}}` alone on one line (`problems/taskkinds.py`). Shown to
+    #: solvers, so it must not hold an expected answer.
+    harness = models.TextField(blank=True)
 
     class Meta:
         ordering: ClassVar = ["language__name"]

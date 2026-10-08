@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2210 strings.**
+**2269 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -396,130 +396,161 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.members` | A'zolar | Aǵzalar |  |
 | `classroom.assignments` | Vazifalar | Wazıypalar |  |
 | `about.title` | RankWant qanday ishlaydi | RankWant qalay isleydi |  |
-| `about.lead` | Bu sahifa judge, tillar va yuborish qoidalari bo'yicha to'liq yo'riqnoma. Quyida platforma yo'li va tizim bilan ishlash tartibi. | This page is the full guide to the judge, languages, and submission rules. Below: the platform journey and how to work with the system. |  |
-| `about.ratingTeaser` | To'rtala reytingning formulasi | Formulas for all four ratings are on the |  |
-| `about.journey.solveTitle` | Yeching | Solve |  |
-| `about.journey.solveBody` | Masala yechasiz — sandbox'da judge tekshiradi, verdict soniyalarda keladi. | Submit solutions — the judge runs them in a sandbox and returns a verdict within seconds. |  |
-| `about.journey.measureTitle` | O'lchanadi | Get measured |  |
-| `about.journey.measureBody` | Har AC Skills reytingiga kiradi. Formula ochiq: joriy qiyinlik × kamayuvchi koeffitsient. | Each AC updates your Skills rating. The formula is public: current difficulty × decay coefficient. |  |
-| `about.journey.competeTitle` | Bellashing | Compete |  |
-| `about.journey.competeBody` | Musobaqa, Arena, Duel, Chempionat — har biri o'z reytingi yoki jadvali bilan. | Contests, Arena, Duels, Tournaments — each with its own standings or rating. |  |
-| `about.journey.qvantTitle` | Qvant to'plang | Earn Qvant |  |
-| `about.journey.qvantBody` | Kunlik vazifalar va streak Qvant beradi. Qvant reytingga ta'sir qilmaydi — faqat do'kon. | Daily quests and streaks grant Qvant. Qvant does not affect ratings — only the shop. |  |
-| `about.journey.transparencyTitle` | Sababini ko'ring | See why |  |
-| `about.journey.transparencyBody` | Profilingizda har reyting o'zgarishining sababi yozilgan. Yashirin algoritm yo'q. | Your profile explains every rating change. No hidden algorithm. |  |
-| `about.compilers.title` | Kompilyatorlar | Compilers |  |
-| `about.compilers.empty` | Til ro'yxati vaqtincha yuklanmadi. Keyinroq yangilab ko'ring. | Language list could not be loaded. Try refreshing. |  |
-| `about.compilers.tabsLabel` | Dasturlash tillari | Programming languages |  |
-| `about.io.title` | Matn oqimi (stdin / stdout) | Standard I/O (stdin / stdout) |  |
-| `about.io.hint` | RankWant masalalarida kiritma va chiqish standart oqim orqali. Namuna — ikkita butun sonning yig'indisi (A + B). | RankWant problems use standard input and output. Sample: sum of two integers (A + B). |  |
-| `about.io.tabsLabel` | Kirish/chiqish usuli | I/O style |  |
+| `about.lead` | Bu sahifa judge, tillar va yuborish qoidalari bo'yicha to'liq yo'riqnoma. Quyida platforma yo'li va tizim bilan ishlash tartibi. | Bul bet judge, tiller hám sheshim jiberiw qaǵıydaları boyınsha tolıq qollanba. Tómende: platformadaǵı jol hám sistema menen islew tártibi. |  |
+| `about.ratingTeaser` | To'rtala reytingning formulasi | Tórt reytingtiń de formulaları mına bette: |  |
+| `about.journey.solveTitle` | Yeching | Sheshiń |  |
+| `about.journey.solveBody` | Masala yechasiz — sandbox'da judge tekshiradi, verdict soniyalarda keladi. | Sheshim jiberesiz — judge onı sandbox ishinde iske túsiredi hám verdict bir neshe sekundta keledi. |  |
+| `about.journey.measureTitle` | O'lchanadi | Ólshenedi |  |
+| `about.journey.measureBody` | Har AC Skills reytingiga kiradi. Formula ochiq: joriy qiyinlik × kamayuvchi koeffitsient. | Hár bir AC Skills reytingińizdi jańalaydı. Formula ashıq: házirgi qıyınlıq × kemeyiw koefficienti. |  |
+| `about.journey.competeTitle` | Bellashing | Jarısıń |  |
+| `about.journey.competeBody` | Musobaqa, Arena, Duel, Chempionat — har biri o'z reytingi yoki jadvali bilan. | Jarıslar, Arena, Dueller, Turnirler — hár biriniń óz kestesi yamasa reytingi bar. |  |
+| `about.journey.qvantTitle` | Qvant to'plang | Qvant jıynań |  |
+| `about.journey.qvantBody` | Kunlik vazifalar va streak Qvant beradi. Qvant reytingga ta'sir qilmaydi — faqat do'kon. | Kúndelikli tapsırmalar hám streak Qvant beredi. Qvant reytingke tásir etpeydi — tek dúkanǵa. |  |
+| `about.journey.transparencyTitle` | Sababini ko'ring | Sebebin kóriń |  |
+| `about.journey.transparencyBody` | Profilingizda har reyting o'zgarishining sababi yozilgan. Yashirin algoritm yo'q. | Profilińizde reytingtiń hár bir ózgerisi túsindirilgen. Jasırın algoritm joq. |  |
+| `about.compilers.title` | Kompilyatorlar | Kompilyatorlar dizimi |  |
+| `about.compilers.empty` | Til ro'yxati vaqtincha yuklanmadi. Keyinroq yangilab ko'ring. | Tiller dizimi júklenbedi. Betti jańalap kóriń. |  |
+| `about.compilers.tabsLabel` | Dasturlash tillari | Baǵdarlamalaw tilleri |  |
+| `about.io.title` | Matn oqimi (stdin / stdout) | Standart kirgiziw/shıǵarıw (stdin / stdout) |  |
+| `about.io.hint` | RankWant masalalarida kiritma va chiqish standart oqim orqali. Namuna — ikkita butun sonning yig'indisi (A + B). | RankWant máselelerinde standart kirgiziw hám shıǵarıw qollanıladı. Úlgi: eki pútin sannıń qosındısı (A + B). |  |
+| `about.io.tabsLabel` | Kirish/chiqish usuli | Kirgiziw/shıǵarıw usılı |  |
 | `about.io.kind.stdio` | Stdin / stdout | Standart kiritiw / shıǵıw |  |
 | `about.io.kind.file` | input.txt / output.txt | input.txt / output.txt faylları |  |
-| `about.io.file.title` | Fayl oqimi (input.txt / output.txt) | File I/O (input.txt / output.txt) |  |
-| `about.io.file.hint` | input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz). | Read two integers from input.txt and write the sum to output.txt (no extra spaces or lines). |  |
-| `about.sampleMissing` | Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling. | No sample snippet for this language yet. Follow the problem's I/O format. |  |
-| `about.judge.title` | Tizim qanday ishlaydi | How judging works |  |
-| `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Each submission is compiled and run in an isolated sandbox against all hidden tests (ACM mode: stop at the first failing test). Accepted only if every test passes. Time and memory limits apply per test. |  |
-| `about.notes.title` | Muhim eslatmalar | Important notes |  |
-| `about.notes.io` | Ko'p masalalar stdin/stdout ishlatadi. Ba'zilari (jumladan A+B) input.txt va output.txt ni ham qabul qiladi — shartga qarang. | Most problems use stdin and stdout. Some (including A+B) also accept input.txt and output.txt — follow the statement. |  |
-| `about.notes.cpp` | C++ da __int64 o'rniga long long ishlating; tez kirish/chiqish uchun ios::sync_with_stdio(false) tavsiya etiladi. | In C++, prefer long long over __int64; fast I/O with ios::sync_with_stdio(false) is recommended. |  |
-| `about.notes.java` | Java yechimida public class nomi Main bo'lishi va fayl Main.java deb saqlanishi kerak. | Java submissions must use a public class named Main in Main.java. |  |
-| `about.submit.title` | Yechimni qanday yuborish kerak | How to submit |  |
-| `about.submit.pickProblem` | Masalalar ro'yxatidan masalani tanlang va shartni diqqat bilan o'qing. | Pick a problem and read the statement carefully. |  |
-| `about.submit.pickLanguage` | Qo'llab-quvvatlanadigan tillardan birida yechim yozing. | Write a solution in one of the supported languages. |  |
-| `about.submit.useStdio` | Shartda ko'rsatilganidek stdin/stdout yoki input.txt/output.txt dan foydalaning. | Use stdin/stdout, or input.txt/output.txt when the statement allows file I/O. |  |
-| `about.submit.sendForm` | Masala sahifasidagi yuborish formasi orqali kodni yuboring. | Submit via the form on the problem page. |  |
-| `about.submit.waitJudge` | Kompilyatsiya va test natijasini kuting (PENDING → RUNNING → verdict). | Wait for compile and test (PENDING → RUNNING → verdict). |  |
-| `about.submit.analyzeResult` | Natijani tahlil qiling; xato bo'lsa shart, cheklovlar va namuna testlarni qayta ko'ring. | If it fails, re-check the statement, limits, and samples. |  |
-| `about.practices.title` | Masalalarni yechishda eng yaxshi amaliyotlar | Best practices |  |
-| `about.practices.samples` | Yuborishdan oldin namunaviy kiritmalarda sinab ko'ring (Custom test). | Try sample tests before submitting (custom test). |  |
-| `about.practices.limits` | Vaqt va xotira cheklovlariga e'tibor bering. | Respect time and memory limits. |  |
-| `about.practices.algorithms` | Cheklovlarga mos samarali algoritm va ma'lumotlar strukturasi tanlang. | Pick algorithms and structures that fit the constraints. |  |
-| `about.practices.edges` | Chegaraviy holatlarni qayta ishlang: bo'sh kiritma, min/max qiymatlar. | Handle edge cases: empty input, min/max values. |  |
-| `about.practices.format` | Chiqish formatiga rioya qiling — ortiqcha bo'shliq PE ga olib kelishi mumkin. | Match output format exactly — extra spaces may cause PE. |  |
-| `about.practices.fastIo` | Katta kiritmada tilning tez I/O usullaridan foydalaning. | Use fast I/O for large input in your language. |  |
-| `about.practices.debug` | Mantiqni lokal debug qiling; keyin tozalangan kodni yuboring. | Debug locally, then submit clean code. |  |
-| `about.practices.readAll` | Shart, izohlar va cheklovlarni oxirigacha o'qing. | Read the full statement, notes, and limits. |  |
-| `about.verdicts.title` | Yechim holati kodlari (24 ta) | Verdict codes (24) |  |
-| `about.verdicts.intro` | Platformada 24 ta verdict kodi bor. Jadvalda har biri: nima degani, nima qilish kerak va oddiy misol. | The platform defines 24 verdict codes. Each row explains the meaning, what to do, and a simple example. |  |
+| `about.io.file.title` | Fayl oqimi (input.txt / output.txt) | Fayl arqalı kirgiziw/shıǵarıw (input.txt / output.txt) |  |
+| `about.io.file.hint` | input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz). | input.txt faylınan eki pútin sandı oqıń hám qosındını output.txt faylına jazıń (artıqsha bos orın yamasa qatarsız). |  |
+| `about.sampleMissing` | Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling. | Bul til ushın úlgi kod ele joq. Máseledegi kirgiziw/shıǵarıw formatına ámel etiń. |  |
+| `about.eval.title` | Javob qanday tekshiriladi | Juwap qalay tekseriledi |  |
+| `about.eval.standard` | Oddiy tekshiruv: chiqishingiz kutilgan javob bilan solishtiriladi. Farq faqat bo'shliq yoki qator bo'linishida bo'lsa — PE, boshqa farqda — WA. | Ápiwayı tekseriw: shıǵısıńız kútilgen juwap penen salıstırıladı. Ayırma tek bos orın yamasa qatar bóliniwinde bolsa — PE, basqa ayırmada — WA. |  |
+| `about.eval.special` | Maxsus tekshiruvchi: to'g'ri javob bir nechta bo'lishi mumkin bo'lgan masalada javobingizni muallif yozgan dastur tekshiradi. Shartga mos har qanday javob qabul qilinadi. | Arnawlı tekseriwshi: durıs juwap bir neshe bolıwı múmkin máselede juwabıńızdı avtor jazǵan programma tekseredi. Shártke sáykes hár qanday juwap qabıl etiledi. |  |
+| `about.eval.interactive` | Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi. | Interaktiv másele: programmańız tóreshi programması menen sóylesedi — soraw jazadı, juwabın oqıydı. Hár jazıwdan keyin shıǵıs buferin bosatıń (flush), bolmasa húkim IDLENESS boladı. |  |
+| `about.eval.scorer` | Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi). | Ballı másele: hár test 0 den 100 ge shekem bahalanadı, juwmaqlawshı ball — olardıń ortashası. 100 ball — AC; 100 den kem, biraq nolden úlken — PARTIAL (másele sheshilgen dep esaplanbaydı). |  |
+| `submit.function.hint` | Faqat funksiyani yozing: kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi. | Tek funkciyanı jazıń: kirisiwdi oqıw hám juwaptı shıǵarıwdı tóreshi programması orınlaydı. |  |
+| `submit.function.harness` | Hakam dasturi (o'zgartirib bo'lmaydi) | Tóreshi programması (ózgertip bolmaydı) |  |
+| `about.eval.function` | Funksiya masalasi: butun dastur emas, bitta funksiya yoziladi. Kirishni o'qish va javobni chiqarishni hakam dasturi bajaradi — main yozilmaydi. | Funkciya máselesi: pútin programma emes, bir funkciya jazıladı. Kirisiwdi oqıw hám juwaptı shıǵarıwdı tóreshi programması orınlaydı — main jazılmaydı. |  |
+| `admin.label.text.taskKind` | Masala turi | Másele túri |  |
+| `admin.label.value.wholeProgram` | Butun dastur | Pútin programma |  |
+| `admin.label.value.functionOnly` | Funksiya | Funkciya |  |
+| `answer.title` | Javob fayllari | Juwap faylları |  |
+| `answer.hint` | Bu masalada dastur yuborilmaydi. Kirish fayllarini yuklab oling, javoblarni istalgan usulda toping va har test uchun matnli fayl yuboring. | Bul máselede programma jiberilmeydi. Kirisiw fayllarin júklep alıń, juwaplardı qálegen usılda tabıń hám hár test ushın tekstli fayl jiberiń. |  |
+| `answer.download` | Kirish fayllarini yuklab olish (zip) | Kirisiw fayllarin júklep alıw (zip) |  |
+| `answer.noFile` | fayl tanlanmagan | fayl tańlanbaǵan |  |
+| `answer.pick` | {order}-test uchun javob faylini tanlash | {order}-test ushın juwap faylın tańlaw |  |
+| `answer.zip` | Yoki hamma javobni bitta zip faylda (fayl nomida test raqami bo'lsin: 1.out, 02.txt) | Yamasa barlıq juwaptı bir zip faylda (fayl atında test nomeri bolsın: 1.out, 02.txt) |  |
+| `answer.kept` | Yuborilmagan test uchun oxirgi yuborgan javobingiz saqlanadi. | Jiberilmegen test ushın sońǵı jibergen juwabıńız saqlanadı. |  |
+| `answer.submit` | Javoblarni yuborish | Juwaplardı jiberiw |  |
+| `answer.count` | Tanlandi: {picked} / {total} | Tańlandı: {picked} / {total} |  |
+| `answer.tooLarge` | Fayllar jami 10 MB dan oshmasin. | Fayllar jámi 10 MB tan aspasın. |  |
+| `answer.failed` | Yuborib bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring. | Jiberip bolmadı. Baylanıstı tekserip, qayta urınıp kóriń. |  |
+| `about.eval.answer` | Faqat javob masalasi: dastur yuborilmaydi. Kirish fayllari ochiq, siz har test uchun javob faylini yuborasiz; uni muallif dasturi baholaydi. Yuborilmagan test uchun oxirgi javobingiz saqlanadi. | Tek juwap máselesi: programma jiberilmeydi. Kirisiw faylları ashıq, siz hár test ushın juwap faylın jiberesiz; onı avtor programması bahalaydı. Jiberilmegen test ushın sońǵı juwabıńız saqlanadı. |  |
+| `admin.label.value.answerFiles` | Javob fayllari | Juwap faylları |  |
+| `about.eval.twoPass` | Ikki bosqichli masala: dasturingiz har testda ikki marta ishga tushadi. Ikkinchi yurish faqat hakam dasturi birinchisining chiqishidan yasagan kirishni ko'radi — xotira ham, fayl ham saqlanmaydi. | Eki basqıshlı másele: programmańız hár testte eki ret iske túsedi. Ekinshi júriw tek tóreshi programması birinshisiniń shıǵısınan jasaǵan kirisiwdi kóredi — yad ta, fayl da saqlanbaydı. |  |
+| `admin.label.value.twoPass` | Ikki bosqichli | Eki basqıshlı |  |
+| `admin.label.tech.managerLanguage` | Oraliq dastur tili (kod, masalan py313) | Aralıq programma tili (kod, mısalı py313) |  |
+| `admin.label.tech.managerSource` | Oraliq dastur manbasi | Aralıq programma deregi |  |
+| `admin.help.managerOnlyTwoPass` | Faqat ikki bosqichli masala uchun: manager <kirish> <1-yurish chiqishi> <javob>; chiqishi 2-yurishning kirishi bo'ladi, noldan farqli kod rad etadi. | Tek eki basqıshlı másele ushın: manager <kirisiw> <1-júriw shıǵısı> <juwap>; shıǵısı 2-júriwdiń kirisiwi boladı, nolden ózge kod biykarlaydı. |  |
+| `about.eval.sql` | SQL masalasi: bitta SELECT so'rovi yoziladi (SQLite 3). Har test — tayyor baza; so'rov natijasi qatorma-qator solishtiriladi. Ma'lumotni o'zgartiruvchi buyruqlar rad etiladi. | SQL máselesi: bir SELECT sorawı jazıladı (SQLite 3). Hár test — tayar baza; soraw nátiyjesi qatarma-qatar salıstırıladı. Maǵlıwmattı ózgertiwshi buyrıqlar biykarlanadı. |  |
+| `admin.label.value.sqlQuery` | SQL so'rovi | SQL sorawı |  |
+| `about.judge.title` | Tizim qanday ishlaydi | Tekseriw qalay isleydi |  |
+| `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı. |  |
+| `about.notes.title` | Muhim eslatmalar | Áhmiyetli eskertpeler |  |
+| `about.notes.io` | Ko'p masalalar stdin/stdout ishlatadi. Ba'zilari (jumladan A+B) input.txt va output.txt ni ham qabul qiladi — shartga qarang. | Kópshilik máseleler stdin hám stdout qollanadı. Ayırımları (sonıń ishinde A+B) input.txt hám output.txt ti de qabıl etedi — shártke qarań. |  |
+| `about.notes.cpp` | C++ da __int64 o'rniga long long ishlating; tez kirish/chiqish uchun ios::sync_with_stdio(false) tavsiya etiladi. | C++ tilinde __int64 ornına long long qollanıń; tez kirgiziw/shıǵarıw ushın ios::sync_with_stdio(false) usınıladı. |  |
+| `about.notes.java` | Java yechimida public class nomi Main bo'lishi va fayl Main.java deb saqlanishi kerak. | Java sheshimlerinde Main atlı public class bolıwı hám ol Main.java faylında turıwı shárt. |  |
+| `about.submit.title` | Yechimni qanday yuborish kerak | Sheshimdi qalay jiberiw kerek |  |
+| `about.submit.pickProblem` | Masalalar ro'yxatidan masalani tanlang va shartni diqqat bilan o'qing. | Másele tańlań hám shártin dıqqat penen oqıń. |  |
+| `about.submit.pickLanguage` | Qo'llab-quvvatlanadigan tillardan birida yechim yozing. | Qollap-quwatlanatuǵın tillerdiń birinde sheshim jazıń. |  |
+| `about.submit.useStdio` | Shartda ko'rsatilganidek stdin/stdout yoki input.txt/output.txt dan foydalaning. | stdin/stdout qollanıń, al shárt fayl menen islewge ruqsat berse — input.txt/output.txt. |  |
+| `about.submit.sendForm` | Masala sahifasidagi yuborish formasi orqali kodni yuboring. | Kodtı másele betindegi forma arqalı jiberiń. |  |
+| `about.submit.waitJudge` | Kompilyatsiya va test natijasini kuting (PENDING → RUNNING → verdict). | Kompilyaciya hám testti kútiń (PENDING → RUNNING → verdict). |  |
+| `about.submit.analyzeResult` | Natijani tahlil qiling; xato bo'lsa shart, cheklovlar va namuna testlarni qayta ko'ring. | Sheshim ótpese, shártti, sheklerdi hám úlgilerdi qayta tekseriń. |  |
+| `about.practices.title` | Masalalarni yechishda eng yaxshi amaliyotlar | Eń jaqsı ámeliyatlar |  |
+| `about.practices.samples` | Yuborishdan oldin namunaviy kiritmalarda sinab ko'ring (Custom test). | Jiberiwden aldın úlgi testlerde sınap kóriń (custom test). |  |
+| `about.practices.limits` | Vaqt va xotira cheklovlariga e'tibor bering. | Waqıt hám yad sheklerine itibar beriń. |  |
+| `about.practices.algorithms` | Cheklovlarga mos samarali algoritm va ma'lumotlar strukturasi tanlang. | Sheklewlerge sáykes algoritm hám strukturalardı tańlań. |  |
+| `about.practices.edges` | Chegaraviy holatlarni qayta ishlang: bo'sh kiritma, min/max qiymatlar. | Shegaralıq jaǵdaylardı esapqa alıń: bos kirgiziw, min/max mánisler. |  |
+| `about.practices.format` | Chiqish formatiga rioya qiling — ortiqcha bo'shliq PE ga olib kelishi mumkin. | Shıǵarıw formatın anıq saqlań — artıqsha bos orınlar PE beriwi múmkin. |  |
+| `about.practices.fastIo` | Katta kiritmada tilning tez I/O usullaridan foydalaning. | Úlken kirgiziwde tilińizdiń tez I/O usılların qollanıń. |  |
+| `about.practices.debug` | Mantiqni lokal debug qiling; keyin tozalangan kodni yuboring. | Kodtı óz kompyuterińizde debug qılıń, keyin taza kodtı jiberiń. |  |
+| `about.practices.readAll` | Shart, izohlar va cheklovlarni oxirigacha o'qing. | Shártti, eskertpelerdi hám sheklerdi aqırına shekem oqıń. |  |
+| `about.verdicts.title` | Yechim holati kodlari ({count} ta) | Verdict kodları ({count}) |  |
+| `about.verdicts.intro` | Platformada {count} ta verdict kodi bor. Jadvalda har biri: nima degani, nima qilish kerak va oddiy misol. | Platformada {count} verdict kodı bar. Hár bir qatarda: mánisi, ne islew kerek hám ápiwayı mısal. |  |
 | `about.verdicts.col.num` | № | # |  |
-| `about.verdicts.col.status` | Holati | Status |  |
-| `about.verdicts.col.event` | Tushuntirish | Meaning |  |
-| `about.verdicts.col.cause` | Nima qilish kerak | What to do |  |
-| `about.verdicts.col.example` | Misol | Example |  |
-| `about.verdicts.event.pending` | Yuborish navbatda — judge hali boshlamagan. | Submission is queued — judging has not started yet. |  |
-| `about.verdicts.cause.pending` | Kuting; urinishlar sahifasida holat o'zgaradi. | Wait; the status updates on your attempts page. |  |
-| `about.verdicts.example.pending` | Ko'p yuborish paytida yangi urinish bir necha soniya PENDING bo'ladi. | During busy periods a new submit may stay PENDING for a few seconds. |  |
-| `about.verdicts.event.running` | Kod kompilyatsiya qilinmoqda yoki testlar bajarilmoqda. | Code is compiling or tests are running. |  |
-| `about.verdicts.cause.running` | Sahifani tez-tez yangilamang; natija tez orada keladi. | Avoid rapid refresh; the result arrives soon. |  |
-| `about.verdicts.example.running` | Birinchi testdan oldin RUNNING bir-ikki soniya ko'rinishi mumkin. | You may see RUNNING for a second or two before the first test finishes. |  |
-| `about.verdicts.event.ac` | Barcha yashirin testlar o'tdi — yechim qabul qilindi. | All hidden tests passed — accepted. |  |
-| `about.verdicts.cause.ac` | Hech narsa tuzatish shart emas; keyingi masalaga o'ting. | Nothing to fix; move on to the next problem. |  |
-| `about.verdicts.example.ac` | A+B masalasida `3 4` kiritsangiz, chiqish `7` bo'lsa — AC. | On A+B, input `3 4` with output `7` yields AC. |  |
-| `about.verdicts.event.wa` | Chiqish kutilgan javobga mos emas (Wrong Answer). | Output does not match the expected answer. |  |
-| `about.verdicts.cause.wa` | Algoritm va chegaraviy holatlarni tekshiring; namunadan boshlang. | Review logic and edge cases; start from the samples. |  |
-| `about.verdicts.example.wa` | Javob `10` bo'lishi kerak bo'lsa, `9` yoki `10\\n` ortiqcha qator — WA. | If the answer should be `10`, output `9` or an extra blank line can be WA. |  |
-| `about.verdicts.event.pe` | Format xatosi — ortiqcha/bo'sh joy, noto'g'ri qator yoki belgi. | Presentation error — extra spaces, lines, or characters. |  |
-| `about.verdicts.cause.pe` | Chiqishni shartdagidek qiling; ortiqcha probel yoki `\\n` qoldirmang. | Match the required format exactly; drop trailing spaces or lines. |  |
-| `about.verdicts.example.pe` | Har qator `x y` bo'lishi kerak bo'lsa, oxirida `x y ` — PE. | If each line must be `x y`, a trailing space on `x y ` can be PE. |  |
-| `about.verdicts.event.tle` | Vaqt chegarasi (Time Limit) buzildi. | Time limit exceeded. |  |
-| `about.verdicts.cause.tle` | Murakkablikni pasaytiring; sekin tsikl yoki rekursiyani optimallashtiring. | Improve complexity; remove slow loops or deep recursion. |  |
-| `about.verdicts.example.tle` | O(n²) tsikl n=10⁵ da TLE; O(n log n) odatda o'tadi. | An O(n²) loop at n=10⁵ often TLE; O(n log n) usually passes. |  |
-| `about.verdicts.event.mle` | Xotira chegarasi (Memory Limit) oshdi. | Memory limit exceeded. |  |
-| `about.verdicts.cause.mle` | Massiv hajmini kamaytiring; keraksiz nusxa va katta konteynerlardan qoching. | Shrink arrays; avoid huge copies and containers. |  |
-| `about.verdicts.example.mle` | 10⁸ elementli `int` massivi bir necha GB — MLE. | An array of 10⁸ ints can exceed the limit — MLE. |  |
-| `about.verdicts.event.ole` | Chiqish hajmi chegaradan oshdi (Output Limit). | Output limit exceeded. |  |
-| `about.verdicts.cause.ole` | Cheksiz chiqish yoki juda katta matn chop etmang. | Do not print unbounded or huge text. |  |
-| `about.verdicts.example.ole` | Har son uchun alohida qator o'rniga bitta qisqa javob yetadi. | Print one concise answer instead of millions of lines. |  |
-| `about.verdicts.event.idleness` | Dastur juda uzoq vaqt hech narsa o'qimaydi/yozmaydi (idleness). | Program idle too long without reading/writing. |  |
-| `about.verdicts.cause.idleness` | Interaktiv masalalarda kiritmani darhol o'qing; bloklanib qolmang. | In interactive tasks, read promptly; do not block idle. |  |
-| `about.verdicts.example.idleness` | Birinchi `read` dan keyin uzoq hisoblashdan oldin javob yozing. | After the first read, do not compute silently for too long. |  |
-| `about.verdicts.event.ce` | Kompilyatsiya xatosi — kod build bo'lmadi. | Compilation error — the code did not build. |  |
-| `about.verdicts.cause.ce` | Xato matnini o'qing; sintaksis, import va Main.java nomini tekshiring. | Read the compiler message; check syntax, imports, and Main.java. |  |
-| `about.verdicts.example.ce` | Java: `class Solution` o'rniga `public class Main` — CE. | Java: `class Solution` instead of `public class Main` — CE. |  |
-| `about.verdicts.event.compile_timeout` | Kompilyatsiya vaqt budjetidan oshdi. | Compilation exceeded its time budget. |  |
-| `about.verdicts.cause.compile_timeout` | Og'ir shablon yoki juda katta faylni soddalashtiring; qayta yuboring. | Simplify heavy templates or huge translation units. |  |
-| `about.verdicts.example.compile_timeout` | Juda katta header-only C++ shabloni ba'zan compile timeout beradi. | Very heavy C++ templates can hit compile timeout. |  |
-| `about.verdicts.event.re_signal` | Dastur signal bilan to'xtadi (masalan, segmentation fault). | Program stopped on a signal (e.g. segfault). |  |
-| `about.verdicts.cause.re_signal` | Indeks, nolga bo'lish, `null` — xavfsizlikni tekshiring. | Check bounds, division by zero, null access. |  |
-| `about.verdicts.example.re_signal` | `a[-1]` yoki `1/0` — RE_SIGNAL. | `a[-1]` or `1/0` — RE_SIGNAL. |  |
-| `about.verdicts.event.re_exit` | Dastur nolga teng bo'lmagan chiqish kodi bilan tugadi. | Program exited with a non-zero code. |  |
-| `about.verdicts.cause.re_exit` | `System.exit(1)` yoki `abort()` ishlatmang; `return 0` bilan chiqing. | Avoid `System.exit(1)` / `abort()`; finish with `return 0`. |  |
-| `about.verdicts.example.re_exit` | C++ da `exit(1)` o'rniga `return 0` — RE_EXIT. | In C++, prefer `return 0` over `exit(1)`. |  |
-| `about.verdicts.event.re` | Eski umumiy RE kodi (tarixiy yozuvlar). | Legacy generic RE (historical records). |  |
-| `about.verdicts.cause.re` | Yangi urinishlarda odatda RE_SIGNAL yoki RE_EXIT ko'rasiz. | New runs usually show RE_SIGNAL or RE_EXIT instead. |  |
-| `about.verdicts.example.re` | Arxivdagi eski urinishda `RE` qolgan bo'lishi mumkin. | Old attempts in the archive may still say RE. |  |
-| `about.verdicts.event.partial` | Qisman ball — ba'zi testlar o'tdi (IOI uslubi). | Partial score — some tests passed (IOI-style). |  |
-| `about.verdicts.cause.partial` | Qaysi testlar o'tganini ko'ring; qolganlar uchun yechimni yaxshilang. | See which tests passed; improve the rest. |  |
-| `about.verdicts.example.partial` | 10 testdan 7 tasi to'g'ri — PARTIAL (musobaqa rejimiga bog'liq). | 7 of 10 tests correct — PARTIAL (depends on contest mode). |  |
-| `about.verdicts.event.skipped` | Test o'tkazib yuborildi (maxsus rejim yoki sozlama). | Test was skipped (special mode or configuration). |  |
-| `about.verdicts.cause.skipped` | Odatiy masala yuborishida kam uchraydi; staff izohiga qarang. | Rare on normal submits; see staff notes if shown. |  |
-| `about.verdicts.example.skipped` | Ba'zi musobaqalarda validator yiqilganda keyingi test SKIPPED bo'lishi mumkin. | Some contest setups skip tests after certain failures. |  |
-| `about.verdicts.event.hacked` | Qabul qilingan yechim hack testida yiqildi. | An accepted solution failed a hack test. |  |
-| `about.verdicts.cause.hacked` | Bu hack/jury jarayoni; oddiy WA emas — shart va cheklovlarni qayta o'qing. | Part of hack/jury flow — re-read constraints. |  |
-| `about.verdicts.example.hacked` | Boshqasining AC kodi maxsus testda WA bo'lsa, asl yechim HACKED bo'lishi mumkin. | Someone's AC failing a generated stress test may become HACKED. |  |
-| `about.verdicts.event.wrong_test` | Test yaroqsiz — muammo masala/hakam tomonda. | Invalid test — problem/checker side. |  |
-| `about.verdicts.cause.wrong_test` | Sizning kodingiz emas; muallifga xabar bering yoki kuting. | Not your bug; report to authors or wait for a fix. |  |
-| `about.verdicts.example.wrong_test` | Noto'g'ri checker yoki imkonsiz cheklov — WRONG_TEST. | Broken checker or impossible constraint — WRONG_TEST. |  |
-| `about.verdicts.event.checker_error` | Checker (solish) dasturida ichki xato. | Internal error in the checker program. |  |
-| `about.verdicts.cause.checker_error` | Foydalanuvchi aybi emas; qayta urinib ko'ring, muammo davom etsa xabar bering. | Not your fault; retry, report if it persists. |  |
-| `about.verdicts.example.checker_error` | Checker crash qilsa — CHECKER_ERROR, WA emas. | If the checker crashes — CHECKER_ERROR, not WA. |  |
-| `about.verdicts.event.ie` | Ichki xato (Internal Error) — tizim yoki masala sozlashida muammo. | Internal error — platform or problem configuration. |  |
-| `about.verdicts.cause.ie` | Kodni o'zgartirish shart emas; biroz kutib qayta yuboring. | Your code may be fine; wait and resubmit. |  |
-| `about.verdicts.example.ie` | Vaqtincha judge nosozligi — IE; keyin o'sha kod AC bo'lishi mumkin. | Transient judge issue — IE; same code may later AC. |  |
-| `about.verdicts.event.security_violation` | Sandbox xavfsizlik qoidasi buzildi. | Sandbox security rule violated. |  |
-| `about.verdicts.cause.security_violation` | Fayl/tarmoq chaqiruvi, chetlab o'tish urinishi — ruxsat etilmagan. | Forbidden file/network/system calls. |  |
-| `about.verdicts.example.security_violation` | Tashqi fayl ochish yoki `system()` chaqiruvi — SECURITY_VIOLATION. | Opening arbitrary files or calling `system()` — SECURITY_VIOLATION. |  |
-| `about.verdicts.event.testing_aborted` | Oldingi natija bekor qilindi — qayta tekshiruv boshlandi. | Previous result revoked — rejudging started. |  |
-| `about.verdicts.cause.testing_aborted` | Rejudge yoki hack jarayoni; yangi verdict kelguncha kuting. | Rejudge or hack flow; wait for the new verdict. |  |
-| `about.verdicts.example.testing_aborted` | Staff rejudge qilganda bir lahza TESTING_ABORTED ko'rinadi. | Staff rejudge may briefly show TESTING_ABORTED. |  |
-| `about.verdicts.event.rate_limited` | Submit tezligi chegarasi — yuborish rad etildi (429). | Submit rate limit hit — request rejected (429). |  |
-| `about.verdicts.cause.rate_limited` | Retry-After yoki xabardagi kutish vaqtini kuting; spam qilmang. | Wait for Retry-After; do not spam submits. |  |
-| `about.verdicts.example.rate_limited` | 1 daqiqada juda ko'p yuborish — RATE_LIMITED (tarixda qolishi mumkin). | Too many submits per minute — RATE_LIMITED (may appear in history). |  |
-| `about.verdicts.event.denial_of_judgement` | Judge ishini yo'qotdi — infra muammosi (navbat qayta urinmadi). | Judge lost the job — infrastructure issue. |  |
-| `about.verdicts.cause.denial_of_judgement` | Sizning aybingiz emas; qayta yuboring; muammo takrorlansa support. | Not your fault; resubmit; contact support if repeated. |  |
-| `about.verdicts.example.denial_of_judgement` | Deploy vaqtida navbatdagi urinish DENIAL_OF_JUDGEMENT bo'lishi mumkin. | During deploy, queued jobs may get DENIAL_OF_JUDGEMENT. |  |
+| `about.verdicts.col.status` | Holati | Jaǵdayı |  |
+| `about.verdicts.col.event` | Tushuntirish | Mánisi |  |
+| `about.verdicts.col.cause` | Nima qilish kerak | Ne islew kerek |  |
+| `about.verdicts.col.example` | Misol | Mısal |  |
+| `about.verdicts.event.pending` | Yuborish navbatda — judge hali boshlamagan. | Sheshim gezekte tur — tekseriw ele baslanbaǵan. |  |
+| `about.verdicts.cause.pending` | Kuting; urinishlar sahifasida holat o'zgaradi. | Kútiń; jaǵday urınıwlar betinde jańalanadı. |  |
+| `about.verdicts.example.pending` | Ko'p yuborish paytida yangi urinish bir necha soniya PENDING bo'ladi. | Júkleme kóp waqıtta jańa sheshim bir neshe sekund PENDING bolıp turıwı múmkin. |  |
+| `about.verdicts.event.running` | Kod kompilyatsiya qilinmoqda yoki testlar bajarilmoqda. | Kod kompilyaciyalanıp atır yamasa testler orınlanıp atır. |  |
+| `about.verdicts.cause.running` | Sahifani tez-tez yangilamang; natija tez orada keladi. | Betti qayta-qayta jańalamań; nátiyje tez arada keledi. |  |
+| `about.verdicts.example.running` | Birinchi testdan oldin RUNNING bir-ikki soniya ko'rinishi mumkin. | Birinshi test tamamlanǵansha bir-eki sekund RUNNING kóriniwi múmkin. |  |
+| `about.verdicts.event.ac` | Barcha yashirin testlar o'tdi — yechim qabul qilindi. | Barlıq jasırın testler ótti — sheshim qabıl etildi. |  |
+| `about.verdicts.cause.ac` | Hech narsa tuzatish shart emas; keyingi masalaga o'ting. | Dúzetetuǵın hesh nárse joq; keyingi máselege ótiń. |  |
+| `about.verdicts.example.ac` | A+B masalasida `3 4` kiritsangiz, chiqish `7` bo'lsa — AC. | A+B máselesinde `3 4` kirgizilip, `7` shıǵarılsa — AC. |  |
+| `about.verdicts.event.wa` | Chiqish kutilgan javobga mos emas (Wrong Answer). | Shıǵarılǵan nátiyje kútilgen juwapqa sáykes kelmeydi. |  |
+| `about.verdicts.cause.wa` | Algoritm va chegaraviy holatlarni tekshiring; namunadan boshlang. | Logikanı hám shegaralıq jaǵdaylardı tekseriń; úlgilerden baslań. |  |
+| `about.verdicts.example.wa` | Javob `10` bo'lishi kerak bo'lsa, `9` yoki `10\\n` ortiqcha qator — WA. | Juwap `10` bolıwı kerek bolsa, `9` yamasa artıqsha bos qatar WA beriwi múmkin. |  |
+| `about.verdicts.event.pe` | Format xatosi — ortiqcha/bo'sh joy, noto'g'ri qator yoki belgi. | Format qátesi — artıqsha bos orın, qatar yamasa belgiler. |  |
+| `about.verdicts.cause.pe` | Chiqishni shartdagidek qiling; ortiqcha probel yoki `\\n` qoldirmang. | Talap etilgen formattı anıq saqlań; aqırındaǵı bos orın yamasa qatarlardı alıp taslań. |  |
+| `about.verdicts.example.pe` | Har qator `x y` bo'lishi kerak bo'lsa, oxirida `x y ` — PE. | Hár qatar `x y` bolıwı kerek bolsa, aqırında bos ornı bar `x y ` PE beriwi múmkin. |  |
+| `about.verdicts.event.tle` | Vaqt chegarasi (Time Limit) buzildi. | Waqıt shegi asıp ketti. |  |
+| `about.verdicts.cause.tle` | Murakkablikni pasaytiring; sekin tsikl yoki rekursiyani optimallashtiring. | Quramalılıqtı tómenletiń; áste cikllerdi yamasa tereń rekursiyanı alıp taslań. |  |
+| `about.verdicts.example.tle` | O(n²) tsikl n=10⁵ da TLE; O(n log n) odatda o'tadi. | O(n²) cikl n=10⁵ bolǵanda kóbinese TLE beredi; O(n log n) ádette ótedi. |  |
+| `about.verdicts.event.mle` | Xotira chegarasi (Memory Limit) oshdi. | Yad shegi asıp ketti. |  |
+| `about.verdicts.cause.mle` | Massiv hajmini kamaytiring; keraksiz nusxa va katta konteynerlardan qoching. | Massivlerdi kishireytiń; úlken kóshirmeler hám konteynerlerden qashıń. |  |
+| `about.verdicts.example.mle` | 10⁸ elementli `int` massivi bir necha GB — MLE. | 10⁸ pútin sannan turatuǵın massiv shekten asıp ketiwi múmkin — MLE. |  |
+| `about.verdicts.event.ole` | Chiqish hajmi chegaradan oshdi (Output Limit). | Shıǵarıw kólemi shekten asıp ketti. |  |
+| `about.verdicts.cause.ole` | Cheksiz chiqish yoki juda katta matn chop etmang. | Sheksiz yamasa júdá úlken tekst shıǵarmań. |  |
+| `about.verdicts.example.ole` | Har son uchun alohida qator o'rniga bitta qisqa javob yetadi. | Millionlaǵan qatar ornına bir qısqa juwap shıǵarıń. |  |
+| `about.verdicts.event.idleness` | Dastur juda uzoq vaqt hech narsa o'qimaydi/yozmaydi (idleness). | Baǵdarlama uzaq waqıt hesh nárse oqımay/jazbay turdı. |  |
+| `about.verdicts.cause.idleness` | Interaktiv masalalarda kiritmani darhol o'qing; bloklanib qolmang. | Interaktiv máselelerde kirgiziwdi dárhal oqıń; bos kútip qalmań. |  |
+| `about.verdicts.example.idleness` | Birinchi `read` dan keyin uzoq hisoblashdan oldin javob yozing. | Birinshi oqıwdan keyin únsiz uzaq waqıt esaplamań. |  |
+| `about.verdicts.event.ce` | Kompilyatsiya xatosi — kod build bo'lmadi. | Kompilyaciya qátesi — kod jıynalmadı. |  |
+| `about.verdicts.cause.ce` | Xato matnini o'qing; sintaksis, import va Main.java nomini tekshiring. | Kompilyator xabarın oqıń; sintaksisti, importlardı hám Main.java atın tekseriń. |  |
+| `about.verdicts.example.ce` | Java: `class Solution` o'rniga `public class Main` — CE. | Java: `public class Main` ornına `class Solution` jazılsa — CE. |  |
+| `about.verdicts.event.compile_timeout` | Kompilyatsiya vaqt budjetidan oshdi. | Kompilyaciya ózine ajıratılǵan waqıttan asıp ketti. |  |
+| `about.verdicts.cause.compile_timeout` | Og'ir shablon yoki juda katta faylni soddalashtiring; qayta yuboring. | Awır shablonlardı yamasa júdá úlken fayllardı ápiwayılastırıń. |  |
+| `about.verdicts.example.compile_timeout` | Juda katta header-only C++ shabloni ba'zan compile timeout beradi. | Júdá awır C++ shablonları compile timeout beriwi múmkin. |  |
+| `about.verdicts.event.re_signal` | Dastur signal bilan to'xtadi (masalan, segmentation fault). | Baǵdarlama signal menen toqtadı (mısalı, segfault). |  |
+| `about.verdicts.cause.re_signal` | Indeks, nolga bo'lish, `null` — xavfsizlikni tekshiring. | Indeks shegaraların, nolge bóliwdi, null ǵa múrájatti tekseriń. |  |
+| `about.verdicts.example.re_signal` | `a[-1]` yoki `1/0` — RE_SIGNAL. | `a[-1]` yamasa `1/0` jazılsa — RE_SIGNAL. |  |
+| `about.verdicts.event.re_exit` | Dastur nolga teng bo'lmagan chiqish kodi bilan tugadi. | Baǵdarlama nol emes kod penen juwmaqlandı. |  |
+| `about.verdicts.cause.re_exit` | `System.exit(1)` yoki `abort()` ishlatmang; `return 0` bilan chiqing. | `System.exit(1)` / `abort()` qollanbań; `return 0` menen juwmaqlań. |  |
+| `about.verdicts.example.re_exit` | C++ da `exit(1)` o'rniga `return 0` — RE_EXIT. | C++ tilinde `exit(1)` ornına `return 0` qollanıń. |  |
+| `about.verdicts.event.re` | Eski umumiy RE kodi (tarixiy yozuvlar). | Eski ulıwma RE kodı (tariyxıy jazıwlar). |  |
+| `about.verdicts.cause.re` | Yangi urinishlarda odatda RE_SIGNAL yoki RE_EXIT ko'rasiz. | Jańa urınıwlarda ádette onıń ornına RE_SIGNAL yamasa RE_EXIT kórinedi. |  |
+| `about.verdicts.example.re` | Arxivdagi eski urinishda `RE` qolgan bo'lishi mumkin. | Arxivtegi eski urınıwlarda ele de RE jazılıp turıwı múmkin. |  |
+| `about.verdicts.event.partial` | Qisman ball — ba'zi testlar o'tdi (IOI uslubi). | Bólekley ball — ayırım testler ótti (IOI usılı). |  |
+| `about.verdicts.cause.partial` | Qaysi testlar o'tganini ko'ring; qolganlar uchun yechimni yaxshilang. | Qaysı testler ótkenin kóriń; qalǵanların jaqsılań. |  |
+| `about.verdicts.example.partial` | 10 testdan 7 tasi to'g'ri — PARTIAL (musobaqa rejimiga bog'liq). | 10 testten 7 si durıs — PARTIAL (jarıs rejimine baylanıslı). |  |
+| `about.verdicts.event.skipped` | Test o'tkazib yuborildi (maxsus rejim yoki sozlama). | Test ótkerip jiberildi (arnawlı rejim yamasa sazlaw). |  |
+| `about.verdicts.cause.skipped` | Odatiy masala yuborishida kam uchraydi; staff izohiga qarang. | Ádettegi jiberiwlerde siyrek ushırasadı; staff eskertpesi bolsa, soǵan qarań. |  |
+| `about.verdicts.example.skipped` | Ba'zi musobaqalarda validator yiqilganda keyingi test SKIPPED bo'lishi mumkin. | Ayırım jarıs sazlawlarında belgili qátelerden keyin testler ótkerip jiberiledi. |  |
+| `about.verdicts.event.hacked` | Qabul qilingan yechim hack testida yiqildi. | Qabıl etilgen sheshim hack testinen ótpedi. |  |
+| `about.verdicts.cause.hacked` | Bu hack/jury jarayoni; oddiy WA emas — shart va cheklovlarni qayta o'qing. | Bul hack/jury processiniń bólegi — sheklewlerdi qayta oqıń. |  |
+| `about.verdicts.example.hacked` | Boshqasining AC kodi maxsus testda WA bo'lsa, asl yechim HACKED bo'lishi mumkin. | Birewdiń AC sheshimi generaciyalanǵan stress testten ótpese, HACKED bolıwı múmkin. |  |
+| `about.verdicts.event.wrong_test` | Test yaroqsiz — muammo masala/hakam tomonda. | Test jaramsız — másele/checker tárepindegi mashqala. |  |
+| `about.verdicts.cause.wrong_test` | Sizning kodingiz emas; muallifga xabar bering yoki kuting. | Bul sizdiń qáteńiz emes; avtorlarǵa xabar beriń yamasa dúzetiliwin kútiń. |  |
+| `about.verdicts.example.wrong_test` | Noto'g'ri checker yoki imkonsiz cheklov — WRONG_TEST. | Buzıq checker yamasa orınlap bolmaytuǵın sheklew — WRONG_TEST. |  |
+| `about.verdicts.event.checker_error` | Checker (solish) dasturida ichki xato. | Checker baǵdarlamasında ishki qáte. |  |
+| `about.verdicts.cause.checker_error` | Foydalanuvchi aybi emas; qayta urinib ko'ring, muammo davom etsa xabar bering. | Sizdiń ayıbıńız emes; qayta urınıń, dawam etse xabar beriń. |  |
+| `about.verdicts.example.checker_error` | Checker crash qilsa — CHECKER_ERROR, WA emas. | Checker qulap qalsa — WA emes, CHECKER_ERROR. |  |
+| `about.verdicts.event.ie` | Ichki xato (Internal Error) — tizim yoki masala sozlashida muammo. | Ishki qáte — platforma yamasa másele sazlawında mashqala. |  |
+| `about.verdicts.cause.ie` | Kodni o'zgartirish shart emas; biroz kutib qayta yuboring. | Kodıńız durıs bolıwı múmkin; kútip, qayta jiberiń. |  |
+| `about.verdicts.example.ie` | Vaqtincha judge nosozligi — IE; keyin o'sha kod AC bo'lishi mumkin. | Judge tiń waqıtsha nasazlıǵı — IE; sol kod keyin AC alıwı múmkin. |  |
+| `about.verdicts.event.security_violation` | Sandbox xavfsizlik qoidasi buzildi. | Sandbox qáwipsizlik qaǵıydası buzıldı. |  |
+| `about.verdicts.cause.security_violation` | Fayl/tarmoq chaqiruvi, chetlab o'tish urinishi — ruxsat etilmagan. | Fayl/tarmaq/sistema shaqırıwları qadaǵan etilgen. |  |
+| `about.verdicts.example.security_violation` | Tashqi fayl ochish yoki `system()` chaqiruvi — SECURITY_VIOLATION. | Qálegen fayldı ashıw yamasa `system()` shaqırıw — SECURITY_VIOLATION. |  |
+| `about.verdicts.event.testing_aborted` | Oldingi natija bekor qilindi — qayta tekshiruv boshlandi. | Aldınǵı nátiyje biykar etildi — qayta tekseriw baslandı. |  |
+| `about.verdicts.cause.testing_aborted` | Rejudge yoki hack jarayoni; yangi verdict kelguncha kuting. | Rejudge yamasa hack processi; jańa verdict ti kútiń. |  |
+| `about.verdicts.example.testing_aborted` | Staff rejudge qilganda bir lahza TESTING_ABORTED ko'rinadi. | Staff rejudge qılǵanda qısqa waqıt TESTING_ABORTED kóriniwi múmkin. |  |
+| `about.verdicts.event.rate_limited` | Submit tezligi chegarasi — yuborish rad etildi (429). | Jiberiw tezligi shegine jetildi — soraw qaytarıldı (429). |  |
+| `about.verdicts.cause.rate_limited` | Retry-After yoki xabardagi kutish vaqtini kuting; spam qilmang. | Retry-After waqtın kútiń; izbe-iz kóp jibere bermeń. |  |
+| `about.verdicts.example.rate_limited` | 1 daqiqada juda ko'p yuborish — RATE_LIMITED (tarixda qolishi mumkin). | Bir minutta júdá kóp jiberiw — RATE_LIMITED (tariyxta kóriniwi múmkin). |  |
+| `about.verdicts.event.denial_of_judgement` | Judge ishini yo'qotdi — infra muammosi (navbat qayta urinmadi). | Judge tapsırmanı joǵalttı — infrastruktura mashqalası. |  |
+| `about.verdicts.cause.denial_of_judgement` | Sizning aybingiz emas; qayta yuboring; muammo takrorlansa support. | Sizdiń ayıbıńız emes; qayta jiberiń; tákirarlansa, support qa jazıń. |  |
+| `about.verdicts.example.denial_of_judgement` | Deploy vaqtida navbatdagi urinish DENIAL_OF_JUDGEMENT bo'lishi mumkin. | Deploy waqtında gezektegi tapsırmalar DENIAL_OF_JUDGEMENT alıwı múmkin. |  |
 | `team.title` | Jamoa | Komanda |  |
 | `admin.title` | Boshqaruv | Basqarıw |  |
 | `admin.create` | Yaratish | Jaratıw |  |
@@ -1280,36 +1311,36 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.samples` | Namunalar | Mısalar |  |
 | `problem.sampleInput` | Kirish | Kiris |  |
 | `problem.sampleOutput` | Chiqish | Shıǵıs |  |
-| `problem.sampleAnswer` | Javob | Answer |  |
+| `problem.sampleAnswer` | Javob | Juwap |  |
 | `problem.sampleRunHint` | Namunalarda sinash uchun jadvaldagi ▶ yoki muharrir panelidagi namuna konsolidan foydalaning. | Namunada sinaw ushin jadvaldagi ▶ yamasa muharrir panelinen paydalanıń. |  |
-| `problem.tagsAndTopics` | Teglar va mavzular | Tags and topics |  |
-| `problem.splitResize` | Panellar kengligini o'zgartirish | Resize statement and editor panels |  |
-| `problem.openEditor` | Kod | Code |  |
-| `problem.closeEditor` | Yopish | Close |  |
-| `problem.collapseEditor` | Muharrirni yig‘ish | Collapse editor |  |
-| `problem.expandEditor` | Muharrirni ko‘rsatish | Show editor |  |
-| `problem.sheetResize` | Muharrir balandligini o‘zgartirish | Resize editor sheet height |  |
-| `problem.statementSizeLabel` | Matn | Text |  |
-| `problem.statementSizeHint` | Masala matni o‘lchami | Statement text size |  |
-| `problem.sectionMode.label` | Bo‘limlar ajratilishi | Section spacing |  |
-| `problem.sectionMode.space` | Bo‘shliq | Space |  |
-| `problem.sectionMode.line` | Chiziq | Line |  |
-| `problem.sectionMode.card` | Karta | Card |  |
-| `problem.sectionNav.label` | Shart bo‘limlari | Statement sections |  |
-| `problem.sectionNav.statement` | Tavsif | Statement |  |
-| `problem.sectionNav.input` | Kirish | Input |  |
-| `problem.sectionNav.output` | Chiqish | Output |  |
+| `problem.tagsAndTopics` | Teglar va mavzular | Tegler hám temalar |  |
+| `problem.splitResize` | Panellar kengligini o'zgartirish | Shárt hám redaktor panelleriniń keńligin ózgertiw |  |
+| `problem.openEditor` | Kod | Redaktor |  |
+| `problem.closeEditor` | Yopish | Jabıw |  |
+| `problem.collapseEditor` | Muharrirni yig‘ish | Redaktordı jıynaw |  |
+| `problem.expandEditor` | Muharrirni ko‘rsatish | Redaktordı kórsetiw |  |
+| `problem.sheetResize` | Muharrir balandligini o‘zgartirish | Redaktor biyikligin ózgertiw |  |
+| `problem.statementSizeLabel` | Matn | Tekst |  |
+| `problem.statementSizeHint` | Masala matni o‘lchami | Másele tekstiniń ólshemi |  |
+| `problem.sectionMode.label` | Bo‘limlar ajratilishi | Bólimlerdiń ajıratılıwı |  |
+| `problem.sectionMode.space` | Bo‘shliq | Aralıq |  |
+| `problem.sectionMode.line` | Chiziq | Sızıq |  |
+| `problem.sectionMode.card` | Karta | Kartochka |  |
+| `problem.sectionNav.label` | Shart bo‘limlari | Shárt bólimleri |  |
+| `problem.sectionNav.statement` | Tavsif | Shárt |  |
+| `problem.sectionNav.input` | Kirish | Kiris |  |
+| `problem.sectionNav.output` | Chiqish | Shıǵıs |  |
 | `problem.sectionNav.notes` | Izohlar | Eskertpeler |  |
-| `problem.sectionNav.samples` | Namunalar | Samples |  |
+| `problem.sectionNav.samples` | Namunalar | Úlgiler |  |
 | `problem.sectionNav.editorial` | Tahlil | Sheshim tahlili |  |
-| `problem.sampleRun` | {order}-namunani sinash | Run sample {order} |  |
-| `problem.verdictLayout.label` | Natija ko‘rinishi | Result layout |  |
+| `problem.sampleRun` | {order}-namunani sinash | {order}-úlgini sınaw |  |
+| `problem.verdictLayout.label` | Natija ko‘rinishi | Nátiyje jaylasıwı |  |
 | `problem.verdictLayout.tab` | Yorliq | Bet |  |
-| `problem.verdictLayout.column` | Ustun | Column |  |
+| `problem.verdictLayout.column` | Ustun | Baǵana |  |
 | `problem.verdictLayout.toast` | Qisqa xabar | Qisqa habar |  |
 | `problem.verdictLayout.modal` | Oyna | Termin |  |
-| `problem.solveTimer` | Yechish | Solve time |  |
-| `problem.roundTimer` | Raund | Round |  |
+| `problem.solveTimer` | Yechish | Sheshiw waqtı |  |
+| `problem.roundTimer` | Raund | Tur |  |
 | `problem.copy` | Nusxalash | Kóshiriw |  |
 | `problem.copied` | Nusxalandi | Kóshirildi |  |
 | `problem.copyFailed` | Nusxa olinmadi | Kóshirilmedi |  |
@@ -1810,21 +1841,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.testsNotReadyBody` | Bu masalaning testlari hali tayyorlanmagan, shu sababli yechim qabul qilinmaydi. Matnni o'qib, o'zingiz uchun yechib ko'rishingiz mumkin — testlar qo'shilishi bilan yuborish ochiladi. | Bul máseleniń testleri ele tayar emes, sol sebepli sheshimler qabıl etilmeydi. Shártin oqıp, ózińiz sheship kóriwińiz múmkin — testler qosılǵanda jiberiw ashıladı. |  |
 | `submit.signInToSubmit` | Yuborish uchun kiring | Jiberiw ushın kiriń |  |
 | `submit.testOnSamples` | Namunada sinash | Mısallarda sınaw |  |
-| `submit.sampleConsoleLabel` | Namuna sinov konsoli | Sample test console |  |
-| `submit.sampleConsoleIdle` | Namuna natijalari (hali sinov yo'q) | Sample results (no run yet) |  |
-| `submit.sampleConsoleRunning` | Sinov yurmoqda… | Running… |  |
-| `submit.sampleConsoleReady` | Tayyor | Ready |  |
-| `submit.sampleResultsTitle` | Namuna natijalari | Sample results |  |
-| `submit.samplePick` | {order}-namuna | Sample {order} |  |
-| `submit.samplePassLog` | {order}-namuna mos keldi | Sample {order} matched |  |
-| `submit.sampleFailLog` | {order}-namuna mos kelmadi | Sample {order} did not match |  |
-| `submit.tabVerdict` | Natija | Result |  |
-| `submit.tabSamples` | Namunalar | Samples |  |
-| `submit.tabCustom` | O'z testim | Custom tests |  |
+| `submit.sampleConsoleLabel` | Namuna sinov konsoli | Úlgi sınaw konsolı |  |
+| `submit.sampleConsoleIdle` | Namuna natijalari (hali sinov yo'q) | Úlgi nátiyjeleri (ele sınaw joq) |  |
+| `submit.sampleConsoleRunning` | Sinov yurmoqda… | Sınaw júrip atır… |  |
+| `submit.sampleConsoleReady` | Tayyor | Tayın |  |
+| `submit.sampleResultsTitle` | Namuna natijalari | Úlgi nátiyjeleri |  |
+| `submit.samplePick` | {order}-namuna | {order}-úlgi |  |
+| `submit.samplePassLog` | {order}-namuna mos keldi | {order}-úlgi sáykes keldi |  |
+| `submit.sampleFailLog` | {order}-namuna mos kelmadi | {order}-úlgi sáykes kelmedi |  |
+| `submit.tabVerdict` | Natija | Nátiyje |  |
+| `submit.tabSamples` | Namunalar | Úlgiler |  |
+| `submit.tabCustom` | O'z testim | Óz testlerim |  |
 | `submit.draftSavedLocally` | Qoralama shu brauzerda saqlanadi | Qaralama usı brauzerde saqlanadı |  |
 | `submit.loadFromFile` | Fayldan yuklash | Fayldan júklew |  |
 | `submit.nothingSubmitted` | Hali yuborilmadi. Kod yozing va «Yuborish» ni bosing. | Ele jiberilmegen. Kod jazıp, «Jiberiw» túymesin basıń. |  |
-| `submit.verdictShownElsewhere` | Natija tanlangan joyda ko‘rsatiladi (ustun, toast yoki modal). | The result is shown in the layout you selected (column, toast, or modal). |  |
+| `submit.verdictShownElsewhere` | Natija tanlangan joyda ko‘rsatiladi (ustun, toast yoki modal). | Nátiyje siz tańlaǵan orında kórsetiledi (baǵana, toast yamasa modal). |  |
 | `submit.testTooltip` | {index}: {verdict} · {time} ms | {index}: {verdict} · {time} ms |  |
 | `submit.addTest` | Test qo'shish | Test qosıw |  |
 | `submit.removeTest` | Test {index} ni o'chirish | Test {index} óshiriw |  |
@@ -1991,19 +2022,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.pattern.diagonal` | Diagonal | Diagonal |  |
 | `customizer.pattern.mesh` | Tuman | Tuman |  |
 | `customizer.patternHint` | Kontent orqasida turadi va matnni to'smaydi. | Kontent arqasında turadı hám teksti jappaydı. |  |
-| `customizer.verdict` | Natija ko'rinishi | Result style |  |
-| `verdict.style.auto` | Avtomatik | Automatic |  |
-| `verdict.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, planshetda ikonka, kompyuterda to'liq nom. | Picks the shape by screen: circle on phone, icon on tablet, full name on desktop. |  |
-| `verdict.style.badge` | Faqat nishon | Badge only |  |
-| `verdict.style.badgeHint` | Rangli nishonda qisqa kod. Ixcham — zich jadvallar uchun. | Short code on a coloured pill. Compact — for dense tables. |  |
+| `customizer.verdict` | Natija ko'rinishi | Nátiyje kórinisi |  |
+| `verdict.style.auto` | Avtomatik | Avtomat |  |
+| `verdict.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, planshetda ikonka, kompyuterda to'liq nom. | Formanı ekranǵa qarap tańlaydı: telefonda sheńber, planshette ikonka, kompyuterde tolıq atama. |  |
+| `verdict.style.badge` | Faqat nishon | Tek belgi |  |
+| `verdict.style.badgeHint` | Rangli nishonda qisqa kod. Ixcham — zich jadvallar uchun. | Reńli belgide qısqa kod. Iqsham — tıǵız kesteler ushın. |  |
 | `verdict.style.plain` | Faqat ikonka | Tek belgi |  |
 | `verdict.style.plainHint` | Faqat ikonka, rangsiz. Eng izchil ko'rinish — lekin holat darhol sezilmaydi. | Tek belgi, reńsiz. Eń birdey kórinis, biraq jaǵday derhal bilinbeydi. |  |
-| `verdict.style.icon` | Ikonka va rang | Icon + colour |  |
-| `verdict.style.iconHint` | Ikonka, qisqa kod va natija rangi. Eng tez o'qiladi. | Icon, short code and result colour. Reads fastest. |  |
-| `verdict.style.full` | Ikonka, rang va nom | Icon + colour + name |  |
-| `verdict.style.fullHint` | To'liq natija nomi izohi bilan. Ko'proq joy egallaydi. | Full result name with an explanation. Takes more room. |  |
-| `verdict.style.circle` | Doira va ikonka | Circle + icon |  |
-| `verdict.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — mobil va tor qatorlar uchun. | Filled circle with a white icon. Smallest — for mobile and tight rows. |  |
+| `verdict.style.icon` | Ikonka va rang | Ikonka hám reń |  |
+| `verdict.style.iconHint` | Ikonka, qisqa kod va natija rangi. Eng tez o'qiladi. | Ikonka, qısqa kod hám nátiyje reńi. Eń tez oqıladı. |  |
+| `verdict.style.full` | Ikonka, rang va nom | Ikonka, reń hám atama |  |
+| `verdict.style.fullHint` | To'liq natija nomi izohi bilan. Ko'proq joy egallaydi. | Nátiyjeniń tolıq ataması túsindirmesi menen. Kóbirek orın aladı. |  |
+| `verdict.style.circle` | Doira va ikonka | Sheńber hám ikonka |  |
+| `verdict.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — mobil va tor qatorlar uchun. | Toltırılǵan sheńberde aq ikonka. Eń kishi — mobil hám tar qatarlar ushın. |  |
 | `verdict.style.dot` | Nuqta va kod | Nokat hám kod |  |
 | `verdict.style.dotHint` | Rangli nuqta va qisqa kod. Jadvaldan yengilroq — log ro'yxatlari uchun. | Túsli nokat hám qısqa kod. Kesteden jeńil — log dizimleri ushın. |  |
 | `verdict.style.box` | Chegara va ikonka | Shegara hám belgi |  |
@@ -2012,19 +2043,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.style.barHint` | Chap tomonda rangli chiziq, yonida ikonka va to'liq nom. Ogohlantirishlar uchun. | Shep tárepte túsli sızıq, qasında belgi hám tolıq at. Eskertiwler ushın. |  |
 | `verdict.style.percent` | Ikonka va foiz | Belgi hám payız |  |
 | `verdict.style.percentHint` | Ikonka, qisqa kod va natija foizi. Baholash va qisman natijalar uchun. | Belgi, qısqa kod hám nátiyje payızı. Bahalaw hám bóleklep nátiyjeler ushın. |  |
-| `verdict.style.card` | Katta karta | Large card |  |
-| `verdict.style.cardHint` | Katta ikonka izohi bilan. Masala sahifasidagi natija paneli uchun. | Big icon with a description. For the result panel on a problem page. |  |
-| `verdict.hint.AC` | Barcha testlar o'tdi | All tests passed |  |
-| `verdict.hint.WA` | Javob kutilganiga mos emas | Output does not match |  |
-| `verdict.hint.TLE` | Belgilangan vaqtdan uzoq ishladi | Ran longer than allowed |  |
-| `verdict.hint.MLE` | Belgilangan xotiradan ko'p ishlatdi | Used more memory than allowed |  |
-| `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Program crashed while running |  |
-| `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Code did not compile |  |
-| `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Extra spaces or line breaks |  |
+| `verdict.style.card` | Katta karta | Úlken kartochka |  |
+| `verdict.style.cardHint` | Katta ikonka izohi bilan. Masala sahifasidagi natija paneli uchun. | Úlken ikonka túsindirmesi menen. Másele betindegi nátiyje paneli ushın. |  |
+| `verdict.hint.AC` | Barcha testlar o'tdi | Barlıq testler ótti |  |
+| `verdict.hint.WA` | Javob kutilganiga mos emas | Juwap kútilgenge sáykes emes |  |
+| `verdict.hint.TLE` | Belgilangan vaqtdan uzoq ishladi | Belgilengen waqıttan uzaq isledi |  |
+| `verdict.hint.MLE` | Belgilangan xotiradan ko'p ishlatdi | Belgilengen yadtan kóp paydalandı |  |
+| `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Programma islew waqtında toqtap qaldı |  |
+| `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Kod kompilyaciyalanbadı |  |
+| `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Artıqsha bos orın yamasa qatar |  |
 | `verdict.hint.HACKED` | Qabul qilingan yechim boshqa ishtirokchining to'g'ri testida yiqildi | Qabıllanǵan sheshim basqa qatnasıwshınıń durıs testinde qulap tústi |  |
-| `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Printed too much output |  |
-| `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Judge error, not your fault |  |
-| `verdict.hint.PD` | Navbatda kutilmoqda | Waiting in the queue |  |
+| `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Júdá kóp maǵlıwmat shıǵardı |  |
+| `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Tekseriwshi qátesi — sizden emes |  |
+| `verdict.hint.PD` | Navbatda kutilmoqda | Gezekte kútilmekte |  |
 | `customizer.exportFile` | Faylga saqlash | Faylǵa saqlaw |  |
 | `customizer.importFile` | Fayldan yuklash | Fayldan júklew |  |
 | `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Fayl durıs JSON emes. |  |
@@ -2231,3 +2262,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `attempt.testsPassed` | {passed} / {total} o'tdi | {passed} / {total} ótti |  |
 | `attempt.toProblem` | Masalaga o'tish | Máselege ótiw |  |
 | `attempt.editResubmit` | Tahrirlab qayta yuborish | Ózgertip qayta jiberiw |  |
+| `footer.resources` | Resurslar | Derekler |  |
+| `footer.telegram` | Telegram kanali | Telegram kanalı |  |
+| `footer.opensNewTab` | (yangi oynada ochiladi) | (jańa aynada ashıladı) |  |
+| `nav.badge.todo` | {count} ta ish kutyapti | {count} is kútip tur |  |
+| `nav.badge.unread` | {count} ta o'qilmagan | {count} oqılmaǵan |  |
+| `nav.badge.new` | {count} ta yangi | {count} jańa |  |
+| `nav.badge.live` | hozir jonli | házir janlı |  |
+| `nav.badge.liveShort` | jonli | janlı |  |
+| `about.journey.title` | Platforma yo'li | Platforma jolı |  |
+| `about.toc.label` | Mundarija | Mazmunı |  |
+| `about.toc.submit` | Yuborish | Jiberiw |  |
+| `about.toc.languages` | Tillar | Tiller |  |
+| `about.toc.verdicts` | Holat kodlari | Verdict kodları |  |
+| `about.toc.practices` | Amaliyotlar | Ámeliyatlar |  |
+| `about.toc.judge` | Tizim | Sistema |  |
+| `about.cta.solve` | Birinchi masalani yechish | Birinshi máseleni sheshiw |  |
+| `about.anchor` | Bo'lim havolasi | Bólim siltemesi |  |
+| `about.lang.other` | Boshqa til ({count}) | Basqa til ({count}) |  |
+| `about.lang.count` | {count} ta til | {count} til |  |
+| `about.verdicts.search` | Kod yoki so'z: TLE, xotira… | Kod yamasa sóz: TLE, yad… |  |
+| `about.verdicts.searchLabel` | Holat kodini qidirish | Verdict kodın izlew |  |
+| `about.verdicts.groupLabel` | Guruh bo'yicha saralash | Topar boyınsha saralaw |  |
+| `about.verdicts.group.all` | Hammasi | Barlıǵı |  |
+| `about.verdicts.group.common` | Ko'p uchraydigan | Kóp ushırasatuǵın |  |
+| `about.verdicts.group.flow` | Jarayon holatlari | Process halatları |  |
+| `about.verdicts.group.system` | Kam uchraydigan va tizim | Siyrek hám sistemalıq |  |
+| `about.verdicts.found` | {count} ta kod | {count} kod |  |
+| `about.verdicts.none` | Bunday kod topilmadi. | Bunday kod tabılmadı. |  |

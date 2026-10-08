@@ -1012,11 +1012,21 @@ def brand_in_header_and_footer_columns() -> str | None:
             "(qaror 22)"
         )
     footer = read(APP_FOOTER)
-    if "lg:grid-cols-[1fr_auto_auto]" not in footer:
+    # 2026-10-06: the footer was redesigned on the owner's request — a band
+    # of its own, the brand from `BrandMark`, and three labelled link groups
+    # (product, resources, contact) instead of one list.
+    if "lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]" not in footer:
         return (
-            f"{APP_FOOTER}: footer uch ustunga bo'linmagan — brend, "
-            "platforma havolalari va aloqa alohida ustunlarda (qaror 22)"
+            f"{APP_FOOTER}: footer guruhlarga bo'linmagan — brend, platforma, "
+            "resurslar va aloqa alohida ustunlarda (qaror 22, 2026-10-06)"
         )
+    if "<BrandMark variant=\"full\"" not in footer:
+        return f"{APP_FOOTER}: brend `BrandMark` dan emas — wordmark yana nusxalangan (qaror 22)"
+    if footer.count("<nav aria-labelledby=") != 3:
+        return f"{APP_FOOTER}: uchta nomlangan havola guruhi (`<nav aria-labelledby>`) yo'q"
+    # Twice: the link row and the wordmark link.
+    if footer.count("[@media(pointer:coarse)]:min-h-11") < 2:
+        return f"{APP_FOOTER}: havolalar sensorli ekranda 44 px emas"
     for key in ("footer.copyright", "footer.terms", "footer.privacy"):
         if key not in footer:
             return (
@@ -2066,6 +2076,28 @@ def customizer_reachable_on_a_phone() -> str | None:
     return None
 
 
+def editor_sheet_clears_the_side_menu() -> str | None:
+    """2026-10-07: masala sahifasidagi muharrir varag'i yon menyu ostiga kirmaydi.
+
+    `xl` dan pastda muharrir pastki varaqda, `lg` dan esa yon menyu ko'rinadi
+    va varaqdan yuqorida turadi (z-50 > z-40). Varaq `fixed` — ustunning
+    `margin` i uni surmaydi, shuning uchun 1024–1279 px da u oyna chetidan
+    boshlanib, «Yuborish» tugmasi menyu havolasi ostida qolardi.
+    """
+    shell = read("apps/web/src/layout/AppShell.tsx")
+    if 'const SHELL_INSET = "--rw-shell-inset"' not in shell:
+        return "AppShell.tsx: `--rw-shell-inset` e'lon qilinmagan — fixed qutilar yon menyu kengligini bilmaydi"
+    if '[SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px"' not in shell:
+        return "AppShell.tsx: `--rw-shell-inset` yon menyu holatiga (260 / 86 / 0 px) bog'lanmagan"
+    side = read("apps/web/src/layout/AppSidebar.tsx")
+    if '"w-[260px] px-4" : "w-[86px] px-2"' not in side:
+        return "AppSidebar.tsx: yon menyu kengligi 260 / 86 px emas — `--rw-shell-inset` bilan ajralib ketadi"
+    sheet = read("apps/web/src/features/problems/components/ProblemWorkspace.tsx")
+    if "fixed inset-x-0 bottom-0 z-40" in sheet and "lg:left-[var(--rw-shell-inset,0px)]" not in sheet:
+        return "ProblemWorkspace.tsx: muharrir varag'i `lg` dan yon menyu ostida boshlanadi — «Yuborish» bosilmaydi"
+    return None
+
+
 def customizer_quick_row_first() -> str | None:
     """2026-10-05: sozlagichda tez qator va shablonlar akkordeonlardan oldin.
 
@@ -2203,6 +2235,58 @@ def team_page_is_managed_data() -> str | None:
     return None
 
 
+def team_page_is_compact() -> str | None:
+    """2026-10-06: «Jamoa» sahifasi ixcham ro'yxat (HITL: B varianti).
+
+    O'lchandi (jonli sayt): telefonda 12 ekran; 24 ta bir xil `h2`; 48 ta
+    havola ikki manzilga; yopishqoq panel jiddiy kartani yopardi; ulashilganda
+    sayt nomi va bosh sahifa manzili chiqardi.
+    """
+    directory = read("apps/web/src/components/team/TeamDirectory.tsx")
+    if 'if (!whole && index >= FIRST_WIDE) fold = "hidden";' not in directory:
+        return "TeamDirectory.tsx: ro'yxat qisqartirilmagan yoki yashirin lavozimlar sahifadan chiqarilgan"
+    if '{localized(role, "title", locale)}\n                          </h2>' not in directory:
+        return "TeamDirectory.tsx: karta sarlavhasi lavozim emas - 24 ta bir xil `h2` qaytdi"
+    if directory.count("<SocialLinks") != 1:
+        return "TeamDirectory.tsx: havolalar yana har kartada (yoki jiddiy ko'rinishdan yo'qolgan)"
+    if "sticky" in directory:
+        return "TeamDirectory.tsx: boshqaruv paneli yana yopishqoq - jiddiy kartani yopadi"
+    if "        {serious ? null : (\n          <>" not in directory:
+        return "TeamDirectory.tsx: jiddiy ko'rinishda filtr va qidiruv chiziladi"
+    page = read("apps/web/src/app/(site)/team/page.tsx")
+    if "<div lang={locale}" not in page:
+        return "team/page.tsx: matn tili aytilmagan - turkcha sahifada o'zbekcha «i» «İ» bo'ladi"
+    if "url: alternates.canonical," not in page:
+        return "team/page.tsx: ulashilganda sahifa o'z manzilini aytmaydi"
+    return None
+
+
+def about_page_is_one_searchable_page() -> str | None:
+    """2026-10-07: «Qanday ishlaydi» - bitta sahifa, mundarija bilan (HITL: B).
+
+    O'lchandi: 35 til `role="tab"` edi, tanlanmaganlari `tabIndex={-1}` va
+    strelka tugmalari uchun kod yo'q - 34 til klaviaturaga yopiq; standart til
+    alifbo bo'yicha birinchisi (Ada); bo'limlarda langar yo'q; ulashilganda
+    sayt tavsifi va bosh sahifa manzili chiqardi.
+    """
+    languages = read("apps/web/src/features/about/components/LanguageGuide.tsx")
+    if "useState(() => defaultLanguage(sorted))" not in languages:
+        return "LanguageGuide.tsx: namuna alifbo bo'yicha birinchi tilda ochiladi (Ada), muharrir ochadigan tilda emas"
+    if 'role="tab"' in languages or "aria-pressed={language.code === current.code}" not in languages:
+        return "LanguageGuide.tsx: tillar yana `role=\"tab\"` - klaviatura bilan boshqa tilga o'tib bo'lmaydi"
+    if '<details className="group">' not in read("apps/web/src/features/about/components/VerdictGuide.tsx"):
+        return "VerdictGuide.tsx: yopiq kodlar sahifadan chiqarilgan - qidiruv tizimi va «sahifadan topish» ko'rmaydi"
+    if "<section id={id} aria-labelledby={heading}" not in read("apps/web/src/features/about/components/GuideSection.tsx"):
+        return "GuideSection.tsx: bo'limda langar yo'q - `/about#verdicts` havolasi ishlamaydi"
+    sections = read("apps/web/src/features/about/sections.ts")
+    for anchor in ("journey", "submit", "languages", "verdicts", "practices", "judge"):
+        if f'{{ id: "{anchor}", ' not in sections:
+            return f"about/sections.ts: `#{anchor}` langari o'zgargan - ulashilgan havolalar sinadi"
+    if "url: alternates.canonical," not in read("apps/web/src/app/(site)/about/page.tsx"):
+        return "about/page.tsx: ulashilganda sahifa o'z manzilini aytmaydi"
+    return None
+
+
 def site_search_is_one_engine() -> str | None:
     """2026-10-05: sayt qidiruvi — bitta dvigatel, bitta panel.
 
@@ -2299,6 +2383,51 @@ def attempts_feed_is_the_shared_table() -> str | None:
     return None
 
 
+def side_menu_keeps_its_sections() -> str | None:
+    """2026-10-06: yon menyu bo'sh joyni avval bo'limlar orasiga beradi.
+
+    O'lchandi (jonli sayt): birinchi ixchamlash 1100 px dan past har ekranda
+    hammasini birdan toraytirardi - 1080 px da 58 px yetishmovchilik uchun
+    280 px olinardi, bo'limlar orasi 4-10 px, sarlavha ostida 2 px.
+    """
+    css = read("apps/web/src/app/theme.css")
+    if "--rw-nav-spare: calc(100vh - 45.125rem);" not in css:
+        return "theme.css: yon menyu ekran balandligiga moslashmaydi (`--rw-nav-spare` yo'q)"
+    if "@media (min-width: 1024px) and (max-height: 1100px) and (pointer: fine)" in css:
+        return "theme.css: yon menyu yana pog'onali ixchamlashda - bo'limlar yopishib qoladi"
+    if "0.625rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem)" not in css:
+        return "theme.css: bo'limlar orasi 10 px dan boshlanmaydi yoki bo'sh joyni birinchi olmaydi"
+    return None
+
+
+def side_menu_badges_are_one_request() -> str | None:
+    """2026-10-06: yon menyu belgilari - bitta so'rov, to'rt tur.
+
+    «O'zgarishlar» soni har o'qilgan yozuvga bitta qator saqlaydi; shu usul
+    1 229 masala yoki har bo'limga yoyilsa jadval foydalanuvchilar soniga
+    ko'paytiriladi. Shuning uchun: bitta endpoint, har bo'lim o'z
+    hisoblagichini ro'yxatdan o'tkazadi, «yangi» turi bo'limga bitta vaqt
+    belgisini saqlaydi.
+    """
+    if 'autodiscover_modules("nav_badges")' not in read("apps/api/core/apps.py"):
+        return "core/apps.py: bo'limlarning `nav_badges.py` fayllari yuklanmaydi - belgilar bo'sh chiqadi"
+    if 'name="uniq_nav_seen"' not in read("apps/api/core/models.py"):
+        return "core/models.py: `NavSeen` bo'limga bitta qator emas - har yozuvga qator qaytdi"
+    if "floor = max(EPOCH, user.date_joined)" not in read("apps/api/core/nav_badges.py"):
+        return "core/nav_badges.py: boshlang'ich nuqta yo'q - eski hisob hamma narsani «yangi» deb ko'radi"
+    if read("apps/web/src/context/NavBadgesContext.tsx").count("if (!signedIn) return;") < 2:
+        return "NavBadgesContext.tsx: mehmon uchun ham so'rov ketadi (401 va keshlangan sahifada ortiqcha yuk)"
+    lib = read("apps/web/src/lib/nav-badges.ts")
+    start = lib.index("export const SEEN_ON_VISIT")
+    seen = lib[start : lib.index("]);", start)]
+    for section in ("duels", "classroom", "contests", "arena", "tournaments", "hackathons"):
+        if f'"{section}"' in seen:
+            return f"nav-badges.ts: `{section}` belgisi bo'limni ochish bilan o'chadi - u ish yoki holat, o'qilmagan emas"
+    if '{said && <span className="sr-only">{said}</span>}' not in read("apps/web/src/layout/AppSidebar.tsx"):
+        return "AppSidebar.tsx: belgi ekran o'quvchiga aytilmaydi (faqat son yoki nuqta)"
+    return None
+
+
 def scroll_is_one_vocabulary() -> str | None:
     """2026-10-06: scroll — bitta lug'at, bitta modul.
 
@@ -2309,12 +2438,194 @@ def scroll_is_one_vocabulary() -> str | None:
     """
     if "        run: python3 tools/check_scroll.py\n" not in read(".github/workflows/ci.yml"):
         return "ci.yml: `check_scroll.py` yurmaydi — xom scroll konteyner jim qaytadi"
-    if "    <div tabIndex={0} className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n" not in read("apps/web/src/components/ui/Table.tsx"):
+    if "    <div tabIndex={0} className=\"@container min-w-0 rw-scroll-x rw-focus-ring\">\n" not in read("apps/web/src/components/ui/Table.tsx"):
         return "Table.tsx: jadval qutisida tab to'xtash joyi yo'q — klaviatura bilan yon tomonga surilmaydi"
     if "        className=\"sticky top-16 z-20 -mx-1 -mt-4 space-y-1.5 px-1 py-2\"\n" not in read("apps/web/src/features/submissions/components/AttemptFilters.tsx"):
         return "AttemptFilters.tsx: filtr qatori sarlavha ostiga yopishmaydi (`sticky top-16`)"
     if "import \"./globals.css\";\n" not in read("apps/web/src/app/not-found.tsx"):
         return "not-found.tsx: 404 sahifasi uslub faylisiz chiziladi"
+    return None
+
+
+def evaluation_paths_are_proven() -> str | None:
+    """2026-10-07: special checker, interactive va scorer haqiqiy judge'da isbotlangan.
+
+    O'lchandi (haqiqiy stack, 12 yuborish): eski judge uchtasini noto'g'ri
+    baholardi - boshqacha formatlangan to'g'ri javob `PE` (checker
+    chaqirilmasdi), scorer'da 70 va 25 ball `AC`. Bu yo'llarni unit testlar
+    ko'rmaydi: ular sandbox, checker jarayoni va pipe'larni almashtiradi.
+    """
+    judge = read("services/judge-go/judge.go")
+    if "	return v == VAC || v == VWA || v == VPE\n" not in judge:
+        return "judge.go: `PE` dastlabki verdikti checker'ga yetmaydi - boshqacha formatlangan to'g'ri javob rad etiladi"
+    if "		worst = scorerVerdict(worst, res.Score)\n" not in judge:
+        return "judge.go: scorer balli verdiktga aylanmaydi - 100 dan kam ball `AC` bo'lib qoladi"
+    if "			cancel()\n" not in read("services/judge-go/interactive.go"):
+        return "interactive.go: rad etilgan yechim to'xtatilmaydi - `WA` o'rniga `IDLENESS`"
+    if "    evaluation_gate,\n" not in read("apps/api/problems/release.py"):
+        return "release.py: tekshiruv turi darvozasi nashr zanjirida yo'q"
+    if "evaluation.combination_error(io_mode, checker_type)" not in read("apps/api/problems/staff_serializers.py"):
+        return "staff_serializers.py: yaroqsiz `io_mode` + `checker_type` birikmasi saqlashda rad etilmaydi"
+    nightly = read(".github/workflows/nightly.yml")
+    if (
+        "            python manage.py seed_reference_problems\n" not in nightly
+        or "            --profile evaluation run --rm evaluation\n" not in nightly
+    ):
+        return "nightly.yml: tekshiruv yo'llari haqiqiy judge'da yurmaydi (`evaluation` profili)"
+    return None
+
+
+def function_problems_are_composed() -> str | None:
+    """2026-10-07: funksiya masalasi - yechim hakam dasturiga qo'yiladi (ADR-0053).
+
+    Judge bu tur haqida hech narsa bilmaydi: API yechimni tilning hakam
+    dasturiga qo'yib, oddiy dastur yuboradi. Shu uch joy tushsa, yechim
+    hakam dasturisiz yuriladi - har yuborish kompilyatsiya xatosi bo'ladi va
+    ayb yechuvchiga yoziladi.
+    """
+    if "        source = taskkinds.compose(harness, source)\n" not in read("apps/api/judging/services.py"):
+        return "judging/services.py: funksiya yechimi hakam dasturiga qo'yilmaydi"
+    if '            rows = rows.exclude(harness="")\n' not in read("apps/api/judging/serializers.py"):
+        return "judging/serializers.py: hakam dasturi yo'q tilda yuborish qabul qilinadi"
+    if "        or harnesses_error(problem)\n" not in read("apps/api/problems/evaluation.py"):
+        return "evaluation.py: hakam dasturisiz funksiya masalasi nashr darvozasidan o'tadi"
+    if "(PAIR, GUESS, COINS, MAXPAIR" not in read("apps/api/problems/reference_problems.py"):
+        return "reference_problems.py: funksiya turining etalon masalasi ro'yxatda yo'q - haqiqiy judge'da sinalmaydi"
+    return None
+
+
+def answer_problems_run_no_code() -> str | None:
+    """2026-10-07: «faqat javob» masalasi - kod yurmaydi, fayllarni checker baholaydi (ADR-0053).
+
+    Uch joy birga ishlaydi: API ishga `task.kind = answer` ni qo'yadi, judge
+    uni dasturdan ajratadi, va ikki eshik (manba kod / fayllar) bir-birini
+    almashtirmaydi. Bittasi tushsa: javob arxivi dastur sifatida
+    kompilyatsiya qilinadi yoki zip chegarasiz ochiladi.
+    """
+    judge = read("services/judge-go/judge.go")
+    if "\tcase TaskAnswer:\n\t\tjudgeAnswers(ctx, work, job, tests, emit, res)\n" not in judge:
+        return "judge.go: `answer` ishi dastur yo'lidan ketadi - javob fayllari kompilyatsiya qilinadi"
+    if '\t\tres.CompileOutput = "unsupported task kind: " + job.Task.Kind\n' not in judge:
+        return "judge.go: notanish `task.kind` rad etilmaydi (yopiq yiqilish yo'q)"
+    if '        task = {"kind": "answer"}\n' not in read("apps/api/judging/services.py"):
+        return "judging/services.py: `answer` masalasining ishida `task` yo'q - judge uni dastur deb o'qiydi"
+    if '        if takes_files != bool(self.context.get("answer_files")):\n' not in read(
+        "apps/api/judging/serializers.py"
+    ):
+        return "judging/serializers.py: manba kod va javob fayllari eshiklari aralashadi"
+    if "        if sum(info.file_size for info in entries) > MAX_BYTES:\n" not in read(
+        "apps/api/judging/answers.py"
+    ):
+        return "judging/answers.py: zip ochilgan hajmi bo'yicha cheklanmaydi (zip bomba)"
+    if "MAXPAIR, PALS" not in read("apps/api/problems/reference_problems.py"):
+        return "reference_problems.py: «faqat javob» etaloni ro'yxatda yo'q - haqiqiy judge'da sinalmaydi"
+    return None
+
+
+def two_pass_runs_share_nothing() -> str | None:
+    """2026-10-07: ikki bosqichli masala - ikki yurish orasida faqat manager chiqishi o'tadi (ADR-0053).
+
+    O'lchandi (bake-off `32-two-pass-no-carry`): ish katalogi sandbox'ga
+    yoziladigan qilib ulanadi - birinchi yurish fayl yoza OLADI. Har yurish
+    toza nusxada ishlamasa, o'sha fayl ikkinchi yurishga yetadi va masalaning
+    butun ma'nosi (xabar faqat manager orqali o'tadi) yo'qoladi.
+    """
+    if "\t\tdir, err := cloneForRun(work)\n" not in read("services/judge-go/twopass.go"):
+        return "twopass.go: yurishlar bitta katalogda ishlaydi - birinchisi qoldirgan fayl ikkinchisiga yetadi"
+    if "\t\t\tout, decided, err = twoPass(ctx, work, runCmd, managerCmd, test, job.Limits, wallLimit)\n" not in read(
+        "services/judge-go/judge.go"
+    ):
+        return "judge.go: `two_pass` ishi bir marta yuritiladi"
+    if '            "kind": "two_pass",\n' not in read("apps/api/judging/services.py"):
+        return "judging/services.py: `two_pass` masalasining ishida `task` yo'q - dastur bir marta yuradi"
+    if "        or two_pass_error(problem)\n" not in read("apps/api/problems/evaluation.py"):
+        return "evaluation.py: manager'siz ikki bosqichli masala nashr darvozasidan o'tadi"
+    cases = ROOT / "services/bakeoff/cases/32-two-pass-no-carry.json"
+    if not cases.exists():
+        return "bake-off: `32-two-pass-no-carry` yo'q - yurishlar orasidagi izolyatsiya sinalmaydi"
+    return None
+
+
+def nightly_builds_each_image_once() -> str | None:
+    # 2026-10-07, Nightly run of c3623d9 (19.9 min): the worker binary sat
+    # inside the judge image's one flattened layer, so a Go change made eight
+    # jobs rebuild every toolchain and five of them upload the result.
+    dockerfile = read("services/judge-go/Dockerfile")
+    code = [ln for ln in dockerfile.splitlines() if ln.strip() and not ln.lstrip().startswith("#")]
+    froms = [i for i, ln in enumerate(code) if ln.startswith("FROM ")]
+    if not froms or "ARG JUDGE_BASE=base" not in code[: froms[0]]:
+        return "judge Dockerfile: `ARG JUDGE_BASE=base` birinchi FROM dan oldin yo'q"
+    if "FROM scratch AS base" not in code:
+        return "judge Dockerfile: `base` bosqichi yo'q"
+    if code[froms[-1]] != "FROM ${JUDGE_BASE}":
+        return "judge Dockerfile: oxirgi bosqich `FROM ${JUDGE_BASE}` emas"
+    base_at = code.index("FROM scratch AS base")
+    binary = [i for i, ln in enumerate(code) if ln.startswith("COPY --from=go-build")]
+    if not binary or min(binary) < base_at:
+        return "judge binari toolchain qatlami ichida — Go o'zgarsa butun obraz qayta quriladi"
+    stack = read("tools/ci_stack.sh")
+    if "--target base" not in stack or "JUDGE_BASE=${project}-judge-base" not in stack:
+        return "ci_stack.sh judge'ni base ustiga qurmaydi"
+    nightly = read(".github/workflows/nightly.yml")
+    push = re.compile(r"(?m)^\s+run: .*ci_stack\.sh --push-only")
+    if len(push.findall(nightly)) != 1 or not push.search(_workflow_job(nightly, "images")):
+        return "obraz keshini faqat `images` job'i yozishi kerak"
+    coverage = _workflow_job(nightly, "coverage")
+    matrix = re.search(r"(?m)^\s+shard: \[([\d, ]+)\]", coverage)
+    if not matrix:
+        return "coverage shardlarga bo'linmagan"
+    count = str(len(matrix.group(1).split(",")))
+    if f"pytest_shard.py --check {count}" not in coverage:
+        return "coverage shardlar to'liqligini tekshirmaydi"
+    if f"pytest_shard.py ${{{{ matrix.shard }}}} {count}" not in coverage:
+        return "coverage shard soni matritsaga mos emas"
+    if "needs: coverage" not in _workflow_job(nightly, "coverage-report"):
+        return "coverage hisoboti shardlarni kutmaydi"
+    return None
+
+
+def sql_queries_only_read() -> str | None:
+    """2026-10-07: SQL masalasi - so'rov mavjud sandbox ichida, faqat o'qish (ADR-0053).
+
+    So'rov Python dasturiga satr bo'lib joylanadi. Uch narsa uni xavfsiz
+    ushlab turadi: `repr` (matn kodga aylanmaydi), authorizer (o'qishdan
+    boshqa hamma narsa rad etiladi) va til eshigi (SQL faqat SQL masalasida).
+    """
+    runner = read("apps/api/problems/sqltasks.py")
+    if '        _RUNNER.replace("__QUERY__", repr(query))\n' not in runner:
+        return "sqltasks.py: so'rov dasturga `repr` siz joylanadi - matn Python kodiga aylanishi mumkin"
+    if (
+        "db.set_authorizer(lambda action, *_: sqlite3.SQLITE_OK if action in READS else sqlite3.SQLITE_DENY)\n"
+        not in runner
+    ):
+        return "sqltasks.py: authorizer yo'q - so'rov ma'lumotni o'zgartira oladi yoki fayl ocha oladi"
+    if "        source = sqltasks.compose(source)\n" not in read("apps/api/judging/services.py"):
+        return "judging/services.py: SQL so'rovi judge'ga xom holda ketadi - Python dasturi deb yuritiladi"
+    if '        if is_sql != (attrs["language"] == SQL_LANGUAGE):\n' not in read(
+        "apps/api/judging/serializers.py"
+    ):
+        return "judging/serializers.py: SQL tili boshqa masalada (yoki boshqa til SQL masalasida) qabul qilinadi"
+    return None
+
+
+def dates_are_written_in_the_site_zone() -> str | None:
+    """2026-10-06: sana yordamchilari standart holatda sayt zonasida yozadi.
+
+    O'lchandi (jonli sayt): `dateTime` / `date` / `time` zonani belgilamasdi —
+    web server (UTC) Toshkent vaqti bilan 14:56 da qilingan urinishni
+    «9:56 AM» deb chizardi; klient komponentda brauzer uni qayta chizib,
+    React gidratsiya xatosini (#418) berardi.
+    """
+    core = read("packages/shared/src/i18n/core.ts")
+    if "  return { timeZone: DISPLAY_TIME_ZONE, ...options };\n" not in core:
+        return "i18n/core.ts: sana yordamchilari zonasiz — server UTC vaqtini chizadi, klientda gidratsiya xatosi"
+    if core.count("zoned(options)") != 3:
+        return "i18n/core.ts: `dateTime`, `date` va `time` ning hammasi `zoned()` dan o'tmaydi"
+    # A client component that is also server-rendered must not format a date
+    # in the viewer's locale: Node has `uz` date data, the browser does not.
+    table = read("apps/web/src/features/submissions/components/AttemptTable.tsx")
+    if table.count("numericStamp(row.created_at)") != 2:
+        return "AttemptTable.tsx: sana til bo'yicha formatlanadi — server va brauzer ICU'si har xil chizadi (gidratsiya xatosi)"
     return None
 
 
@@ -3080,11 +3391,23 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
     ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
     ("jamoa sahifasi boshqariladi", team_page_is_managed_data),
+    ("jamoa sahifasi ixcham", team_page_is_compact),
+    ("qanday ishlaydi sahifasi qidiriladigan", about_page_is_one_searchable_page),
     ("qidiruv bitta dvigatel", site_search_is_one_engine),
     ("bildirishnomalar shartnomasi", notifications_inbox_contract),
     ("qidiruv chegaralangan va aniq", site_search_is_bounded_and_exact),
     ("urinishlar lentasi umumiy jadvalda", attempts_feed_is_the_shared_table),
     ("scroll bitta lug'atda", scroll_is_one_vocabulary),
+    ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
+    ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
+    ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
+    ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
+    ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
+    ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),
+    ("ikki bosqichli yurishlar hech narsa bo'lishmaydi", two_pass_runs_share_nothing),
+    ("faqat javob masalasida kod yurmaydi", answer_problems_run_no_code),
+    ("funksiya masalasi hakam dasturi bilan yuriladi", function_problems_are_composed),
+    ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),

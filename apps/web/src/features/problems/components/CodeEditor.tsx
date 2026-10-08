@@ -9,7 +9,10 @@ import { useEffect, useState } from "react";
 
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
-const HEIGHT = "clamp(320px, min(52vh, 640px), 640px)";
+// `--rw-editor-h` is set by a layout that knows how much room is left
+// (the sticky submit panel); everywhere else the editor is about half
+// the screen.
+const HEIGHT = "var(--rw-editor-h, clamp(320px, min(52vh, 640px), 640px))";
 const LOAD_TIMEOUT_MS = 3500;
 
 const monacoOptions = {
@@ -84,7 +87,7 @@ export default function CodeEditor({
     return (
       <div
         className="overflow-hidden rw-radius-sm border rw-line"
-        style={{ height: HEIGHT, minHeight: 320 }}
+        style={{ height: HEIGHT, minHeight: 240 }}
       >
         <Monaco
           language={language}
@@ -107,7 +110,7 @@ export default function CodeEditor({
       autoCorrect="off"
       aria-label={t(locale, "submit.solution")}
       className="w-full rw-radius-sm border rw-line rw-field-bg p-3 font-mono text-theme-sm leading-relaxed rw-strong outline-none rw-focus-line"
-      style={{ height: HEIGHT, minHeight: 320, tabSize: 4 }}
+      style={{ height: HEIGHT, minHeight: 240, tabSize: 4 }}
     />
   );
 }

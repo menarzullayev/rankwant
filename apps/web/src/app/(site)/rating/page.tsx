@@ -66,7 +66,9 @@ function Section({
 function Formula({ children }: { children: React.ReactNode }) {
   return (
     <pre
-      className="rw-scroll-x rounded p-3 text-xs"
+      // A formula is prose in a fixed-width face: it may break across
+      // lines. Program code may not — indentation is its structure.
+      className="rounded p-3 text-xs break-words whitespace-pre-wrap"
       style={{ background: "var(--bg)", color: "var(--text)" }}
     >
       <code>{children}</code>

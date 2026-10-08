@@ -1,0 +1,47 @@
+{
+  "id": "29-interactive-rejected",
+  "title": "Interactive — rad etilgan suhbat WA, RE emas",
+  "measures": "interactor rad etib chiqqanda yechimning uzilgan quvurga yozishi xato deb sanalmaydi",
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "source": "import sys\n\nfor x in range(1, 101):\n    print(x, flush=True)\n    if sys.stdin.readline().strip() == \"=\":\n        print(\"!\", x, flush=True)\n        break\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "",
+      "expected": ""
+    }
+  ],
+  "expect_verdict": "WA",
+  "must_hold": [
+    "20 dan ortiq so'rov: interactor chiqadi, yechim esa yopiq quvurga yozadi",
+    "2026-10-07 gacha bu RE qaytarardi"
+  ],
+  "mode": "acm",
+  "implemented": true,
+  "checker": {
+    "type": "interactive",
+    "interactor": {
+      "code": "py312",
+      "compile": null,
+      "run": [
+        "python3",
+        "{src}"
+      ],
+      "source": "\"\"\"Interactor: 1..100 oralig'ida sonni topish o'yini.\n\nProtokol:\n  submission → taxmin (butun son)\n  interactor → \"<\" (sir kichikroq) | \">\" (sir kattaroq)\n  submission → \"! javob\"\n  interactor → chiqish kodi 0 = AC, 1 = WA\n\"\"\"\nimport sys\n\nSECRET = 42\nMAX_QUERIES = 20\n\nqueries = 0\nfor line in sys.stdin:\n    line = line.strip()\n    if not line:\n        continue\n    if line.startswith(\"!\"):\n        try:\n            answer = int(line[1:].strip())\n        except ValueError:\n            sys.exit(1)\n        sys.exit(0 if answer == SECRET else 1)\n    queries += 1\n    if queries > MAX_QUERIES:\n        sys.exit(1)          # juda ko'p so'rov\n    try:\n        guess = int(line)\n    except ValueError:\n        sys.exit(1)\n    if guess == SECRET:\n        print(\"=\", flush=True)\n    elif guess > SECRET:\n        print(\"<\", flush=True)\n    else:\n        print(\">\", flush=True)\nsys.exit(1)                   # javobsiz tugadi\n"
+    }
+  }
+}

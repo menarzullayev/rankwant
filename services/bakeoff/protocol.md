@@ -65,7 +65,8 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
   ],
   "mode": "acm",
   "validate_input": false,
-  "validator": null
+  "validator": null,
+  "task": null
 }
 ```
 
@@ -179,6 +180,82 @@ Bake-off'da ishlatiladigan qism (to'liq 20 ta: [08](../../docs/08-technical-spec
 `RE` — eski kod, judge endi uni chiqarmaydi: signal bilan o'ldirilgan
 dastur (`RE_SIGNAL`) va o'zi nolga teng bo'lmagan kod bilan chiqqan
 dastur (`RE_EXIT`) ajratildi (DMOJ modeli).
+
+## Tekshiruv turlari — verdikt qayerdan keladi
+
+`checker.type` to'rtta qiymatdan biri. Har biri uchun haqiqiy masala va
+kutilgan verdiktlar jadvali bor (`apps/api/problems/reference_problems.py`);
+`tests/evaluation/check_evaluation_paths.py` ularni haqiqiy judge'da yuboradi.
+
+| Tur | Kim hal qiladi | Qoidalar |
+| --- | --- | --- |
+| `standard` | judge'ning o'z solishtiruvi | tokenlar teng, formatlash boshqa — `PE` |
+| `special` | `checker <input> <output> <answer>`, stdout `ok` / boshqa | Dastlabki solishtiruv `AC`, `WA` **yoki `PE`** bersa ham checker chaqiriladi: formatni u hal qiladi |
+| `scorer` | o'sha chaqiruv, stdout — 0…100 | Yakuniy ball — testlar o'rtachasi. 100 — `AC`; 0 < ball < 100 — `PARTIAL`; 0 — `WA` |
+| `interactive` | interactor'ning chiqish kodi (0 — qabul) | **Bitta** dialog; `tests` va fayl I/O ishlatilmaydi. Interactor rad etib chiqsa — `WA`, yechim shundan keyin nima bo'lganidan qat'i nazar (judge uni to'xtatadi). Yechim interactor'dan oldin o'zi yiqilsa — `RE_*` |
+
+2026-10-07 gacha uchta holat noto'g'ri baholanardi: `special`/`scorer` da
+boshqacha formatlangan to'g'ri javob `PE` olardi (checker chaqirilmasdi);
+`scorer` da har testda 100 dan kam olgan yechim `AC` bo'lardi; interactor rad
+etgandan keyin yozishda davom etgan yechim `IDLENESS` yoki `RE` olardi.
+
+`io_mode = both` (stdout **yoki** `output.txt`) faqat `standard` bilan
+ishlaydi: checker va interactor faylga yozilgan javobni ko'rmaydi. API bu
+birikmani saqlashda ham, nashr darvozasida ham rad etadi
+(`problems/evaluation.py`).
+
+## Masala turi (`task_kind`) — judge uchun ko'rinmas
+
+`function` masalasida yechuvchi butun dasturni emas, funksiyani yuboradi
+([ADR-0053](../../docs/07-adr/0053-task-kinds.md)). Shartnoma **o'zgarmaydi**:
+API yechimni muallifning shu til uchun yozgan hakam dasturiga qo'yadi
+(`{{SOLUTION}}` qatori o'rniga — `problems/taskkinds.py`) va `source` da tayyor
+dastur keladi. Judge ikkinchi kompilyatsiya birligi, modul yo'li yoki til
+bo'yicha maxsus buyruq haqida hech narsa bilmaydi — shuning uchun o'n bir til
+bitta til narxida ishlaydi.
+
+Oqibati: kompilyatsiya xatosidagi qator raqami hakam dasturining bosh qismi
+uzunligiga siljigan bo'ladi.
+
+`answer` masalasida esa judge ISHTIROK ETADI: `task` maydoni `{"kind": "answer"}`
+bo'ladi va har testga yechuvchi yuborgan fayl biriktiriladi — `answer_ref`
+(S3 havolasi) yoki `answer` (inline, bake-off uchun). Bu ishda:
+
+- hech narsa kompilyatsiya qilinmaydi va yuritilmaydi (`source`, `language` va
+  `limits` o'qilmaydi); `time_ms` va `memory_kb` 0;
+- `checker.type` `special` yoki `scorer` bo'lishi va dasturi berilishi shart,
+  aks holda `IE`;
+- har test alohida baholanadi, birinchi xatoda to'xtalmaydi; fayli yo'q test
+  0 ball oladi va checker'ga ko'rsatilmaydi;
+- ball — testlar o'rtachasi: 100 — `AC`, 0 dan katta — `PARTIAL`, 0 — `WA`;
+- checker yiqilsa `CHECKER_ERROR` (nol ball emas).
+
+`two_pass` masalasida `task` = `{"kind": "two_pass", "manager": {…}}`; `manager`
+— `checker.program` shaklidagi ishonchli dastur. Har testda:
+
+1. 1-yurish: stdin — test kirishi. Resurs yoki ishga tushirish xatosi (TLE, MLE,
+   RE…) testni shu yerda hal qiladi.
+2. `manager <kirish> <1-yurish chiqishi> <jyuri javobi>`: stdout — 2-yurishning
+   **butun** kirishi. Noldan farqli chiqish kodi — xabar qoidani buzgan, `WA`;
+   manager signal bilan o'lsa yoki vaqti tugasa — `CHECKER_ERROR`.
+3. 2-yurish: stdin — manager chiqishi. Uning javobi odatdagidek baholanadi
+   (solishtiruv yoki `special` checker).
+
+Har yurish kompilyatsiya qilingan katalogning **toza nusxasida** ishlaydi:
+katalog sandbox'ga yoziladigan qilib ulanadi, ya'ni usiz 1-yurish qoldirgan
+fayl 2-yurishga yetib borardi (`32-two-pass-no-carry`). Muallif dasturlari
+(`checker_*`, `manager_*`) bu nusxaga ko'chirilmaydi. `time_ms` va `memory_kb` —
+ikki yurishning kattasi; chegara har yurishga alohida. `io`, `scorer`,
+interaktiv va `custom` rejim bilan birga kelsa — `IE`.
+
+`sql` masalasi ham judge uchun ko'rinmas (`function` kabi): API so'rovni kichik
+Python dasturiga satr sifatida joylaydi (`problems/sqltasks.py`) va oddiy ish
+yuboradi — `task` yo'q, til `python3`. Dastur test kirishidagi skript bilan
+xotiradagi SQLite bazasini quradi, so'rovni **faqat o'qish** rejimida bajaradi
+va qatorlarni chiqaradi; ular odatdagi solishtiruvdan o'tadi.
+
+⚠️ YOPIQ YIQILISH: judge tanimaydigan `task.kind` ni `IE` bilan rad etadi —
+dastur sifatida yuritmaydi.
 
 ## Vaqt o'lchash — muhim farq
 

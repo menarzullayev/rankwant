@@ -5,13 +5,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
+import { numericStamp } from "@rankwant/shared/format";
+
 import { SortHeader, TBody, TD, TH, THead, Table, type SortDirection } from "@/components/ui/Table";
 import { UserName } from "@/components/ui/Identity";
 import { Loading } from "@/components/ui/Loading";
 import { Verdict } from "@/components/ui/Verdict";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, fill, t, type Locale } from "@/i18n/messages";
+import { fill, t, type Locale } from "@/i18n/messages";
 import { mergeAttemptRow, useAttemptLiveOptional, AttemptLiveProgress } from "@/features/submissions";
 import { API_BASE, type Attempt } from "@/lib/api";
 import { buildAttemptListHref } from "@/lib/problem-tabs";
@@ -171,25 +173,25 @@ export function AttemptTable({
     <Table>
       <THead>
         <TH className="w-20">#</TH>
-        <TH className="hidden sm:table-cell">{t(locale, "attempts.col.submitted")}</TH>
-        <TH className="hidden sm:table-cell">{t(locale, "attempts.language")}</TH>
+        <TH className="hidden @2xl:table-cell">{t(locale, "attempts.col.submitted")}</TH>
+        <TH className="hidden @2xl:table-cell">{t(locale, "attempts.language")}</TH>
         <TH>{t(locale, "standings.user")}</TH>
-        {!slug && <TH className="hidden sm:table-cell">{t(locale, "problems.name")}</TH>}
+        {!slug && <TH className="hidden @2xl:table-cell">{t(locale, "problems.name")}</TH>}
         <TH>{t(locale, "attempts.verdict")}</TH>
-        <SortHeader {...sortProps("runTime")} align="right" className="hidden sm:table-cell">
+        <SortHeader {...sortProps("runTime")} align="right" className="hidden @3xl:table-cell">
           {t(locale, "attempts.col.runTime")}
         </SortHeader>
-        <SortHeader {...sortProps("memory")} align="right" className="hidden md:table-cell">
+        <SortHeader {...sortProps("memory")} align="right" className="hidden @4xl:table-cell">
           {t(locale, "col.memory")}
         </SortHeader>
-        <SortHeader {...sortProps("codeSize")} align="right" className="hidden lg:table-cell">
+        <SortHeader {...sortProps("codeSize")} align="right" className="hidden @[60rem]:table-cell">
           {t(locale, "attempts.col.codeSize")}
         </SortHeader>
         {showContest && (
-          <TH className="hidden lg:table-cell">{t(locale, "attempts.col.contest")}</TH>
+          <TH className="hidden @[60rem]:table-cell">{t(locale, "attempts.col.contest")}</TH>
         )}
         {showScore && (
-          <TH align="right" className="hidden lg:table-cell">
+          <TH align="right" className="hidden @[60rem]:table-cell">
             {t(locale, "col.points")}
           </TH>
         )}
@@ -243,9 +245,9 @@ export function AttemptTable({
                 </Link>
               </TD>
 
-              <TD className="hidden sm:table-cell">
+              <TD className="hidden @2xl:table-cell">
                 <time dateTime={row.created_at} className="rw-dim-2">
-                  {dateTime(row.created_at, locale)}
+                  {numericStamp(row.created_at)}
                 </time>
                 {waited !== null && (
                   <span className="block text-theme-xs rw-faint">
@@ -256,7 +258,7 @@ export function AttemptTable({
                 )}
               </TD>
 
-              <TD className="hidden rw-dim sm:table-cell">{row.language_name || row.language}</TD>
+              <TD className="hidden rw-dim @2xl:table-cell">{row.language_name || row.language}</TD>
 
               <TD>
                 <span className="inline-flex items-center gap-1.5">
@@ -277,7 +279,7 @@ export function AttemptTable({
                 {/* MOBIL — ikki qatorli stack (S20). Ustunlar
                     YASHIRILMAYDI, shu yerga ko'chadi: hech narsa
                     yo'qolmaydi. `sm` dan yuqorida ko'rinmaydi. */}
-                <span className="mt-0.5 block text-theme-xs rw-faint sm:hidden">
+                <span className="mt-0.5 block text-theme-xs rw-faint @2xl:hidden">
                   {/* The verdict mark can be a bare colour on a phone
                       (D56), so its name is spelled out here too. */}
                   <span className="block rw-dim">
@@ -294,7 +296,7 @@ export function AttemptTable({
                       .join(" · ")}
                   </span>
                   {[
-                    dateTime(row.created_at, locale),
+                    numericStamp(row.created_at),
                     row.language_name || row.language,
                     showProgress ? null : `${row.time_ms} ms`,
                     showProgress ? null : `${Math.round(row.memory_kb / 1024)} MB`,
@@ -308,7 +310,7 @@ export function AttemptTable({
               </TD>
 
               {!slug && (
-                <TD className="hidden sm:table-cell">
+                <TD className="hidden @2xl:table-cell">
                   <Link href={`/problems/${row.problem}` as Route} className="rw-link-hover">
                     {row.problem_code !== null && (
                       <span className="mr-1.5 font-mono text-theme-xs rw-faint tabular-nums">
@@ -331,7 +333,7 @@ export function AttemptTable({
                       </span>
                     )}
                     {display.failed_test_index !== null && (
-                      <span className="hidden rw-faint text-theme-xs sm:inline">
+                      <span className="hidden rw-faint text-theme-xs @2xl:inline">
                         {fill(t(locale, "attempts.failedAtTest"), {
                           index: display.failed_test_index,
                         })}
@@ -351,18 +353,18 @@ export function AttemptTable({
 
               {/* An attempt still being judged has no time or memory yet;
                   `0 ms` would read as a measurement. */}
-              <TD align="right" className="hidden rw-faint tabular-nums sm:table-cell">
+              <TD align="right" className="hidden rw-faint tabular-nums @3xl:table-cell">
                 {showProgress ? DASH : `${row.time_ms} ms`}
               </TD>
-              <TD align="right" className="hidden rw-faint tabular-nums md:table-cell">
+              <TD align="right" className="hidden rw-faint tabular-nums @4xl:table-cell">
                 {showProgress ? DASH : `${Math.round(row.memory_kb / 1024)} MB`}
               </TD>
-              <TD align="right" className="hidden rw-faint tabular-nums lg:table-cell">
+              <TD align="right" className="hidden rw-faint tabular-nums @[60rem]:table-cell">
                 {row.source_size} B
               </TD>
-              {showContest && <TD className="hidden rw-faint lg:table-cell">{row.contest}</TD>}
+              {showContest && <TD className="hidden rw-faint @[60rem]:table-cell">{row.contest}</TD>}
               {showScore && (
-                <TD align="right" className="hidden rw-faint tabular-nums lg:table-cell">
+                <TD align="right" className="hidden rw-faint tabular-nums @[60rem]:table-cell">
                   {row.score}
                 </TD>
               )}

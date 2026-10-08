@@ -225,13 +225,30 @@ export function intlLocale(locale: Locale): string {
   return locale;
 }
 
+/** The zone every date on the site is written in (`SITE_TZ` in
+ *  `format.ts` — the API's `TIME_ZONE`).
+ *
+ *  It is the DEFAULT of the three helpers below, not something a caller
+ *  has to remember. Measured on the live site 2026-10-06: without it the
+ *  web server (UTC) drew `9:56 AM` for an attempt made at `2:56 PM`
+ *  Tashkent time — every server-rendered time was five hours off — and
+ *  in a client component the browser then redrew it in its own zone,
+ *  which React reports as a hydration error (#418) on every such page.
+ *  A caller may still pass another `timeZone` (a date of birth is UTC).
+ */
+export const DISPLAY_TIME_ZONE = "Asia/Tashkent";
+
+function zoned(options?: Intl.DateTimeFormatOptions): Intl.DateTimeFormatOptions {
+  return { timeZone: DISPLAY_TIME_ZONE, ...options };
+}
+
 /** Sana-vaqtni tilga mos ko'rinishda. Qarang: `intlLocale`. */
 export function dateTime(
   value: string | number | Date,
   locale: Locale,
   options?: Intl.DateTimeFormatOptions,
 ): string {
-  return new Date(value).toLocaleString(intlLocale(locale), options);
+  return new Date(value).toLocaleString(intlLocale(locale), zoned(options));
 }
 
 /** Faqat sana (vaqtsiz) — qarang: `intlLocale`. */
@@ -240,7 +257,7 @@ export function date(
   locale: Locale,
   options?: Intl.DateTimeFormatOptions,
 ): string {
-  return new Date(value).toLocaleDateString(intlLocale(locale), options);
+  return new Date(value).toLocaleDateString(intlLocale(locale), zoned(options));
 }
 
 /** Faqat vaqt (sanasiz) — qarang: `intlLocale`. */
@@ -249,7 +266,7 @@ export function time(
   locale: Locale,
   options?: Intl.DateTimeFormatOptions,
 ): string {
-  return new Date(value).toLocaleTimeString(intlLocale(locale), options);
+  return new Date(value).toLocaleTimeString(intlLocale(locale), zoned(options));
 }
 
 /** Content names that have a dedicated column.

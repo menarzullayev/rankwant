@@ -1,6 +1,13 @@
 /** Problem archive and judging: problems, attempts, custom runs, feedback. */
 
-import { deleteJson, getJson, postJson, type Paginated } from "@/lib/api/client";
+import {
+  API_BASE,
+  deleteJson,
+  getJson,
+  postForm,
+  postJson,
+  type Paginated,
+} from "@/lib/api/client";
 import type { UserTitle } from "@/lib/identity";
 
 export type Problem = {
@@ -46,6 +53,8 @@ export type ProblemLanguage = {
   time_limit_ms: number;
   memory_limit_kb: number;
   code_template: string;
+  /** `function` problems: the program the submission is inserted into. */
+  harness: string;
 };
 
 export type SimilarProblem = {
@@ -88,6 +97,9 @@ export type ProblemDetail = Problem & {
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: string;
+  task_kind: string;
+  /** `answer` problems: the tests a file is sent for. */
+  answer_tests: number[];
   languages: ProblemLanguage[];
   similar: SimilarProblem[];
   attachments: Attachment[];
@@ -244,6 +256,28 @@ export function submitAttempt(body: {
 }): Promise<Attempt> {
   return postJson<Attempt>("/attempts/", body);
 }
+
+/** An `answer` problem: files instead of source. A file picked for a test
+ *  is sent under that test's number, whatever it is called on disk. */
+export function submitAnswerFiles(body: {
+  problem: string;
+  contest?: string;
+  files: Record<number, File>;
+  archive: File | null;
+}): Promise<Attempt> {
+  const form = new FormData();
+  form.append("problem", body.problem);
+  if (body.contest) form.append("contest", body.contest);
+  for (const [order, file] of Object.entries(body.files)) {
+    form.append("files", file, `${order}.out`);
+  }
+  if (body.archive) form.append("archive", body.archive, body.archive.name);
+  return postForm<Attempt>("/attempts/answers/", form);
+}
+
+/** Where the inputs of an `answer` problem are downloaded from. */
+export const answerInputsUrl = (slug: string) =>
+  `${API_BASE}/problems/${encodeURIComponent(slug)}/inputs/`;
 
 export const fetchAttempt = (id: number) =>
   getJson<AttemptDetail>(`/attempts/${id}/`);

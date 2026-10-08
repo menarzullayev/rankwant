@@ -41,6 +41,9 @@ class JudgeJob:
     hack_stage: str = ""
     #: Masala I/O rejimi — judge `input.txt` yozadi va `output.txt` ni tekshiradi.
     io: dict[str, Any] | None = None
+    #: What the solver submitted, when it is not a program (ADR-0053):
+    #: `{"kind": "answer"}`. `None` — a program, as before the field.
+    task: dict[str, Any] | None = None
 
     def to_json(self) -> str:
         # ⚠️ Yangi maydon shu lug'atga ham QO'SHILISHI shart. Dataclass'ga
@@ -63,6 +66,7 @@ class JudgeJob:
                 "hack_id": self.hack_id,
                 "hack_stage": self.hack_stage,
                 "io": self.io,
+                "task": self.task,
             }
         )
 

@@ -7,6 +7,7 @@ import {
   ProblemStatsPanel,
   ProblemTabs,
   ProblemWorkspace,
+  AnswerPanel,
   SubmitPanel,
 } from "@/features/problems";
 import { ProblemAttemptsPanel } from "./_panels/ProblemAttemptsPanel";
@@ -18,6 +19,9 @@ import { getLocale } from "@/i18n/server";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { fill, t } from "@/i18n/messages";
 import { resolveProblemTab } from "@/lib/problem-tabs";
+
+/** `Problem.task_kind` of a problem solved by sending answer files. */
+const ANSWER_KIND = "answer";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -162,13 +166,18 @@ export default async function ProblemPage({ params, searchParams }: Props) {
             </div>
           }
           editor={
-            <SubmitPanel
-              problem={slug}
-              languages={problem.languages}
-              samples={problem.samples}
-              contest={contest}
-              hasTests={problem.has_tests}
-            />
+            // An answer problem takes files, not source (ADR-0053).
+            problem.task_kind === ANSWER_KIND ? (
+              <AnswerPanel problem={slug} tests={problem.answer_tests} contest={contest} />
+            ) : (
+              <SubmitPanel
+                problem={slug}
+                languages={problem.languages}
+                samples={problem.samples}
+                contest={contest}
+                hasTests={problem.has_tests}
+              />
+            )
           }
         />
       </>

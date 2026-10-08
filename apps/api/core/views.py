@@ -40,6 +40,7 @@ from core import (
     account,
     handles,
     login_guard,
+    nav_badges,
     oauth,
     recovery,
     sessions,
@@ -70,6 +71,8 @@ from core.serializers import (
     EmailVerifySerializer,
     LoginSerializer,
     MeSerializer,
+    NavBadgeSeenSerializer,
+    NavBadgesSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
     PresenceSerializer,
@@ -283,6 +286,51 @@ class DailyStatsView(APIView):
                 )
             cache_set("platform-stats-daily", rows, self.CACHE_S)
         return Response(rows)
+
+
+def _nav_badges_payload(user: User) -> dict[str, list[dict[str, object]]]:
+    return {
+        "badges": [
+            {"section": section, **badge} for section, badge in nav_badges.badges_for(user).items()
+        ]
+    }
+
+
+@extend_schema(summary="Yon menyu belgilari")
+class NavBadgesView(APIView):
+    """What the side menu marks for the signed-in user (`core.nav_badges`).
+
+    One request for every section: work waiting (`todo`), something
+    running now (`live`), entries published since the section was last
+    opened (`unread`, `new`). A section with nothing to show is absent.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={200: NavBadgesSerializer})
+    def get(self, request: Request) -> Response:
+        return Response(_nav_badges_payload(request.user))  # type: ignore[arg-type]
+
+
+@extend_schema(summary="Yon menyu bo'limi ko'rildi")
+class NavBadgesSeenView(APIView):
+    """The user opened a section: its `unread` / `new` badge starts over.
+
+    `todo` and `live` badges are not cleared by looking - they follow the
+    work and the clock - so naming one of those sections is a 400.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=NavBadgeSeenSerializer, responses={200: NavBadgesSerializer})
+    def post(self, request: Request) -> Response:
+        body = NavBadgeSeenSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        section = body.validated_data["section"]
+        if not nav_badges.has_watermark(section):
+            raise exceptions.ValidationError({"section": "This section keeps no unread state"})
+        nav_badges.mark_seen(request.user, section)  # type: ignore[arg-type]
+        return Response(_nav_badges_payload(request.user))  # type: ignore[arg-type]
 
 
 @extend_schema(summary="Bugun faol foydalanuvchilar")

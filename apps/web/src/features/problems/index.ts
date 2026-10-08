@@ -37,6 +37,7 @@ export { ProblemSolveTimer } from "./components/ProblemSolveTimer";
 export { ProblemWorkspace } from "./components/ProblemWorkspace";
 
 export { SubmitPanel } from "./components/SubmitPanel";
+export { AnswerPanel } from "./components/AnswerPanel";
 
 export { SampleTests } from "./components/SampleTests";
 
