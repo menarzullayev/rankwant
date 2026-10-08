@@ -11,10 +11,12 @@ import { EXP_COOKIE, GEO_EXPERIMENT } from "@/lib/experiments";
 import {
   HOME_CACHE_LOCALE,
   HOME_CACHE_REQUEST_HEADER,
+  SESSION_COOKIE,
   homeCacheDecision,
   homeCacheMark,
   requestHasRscHint,
 } from "@/lib/home-cache";
+import { loginHref, needsSignIn } from "@/lib/access";
 import { SITE_URL } from "@/lib/site";
 import {
   SECURITY_HEADERS,
@@ -163,6 +165,18 @@ export function proxy(request: NextRequest): NextResponse {
   if (homeMark !== null) {
     requestHeaders.set(HOME_CACHE_REQUEST_HEADER, homeMark);
   }
+  // A guest on a page that is for signed-in visitors only (ADR-0054).
+  //
+  // The check is the cheapest one that can be made here: is there a
+  // session cookie at all. No cookie — no session, so the request is
+  // answered before any page code runs and without asking the API. A
+  // cookie that is present but stale is caught by the page's own
+  // `requireUser()` / `requireStaff()`.
+  const signIn =
+    !boshqa_domen &&
+    needsSignIn(request.nextUrl.pathname) &&
+    !request.cookies.has(SESSION_COOKIE);
+
   // ⚠️ `next()` dan OLDIN (yuqoridagi izohga qarang).
   if (fromParam !== null) requestHeaders.set(LANG_PARAM_HEADER, fromParam);
   if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);
@@ -172,7 +186,17 @@ export function proxy(request: NextRequest): NextResponse {
         new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),
         301,
       )
-    : NextResponse.next({ request: { headers: requestHeaders } });
+    : signIn
+      ? NextResponse.redirect(
+          new URL(
+            loginHref(`${request.nextUrl.pathname}${request.nextUrl.search}`),
+            request.nextUrl,
+          ),
+          307,
+        )
+      : NextResponse.next({ request: { headers: requestHeaders } });
+  // The answer depends on the visitor: no cache may keep it.
+  if (signIn) response.headers.set("Cache-Control", "private, no-store");
 
   // `Vary: Accept-Language` — javob tilga bog'liq bo'lganda MAJBURIY.
   //

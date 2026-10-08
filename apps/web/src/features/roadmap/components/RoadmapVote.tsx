@@ -1,5 +1,6 @@
 "use client";
 
+import { GuestPrompt } from "@/components/auth/SignInPopover";
 import type { Route } from "next";
 import Link from "next/link";
 import { useState } from "react";
@@ -53,18 +54,22 @@ export function RoadmapVote({
 
   if (!user) {
     return (
-      <Link
-        href={"/login?tab=login" as Route}
-        title={t(locale, "roadmap.voteLogin")}
-        aria-label={t(locale, "roadmap.voteLogin")}
-        className={`flex items-center justify-center gap-1 rw-radius-sm border rw-line rw-dim-2 transition rw-hover-bg ${
-          compact ? "flex-col px-2.5 py-1.5 text-theme-xs font-semibold" : "px-4 py-3 text-theme-sm"
-        }`}
-      >
-        <Icon name="nav.up" className={compact ? "size-4" : "size-5"} />
-        {count}
-        {!compact && <span>{t(locale, "roadmap.vote")}</span>}
-      </Link>
+      <GuestPrompt
+        reason="vote"
+        trigger={(props) => (
+          <button
+            {...props}
+            aria-label={t(locale, "roadmap.vote")}
+            className={`flex items-center justify-center gap-1 rw-radius-sm border rw-line rw-dim-2 transition rw-hover-bg rw-focus-ring ${
+              compact ? "flex-col px-2.5 py-1.5 text-theme-xs font-semibold" : "px-4 py-3 text-theme-sm"
+            }`}
+          >
+            <Icon name="nav.up" className={compact ? "size-4" : "size-5"} />
+            {count}
+            {!compact && <span>{t(locale, "roadmap.vote")}</span>}
+          </button>
+        )}
+      />
     );
   }
 

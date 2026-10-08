@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2269 strings.**
+**2291 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2290,3 +2290,25 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.verdicts.group.system` | Kam uchraydigan va tizim | Нодир ва системавӣ |  |
 | `about.verdicts.found` | {count} ta kod | {count} код |  |
 | `about.verdicts.none` | Bunday kod topilmadi. | Чунин код ёфт нашуд. |  |
+| `gate.solve.title` | Yechish uchun tizimga kiring | Барои ҳал кардан ворид шавед |  |
+| `gate.solve.body` | Kod yozish, namunada sinash va yechim yuborish uchun hisob kerak. | Барои навиштани код, санҷиш дар намуна ва фиристодани ҳал ҳисоб лозим аст. |  |
+| `gate.editorial.title` | Tahlilni o'qish uchun tizimga kiring | Барои хондани таҳлил ворид шавед |  |
+| `gate.editorial.body` | Yechim tushuntirishi faqat hisobi bor foydalanuvchilarga ochiq. | Шарҳи ҳал танҳо барои корбарони дорои ҳисоб кушода аст. |  |
+| `gate.source.title` | Kodni ko'rish uchun tizimga kiring | Барои дидани код ворид шавед |  |
+| `gate.source.body` | Manba kod faqat hisobi bor foydalanuvchilarga, masala qoidalari ruxsat bergan hollarda ko'rsatiladi. | Коди манбаъ танҳо ба корбарони дорои ҳисоб ва дар ҳолатҳое, ки қоидаҳои масъала иҷозат медиҳанд, нишон дода мешавад. |  |
+| `gate.personal.body` | Bu bo'lim sizning hisobingizga bog'liq. | Ин бахш ба ҳисоби шумо вобаста аст. |  |
+| `gate.quiz.title` | Testni yechish uchun tizimga kiring | Барои супоридани тест ворид шавед |  |
+| `gate.arena.title` | Arenada qatnashish uchun tizimga kiring | Барои иштирок дар арена ворид шавед |  |
+| `gate.hackathon.title` | Loyiha topshirish uchun tizimga kiring | Барои супоридани лоиҳа ворид шавед |  |
+| `gate.duel.title` | Duelga chaqirish uchun tizimga kiring | Барои даъват ба дуэл ворид шавед |  |
+| `gate.classroom.title` | Auditoriyalarni ko'rish uchun tizimga kiring | Барои дидани аудиторияҳо ворид шавед |  |
+| `gate.qvant.title` | Balans va vazifalarni ko'rish uchun tizimga kiring | Барои дидани баланс ва супоришҳо ворид шавед |  |
+| `gate.follow.title` | Kuzatish uchun tizimga kiring | Барои пайгирӣ ворид шавед |  |
+| `gate.vote.title` | Ovoz berish uchun tizimga kiring | Барои овоз додан ворид шавед |  |
+| `gate.favourite.title` | Sevimlilarga qo'shish uchun tizimga kiring | Барои илова ба дӯстдоштаҳо ворид шавед |  |
+| `gate.report.title` | Xato haqida xabar berish uchun tizimga kiring | Барои хабар додан дар бораи хато ворид шавед |  |
+| `gate.comment.title` | Izoh yozish uchun tizimga kiring | Барои навиштани шарҳ ворид шавед |  |
+| `gate.returnNote` | Kirgach shu sahifaga qaytasiz. | Пас аз воридшавӣ ба ҳамин саҳифа бармегардед. |  |
+| `session.expiredTitle` | Sessiya tugadi. | Сессия ба охир расид. |  |
+| `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Аз нав ворид шавед — ба ҳамин саҳифа бармегардед, коди навиштаатон нигоҳ дошта шудааст. |  |
+| `auth.continueNote` | Davom etish uchun tizimga kiring — keyin o'sha sahifaga qaytasiz. | Барои идома ворид шавед — баъд ба ҳамон саҳифа бармегардед. |  |

@@ -1,5 +1,6 @@
 "use client";
 
+import { GuestPrompt } from "@/components/auth/SignInPopover";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,14 +33,17 @@ export function RoadmapCommentForm({ itemId }: { itemId: number }) {
 
   if (!user) {
     return (
-      <p className="text-theme-sm rw-dim">
-        <Link
-          href={"/login?tab=login" as Route}
-          className="font-medium rw-accent-ink hover:underline"
-        >
-          {t(locale, "roadmap.commentLogin")}
-        </Link>
-      </p>
+      <GuestPrompt
+        reason="comment"
+        trigger={(props) => (
+          <button
+            {...props}
+            className="inline-flex min-h-11 items-center rw-radius-sm px-2 text-theme-sm font-medium rw-accent-ink hover:underline rw-focus-ring"
+          >
+            {t(locale, "roadmap.commentLogin")}
+          </button>
+        )}
+      />
     );
   }
 

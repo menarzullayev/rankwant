@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInGate } from "@/components/auth/SignInGate";
 import { useState } from "react";
 
 import { Markdown } from "@/components/ui/Markdown";
@@ -43,6 +44,10 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
       setBusy(false);
     }
   }
+
+  // The questions are the working panel: a guest gets the card, not a
+  // form whose answers would go nowhere.
+  if (ready && !user) return <SignInGate reason="quiz" />;
 
   const review = new Map(result?.review.map((r) => [r.question_id, r]) ?? []);
 
@@ -97,15 +102,11 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
       })}
 
       {error && <p className="text-theme-sm rw-bad-ink">{error}</p>}
-      {!result &&
-        ready &&
-        (user ? (
-          <Button onClick={submit} disabled={busy}>
-            {t(locale, "quiz.submit")}
-          </Button>
-        ) : (
-          <p className="text-theme-sm rw-faint">{t(locale, "auth.login")} →</p>
-        ))}
+      {!result && ready && (
+        <Button onClick={submit} disabled={busy}>
+          {t(locale, "quiz.submit")}
+        </Button>
+      )}
     </div>
   );
 }

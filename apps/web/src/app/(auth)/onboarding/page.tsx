@@ -1,13 +1,11 @@
-import type { Metadata, Route } from "next";
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { OnboardingForm } from "@/features/account";
 import { Card } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
-import { getSessionUser } from "@/lib/api.server";
-import { isSignedIn } from "@/lib/server-session";
+import { requireUser } from "@/lib/access.server";
 import type { Me } from "@/lib/api";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,13 +24,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function OnboardingPage() {
   // `?next=` bilan: kirgandan keyin odam AYNAN shu yerga qaytishi kerak,
   // aks holda 2-qadamni tugatib bosh sahifaga tushardi (qaror 1).
-  if (!(await isSignedIn()))
-    redirect(`/login?tab=login&next=${encodeURIComponent("/onboarding")}` as Route);
-
+  const me = await requireUser<Me>("/onboarding");
   const locale = await getLocale();
-  const me = await getSessionUser<Me>();
-  // Sessiya cookie'i bor, lekin hisob o'chirilgan/o'chirilgan holat.
-  if (!me) redirect(`/login?tab=login&next=${encodeURIComponent("/onboarding")}` as Route);
 
   return (
     <div className="mx-auto max-w-md py-10">

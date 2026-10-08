@@ -88,6 +88,11 @@ export default async function AuthPage({
           SERVER. A client search-params hook pushed the whole form into a
           Suspense fallback: "Loading" first, then the form — 768 px
           register measured LCP 4.2 s / CLS 0.202 (2026-09-21). */}
+      {safeNext(nextOf(params)) !== null && tab !== "reset-password" && (
+        <p className="mb-4 rw-radius-sm rw-field-bg px-3 py-2 text-theme-sm rw-dim" data-continue-note="">
+          {t(locale, "auth.continueNote")}
+        </p>
+      )}
       <AuthTabs active={tab} next={nextOf(params)} />
       {tab === "reset-password" ? (
         <ResetForm token={one(params.token) ?? ""} />

@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInGate } from "@/components/auth/SignInGate";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -151,6 +152,7 @@ export function DuelActions({ waiting }: { waiting: Duel[] }) {
   return (
     <div className="space-y-6">
       {error && <p className="text-theme-sm rw-bad-ink">{error}</p>}
+      {ready && !user && <SignInGate reason="duel" />}
       {ready && user && (
         <Card
           title={t(locale, "duel.mine")}

@@ -1,39 +1,16 @@
-"use client";
+import { AdminFrame } from "@/components/admin/AdminFrame";
+import { requireStaff } from "@/lib/access.server";
 
-import { AdminNav } from "@/components/admin/AdminNav";
-import { Can, Forbidden } from "@/components/kit/Can";
-import { Card } from "@/components/ui/Card";
-import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
-
-/** Admin UI — faqat `is_staff`. Haqiqiy himoya API'da (IsAdminUser);
- * bu yerdagi tekshiruv faqat UI ni yashirish uchun. */
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const locale = useLocale();
-  return (
-    <Can
-      perm="staff"
-      fallback={
-        <Card>
-          <Forbidden />
-        </Card>
-      }
-    >
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-title-sm font-bold rw-strong">
-            {t(locale, "admin.title")}
-          </h1>
-          <div className="mt-3">
-            <AdminNav />
-          </div>
-        </div>
-        {children}
-      </div>
-    </Can>
-  );
+/** Admin — staff only (ADR-0054).
+ *
+ *  The check runs on the server, before anything of the section is sent:
+ *  a guest is redirected to sign in, a signed-in non-member gets the
+ *  ordinary "not found" page. It used to be a client `<Can>` — every
+ *  visitor received the admin shell with status 200 and the browser then
+ *  hid it. The data was never exposed (the API answers 401/403), the
+ *  section itself was.
+ */
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  await requireStaff("/admin");
+  return <AdminFrame>{children}</AdminFrame>;
 }

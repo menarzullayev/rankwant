@@ -2546,6 +2546,44 @@ def two_pass_runs_share_nothing() -> str | None:
     return None
 
 
+def guest_zones_are_gated() -> str | None:
+    # 2026-10-08, measured as a guest on the live site: the solve panel with
+    # its editor was drawn for everybody, `/notifications` and 24 admin pages
+    # answered 200 and let the browser hide them (ADR-0054).
+    page = read("apps/web/src/app/(site)/problems/[slug]/page.tsx")
+    if "(await getSessionUser()) !== null" not in page:
+        return "masala sahifasi mehmonni serverda aniqlamaydi"
+    if '<SignInGate reason="solve" centered />' not in page:
+        return "masala sahifasida mehmon uchun kirish kartasi yo'q"
+    if "            !signedIn ? null :" not in page:
+        return "mehmonga ham yechim paneli (editor) yuboriladi"
+    workspace = read("apps/web/src/features/problems/components/ProblemWorkspace.tsx")
+    if "if (gate) {" not in workspace or workspace.index("if (gate) {") > workspace.index("if (wide) {"):
+        return "ProblemWorkspace mehmon uchun editorsiz tartibni chizmaydi"
+    admin = read("apps/web/src/app/(site)/admin/layout.tsx")
+    if '"use client"' in admin or "await requireStaff(" not in admin:
+        return "admin bo'limi serverda tekshirilmaydi"
+    gate = read("apps/web/src/components/auth/SignInGate.tsx")
+    if 'loginHref(next, "login")' not in gate or 'loginHref(next, "register")' not in gate:
+        return "kirish kartasida ikki tugma (kirish, ro'yxatdan o'tish) qaytish manzili bilan emas"
+    for rel, reason in (
+        ("apps/web/src/features/problems/components/Editorial.tsx", "editorial"),
+        ("apps/web/src/features/submissions/components/AttemptView.tsx", "source"),
+        ("apps/web/src/features/quizzes/components/QuizPlayer.tsx", "quiz"),
+        ("apps/web/src/features/arena/components/ArenaPlayer.tsx", "arena"),
+    ):
+        if f'<SignInGate reason="{reason}" />' not in read(rel):
+            return f"{rel}: mehmon uchun kirish kartasi yo'q"
+    client = read("apps/web/src/lib/api/client.ts")
+    if client.count("announceUnauthorized(res.status);") < 2:
+        return "API mijozi 401 ni e'lon qilmaydi — tugagan sessiya sezilmaydi"
+    if "<SessionExpired />" not in read("apps/web/src/layout/AppShell.tsx"):
+        return "«sessiya tugadi» xabari o'rnatilmagan"
+    if "python3 tools/check_access.py" not in read(".github/workflows/ci.yml"):
+        return "check_access.py CI'da yurmaydi"
+    return None
+
+
 def nightly_builds_each_image_once() -> str | None:
     # 2026-10-07, Nightly run of c3623d9 (19.9 min): the worker binary sat
     # inside the judge image's one flattened layer, so a Go change made eight
@@ -3402,6 +3440,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
     ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
+    ("mehmon zonalari yopiq", guest_zones_are_gated),
     ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),
     ("ikki bosqichli yurishlar hech narsa bo'lishmaydi", two_pass_runs_share_nothing),

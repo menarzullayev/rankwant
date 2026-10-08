@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInGate } from "@/components/auth/SignInGate";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -41,11 +42,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
   }, [user, slug]);
 
   if (ready && !user)
-    return (
-      <Card>
-        <p className="text-theme-sm rw-faint">{t(locale, "auth.login")} →</p>
-      </Card>
-    );
+    return <SignInGate reason="classroom" />;
   if (missing)
     return (
       <Card>

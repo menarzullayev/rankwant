@@ -104,9 +104,15 @@ function writeCollapsed(v: boolean) {
 export function ProblemWorkspace({
   statement,
   editor,
+  gate,
 }: {
   statement: React.ReactNode;
   editor: React.ReactNode;
+  /** Shown INSTEAD of the editor to a guest (ADR-0054). With it the
+   *  workspace has no editor at all: no split handle, no bottom sheet,
+   *  no "open the editor" button — the card sits beside the statement
+   *  on a wide screen and under it on a narrow one. */
+  gate?: React.ReactNode;
 }) {
   const locale = useLocale();
   const wide = useSyncExternalStore(subscribeWide, readWide, () => false);
@@ -174,6 +180,21 @@ export function ProblemWorkspace({
     height: `${sheetHPct}vh`,
     maxHeight: "min(96vh, 720px)",
   };
+
+  if (gate) {
+    // Plain CSS, no `matchMedia`: the same markup on the server and in
+    // the browser, so nothing moves after hydration. The workspace
+    // context is left out on purpose — "collapse the editor" has
+    // nothing to collapse.
+    return (
+      <ProblemSolveProvider>
+        <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] xl:items-start">
+          <div className="min-w-0 space-y-6">{statement}</div>
+          <div className="min-w-0 xl:sticky xl:top-[calc(var(--rw-header-h)+1rem)]">{gate}</div>
+        </div>
+      </ProblemSolveProvider>
+    );
+  }
 
   if (wide) {
     return (

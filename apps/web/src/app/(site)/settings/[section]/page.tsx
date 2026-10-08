@@ -6,8 +6,7 @@ import { Suspense } from "react";
 import { SECTIONS, SettingsShell, isSection, legacyTarget, tabOf } from "@/features/account";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
-import type { Me } from "@/lib/api";
-import { getSessionUser } from "@/lib/api.server";
+import { requireUser } from "@/lib/access.server";
 
 type Query = Record<string, string | string[] | undefined>;
 type Props = { params: Promise<{ section: string }>; searchParams: Promise<Query> };
@@ -45,8 +44,7 @@ export default async function SettingsSectionPage({ params, searchParams }: Prop
   // ko'rsatiladigan hech narsasi yo'q. `?next=` bilan qaytariladi:
   // sozlamaga kirish uchun kirgan odam o'sha bo'limga qaytishi kerak,
   // bosh sahifaga emas (qaror 1).
-  const me = await getSessionUser<Me>();
-  if (!me) redirect(`/login?next=${encodeURIComponent(`/settings/${section}`)}`);
+  await requireUser(`/settings/${section}`);
 
   return (
     <Suspense>

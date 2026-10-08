@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInGate } from "@/components/auth/SignInGate";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -181,6 +182,11 @@ export function AttemptView({ id }: { id: number }) {
         )}
       </Card>
 
+      {/* A guest is never sent the source (the API leaves it out); the
+          card says how to see it instead of an empty box. */}
+      {!user && !data.source_code ? (
+        <SignInGate reason="source" />
+      ) : (
       <Card title={t(locale, "attempt.source")}>
         {data.source_code ? (
           <CodeCopy text={data.source_code} filename={data.language_name || data.language}>
@@ -202,6 +208,7 @@ export function AttemptView({ id }: { id: number }) {
           <p className="text-theme-sm rw-faint">{t(locale, "attempt.sourceHidden")}</p>
         )}
       </Card>
+      )}
 
       <HackPanel attempt={data} />
     </div>

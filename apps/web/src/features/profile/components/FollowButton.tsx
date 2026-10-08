@@ -1,5 +1,6 @@
 "use client";
 
+import { GuestPrompt } from "@/components/auth/SignInPopover";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,9 +31,14 @@ export function FollowButton({
   if (!ready) return <div className="h-11 w-28" />;
   if (!user) {
     return (
-      <ButtonLink href={"/login?tab=login" as Route} variant="outline">
-        {t(locale, "profile.follow")}
-      </ButtonLink>
+      <GuestPrompt
+        reason="follow"
+        trigger={(props) => (
+          <Button variant="outline" {...props}>
+            {t(locale, "profile.follow")}
+          </Button>
+        )}
+      />
     );
   }
 

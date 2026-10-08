@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2269 strings.**
+**2291 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2290,3 +2290,25 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.verdicts.group.system` | Kam uchraydigan va tizim | Сирек және жүйелік |  |
 | `about.verdicts.found` | {count} ta kod | {count} код |  |
 | `about.verdicts.none` | Bunday kod topilmadi. | Мұндай код табылмады. |  |
+| `gate.solve.title` | Yechish uchun tizimga kiring | Шешу үшін жүйеге кіріңіз |  |
+| `gate.solve.body` | Kod yozish, namunada sinash va yechim yuborish uchun hisob kerak. | Код жазу, мысалда тексеру және шешім жіберу үшін аккаунт керек. |  |
+| `gate.editorial.title` | Tahlilni o'qish uchun tizimga kiring | Талдауды оқу үшін жүйеге кіріңіз |  |
+| `gate.editorial.body` | Yechim tushuntirishi faqat hisobi bor foydalanuvchilarga ochiq. | Шешім түсіндірмесі тек аккаунты бар пайдаланушыларға ашық. |  |
+| `gate.source.title` | Kodni ko'rish uchun tizimga kiring | Кодты көру үшін жүйеге кіріңіз |  |
+| `gate.source.body` | Manba kod faqat hisobi bor foydalanuvchilarga, masala qoidalari ruxsat bergan hollarda ko'rsatiladi. | Бастапқы код тек аккаунты бар пайдаланушыларға, есеп ережелері рұқсат еткен жағдайда көрсетіледі. |  |
+| `gate.personal.body` | Bu bo'lim sizning hisobingizga bog'liq. | Бұл бөлім сіздің аккаунтыңызға байланысты. |  |
+| `gate.quiz.title` | Testni yechish uchun tizimga kiring | Тест тапсыру үшін жүйеге кіріңіз |  |
+| `gate.arena.title` | Arenada qatnashish uchun tizimga kiring | Аренаға қатысу үшін жүйеге кіріңіз |  |
+| `gate.hackathon.title` | Loyiha topshirish uchun tizimga kiring | Жоба тапсыру үшін жүйеге кіріңіз |  |
+| `gate.duel.title` | Duelga chaqirish uchun tizimga kiring | Дуэльге шақыру үшін жүйеге кіріңіз |  |
+| `gate.classroom.title` | Auditoriyalarni ko'rish uchun tizimga kiring | Аудиторияларды көру үшін жүйеге кіріңіз |  |
+| `gate.qvant.title` | Balans va vazifalarni ko'rish uchun tizimga kiring | Баланс пен тапсырмаларды көру үшін жүйеге кіріңіз |  |
+| `gate.follow.title` | Kuzatish uchun tizimga kiring | Жазылу үшін жүйеге кіріңіз |  |
+| `gate.vote.title` | Ovoz berish uchun tizimga kiring | Дауыс беру үшін жүйеге кіріңіз |  |
+| `gate.favourite.title` | Sevimlilarga qo'shish uchun tizimga kiring | Таңдаулыларға қосу үшін жүйеге кіріңіз |  |
+| `gate.report.title` | Xato haqida xabar berish uchun tizimga kiring | Қате туралы хабарлау үшін жүйеге кіріңіз |  |
+| `gate.comment.title` | Izoh yozish uchun tizimga kiring | Пікір жазу үшін жүйеге кіріңіз |  |
+| `gate.returnNote` | Kirgach shu sahifaga qaytasiz. | Кіргеннен кейін осы бетке ораласыз. |  |
+| `session.expiredTitle` | Sessiya tugadi. | Сессия аяқталды. |  |
+| `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Қайта кіріңіз — осы бетке ораласыз, жазған кодыңыз сақталған. |  |
+| `auth.continueNote` | Davom etish uchun tizimga kiring — keyin o'sha sahifaga qaytasiz. | Жалғастыру үшін жүйеге кіріңіз — содан кейін сол бетке ораласыз. |  |
