@@ -47,43 +47,55 @@ async function openSolvePanel(page: import("@playwright/test").Page) {
   }
 }
 
-test("mehmonga panel ko'rinadi, lekin yuborish kirishni talab qiladi", async ({
+// A guest gets no solve panel at all (ADR-0054): no editor, no language
+// list, no sample runner, no bottom sheet and no button that opens one.
+// The card that stands in its place says why and leads to sign in — and
+// back to this problem afterwards.
+test("mehmonga yechim paneli chizilmaydi, o'rnida kirish kartasi turadi", async ({
   page,
 }) => {
   await page.goto(PROBLEM);
-  await openSolvePanel(page);
 
-  await expect(page.getByRole("heading", { name: "Yechim" })).toBeVisible();
-  // Tillar serverda olinadi — mehmon ham ko'radi (SSR).
-  //
-  // ANIQ nom bo'yicha, «birinchi combobox» bo'yicha emas: header'da UI
-  // tilini tanlash ham select va u sahifada birinchi turadi. Testlar
-  // standart tilda (o'zbekcha) ishlaydi, ya'ni nom aniq.
-  // Headless UI combobox — tanlangan til `input` value'da, matn node emas.
+  const gate = page.locator('[data-gate="solve"]');
   await expect(
-    page.getByRole("combobox", { name: "Til", exact: true }),
-  ).toHaveValue(/C\+\+|Python|Java/);
-  await expect(
-    page.getByRole("link", { name: "Yuborish uchun kiring" }),
+    gate.getByRole("heading", { name: "Yechish uchun tizimga kiring" }),
   ).toBeVisible();
+  const back = encodeURIComponent(PROBLEM);
+  await expect(gate.getByRole("link", { name: "Kirish", exact: true })).toHaveAttribute(
+    "href",
+    `/login?tab=login&next=${back}`,
+  );
+  await expect(gate.getByRole("link", { name: "Ro'yxatdan o'tish" })).toHaveAttribute(
+    "href",
+    `/login?tab=register&next=${back}`,
+  );
+
+  await expect(page.getByRole("heading", { name: "Yechim", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("combobox", { name: "Til", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Kod$/ })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Yuborish" })).toHaveCount(0);
+  await expect(page.locator(".monaco-editor")).toHaveCount(0);
+  // The statement is still the guest's to read.
+  await expect(page.getByRole("heading", { name: "Namunalar" })).toBeVisible();
 });
 
-// Between `lg` and `xl` the side menu is on screen and the editor is still
-// a bottom sheet. The sheet used to start at the window's edge, under the
-// menu: a click meant for the submit control landed on a menu link
-// (measured on the live site, 2026-10-07, 1276 px). A guest's sign-in link
-// sits where the signed-in Send button does, so the guest view is enough —
-// and it runs on the CI stack, where a signed-in page cannot.
+// Between `lg` and `xl` the side menu is on screen. The signed-in editor is
+// a bottom sheet there and used to start at the window's edge, under the
+// menu (measured on the live site, 2026-10-07, 1276 px) — that case needs a
+// signed-in page, which the CI stack cannot give a browser, and is held by
+// the `editor_sheet_clears_the_side_menu` rule. What a guest has in that
+// place is the sign-in card, and the same must be true of it: beside the
+// menu, on top, and inside the window.
 for (const width of [1024, 1100, 1276]) {
-  test(`${width}px: yechim varag'i yon menyu ostiga kirmaydi`, async ({
+  test(`${width}px: kirish kartasi yon menyu ostiga kirmaydi`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 800 });
     await page.goto(PROBLEM);
-    await openSolvePanel(page);
 
-    const submit = page.getByRole("link", { name: "Yuborish uchun kiring" });
+    const submit = page
+      .locator('[data-gate="solve"]')
+      .getByRole("link", { name: "Kirish", exact: true });
     await submit.scrollIntoViewIfNeeded();
 
     const found = await submit.evaluate((link) => {

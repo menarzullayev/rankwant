@@ -1,5 +1,6 @@
 "use client";
 
+import { GuestPrompt } from "@/components/auth/SignInPopover";
 import { useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
@@ -87,6 +88,16 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
       className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-theme-sm rw-dim"
       data-problem-actions=""
     >
+      {ready && !user && (
+        <GuestPrompt
+          reason="favourite"
+          trigger={(props) => (
+            <button {...props} className={`${actionBtn} gap-1.5 rw-dim`}>
+              {t(locale, "problem.addFavourite")}
+            </button>
+          )}
+        />
+      )}
       {signedIn && (
         <button
           type="button"
@@ -102,6 +113,22 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
         </button>
       )}
 
+      {ready && !user && (
+        <GuestPrompt
+          reason="vote"
+          trigger={(props) => (
+            <button
+              {...props}
+              aria-label={`${t(locale, "problem.voteUp")} — ▲ ${votes.up}, ${t(locale, "problem.voteDown")} — ▼ ${votes.down}`}
+              className={`${actionBtn} gap-2 tabular-nums rw-dim`}
+            >
+              <span>▲ {votes.up}</span>
+              <span>▼ {votes.down}</span>
+            </button>
+          )}
+        />
+      )}
+      {signedIn && (
       <span
         className="inline-flex items-center gap-0.5"
         role="group"
@@ -130,6 +157,7 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
           ▼ {votes.down}
         </button>
       </span>
+      )}
 
       <span className="inline-flex flex-wrap items-center gap-2.5">
         <span id={ratingSummaryId} className="rw-faint tabular-nums">

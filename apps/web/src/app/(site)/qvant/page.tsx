@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { SignInGate } from "@/components/auth/SignInGate";
 import { Badge } from "@/components/ui/Badge";
 import { Card, StatCard } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
@@ -14,6 +15,7 @@ import {
   type ShopItem,
   type Wallet,
 } from "@/lib/api";
+import { getSessionUser, getWithSession } from "@/lib/api.server";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: t(await getLocale(), "qvant.title") };
@@ -24,6 +26,7 @@ export const dynamic = "force-dynamic";
 
 export default async function QvantPage() {
   const locale = await getLocale();
+  const me = await getSessionUser();
 
   let wallet: Wallet | null = null;
   let quests: Quest[] = [];
@@ -31,10 +34,10 @@ export default async function QvantPage() {
   let marathon: Marathon | null = null;
   try {
     [wallet, quests, shop, marathon] = await Promise.all([
-      api.wallet(),
-      api.quests(),
+      getWithSession<Wallet>("/qvant/wallet/"),
+      getWithSession<Quest[]>("/qvant/quests/"),
       api.shop(),
-      api.marathon(),
+      getWithSession<Marathon>("/qvant/marathon/"),
     ]);
   } catch (error) {
     // Kirmagan foydalanuvchi hamyonni ko'ra olmaydi — do'kon ochiq qoladi.
@@ -73,12 +76,14 @@ export default async function QvantPage() {
             value={wallet.remaining_today}
           />
         </section>
-      ) : (
+      ) : me ? (
         <Card>
           <p className="text-theme-sm rw-dim">
             {t(locale, "qvant.signIn")}
           </p>
         </Card>
+      ) : (
+        <SignInGate reason="qvant" />
       )}
 
       {quests.length > 0 && (

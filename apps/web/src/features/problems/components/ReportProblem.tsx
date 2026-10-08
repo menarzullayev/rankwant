@@ -1,5 +1,6 @@
 "use client";
 
+import { GuestPrompt } from "@/components/auth/SignInPopover";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -29,7 +30,24 @@ export function ReportProblem({ slug }: { slug: string }) {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!ready || !user) return null;
+  if (!ready) return null;
+  // A guest sees that a problem can be reported; the report itself
+  // needs somebody to answer to.
+  if (!user)
+    return (
+      <GuestPrompt
+        reason="report"
+        trigger={(props) => (
+          <button
+            {...props}
+            className="inline-flex items-center gap-1.5 rw-radius-sm px-2 py-1 text-theme-sm rw-faint transition rw-hover-bg rw-focus-ring"
+          >
+            <Icon name="contest.flag" className="size-3.5" />
+            {t(locale, "report.open")}
+          </button>
+        )}
+      />
+    );
 
   async function send() {
     if (busy) return;

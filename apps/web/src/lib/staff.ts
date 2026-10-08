@@ -1,6 +1,7 @@
 /** Staff (admin UI) mijozi — sessiya + CSRF bilan, brauzerda. */
 
 import { API_BASE, ApiError, type Paginated } from "@/lib/api";
+import { announceUnauthorized } from "@/lib/api/client";
 
 function csrf(): Record<string, string> {
   const m = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
@@ -26,6 +27,7 @@ export async function staffFetch<T>(
   const raw = await res.text();
   const parsed = raw ? JSON.parse(raw) : null;
   if (!res.ok) {
+    announceUnauthorized(res.status);
     // Maydon xatolari `details` da keladi, `message` esa umumiy
     // («Kiritilgan ma'lumot noto'g'ri»). Umumiysi birinchi bo'lsa
     // xodim aynan qaysi maydon xato ekanini ko'rmasdi.

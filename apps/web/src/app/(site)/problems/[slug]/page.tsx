@@ -10,10 +10,11 @@ import {
   AnswerPanel,
   SubmitPanel,
 } from "@/features/problems";
+import { SignInGate } from "@/components/auth/SignInGate";
 import { ProblemAttemptsPanel } from "./_panels/ProblemAttemptsPanel";
 import { ProblemDescription } from "./_panels/ProblemDescription";
 import { ApiError, type ProblemDetail } from "@/lib/api";
-import { getWithSession } from "@/lib/api.server";
+import { getSessionUser, getWithSession } from "@/lib/api.server";
 import { SITE_URL, jsonLd } from "@/lib/site";
 import { getLocale } from "@/i18n/server";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
@@ -105,6 +106,9 @@ export default async function ProblemPage({ params, searchParams }: Props) {
   const { contest } = query;
   const tab = resolveProblemTab(query.tab);
   const locale = await getLocale();
+  // Decided on the server: a guest's page carries no editor at all —
+  // not its markup, not its props, not the Monaco chunk (ADR-0054).
+  const signedIn = (await getSessionUser()) !== null;
 
   let problem: ProblemDetail;
   try {
@@ -165,8 +169,9 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               )}
             </div>
           }
+          gate={signedIn ? undefined : <SignInGate reason="solve" centered />}
           editor={
-            // An answer problem takes files, not source (ADR-0053).
+            !signedIn ? null : // An answer problem takes files, not source (ADR-0053).
             problem.task_kind === ANSWER_KIND ? (
               <AnswerPanel problem={slug} tests={problem.answer_tests} contest={contest} />
             ) : (

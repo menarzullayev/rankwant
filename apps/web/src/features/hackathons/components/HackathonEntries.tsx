@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInGate } from "@/components/auth/SignInGate";
 import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/Badge";
@@ -60,6 +61,9 @@ export function HackathonEntries({ hackathon }: { hackathon: Hackathon }) {
 
   return (
     <div className="space-y-6">
+      {ready && !user && hackathon.accepts_submissions && (
+        <SignInGate reason="hackathon" />
+      )}
       {ready && user && hackathon.accepts_submissions && (
         <Card title={t(locale, "hackathon.submit")}>
           <form onSubmit={submit} className="grid gap-3 md:grid-cols-2">

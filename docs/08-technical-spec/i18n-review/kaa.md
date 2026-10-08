@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2269 strings.**
+**2291 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2290,3 +2290,25 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.verdicts.group.system` | Kam uchraydigan va tizim | Siyrek hám sistemalıq |  |
 | `about.verdicts.found` | {count} ta kod | {count} kod |  |
 | `about.verdicts.none` | Bunday kod topilmadi. | Bunday kod tabılmadı. |  |
+| `gate.solve.title` | Yechish uchun tizimga kiring | Sheshiw ushın sistemaǵa kiriń |  |
+| `gate.solve.body` | Kod yozish, namunada sinash va yechim yuborish uchun hisob kerak. | Kod jazıw, úlgide sınaw hám sheshim jiberiw ushın akkaunt kerek. |  |
+| `gate.editorial.title` | Tahlilni o'qish uchun tizimga kiring | Talqılawdı oqıw ushın sistemaǵa kiriń |  |
+| `gate.editorial.body` | Yechim tushuntirishi faqat hisobi bor foydalanuvchilarga ochiq. | Sheshim túsindirmesi tek akkauntı bar paydalanıwshılarǵa ashıq. |  |
+| `gate.source.title` | Kodni ko'rish uchun tizimga kiring | Kodtı kóriw ushın sistemaǵa kiriń |  |
+| `gate.source.body` | Manba kod faqat hisobi bor foydalanuvchilarga, masala qoidalari ruxsat bergan hollarda ko'rsatiladi. | Derek kod tek akkauntı bar paydalanıwshılarǵa, másele qaǵıydaları ruqsat bergen jaǵdaylarda kórsetiledi. |  |
+| `gate.personal.body` | Bu bo'lim sizning hisobingizga bog'liq. | Bul bólim sizdiń akkauntıńızǵa baylanıslı. |  |
+| `gate.quiz.title` | Testni yechish uchun tizimga kiring | Testti sheshiw ushın sistemaǵa kiriń |  |
+| `gate.arena.title` | Arenada qatnashish uchun tizimga kiring | Arenada qatnasıw ushın sistemaǵa kiriń |  |
+| `gate.hackathon.title` | Loyiha topshirish uchun tizimga kiring | Joybar tapsırıw ushın sistemaǵa kiriń |  |
+| `gate.duel.title` | Duelga chaqirish uchun tizimga kiring | Duelge shaqırıw ushın sistemaǵa kiriń |  |
+| `gate.classroom.title` | Auditoriyalarni ko'rish uchun tizimga kiring | Auditoriyalardı kóriw ushın sistemaǵa kiriń |  |
+| `gate.qvant.title` | Balans va vazifalarni ko'rish uchun tizimga kiring | Balans hám tapsırmalardı kóriw ushın sistemaǵa kiriń |  |
+| `gate.follow.title` | Kuzatish uchun tizimga kiring | Baqlaw ushın sistemaǵa kiriń |  |
+| `gate.vote.title` | Ovoz berish uchun tizimga kiring | Dawıs beriw ushın sistemaǵa kiriń |  |
+| `gate.favourite.title` | Sevimlilarga qo'shish uchun tizimga kiring | Súyiklilerge qosıw ushın sistemaǵa kiriń |  |
+| `gate.report.title` | Xato haqida xabar berish uchun tizimga kiring | Qáte haqqında xabar beriw ushın sistemaǵa kiriń |  |
+| `gate.comment.title` | Izoh yozish uchun tizimga kiring | Pikir jazıw ushın sistemaǵa kiriń |  |
+| `gate.returnNote` | Kirgach shu sahifaga qaytasiz. | Kirgennen keyin usı betke qaytasız. |  |
+| `session.expiredTitle` | Sessiya tugadi. | Sessiya tamamlandı. |  |
+| `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Qayta kiriń — usı betke qaytasız, jazǵan kodıńız saqlanǵan. |  |
+| `auth.continueNote` | Davom etish uchun tizimga kiring — keyin o'sha sahifaga qaytasiz. | Dawam etiw ushın sistemaǵa kiriń — keyin sol betke qaytasız. |  |

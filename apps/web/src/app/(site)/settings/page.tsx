@@ -6,8 +6,7 @@ import { Suspense } from "react";
 import { SettingsShell } from "@/features/account";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
-import type { Me } from "@/lib/api";
-import { getSessionUser } from "@/lib/api.server";
+import { requireUser } from "@/lib/access.server";
 
 type Props = { searchParams: Promise<{ social?: string }> };
 
@@ -30,8 +29,7 @@ export default async function SettingsPage({ searchParams }: Props) {
   if (social) {
     redirect(`/settings/xavfsizlik?social=${encodeURIComponent(social)}` as Route);
   }
-  const me = await getSessionUser<Me>();
-  if (!me) redirect(`/login?next=${encodeURIComponent("/settings")}`);
+  await requireUser("/settings");
 
   return (
     <Suspense>

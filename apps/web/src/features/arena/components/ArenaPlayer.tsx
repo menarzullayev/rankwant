@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInGate } from "@/components/auth/SignInGate";
 import { useCallback, useEffect, useState } from "react";
 
 import { Markdown } from "@/components/ui/Markdown";
@@ -145,13 +146,7 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
     <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
       <div className="space-y-4">
         {error && <p className="text-theme-sm rw-bad-ink">{error}</p>}
-        {ready && !user && (
-          <Card>
-            <p className="text-theme-sm rw-faint">
-              {t(locale, "auth.login")} →
-            </p>
-          </Card>
-        )}
+        {ready && !user && <SignInGate reason="arena" />}
         {user && !arena.joined && !arena.is_finished && (
           <Card>
             <Button onClick={join}>{t(locale, "arena.join")}</Button>

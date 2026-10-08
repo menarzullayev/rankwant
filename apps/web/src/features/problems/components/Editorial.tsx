@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInGate } from "@/components/auth/SignInGate";
 import type { Route } from "next";
 import { useState } from "react";
 
@@ -56,16 +57,7 @@ export function Editorial({
   if (!ready) return null;
 
   if (!user) {
-    return (
-      <Card title={t(locale, "editorial.title")}>
-        <p className="text-theme-sm rw-faint">
-          {t(locale, "editorial.lockedTitle")}{" "}
-          <Link href={"/login?tab=login" as Route} className="underline rw-accent-ink">
-            {t(locale, "editorial.login")}
-          </Link>
-        </p>
-      </Card>
-    );
+    return <SignInGate reason="editorial" />;
   }
 
   if (!body) {

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
+import { requireUser } from "@/lib/access.server";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: t(await getLocale(), "notif.title"), robots: { index: false } };
@@ -11,6 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
 /** The list is read in the browser: it is private, it changes while the
  *  page is open, and every time on it is drawn in the reader's own time
  *  zone — a server render would disagree with the first client one. */
-export default function NotificationsPage() {
+export default async function NotificationsPage() {
+  // Nothing here is for a guest: the page is the reader's own inbox.
+  await requireUser("/notifications");
   return <NotificationCenter />;
 }

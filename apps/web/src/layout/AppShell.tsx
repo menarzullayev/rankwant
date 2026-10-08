@@ -8,6 +8,7 @@ import { CustomizerProvider, useCustomizer } from "@/context/CustomizerContext";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { clampNavMode, clampNavShape } from "./nav-config";
 import { PrefsSync } from "@/context/PrefsSync";
+import { SessionExpired } from "@/components/auth/SessionExpired";
 import { SessionProvider } from "@/context/SessionContext";
 import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -197,6 +198,7 @@ export default function AppShell({
               {/* CommandPalette bu yerda YO'Q (H2): Ctrl+K qidiruvniki.
                   Kit fayli qoladi — clipboard toast shartnomasi uchun. */}
               <PrefsSync />
+              <SessionExpired />
               <UpdatesProvider>
                 <NavBadgesProvider>
                   <NotificationsProvider>

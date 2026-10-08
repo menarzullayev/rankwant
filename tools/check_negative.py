@@ -4252,6 +4252,121 @@ def neg_decisions_shell_inset_ignores_side_menu() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_guest_gets_the_editor() -> tuple[bool, str]:
+    """The solve panel is sent to a guest again."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/problems/[slug]/page.tsx",
+        "            !signedIn ? null : // An answer problem takes files, not source (ADR-0053).\n",
+        "            // An answer problem takes files, not source (ADR-0053).\n",
+        "mehmonga ham yechim paneli",
+    )
+
+
+def neg_decisions_admin_checked_in_the_browser() -> tuple[bool, str]:
+    """The admin section goes back to a client-side check."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/admin/layout.tsx",
+        '  await requireStaff("/admin");\n',
+        "",
+        "admin bo'limi serverda tekshirilmaydi",
+    )
+
+
+def neg_decisions_session_end_goes_unnoticed() -> tuple[bool, str]:
+    """A 401 is no longer announced by the API client."""
+    return _decision_broken(
+        "apps/web/src/lib/api/client.ts",
+        "  if (!res.ok) {\n    announceUnauthorized(res.status);\n    throw new ApiError(\n",
+        "  if (!res.ok) {\n    throw new ApiError(\n",
+        "401 ni e'lon qilmaydi",
+    )
+
+
+def neg_decisions_gate_loses_register() -> tuple[bool, str]:
+    """The sign-in card keeps one button only."""
+    return _decision_broken(
+        "apps/web/src/components/auth/SignInGate.tsx",
+        'loginHref(next, "register")',
+        'loginHref(next, "login")',
+        "ikki tugma",
+    )
+
+
+def _access_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break one access invariant in `rel`; check_access must catch it."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"access/{expect}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("access")
+    if code != 1:
+        return False, f"access/{expect}: buzilgan holat exit {code} berdi (1 kerak)"
+    if expect not in out:
+        return False, f"access/{expect}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"access/{expect}: tutildi (exit 1)"
+
+
+def neg_access_section_without_level() -> tuple[bool, str]:
+    """A section has pages but no entry in the list."""
+    return _access_broken(
+        "apps/web/src/lib/access.ts",
+        '  duels: "public",\n',
+        "",
+        "section `duels` has no access level",
+    )
+
+
+def neg_access_stale_entry() -> tuple[bool, str]:
+    """The list protects a section that does not exist."""
+    return _access_broken(
+        "apps/web/src/lib/access.ts",
+        '  admin: "staff",\n',
+        '  admin: "staff",\n  backoffice: "staff",\n',
+        "`backoffice` is listed but has no page",
+    )
+
+
+def neg_access_admin_unguarded() -> tuple[bool, str]:
+    """The admin layout no longer checks for staff."""
+    return _access_broken(
+        "apps/web/src/app/(site)/admin/layout.tsx",
+        '  await requireStaff("/admin");\n',
+        "",
+        "a `staff` page with no `requireStaff()` guard",
+    )
+
+
+def neg_access_staff_section_asks_for_any_user() -> tuple[bool, str]:
+    """A staff section settles for "signed in"."""
+    return _access_broken(
+        "apps/web/src/app/(site)/admin/layout.tsx",
+        '  await requireStaff("/admin");\n',
+        '  await requireUser("/admin");\n',
+        "a `staff` page with no `requireStaff()` guard",
+    )
+
+
+def neg_access_guard_only_in_a_comment() -> tuple[bool, str]:
+    """The call is commented out; its name is still in the file."""
+    return _access_broken(
+        "apps/web/src/app/(site)/notifications/page.tsx",
+        '  await requireUser("/notifications");\n',
+        '  // await requireUser("/notifications");\n',
+        "a `user` page with no `requireUser()` guard",
+    )
+
+
+def neg_access_proxy_ignores_the_list() -> tuple[bool, str]:
+    """The proxy stops turning guests away."""
+    return _access_broken(
+        "apps/web/src/proxy.ts",
+        "    needsSignIn(request.nextUrl.pathname) &&\n",
+        "",
+        "proxy.ts does not use the access list",
+    )
+
+
 def neg_decisions_judge_binary_in_toolchain_layer() -> tuple[bool, str]:
     """The worker binary goes back into the flattened toolchain layer."""
     return _decision_broken(
@@ -4663,13 +4778,29 @@ def neg_decisions_locale_header_after_next() -> tuple[bool, str]:
         "        new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),\n"
         "        301,\n"
         "      )\n"
-        "    : NextResponse.next({ request: { headers: requestHeaders } });",
+        "    : signIn\n"
+        "      ? NextResponse.redirect(\n"
+        "          new URL(\n"
+        "            loginHref(`${request.nextUrl.pathname}${request.nextUrl.search}`),\n"
+        "            request.nextUrl,\n"
+        "          ),\n"
+        "          307,\n"
+        "        )\n"
+        "      : NextResponse.next({ request: { headers: requestHeaders } });",
         "  const response = boshqa_domen\n"
         "    ? NextResponse.redirect(\n"
         "        new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),\n"
         "        301,\n"
         "      )\n"
-        "    : NextResponse.next({ request: { headers: requestHeaders } });\n"
+        "    : signIn\n"
+        "      ? NextResponse.redirect(\n"
+        "          new URL(\n"
+        "            loginHref(`${request.nextUrl.pathname}${request.nextUrl.search}`),\n"
+        "            request.nextUrl,\n"
+        "          ),\n"
+        "          307,\n"
+        "        )\n"
+        "      : NextResponse.next({ request: { headers: requestHeaders } });\n"
         "  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);",
         "til havolada ham keladi",
     )
@@ -6079,6 +6210,13 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/sqltasks.py",
     "services/judge-go/Dockerfile",
     "tools/ci_stack.sh",
+    "apps/web/src/app/(site)/admin/layout.tsx",
+    "apps/web/src/components/auth/SignInGate.tsx",
+    "apps/web/src/features/problems/components/Editorial.tsx",
+    "apps/web/src/features/submissions/components/AttemptView.tsx",
+    "apps/web/src/features/quizzes/components/QuizPlayer.tsx",
+    "apps/web/src/features/arena/components/ArenaPlayer.tsx",
+    "apps/web/src/lib/api/client.ts",
 )
 
 
@@ -9189,6 +9327,17 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ],
     ),
     (
+        "access",
+        [
+            ("darajasiz bo'lim tutilsin", neg_access_section_without_level),
+            ("sahifasiz yozuv tutilsin", neg_access_stale_entry),
+            ("qo'riqchisiz admin tutilsin", neg_access_admin_unguarded),
+            ("xodim bo'limi oddiy kirishga tushsa tutilsin", neg_access_staff_section_asks_for_any_user),
+            ("izohdagi qo'riqchi tutilsin", neg_access_guard_only_in_a_comment),
+            ("proxy ro'yxatni ishlatmasa tutilsin", neg_access_proxy_ignores_the_list),
+        ],
+    ),
+    (
         "scroll",
         [
             ("xom scroll klassi tutilsin", neg_scroll_raw_class),
@@ -9389,6 +9538,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ikki bosqichli ish bir marta yursa tutilsin", neg_decisions_two_pass_runs_once),
             ("ikki bosqichli ish tursiz ketsa tutilsin", neg_decisions_two_pass_job_without_task),
             ("manager'siz masala nashr qilinsa tutilsin", neg_decisions_two_pass_released_without_manager),
+            ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
+            ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),
+            ("401 e'lon qilinmasa tutilsin", neg_decisions_session_end_goes_unnoticed),
+            ("kartada bitta tugma qolsa tutilsin", neg_decisions_gate_loses_register),
             ("judge binari toolchain qatlamiga qaytsa tutilsin", neg_decisions_judge_binary_in_toolchain_layer),
             ("judge base'siz qurilsa tutilsin", neg_decisions_judge_built_without_base),
             ("ikkinchi job obraz keshini yozsa tutilsin", neg_decisions_second_job_pushes_images),

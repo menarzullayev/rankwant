@@ -98,6 +98,20 @@ class ApiError extends Error {
   }
 }
 
+/** Fired on `window` whenever a session request is answered 401.
+ *
+ *  The client only reports; what it means is decided by the listener
+ *  (`components/auth/SessionExpired`): for a guest it is ordinary, for a
+ *  signed-in page it may be the session ending. Not fired by `get()` —
+ *  that one sends no cookie and also runs on the server. */
+export const UNAUTHORIZED_EVENT = "rw:unauthorized";
+
+export function announceUnauthorized(status: number): void {
+  if (status === 401 && typeof window !== "undefined") {
+    window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+  }
+}
+
 export async function get<T>(path: string, revalidate = 30): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     next: { revalidate },
@@ -164,6 +178,7 @@ async function send<T>(method: string, path: string, body?: unknown): Promise<T>
     }
   }
   if (!res.ok) {
+    announceUnauthorized(res.status);
     throw new ApiError(
       res.status,
       parsed?.error?.code ?? "error",
@@ -206,6 +221,7 @@ export async function getJson<T>(
     signal: init?.signal,
   });
   if (!res.ok) {
+    announceUnauthorized(res.status);
     const body = await res.json().catch(() => null);
     throw new ApiError(
       res.status,

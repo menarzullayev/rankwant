@@ -409,6 +409,11 @@ jobs:
       - name: Scroll vocabulary
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_scroll.py
+      # Every page has an access level and the protected ones are behind a
+      # server guard (2026-10-08, ADR-0054).
+      - name: Access levels
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_access.py
       # Sxemadan generatsiya qilingan TS tiplar eskirgan bo'lsa — qizil.
       # `openapi/schema.yml` o'zgargan-u `schema.ts` yangilanmagan bo'lsa,
       # mijoz tiplari jimgina noto'g'ri bo'lib qolardi.
