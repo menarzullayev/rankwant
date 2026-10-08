@@ -158,7 +158,11 @@ class AttemptViewSet(
         # usiz har qator uchun alohida so'rov ketardi (N+1).
         qs = Attempt.objects.select_related("user", "problem", "language", "contest")
 
-        qs = _outside_the_freeze(qs, self.request.user)
+        # Schema generation builds this queryset with no request and, on CI,
+        # no database: the freeze lookup would fail there and the generator
+        # would lose the model (and with it the type of `id`).
+        if not getattr(self, "swagger_fake_view", False):
+            qs = _outside_the_freeze(qs, self.request.user)
 
         problem = params.get("problem")
         if problem:
