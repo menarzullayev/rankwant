@@ -94,7 +94,7 @@ gunicorn==26.2.0
     # via -r requirements.txt
 h11==0.16.0
     # via uvicorn
-hypothesis==6.168.3
+hypothesis==6.169.0
     # via -r requirements-dev.txt
 idna==3.19
     # via requests
