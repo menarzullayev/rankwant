@@ -116,6 +116,7 @@ harness at live data.
 | Date | Environment | p50 | p95 | Samples | Budget met |
 |---|---|---|---|---|---|
 | 2026-09-21T07:00+05 | GitHub runner (`ubuntu-latest`) | — | — | 20 | ⏳ first scheduled run |
+| 2026-10-17 | **Production** (`rankwant.uz`, judge on main `70276a1`, Go 1.26) | 2045 ms | 2129 ms | 20 | ✅ yes (5000 / 15000 ms) — see "Production measurement" below for how it was run |
 
 The row is filled in from the run's `LATENCY_JSON:` line. Until it is, the gate
 row in `docs/09` stays unchecked.
@@ -203,11 +204,7 @@ Harness `tests/latency/check_judge_latency.py` pointed at `https://rankwant.uz/a
 20 samples after 2 warm-up, `cpp23`, `a-plus-b`, sequential. Production judge: Go 1.26
 build, main `70276a1`.
 
-| Metric | Measured | Budget |
-|---|---|---|
-| p50 | 2045 ms | 5000 ms |
-| p95 | 2129 ms | 15000 ms |
-| min / max | 1977 / 2159 ms | |
+min / max 1977 / 2159 ms. The p50 / p95 figures are in the §5.1 table.
 
 All 22 submissions returned `AC`. The CI baseline (p50 2081 / p95 2095 ms) matches.
 
