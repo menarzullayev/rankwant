@@ -46,7 +46,7 @@ django-cors-headers==4.9.0
     # via -r requirements.txt
 django-filter==26.2
     # via -r requirements.txt
-djangorestframework==3.18.1
+djangorestframework==3.18.3
     # via
     #   -r requirements.txt
     #   drf-spectacular

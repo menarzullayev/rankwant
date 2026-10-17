@@ -8,7 +8,7 @@
 #   uv pip compile requirements.txt -o requirements.lock
 #   uv pip compile requirements-dev.txt -o requirements-dev.lock
 Django>=5.2.17,<6.0
-djangorestframework>=3.18.1
+djangorestframework>=3.18.3
 drf-spectacular>=0.30.0
 django-filter>=26.2
 psycopg[binary]>=3.3.6
