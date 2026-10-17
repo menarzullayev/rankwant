@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yon menyu belgilari</title>
+<style>
+  :root {
+    --ground: #ede4ff; --surface: #fbf7ff; --surface-2: #f2ebff; --divider: #8874a5;
+    --text: #4a2d75; --text-2: #5d3d89; --muted: #624f82; --faint: #6f5897;
+    --accent: #7c3aed; --accent-ink: #7936ea; --accent-soft: #ede4ff; --hover: #f2ebff;
+    --live: #1f8a5b; --live-soft: #d9f7ea;
+  }
+  :root.dark {
+    --ground: #130d21; --surface: #1e1632; --surface-2: #281d42; --divider: #9580bf;
+    --text: #efe8ff; --text-2: #dccff7; --muted: #bcaede; --faint: #ab9bd0;
+    --accent-ink: #c9afff; --accent-soft: #2c2147; --hover: #281d42;
+    --live: #5fd6a4; --live-soft: #12382b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--text); font: 14px/20px system-ui, "Segoe UI", sans-serif; }
+  header.bar { position: sticky; top: 0; z-index: 5; background: var(--surface); padding: 12px 16px;
+               border-bottom: 1px solid color-mix(in srgb, var(--divider) 35%, transparent);
+               display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+  header.bar h1 { font-size: 16px; margin: 0; }
+  .seg { display: inline-flex; border-radius: 10px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--divider) 45%, transparent); }
+  .seg button { font: inherit; color: var(--text-2); background: transparent; border: 0; padding: 8px 12px; cursor: pointer; min-height: 36px; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .seg button:focus-visible, .item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  label.lbl { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
+
+  .stage { padding: 16px; overflow-x: auto; }
+  .row { display: flex; gap: 24px; align-items: flex-start; width: max-content; }
+  .col h2 { font-size: 14px; margin: 0 0 2px; }
+  .col .sub { color: var(--muted); font-size: 12px; line-height: 16px; margin: 0 0 8px; max-width: 260px; min-height: 32px; }
+  .frame { background: var(--surface); display: flex; flex-direction: column; border-radius: 6px;
+           border-right: 1px solid color-mix(in srgb, var(--divider) 40%, transparent);
+           box-shadow: 0 6px 18px rgba(80, 40, 160, .14); }
+  .frame.wide { width: 260px; padding: 0 16px; }
+  .frame.rail { width: 86px; padding: 0 8px; }
+  .top { height: 64px; flex: none; }
+  nav { flex: 1; min-height: 0; overflow: hidden; }
+  .grp + .grp { border-top: 1px solid color-mix(in srgb, var(--divider) var(--line), transparent); padding-top: calc(var(--sep) / 2); }
+  .grp { margin-bottom: calc(var(--sep) / 2); }
+  .title { margin: 0 0 var(--tg); padding: 0 12px; font-size: 12px; line-height: 18px; font-weight: 500;
+           letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .rail .title { display: none; }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--rg); }
+  .item { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; padding: var(--py) 12px;
+          border-radius: 8px; font-weight: 500; color: var(--text-2); text-decoration: none; }
+  .rail .item { justify-content: center; padding-inline: 0; }
+  .rail .item .label { display: none; }
+  .item:hover { background: var(--hover); color: var(--text); }
+  .item svg { width: 20px; height: 20px; flex: none; color: var(--faint); }
+  .item.on { background: var(--accent-soft); color: var(--accent-ink); }
+  .item.on svg { color: var(--accent-ink); }
+  .label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* --- badges ----------------------------------------------------------- */
+  .b { flex: none; font-size: 11px; line-height: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  /* Style A: chips */
+  .sA .b.todo   { background: var(--accent); color: #fff; padding: 0 6px; border-radius: 999px; min-width: 18px; text-align: center; }
+  .sA .b.unread { background: var(--accent-soft); color: var(--accent-ink); padding: 0 6px; border-radius: 999px; min-width: 18px; text-align: center;
+                  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-ink) 35%, transparent); }
+  .sA .b.new    { color: var(--muted); padding: 0 6px; border-radius: 999px;
+                  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--divider) 55%, transparent); }
+  .sA .b.live   { display: inline-flex; align-items: center; gap: 5px; color: var(--live); background: var(--live-soft); padding: 0 7px; border-radius: 999px; }
+  .sA .b.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  /* Style B: quiet numbers */
+  .sB .b.todo   { color: var(--accent-ink); }
+  .sB .b.unread, .sB .b.new { color: var(--muted); font-weight: 500; }
+  .sB .b.live   { font-size: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--live); }
+  /* Style C: dots only */
+  .sC .b { font-size: 0; width: 8px; height: 8px; border-radius: 50%; padding: 0; }
+  .sC .b.todo { background: var(--accent); }
+  .sC .b.unread { background: var(--accent-ink); opacity: .55; }
+  .sC .b.new { box-shadow: inset 0 0 0 1.5px var(--muted); }
+  .sC .b.live { background: var(--live); }
+  /* The rail has no room for a number: every badge becomes a corner dot. */
+  .rail .b { position: absolute; top: calc(var(--py) - 1px); right: 20px; font-size: 0 !important; width: 9px; height: 9px;
+             padding: 0 !important; min-width: 0 !important; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface) !important; }
+  .rail .b::before { display: none; }
+  .rail .b.todo { background: var(--accent); }
+  .rail .b.unread { background: var(--accent-ink); opacity: 1; }
+  .rail .b.new { background: var(--muted); }
+  .rail .b.live { background: var(--live); }
+
+  .legend { margin: 4px 16px 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; max-width: 1000px; }
+  .legend div { background: var(--surface); border-radius: 12px; padding: 10px 12px; font-size: 12px; line-height: 17px; color: var(--muted); }
+  .legend b { display: block; color: var(--text); font-size: 13px; margin-bottom: 2px; }
+  .count { margin: 0 16px 24px; font-size: 12px; color: var(--muted); }
+  .count b { color: var(--text); }
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1>Yon menyu belgilari</h1>
+  <label class="lbl">Uslub
+    <span class="seg" id="style">
+      <button data-v="A">A. Chiplar</button>
+      <button data-v="B">B. Sokin sonlar</button>
+      <button data-v="C">C. Faqat nuqta</button>
+    </span>
+  </label>
+  <label class="lbl">Holat
+    <span class="seg" id="scene">
+      <button data-v="calm">Oddiy kun</button>
+      <button data-v="busy">Band kun</button>
+      <button data-v="all">Hammasi yoqilgan</button>
+      <button data-v="none">Belgisiz</button>
+    </span>
+  </label>
+  <label class="lbl">Ekran
+    <span class="seg" id="h">
+      <button data-v="1080">1080</button>
+      <button data-v="768">768</button>
+    </span>
+  </label>
+  <label class="lbl">Rejim
+    <span class="seg" id="mode">
+      <button data-v="light">Yorug'</button>
+      <button data-v="dark">Qorong'u</button>
+    </span>
+  </label>
+</header>
+
+<div class="stage"><div class="row" id="row"></div></div>
+<p class="count" id="count"></p>
+<div class="legend">
+  <div><b>Ish kutyapti (to'liq rangli)</b>Sizdan harakat talab qiladi: bajarilmagan topshiriq, sizga kelgan duel chaqiruvi. Ochib ko'rish bilan yo'qolmaydi — ish bajarilganda yo'qoladi.</div>
+  <div><b>O'qilmagan (och rangli)</b>Siz ko'rmagan yozuvlar: o'zgarishlar, yangiliklar. Bo'limni ochganda yo'qoladi.</div>
+  <div><b>Jonli (yashil)</b>Hozir o'tayotgan musobaqa yoki arena. Son emas — holat. Tugaganda yo'qoladi.</div>
+  <div><b>Yangi (hoshiyali)</b>Oxirgi kirganingizdan beri qo'shilgan masala, maqola, test. 3-bosqich — faqat «Hammasi yoqilgan» holatida ko'rinadi.</div>
+</div>
+
+<script>
+const GROUPS = [
+  ["Laboratoriya", [["Masalalar","doc","problems"],["Urinishlar","bars","attempts"],["Testlar","check","quizzes"]]],
+  ["Kutubxona", [["Maqolalar","book","learn"],["Traektoriya","route","roadmaps"],["Algoritmlar","nodes","algorithms"],["Auditoriya","book","classroom"]]],
+  ["Musobaqa", [["Musobaqalar","cup","contests"],["Arena","bolt","arena"],["Duel","swords","duels"],["Chempionat","cup","tournaments"],["Hakaton","code","hackathons"],["Taqvim","cal","calendar"]]],
+  ["Kampus", [["Reyting","bars","leaderboard"],["Yangiliklar","doc","blog"],["O'zgarishlar","bell","updates"],["Yo'l xaritasi","route","platform-roadmap"]]],
+  ["Platforma", [["Formulalar","sigma","rating"],["Do'kon","bag","qvant"],["Qanday ishlaydi","info","about"],["Jamoa","users","team"]]],
+];
+const ICON = {
+  doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  bars: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
+  check: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/>',
+  route: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h5a4 4 0 0 0 0-6h-2a4 4 0 0 1 0-6h5"/>',
+  nodes: '<circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v5M12 12l-6 5M12 12l6 5"/>',
+  cup: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>',
+  bolt: '<path d="M13 3 5 14h6l-1 7 8-11h-6z"/>',
+  swords: '<path d="M4 4l10 10M20 4 10 14M6 16l2 2M18 16l-2 2M4 20l3-3M20 20l-3-3"/>',
+  code: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>',
+  bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  sigma: '<path d="M17 6V4H7l6 8-6 8h10v-2"/>',
+  bag: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  users: '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a5 5 0 0 1 5 6"/>',
+};
+const svg = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+
+// kind: todo | unread | live | new
+const SCENES = {
+  none: {},
+  calm: { updates: ["unread", 2], duels: ["todo", 1], contests: ["live"] },
+  busy: { updates: ["unread", 5], blog: ["unread", 3], classroom: ["todo", 2], duels: ["todo", 1], contests: ["live"], arena: ["live"] },
+  all:  { updates: ["unread", 12], blog: ["unread", 3], classroom: ["todo", 2], duels: ["todo", 1], contests: ["live"], arena: ["live"],
+          tournaments: ["live"], hackathons: ["live"], problems: ["new", 4], learn: ["new", 1], algorithms: ["new", 2], quizzes: ["new", 1] },
+};
+const SAY = {
+  todo: (n) => `${n} ta ish kutyapti`, unread: (n) => `${n} ta o'qilmagan`, live: () => "hozir jonli", new: (n) => `${n} ta yangi`,
+};
+const DENS = { 1080: { py: 8, rg: 2.6, sep: 20, tg: 8, line: "0%" }, 768: { py: 2.2, rg: 0, sep: 16, tg: 6, line: "30%" } };
+const state = { style: "A", scene: "busy", h: 768, mode: "light" };
+
+function frame(kind) {
+  const d = DENS[state.h];
+  const el = document.createElement("div");
+  el.className = `frame ${kind} s${state.style}`;
+  el.style.cssText = `height:${state.h}px;--py:${d.py}px;--rg:${d.rg}px;--sep:${d.sep}px;--tg:${d.tg}px;--line:${d.line}`;
+  const scene = SCENES[state.scene];
+  el.innerHTML = '<div class="top"></div><nav aria-label="Asosiy navigatsiya">' + GROUPS.map(([title, items], gi) =>
+    `<div class="grp"><p class="title">${title}</p><ul>` + items.map(([label, icon, id], i) => {
+      const b = scene[id];
+      const text = b ? (b[0] === "live" ? "jonli" : (b[1] > 99 ? "99+" : b[1])) : "";
+      const badge = b ? `<span class="b ${b[0]}" title="${SAY[b[0]](b[1])}"><span aria-hidden="true">${text}</span></span>` : "";
+      const say = b ? `, ${SAY[b[0]](b[1])}` : "";
+      return `<li><a href="#" class="item${gi === 0 && i === 0 ? " on" : ""}" aria-label="${label}${say}" title="${label}${say}">${svg(icon)}<span class="label">${label}</span>${badge}</a></li>`;
+    }).join("") + "</ul></div>").join("") + "</nav>";
+  return el;
+}
+
+function build() {
+  document.documentElement.classList.toggle("dark", state.mode === "dark");
+  const row = document.getElementById("row");
+  row.innerHTML = "";
+  for (const [kind, name, sub] of [
+    ["wide", "Keng menyu (260 px)", "Belgi qator oxirida, nom qisqarmaydi."],
+    ["rail", "Yig'ilgan menyu (86 px)", "Songa joy yo'q — burchakda nuqta; son ko'rsatma (tooltip) va ekran o'quvchida."],
+  ]) {
+    const col = document.createElement("section");
+    col.className = "col";
+    col.innerHTML = `<h2>${name}</h2><p class="sub">${sub}</p>`;
+    col.append(frame(kind));
+    row.append(col);
+  }
+  row.style.zoom = Math.min(1, (innerHeight - 200) / state.h);
+  const n = Object.keys(SCENES[state.scene]).length;
+  document.getElementById("count").innerHTML = `Bir vaqtda yonib turgan belgilar: <b>${n}</b> / 21 band.` +
+    (n > 6 ? " Shuncha ko'p belgi bir-birining qadrini tushiradi — «Hammasi yoqilgan» holati shuni ko'rsatish uchun." : "");
+}
+for (const [id, key, cast] of [["style", "style", String], ["scene", "scene", String], ["h", "h", Number], ["mode", "mode", String]]) {
+  const box = document.getElementById(id);
+  const paint = () => box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(cast(b.dataset.v) === state[key])));
+  box.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; state[key] = cast(b.dataset.v); paint(); build(); });
+  paint();
+}
+addEventListener("resize", build);
+build();
+</script>
+</body>
+</html>
