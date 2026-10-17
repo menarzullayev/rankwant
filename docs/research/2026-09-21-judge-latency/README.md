@@ -196,3 +196,28 @@ The fix for the actual gap (§1.3). Three pieces:
    **not** require a numeric row yet, because no number has been produced. Once
    §5.1 has one, the rule should require it — otherwise the table can silently
    empty out.
+
+## Production measurement (2026-10-17)
+
+Harness `tests/latency/check_judge_latency.py` pointed at `https://rankwant.uz/api/v1`,
+20 samples after 2 warm-up, `cpp23`, `a-plus-b`, sequential. Production judge: Go 1.26
+build, main `70276a1`.
+
+| Metric | Measured | Budget |
+|---|---|---|
+| p50 | 2045 ms | 5000 ms |
+| p95 | 2129 ms | 15000 ms |
+| min / max | 1977 / 2159 ms | |
+
+All 22 submissions returned `AC`. The CI baseline (p50 2081 / p95 2095 ms) matches.
+
+How it was run, because the harness alone cannot reach production:
+
+- Cloudflare returns 403 to Python's default User-Agent; the run used `rankwant-latency-harness/1`.
+- Registration needs a Turnstile token, so one `latency…` user was created in the
+  production database (owner-approved). User rows cannot be deleted by policy; it remains.
+- `THROTTLE_SUBMIT` is 6/min; submissions were paced 12 s apart. Pacing does not change the
+  measured wall time per submission.
+
+Not done: the `docs/09` launch-gate checkbox stays unchecked (the document is locked and the
+box means a human accepted the number).
