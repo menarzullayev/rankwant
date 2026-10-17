@@ -42,7 +42,7 @@ RUN git clone --depth 1 --branch "${NSJAIL_REF}" https://github.com/google/nsjai
     && cd /src && make -j"$(nproc)"
 
 # ── 2. worker ────────────────────────────────────────────────────────
-FROM golang:1.25-bookworm AS go-build
+FROM golang:1.26-bookworm AS go-build
 WORKDIR /app
 COPY go.mod go.sum* ./
 # `--mount=type=cache,target=/go/pkg/mod` — Go modul keshi qatlam keshidan
@@ -52,7 +52,7 @@ COPY go.mod go.sum* ./
 RUN --mount=type=cache,target=/go/pkg/mod \
     go mod download
 COPY *.go ./
-# Kompilyatsiya keshi ham alohida: `golang:1.25-bookworm` image'ida
+# Kompilyatsiya keshi ham alohida: `golang:1.26-bookworm` image'ida
 # GOCACHE allaqachon `/root/.cache/go-build`, ya'ni `go build` uni
 # ishlatadi. Uni ham konteyner qatlami sifatida saqlash `go mod download`
 # qatlamini har build'da takrorlanishdan qutqaradi.
