@@ -70,7 +70,7 @@ django-stubs==6.1.2
     #   djangorestframework-stubs
 django-stubs-ext==6.1.1
     # via django-stubs
-djangorestframework==3.18.1
+djangorestframework==3.18.3
     # via
     #   -r requirements.txt
     #   drf-spectacular

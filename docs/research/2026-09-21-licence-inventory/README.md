@@ -990,7 +990,7 @@ new dependency cannot make this document quietly false.
 | `django` | 5.2.17 | runtime | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | runtime | MIT |
 | `django-filter` | 26.2 | runtime | BSD License |
-| `djangorestframework` | 3.18.1 | runtime | BSD-3-Clause |
+| `djangorestframework` | 3.18.3 | runtime | BSD-3-Clause |
 | `drf-spectacular` | 0.30.0 | runtime | BSD-3-Clause |
 | `fonttools` | 4.65.0 | runtime | MIT |
 | `fpdf2` | 2.8.9 | runtime | LGPL-3.0-only |
@@ -1053,7 +1053,7 @@ new dependency cannot make this document quietly false.
 | `django-filter` | 26.2 | dev | BSD License |
 | `django-stubs` | 6.1.2 | dev | MIT |
 | `django-stubs-ext` | 6.1.1 | dev | MIT |
-| `djangorestframework` | 3.18.1 | dev | BSD-3-Clause |
+| `djangorestframework` | 3.18.3 | dev | BSD-3-Clause |
 | `djangorestframework-stubs` | 3.18.1 | dev | MIT |
 | `drf-spectacular` | 0.30.0 | dev | BSD-3-Clause |
 | `execnet` | 2.1.2 | dev | MIT |
