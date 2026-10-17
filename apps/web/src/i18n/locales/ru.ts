@@ -2375,4 +2375,10 @@ export const ru: Record<MessageKey, string> = {
   "session.expiredTitle": "Сессия завершена.",
   "session.expiredBody": "Войдите снова — вы вернётесь на эту страницу, а написанный код сохранён.",
   "auth.continueNote": "Войдите, чтобы продолжить — после этого вы вернётесь на ту страницу.",
+  "contest.gate.registerTitle": "Эта задача в соревновании «{contest}»",
+  "contest.gate.registerBody": "Чтобы отправить решение, зарегистрируйтесь в соревновании. Условие открыто всем.",
+  "contest.gate.endedTitle": "Соревнование завершено",
+  "contest.gate.endedBody": "После подведения итогов задача перейдёт в архив, и отправка снова откроется.",
+  "contest.gate.cta": "Страница соревнования",
+  "contest.problemsAtStart": "Задач: {count} — они откроются с началом соревнования.",
 };

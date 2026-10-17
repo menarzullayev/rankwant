@@ -2375,4 +2375,10 @@ export const kaa: Record<MessageKey, string> = {
   "session.expiredTitle": "Sessiya tamamlandı.",
   "session.expiredBody": "Qayta kiriń — usı betke qaytasız, jazǵan kodıńız saqlanǵan.",
   "auth.continueNote": "Dawam etiw ushın sistemaǵa kiriń — keyin sol betke qaytasız.",
+  "contest.gate.registerTitle": "Bul másele «{contest}» jarısında",
+  "contest.gate.registerBody": "Sheshim jiberiw ushın jarısqa jazılıń. Shártti oqıw hámmege ashıq.",
+  "contest.gate.endedTitle": "Jarıs tamamlandı",
+  "contest.gate.endedBody": "Nátiyjeler juwmaqlanǵannan keyin másele arxivke ótedi hám jiberiw qayta ashıladı.",
+  "contest.gate.cta": "Jarıs beti",
+  "contest.problemsAtStart": "{count} másele — jarıs baslanǵanda ashıladı.",
 };

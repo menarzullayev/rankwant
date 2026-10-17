@@ -23,6 +23,7 @@ from core.models import User
 from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 from judging.verdicts import Verdict
+from problems import visibility
 from problems.filters import ProblemFilter
 from problems.models import (
     DIFFICULTY_LEVELS,
@@ -118,8 +119,11 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
     def get_queryset(self):  # type: ignore[no-untyped-def]
         # Baho ro'yxatda ham ko'rinadi — har qatorga alohida so'rov
         # bo'lmasligi uchun annotatsiya.
+        # The list is the archive. One problem opened by its address may
+        # also be a contest problem whose contest has started (ADR-0055).
+        scope = Q(is_public=True) if self.action == "list" else visibility.openable_q()
         return (
-            Problem.objects.filter(is_public=True)
+            Problem.objects.filter(scope)
             .select_related("author")
             .prefetch_related("topics")
             .annotate(
@@ -297,7 +301,8 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         """
         problem = self.get_object()
         assert isinstance(request.user, User)
-        if not problem.editorial:
+        # Not for sale while the contest it was written for is undecided.
+        if not problem.editorial or not problem.is_public:
             return Response({"detail": "This problem has no editorial"}, status=404)
 
         try:
@@ -353,17 +358,21 @@ class ProblemStatsView(APIView):
     def get(self, request: Request, slug: str) -> Response:
         from judging.models import Attempt
 
-        problem = get_object_or_404(Problem, slug=slug, is_public=True)
+        problem = get_object_or_404(Problem.objects.filter(visibility.openable_q()), slug=slug)
+        # A contest problem's numbers stop where the scoreboard froze.
+        frozen = visibility.frozen_since(problem)
 
         # Serverda ham keshlanadi, chekkada ham. Chekka kesh chekkaga
         # yetgan so'rovni to'sadi; bu esa CDN qoidasi qo'yilmagan yoki
         # kesh muzlagan holatda ham beshta agregatni takrorlamaydi.
-        cache_key = f"problem-stats:{problem.pk}"
+        cache_key = f"problem-stats:{problem.pk}" + (":frozen" if frozen else "")
         cached = cache_get(cache_key)
         if cached is not None:
             return edge_cacheable(Response(cached), PUBLIC_STATS_CACHE_S)
 
         attempts = Attempt.objects.filter(problem=problem)
+        if frozen:
+            attempts = attempts.filter(created_at__lt=frozen)
 
         verdicts = [
             {"verdict": row["verdict"], "count": row["n"]}
@@ -436,8 +445,11 @@ class ProblemSolversView(APIView):
     def get(self, request: Request, slug: str) -> Response:
         from judging.models import Attempt
 
-        problem = get_object_or_404(Problem, slug=slug, is_public=True)
+        problem = get_object_or_404(Problem.objects.filter(visibility.openable_q()), slug=slug)
         accepted = Attempt.objects.filter(problem=problem, verdict=Verdict.AC)
+        frozen = visibility.frozen_since(problem)
+        if frozen:
+            accepted = accepted.filter(created_at__lt=frozen)
 
         # Har foydalanuvchining BIRINCHI AC si — `DISTINCT ON` Postgres'ga
         # bog'lab qo'yardi (testlar SQLite'da), shuning uchun eng erta

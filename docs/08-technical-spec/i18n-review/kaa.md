@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2291 strings.**
+**2297 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2312,3 +2312,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `session.expiredTitle` | Sessiya tugadi. | Sessiya tamamlandı. |  |
 | `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Qayta kiriń — usı betke qaytasız, jazǵan kodıńız saqlanǵan. |  |
 | `auth.continueNote` | Davom etish uchun tizimga kiring — keyin o'sha sahifaga qaytasiz. | Dawam etiw ushın sistemaǵa kiriń — keyin sol betke qaytasız. |  |
+| `contest.gate.registerTitle` | Bu masala «{contest}» musobaqasida | Bul másele «{contest}» jarısında |  |
+| `contest.gate.registerBody` | Yechim yuborish uchun musobaqaga yoziling. Shartni o'qish hammaga ochiq. | Sheshim jiberiw ushın jarısqa jazılıń. Shártti oqıw hámmege ashıq. |  |
+| `contest.gate.endedTitle` | Musobaqa tugadi | Jarıs tamamlandı |  |
+| `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Nátiyjeler juwmaqlanǵannan keyin másele arxivke ótedi hám jiberiw qayta ashıladı. |  |
+| `contest.gate.cta` | Musobaqa sahifasi | Jarıs beti |  |
+| `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} másele — jarıs baslanǵanda ashıladı. |  |

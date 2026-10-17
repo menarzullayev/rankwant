@@ -200,7 +200,7 @@ attach obligations to distribution. Strong copyleft first.
 | `psycopg-binary` | 3.3.6 | runtime | LGPL-3.0-only |
 | `certifi` | 2026.7.22 | dev | MPL-2.0 |
 | `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
-| `hypothesis` | 6.168.3 | dev | MPL-2.0 |
+| `hypothesis` | 6.169.0 | dev | MPL-2.0 |
 | `pathspec` | 1.1.1 | dev | Mozilla Public License 2.0 (MPL 2.0) |
 | `psycopg` | 3.3.6 | dev | LGPL-3.0-only |
 | `psycopg-binary` | 3.3.6 | dev | LGPL-3.0-only |
@@ -1051,7 +1051,7 @@ new dependency cannot make this document quietly false.
 | `django` | 5.2.17 | dev | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | dev | MIT |
 | `django-filter` | 26.1 | dev | BSD License |
-| `django-stubs` | 6.1.1 | dev | MIT |
+| `django-stubs` | 6.1.2 | dev | MIT |
 | `django-stubs-ext` | 6.1.1 | dev | MIT |
 | `djangorestframework` | 3.18.1 | dev | BSD-3-Clause |
 | `djangorestframework-stubs` | 3.18.1 | dev | MIT |
@@ -1064,7 +1064,7 @@ new dependency cannot make this document quietly false.
 | `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
 | `gunicorn` | 26.2.0 | dev | MIT |
 | `h11` | 0.16.0 | dev | MIT |
-| `hypothesis` | 6.168.3 | dev | MPL-2.0 |
+| `hypothesis` | 6.169.0 | dev | MPL-2.0 |
 | `idna` | 3.19 | dev | BSD-3-Clause |
 | `inflection` | 0.5.1 | dev | MIT |
 | `iniconfig` | 2.3.0 | dev | MIT |
@@ -1072,12 +1072,12 @@ new dependency cannot make this document quietly false.
 | `jsonschema` | 4.26.0 | dev | MIT |
 | `jsonschema-specifications` | 2025.9.1 | dev | MIT |
 | `kombu` | 5.6.2 | dev | BSD-3-Clause |
-| `librt` | 0.15.0 | dev | MIT |
+| `librt` | 0.16.0 | dev | MIT |
 | `license-expression` | 30.4.4 | dev | Apache-2.0 |
 | `markdown-it-py` | 4.2.0 | dev | MIT License |
 | `mdurl` | 0.1.2 | dev | MIT License |
 | `msgpack` | 1.2.2 | dev | Apache-2.0 |
-| `mypy` | 2.3.1 | dev | MIT |
+| `mypy` | 2.4.0 | dev | MIT |
 | `mypy-extensions` | 1.1.0 | dev | MIT |
 | `packageurl-python` | 0.17.6 | dev | MIT |
 | `packaging` | 26.3 | dev | Apache-2.0 OR BSD-2-Clause |
