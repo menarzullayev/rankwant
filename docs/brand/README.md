@@ -3,6 +3,8 @@
 Crest + Wordmarkni **locked** deb e'lon qilishdan oldin:
 [`LOCK-GATE.md`](LOCK-GATE.md) (acceptance checklist va PASS/FAIL).
 
+Animatsion **yordamchi maskot** prototipi (Lottie / Rive / SVG): [`mascot-prototype/`](mascot-prototype/) — production emas.
+
 ## Logotip — bitta manba
 
 [`mark-crest.svg`](mark-crest.svg) — **haqiqat manbai**. U

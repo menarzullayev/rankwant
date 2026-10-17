@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yangi masala turlari — prototip</title>
+<style>
+  :root {
+    --bg: #f3eefc; --surface: #ffffff; --surface-2: #f7f3ff; --line: #e2d8f5;
+    --ink: #1d1530; --dim: #5d5275; --faint: #8b80a3;
+    --accent: #7c3aed; --accent-ink: #6a2fd0; --on-accent: #fff;
+    --ok: #16794a; --ok-bg: #e2f6ea; --bad: #b3261e; --bad-bg: #fde8e6;
+    --warn: #8a5a00; --warn-bg: #fdf0d0; --code: #f4f0fb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #130d21; --surface: #1e1632; --surface-2: #261c40; --line: #3a2d5c;
+      --ink: #efe8ff; --dim: #b9aed6; --faint: #8d82aa;
+      --accent: #7c3aed; --accent-ink: #c9afff; --on-accent: #fff;
+      --ok: #7be0a8; --ok-bg: #173a29; --bad: #ff9d94; --bad-bg: #44201d;
+      --warn: #f3cf7a; --warn-bg: #40320f; --code: #171028;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 0 0 10px; }
+  h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); margin: 0 0 8px; }
+  p { margin: 0 0 10px; }
+  .lead { color: var(--dim); max-width: 70ch; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 14px; }
+  .tabs button { font: inherit; min-height: 44px; padding: 0 14px; border-radius: 12px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+  .tabs button[aria-selected="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .tabs small { opacity: .75; margin-left: 6px; }
+  .grid { display: grid; gap: 14px; }
+  @media (min-width: 900px) { .grid.two { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); } .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; min-width: 0; }
+  .card.flat { background: var(--surface-2); }
+  .tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--dim); }
+  .tag.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+  .tag.bad { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+  .tag.warn { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+  pre, code, .mono { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 13px; }
+  pre { margin: 0; padding: 12px; background: var(--code); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; white-space: pre; }
+  pre.locked { opacity: .7; border-style: dashed; }
+  textarea { width: 100%; min-height: 120px; resize: vertical; padding: 12px; color: var(--ink);
+    background: var(--code); border: 1px solid var(--line); border-radius: 10px; font: 13px/1.5 ui-monospace, Consolas, monospace; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .btn { font: inherit; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink); cursor: pointer; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .seg button { font: inherit; min-height: 36px; padding: 0 12px; border: 0; background: var(--surface); color: var(--dim); cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--ink); font-weight: 600; }
+  ol.steps { margin: 0; padding-left: 20px; color: var(--dim); }
+  ol.steps li { margin-bottom: 6px; }
+  ul.plain { margin: 0; padding-left: 18px; color: var(--dim); }
+  ul.plain li { margin-bottom: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--faint); font-weight: 600; }
+  .scroll { overflow-x: auto; }
+  .tests { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .tests button { font: inherit; min-height: 56px; border-radius: 10px; border: 1px dashed var(--line); background: var(--surface-2); color: var(--dim); cursor: pointer; }
+  .tests button.done { border-style: solid; background: var(--ok-bg); color: var(--ok); }
+  .tests button.part { border-style: solid; background: var(--warn-bg); color: var(--warn); }
+  .tests b { display: block; font-size: 13px; }
+  .flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
+  .flow div { flex: 1 1 130px; padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); font-size: 13px; }
+  .flow div b { display: block; }
+  .flow div.judge { border-style: dashed; }
+  .note { font-size: 13px; color: var(--dim); }
+  .verdict { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); font-size: 14px; }
+  [hidden] { display: none !important; }
+  .size { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Yangi masala turlari — prototip</h1>
+  <p class="lead">Har bir tur uchun: yechuvchi nimani ko'radi, muallif nima tayyorlaydi, hakam nima qiladi va bu qancha ish. Bu chizma — hech biri hali kodda yo'q.</p>
+
+  <div class="tabs" role="tablist" aria-label="Masala turi">
+    <button role="tab" aria-selected="true" data-tab="grader">Funksiya (grader)<small>1</small></button>
+    <button role="tab" aria-selected="false" data-tab="output">Faqat javob<small>2</small></button>
+    <button role="tab" aria-selected="false" data-tab="twice">Ikki bosqichli<small>3</small></button>
+    <button role="tab" aria-selected="false" data-tab="sql">SQL<small>4</small></button>
+    <button role="tab" aria-selected="false" data-tab="sum">Taqqoslash</button>
+  </div>
+
+  <!-- ─────────────── GRADER ─────────────── -->
+  <section data-panel="grader">
+    <div class="grid two">
+      <div class="card">
+        <h3>Masala sharti</h3>
+        <h2>#2101 · Eng katta juftlik <span class="tag">Funksiya</span></h2>
+        <p>Quyidagi funksiyani yozing. U massivdagi ikki xil elementning eng katta yig'indisini qaytaradi.</p>
+        <pre>long long max_pair(std::vector&lt;int&gt; a);</pre>
+        <p class="note" style="margin-top:10px">Kirishni o'qish va javobni chiqarish <b>kerak emas</b> — buni hakamning dasturi qiladi. <code>main</code> yozmang.</p>
+        <p class="note">Cheklovlar: 2 ≤ n ≤ 2·10⁵, vaqt 1 s, xotira 256 MB.</p>
+      </div>
+      <div class="card">
+        <h3>Yechuvchi ko'radigan panel</h3>
+        <div class="row" style="margin-bottom:8px">
+          <div class="seg" id="g-lang">
+            <button aria-pressed="true" data-l="cpp">C++</button>
+            <button aria-pressed="false" data-l="py">Python</button>
+            <button aria-pressed="false" data-l="java">Java</button>
+          </div>
+          <span class="tag warn">3 tilda (35 tadan)</span>
+        </div>
+        <textarea id="g-code" spellcheck="false"></textarea>
+        <details style="margin:8px 0">
+          <summary class="note" style="cursor:pointer">Hakamning dasturi (o'zgartirib bo'lmaydi)</summary>
+          <pre class="locked" id="g-grader"></pre>
+        </details>
+        <div class="row">
+          <button class="btn">Namunada sinash</button>
+          <button class="btn primary">Yuborish</button>
+        </div>
+        <div class="verdict" style="margin-top:10px"><span class="tag ok">Accepted</span> 12 / 12 test · 84 ms · 6 MB</div>
+      </div>
+    </div>
+    <div class="grid three" style="margin-top:14px">
+      <div class="card flat"><h3>Muallif tayyorlaydi</h3><ul class="plain"><li>Har til uchun: hakam dasturi (<code>main</code>) va bo'sh funksiya qolipi</li><li>Testlar va javoblar — odatdagidek</li></ul></div>
+      <div class="card flat"><h3>Hakam qiladi</h3><ol class="steps"><li>Yechim va hakam dasturini birga kompilyatsiya qiladi</li><li>Odatdagi testlarni yuritadi</li><li>Hukm — mavjud to'rt tekshiruvdan biri bilan</li></ol></div>
+      <div class="card flat"><h3>Narxi</h3><p><span class="size">O'rta</span> · judge: kompilyatsiyaga qo'shimcha fayl; web: muharrirda qolip; model: yangi maydon + har til uchun fayl.</p><p class="note">Xavf: hakam dasturi yechim bilan bitta jarayonda — yechim uning xotirasini o'qiy oladi (IOI ham shunday yashaydi).</p></div>
+    </div>
+  </section>
+
+  <!-- ─────────────── OUTPUT ONLY ─────────────── -->
+  <section data-panel="output" hidden>
+    <div class="grid two">
+      <div class="card">
+        <h3>Masala sharti</h3>
+        <h2>#2102 · Yuk mashinalari <span class="tag">Faqat javob</span></h2>
+        <p>10 ta xarita berilgan. Har biri uchun marshrutni <b>o'zingiz</b> toping — qo'lda, o'z kompyuteringizdagi dastur bilan, xohlagan usulda — va javob faylini yuboring.</p>
+        <p class="note">Kod yuborilmaydi. Vaqt va xotira chegarasi yo'q. Har xarita 0–100 ball: marshrut qancha qisqa bo'lsa, shuncha ko'p.</p>
+        <div class="row"><button class="btn">Kirish fayllari (zip, 1.4 MB)</button></div>
+      </div>
+      <div class="card">
+        <h3>Yechuvchi ko'radigan panel</h3>
+        <p class="note">Xaritani bosing — faylini tanlaysiz. Hammasini bitta zip bilan ham yuklash mumkin.</p>
+        <div class="tests" id="o-tests"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn">Zip yuklash</button>
+          <button class="btn primary" id="o-send">Yuborish</button>
+        </div>
+        <div class="verdict" style="margin-top:10px" id="o-verdict"><span class="tag">Hali yuborilmagan</span></div>
+        <p class="note" style="margin-top:8px">Yuborilmagan xarita uchun oldingi eng yaxshi javobingiz saqlanadi.</p>
+      </div>
+    </div>
+    <div class="grid three" style="margin-top:14px">
+      <div class="card flat"><h3>Muallif tayyorlaydi</h3><ul class="plain"><li>Kirish fayllari (ochiq)</li><li>Ball beradigan checker</li></ul></div>
+      <div class="card flat"><h3>Hakam qiladi</h3><ol class="steps"><li>Zip'ni ochadi (hajm va fayl soni chegarasi bilan)</li><li>Har fayl uchun checker'ni yuritadi</li><li>Ballarni qo'shadi; sandbox'da begona kod yurmaydi</li></ol></div>
+      <div class="card flat"><h3>Narxi</h3><p><span class="size">O'rta</span> · judge: yangi qisqa yo'l (kompilyatsiya va sandbox'siz); web: fayl yuklash paneli; model: urinishda fayllar (hozir faqat matn).</p><p class="note">Ballik tur (kecha isbotlandi) ustiga quriladi.</p></div>
+    </div>
+  </section>
+
+  <!-- ─────────────── RUN TWICE ─────────────── -->
+  <section data-panel="twice" hidden>
+    <div class="grid two">
+      <div class="card">
+        <h3>Masala sharti</h3>
+        <h2>#2103 · Xabarni yashirish <span class="tag">Ikki bosqichli</span></h2>
+        <p>Dasturingiz <b>ikki marta</b> ishga tushadi.</p>
+        <ol class="steps">
+          <li><b>1-yurish</b> (birinchi qatorda <code>encode</code>): 64 bitli sonni o'qiydi, 100 ta kartadan ko'pi bilan 12 tasini belgilaydi.</li>
+          <li>Hakam kartalarni <b>aralashtiradi</b>.</li>
+          <li><b>2-yurish</b> (birinchi qatorda <code>decode</code>): aralashgan kartalarni o'qiydi, sonni qaytaradi.</li>
+        </ol>
+        <p class="note" style="margin-top:8px">Ikki yurish orasida xotira, fayl yoki boshqa hech narsa saqlanmaydi.</p>
+      </div>
+      <div class="card">
+        <h3>Yechuvchi ko'radigan panel</h3>
+        <pre>mode = input()
+if mode == "encode":
+    x = int(input())
+    ...          # kartalarni belgilash
+else:
+    cards = input().split()
+    ...          # sonni tiklash</pre>
+        <div class="row" style="margin:10px 0"><button class="btn primary">Yuborish</button></div>
+        <h3>Hakam har testda</h3>
+        <div class="flow">
+          <div><b>1-yurish</b>encode · 31 ms</div>
+          <div class="judge"><b>Hakam</b>tekshiradi, aralashtiradi</div>
+          <div><b>2-yurish</b>decode · 28 ms</div>
+          <div class="judge"><b>Checker</b>son mos keldimi</div>
+        </div>
+        <div class="verdict" style="margin-top:10px"><span class="tag bad">Wrong Answer</span> 4-test · 2-yurishda · vaqt: eng sekin yurish 31 ms</div>
+      </div>
+    </div>
+    <div class="grid three" style="margin-top:14px">
+      <div class="card flat"><h3>Muallif tayyorlaydi</h3><ul class="plain"><li>O'rtadagi dastur: 1-yurish chiqishini tekshiradi va 2-yurish kirishini yasaydi</li><li>Yakuniy checker</li></ul></div>
+      <div class="card flat"><h3>Hakam qiladi</h3><ol class="steps"><li>Yechimni ikki alohida sandbox'da yuritadi</li><li>Orasida muallif dasturini chaqiradi</li><li>Chegaralar har yurishga alohida</li></ol></div>
+      <div class="card flat"><h3>Narxi</h3><p><span class="size">Katta</span> · judge: yangi baholash yo'li; web: deyarli o'zgarmaydi; model: yangi dastur turi.</p><p class="note">Bunday masalalar kam: dunyoda yiliga o'nlab. Interaktiv tur bilan ko'pini ifodalasa bo'ladi.</p></div>
+    </div>
+  </section>
+
+  <!-- ─────────────── SQL ─────────────── -->
+  <section data-panel="sql" hidden>
+    <div class="grid two">
+      <div class="card">
+        <h3>Masala sharti</h3>
+        <h2>#2104 · Eng faol yechuvchilar <span class="tag">SQL</span></h2>
+        <p>Kamida 2 ta masala yechgan foydalanuvchilarni, yechgan masalalari soni bilan chiqaring. Tartib: son kamayish bo'yicha, keyin ism.</p>
+        <div class="scroll"><table>
+          <tr><th colspan="2">users</th><th colspan="2">solves</th></tr>
+          <tr><td class="mono">id</td><td class="mono">int</td><td class="mono">user_id</td><td class="mono">int</td></tr>
+          <tr><td class="mono">name</td><td class="mono">text</td><td class="mono">problem_id</td><td class="mono">int</td></tr>
+        </table></div>
+        <p class="note" style="margin-top:8px">PostgreSQL 16 · faqat <code>SELECT</code> · 2 s</p>
+      </div>
+      <div class="card">
+        <h3>Yechuvchi ko'radigan panel</h3>
+        <textarea id="s-code" spellcheck="false">SELECT u.name, COUNT(*) AS solved
+FROM users u JOIN solves s ON s.user_id = u.id
+GROUP BY u.name
+HAVING COUNT(*) >= 2
+ORDER BY solved DESC, u.name;</textarea>
+        <div class="row" style="margin:8px 0">
+          <button class="btn" id="s-run">Namunada yuritish</button>
+          <button class="btn primary">Yuborish</button>
+        </div>
+        <div id="s-out" hidden>
+          <div class="scroll"><table>
+            <tr><th>name</th><th>solved</th></tr>
+            <tr><td>Aziza</td><td>3</td></tr>
+            <tr><td>Bobur</td><td>2</td></tr>
+            <tr><td>Dilnoza</td><td>2</td></tr>
+          </table></div>
+          <p class="note" style="margin-top:6px"><span class="tag ok">Kutilgan natija bilan bir xil</span> 3 qator · 4 ms</p>
+        </div>
+      </div>
+    </div>
+    <div class="grid three" style="margin-top:14px">
+      <div class="card flat"><h3>Muallif tayyorlaydi</h3><ul class="plain"><li>Sxema (jadvallar)</li><li>Har test — ma'lumot to'plami</li><li>Etalon so'rov; tartib muhimmi-yo'qmi</li></ul></div>
+      <div class="card flat"><h3>Hakam qiladi</h3><ol class="steps"><li>Har testga toza, tarmoqsiz baza ko'taradi</li><li>So'rovni faqat-o'qish huquqi va vaqt chegarasi bilan yuritadi</li><li>Natija jadvalini etalon bilan solishtiradi</li></ol></div>
+      <div class="card flat"><h3>Narxi</h3><p><span class="size">Juda katta</span> · judge: yangi sandbox (baza dvigateli), yangi xavfsizlik chegarasi; web: natija jadvali; model: sxema va ma'lumot to'plamlari.</p><p class="note">Bu judge turi emas — yangi yo'nalish va yangi auditoriya (ma'lumotlar tahlili, intervyu).</p></div>
+    </div>
+  </section>
+
+  <!-- ─────────────── SUMMARY ─────────────── -->
+  <section data-panel="sum" hidden>
+    <div class="card">
+      <h2>Taqqoslash</h2>
+      <div class="scroll"><table>
+        <tr><th>Tur</th><th>Kim uchun</th><th>Judge</th><th>Web</th><th>Ish hajmi</th><th>Tavsiya</th></tr>
+        <tr><td><b>Funksiya (grader)</b></td><td>Boshlovchilar darsi, IOI uslubi</td><td>Kompilyatsiyaga fayl</td><td>Muharrirda qolip</td><td>O'rta</td><td><span class="tag ok">1-navbat</span></td></tr>
+        <tr><td><b>Faqat javob</b></td><td>Optimallashtirish, evristika</td><td>Sandbox'siz qisqa yo'l</td><td>Fayl yuklash</td><td>O'rta</td><td><span class="tag ok">2-navbat</span></td></tr>
+        <tr><td><b>Ikki bosqichli</b></td><td>Kodlash / dekodlash masalalari</td><td>Yangi baholash yo'li</td><td>Deyarli yo'q</td><td>Katta</td><td><span class="tag warn">Keyinroq</span></td></tr>
+        <tr><td><b>SQL</b></td><td>Ma'lumotlar bilan ishlovchilar</td><td>Yangi sandbox</td><td>Natija jadvali</td><td>Juda katta</td><td><span class="tag warn">Alohida qaror</span></td></tr>
+      </table></div>
+    </div>
+    <div class="grid two" style="margin-top:14px">
+      <div class="card flat">
+        <h3>Hammasiga umumiy</h3>
+        <ul class="plain">
+          <li>Yangi maydon kerak (masalan, <code>task_type</code>): tekshiruv turi «javobni kim baholaydi», bu esa «nima yuboriladi va qanday yuritiladi».</li>
+          <li>Bu qulflangan domen modeliga tegadi — har tur uchun ADR.</li>
+          <li>Har tur kechagi kabi isbotlanadi: etalon masala + kutilgan hukmlar jadvali + haqiqiy judge'da yurish.</li>
+        </ul>
+      </div>
+      <div class="card flat">
+        <h3>Qaror kerak</h3>
+        <ol class="steps">
+          <li>Funksiya turi: boshlash uchun qaysi tillar? (taklif: C++, Python, Java)</li>
+          <li>Faqat javob: zip chegarasi (taklif: 10 MB, 50 fayl)</li>
+          <li>Ikki bosqichli: hozir yoki birinchi real masala paydo bo'lganda?</li>
+          <li>SQL: yo'nalish sifatida kerakmi?</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Tabs
+  const tabs = document.querySelectorAll('[role="tab"]');
+  tabs.forEach((tab) => tab.addEventListener('click', () => {
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+    document.querySelectorAll('[data-panel]').forEach((p) => { p.hidden = p.dataset.panel !== tab.dataset.tab; });
+  }));
+
+  // Grader: the stub and the locked grader follow the language.
+  const STUB = {
+    cpp: '#include <vector>\n\nlong long max_pair(std::vector<int> a) {\n    // shu yerga yozing\n}\n',
+    py: 'def max_pair(a: list[int]) -> int:\n    # shu yerga yozing\n    ...\n',
+    java: 'class Solution {\n    long maxPair(int[] a) {\n        // shu yerga yozing\n    }\n}\n',
+  };
+  const GRADER = {
+    cpp: '#include <cstdio>\n#include <vector>\nlong long max_pair(std::vector<int> a);\n\nint main() {\n    int n; scanf("%d", &n);\n    std::vector<int> a(n);\n    for (int &x : a) scanf("%d", &x);\n    printf("%lld\\n", max_pair(a));\n}',
+    py: 'from solution import max_pair\n\nn = int(input())\nprint(max_pair(list(map(int, input().split()))))',
+    java: 'public class Main {\n    public static void main(String[] args) {\n        // kirishni o\'qiydi, Solution.maxPair ni chaqiradi\n    }\n}',
+  };
+  const gCode = document.getElementById('g-code'), gGrader = document.getElementById('g-grader');
+  const setLang = (l) => { gCode.value = STUB[l]; gGrader.textContent = GRADER[l]; };
+  document.querySelectorAll('#g-lang button').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('#g-lang button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    setLang(b.dataset.l);
+  }));
+  setLang('cpp');
+
+  // Output-only: ten slots; clicking one "attaches" a file.
+  const slots = document.getElementById('o-tests');
+  const SCORE = [100, 100, 87, 100, 64, 92, 100, 71, 55, 38];
+  for (let i = 1; i <= 10; i++) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.i = i;
+    b.innerHTML = '<b>' + String(i).padStart(2, '0') + '</b>fayl yo\'q';
+    b.addEventListener('click', () => { b.dataset.has = '1'; b.className = ''; b.innerHTML = '<b>' + String(i).padStart(2, '0') + '</b>tanlandi'; b.style.borderStyle = 'solid'; });
+    slots.appendChild(b);
+  }
+  document.getElementById('o-send').addEventListener('click', () => {
+    let total = 0, sent = 0;
+    slots.querySelectorAll('button').forEach((b) => {
+      if (!b.dataset.has) return;
+      const s = SCORE[b.dataset.i - 1]; total += s; sent++;
+      b.className = s === 100 ? 'done' : 'part';
+      b.innerHTML = '<b>' + String(b.dataset.i).padStart(2, '0') + '</b>' + s + ' ball';
+    });
+    const v = document.getElementById('o-verdict');
+    v.innerHTML = sent
+      ? '<span class="tag ' + (total === 1000 ? 'ok">Accepted' : 'warn">Partial score') + '</span> ' + total + ' / 1000 ball · ' + sent + ' / 10 xarita yuborildi'
+      : '<span class="tag">Avval kamida bitta fayl tanlang</span>';
+  });
+
+  // SQL: show the sample result.
+  document.getElementById('s-run').addEventListener('click', () => { document.getElementById('s-out').hidden = false; });
+</script>
+</body>
+</html>
