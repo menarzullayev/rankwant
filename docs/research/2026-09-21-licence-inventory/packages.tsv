@@ -83,7 +83,6 @@ node/web	@img/sharp-libvips-linux-arm64	1.3.4	runtime	LGPL-3.0-or-later
 node/web	@img/sharp-libvips-linux-ppc64	1.3.4	runtime	LGPL-3.0-or-later
 node/web	@img/sharp-libvips-linux-riscv64	1.3.4	runtime	LGPL-3.0-or-later
 node/web	@img/sharp-libvips-linux-s390x	1.3.4	runtime	LGPL-3.0-or-later
-node/web	@img/sharp-libvips-linux-x64	1.3.3	runtime	LGPL-3.0-or-later
 node/web	@img/sharp-libvips-linux-x64	1.3.4	runtime	LGPL-3.0-or-later
 node/web	@img/sharp-libvips-linuxmusl-arm64	1.3.4	runtime	LGPL-3.0-or-later
 node/web	@img/sharp-libvips-linuxmusl-x64	1.3.4	runtime	LGPL-3.0-or-later
@@ -92,7 +91,6 @@ node/web	@img/sharp-linux-arm64	0.35.5	runtime	Apache-2.0
 node/web	@img/sharp-linux-ppc64	0.35.5	runtime	Apache-2.0
 node/web	@img/sharp-linux-riscv64	0.35.5	runtime	Apache-2.0
 node/web	@img/sharp-linux-s390x	0.35.5	runtime	Apache-2.0
-node/web	@img/sharp-linux-x64	0.35.4	runtime	Apache-2.0
 node/web	@img/sharp-linux-x64	0.35.5	runtime	Apache-2.0
 node/web	@img/sharp-linuxmusl-arm64	0.35.5	runtime	Apache-2.0
 node/web	@img/sharp-linuxmusl-x64	0.35.5	runtime	Apache-2.0
@@ -114,16 +112,16 @@ node/web	@keyv/serialize	1.1.1	dev	MIT
 node/web	@monaco-editor/loader	1.7.0	runtime	MIT
 node/web	@monaco-editor/react	4.7.0	runtime	MIT
 node/web	@napi-rs/wasm-runtime	1.2.4	dev	MIT
-node/web	@next/env	16.3.6	runtime	MIT
-node/web	@next/eslint-plugin-next	16.3.6	dev	MIT
-node/web	@next/swc-darwin-arm64	16.3.6	runtime	MIT
-node/web	@next/swc-darwin-x64	16.3.6	runtime	MIT
-node/web	@next/swc-linux-arm64-gnu	16.3.6	runtime	MIT
-node/web	@next/swc-linux-arm64-musl	16.3.6	runtime	MIT
-node/web	@next/swc-linux-x64-gnu	16.3.6	runtime	MIT
-node/web	@next/swc-linux-x64-musl	16.3.6	runtime	MIT
-node/web	@next/swc-win32-arm64-msvc	16.3.6	runtime	MIT
-node/web	@next/swc-win32-x64-msvc	16.3.6	runtime	MIT
+node/web	@next/env	16.3.8	runtime	MIT
+node/web	@next/eslint-plugin-next	16.3.8	dev	MIT
+node/web	@next/swc-darwin-arm64	16.3.8	runtime	MIT
+node/web	@next/swc-darwin-x64	16.3.8	runtime	MIT
+node/web	@next/swc-linux-arm64-gnu	16.3.8	runtime	MIT
+node/web	@next/swc-linux-arm64-musl	16.3.8	runtime	MIT
+node/web	@next/swc-linux-x64-gnu	16.3.8	runtime	MIT
+node/web	@next/swc-linux-x64-musl	16.3.8	runtime	MIT
+node/web	@next/swc-win32-arm64-msvc	16.3.8	runtime	MIT
+node/web	@next/swc-win32-x64-msvc	16.3.8	runtime	MIT
 node/web	@nodelib/fs.scandir	2.1.5	dev	MIT
 node/web	@nodelib/fs.stat	2.0.5	dev	MIT
 node/web	@nodelib/fs.walk	1.2.8	dev	MIT
@@ -174,7 +172,7 @@ node/web	@types/json5	0.0.29	dev	MIT
 node/web	@types/katex	0.16.8	runtime	MIT
 node/web	@types/mdast	4.0.4	runtime	MIT
 node/web	@types/ms	2.1.0	runtime	MIT
-node/web	@types/node	22.20.4	dev	MIT
+node/web	@types/node	22.20.5	dev	MIT
 node/web	@types/react	19.3.0	runtime	MIT
 node/web	@types/react-dom	19.3.0	dev	MIT
 node/web	@types/trusted-types	2.0.7	runtime	MIT
@@ -285,8 +283,6 @@ node/web	color-convert	2.0.1	dev	MIT
 node/web	color-name	1.1.4	dev	MIT
 node/web	colorette	1.4.0	dev	MIT
 node/web	comma-separated-tokens	2.0.3	runtime	MIT
-node/web	commander	8.3.0	runtime	MIT
-node/web	commander	8.3.0	runtime	MIT
 node/web	commander	15.0.0	runtime	MIT
 node/web	concat-map	0.0.1	dev	MIT
 node/web	convert-source-map	2.0.0	dev	MIT
@@ -309,7 +305,7 @@ node/web	dequal	2.0.3	runtime	MIT
 node/web	detect-libc	2.1.2	runtime	Apache-2.0
 node/web	devlop	1.1.0	runtime	MIT
 node/web	doctrine	2.1.0	dev	Apache-2.0
-node/web	dompurify	3.4.15	runtime	(MPL-2.0 OR Apache-2.0)
+node/web	dompurify	3.4.16	runtime	(MPL-2.0 OR Apache-2.0)
 node/web	dunder-proto	1.0.1	dev	MIT
 node/web	electron-to-chromium	1.5.439	dev	ISC
 node/web	emoji-regex	9.2.2	dev	MIT
@@ -330,7 +326,7 @@ node/web	escape-string-regexp	5.0.0	runtime	MIT
 node/web	escape-string-regexp	4.0.0	dev	MIT
 node/web	eslint	10.11.0	dev	MIT
 node/web	eslint	9.39.5	dev	MIT
-node/web	eslint-config-next	16.3.6	dev	MIT
+node/web	eslint-config-next	16.3.8	dev	MIT
 node/web	eslint-import-resolver-node	0.3.10	dev	MIT
 node/web	eslint-import-resolver-typescript	3.10.1	dev	ISC
 node/web	eslint-module-utils	2.14.0	dev	MIT
@@ -465,9 +461,7 @@ node/web	json-stable-stringify-without-jsonify	1.0.1	dev	MIT
 node/web	json5	2.2.3	dev	MIT
 node/web	json5	1.0.2	dev	MIT
 node/web	jsx-ast-utils	3.3.5	dev	MIT
-node/web	katex	0.16.47	runtime	MIT
-node/web	katex	0.16.47	runtime	MIT
-node/web	katex	0.18.10	runtime	MIT
+node/web	katex	0.19.0	runtime	MIT
 node/web	keyv	4.5.4	dev	MIT
 node/web	keyv	5.6.0	dev	MIT
 node/web	language-subtag-registry	0.3.23	dev	CC0-1.0
@@ -567,7 +561,7 @@ node/web	ms	2.1.3	runtime	MIT
 node/web	nanoid	3.3.19	runtime	MIT
 node/web	napi-postinstall	0.3.4	dev	MIT
 node/web	natural-compare	1.4.0	dev	MIT
-node/web	next	16.3.6	runtime	MIT
+node/web	next	16.3.8	runtime	MIT
 node/web	node-exports-info	1.6.2	dev	MIT
 node/web	node-releases	2.0.57	dev	MIT
 node/web	object-assign	4.1.1	dev	MIT
@@ -647,7 +641,7 @@ node/web	side-channel-list	1.0.1	dev	MIT
 node/web	side-channel-map	1.0.1	dev	MIT
 node/web	side-channel-weakmap	1.0.2	dev	MIT
 node/web	simple-icons	16.33.0	runtime	CC0-1.0
-node/web	source-map-js	1.2.1	runtime	BSD-3-Clause
+node/web	source-map-js	1.2.2	runtime	BSD-3-Clause
 node/web	space-separated-tokens	2.0.2	runtime	MIT
 node/web	stable-hash	0.0.5	dev	MIT
 node/web	state-local	1.0.7	runtime	MIT
@@ -728,8 +722,8 @@ python/api	amqp	5.3.1	runtime	BSD
 python/api	asgiref	3.12.1	runtime	BSD-3-Clause
 python/api	attrs	26.1.0	runtime	MIT
 python/api	billiard	4.2.4	runtime	BSD
-python/api	boto3	1.43.108	runtime	Apache-2.0
-python/api	botocore	1.43.108	runtime	Apache-2.0
+python/api	boto3	1.43.111	runtime	Apache-2.0
+python/api	botocore	1.43.111	runtime	Apache-2.0
 python/api	celery	5.6.3	runtime	BSD-3-Clause
 python/api	click	8.5.0	runtime	BSD-3-Clause
 python/api	click-didyoumean	0.3.1	runtime	MIT
@@ -779,8 +773,8 @@ python/api-dev	ast-serialize	0.11.2	dev	MIT
 python/api-dev	attrs	26.1.0	dev	MIT
 python/api-dev	billiard	4.2.4	dev	BSD
 python/api-dev	boolean-py	5.0	dev	BSD-2-Clause
-python/api-dev	boto3	1.43.108	dev	Apache-2.0
-python/api-dev	botocore	1.43.108	dev	Apache-2.0
+python/api-dev	boto3	1.43.111	dev	Apache-2.0
+python/api-dev	botocore	1.43.111	dev	Apache-2.0
 python/api-dev	cachecontrol	0.14.4	dev	Apache-2.0
 python/api-dev	celery	5.6.3	dev	BSD-3-Clause
 python/api-dev	certifi	2026.7.22	dev	MPL-2.0
@@ -795,7 +789,7 @@ python/api-dev	defusedxml	0.7.1	dev	PSFL
 python/api-dev	django	5.2.17	dev	BSD-3-Clause
 python/api-dev	django-cors-headers	4.9.0	dev	MIT
 python/api-dev	django-filter	26.1	dev	BSD License
-python/api-dev	django-stubs	6.1.1	dev	MIT
+python/api-dev	django-stubs	6.1.2	dev	MIT
 python/api-dev	django-stubs-ext	6.1.1	dev	MIT
 python/api-dev	djangorestframework	3.18.1	dev	BSD-3-Clause
 python/api-dev	djangorestframework-stubs	3.18.1	dev	MIT
@@ -808,7 +802,7 @@ python/api-dev	fonttools	4.65.0	dev	MIT
 python/api-dev	fpdf2	2.8.9	dev	LGPL-3.0-only
 python/api-dev	gunicorn	26.2.0	dev	MIT
 python/api-dev	h11	0.16.0	dev	MIT
-python/api-dev	hypothesis	6.168.3	dev	MPL-2.0
+python/api-dev	hypothesis	6.169.0	dev	MPL-2.0
 python/api-dev	idna	3.19	dev	BSD-3-Clause
 python/api-dev	inflection	0.5.1	dev	MIT
 python/api-dev	iniconfig	2.3.0	dev	MIT
@@ -816,12 +810,12 @@ python/api-dev	jmespath	1.1.0	dev	MIT
 python/api-dev	jsonschema	4.26.0	dev	MIT
 python/api-dev	jsonschema-specifications	2025.9.1	dev	MIT
 python/api-dev	kombu	5.6.2	dev	BSD-3-Clause
-python/api-dev	librt	0.15.0	dev	MIT
+python/api-dev	librt	0.16.0	dev	MIT
 python/api-dev	license-expression	30.4.4	dev	Apache-2.0
 python/api-dev	markdown-it-py	4.2.0	dev	MIT License
 python/api-dev	mdurl	0.1.2	dev	MIT License
 python/api-dev	msgpack	1.2.2	dev	Apache-2.0
-python/api-dev	mypy	2.3.1	dev	MIT
+python/api-dev	mypy	2.4.0	dev	MIT
 python/api-dev	mypy-extensions	1.1.0	dev	MIT
 python/api-dev	packageurl-python	0.17.6	dev	MIT
 python/api-dev	packaging	26.3	dev	Apache-2.0 OR BSD-2-Clause
