@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2291 strings.**
+**2297 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2312,3 +2312,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `session.expiredTitle` | Sessiya tugadi. | Сессия аяктады. |  |
 | `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Кайра кириңиз — ушул бетке кайтасыз, жазган кодуңуз сакталган. |  |
 | `auth.continueNote` | Davom etish uchun tizimga kiring — keyin o'sha sahifaga qaytasiz. | Улантуу үчүн системага кириңиз — андан кийин ошол бетке кайтасыз. |  |
+| `contest.gate.registerTitle` | Bu masala «{contest}» musobaqasida | Бул маселе «{contest}» мелдешинде |  |
+| `contest.gate.registerBody` | Yechim yuborish uchun musobaqaga yoziling. Shartni o'qish hammaga ochiq. | Чечим жөнөтүү үчүн мелдешке катталыңыз. Шартты окуу баарына ачык. |  |
+| `contest.gate.endedTitle` | Musobaqa tugadi | Мелдеш аяктады |  |
+| `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Жыйынтыктар чыккандан кийин маселе архивге өтөт жана жөнөтүү кайра ачылат. |  |
+| `contest.gate.cta` | Musobaqa sahifasi | Мелдеш барагы |  |
+| `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} маселе — мелдеш башталганда ачылат. |  |

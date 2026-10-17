@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2291 strings.**
+**2297 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2312,3 +2312,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `session.expiredTitle` | Sessiya tugadi. | Сессия ба охир расид. |  |
 | `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Аз нав ворид шавед — ба ҳамин саҳифа бармегардед, коди навиштаатон нигоҳ дошта шудааст. |  |
 | `auth.continueNote` | Davom etish uchun tizimga kiring — keyin o'sha sahifaga qaytasiz. | Барои идома ворид шавед — баъд ба ҳамон саҳифа бармегардед. |  |
+| `contest.gate.registerTitle` | Bu masala «{contest}» musobaqasida | Ин масъала дар мусобиқаи «{contest}» аст |  |
+| `contest.gate.registerBody` | Yechim yuborish uchun musobaqaga yoziling. Shartni o'qish hammaga ochiq. | Барои фиристодани ҳал дар мусобиқа сабти ном кунед. Хондани шарт барои ҳама кушода аст. |  |
+| `contest.gate.endedTitle` | Musobaqa tugadi | Мусобиқа ба охир расид |  |
+| `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Пас аз ҷамъбасти натиҷаҳо масъала ба бойгонӣ мегузарад ва фиристодан боз кушода мешавад. |  |
+| `contest.gate.cta` | Musobaqa sahifasi | Саҳифаи мусобиқа |  |
+| `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} масъала — бо оғози мусобиқа кушода мешаванд. |  |

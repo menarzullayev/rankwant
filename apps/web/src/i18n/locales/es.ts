@@ -2375,4 +2375,10 @@ export const es: Record<MessageKey, string> = {
   "session.expiredTitle": "Tu sesión ha terminado.",
   "session.expiredBody": "Inicia sesión de nuevo: volverás a esta página y el código que escribiste está guardado.",
   "auth.continueNote": "Inicia sesión para continuar: después volverás a esa página.",
+  "contest.gate.registerTitle": "Este problema está en el concurso «{contest}»",
+  "contest.gate.registerBody": "Inscríbete en el concurso para enviar una solución. El enunciado está abierto a todos.",
+  "contest.gate.endedTitle": "El concurso ha terminado",
+  "contest.gate.endedBody": "Cuando los resultados sean definitivos, el problema pasará al archivo y se podrá enviar de nuevo.",
+  "contest.gate.cta": "Página del concurso",
+  "contest.problemsAtStart": "{count} problemas: se abren cuando empieza el concurso.",
 };

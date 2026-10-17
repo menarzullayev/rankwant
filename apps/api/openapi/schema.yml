@@ -13079,6 +13079,9 @@ components:
           items:
             $ref: '#/components/schemas/ContestProblem'
           readOnly: true
+        problem_count:
+          type: integer
+          readOnly: true
       required:
       - end_at
       - hack_open_until
@@ -13087,6 +13090,7 @@ components:
       - is_hack_open
       - is_running
       - participant_count
+      - problem_count
       - problems
       - slug
       - start_at
@@ -17469,6 +17473,16 @@ components:
           type: object
           additionalProperties: {}
           readOnly: true
+        contest:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: |-
+            Set while the problem belongs to a contest and not to the archive.
+
+            The page uses it to send solutions to that contest and to tell a
+            visitor who is not registered where to register.
+          readOnly: true
         image:
           oneOf:
           - type: string
@@ -17549,6 +17563,7 @@ components:
       - answer_tests
       - attachments
       - author
+      - contest
       - difficulty
       - editorial
       - editorial_state
