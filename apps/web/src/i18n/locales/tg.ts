@@ -2376,4 +2376,10 @@ export const tg: Record<MessageKey, string> = {
   "session.expiredTitle": "Сессия ба охир расид.",
   "session.expiredBody": "Аз нав ворид шавед — ба ҳамин саҳифа бармегардед, коди навиштаатон нигоҳ дошта шудааст.",
   "auth.continueNote": "Барои идома ворид шавед — баъд ба ҳамон саҳифа бармегардед.",
+  "contest.gate.registerTitle": "Ин масъала дар мусобиқаи «{contest}» аст",
+  "contest.gate.registerBody": "Барои фиристодани ҳал дар мусобиқа сабти ном кунед. Хондани шарт барои ҳама кушода аст.",
+  "contest.gate.endedTitle": "Мусобиқа ба охир расид",
+  "contest.gate.endedBody": "Пас аз ҷамъбасти натиҷаҳо масъала ба бойгонӣ мегузарад ва фиристодан боз кушода мешавад.",
+  "contest.gate.cta": "Саҳифаи мусобиқа",
+  "contest.problemsAtStart": "{count} масъала — бо оғози мусобиқа кушода мешаванд.",
 };

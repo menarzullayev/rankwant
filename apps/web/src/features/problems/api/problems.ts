@@ -84,6 +84,17 @@ export type ProblemDetail = Problem & {
   /** Ochilmagan bo'lsa serverdan bo'sh keladi — yashirin matn yo'q. */
   editorial: string;
   editorial_state: EditorialState;
+  /** Set while the problem belongs to a contest and not to the archive
+   *  (ADR-0055): solutions go to that contest, from registered
+   *  participants, while it runs. */
+  contest?: {
+    slug: string;
+    title: string;
+    index_letter: string;
+    is_running: boolean;
+    is_frozen: boolean;
+    registered: boolean;
+  } | null;
   /** `has_profile` — nofaol import mualliflarining profil sahifasi yo'q. */
   author: {
     username: string;

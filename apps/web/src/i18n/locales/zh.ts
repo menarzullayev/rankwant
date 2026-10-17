@@ -2372,4 +2372,10 @@ export const zh: Record<MessageKey, string> = {
   "session.expiredTitle": "会话已结束。",
   "session.expiredBody": "请重新登录——您将返回此页面，已写的代码已保存。",
   "auth.continueNote": "请登录以继续——之后将返回该页面。",
+  "contest.gate.registerTitle": "此题属于比赛“{contest}”",
+  "contest.gate.registerBody": "报名参加比赛后才能提交解答。题面对所有人开放。",
+  "contest.gate.endedTitle": "比赛已结束",
+  "contest.gate.endedBody": "成绩确定后，此题将进入题库并重新开放提交。",
+  "contest.gate.cta": "比赛页面",
+  "contest.problemsAtStart": "{count} 道题——比赛开始时开放。",
 };

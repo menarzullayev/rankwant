@@ -789,7 +789,7 @@ python/api-dev	defusedxml	0.7.1	dev	PSFL
 python/api-dev	django	5.2.17	dev	BSD-3-Clause
 python/api-dev	django-cors-headers	4.9.0	dev	MIT
 python/api-dev	django-filter	26.1	dev	BSD License
-python/api-dev	django-stubs	6.1.1	dev	MIT
+python/api-dev	django-stubs	6.1.2	dev	MIT
 python/api-dev	django-stubs-ext	6.1.1	dev	MIT
 python/api-dev	djangorestframework	3.18.1	dev	BSD-3-Clause
 python/api-dev	djangorestframework-stubs	3.18.1	dev	MIT
@@ -810,12 +810,12 @@ python/api-dev	jmespath	1.1.0	dev	MIT
 python/api-dev	jsonschema	4.26.0	dev	MIT
 python/api-dev	jsonschema-specifications	2025.9.1	dev	MIT
 python/api-dev	kombu	5.6.2	dev	BSD-3-Clause
-python/api-dev	librt	0.15.0	dev	MIT
+python/api-dev	librt	0.16.0	dev	MIT
 python/api-dev	license-expression	30.4.4	dev	Apache-2.0
 python/api-dev	markdown-it-py	4.2.0	dev	MIT License
 python/api-dev	mdurl	0.1.2	dev	MIT License
 python/api-dev	msgpack	1.2.2	dev	Apache-2.0
-python/api-dev	mypy	2.3.1	dev	MIT
+python/api-dev	mypy	2.4.0	dev	MIT
 python/api-dev	mypy-extensions	1.1.0	dev	MIT
 python/api-dev	packageurl-python	0.17.6	dev	MIT
 python/api-dev	packaging	26.3	dev	Apache-2.0 OR BSD-2-Clause

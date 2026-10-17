@@ -2375,4 +2375,10 @@ export const ky: Record<MessageKey, string> = {
   "session.expiredTitle": "Сессия аяктады.",
   "session.expiredBody": "Кайра кириңиз — ушул бетке кайтасыз, жазган кодуңуз сакталган.",
   "auth.continueNote": "Улантуу үчүн системага кириңиз — андан кийин ошол бетке кайтасыз.",
+  "contest.gate.registerTitle": "Бул маселе «{contest}» мелдешинде",
+  "contest.gate.registerBody": "Чечим жөнөтүү үчүн мелдешке катталыңыз. Шартты окуу баарына ачык.",
+  "contest.gate.endedTitle": "Мелдеш аяктады",
+  "contest.gate.endedBody": "Жыйынтыктар чыккандан кийин маселе архивге өтөт жана жөнөтүү кайра ачылат.",
+  "contest.gate.cta": "Мелдеш барагы",
+  "contest.problemsAtStart": "{count} маселе — мелдеш башталганда ачылат.",
 };
