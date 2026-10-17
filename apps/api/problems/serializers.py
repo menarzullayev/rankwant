@@ -205,6 +205,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
     votes = serializers.SerializerMethodField()
     editorial = serializers.SerializerMethodField()
     editorial_state = serializers.SerializerMethodField()
+    contest = serializers.SerializerMethodField()
 
     def _user(self) -> Any:
         request = self.context.get("request")
@@ -329,19 +330,76 @@ class ProblemDetailSerializer(ProblemListSerializer):
             return "purchased"
         return "free" if not problem.editorial_price else "locked"
 
+    def _held(self, problem: Problem) -> Any | None:
+        """The contest entry keeping this problem out of the archive."""
+        cache: dict[int, Any] = self.__dict__.setdefault("_held_cache", {})
+        if problem.pk not in cache:
+            from problems import visibility
+
+            cache[problem.pk] = visibility.holding_entry(problem)
+        return cache[problem.pk]
+
+    def get_contest(self, problem: Problem) -> dict[str, Any] | None:
+        """Set while the problem belongs to a contest and not to the archive.
+
+        The page uses it to send solutions to that contest and to tell a
+        visitor who is not registered where to register.
+        """
+        entry = self._held(problem)
+        if entry is None:
+            return None
+        contest = entry.contest
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        registered = bool(
+            user is not None
+            and user.is_authenticated
+            and contest.registrations.filter(user=user).exists()
+        )
+        return {
+            "slug": contest.slug,
+            "title": contest.title,
+            "index_letter": entry.index_letter,
+            "is_running": contest.is_running,
+            "is_frozen": contest.is_frozen,
+            "registered": registered,
+        }
+
+    def to_representation(self, problem: Problem) -> dict[str, Any]:
+        data = super().to_representation(problem)
+        entry = self._held(problem)
+        if entry is None:
+            return data
+        from problems import visibility
+
+        frozen = visibility.frozen_since(problem)
+        if frozen:
+            # The stored counters keep moving; what is shown stops where
+            # the scoreboard froze.
+            from judging.verdicts import Verdict
+
+            seen = problem.attempts.filter(created_at__lt=frozen)
+            total = seen.count()
+            solved = seen.filter(verdict=Verdict.AC).values("user_id").distinct().count()
+            data["attempt_count"] = total
+            data["solved_count"] = solved
+            data["success_rate"] = round(solved / total * 100) if total else None
+        return data
+
     def get_editorial(self, problem: Problem) -> str:
         """Ochilmagan bo'lsa MATN UMUMAN YUBORILMAYDI.
 
         Frontendda yashirish spoylerni himoya qilmaydi — matn baribir
         sahifa manbasida ko'rinib turardi.
         """
-        if not problem.editorial:
+        # Closed until the contest is finalized — solved or not (ADR-0055).
+        if not problem.editorial or not problem.is_public:
             return ""
         return problem.editorial if self._editorial_access(problem) in EDITORIAL_OPEN else ""
 
     def get_editorial_state(self, problem: Problem) -> dict[str, Any]:
         return {
-            "available": bool(problem.editorial),
+            "available": bool(problem.editorial) and problem.is_public,
             "access": self._editorial_access(problem),
             "price": problem.editorial_price,
         }
@@ -356,6 +414,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "attachments",
             "votes",
             "editorial_state",
+            "contest",
             "image",
             "partial_scoring",
             "source_rating",

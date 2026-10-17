@@ -2546,6 +2546,38 @@ def two_pass_runs_share_nothing() -> str | None:
     return None
 
 
+def contest_problems_stay_out_of_the_archive() -> str | None:
+    # 2026-10-08 (ADR-0055): a contest problem had to sit in the public
+    # archive before its contest, the contest page named it in advance, and
+    # the attempt feed went on telling what the frozen scoreboard hid.
+    visibility = read("apps/api/problems/visibility.py")
+    if "contest_entries__contest__start_at__lte=now" not in visibility:
+        return "musobaqa masalasi boshlanishdan oldin ham ochiladi"
+    if "contest_entries__contest__is_public=True" not in visibility:
+        return "qoralama musobaqa ham masalani ochadi"
+    views = read("apps/api/problems/views.py")
+    if 'Q(is_public=True) if self.action == "list" else visibility.openable_q()' not in views:
+        return "arxiv ro'yxati musobaqa masalasini ham beradi (yoki masala sahifasi uni ochmaydi)"
+    submit = read("apps/api/judging/serializers.py")
+    if "This problem belongs to a contest" not in submit:
+        return "musobaqa masalasiga musobaqadan tashqari yechim qabul qilinadi"
+    feed = read("apps/api/judging/views.py")
+    if feed.count("_outside_the_freeze(") < 3:
+        return "muzlatish lentada yoki bitta urinish sahifasida ishlamaydi"
+    contests = read("apps/api/contests/serializers.py")
+    if "if timezone.now() < contest.start_at:" not in contests:
+        return "musobaqa sahifasi masalalarni boshlanishdan oldin ko'rsatadi"
+    services = read("apps/api/contests/services.py")
+    if "        release_problems(contest)\n" not in services:
+        return "yakunlangan musobaqa masalalari arxivga o'tmaydi"
+    if "end_at__gt=now" not in services:
+        return "muzlatish musobaqa bilan birga tugamaydi — hack bosqichi urinishlarni ko'rmaydi"
+    serializer = read("apps/api/problems/serializers.py")
+    if "if not problem.editorial or not problem.is_public:" not in serializer:
+        return "tahlil musobaqa paytida ochiq"
+    return None
+
+
 def guest_zones_are_gated() -> str | None:
     # 2026-10-08, measured as a guest on the live site: the solve panel with
     # its editor was drawn for everybody, `/notifications` and 24 admin pages
@@ -3440,6 +3472,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
     ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
+    ("musobaqa masalasi arxivdan tashqarida", contest_problems_stay_out_of_the_archive),
     ("mehmon zonalari yopiq", guest_zones_are_gated),
     ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),

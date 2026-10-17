@@ -6053,6 +6053,7 @@ export interface components {
             readonly participant_count: number;
             description?: string;
             readonly problems: components["schemas"]["ContestProblem"][];
+            readonly problem_count: number;
         };
         ContestProblem: {
             index_letter: string;
@@ -8264,6 +8265,15 @@ export interface components {
             readonly editorial_state: {
                 [key: string]: unknown;
             };
+            /**
+             * @description Set while the problem belongs to a contest and not to the archive.
+             *
+             *     The page uses it to send solutions to that contest and to tell a
+             *     visitor who is not registered where to register.
+             */
+            readonly contest: {
+                [key: string]: unknown;
+            } | null;
             image?: string;
             partial_scoring?: boolean;
             /** Format: int64 */

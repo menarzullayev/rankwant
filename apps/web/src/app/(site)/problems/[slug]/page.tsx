@@ -11,6 +11,7 @@ import {
   SubmitPanel,
 } from "@/features/problems";
 import { SignInGate } from "@/components/auth/SignInGate";
+import { ContestGate } from "./_panels/ContestGate";
 import { ProblemAttemptsPanel } from "./_panels/ProblemAttemptsPanel";
 import { ProblemDescription } from "./_panels/ProblemDescription";
 import { ApiError, type ProblemDetail } from "@/lib/api";
@@ -118,6 +119,18 @@ export default async function ProblemPage({ params, searchParams }: Props) {
     throw error;
   }
 
+  // A problem that still belongs to a contest (ADR-0055): its solutions
+  // go to that contest whether or not the address says so, and a visitor
+  // who cannot send to it gets a card in place of the solve panel.
+  const held = problem.contest ?? null;
+  const contestSlug = contest ?? held?.slug;
+  const contestGate =
+    held && !held.registered ? (
+      <ContestGate held={held} kind="register" locale={locale} />
+    ) : held && !held.is_running ? (
+      <ContestGate held={held} kind="ended" locale={locale} />
+    ) : undefined;
+
   const jsonLdDescription = fill(t(locale, "problem.difficultyDescription"), {
     title: problem.title,
     difficulty: problem.difficulty,
@@ -169,17 +182,18 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               )}
             </div>
           }
-          gate={signedIn ? undefined : <SignInGate reason="solve" centered />}
+          gate={signedIn ? contestGate : <SignInGate reason="solve" centered />}
           editor={
             !signedIn ? null : // An answer problem takes files, not source (ADR-0053).
+            contestGate ? null :
             problem.task_kind === ANSWER_KIND ? (
-              <AnswerPanel problem={slug} tests={problem.answer_tests} contest={contest} />
+              <AnswerPanel problem={slug} tests={problem.answer_tests} contest={contestSlug} />
             ) : (
               <SubmitPanel
                 problem={slug}
                 languages={problem.languages}
                 samples={problem.samples}
-                contest={contest}
+                contest={contestSlug}
                 hasTests={problem.has_tests}
               />
             )

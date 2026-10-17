@@ -2375,4 +2375,10 @@ export const tr: Record<MessageKey, string> = {
   "session.expiredTitle": "Oturumunuz sona erdi.",
   "session.expiredBody": "Yeniden giriş yapın — bu sayfaya dönersiniz, yazdığınız kod kaydedildi.",
   "auth.continueNote": "Devam etmek için giriş yapın — ardından o sayfaya dönersiniz.",
+  "contest.gate.registerTitle": "Bu problem “{contest}” yarışmasında",
+  "contest.gate.registerBody": "Çözüm göndermek için yarışmaya kaydolun. Problem metni herkese açıktır.",
+  "contest.gate.endedTitle": "Yarışma sona erdi",
+  "contest.gate.endedBody": "Sonuçlar kesinleşince problem arşive geçer ve gönderim yeniden açılır.",
+  "contest.gate.cta": "Yarışma sayfası",
+  "contest.problemsAtStart": "{count} problem — yarışma başladığında açılır.",
 };
