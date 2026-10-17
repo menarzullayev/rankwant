@@ -5126,11 +5126,18 @@ def neg_decisions_types_node_major_unignored() -> tuple[bool, str]:
 
 
 def neg_decisions_eslint_is_nine() -> tuple[bool, str]:
-    """ESLint 9 ga qaytsa tutilsin."""
+    """ESLint 9 ga qaytsa tutilsin.
+
+    Langar versiya yamog'iga emas, MAJOR'ga bog'langan: ilgari `^10.11.0`
+    aynan yozilgan edi, shuning uchun Dependabot minor'ni ko'tarishi bilan
+    (#414, 10.12.0) test «langar topilmadi» deb yiqilardi — kod emas, test
+    buzilgan edi. Qoidaning o'zi (`eslint_ten_uses_ts_parser`) allaqachon
+    `"eslint": "^10.` ni qidiradi.
+    """
     return _decision_broken(
         "apps/web/package.json",
-        '"eslint": "^10.11.0"',
-        '"eslint": "^9.39.5"',
+        '"eslint": "^10.',
+        '"eslint": "^9.',
         "ESLint 10 typescript parser",
     )
 
