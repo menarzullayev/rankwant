@@ -51,47 +51,21 @@ python tools/licence_inventory.py --check    # drift only, offline, CI-safe
 
 | Ecosystem | Packages | runtime | dev | classified | needs review | UNKNOWN |
 |---|---|---|---|---|---|---|
-| `go/judge-go` | 21 | 21 | 0 | 0 | 0 | 21 |
+| `go/judge-go` | 21 | 21 | 0 | 21 | 0 | 0 |
 | `node/e2e` | 3 | 0 | 3 | 3 | 0 | 0 |
 | `node/web` | 695 | 220 | 475 | 689 | 2 | 4 |
-| `python/api` | 49 | 49 | 0 | 48 | 1 | 0 |
-| `python/api-dev` | 95 | 0 | 95 | 94 | 1 | 0 |
-| `python/judge-py` | 14 | 14 | 0 | 13 | 0 | 1 |
-| **total** | **877** | | | **847** | **4** | **26** |
+| `python/api` | 49 | 49 | 0 | 46 | 1 | 2 |
+| `python/api-dev` | 95 | 0 | 95 | 92 | 1 | 2 |
+| `python/judge-py` | 14 | 14 | 0 | 14 | 0 | 0 |
+| **total** | **877** | | | **865** | **4** | **8** |
 
-Copyleft: **0 strong**, **50 weak**. Needs a human eye: **4**. UNKNOWN: **26**.
+Copyleft: **0 strong**, **50 weak**. Needs a human eye: **4**. UNKNOWN: **8**.
 
 ## 4. Licences that could not be determined
 
 These are **not** clean — they are unknown. A lawyer reviewing this
 document must treat them as open, and the cheapest way to close them is
 listed under each group.
-
-**`go/judge-go` — 21 package(s)**
-
-| Package | Version | Scope | Licence |
-|---|---|---|---|
-| `github.com/cespare/xxhash/v2` | v2.3.0 | indirect | **UNKNOWN** |
-| `github.com/dustin/go-humanize` | v1.0.1 | indirect | **UNKNOWN** |
-| `github.com/google/uuid` | v1.6.0 | indirect | **UNKNOWN** |
-| `github.com/klauspost/compress` | v1.19.2 | indirect | **UNKNOWN** |
-| `github.com/klauspost/cpuid/v2` | v2.4.0 | indirect | **UNKNOWN** |
-| `github.com/klauspost/crc32` | v1.3.0 | indirect | **UNKNOWN** |
-| `github.com/minio/crc64nvme` | v1.1.1 | indirect | **UNKNOWN** |
-| `github.com/minio/md5-simd` | v1.1.2 | indirect | **UNKNOWN** |
-| `github.com/minio/minio-go/v7` | v7.3.0 | direct | **UNKNOWN** |
-| `github.com/philhofer/fwd` | v1.2.0 | indirect | **UNKNOWN** |
-| `github.com/redis/go-redis/v9` | v9.22.0 | direct | **UNKNOWN** |
-| `github.com/rs/xid` | v1.6.0 | indirect | **UNKNOWN** |
-| `github.com/tinylib/msgp` | v1.6.4 | indirect | **UNKNOWN** |
-| `github.com/zeebo/xxh3` | v1.1.0 | indirect | **UNKNOWN** |
-| `go.uber.org/atomic` | v1.11.0 | indirect | **UNKNOWN** |
-| `go.yaml.in/yaml/v3` | v3.0.5 | indirect | **UNKNOWN** |
-| `golang.org/x/crypto` | v0.55.0 | indirect | **UNKNOWN** |
-| `golang.org/x/net` | v0.58.0 | indirect | **UNKNOWN** |
-| `golang.org/x/sys` | v0.47.0 | indirect | **UNKNOWN** |
-| `golang.org/x/text` | v0.41.0 | indirect | **UNKNOWN** |
-| `gopkg.in/ini.v1` | v1.67.3 | indirect | **UNKNOWN** |
 
 **`node/web` — 4 package(s)**
 
@@ -102,17 +76,25 @@ listed under each group.
 | `packages/shared` | 0.1.0 | runtime | **UNKNOWN** |
 | `rankwant-web` | ? | runtime | **UNKNOWN** |
 
-**`python/judge-py` — 1 package(s)**
+**`python/api` — 2 package(s)**
 
 | Package | Version | Scope | Licence |
 |---|---|---|---|
-| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
+| `h11` | 0.16.0 | runtime | **UNKNOWN** |
+| `uvicorn` | 0.54.0 | runtime | **UNKNOWN** |
+
+**`python/api-dev` — 2 package(s)**
+
+| Package | Version | Scope | Licence |
+|---|---|---|---|
+| `h11` | 0.16.0 | dev | **UNKNOWN** |
+| `uvicorn` | 0.54.0 | dev | **UNKNOWN** |
 
 Closing them:
 
-- **Go** — run `go mod download` once (or `go list -m -json all`) on a
-  machine with the toolchain, then add a reader for
-  `$(go env GOMODCACHE)/<module>@<version>/LICENSE`.
+- **Go** — on a machine with the toolchain run `go mod download`, read
+  `$(go env GOMODCACHE)/<module>@<version>/LICENSE` and update
+  `go-licences.tsv` (module, version, licence).
 - **Python** — run the install in `apps/api` (the venv is gitignored),
   then regenerate.
 - **Node** — if any appear, the lockfile entry has no `license` field;
@@ -219,7 +201,7 @@ they are what the image is built from, and the lawyer decides.
 | `apps/web/Dockerfile` | `node:22-slim` |
 | `apps/web/Dockerfile` | `node:22-slim` |
 | `services/judge-go/Dockerfile` | `debian:trixie` |
-| `services/judge-go/Dockerfile` | `golang:1.25-bookworm` |
+| `services/judge-go/Dockerfile` | `golang:1.26-bookworm` |
 | `services/judge-go/Dockerfile` | `debian:trixie-slim` |
 | `services/judge-go/Dockerfile` | `debian:trixie-slim` |
 | `services/judge-go/Dockerfile` | `scratch` |
@@ -241,27 +223,27 @@ new dependency cannot make this document quietly false.
 
 | Package | Version | Scope | Licence |
 |---|---|---|---|
-| `github.com/cespare/xxhash/v2` | v2.3.0 | indirect | **UNKNOWN** |
-| `github.com/dustin/go-humanize` | v1.0.1 | indirect | **UNKNOWN** |
-| `github.com/google/uuid` | v1.6.0 | indirect | **UNKNOWN** |
-| `github.com/klauspost/compress` | v1.19.2 | indirect | **UNKNOWN** |
-| `github.com/klauspost/cpuid/v2` | v2.4.0 | indirect | **UNKNOWN** |
-| `github.com/klauspost/crc32` | v1.3.0 | indirect | **UNKNOWN** |
-| `github.com/minio/crc64nvme` | v1.1.1 | indirect | **UNKNOWN** |
-| `github.com/minio/md5-simd` | v1.1.2 | indirect | **UNKNOWN** |
-| `github.com/minio/minio-go/v7` | v7.3.0 | direct | **UNKNOWN** |
-| `github.com/philhofer/fwd` | v1.2.0 | indirect | **UNKNOWN** |
-| `github.com/redis/go-redis/v9` | v9.22.0 | direct | **UNKNOWN** |
-| `github.com/rs/xid` | v1.6.0 | indirect | **UNKNOWN** |
-| `github.com/tinylib/msgp` | v1.6.4 | indirect | **UNKNOWN** |
-| `github.com/zeebo/xxh3` | v1.1.0 | indirect | **UNKNOWN** |
-| `go.uber.org/atomic` | v1.11.0 | indirect | **UNKNOWN** |
-| `go.yaml.in/yaml/v3` | v3.0.5 | indirect | **UNKNOWN** |
-| `golang.org/x/crypto` | v0.55.0 | indirect | **UNKNOWN** |
-| `golang.org/x/net` | v0.58.0 | indirect | **UNKNOWN** |
-| `golang.org/x/sys` | v0.47.0 | indirect | **UNKNOWN** |
-| `golang.org/x/text` | v0.41.0 | indirect | **UNKNOWN** |
-| `gopkg.in/ini.v1` | v1.67.3 | indirect | **UNKNOWN** |
+| `github.com/cespare/xxhash/v2` | v2.3.0 | indirect | MIT |
+| `github.com/dustin/go-humanize` | v1.0.1 | indirect | MIT |
+| `github.com/google/uuid` | v1.6.0 | indirect | BSD-3-Clause |
+| `github.com/klauspost/compress` | v1.19.2 | indirect | Apache-2.0 |
+| `github.com/klauspost/cpuid/v2` | v2.4.0 | indirect | MIT |
+| `github.com/klauspost/crc32` | v1.3.0 | indirect | BSD-3-Clause |
+| `github.com/minio/crc64nvme` | v1.1.1 | indirect | Apache-2.0 |
+| `github.com/minio/md5-simd` | v1.1.2 | indirect | Apache-2.0 |
+| `github.com/minio/minio-go/v7` | v7.3.0 | direct | Apache-2.0 |
+| `github.com/philhofer/fwd` | v1.2.0 | indirect | MIT |
+| `github.com/redis/go-redis/v9` | v9.23.0 | direct | BSD-2-Clause |
+| `github.com/rs/xid` | v1.6.0 | indirect | MIT |
+| `github.com/tinylib/msgp` | v1.6.4 | indirect | MIT |
+| `github.com/zeebo/xxh3` | v1.1.0 | indirect | BSD-2-Clause |
+| `go.uber.org/atomic` | v1.12.0 | indirect | MIT |
+| `go.yaml.in/yaml/v3` | v3.0.5 | indirect | Apache-2.0 |
+| `golang.org/x/crypto` | v0.55.0 | indirect | BSD-3-Clause |
+| `golang.org/x/net` | v0.58.0 | indirect | BSD-3-Clause |
+| `golang.org/x/sys` | v0.48.0 | indirect | BSD-3-Clause |
+| `golang.org/x/text` | v0.41.0 | indirect | BSD-3-Clause |
+| `gopkg.in/ini.v1` | v1.67.3 | indirect | Apache-2.0 |
 
 ### `node/e2e` — 3
 
@@ -995,7 +977,7 @@ new dependency cannot make this document quietly false.
 | `fonttools` | 4.65.0 | runtime | MIT |
 | `fpdf2` | 2.8.9 | runtime | LGPL-3.0-only |
 | `gunicorn` | 26.2.0 | runtime | MIT |
-| `h11` | 0.16.0 | runtime | MIT |
+| `h11` | 0.16.0 | runtime | **UNKNOWN** |
 | `inflection` | 0.5.1 | runtime | MIT |
 | `jmespath` | 1.1.0 | runtime | MIT |
 | `jsonschema` | 4.26.0 | runtime | MIT |
@@ -1020,7 +1002,7 @@ new dependency cannot make this document quietly false.
 | `tzlocal` | 5.4.4 | runtime | MIT |
 | `uritemplate` | 4.2.0 | runtime | BSD 3-Clause OR Apache-2.0 |
 | `urllib3` | 2.7.0 | runtime | MIT |
-| `uvicorn` | 0.54.0 | runtime | BSD-3-Clause |
+| `uvicorn` | 0.54.0 | runtime | **UNKNOWN** |
 | `vine` | 5.1.0 | runtime | BSD |
 | `wcwidth` | 0.8.3 | runtime | MIT |
 | `whitenoise` | 6.12.0 | runtime | MIT |
@@ -1063,7 +1045,7 @@ new dependency cannot make this document quietly false.
 | `fonttools` | 4.65.0 | dev | MIT |
 | `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
 | `gunicorn` | 26.2.0 | dev | MIT |
-| `h11` | 0.16.0 | dev | MIT |
+| `h11` | 0.16.0 | dev | **UNKNOWN** |
 | `hypothesis` | 6.169.0 | dev | MPL-2.0 |
 | `idna` | 3.19 | dev | BSD-3-Clause |
 | `inflection` | 0.5.1 | dev | MIT |
@@ -1120,7 +1102,7 @@ new dependency cannot make this document quietly false.
 | `tzlocal` | 5.4.4 | dev | MIT |
 | `uritemplate` | 4.2.0 | dev | BSD 3-Clause OR Apache-2.0 |
 | `urllib3` | 2.7.0 | dev | MIT |
-| `uvicorn` | 0.54.0 | dev | BSD-3-Clause |
+| `uvicorn` | 0.54.0 | dev | **UNKNOWN** |
 | `vine` | 5.1.0 | dev | BSD |
 | `wcwidth` | 0.8.3 | dev | MIT |
 | `whitenoise` | 6.12.0 | dev | MIT |
@@ -1130,7 +1112,7 @@ new dependency cannot make this document quietly false.
 | Package | Version | Scope | Licence |
 |---|---|---|---|
 | `ast-serialize` | 0.11.0 | runtime | MIT |
-| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
+| `colorama` | 0.4.6 | runtime | BSD License |
 | `iniconfig` | 2.3.0 | runtime | MIT |
 | `librt` | 0.15.0 | runtime | MIT |
 | `mypy` | 2.3.1 | runtime | MIT |

@@ -28,9 +28,10 @@ Where the licences come from, and where they do not:
     `asgiref`, `amqp`). ⚠️ The venv is **gitignored**, so this works only on a
     machine that has run the install — which is exactly why the generated file
     is committed and `--check` never needs the venv.
-  * **Go** — nothing offline: `~/go/pkg/mod` does not exist on this machine and
-    `go` is not on PATH (measured 2026-09-21). The modules are listed and the
-    licence is left UNKNOWN rather than guessed.
+  * **Go** — nothing offline. The licences are read from each module's LICENSE
+    file on a machine with Go (`go mod download`) and committed as
+    `go-licences.tsv`, keyed by module **and version**; a module whose version
+    changed goes back to UNKNOWN rather than inheriting the old reading.
   * **Docker base images** — an aggregate, not one licence: `debian:trixie`
     ships GPL and LGPL components. They are listed and flagged, never called
     clean.
@@ -262,6 +263,23 @@ def go_packages() -> list[tuple[str, str, str, str]]:
     return rows
 
 
+def go_licences() -> dict[tuple[str, str], str]:
+    """(module, version) -> licence, from the committed `go-licences.tsv`.
+
+    Keyed by version on purpose: after a bump the pair no longer matches and the
+    module goes back to UNKNOWN instead of keeping a licence read from the old
+    version. The file is produced on a machine with Go (see the README, § 4).
+    """
+    path = ROOT / RECORD_DIR / "go-licences.tsv"
+    found: dict[tuple[str, str], str] = {}
+    if path.exists():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            parts = line.split("	")
+            if len(parts) == 3 and not line.startswith("#"):
+                found[(parts[0], parts[1])] = parts[2]
+    return found
+
+
 def docker_images() -> list[tuple[str, str]]:
     """(dockerfile, image) for every `FROM`, in file order."""
     rows: list[tuple[str, str]] = []
@@ -301,6 +319,7 @@ def collect(venv: Path) -> tuple[list[dict[str, str]], list[tuple[str, str]]]:
                 "licence": node_lic.get(name, ""),
             }
         )
+    go_lic = go_licences()
     for eco, name, version, scope in go_packages():
         rows.append(
             {
@@ -308,7 +327,7 @@ def collect(venv: Path) -> tuple[list[dict[str, str]], list[tuple[str, str]]]:
                 "name": name,
                 "version": version,
                 "scope": scope,
-                "licence": "",
+                "licence": go_lic.get((name, version), ""),
             }
         )
     rows.sort(key=lambda row: (row["ecosystem"], row["name"]))
@@ -437,9 +456,9 @@ def render_readme(rows: list[dict[str, str]], images: list[tuple[str, str]]) -> 
         out += [
             "Closing them:",
             "",
-            "- **Go** — run `go mod download` once (or `go list -m -json all`) on a",
-            "  machine with the toolchain, then add a reader for",
-            "  `$(go env GOMODCACHE)/<module>@<version>/LICENSE`.",
+            "- **Go** — on a machine with the toolchain run `go mod download`, read",
+            "  `$(go env GOMODCACHE)/<module>@<version>/LICENSE` and update",
+            "  `go-licences.tsv` (module, version, licence).",
             "- **Python** — run the install in `apps/api` (the venv is gitignored),",
             "  then regenerate.",
             "- **Node** — if any appear, the lockfile entry has no `license` field;",
