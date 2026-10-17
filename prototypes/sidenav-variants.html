@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yon menyu variantlari</title>
+<style>
+  :root {
+    --ground: #ede4ff; --surface: #fbf7ff; --surface-2: #f2ebff; --divider: #8874a5;
+    --text: #4a2d75; --text-2: #5d3d89; --muted: #624f82; --faint: #6f5897;
+    --accent: #7c3aed; --accent-ink: #7936ea; --accent-soft: #ede4ff; --hover: #f2ebff;
+  }
+  :root.dark {
+    --ground: #130d21; --surface: #1e1632; --surface-2: #281d42; --divider: #9580bf;
+    --text: #efe8ff; --text-2: #dccff7; --muted: #bcaede; --faint: #ab9bd0;
+    --accent-ink: #c9afff; --accent-soft: #2c2147; --hover: #281d42;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--text);
+         font: 14px/20px system-ui, "Segoe UI", sans-serif; }
+  header.bar { position: sticky; top: 0; z-index: 5; background: var(--surface);
+               border-bottom: 1px solid color-mix(in srgb, var(--divider) 35%, transparent);
+               padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+  header.bar h1 { font-size: 16px; margin: 0; }
+  .seg { display: inline-flex; border-radius: 10px; overflow: hidden;
+         border: 1px solid color-mix(in srgb, var(--divider) 45%, transparent); }
+  .seg button { font: inherit; color: var(--text-2); background: transparent; border: 0;
+                padding: 8px 12px; cursor: pointer; min-height: 36px; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .seg button:focus-visible, .grp-btn:focus-visible, .item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  label.lbl { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
+
+  .stage { padding: 16px; overflow-x: auto; }
+  .row { display: flex; gap: 20px; align-items: flex-start; width: max-content; }
+  .col { width: 260px; }
+  .col h2 { font-size: 14px; margin: 0 0 2px; }
+  .col .sub { color: var(--muted); font-size: 12px; line-height: 16px; min-height: 48px; margin: 0 0 8px; }
+  .col.rec h2::after { content: "tavsiya"; margin-left: 8px; font-size: 11px; font-weight: 600;
+                       background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 999px; }
+  .frame { width: 260px; background: var(--surface); padding: 0 16px; display: flex; flex-direction: column;
+           border-right: 1px solid color-mix(in srgb, var(--divider) 40%, transparent);
+           border-radius: 6px; box-shadow: 0 6px 18px rgba(80, 40, 160, .14); }
+  .top { height: 64px; flex: none; display: flex; align-items: center; justify-content: flex-end; color: var(--faint); }
+  .top span { width: 40px; height: 40px; display: grid; place-items: center; }
+  nav { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin;
+        scrollbar-color: var(--accent) transparent; padding-bottom: var(--pb); }
+  .grp { margin-bottom: var(--grp-gap); }
+  .grp:last-child { margin-bottom: 0; }
+  .grp.line + .grp.line, .line-on .grp + .grp { border-top: 1px solid color-mix(in srgb, var(--divider) 30%, transparent);
+        padding-top: var(--grp-gap); }
+  .line-on .grp { margin-bottom: 0; padding-bottom: 0; }
+  .line-on .grp:not(:last-child) { margin-bottom: var(--grp-gap); }
+  .title { margin: 0 0 var(--title-gap); padding: 0 12px; font-size: 12px; line-height: 18px; font-weight: 500;
+           letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  ul[hidden] { display: none !important; }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--row-gap); }
+  .item { display: flex; align-items: center; gap: 12px; width: 100%; padding: var(--py) 12px;
+          border-radius: 8px; font-weight: 500; color: var(--text-2); text-decoration: none; }
+  .item:hover { background: var(--hover); color: var(--text); }
+  .item svg { width: 20px; height: 20px; flex: none; color: var(--faint); }
+  .item.on { background: var(--accent-soft); color: var(--accent-ink); }
+  .item.on svg { color: var(--accent-ink); }
+  .grp-btn { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;
+             width: 100%; min-height: 32px; padding: 0 12px; cursor: pointer; border-radius: 8px;
+             font-size: 12px; line-height: 18px; font-weight: 500; letter-spacing: .05em;
+             text-transform: uppercase; color: var(--muted); }
+  .grp-btn:hover { background: var(--hover); }
+  .grp-btn svg { width: 16px; height: 16px; transition: transform .15s; }
+  .grp-btn[aria-expanded="true"] svg { transform: rotate(90deg); }
+  .grp-btn .n { margin-left: auto; margin-right: 8px; font-size: 11px; letter-spacing: 0; color: var(--faint); }
+  .stats { margin-top: 10px; font-size: 12px; line-height: 18px; color: var(--muted); }
+  .stats b { color: var(--text); font-weight: 600; }
+  .stats .bad { color: #b4305e; font-weight: 600; }
+  :root.dark .stats .bad { color: #ff9dbd; }
+  .stats .ok { color: #247a55; font-weight: 600; }
+  :root.dark .stats .ok { color: #5fd6a4; }
+  .note { padding: 0 16px 24px; color: var(--muted); font-size: 12px; max-width: 900px; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1>Yon menyu — variantlar</h1>
+  <label class="lbl">Ekran
+    <span class="seg" id="heights">
+      <button data-h="1080">1920×1080</button>
+      <button data-h="864">1536×864</button>
+      <button data-h="768">1366×768</button>
+      <button data-h="720">1280×720</button>
+    </span>
+  </label>
+  <label class="lbl">Masshtab
+    <span class="seg" id="zoom">
+      <button data-z="fit">Ekranga sig'dirish</button>
+      <button data-z="1">Haqiqiy o'lcham</button>
+    </span>
+  </label>
+  <label class="lbl">Rejim
+    <span class="seg" id="mode">
+      <button data-m="light">Yorug'</button>
+      <button data-m="dark">Qorong'u</button>
+    </span>
+  </label>
+</header>
+
+<div class="stage"><div class="row" id="row"></div></div>
+<p class="note">Har ustun — yon panelning to'liq balandligi (tanlangan ekran uchun). Pastdagi sonlar shu sahifada o'lchanadi.
+B variantida bo'lim sarlavhasini bosib ochish/yopish mumkin. Menyu ichida aylantirish paydo bo'lsa, o'ng chetda binafsha chiziq ko'rinadi.</p>
+
+<script>
+const GROUPS = [
+  ["Laboratoriya", [["Masalalar","doc"],["Urinishlar","bars"],["Testlar","check"]]],
+  ["Kutubxona", [["Maqolalar","book"],["Traektoriya","route"],["Algoritmlar","nodes"],["Auditoriya","book"]]],
+  ["Musobaqa", [["Musobaqalar","cup"],["Arena","bolt"],["Duel","swords"],["Chempionat","cup"],["Hakaton","code"],["Taqvim","cal"]]],
+  ["Kampus", [["Reyting","bars"],["Yangiliklar","doc"],["O'zgarishlar","bell"],["Yo'l xaritasi","route"]]],
+  ["Platforma", [["Formulalar","sigma"],["Do'kon","bag"],["Qanday ishlaydi","info"],["Jamoa","users"]]],
+];
+const ICON = {
+  doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  bars: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
+  check: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/>',
+  route: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h6" transform="translate(0 3) scale(1 .78)"/>',
+  nodes: '<circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v5M12 12l-6 5M12 12l6 5"/>',
+  cup: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>',
+  bolt: '<path d="M13 3 5 14h6l-1 7 8-11h-6z"/>',
+  swords: '<path d="M4 4l10 10M20 4 10 14M6 16l2 2M18 16l-2 2M4 20l3-3M20 20l-3-3"/>',
+  code: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>',
+  bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  sigma: '<path d="M17 6V4H7l6 8-6 8h10v-2"/>',
+  bag: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  users: '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a5 5 0 0 1 5 6"/>',
+};
+const svg = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+const CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+
+const COMFORT = { py: 8, rowGap: 4, grpGap: 20, titleGap: 8, pb: 24, line: false };
+
+/** What is live today: three steps keyed to the screen height. */
+function nowVars(h) {
+  if (h > 1100) return COMFORT;
+  if (h <= 740) return { py: 2, rowGap: 0, grpGap: 4, titleGap: 2, pb: 8, line: false };
+  if (h <= 800) return { py: 3, rowGap: 0, grpGap: 6, titleGap: 2, pb: 8, line: false };
+  return { py: 4, rowGap: 2, grpGap: 10, titleGap: 2, pb: 8, line: false };
+}
+
+/** A: spare height goes to the space between sections first, then to rows. */
+function adaptiveVars(h) {
+  const rows = 21, groups = 5;
+  const v = { py: 2, rowGap: 0, sep: 10, titleGap: 3, pb: 2 };
+  const cost = { sep: groups - 1, titleGap: groups, py: rows * 2, rowGap: rows - groups };
+  let spare = h - 64 - (groups * 18 + rows * (20 + 2 * v.py) + groups * v.titleGap + (groups - 1) * (v.sep + 1) + v.pb);
+  const give = (key, upTo) => {
+    if (spare <= 0 || v[key] >= upTo) return;
+    const add = Math.min(upTo - v[key], spare / cost[key]);
+    v[key] += add; spare -= add * cost[key];
+  };
+  give("sep", 16); give("titleGap", 6); give("py", 4); give("sep", 20);
+  give("titleGap", 8); give("py", 8); give("rowGap", 4);
+  for (const k of Object.keys(v)) v[k] = Math.floor(v[k] * 2) / 2;
+  // The line stays while rows are compact; comfortable rows do not need it.
+  v.line = v.py < 6;
+  v.grpGap = v.line ? v.sep / 2 : v.sep;
+  return v;
+}
+
+const VARIANTS = [
+  { id: "now", name: "Hozirgi holat", sub: "Jonli saytdagi ko'rinish: hamma narsa birdan eng zich holatga tushadi.", vars: nowVars },
+  { id: "a", name: "A. Moslashuvchan", rec: true, sub: "Bo'sh joy avval bo'limlar orasiga, keyin qatorlarga beriladi. Tor joyda ajratgich chiziq.", vars: adaptiveVars },
+  { id: "b", name: "B. Yig'iladigan", sub: "Qulay o'lchamlar. Joriy bo'lim ochiq, qolganlari sig'ganicha; sarlavha bosiladi.", vars: () => ({ ...COMFORT, grpGap: 8, titleGap: 4, pb: 8 }), fold: true },
+  { id: "c", name: "C. Asl holat", sub: "Ixchamlashdan oldingi ko'rinish. Past ekranda menyu aylanadi.", vars: () => COMFORT },
+  { id: "d", name: "D. Zich qator, aniq bo'lim", sub: "Qatorlar 28 px, bo'limlar orasida 16 px va chiziq. Balandlikka qaramaydi.", vars: () => ({ py: 4, rowGap: 2, grpGap: 8, titleGap: 4, pb: 8, line: true }) },
+];
+
+const state = { h: 768, zoom: "fit", mode: "light", open: null };
+const row = document.getElementById("row");
+
+function build() {
+  row.innerHTML = "";
+  for (const variant of VARIANTS) {
+    const v = variant.vars(state.h);
+    const col = document.createElement("section");
+    col.className = "col" + (variant.rec ? " rec" : "");
+    col.innerHTML = `<h2>${variant.name}</h2><p class="sub">${variant.sub}</p>`;
+    const frame = document.createElement("div");
+    frame.className = "frame";
+    frame.style.height = state.h + "px";
+    frame.style.setProperty("--py", v.py + "px");
+    frame.style.setProperty("--row-gap", v.rowGap + "px");
+    frame.style.setProperty("--grp-gap", v.grpGap + "px");
+    frame.style.setProperty("--title-gap", v.titleGap + "px");
+    frame.style.setProperty("--pb", v.pb + "px");
+    const nav = document.createElement("nav");
+    if (v.line) nav.className = "line-on";
+    nav.setAttribute("aria-label", variant.name);
+    GROUPS.forEach(([title, items], gi) => {
+      const grp = document.createElement("div");
+      grp.className = "grp";
+      const list = `<ul>${items.map(([label, icon], i) =>
+        `<li><a href="#" class="item${gi === 0 && i === 0 ? " on" : ""}">${svg(icon)}<span>${label}</span></a></li>`).join("")}</ul>`;
+      if (variant.fold) {
+        grp.innerHTML = `<button class="grp-btn" type="button" aria-expanded="true" data-g="${gi}"><span>${title}</span><span class="n">${items.length}</span>${CHEV}</button>${list}`;
+        grp.querySelector("ul").style.marginTop = v.titleGap + "px";
+      } else {
+        grp.innerHTML = `<p class="title">${title}</p>${list}`;
+      }
+      nav.append(grp);
+    });
+    frame.innerHTML = `<div class="top"><span>${svg("code")}</span></div>`;
+    frame.append(nav);
+    col.append(frame);
+    const stats = document.createElement("p");
+    stats.className = "stats";
+    col.append(stats);
+    row.append(col);
+
+    if (variant.fold) {
+      // The current section is open; the others open top-down while they fit.
+      const groups = [...nav.querySelectorAll(".grp")];
+      const set = (g, open) => {
+        g.querySelector(".grp-btn").setAttribute("aria-expanded", String(open));
+        g.querySelector("ul").hidden = !open;
+      };
+      if (state.open) groups.forEach((g, i) => set(g, state.open[i]));
+      else {
+        groups.forEach((g, i) => set(g, i === 0));
+        for (let i = 1; i < groups.length; i++) {
+          set(groups[i], true);
+          if (nav.scrollHeight > nav.clientHeight) { set(groups[i], false); break; }
+        }
+      }
+      nav.addEventListener("click", (event) => {
+        const button = event.target.closest(".grp-btn");
+        if (!button) return;
+        const g = button.parentElement;
+        set(g, button.getAttribute("aria-expanded") !== "true");
+        state.open = groups.map((x) => x.querySelector(".grp-btn").getAttribute("aria-expanded") === "true");
+        measure(nav, stats, variant);
+      });
+    }
+    measure(nav, stats, variant);
+  }
+  const zoom = state.zoom === "fit" ? Math.min(1, (innerHeight - 210) / state.h) : 1;
+  row.style.zoom = zoom;
+}
+
+function measure(nav, stats, variant) {
+  const item = nav.querySelector(".item");
+  const groups = [...nav.querySelectorAll(".grp")];
+  const rowH = Math.round(item.getBoundingClientRect().height * 10) / 10 / (row.style.zoom || 1);
+  const z = Number(row.style.zoom || 1) || 1;
+  const px = (n) => Math.round(n / z);
+  const a = groups[0].getBoundingClientRect(), b = groups[1].getBoundingClientRect();
+  const lastOfFirst = [...groups[0].querySelectorAll(".item")].filter((x) => x.offsetParent).pop();
+  const headOfSecond = groups[1].querySelector(".title, .grp-btn span");
+  const between = lastOfFirst
+    ? px(headOfSecond.getBoundingClientRect().top - lastOfFirst.getBoundingClientRect().bottom)
+    : px(b.top - a.bottom);
+  const over = nav.scrollHeight - nav.clientHeight;
+  const spare = nav.clientHeight - [...nav.children].reduce((s, g) => Math.max(s, g.offsetTop + g.offsetHeight), 0) + nav.offsetTop;
+  const hidden = variant.fold ? nav.querySelectorAll("ul[hidden] .item").length : 0;
+  stats.innerHTML =
+    `Qator: <b>${Math.round(item.offsetHeight)} px</b> · bo'limlar orasi: <b>${between} px</b><br>` +
+    (over > 0 ? `<span class="bad">Aylanadi: ${over} px yashirin</span>` : `<span class="ok">Aylanmaydi</span> · pastda bo'sh: <b>${Math.max(0, spare)} px</b>`) +
+    (variant.fold ? `<br>Yopiq bo'limlarda: <b>${hidden}</b> band` : "");
+}
+
+function seg(id, key, attr, cast = (x) => x) {
+  const box = document.getElementById(id);
+  const paint = () => box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(cast(b.dataset[attr]) === state[key])));
+  box.addEventListener("click", (event) => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    state[key] = cast(button.dataset[attr]);
+    if (key === "h") state.open = null;
+    document.documentElement.classList.toggle("dark", state.mode === "dark");
+    paint(); build(); build();
+  });
+  paint();
+}
+seg("heights", "h", "h", Number);
+seg("zoom", "zoom", "z");
+seg("mode", "mode", "m");
+addEventListener("resize", () => { build(); build(); });
+build(); build();
+</script>
+</body>
+</html>

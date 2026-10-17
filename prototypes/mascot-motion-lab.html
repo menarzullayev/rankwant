@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="uz" data-style="clay" data-motion="full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RankWant — maskot harakat labi</title>
+<style>
+  /* ── Uslub palitralari: RankWant'dagi 12 uslubdan 5 tasi (namuna) ──────
+     Har blok `--rw-*` tokenlarini e'lon qiladi — maskot shulardan rang oladi,
+     ya'ni shakl bitta qoladi, rang o'zi moslashadi (REPORT §4, A strategiya). */
+  [data-style="clay"]      { --accent:#7c3aed; --accent-2:#a78bfa; --ink:#0d0718; --ground:#130d21; --surface:#1e1632; --text:#efe8ff; --muted:#a99cd0; --radius:22px; --stroke:0; --shadow:0 18px 40px -18px rgba(124,58,237,.65); }
+  [data-style="dashboard"] { --accent:#5b8cff; --accent-2:#9dbaff; --ink:#08111a; --ground:#0b1220; --surface:#141d31; --text:#e8eeff; --muted:#93a4c9; --radius:12px; --stroke:0; --shadow:0 12px 28px -16px rgba(91,140,255,.55); }
+  [data-style="terminal"]  { --accent:#37d67a; --accent-2:#8ef0b4; --ink:#02150b; --ground:#04120a; --surface:#08200f; --text:#d6ffe4; --muted:#7fc79a; --radius:2px;  --stroke:0; --shadow:none; }
+  [data-style="brutal"]    { --accent:#ffd400; --accent-2:#fff27a; --ink:#000000; --ground:#101010; --surface:#1c1c1c; --text:#ffffff; --muted:#b9b9b9; --radius:0;   --stroke:5; --shadow:8px 8px 0 #000; }
+  [data-style="aurora"]    { --accent:#4dd6c1; --accent-2:#8b7cff; --ink:#04140f; --ground:#07131a; --surface:#0d2029; --text:#e6fffb; --muted:#8fb8b3; --radius:26px; --stroke:0; --shadow:0 22px 50px -20px rgba(77,214,193,.6); }
+
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body {
+    background:
+      radial-gradient(1100px 620px at 18% -12%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 62%),
+      var(--ground);
+    color: var(--text);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    min-height:100vh; padding:32px 20px 56px;
+    transition: background .4s ease;
+  }
+  .wrap { max-width: 980px; margin:0 auto; }
+  h1 { font-size:26px; margin:0 0 6px; letter-spacing:-.02em; }
+  h1 span { color: var(--accent); }
+  .sub { color: var(--muted); margin:0 0 26px; font-size:14px; }
+  .grid { display:grid; grid-template-columns: 1.25fr .75fr; gap:20px; align-items:start; }
+  @media (max-width: 760px) { .grid { grid-template-columns:1fr; } }
+
+  .panel {
+    background: var(--surface); border-radius: var(--radius);
+    border: calc(var(--stroke) * 1px) solid var(--ink);
+    box-shadow: var(--shadow);
+    padding:18px;
+  }
+  .stage { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:330px; }
+  .stage svg { width:100%; max-width:420px; height:auto; display:block; }
+
+  /* ── SVG ranglari — hammasi tokendan, xom hex yo'q (REPORT §5.1) ─────── */
+  .peak   { fill:url(#peakGrad); stroke:var(--ink); stroke-width:calc(var(--stroke) * 1px); stroke-linejoin:round; }
+  .facet  { fill:var(--accent-2); opacity:.35; }
+  .dot    { fill:url(#dotGrad);  stroke:var(--ink); stroke-width:calc(var(--stroke) * 1px); }
+  .ink    { fill:var(--ink); }
+  .stroke { fill:none; stroke:var(--ink); stroke-width:3.4; stroke-linecap:round; }
+  .trail  { fill:none; stroke:var(--accent); stroke-opacity:.3; stroke-width:2; stroke-dasharray:6 10; }
+
+  /* ── Maskot animatsiyasi — HAR klass `animate-` bilan boshlanadi, shuning
+     uchun `[data-motion="mild"] [class*="animate-"]` darvozasi uni o'chiradi.
+     Bu — REPORT §2.1 dagi nomlash qoidasi amalda. ───────────────────────── */
+  .animate-bob   { animation: bob 2.6s ease-in-out infinite; }
+  .animate-blink { animation: blink 4.2s steps(1,end) infinite; transform-box:fill-box; transform-origin:center; }
+  .animate-spin  { animation: spin 9s linear infinite; transform-box:view-box; transform-origin:50% 50%; }
+  .animate-pop   { animation: pop .5s cubic-bezier(.2,1.6,.4,1) both; transform-box:view-box; transform-origin:50% 50%; }
+
+  @keyframes bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+  @keyframes blink { 0%,92%,100% { transform: scaleY(1) } 95% { transform: scaleY(.08) } }
+  @keyframes spin  { to { transform: rotate(360deg) } }
+  @keyframes pop   { from { transform: scale(.86) } to { transform: scale(1) } }
+
+  /* ⚠️ Darvoza 1: foydalanuvchi sozlamasi. Klasslarni SANASH shart —
+     `theme.css` dagi `@media (prefers-reduced-motion)` bloki ham shunday. */
+  [data-motion="off"] *, [data-motion="reduce"] * {
+    animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  [data-motion="mild"] * { transition-duration:120ms !important; }
+  [data-motion="mild"] [class*="animate-"] { animation:none !important; }
+
+  /* ⚠️ Darvoza 2: OS sozlamasi — atributsiz holatda ham hurmat qilinadi.
+     Yangi har bir maskot klassini shu ro'yxatga qo'shish kerak. */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-bob, .animate-blink, .animate-spin, .animate-pop { animation:none !important; }
+  }
+
+  .controls { display:flex; flex-direction:column; gap:16px; }
+  .field label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:7px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chips button {
+    font:inherit; font-size:13px; cursor:pointer; color:var(--text);
+    background: color-mix(in srgb, var(--text) 8%, transparent);
+    border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+    border-radius: calc(var(--radius) / 1.6); padding:6px 11px; transition: all .15s ease;
+  }
+  .chips button:hover { border-color: var(--accent); }
+  .chips button[aria-pressed="true"] { background: var(--accent); color: var(--ink); border-color: var(--accent); font-weight:600; }
+  [data-style="brutal"] .chips button { border-width:2px; border-radius:0; }
+
+  .note { margin-top:20px; font-size:13px; color:var(--muted); border-left:3px solid var(--accent); padding:10px 0 10px 13px; }
+  .note b { color: var(--text); }
+  .badge { display:inline-block; font-size:11px; padding:2px 7px; border-radius:99px; background: color-mix(in srgb, var(--accent) 24%, transparent); color: var(--text); margin-left:6px; }
+  code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size:.92em; color: var(--accent-2); }
+  .cap { font-size:12px; color:var(--muted); margin-top:14px; text-align:center; }
+  .cap b { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>RankWant maskot labi — <span>Nuqta</span></h1>
+  <p class="sub">Crest'dagi mustaqil nuqta jonlanadi. Shakl bitta, rang tokendan — uslub almashsa, maskot o'zi moslashadi.</p>
+
+  <div class="grid">
+    <div class="panel stage">
+      <svg viewBox="0 0 400 300" role="img" aria-label="RankWant maskoti — Nuqta">
+        <defs>
+          <linearGradient id="peakGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)"/>
+            <stop offset="100%" stop-color="var(--accent-2)" stop-opacity=".55"/>
+          </linearGradient>
+          <radialGradient id="dotGrad" cx="35%" cy="30%">
+            <stop offset="0%" stop-color="var(--accent-2)"/>
+            <stop offset="100%" stop-color="var(--accent)"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Iz — faqat `full` harakatda ko'rinadi (dekorativ) -->
+        <path id="trail" class="trail animate-spin" d="M200 150 m-52 0 a52 52 0 1 1 104 0"/>
+
+        <!-- Ikki cho'qqi — Crest geometriyasi soddalashtirilgan -->
+        <path class="peak" d="M30 258 L128 74 L186 156 L252 100 L372 258 Z"/>
+        <path class="facet" d="M128 74 L186 156 L150 258 L92 258 Z"/>
+
+        <!-- Qahramon. Uch qatlam ataylab: har elementda BITTA transform manbasi.
+             `#heroPose` — poza (SVG atributi), `#heroPop`/`#heroBob` — CSS. -->
+        <g id="heroPose">
+          <g id="heroPop" class="animate-pop">
+            <g id="heroBob" class="animate-bob">
+              <circle class="dot" cx="200" cy="120" r="30"/>
+              <g id="eyes" class="ink">
+                <ellipse class="animate-blink" cx="189" cy="115" rx="3.6" ry="5"/>
+                <ellipse class="animate-blink" cx="211" cy="115" rx="3.6" ry="5"/>
+              </g>
+              <path id="mouth" class="stroke" d="M190 131 q10 9 20 0"/>
+              <g id="arms" class="stroke">
+                <line id="armL" x1="172" y1="124" x2="158" y2="140"/>
+                <line id="armR" x1="228" y1="124" x2="242" y2="140"/>
+              </g>
+            </g>
+          </g>
+        </g>
+      </svg>
+      <p class="cap">Poza: <b id="capPose">neytral</b> · daraja: <b id="capMotion">full</b></p>
+    </div>
+
+    <div class="panel controls">
+      <div class="field">
+        <label>Poza</label>
+        <div class="chips" id="poses">
+          <button data-pose="neutral" aria-pressed="true">Neytral</button>
+          <button data-pose="success">Muvaffaqiyat</button>
+          <button data-pose="fail">Xato</button>
+          <button data-pose="thinking">O'ylayapti</button>
+          <button data-pose="celebrate">Nishonlash</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Harakat darajasi <span class="badge">a11y.motion</span></label>
+        <div class="chips" id="motions">
+          <button data-motion="full" aria-pressed="true">full</button>
+          <button data-motion="mild">mild</button>
+          <button data-motion="off">off</button>
+          <button data-motion="system">system</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Uslub (12 dan 5 tasi)</label>
+        <div class="chips" id="styles">
+          <button data-style="clay" aria-pressed="true">clay</button>
+          <button data-style="dashboard">dashboard</button>
+          <button data-style="terminal">terminal</button>
+          <button data-style="brutal">brutal</button>
+          <button data-style="aurora">aurora</button>
+        </div>
+      </div>
+
+      <div class="note">
+        <b>Nima isbotlanmoqda.</b> <code>mild</code> ni tanlang — dekorativ harakat
+        to'xtaydi, poza almashinuvi qoladi. <code>off</code> da maskot
+        <b>statik poza</b> bo'lib qoladi: shakl qoladi, harakat yo'q.
+        Bu — <code>theme.css</code> dagi darvozaning aynan o'zi, maskotga qo'llangan.
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Diqqat — nomlash qoidasi.</b> Har bir animatsiya klass <code>animate-</code>
+    bilan boshlanadi. Sabab: <code>theme.css</code> da <code>mild</code> darvozasi
+    <code>[class*="animate-"]</code> ni qidiradi. Klassni <code>rw-mascot-bob</code>
+    deb nomlasangiz, u <code>mild</code> foydalanuvchisida <b>hamon qimirlaydi</b> —
+    va buni hech bir test ushlamaydi.
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var poseG = document.getElementById("heroPose");
+  var eyes = document.getElementById("eyes");
+  var mouth = document.getElementById("mouth");
+  var armL = document.getElementById("armL");
+  var armR = document.getElementById("armR");
+  var trail = document.getElementById("trail");
+  var capPose = document.getElementById("capPose");
+  var capMotion = document.getElementById("capMotion");
+  var reduceQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  /* Pozalar — faqat geometriya. Rang hech qachon bu yerda yozilmaydi. */
+  var POSES = {
+    neutral:   { dx:   0, dy:   0, mouth: "M190 131 q10 9 20 0",   eyeRy: 5,   aL: [158,140], aR: [242,140], label: "neytral" },
+    success:   { dx: -72, dy: -42, mouth: "M118 96 q10 -13 20 0",   eyeRy: 2.6, aL: [104,64],  aR: [152,64],  label: "muvaffaqiyat" },
+    fail:      { dx:   0, dy:  86, mouth: "M190 214 q10 -10 20 0",  eyeRy: 4.4, aL: [162,214], aR: [238,214], label: "xato" },
+    thinking:  { dx:  32, dy:  30, mouth: "M222 158 q10 3 20 -3",   eyeRy: 4.4, aL: [206,152], aR: [262,150], label: "o'ylayapti" },
+    celebrate: { dx: 100, dy: -58, mouth: "M290 80 q10 13 20 0",    eyeRy: 2.4, aL: [276,44],  aR: [324,44],  label: "nishonlash" }
+  };
+
+  function applyPose(name) {
+    var p = POSES[name];
+    if (!p) return;
+    poseG.setAttribute("transform", "translate(" + p.dx + " " + p.dy + ")");
+    mouth.setAttribute("d", p.mouth);
+    var ellipses = eyes.querySelectorAll("ellipse");
+    for (var i = 0; i < ellipses.length; i++) { ellipses[i].setAttribute("ry", p.eyeRy); }
+    armL.setAttribute("x2", p.aL[0]); armL.setAttribute("y2", p.aL[1]);
+    armR.setAttribute("x2", p.aR[0]); armR.setAttribute("y2", p.aR[1]);
+    capPose.textContent = p.label;
+  }
+
+  var currentMotion = "full";
+
+  function applyMotion(level) {
+    currentMotion = level;
+    var resolved = level === "system" ? (reduceQuery.matches ? "off" : "full") : level;
+    root.dataset.motion = resolved;
+    trail.style.display = resolved === "full" ? "" : "none";
+    capMotion.textContent = level === "system" ? "system → " + resolved : level;
+  }
+
+  function wire(id, attr, fn, initial) {
+    var box = document.getElementById(id);
+    box.addEventListener("click", function (e) {
+      var btn = e.target.closest("button");
+      if (!btn) return;
+      var buttons = box.querySelectorAll("button");
+      for (var i = 0; i < buttons.length; i++) { buttons[i].setAttribute("aria-pressed", "false"); }
+      btn.setAttribute("aria-pressed", "true");
+      fn(btn.getAttribute("data-" + attr));
+    });
+    if (initial) fn(initial);
+  }
+
+  wire("poses", "pose", applyPose, "neutral");
+  wire("motions", "motion", applyMotion, "full");
+  wire("styles", "style", function (s) { root.dataset.style = s; }, "clay");
+
+  /* `system` tanlangan bo'lsa, OS sozlamasi o'zgarganda qayta hal qilinadi. */
+  var onReduceChange = function () { if (currentMotion === "system") applyMotion("system"); };
+  if (reduceQuery.addEventListener) { reduceQuery.addEventListener("change", onReduceChange); }
+  else if (reduceQuery.addListener) { reduceQuery.addListener(onReduceChange); }
+})();
+</script>
+</body>
+</html>

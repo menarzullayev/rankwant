@@ -135,3 +135,6 @@ apps/api/.sync-cache/
 # Mahsulot kodi ham, prototip ham emas — RankWant'ga aloqasi yo'q.
 index.html
 planets/
+# ...except the mascot lab's page: the research report links to it, and the rule above
+# (meant for the one-off gallery) had silently kept it out of git.
+!prototypes/mascot-lab/index.html

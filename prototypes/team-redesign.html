@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jamoa sahifasi — prototip</title>
+<style>
+  :root {
+    --ground: #ede4ff; --surface: #fbf7ff; --surface-2: #f2ebff; --divider: #8874a5;
+    --text: #4a2d75; --text-2: #5d3d89; --muted: #624f82; --faint: #6f5897;
+    --accent: #7c3aed; --accent-ink: #7936ea; --accent-soft: #ede4ff; --hover: #f2ebff;
+    --ok: #247a55; --ok-soft: #d9f7ea; --warn: #8e6616; --warn-soft: #fdf1d6;
+  }
+  :root.dark {
+    --ground: #130d21; --surface: #1e1632; --surface-2: #281d42; --divider: #9580bf;
+    --text: #efe8ff; --text-2: #dccff7; --muted: #bcaede; --faint: #ab9bd0;
+    --accent-ink: #c9afff; --accent-soft: #2c2147; --hover: #281d42;
+    --ok: #5fd6a4; --ok-soft: #12382b; --warn: #f0c36a; --warn-soft: #3a2c0e;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #d9d2ea; color: var(--text); font: 14px/20px system-ui, "Segoe UI", sans-serif; }
+  :root.dark body { background: #07040e; }
+  button, input, select { font: inherit; color: inherit; }
+  header.bar { position: sticky; top: 0; z-index: 20; background: var(--surface); padding: 10px 16px;
+               border-bottom: 1px solid color-mix(in srgb, var(--divider) 35%, transparent);
+               display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; }
+  header.bar h1 { font-size: 16px; margin: 0; }
+  .seg { display: inline-flex; border-radius: 10px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--divider) 45%, transparent); }
+  .seg button { background: transparent; border: 0; padding: 8px 12px; cursor: pointer; min-height: 36px; color: var(--text-2); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .lbl { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wrap { display: flex; gap: 24px; padding: 16px; align-items: flex-start; flex-wrap: wrap; }
+  .side { width: 300px; flex: none; position: sticky; top: 76px; display: grid; gap: 12px; }
+  .note { background: var(--surface); border-radius: 14px; padding: 12px 14px; font-size: 12.5px; line-height: 18px; color: var(--muted); }
+  .note b { color: var(--text); }
+  .note h3 { margin: 0 0 6px; font-size: 13px; color: var(--text); }
+  .note ul { margin: 0; padding-left: 16px; }
+  .metric { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; }
+  .metric span:nth-child(even) { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+  .share { border: 1px solid color-mix(in srgb, var(--divider) 40%, transparent); border-radius: 10px; overflow: hidden; margin-top: 6px; }
+  .share .img { height: 70px; background: linear-gradient(120deg, var(--accent), #b794f6); display: grid; place-items: center; color: #fff; font-weight: 700; }
+  .share .img.photo { background: #1b1230 url("https://rankwant.uz/team/saidakbar.jpg") center 22% / cover; }
+  .share div.t { padding: 6px 8px; font-size: 12px; line-height: 16px; }
+  .share .t b { display: block; }
+
+  /* ---- device frame ---- */
+  .device { background: var(--ground); border-radius: 18px; box-shadow: 0 10px 30px rgba(40, 20, 90, .25); overflow: hidden;
+            container-type: inline-size; flex: none; }
+  .addr { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--surface-2); font: 12px/16px ui-monospace, Consolas, monospace; color: var(--muted);
+          border-bottom: 1px solid color-mix(in srgb, var(--divider) 30%, transparent); overflow: hidden; white-space: nowrap; }
+  .addr b { color: var(--text); font-weight: 500; }
+  .page { padding: 16px; }
+  @container (min-width: 700px) { .page { padding: 24px; } }
+
+  .eyebrow { font: 11px/16px ui-monospace, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 8px; }
+  h1.title { font-size: 28px; line-height: 34px; margin: 0 0 8px; letter-spacing: -.01em; max-width: 16ch; }
+  @container (min-width: 700px) { h1.title { font-size: 36px; line-height: 42px; } }
+  .lead { color: var(--text-2); margin: 0 0 14px; max-width: 56ch; font-size: 15px; line-height: 22px; }
+  .card { background: var(--surface); border-radius: 20px; box-shadow: 0 8px 18px rgba(120, 80, 200, .14); }
+  :root.dark .card { box-shadow: 0 8px 18px rgba(0, 0, 0, .4); }
+
+  /* current: four stat cards */
+  .stats4 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  @container (min-width: 700px) { .stats4 { grid-template-columns: repeat(4, 1fr); } }
+  .stats4 .card { padding: 14px 16px; }
+  .stats4 b { display: block; font-size: 28px; line-height: 34px; }
+  .stats4 span { font-size: 12px; color: var(--muted); }
+  /* proposed: one line */
+  .statline { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0 0 16px; color: var(--muted); font-size: 13px; }
+  .statline b { color: var(--text); font-size: 15px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { min-height: 44px; padding: 0 16px; border-radius: 999px; background: var(--surface); cursor: pointer;
+          border: 1px solid color-mix(in srgb, var(--divider) 70%, transparent); display: inline-flex; align-items: center; gap: 8px; color: var(--text-2); }
+  .chip small { font-size: 11px; color: var(--muted); }
+  .chip[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: transparent; font-weight: 600; }
+  .chip[aria-pressed="true"] small { color: #fff; }
+  .field { min-height: 44px; border-radius: 12px; padding: 0 12px; background: var(--surface); width: 100%;
+           border: 1px solid color-mix(in srgb, var(--divider) 60%, transparent); }
+  .tools-old { display: grid; gap: 12px; margin-bottom: 12px; position: sticky; top: 0; z-index: 5; background: var(--ground); padding: 8px 0; }
+  .tools-old .rowx { display: flex; gap: 12px; align-items: center; }
+  @container (min-width: 900px) { .tools-old { grid-template-columns: 1fr 340px; align-items: start; } }
+
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; position: sticky; top: 0; z-index: 5;
+           background: var(--ground); padding: 8px 0; }
+  .tools select.field { flex: 1 1 140px; width: auto; }
+  .tools input.field { flex: 2 1 160px; width: auto; }
+  .tools .chips { display: none; flex: 1 1 100%; }
+  @container (min-width: 900px) { .tools select.field { display: none; } .tools .chips { display: flex; } .tools input.field { flex: 0 0 240px; margin-left: auto; } .tools .chip { min-height: 36px; padding: 0 12px; } }
+  .switch { display: inline-flex; border-radius: 999px; padding: 3px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--divider) 60%, transparent); flex: none; }
+  .switch button { border: 0; background: transparent; min-height: 38px; padding: 0 14px; border-radius: 999px; cursor: pointer; color: var(--text-2); }
+  .switch button[aria-pressed="true"] { background: var(--accent); color: #fff; font-weight: 600; }
+  .count { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+
+  /* cards: current */
+  .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @container (min-width: 620px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @container (min-width: 960px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .old { padding: 20px; }
+  .dept { font: 10px/14px ui-monospace, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+  .who { display: flex; gap: 12px; align-items: center; }
+  .ava { position: relative; flex: none; width: 64px; height: 64px; border-radius: 50%; padding: 3px; background: hsl(var(--hue) 70% 55%); }
+  .ava img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+  .ava i { position: absolute; right: -4px; bottom: -4px; font: 700 9px/1 ui-monospace, Consolas, monospace; font-style: normal; background: var(--surface); color: var(--text);
+           border-radius: 999px; padding: 4px 6px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--divider) 40%, transparent); }
+  .ava.sm { width: 44px; height: 44px; padding: 2px; }
+  .old h2 { margin: 0; font-size: 16px; line-height: 22px; }
+  .role { color: var(--accent-ink); font-weight: 600; margin: 0; }
+  .about { color: var(--text-2); margin: 12px 0; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 2px 10px; border-radius: 999px; background: var(--ok-soft); color: var(--ok); }
+  .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .status.warn { background: var(--warn-soft); color: var(--warn); }
+  .acts { display: flex; gap: 8px; margin-top: 14px; align-items: center; }
+  .btn { min-height: 44px; padding: 0 14px; border-radius: 12px; background: transparent; cursor: pointer; text-decoration: none;
+         border: 1px solid color-mix(in srgb, var(--divider) 60%, transparent); display: inline-flex; align-items: center; justify-content: center; color: var(--text-2); }
+  .btn.icon { width: 44px; padding: 0; }
+  .btn.primary { background: var(--accent); color: #fff; border-color: transparent; font-weight: 600; }
+  dl.more { margin: 12px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; }
+  dl.more dt { color: var(--muted); } dl.more dd { margin: 0; }
+
+  /* proposed: compact rows */
+  .section-h { display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .section-h small { font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--faint); }
+  .fold { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; }
+  .fold svg { margin-left: auto; width: 18px; height: 18px; transition: transform .15s; }
+  .fold[aria-expanded="true"] svg { transform: rotate(90deg); }
+  .rows { display: grid; gap: 8px; grid-template-columns: 1fr; }
+  @container (min-width: 620px) { .rows { grid-template-columns: 1fr 1fr; gap: 12px; } }
+  @container (min-width: 960px) { .rows { grid-template-columns: repeat(3, 1fr); } }
+  .rowc { padding: 0; overflow: hidden; border-radius: 16px; }
+  .rowc summary { list-style: none; cursor: pointer; display: flex; gap: 12px; align-items: center; padding: 10px 12px; min-height: 64px; }
+  .rowc summary::-webkit-details-marker { display: none; }
+  .rowc h2 { margin: 0; font-size: 14.5px; line-height: 20px; font-weight: 600; }
+  .rowc .by { margin: 0; font-size: 12px; line-height: 16px; color: var(--muted); }
+  .rowc .txt { min-width: 0; flex: 1; }
+  .rowc .status { flex: none; font-size: 11px; }
+  @container (max-width: 380px) { .rowc .status { display: none; } }
+  .rowc .body { padding: 0 12px 12px 68px; color: var(--text-2); font-size: 13.5px; }
+  .rowc .body p { margin: 0 0 8px; }
+  @container (min-width: 620px) { .rowc .teaser { display: block; } }
+  .teaser { display: none; margin: 2px 0 0; font-size: 12.5px; line-height: 17px; color: var(--text-2);
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  @container (max-width: 619px) { .teaser { display: none; } }
+  .moreb { margin: 12px auto 0; display: flex; }
+
+  /* founder / serious */
+  .founder { display: grid; gap: 16px; padding: 16px; margin-bottom: 16px; }
+  @container (min-width: 620px) { .founder { grid-template-columns: 220px 1fr; padding: 20px; align-items: center; } }
+  .founder .ph { border-radius: 16px; aspect-ratio: 4 / 5; background: #1b1230 url("https://rankwant.uz/team/saidakbar.jpg") center 20% / cover; max-height: 300px; width: 100%; }
+  .founder h2 { margin: 0 0 4px; font-size: 24px; line-height: 30px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .facts span { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--text-2); }
+  .mini { display: flex; gap: 12px; align-items: center; padding: 12px 14px; margin-bottom: 16px; }
+  .mini .txt { flex: 1; min-width: 0; }
+  .mini b { display: block; }
+  .mini span { font-size: 12.5px; color: var(--muted); }
+  .vac { border: 1px dashed color-mix(in srgb, var(--divider) 70%, transparent); border-radius: 20px; padding: 16px; margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+  .vac p { margin: 4px 0 0; color: var(--text-2); max-width: 52ch; }
+  .vac h2 { margin: 0; font-size: 16px; }
+  .banner { background: var(--warn-soft); color: var(--warn); border-radius: 12px; padding: 8px 12px; font-size: 12.5px; margin-bottom: 12px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1>Jamoa sahifasi — prototip</h1>
+  <label class="lbl">Variant
+    <span class="seg" id="variant">
+      <button data-v="old">Hozirgi</button>
+      <button data-v="a">A. Bo'limlar bo'yicha</button>
+      <button data-v="b">B. Ixcham ro'yxat</button>
+    </span>
+  </label>
+  <label class="lbl">Ekran
+    <span class="seg" id="screen">
+      <button data-v="390">Telefon 390</button>
+      <button data-v="768">Planshet 768</button>
+      <button data-v="1080">Noutbuk</button>
+    </span>
+  </label>
+  <label class="lbl">Rejim
+    <span class="seg" id="mode">
+      <button data-v="light">Yorug'</button>
+      <button data-v="dark">Qorong'u</button>
+    </span>
+  </label>
+</header>
+
+<div class="wrap">
+  <div class="device" id="device">
+    <div class="addr">rankwant.uz<b id="addr">/team</b></div>
+    <div class="page" id="page"></div>
+  </div>
+
+  <aside class="side">
+    <div class="note"><h3>O'lchov (shu prototipda)</h3><div class="metric" id="metric"></div></div>
+    <div class="note" id="explain"></div>
+    <div class="note"><h3>Ulashilgandagi ko'rinish (Telegram, X)</h3><div id="share"></div></div>
+  </aside>
+</div>
+
+<script>
+const DATA = {"departments": [{"id": 1, "name_uz": "Rahbariyat"}, {"id": 2, "name_uz": "Muhandislik"}, {"id": 3, "name_uz": "Dizayn"}, {"id": 4, "name_uz": "Sifat"}, {"id": 5, "name_uz": "Infratuzilma"}, {"id": 6, "name_uz": "Kontent"}, {"id": 7, "name_uz": "Qo'llab-quvvatlash"}, {"id": 8, "name_uz": "Marketing"}, {"id": 9, "name_uz": "Moliya"}, {"id": 10, "name_uz": "Huquq"}, {"id": 11, "name_uz": "Kadrlar"}, {"id": 12, "name_uz": "Xo'jalik"}], "roles": [{"id": 1, "department": 1, "title_uz": "Asoschi va bosh direktor", "about_uz": "Strategiyani belgilaydi. Strategiya: «bugun ham ishlaymiz».", "reports_to_uz": "Vijdoniga", "status_uz": "Ofisda", "badge": "CEO", "hue": 262, "tone": "ok"}, {"id": 2, "department": 1, "title_uz": "Direktorlar kengashi raisi", "about_uz": "Kengash yig'ilishlarida yagona ovoz bilan qaror qabul qiladi.", "reports_to_uz": "Bosh direktorga", "status_uz": "Kvorum bor", "badge": "x1", "hue": 250, "tone": "ok"}, {"id": 3, "department": 2, "title_uz": "Bosh texnik direktor", "about_uz": "Arxitektura qarorlarini qabul qiladi va keyin o'zi bilan bahslashadi.", "reports_to_uz": "Bosh direktorga", "status_uz": "O'zi bilan review'da", "badge": "CTO", "hue": 215, "tone": "warn"}, {"id": 4, "department": 2, "title_uz": "Backend dasturchi", "about_uz": "Django, Celery va 3 soat davomida bitta vergul qidirish bo'yicha mutaxassis.", "reports_to_uz": "Bosh texnik direktorga", "status_uz": "Kod yozmoqda", "badge": "API", "hue": 200, "tone": "ok"}, {"id": 5, "department": 2, "title_uz": "Frontend dasturchi", "about_uz": "Tugmani 2 piksel chapga suradi. Keyin yana o'ngga.", "reports_to_uz": "Bosh texnik direktorga", "status_uz": "Kod yozmoqda", "badge": "<\/>", "hue": 190, "tone": "ok"}, {"id": 6, "department": 2, "title_uz": "Judge muhandisi", "about_uz": "Sandbox ichida boshqalarning kodini, tashqarisida o'zinikini jazolaydi.", "reports_to_uz": "Bosh texnik direktorga", "status_uz": "Accepted", "badge": "AC", "hue": 140, "tone": "ok"}, {"id": 7, "department": 2, "title_uz": "Kod sharhlovchi", "about_uz": "Har bir PR'ni sinchiklab o'qiydi. Muallifi tanish chiqadi.", "reports_to_uz": "Backend dasturchiga", "status_uz": "Tasdiqladi", "badge": "LGTM", "hue": 170, "tone": "ok"}, {"id": 8, "department": 3, "title_uz": "Bosh dizayner", "about_uz": "12 ta uslub chizdi, chunki bittasini tanlay olmadi.", "reports_to_uz": "Bosh direktorga", "status_uz": "Rang tanlamoqda", "badge": "UI", "hue": 320, "tone": "warn"}, {"id": 9, "department": 3, "title_uz": "UX tadqiqotchi", "about_uz": "Foydalanuvchilar bilan suhbat o'tkazadi. Suhbatdosh doim rozi bo'ladi.", "reports_to_uz": "Bosh dizaynerga", "status_uz": "Intervyu o'tkazmoqda", "badge": "UX", "hue": 300, "tone": "ok"}, {"id": 10, "department": 4, "title_uz": "QA muhandisi", "about_uz": "Dasturchi «menda ishlayapti» desa, ishonmaydi. To'g'ri qiladi.", "reports_to_uz": "Bosh texnik direktorga", "status_uz": "Bug topdi", "badge": "QA", "hue": 20, "tone": "warn"}, {"id": 11, "department": 4, "title_uz": "Salbiy testlar bo'yicha mutaxassis", "about_uz": "Hamma narsani ataylab buzadi va buzilganidan xursand bo'ladi.", "reports_to_uz": "QA muhandisiga", "status_uz": "Qizil = yaxshi", "badge": "!ok", "hue": 0, "tone": "ok"}, {"id": 12, "department": 5, "title_uz": "DevOps muhandisi", "about_uz": "Deploy tugmasini bosadi va nafasini ichiga yutadi.", "reports_to_uz": "Bosh texnik direktorga", "status_uz": "CI yashil", "badge": "CI", "hue": 95, "tone": "ok"}, {"id": 13, "department": 5, "title_uz": "Tungi navbatchi", "about_uz": "Soat ikkida uyg'onadi. Kim uyg'otgani ma'lum.", "reports_to_uz": "DevOps muhandisiga", "status_uz": "Uyqusiz", "badge": "02:00", "hue": 240, "tone": "warn"}, {"id": 14, "department": 5, "title_uz": "Ma'lumotlar bazasi ma'muri", "about_uz": "Indeks qo'shadi. Zaxira nusxa oladi. Yaxshi uxlaydi (nazariy jihatdan).", "reports_to_uz": "DevOps muhandisiga", "status_uz": "Zaxira bor", "badge": "SQL", "hue": 205, "tone": "ok"}, {"id": 15, "department": 6, "title_uz": "Masalalar muallifi", "about_uz": "A + B dan boshladi. Hozircha A + B da.", "reports_to_uz": "Kontent rahbariga", "status_uz": "Yozmoqda", "badge": "A+B", "hue": 38, "tone": "ok"}, {"id": 16, "department": 6, "title_uz": "Kontent rahbari", "about_uz": "Masalalar muallifidan muddatni so'raydi. Javob oladi: «ertaga».", "reports_to_uz": "Bosh direktorga", "status_uz": "Muddat yaqin", "badge": "Aa", "hue": 52, "tone": "warn"}, {"id": 17, "department": 6, "title_uz": "Tarjimon (10 til)", "about_uz": "O'zbekchani biladi. Qolgan to'qqiztasini tekshirib ko'rishga va'da bergan.", "reports_to_uz": "Kontent rahbariga", "status_uz": "Ko'rib chiqilmagan", "badge": "10", "hue": 170, "tone": "warn"}, {"id": 18, "department": 7, "title_uz": "Qo'llab-quvvatlash xizmati", "about_uz": "Murojaatlarga 24/7 javob beradi, uxlagan paytidan tashqari.", "reports_to_uz": "Bosh direktorga", "status_uz": "Onlayn", "badge": "24/7", "hue": 345, "tone": "ok"}, {"id": 19, "department": 8, "title_uz": "Marketing direktori", "about_uz": "Reklama byudjeti: 0 so'm. Samaradorlik: cheksiz.", "reports_to_uz": "Bosh direktorga", "status_uz": "Kampaniya ketmoqda", "badge": "CMO", "hue": 290, "tone": "ok"}, {"id": 20, "department": 8, "title_uz": "SMM menejeri", "about_uz": "Kanalga post yozadi va birinchi bo'lib o'zi layk bosadi.", "reports_to_uz": "Marketing direktoriga", "status_uz": "1 ta layk", "badge": "@", "hue": 330, "tone": "ok"}, {"id": 21, "department": 9, "title_uz": "Moliya direktori", "about_uz": "Xarajatlarni tasdiqlaydi: server, domen va choy.", "reports_to_uz": "Bosh direktorga", "status_uz": "Byudjet ichida", "badge": "CFO", "hue": 150, "tone": "ok"}, {"id": 22, "department": 10, "title_uz": "Yurist", "about_uz": "Foydalanish shartlarini yozdi. Hatto o'zi ham o'qib chiqdi.", "reports_to_uz": "Bosh direktorga", "status_uz": "Shartlar yozilgan", "badge": "§", "hue": 225, "tone": "ok"}, {"id": 23, "department": 11, "title_uz": "Kadrlar bo'limi boshlig'i", "about_uz": "Yil xodimini aniqladi. Nomzodlar ro'yxati qisqa edi.", "reports_to_uz": "Bosh direktorga", "status_uz": "Jamoa ruhi a'lo", "badge": "HR", "hue": 310, "tone": "ok"}, {"id": 24, "department": 12, "title_uz": "Choy damlovchi", "about_uz": "Eng muhim lavozim. Butun ishlab chiqarish shu kishiga bog'liq.", "reports_to_uz": "Hammaga", "status_uz": "Qaynayapti", "badge": "choy", "hue": 30, "tone": "ok"}], "members": [{"name": "Saidakbar Narzullayev"}]};
+const PHOTO = "https://rankwant.uz/team/saidakbar.jpg";
+const NAME = DATA.members[0].name;
+const DEPT = Object.fromEntries(DATA.departments.map((d) => [d.id, d.name_uz]));
+const ROLES = DATA.roles;
+const HEIGHT = { 390: 844, 768: 1024, 1080: 768 };
+const state = { variant: "a", screen: 390, mode: "light", dept: 0, q: "", serious: false, open: new Set([DATA.departments[0].id]), all: false };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+const ava = (r, sm) => `<span class="ava${sm ? " sm" : ""}" style="--hue:${r.hue}"><img src="${PHOTO}" alt="" loading="lazy" width="64" height="64">${sm ? "" : `<i>${esc(r.badge)}</i>`}</span>`;
+const status = (r) => `<span class="status${r.tone === "ok" ? "" : " warn"}">${esc(r.status_uz)}</span>`;
+
+function visible() {
+  const q = state.q.trim().toLowerCase();
+  return ROLES.filter((r) => (!state.dept || r.department === state.dept) &&
+    (!q || (r.title_uz + " " + r.about_uz + " " + DEPT[r.department]).toLowerCase().includes(q)));
+}
+const hero = () => `<p class="eyebrow">Biz haqimizda · Jamoa</p><h1 class="title">RankWant ortidagi katta, ahil jamoa</h1>
+  <p class="lead">Bir nechta bo'lim, ko'plab lavozim va bitta umumiy maqsad. Jamoamiz shu qadar ahilki, majlislar bir daqiqada tugaydi va hech kim hech qachon bir-birining gapini bo'lmaydi.</p>`;
+const chips = () => `<div class="chips" role="group" aria-label="Bo'limlar">` +
+  [[0, "Hammasi", ROLES.length], ...DATA.departments.map((d) => [d.id, d.name_uz, ROLES.filter((r) => r.department === d.id).length])]
+    .map(([id, name, n]) => `<button class="chip" data-dept="${id}" aria-pressed="${state.dept === id}">${esc(name)} <small>${n}</small></button>`).join("") + "</div>";
+const vacancy = () => `<section class="vac"><div><h2>Bo'sh o'rinlar</h2><p>Hozircha barcha lavozimlar band — bitta nomzod hammasiga mos keldi. Lekin haqiqiy hissa qo'shmoqchi bo'lsangiz, eshik ochiq.</p></div><a class="btn primary" href="#">Telegram'da yozish</a></section>`;
+
+function oldPage() {
+  const list = visible();
+  return hero() + `<div class="stats4">${[[24, "lavozim"], [12, "bo'lim"], [1, "inson"], [0, "kelishmovchilik"]].map(([n, l]) => `<div class="card"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
+  <div class="tools-old">${chips()}<div class="rowx"><input class="field" type="search" placeholder="Lavozim qidirish" value="${esc(state.q)}"><label style="white-space:nowrap;display:inline-flex;gap:6px;align-items:center;min-height:44px"><input type="checkbox" id="oldserious" ${state.serious ? "checked" : ""}> Jiddiy rejim</label></div></div>
+  ${state.serious ? `<p class="count">1 kishi, hazilsiz.</p>` + founder(true) : `<p class="count">${list.length} ta lavozim ko'rsatilmoqda · ularni egallagan odamlar soni: 1</p>
+  <div class="grid">${list.map((r) => `<article class="card old"><p class="dept">${esc(DEPT[r.department])}</p><div class="who">${ava(r)}<div><h2>${esc(NAME)}</h2><p class="role">${esc(r.title_uz)}</p></div></div>
+    <p class="about">${esc(r.about_uz)}</p>${status(r)}<div class="acts"><button class="btn">Batafsil</button><a class="btn icon" href="#" aria-label="Telegram: ${esc(NAME)}">T</a><a class="btn icon" href="#" aria-label="GitHub: ${esc(NAME)}">G</a></div></article>`).join("")}</div>`}` + vacancy();
+}
+
+function founder(old) {
+  return `<section class="card founder"><div class="ph" role="img" aria-label="${esc(NAME)} rasmi"></div><div>
+    <p class="eyebrow" style="margin:0 0 4px">${old ? "Jiddiy rejim" : "Asoschi"}</p><h2>${esc(NAME)}</h2><p class="role">Asoschi va yagona ishlab chiquvchi</p>
+    <p class="about">RankWant — bir kishi tomonidan qurilayotgan platforma: backend, frontend, judge, dizayn va kontent bitta qo'lda. ${old ? "Yuqoridagi" : "Hazil rejimidagi"} lavozimlar hazil, ish esa haqiqiy.</p>
+    ${old ? "" : `<div class="facts"><span>Django · Next.js · Go</span><span>35 dasturlash tili</span><span>10 til interfeysi</span><span>Toshkent</span></div>`}
+    <div class="acts" style="margin-top:8px"><a class="btn" href="#">Telegram</a><a class="btn" href="#">GitHub</a></div></div></section>`;
+}
+
+function row(r) {
+  return `<details class="card rowc"><summary>${ava(r, true)}<div class="txt"><h2>${esc(r.title_uz)}</h2><p class="by">${esc(NAME)} · ${esc(DEPT[r.department])}</p>
+    <p class="teaser">${esc(r.about_uz)}</p></div>${status(r)}</summary>
+    <div class="body"><p>${esc(r.about_uz)}</p><dl class="more"><dt>Hisobot beradi</dt><dd>${esc(r.reports_to_uz)}</dd><dt>Hamkasblari</dt><dd>o'zi</dd></dl></div></details>`;
+}
+
+function newPage() {
+  const list = visible();
+  const tools = `<div class="tools">
+    <span class="switch" role="group" aria-label="Ko'rinish"><button data-serious="0" aria-pressed="${!state.serious}">Hazil</button><button data-serious="1" aria-pressed="${state.serious}">Jiddiy</button></span>
+    ${state.serious ? "" : `<select class="field" aria-label="Bo'lim">${[[0, "Barcha bo'limlar"], ...DATA.departments.map((d) => [d.id, d.name_uz])].map(([id, n]) => `<option value="${id}" ${state.dept === id ? "selected" : ""}>${esc(n)}</option>`).join("")}</select>
+    <input class="field" type="search" placeholder="Lavozim qidirish" aria-label="Lavozim qidirish" value="${esc(state.q)}">${chips()}`}</div>`;
+  if (state.serious) {
+    return `<p class="eyebrow">Biz haqimizda · Jamoa</p><h1 class="title">RankWant'ni kim quryapti</h1><p class="lead">Bitta odam. Quyida — hazilsiz.</p>` + tools + founder(false) +
+      `<section class="vac"><div><h2>Hissa qo'shmoqchimisiz?</h2><p>Masala mualliflari, tarjimonlar va sinovchilar kerak. Yozing — javob beraman.</p></div><a class="btn primary" href="#">Telegram'da yozish</a></section>`;
+  }
+  let body;
+  if (!list.length) body = `<p class="count" role="status">Bunday lavozim hali ochilmagan. Ochilsa, kim egallashi ma'lum.</p>`;
+  else if (state.variant === "a") {
+    const filtered = state.dept || state.q;
+    body = DATA.departments.filter((d) => list.some((r) => r.department === d.id)).map((d) => {
+      const rs = list.filter((r) => r.department === d.id);
+      const open = filtered || state.open.has(d.id) || state.screen >= 768;
+      const head = state.screen >= 768 ? `<h3 class="section-h">${esc(d.name_uz)} <small>${rs.length}</small></h3>`
+        : `<h3 class="section-h"><button class="fold" data-fold="${d.id}" aria-expanded="${!!open}">${esc(d.name_uz)} <small>${rs.length}</small>${CHEV}</button></h3>`;
+      return head + (open ? `<div class="rows">${rs.map(row).join("")}</div>` : "");
+    }).join("");
+  } else {
+    const limit = state.all || state.dept || state.q ? list.length : (state.screen >= 768 ? 12 : 8);
+    body = `<div class="rows">${list.slice(0, limit).map(row).join("")}</div>` +
+      (limit < list.length ? `<button class="btn moreb" data-all="1">Yana ${list.length - limit} ta lavozimni ko'rsatish</button>` : "");
+  }
+  return hero() + `<p class="statline"><span><b>24</b> lavozim</span><span><b>12</b> bo'lim</span><span><b>1</b> inson</span><span><b>0</b> kelishmovchilik</span></p>` + tools +
+    `<p class="count" role="status">${list.length} ta lavozim · ularni egallagan odamlar soni: 1</p>` + body +
+    `<a class="card mini" href="#" data-serious-link="1" style="text-decoration:none;color:inherit;margin-top:20px">${ava({ hue: 262, badge: "" }, true)}<span class="txt"><b>Bularning hammasi — ${esc(NAME)}</b><span>Hazilsiz ko'rinish, havolalar va aloqa</span></span>${CHEV.replace("<svg", '<svg width="18" height="18"')}</a>` + vacancy();
+}
+
+const EXPLAIN = {
+  old: `<h3>Hozirgi holat</h3><ul><li>Telefonda juda uzun — o'lchovga qarang.</li><li>Chiplar 6–7 qator.</li><li>Har kartada bir xil ism sarlavha, va ikki bir xil havola.</li><li>«Jiddiy rejim»da chiplar va hazil sonlar qoladi, yopishqoq panel kartani yopadi.</li><li>Holat havolada saqlanmaydi.</li></ul>`,
+  a: `<h3>A. Bo'limlar bo'yicha</h3><ul><li>Lavozimlar 12 bo'lim sarlavhasi ostida; telefonda bo'lim bosilganda ochiladi (birinchisi ochiq).</li><li>Karta sarlavhasi — <b>lavozim</b>; ism kichik qatorda.</li><li>Kartani bosganda tavsif ochiladi.</li><li>Telegram/GitHub bitta joyda — pastdagi kartada va jiddiy ko'rinishda.</li><li>Telefonda chiplar o'rniga bitta tanlash ro'yxati.</li></ul><p style="margin:8px 0 0"><b>Narxi:</b> telefonda 24 lavozimning ko'pi yopiq bo'limlarda.</p>`,
+  b: `<h3>B. Ixcham ro'yxat</h3><ul><li>Bitta tekis ro'yxat; telefonda birinchi 8 ta, keyin «Yana ko'rsatish».</li><li>Qolgani A bilan bir xil: sarlavha — lavozim, kartani bosganda tavsif, havolalar bitta joyda.</li></ul><p style="margin:8px 0 0"><b>Narxi:</b> bo'lim tuzilmasi faqat filtr orqali ko'rinadi.</p>`,
+};
+const BOTH = `<p style="margin:8px 0 0"><b>Ikkala variantda:</b> «Hazil / Jiddiy» almashtirgich alohida ko'rinish beradi (chiplar va hazil sonlar yo'qoladi); holat havolada (yuqoridagi manzil qatoriga qarang); sonlar bitta qatorda.</p>`;
+
+function render() {
+  document.documentElement.classList.toggle("dark", state.mode === "dark");
+  const device = document.getElementById("device");
+  device.style.width = state.screen + "px";
+  const page = document.getElementById("page");
+  page.innerHTML = state.variant === "old" ? oldPage() : newPage();
+  const params = [];
+  if (state.variant !== "old") {
+    if (state.serious) params.push("jiddiy=1");
+    if (state.dept && !state.serious) params.push("bolim=" + DEPT[state.dept].toLowerCase().replace(/[^a-z]+/g, "-"));
+    if (state.q && !state.serious) params.push("q=" + encodeURIComponent(state.q));
+  }
+  document.getElementById("addr").textContent = "/team" + (params.length ? "?" + params.join("&") : "");
+  document.getElementById("explain").innerHTML = EXPLAIN[state.variant] + (state.variant === "old" ? "" : BOTH);
+  const h = device.offsetHeight - 33, vh = HEIGHT[state.screen];
+  const first = page.querySelector(".old, .rowc, .founder");
+  const top = first ? Math.round(first.getBoundingClientRect().top - page.getBoundingClientRect().top) : 0;
+  const stops = page.querySelectorAll("a, button, input, select, summary").length;
+  const heads = [...page.querySelectorAll("h2")].map((x) => x.textContent);
+  document.getElementById("metric").innerHTML =
+    `<span>Sahifa balandligi</span><span>${h} px</span><span>Ekranlar soni</span><span>${(h / vh).toFixed(1)}</span>` +
+    `<span>Birinchi kartagacha</span><span>${top} px</span><span>Klaviatura to'xtash joylari</span><span>${stops}</span>` +
+    `<span>Turli xil sarlavhalar (h2)</span><span>${new Set(heads).size} / ${heads.length}</span>`;
+  document.getElementById("share").innerHTML = state.variant === "old"
+    ? `<div class="share"><div class="img">RankWant</div><div class="t"><b>RankWant — reyting xohlaganlar uchun</b>Sport dasturlash va informatika olimpiadasi platformasi… · rankwant.uz</div></div>`
+    : `<div class="share"><div class="img photo"></div><div class="t"><b>Jamoa — 24 lavozim, 1 inson · RankWant</b>RankWant'ni kim quryapti: 12 bo'lim, 24 lavozim va ularning hammasini egallagan bitta odam. · rankwant.uz/team</div></div>`;
+  for (const id of ["variant", "screen", "mode"]) document.querySelectorAll(`#${id} button`).forEach((b) => b.setAttribute("aria-pressed", String(String(state[id]) === b.dataset.v)));
+}
+
+document.querySelector("header.bar").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  const key = b.parentElement.id; state[key] = key === "screen" ? Number(b.dataset.v) : b.dataset.v;
+  render();
+});
+const page = document.getElementById("page");
+page.addEventListener("click", (e) => {
+  const t = e.target;
+  const chip = t.closest("[data-dept]"); if (chip) { state.dept = Number(chip.dataset.dept); state.all = false; return render(); }
+  const s = t.closest("[data-serious]"); if (s) { state.serious = s.dataset.serious === "1"; return render(); }
+  if (t.closest("[data-serious-link]")) { e.preventDefault(); state.serious = true; render(); document.getElementById("device").scrollIntoView({ block: "start" }); return; }
+  const f = t.closest("[data-fold]"); if (f) { const id = Number(f.dataset.fold); state.open.has(id) ? state.open.delete(id) : state.open.add(id); return render(); }
+  if (t.closest("[data-all]")) { state.all = true; return render(); }
+  if (t.closest("a")) e.preventDefault();
+});
+page.addEventListener("change", (e) => {
+  if (e.target.matches("select")) { state.dept = Number(e.target.value); render(); }
+  if (e.target.id === "oldserious") { state.serious = e.target.checked; render(); }
+});
+page.addEventListener("input", (e) => {
+  if (!e.target.matches("input[type=search]")) return;
+  state.q = e.target.value; const at = e.target.selectionStart; render();
+  const again = page.querySelector("input[type=search]"); if (again) { again.focus(); again.setSelectionRange(at, at); }
+});
+render();
+</script>
+</body>
+</html>
