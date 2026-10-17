@@ -69,7 +69,34 @@ Inventory: `docs/research/2026-09-21-licence-inventory/README.md` (877 packages,
 - Translations to 10 languages are machine-made and not reviewed by native speakers (`threat-model.md` A-8).
 - Related: `docs/10-operations/threat-model.md`, ADR-0016 (sign-up and login), ADR-0023 (indexing).
 
-## 5. What the agent will do before handoff
+## 5. Live Terms and Privacy text, and where it disagrees with the system
 
-- Regenerate the licence inventory and resolve the Go modules (needs `go` via Docker).
-- Attach the current Terms and Privacy text so counsel reads what is live.
+The live text is in `apps/web/src/content/legal.ts` (Uzbek, Russian, English;
+other languages fall back to Uzbek). Both documents carry the date
+`2026-09-10`. Counsel should read that file; it is the exact text users see at
+`/terms` and `/privacy`.
+
+Measured on 2026-10-17, the **Privacy policy lists** username, email, password
+hash, optional display name / bio / avatar link / language / Telegram id,
+activity (submissions and their code, verdicts, ratings, contest results, Qvant
+transactions), and the IP address and browser name on a password reset. It says
+school students are a target audience and that age is neither asked nor stored.
+
+The **system holds more than that**. `User` has 67 fields since 2026-09-18
+(ADR-0024), among them phone (`phone`), a delivery address for prizes
+(`postal_*`), device fingerprint, plan, and the education and work blocks in
+settings. None of phone, postal address, device fingerprint, education or work
+appears in the policy text. The policy also does not mention the ~974 thousand
+imported accounts or that deletion is refused for them. This is a gap between
+the published policy and the data actually kept; it is the first thing to fix
+whatever counsel decides about the rest.
+
+Not checked by the agent: whether each of those fields is actually filled in
+production, and the law that applies to them.
+
+## 6. Licence inventory status (2026-10-17)
+
+After reading the 21 Go modules' LICENSE files (Apache-2.0, MIT, BSD), UNKNOWN
+fell from 26 to 8: four are this repository's own workspace packages and four are
+`h11` and `uvicorn` (API and dev), whose metadata is missing in the local venv.
+Needs-a-reading stays at 4; weak copyleft at 50 (LGPL/MPL); strong copyleft 0.
