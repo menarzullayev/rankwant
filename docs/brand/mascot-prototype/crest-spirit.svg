@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="RankWant Crest Spirit mascot">
+  <title>Crest Spirit  prototip maskot</title>
+  <desc>
+    Crest markdan olingan yuzsiz yordamchi: cho'qqilar = tana, nuqta = maqsad (puls).
+    Animatsiya CSS yoki Lottie/Rive eksporti uchun qatlamlangan guruhlar.
+  </desc>
+
+  <g id="spirit-root">
+    <!-- Soyasi (dekorativ, motion=off da qoladi) -->
+    <ellipse id="spirit-shadow" cx="512" cy="880" rx="220" ry="28" fill="#102038" opacity="0.12"/>
+
+    <!-- Tana  Crest silueti -->
+    <g id="spirit-body">
+      <path id="outer" fill="#102038" d="M116.5 799 L420 294.5 L559 501.5 L649 396.5 L914.5 798 L649 799.5 L595 826.5 L365 826.5 L313 799.5 Z"/>
+      <path id="body" fill="#44A0FC" d="M159.5 771 L420 323.5 L553 558.5 L648 421.5 L860.5 764 L666 709.5 L565 776.5 L378 776.5 L325 707.5 Z"/>
+      <path fill="#1074DC" d="M162 772 L174 753 L359 562 L324 706 Z"/>
+      <path fill="#1074DC" d="M569 774 L671 584 L860 764 L667 708 Z"/>
+    </g>
+
+    <!-- Maqsad nuqtasi  asosiy «jon» -->
+    <g id="spirit-goal">
+      <circle id="goal-glow" cx="420.5" cy="206.76" r="58" fill="#44A0FC" opacity="0.25"/>
+      <circle id="goal-dot" cx="420.5" cy="206.76" r="44.1" fill="#44A0FC"/>
+      <circle cx="408" cy="198" r="6" fill="#102038" opacity="0.35"/>
+      <circle cx="434" cy="198" r="6" fill="#102038" opacity="0.35"/>
+    </g>
+
+    <!-- Qvant zarra (ixtiyoriy orbit  qvant-helper rejimi) -->
+    <g id="spirit-qvant" opacity="0">
+      <ellipse cx="512" cy="520" rx="180" ry="52" fill="none" stroke="#1074DC" stroke-width="8" transform="rotate(-24 512 520)"/>
+      <circle id="qvant-particle" cx="692" cy="480" r="22" fill="#44A0FC"/>
+    </g>
+  </g>
+</svg>

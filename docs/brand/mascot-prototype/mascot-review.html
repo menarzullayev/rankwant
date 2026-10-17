@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RankWant · Mascot animatsiya prototipi</title>
+  <style>
+    :root {
+      --ink: #102038;
+      --ink-soft: #3a4a63;
+      --blue: #44a0fc;
+      --mid: #1074dc;
+      --paper: #f5f5f5;
+      --line: #d8dde6;
+      --warn-bg: #fff8e6;
+      --warn-border: #e6c200;
+      --bad-bg: #fef3f2;
+      --bad-border: #fecdca;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+    .banner {
+      background: var(--warn-bg);
+      border-bottom: 2px solid var(--warn-border);
+      padding: 12px 20px;
+      font-size: 13px;
+    }
+    .banner strong { display: block; font-size: 15px; margin-bottom: 4px; }
+    header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    header p { color: var(--ink-soft); margin-top: 6px; max-width: 75ch; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 20px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .toolbar label { font-size: 12px; color: var(--ink-soft); display: flex; align-items: center; gap: 6px; }
+    .toolbar button, .toolbar select {
+      font: inherit;
+      font-size: 13px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .toolbar button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 56px; }
+    section {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+    }
+    section h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+      margin-bottom: 4px;
+    }
+    section h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+    .hint { font-size: 12px; color: var(--ink-soft); margin-bottom: 14px; max-width: 72ch; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .stage {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafbfc;
+      position: relative;
+      overflow: hidden;
+    }
+    .stage.dark { background: #0d1524; }
+    .stage-label {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-soft);
+    }
+    .stage.dark .stage-label { color: #8899aa; }
+    .lottie-box { width: 240px; height: 240px; }
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e8eef8;
+      color: var(--mid);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge.prod { background: #dcfae6; color: #067647; }
+    .badge.no { background: var(--bad-bg); color: #b42318; }
+    .reject {
+      background: var(--bad-bg);
+      border: 1px solid var(--bad-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    /* ——— SVG/CSS Crest Spirit ——— */
+    .spirit-wrap { width: 220px; height: 220px; }
+    .spirit-wrap svg { width: 100%; height: 100%; display: block; }
+    html:not([data-motion="off"]) #proto-spirit #goal-dot {
+      animation: goal-pulse 2.4s ease-in-out infinite;
+      transform-origin: 420.5px 206.76px;
+    }
+    html:not([data-motion="off"]) #proto-spirit #goal-glow {
+      animation: glow-pulse 2.4s ease-in-out infinite;
+      transform-origin: 420.5px 206.76px;
+    }
+    html:not([data-motion="off"]) #proto-spirit #spirit-body {
+      animation: body-breathe 2.4s ease-in-out infinite;
+      transform-origin: 512px 620px;
+    }
+    html:not([data-motion="off"]) #proto-spirit.mode-qvant #spirit-qvant {
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    html:not([data-motion="off"]) #proto-spirit.mode-qvant #qvant-particle {
+      animation: qvant-orbit 4s linear infinite;
+      transform-origin: 512px 520px;
+    }
+    @keyframes goal-pulse {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.12) translateY(-6px); }
+    }
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(1.15); }
+    }
+    @keyframes body-breathe {
+      0%, 100% { transform: scale(1, 1); }
+      50% { transform: scale(1.01, 0.985); }
+    }
+    @keyframes qvant-orbit {
+      from { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+      to { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
+    }
+    /* Rive SM (SVG fallback) */
+    .sm-idle #proto-sm #goal-dot { transform: scale(1); }
+    .sm-wave #proto-sm #goal-dot {
+      animation: goal-pulse 0.6s ease-in-out 2;
+      transform-origin: 420.5px 206.76px;
+    }
+    .sm-celebrate #proto-sm #spirit-goal {
+      animation: celebrate 0.8s ease-out 1;
+      transform-origin: 420.5px 400px;
+    }
+    @keyframes celebrate {
+      0% { transform: translateY(0) scale(1); }
+      40% { transform: translateY(-24px) scale(1.08); }
+      100% { transform: translateY(0) scale(1); }
+    }
+    /* 3D demo (rad etilgan yo'nalish) */
+    .scene-3d {
+      perspective: 800px;
+      width: 220px;
+      height: 220px;
+    }
+    .card-3d {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      animation: spin3d 6s linear infinite;
+    }
+    html[data-motion="off"] .card-3d { animation: none; transform: rotateY(18deg); }
+    @keyframes spin3d {
+      from { transform: rotateY(0deg) rotateX(8deg); }
+      to { transform: rotateY(360deg) rotateX(8deg); }
+    }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      border: 2px solid var(--mid);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-face.back { transform: rotateY(180deg); background: var(--ink); color: #fff; font-size: 11px; padding: 12px; text-align: center; }
+    #rive-status { font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
+    code { font-size: 12px; background: #f0f2f5; padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <strong>Prototip — production emas</strong>
+    Lottie va Rive runtime CDN orqali yuklanadi. Fayllarni ko'rish uchun lokal HTTP server ishlating (quyida README).
+  </div>
+  <header>
+    <h1>Crest Spirit · animatsiya prototipi</h1>
+    <p>
+      Murakkab yo'nalishlar: <strong>SVG/CSS</strong> (ishlab chiqarishga yaqin),
+      <strong>Lottie</strong> (AE / Bodymovin namunasi),
+      <strong>Rive</strong> (state machine + ixtiyoriy <code>crest-spirit.riv</code>),
+      <strong>3D CSS</strong> (faqat «nima qilmaymiz» solishtiruv).
+    </p>
+  </header>
+
+  <div class="toolbar" role="toolbar" aria-label="Prototip boshqaruv">
+    <label>
+      Harakat
+      <select id="motion-select" aria-label="Harakat darajasi">
+        <option value="full">To'liq</option>
+        <option value="off">O'chiq (a11y)</option>
+      </select>
+    </label>
+    <label>
+      Rejim
+      <select id="mode-select" aria-label="Mascot rejimi">
+        <option value="crest">Crest Spirit</option>
+        <option value="qvant">Qvant orbit</option>
+      </select>
+    </label>
+    <button type="button" id="btn-success" aria-pressed="false">Rive: success trigger</button>
+    <button type="button" id="btn-hover" aria-pressed="false">Rive: hover</button>
+  </div>
+
+  <main>
+    <section>
+      <h2>1 · Production yo'li</h2>
+      <h3>SVG + CSS <span class="badge prod">tavsiya</span></h3>
+      <p class="hint">
+        <code>crest-spirit.svg</code> qatlamlari — Lottie/Rive eksportiga tayyor.
+        Platformadagi <code>data-motion</code> bilan mos: «O'chiq» statik kadr.
+      </p>
+      <div class="grid">
+        <div class="stage" id="stage-svg">
+          <span class="stage-label">Yorug' fon</span>
+          <div class="spirit-wrap" id="spirit-host"></div>
+        </div>
+        <div class="stage dark" id="stage-svg-dark">
+          <span class="stage-label">Qorong'i fon</span>
+          <div class="spirit-wrap" id="spirit-host-dark"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2 · Lottie (Bodymovin)</h2>
+      <h3>JSON runtime <span class="badge">~60 KB JS</span></h3>
+      <p class="hint">
+        Qo'lda prototip: <code>lottie/crest-spirit.json</code>, <code>lottie/qvant-orbit.json</code>.
+        AE eksporti: <code>ae/EXPORT.md</code>.
+      </p>
+      <div class="grid">
+        <div class="stage">
+          <span class="stage-label">Crest pulse</span>
+          <div id="lottie-crest" class="lottie-box" aria-hidden="true"></div>
+        </div>
+        <div class="stage">
+          <span class="stage-label">Qvant orbit</span>
+          <div id="lottie-qvant" class="lottie-box" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>3 · Rive</h2>
+      <h3>State machine <span class="badge">.riv ixtiyoriy</span></h3>
+      <p class="hint">
+        <code>rive/crest-spirit.riv</code> qo'yilsa — haqiqiy Rive canvas.
+        Aks holda SVG + JS state machine (hover / success) — <code>rive/README.md</code>.
+      </p>
+      <div class="stage">
+        <span class="stage-label">MascotSM fallback</span>
+        <div class="spirit-wrap sm-idle" id="sm-wrap">
+          <svg id="proto-sm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" aria-hidden="true">
+            <g id="spirit-body">
+              <path fill="#102038" d="M116.5 799 L420 294.5 L559 501.5 L649 396.5 L914.5 798 L649 799.5 L595 826.5 L365 826.5 L313 799.5 Z"/>
+              <path fill="#44A0FC" d="M159.5 771 L420 323.5 L553 558.5 L648 421.5 L860.5 764 L666 709.5 L565 776.5 L378 776.5 L325 707.5 Z"/>
+            </g>
+            <g id="spirit-goal">
+              <circle id="goal-dot" cx="420.5" cy="206.76" r="44.1" fill="#44A0FC"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <canvas id="rive-canvas" width="512" height="512" style="display:none;max-width:240px;max-height:240px;margin:12px auto;"></canvas>
+      <p id="rive-status"></p>
+    </section>
+
+    <section>
+      <h2>4 · 3D (solishtiruv)</h2>
+      <h3>CSS perspective <span class="badge no">brendga mos emas</span></h3>
+      <p class="hint">Flat vector + 16px qoidasi sababli production uchun tavsiya etilmaydi.</p>
+      <div class="stage">
+        <div class="scene-3d">
+          <div class="card-3d">
+            <div class="card-face">
+              <img src="crest-spirit.svg" alt="" width="160" height="160" />
+            </div>
+            <div class="card-face back">3D faqat prototip — chop etish va favicon uchun flat SVG.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reject">
+        <strong>Rad etilgan:</strong> haqiqiy 3D mesh (Blender / Three.js) — favicon va LOCK-GATE A1 siluet testlaridan o'tmaydi.
+      </div>
+    </section>
+
+    <section>
+      <h2>5 · EmptyState o'lchami</h2>
+      <h3><code>illustration</code> slot</h3>
+      <p class="hint">Platformada bo'sh holat — katta doira; shu o'lchamda SVG/Lottie qo'yish mumkin.</p>
+      <div class="stage" style="min-height:320px;background:linear-gradient(180deg,#fff,#f0f4fa);">
+        <div style="text-align:center;max-width:280px;">
+          <div style="width:140px;height:140px;margin:0 auto 12px;border-radius:50%;background:#e8eef8;display:flex;align-items:center;justify-content:center;">
+            <div class="spirit-wrap" style="width:100px;height:100px;" id="empty-demo"></div>
+          </div>
+          <b style="display:block;font-size:15px;">Hali urinish yo'q</b>
+          <em style="display:block;font-size:13px;color:var(--ink-soft);margin-top:6px;">Birinchi yechimingizni yuboring.</em>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <script src="https://unpkg.com/@rive-app/canvas@2.21.2"></script>
+  <script>
+    const motionSelect = document.getElementById("motion-select");
+    const modeSelect = document.getElementById("mode-select");
+    const btnSuccess = document.getElementById("btn-success");
+    const btnHover = document.getElementById("btn-hover");
+    const smWrap = document.getElementById("sm-wrap");
+    const riveStatus = document.getElementById("rive-status");
+
+    let lottieCrest;
+    let lottieQvant;
+    let riveInstance;
+
+    function applyMotion() {
+      const off = motionSelect.value === "off";
+      document.documentElement.toggleAttribute("data-motion", off ? "off" : "full");
+      if (lottieCrest) off ? lottieCrest.pause() : lottieCrest.play();
+      if (lottieQvant) off ? lottieQvant.pause() : lottieQvant.play();
+    }
+
+    function applyMode() {
+      const qvant = modeSelect.value === "qvant";
+      document.querySelectorAll("#spirit-host, #spirit-host-dark, #empty-demo").forEach((el) => {
+        const root = el.querySelector("#proto-spirit") || el.firstElementChild;
+        if (root) root.classList.toggle("mode-qvant", qvant);
+      });
+    }
+
+    async function loadSvgHosts() {
+      const res = await fetch("crest-spirit.svg");
+      const text = await res.text();
+      const wrapped = text.replace("<svg ", '<svg id="proto-spirit" ');
+      ["spirit-host", "spirit-host-dark", "empty-demo"].forEach((id) => {
+        document.getElementById(id).innerHTML = wrapped;
+      });
+      applyMode();
+    }
+
+    function initLottie() {
+      if (typeof lottie === "undefined") return;
+      lottieCrest = lottie.loadAnimation({
+        container: document.getElementById("lottie-crest"),
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        path: "lottie/crest-spirit.json",
+      });
+      lottieQvant = lottie.loadAnimation({
+        container: document.getElementById("lottie-qvant"),
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        path: "lottie/qvant-orbit.json",
+      });
+      applyMotion();
+    }
+
+    function initRive() {
+      const canvas = document.getElementById("rive-canvas");
+      if (typeof rive === "undefined" || !rive.Rive) {
+        riveStatus.textContent = "Rive runtime yuklanmadi — faqat SVG state machine.";
+        return;
+      }
+      fetch("rive/crest-spirit.riv")
+        .then((r) => {
+          if (!r.ok) throw new Error("no riv");
+          return r.arrayBuffer();
+        })
+        .then((buf) => {
+          canvas.style.display = "block";
+          smWrap.style.display = "none";
+          riveInstance = new rive.Rive({
+            buffer: buf,
+            canvas,
+            autoplay: true,
+            stateMachines: "MascotSM",
+            onLoad: () => {
+              riveInstance.resizeDrawingSurfaceToCanvas();
+              riveStatus.textContent = "crest-spirit.riv yuklandi (MascotSM).";
+            },
+          });
+        })
+        .catch(() => {
+          riveStatus.textContent = "crest-spirit.riv yo'q — SVG MascotSM (hover / success tugmalari).";
+        });
+    }
+
+    btnHover.addEventListener("click", () => {
+      const on = btnHover.getAttribute("aria-pressed") !== "true";
+      btnHover.setAttribute("aria-pressed", on ? "true" : "false");
+      smWrap.classList.toggle("sm-idle", !on);
+      smWrap.classList.toggle("sm-wave", on);
+      if (riveInstance) {
+        try {
+          const inputs = riveInstance.stateMachineInputs("MascotSM");
+          const hover = inputs.find((i) => i.name === "hover");
+          if (hover) hover.value = on;
+        } catch (_) { /* ignore */ }
+      }
+    });
+
+    btnSuccess.addEventListener("click", () => {
+      smWrap.classList.remove("sm-idle", "sm-wave");
+      smWrap.classList.add("sm-celebrate");
+      setTimeout(() => {
+        smWrap.classList.remove("sm-celebrate");
+        smWrap.classList.add("sm-idle");
+      }, 900);
+      if (riveInstance) {
+        try {
+          const inputs = riveInstance.stateMachineInputs("MascotSM");
+          const s = inputs.find((i) => i.name === "success");
+          if (s) s.fire();
+        } catch (_) { /* ignore */ }
+      }
+    });
+
+    motionSelect.addEventListener("change", applyMotion);
+    modeSelect.addEventListener("change", applyMode);
+
+    loadSvgHosts().then(() => {
+      initLottie();
+      initRive();
+    });
+  </script>
+</body>
+</html>

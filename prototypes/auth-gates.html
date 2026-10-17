@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RankWant — mehmon holatlari (prototip)</title>
+<style>
+  :root {
+    --bg: #ede4ff; --surface: #ffffff; --surface-2: #f6f1ff; --line: #dccdfa;
+    --text: #1f1637; --dim: #5f5480; --accent: #7c3aed; --on-accent: #ffffff;
+    --link: #7936ea; --ok: #15803d; --warn-bg: #fff4d6; --warn-text: #6b4a00;
+    --shadow: 0 8px 24px rgba(76, 29, 149, .14);
+  }
+  :root[data-theme="dark"] {
+    --bg: #130d21; --surface: #1e1632; --surface-2: #281d42; --line: #3a2c5c;
+    --text: #efe8ff; --dim: #b3a6d4; --accent: #7c3aed; --on-accent: #ffffff;
+    --link: #c9afff; --ok: #6ee7a0; --warn-bg: #3b2f10; --warn-text: #ffe2a0;
+    --shadow: 0 8px 24px rgba(0, 0, 0, .45);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 system-ui, "Segoe UI", sans-serif; }
+  button { font: inherit; cursor: pointer; }
+  .bar { position: sticky; top: 0; z-index: 5; background: var(--surface);
+    border-bottom: 1px solid var(--line); padding: 10px 16px; display: flex;
+    gap: 8px; flex-wrap: wrap; align-items: center; }
+  .bar b { margin-right: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--surface-2); color: var(--text);
+    border-radius: 999px; padding: 8px 14px; min-height: 40px; }
+  .chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .spacer { flex: 1; }
+  main { padding: 20px 16px 60px; display: flex; justify-content: center; }
+  .frame { width: 100%; max-width: 1180px; transition: max-width .2s; }
+  .frame.phone { max-width: 390px; }
+  .note { color: var(--dim); font-size: 13px; margin: 0 0 14px; }
+  .note b { color: var(--text); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    padding: 18px; box-shadow: var(--shadow); }
+  .grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; }
+  .phone .grid { grid-template-columns: 1fr; }
+  h1 { font-size: 20px; margin: 0 0 6px; } h2 { font-size: 16px; margin: 0 0 6px; }
+  .meta { color: var(--dim); font-size: 13px; margin-bottom: 12px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tab { border: 0; background: transparent; color: var(--dim); padding: 8px 12px;
+    border-radius: 10px; min-height: 40px; }
+  .tab.on { background: var(--surface-2); color: var(--text); font-weight: 600; }
+  pre { background: var(--surface-2); border-radius: 10px; padding: 10px; margin: 6px 0 12px;
+    font: 13px/1.5 ui-monospace, Consolas, monospace; overflow: auto; }
+  /* The gate card — one component, every place. */
+  .gate { display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+    background: var(--surface); border: 1px dashed var(--accent); border-radius: 16px; padding: 22px; }
+  .gate.center { align-items: center; text-align: center; padding: 40px 22px; }
+  .gate .lock { width: 44px; height: 44px; border-radius: 12px; background: var(--surface-2);
+    display: grid; place-items: center; font-size: 20px; }
+  .gate p { margin: 0; color: var(--dim); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { border-radius: 12px; padding: 0 18px; min-height: 44px; border: 1px solid var(--line);
+    background: var(--surface-2); color: var(--text); font-weight: 600; text-decoration: none;
+    display: inline-flex; align-items: center; }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .list { list-style: none; padding: 0; margin: 0; }
+  .list li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--line); }
+  .list li:last-child { border: 0; }
+  .act { position: relative; display: inline-block; }
+  .pop { position: absolute; left: 0; top: calc(100% + 8px); width: 260px; z-index: 3;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px; box-shadow: var(--shadow); }
+  .pop p { margin: 0 0 10px; }
+  .toast { background: var(--warn-bg); color: var(--warn-text); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 12px; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; }
+  .url { font: 13px ui-monospace, Consolas, monospace; background: var(--surface-2);
+    border-radius: 8px; padding: 6px 10px; display: inline-block; margin: 4px 0; word-break: break-all; }
+  .big { font-size: 56px; font-weight: 800; margin: 0; color: var(--accent); }
+  .state { display: none; } .state.on { display: block; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .pill { background: var(--surface-2); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="bar" role="toolbar" aria-label="Prototip holatlari">
+  <b>Mehmon holatlari</b>
+  <button class="chip" data-s="problem" aria-pressed="true">1 · Masala</button>
+  <button class="chip" data-s="editorial">2 · Tahlil tabi</button>
+  <button class="chip" data-s="attempt">3 · Urinish kodi</button>
+  <button class="chip" data-s="mixed">4 · Aralash sahifa</button>
+  <button class="chip" data-s="action">5 · Kichik amal</button>
+  <button class="chip" data-s="redirect">6 · Yo'naltirish</button>
+  <button class="chip" data-s="admin">7 · Admin</button>
+  <button class="chip" data-s="expired">8 · Sessiya tugadi</button>
+  <span class="spacer"></span>
+  <button class="chip" id="w">Telefon</button>
+  <button class="chip" id="th">Qorong'i</button>
+</div>
+
+<main><div class="frame" id="frame">
+
+<section class="state on" id="s-problem">
+  <p class="note"><b>Qaror 1.</b> Shart, namunalar va limitlar ochiq. Yechim paneli (editor, til, namunada sinash, yuborish) <b>chizilmaydi</b> — o'rnida karta. Telefonda karta shart ostida turadi, pastki varaq ochilmaydi.</p>
+  <div class="grid">
+    <div class="card">
+      <div class="tabs"><button class="tab on">Shart</button><button class="tab">Urinishlar</button><button class="tab">Tahlil</button><button class="tab">Statistika</button><button class="tab">Yechganlar</button></div>
+      <h1>#0010 · Ikki sonni yig'indisi</h1>
+      <div class="meta">1000 ms · 512 MB · Boshlang'ich</div>
+      <p>a va b sonlari berilgan. Ushbu sonlar yig'indisini hisoblang.</p>
+      <h2>Namuna</h2>
+      <pre>2 3</pre><pre>5</pre>
+    </div>
+    <div class="gate center">
+      <div class="lock" aria-hidden="true">🔒</div>
+      <h2>Yechish uchun tizimga kiring</h2>
+      <p>Kod yozish, namunada sinash va yechim yuborish uchun hisob kerak.</p>
+      <div class="row"><a class="btn primary" href="#">Kirish</a><a class="btn" href="#">Ro'yxatdan o'tish</a></div>
+      <p style="font-size:13px">Kirgach shu masalaga qaytasiz.</p>
+    </div>
+  </div>
+</section>
+
+<section class="state" id="s-editorial">
+  <p class="note"><b>Qaror 10.</b> Statistika, Yechganlar va Urinishlar tablari ochiq. Tahlil tabida — karta. Test, arena, javob fayli va xakaton panellari ham shu qoidada (<b>qaror 5</b>).</p>
+  <div class="card">
+    <div class="tabs"><button class="tab">Shart</button><button class="tab">Urinishlar</button><button class="tab on">Tahlil</button><button class="tab">Statistika</button><button class="tab">Yechganlar</button></div>
+    <div class="gate">
+      <div class="lock" aria-hidden="true">🔒</div>
+      <h2>Tahlilni o'qish uchun tizimga kiring</h2>
+      <p>Yechim tushuntirishi faqat hisobi bor foydalanuvchilarga ochiq.</p>
+      <div class="row"><a class="btn primary" href="#">Kirish</a><a class="btn" href="#">Ro'yxatdan o'tish</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="state" id="s-attempt">
+  <p class="note"><b>Qaror 9.</b> Lenta va urinish natijasi ochiq (hukm, vaqt, xotira, til). Manba kod o'rnida karta — API mehmonga kodni bugun ham bermaydi.</p>
+  <div class="card">
+    <h1>Urinish #442742</h1>
+    <div class="meta">admin · #2128 Eng katta juftlik · Python 3.13</div>
+    <table><tr><th>Hukm</th><th>Vaqt</th><th>Xotira</th><th>Testlar</th></tr>
+      <tr><td><span class="pill" style="color:var(--ok)">Qabul qilindi</span></td><td>31 ms</td><td>9.4 MB</td><td>6 / 6</td></tr></table>
+    <div class="gate" style="margin-top:14px">
+      <h2>Kodni ko'rish uchun tizimga kiring</h2>
+      <p>Manba kod faqat hisobi bor foydalanuvchilarga, masala qoidalari ruxsat bergan hollarda ko'rsatiladi.</p>
+      <div class="row"><a class="btn primary" href="#">Kirish</a><a class="btn" href="#">Ro'yxatdan o'tish</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="state" id="s-mixed">
+  <p class="note"><b>Qaror 4.</b> /duels, /classroom, /qvant, /calendar: ommaviy qism ochiq, shaxsiy blok o'rnida karta.</p>
+  <div class="grid">
+    <div class="card">
+      <h1>Duel</h1>
+      <p class="meta">So'nggi duellar</p>
+      <ul class="list"><li><span>aziz vs dilnoza</span><span class="pill">tugagan · 2 : 1</span></li>
+        <li><span>temur vs sardor</span><span class="pill">davom etmoqda</span></li>
+        <li><span>malika vs bek</span><span class="pill">tugagan · 0 : 3</span></li></ul>
+    </div>
+    <div class="gate">
+      <div class="lock" aria-hidden="true">🔒</div>
+      <h2>Duelga chaqirish uchun tizimga kiring</h2>
+      <p>Chaqiruv yuborish va o'z duellaringizni ko'rish uchun hisob kerak.</p>
+      <div class="row"><a class="btn primary" href="#">Kirish</a><a class="btn" href="#">Ro'yxatdan o'tish</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="state" id="s-action">
+  <p class="note"><b>Qaror 6.</b> Kuzatish, ovoz berish, yoqtirish, yulduzcha, shikoyat, izoh: tugma ko'rinadi; mehmon bossa sahifadan chiqmasdan kichik oyna. Esc yoki tashqariga bosish yopadi, fokus tugmaga qaytadi.</p>
+  <div class="card" style="min-height:230px">
+    <h1>Dilnoza Karimova</h1>
+    <div class="meta">@dilnoza · 1 842 Skills</div>
+    <div class="row">
+      <span class="act"><button class="btn primary" id="follow" aria-haspopup="dialog" aria-expanded="true">Kuzatish</button>
+        <div class="pop" role="dialog" aria-label="Kirish kerak" id="pop">
+          <p><b>Kuzatish uchun tizimga kiring</b></p>
+          <div class="row"><a class="btn primary" href="#">Kirish</a><a class="btn" href="#">Ro'yxatdan o'tish</a></div>
+        </div></span>
+      <button class="btn">Shikoyat</button>
+    </div>
+  </div>
+</section>
+
+<section class="state" id="s-redirect">
+  <p class="note"><b>Qaror 3.</b> Sof shaxsiy sahifalar mehmonni darhol kirish sahifasiga o'tkazadi, kirgach aynan o'sha sahifaga qaytaradi. Ro'yxat: /settings/*, /onboarding, /notifications, /admin/*.</p>
+  <div class="card">
+    <p style="margin:0">Mehmon ochadi:</p><span class="url">rankwant.uz/notifications</span>
+    <p style="margin:8px 0 0">Server javobi (sahifa chizilmaydi):</p><span class="url">307 → /login?next=%2Fnotifications</span>
+    <p style="margin:8px 0 0">Kirish sahifasida forma ustida bir qator:</p>
+    <div class="toast" style="margin:6px 0 0"><span>Davom etish uchun tizimga kiring — keyin <b>Bildirishnomalar</b> sahifasiga qaytasiz.</span></div>
+  </div>
+</section>
+
+<section class="state" id="s-admin">
+  <p class="note"><b>Qaror 2.</b> Mehmon — kirish sahifasiga. Kirgan, lekin xodim bo'lmagan odam — oddiy «topilmadi» (bo'lim borligi bildirilmaydi).</p>
+  <div class="gate center">
+    <p class="big">404</p>
+    <h2>Sahifa topilmadi</h2>
+    <p>Manzil noto'g'ri yozilgan yoki sahifa ko'chirilgan bo'lishi mumkin.</p>
+    <div class="row"><a class="btn primary" href="#">Bosh sahifa</a><a class="btn" href="#">Masalalar</a></div>
+  </div>
+</section>
+
+<section class="state" id="s-expired">
+  <p class="note"><b>Qaror 8.</b> Sessiya tugagan holda amal bajarilsa: xabar va kirish sahifasi, kirgach shu sahifaga qaytadi. Yozilgan kod qoralamasi brauzerda saqlangan — yo'qolmaydi.</p>
+  <div class="card">
+    <div class="toast" role="alert"><span><b>Sessiya tugadi.</b> Qayta kiring — yozgan kodingiz saqlangan.</span><a class="btn primary" href="#">Kirish</a></div>
+    <p class="meta" style="margin:0">Bir necha soniyadan keyin avtomatik: <span class="url">/login?next=%2Fproblems%2Fikki-sonni-yigindisi</span></p>
+  </div>
+</section>
+
+</div></main>
+<script>
+  const chips = document.querySelectorAll(".chip[data-s]");
+  chips.forEach((c) => c.addEventListener("click", () => {
+    chips.forEach((x) => x.setAttribute("aria-pressed", String(x === c)));
+    document.querySelectorAll(".state").forEach((s) => s.classList.toggle("on", s.id === "s-" + c.dataset.s));
+  }));
+  const frame = document.getElementById("frame");
+  document.getElementById("w").addEventListener("click", (e) => {
+    const on = frame.classList.toggle("phone"); e.target.textContent = on ? "Kompyuter" : "Telefon";
+  });
+  document.getElementById("th").addEventListener("click", (e) => {
+    const dark = document.documentElement.dataset.theme !== "dark";
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    e.target.textContent = dark ? "Yorug'" : "Qorong'i";
+  });
+  const follow = document.getElementById("follow"), pop = document.getElementById("pop");
+  const toggle = (open) => { pop.hidden = !open; follow.setAttribute("aria-expanded", String(open)); };
+  follow.addEventListener("click", () => toggle(pop.hidden));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { toggle(false); follow.focus(); } });
+</script>
+</body>
+</html>

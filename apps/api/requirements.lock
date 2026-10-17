@@ -12,9 +12,9 @@ attrs==26.1.0
     #   referencing
 billiard==4.2.4
     # via celery
-boto3==1.43.108
+boto3==1.43.111
     # via -r requirements.txt
-botocore==1.43.108
+botocore==1.43.111
     # via
     #   boto3
     #   s3transfer
@@ -44,9 +44,9 @@ django==5.2.17
     #   drf-spectacular
 django-cors-headers==4.9.0
     # via -r requirements.txt
-django-filter==26.1
+django-filter==26.2
     # via -r requirements.txt
-djangorestframework==3.18.1
+djangorestframework==3.18.3
     # via
     #   -r requirements.txt
     #   drf-spectacular

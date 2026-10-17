@@ -8,9 +8,9 @@
 #   uv pip compile requirements.txt -o requirements.lock
 #   uv pip compile requirements-dev.txt -o requirements-dev.lock
 Django>=5.2.17,<6.0
-djangorestframework>=3.18.1
+djangorestframework>=3.18.3
 drf-spectacular>=0.30.0
-django-filter>=24
+django-filter>=26.2
 psycopg[binary]>=3.3.6
 redis>=5.2
 celery>=5.6.3
@@ -21,7 +21,7 @@ gunicorn>=26.2.0
 # almashtirardi va nosozlik izolyatsiyasini yo'qotardi.
 uvicorn>=0.54.0
 whitenoise>=6.12.0
-boto3>=1.43.107
+boto3>=1.43.109
 # Sertifikat PDF va QR (ADR-0019). Production image faqat shu fayldan
 # (lock orqali) o'rnatiladi — dev'da qolib ketgan paket deployda yiqiladi.
 fpdf2>=2.8.9

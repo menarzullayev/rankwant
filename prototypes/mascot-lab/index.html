@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RankWant — murakkab maskot labi (Lottie · Rive · 3D)</title>
+<style>
+  :root{--bg:#0d1017;--panel:#151a23;--text:#e6e9ef;--muted:#8b95a7;
+        --line:rgba(230,233,239,.13);--accent:#5b8cff;--warn:#d29922;--radius:12px}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--text);min-height:100vh;
+    font:14px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:28px 18px 64px}
+  .wrap{max-width:1120px;margin:0 auto}
+  h1{font-size:24px;margin:0 0 6px;letter-spacing:-.02em;font-weight:600}
+  h1 em{color:var(--accent);font-style:normal}
+  h2{font-size:15px;margin:34px 0 12px;font-weight:600}
+  h2 .n{display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;
+    border-radius:6px;background:var(--accent);color:#08111a;font-size:12px;font-weight:700;
+    margin-right:8px;vertical-align:1px}
+  .sub{color:var(--muted);margin:0 0 22px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+  code{font-family:ui-monospace,"Cascadia Code",Consolas,monospace;font-size:.9em;color:#9dbaff}
+
+  .bar{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+  .field{min-width:0}
+  .field>span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.09em;
+    color:var(--muted);margin-bottom:6px}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;max-width:100%}
+  .chips button{font:inherit;font-size:12px;cursor:pointer;color:var(--text);
+    background:rgba(230,233,239,.07);border:1px solid var(--line);border-radius:8px;padding:5px 9px}
+  .chips button:hover{border-color:var(--accent)}
+  .chips button[aria-pressed="true"]{background:var(--accent);color:#08111a;border-color:var(--accent);font-weight:600}
+  .swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;
+    vertical-align:0;border:1px solid rgba(255,255,255,.25)}
+
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:900px){.cols{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column}
+  .card>header{padding:11px 14px;border-bottom:1px solid var(--line);display:flex;
+    justify-content:space-between;align-items:center;gap:8px}
+  .card>header b{font-size:13px;font-weight:600}
+  .tag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;
+    border-radius:99px;background:rgba(230,233,239,.1);color:var(--muted);white-space:nowrap}
+  .tag.ok{background:rgba(63,185,80,.16);color:#6fdd82}
+  .tag.bad{background:rgba(248,81,73,.16);color:#ff8b84}
+  .stage{position:relative;display:flex;align-items:center;justify-content:center;
+    min-height:250px;padding:10px;transition:background .3s ease}
+  .stage svg,.stage canvas{width:100%;max-width:340px;height:auto;display:block}
+  .stage canvas{height:230px}
+  .card>footer{padding:10px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .card>footer .warn{color:var(--warn);display:block;margin-top:5px}
+  .ctrl{display:flex;gap:5px;flex-wrap:wrap;padding:9px 14px;border-top:1px solid var(--line)}
+  .ctrl button{font:inherit;font-size:11px;cursor:pointer;color:var(--text);
+    background:rgba(230,233,239,.07);border:1px solid var(--line);border-radius:7px;padding:4px 8px}
+  .ctrl button[aria-pressed="true"]{background:var(--accent);color:#08111a;border-color:var(--accent)}
+  .err{padding:12px 14px;font-size:12px;color:#ff8b84;background:rgba(248,81,73,.08)}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500}
+  td.num{font-family:ui-monospace,Consolas,monospace;text-align:right;white-space:nowrap}
+  .pass{color:#6fdd82}.fail{color:#ff8b84;font-weight:600}
+  tr.agg td{border-bottom:none;border-top:1px solid var(--line);font-weight:600;background:rgba(230,233,239,.03)}
+
+  .px{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap}
+  .px figure{margin:0;text-align:center}
+  .px figcaption{font-size:11px;color:var(--muted);margin-top:7px}
+  .note{font-size:12.5px;color:var(--muted);border-left:3px solid var(--accent);
+    padding:9px 0 9px 12px;margin-top:12px}
+  .note b{color:var(--text)}
+  .verdict{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:13px;margin:0}
+  .verdict dt{color:var(--muted)}
+  .verdict dd{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Murakkab yo'l labi — <em>Lottie · Rive · 3D</em></h1>
+  <p class="sub">Uch yo'l yonma-yon, bitta maskot, bitta palitra tanlagichi. Har da'vo ostida o'lchangan raqam.</p>
+
+  <div class="bar">
+    <div class="field" style="flex:1 1 360px">
+      <span>Palitra — 19 ta, haqiqiy <code>theme.css</code> qiymatlari</span>
+      <div class="chips" id="palChips"></div>
+    </div>
+    <div class="field">
+      <span>Harakat darajasi</span>
+      <div class="chips" id="motionChips">
+        <button data-motion="full" aria-pressed="true">full</button>
+        <button data-motion="mild">mild</button>
+        <button data-motion="off">off</button>
+      </div>
+    </div>
+    <div class="field">
+      <span>Lottie/Rive ni JS bilan to'xtatish</span>
+      <div class="chips" id="hookChips">
+        <button data-hook="on" aria-pressed="false">qo'lda hook</button>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="n">1</span>Uch yo'l yonma-yon</h2>
+  <div class="cols">
+    <div class="card">
+      <header><b>SVG + CSS</b><span class="tag ok">0 KB runtime</span></header>
+      <div class="stage" id="stageSvg"></div>
+      <footer>Rang <code>var(--rw-accent)</code> dan — palitra almashsa, o'zi moslashadi.
+        <span class="warn" id="svgGate"></span></footer>
+    </div>
+    <div class="card">
+      <header><b>Lottie (Bodymovin)</b><span class="tag" id="lottieTag">yuklanmoqda…</span></header>
+      <div class="stage" id="stageLottie"></div>
+      <div class="ctrl">
+        <button data-lot="play" aria-pressed="true">play</button>
+        <button data-lot="pause">pause</button>
+        <button data-lot="slow">0.25×</button>
+      </div>
+      <footer>Ranglar JSON ichida <b>muzlatilgan</b> — clay uchun <code>#7c3aed</code>.</footer>
+    </div>
+    <div class="card">
+      <header><b>Rive</b><span class="tag" id="riveTag">yuklanmoqda…</span></header>
+      <div class="stage" id="stageRive"><canvas id="riveCanvas"></canvas></div>
+      <footer>Ochiq namuna <code>vehicles.riv</code> — runtime ishlayotganini isbotlash uchun.
+        <span class="warn">RankWant maskotining <b>.riv</b> fayli YO'Q: uni Rive Editor'da chizish kerak.</span></footer>
+    </div>
+  </div>
+
+  <div class="note" id="gateNote"></div>
+
+  <h2><span class="n">2</span>O'lchangan hajmlar</h2>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Yo'l</th><th class="num">Runtime (gzip)</th><th class="num">Asset</th>
+        <th>SSR</th><th>Kontrast darvozasi</th></tr></thead>
+      <tbody>
+        <tr><td><b>SVG + CSS</b></td><td class="num">0 B</td><td class="num">≈ 1 200 B</td>
+            <td class="pass">o'tadi</td><td class="pass">o'qiladi (token)</td></tr>
+        <tr><td><b>Lottie</b> <code>lottie_svg</code></td><td class="num">62 260 B</td>
+            <td class="num">3 467 B · 628 B gzip</td>
+            <td class="fail">klient</td><td class="fail">o'qilmaydi (hex)</td></tr>
+        <tr><td><b>Rive</b> <code>@rive-app/canvas</code></td><td class="num">496 256 B</td>
+            <td class="num">58 792 B (namuna)</td>
+            <td class="fail">klient</td><td class="fail">o'qilmaydi (binary)</td></tr>
+        <tr><td><b>3D</b> — render → PNG</td><td class="num">0 B</td>
+            <td class="num">~40–200 KB/poza</td>
+            <td class="pass">statik</td><td class="pass">qo'lda</td></tr>
+      </tbody>
+    </table>
+    <div class="note">Raqamlar shu mashinada o'lchandi: <code>curl</code> + <code>gzip -9</code>.
+      Runtime gzip — Cloudflare sim orqali ketadigan hajm, ya'ni <code>check_bundle_budget.py</code>
+      o'lchaydigan narsa. Lottie JSON esa headless <code>jsdom</code> da chizilib tekshirildi.</div>
+    <div class="note"><b>Rive ning haqiqiy narxi.</b> <code>rive.js</code> yolg'iz <b>52 761 B</b> emas —
+      unga <code>rive.wasm</code> ham kerak: <b>443 495 B gzip</b> (1 192 331 B xom).
+      Jami <b>496 256 B</b>, ya'ni Lottie'dan <b>~8×</b>, SVG'dan esa <b>~500×</b> og'ir.
+      Wasm ni inline qilib ham, tree-shake qilib ham bo'lmaydi — u alohida so'rov.</div>
+  </div>
+
+  <h2><span class="n">3</span>Kontrast va moslashuv sinovi — 19 palitra</h2>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Palitra</th><th>Zamin</th>
+        <th class="num">Muzlatilgan <code>#7c3aed</code></th>
+        <th class="num">Palitraning o'z tokeni</th>
+        <th class="num">Masofa</th></tr></thead>
+      <tbody id="ctBody"></tbody>
+    </table>
+    <div class="note">Chegara <b>3:1</b> (WCAG 1.4.11 — matn bo'lmagan grafika).
+      <b>Masofa</b> — muzlatilgan rang bilan palitraning o'z accent'i orasidagi RGB
+      masofa (0 = bir xil, maksimum 441). U «bu rang bu yerga tegishlimi?» savoliga
+      javob beradi.</div>
+    <div class="note" id="ctFinding"></div>
+  </div>
+
+  <h2><span class="n">4</span>16px testi — «flat vector» qoidasi</h2>
+  <div class="panel">
+    <div class="px" id="pxRow"></div>
+    <div class="note">Brend qoidasi: belgi <b>16px</b> da tanilishi shart
+      (<code>LOCK-GATE</code> A1). Vektor buni yengib o'tadi. <b>3D render esa bu yerda
+      yumshoq dog'ga aylanadi</b> — shuning uchun 3D odatda kerak emas: har o'lcham uchun
+      qayta render, 19 palitra uchun qayta sozlash talab qiladi, yutug'i esa 16px da
+      ko'rinmaydi.</div>
+  </div>
+
+  <h2><span class="n">5</span>Xulosa</h2>
+  <div class="panel">
+    <dl class="verdict">
+      <dt>Murakkab animatsiya kerakmi?</dt><dd id="vNeed"></dd>
+      <dt>Lottie qachon oqlanadi?</dt><dd>Bitta <b>hero lahza</b> uchun — sahifada bitta,
+        klientda, va palitra <b>qulflangan</b> bo'lsa. Aks holda qolgan palitralarda
+        begona ko'rinadi.</dd>
+      <dt>Rive qachon oqlanadi?</dt><dd>Interaktiv qahramon kerak bo'lganda
+        (hover/press/scroll → holat mashinasi). Lekin <code>.riv</code> Rive Editor'da
+        chiziladi — alohida dizayn quvuri va litsenziya qarori.</dd>
+      <dt>3D kerakmi?</dt><dd>Yo'q. Brend «flat vector, 16px» — 3D bu qoidaga zid.</dd>
+      <dt>Eng muhim topilma</dt><dd id="vGate"></dd>
+    </dl>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie_svg.min.js"></script>
+<script src="https://unpkg.com/@rive-app/canvas@2.21.6/rive.js"></script>
+<script>
+(function () {
+  "use strict";
+  var LOTTIE = {"v":"5.12.2","fr":30,"ip":0,"op":90,"w":400,"h":300,"nm":"RankWant Nuqta (muzlatilgan clay palitrasi)","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"ko'zlar","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","nm":"chap ko'z","it":[{"ty":"el","p":{"a":0,"k":[189,115]},"s":{"a":0,"k":[7.2,10]}},{"ty":"fl","c":{"a":0,"k":[0.0314,0.0667,0.102,1]},"o":{"a":0,"k":100}},{"ty":"tr","p":{"a":0,"k":[189,115]},"a":{"a":0,"k":[189,115]},"s":{"a":1,"k":[{"t":0,"s":[100,100,100],"i":{"x":[0.5],"y":[1]},"o":{"x":[0.5],"y":[0]}},{"t":76,"s":[100,100,100],"i":{"x":[0.5],"y":[1]},"o":{"x":[0.5],"y":[0]}},{"t":80,"s":[100,8,100],"i":{"x":[0.5],"y":[1]},"o":{"x":[0.5],"y":[0]}},{"t":84,"s":[100,100,100]}]},"r":{"a":0,"k":0},"o":{"a":0,"k":100}}]},{"ty":"gr","nm":"o'ng ko'z","it":[{"ty":"el","p":{"a":0,"k":[211,115]},"s":{"a":0,"k":[7.2,10]}},{"ty":"fl","c":{"a":0,"k":[0.0314,0.0667,0.102,1]},"o":{"a":0,"k":100}},{"ty":"tr","p":{"a":0,"k":[211,115]},"a":{"a":0,"k":[211,115]},"s":{"a":1,"k":[{"t":0,"s":[100,100,100],"i":{"x":[0.5],"y":[1]},"o":{"x":[0.5],"y":[0]}},{"t":76,"s":[100,100,100],"i":{"x":[0.5],"y":[1]},"o":{"x":[0.5],"y":[0]}},{"t":80,"s":[100,8,100],"i":{"x":[0.5],"y":[1]},"o":{"x":[0.5],"y":[0]}},{"t":84,"s":[100,100,100]}]},"r":{"a":0,"k":0},"o":{"a":0,"k":100}}]}],"ip":0,"op":90,"st":0,"bm":0},{"ddd":0,"ind":2,"ty":4,"nm":"nuqta","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[0,0,0],"i":{"x":[0.42],"y":[1]},"o":{"x":[0.58],"y":[0]}},{"t":45,"s":[0,-9,0],"i":{"x":[0.42],"y":[1]},"o":{"x":[0.58],"y":[0]}},{"t":90,"s":[0,0,0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","nm":"tana","it":[{"ty":"el","p":{"a":0,"k":[200,120]},"s":{"a":0,"k":[60,60]}},{"ty":"fl","c":{"a":0,"k":[0.4863,0.2275,0.9294,1]},"o":{"a":0,"k":100}},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100}}]},{"ty":"gr","nm":"og'iz","it":[{"ty":"sh","ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0]],"v":[[190,131],[200,138],[210,131]],"c":false}}},{"ty":"st","c":{"a":0,"k":[0.0314,0.0667,0.102,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":3},"lc":2,"lj":2},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100}}]}],"ip":0,"op":90,"st":0,"bm":0},{"ddd":0,"ind":3,"ty":4,"nm":"cho'qqilar","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","nm":"siluet","it":[{"ty":"sh","ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0],[0,0],[0,0]],"v":[[30,258],[128,74],[186,156],[252,100],[372,258]],"c":true}}},{"ty":"fl","c":{"a":0,"k":[0.4863,0.2275,0.9294,1]},"o":{"a":0,"k":100}},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100}}]},{"ty":"gr","nm":"facet","it":[{"ty":"sh","ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0],[0,0]],"v":[[128,74],[186,156],[150,258],[92,258]],"c":true}}},{"ty":"fl","c":{"a":0,"k":[0.6549,0.5451,0.9804,1]},"o":{"a":0,"k":35}},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100}}]}],"ip":0,"op":90,"st":0,"bm":0}]};
+  var PALETTES = [{"s":"dashboard","m":"light","g":"#f9fafb","a":"#476dc7"},{"s":"dashboard","m":"dark","g":"#0b0d12","a":"#7ea4ff"},{"s":"swiss","m":"light","g":"#fbfbfa","a":"#1b3a6b"},{"s":"swiss","m":"dark","g":"#0e0e0d","a":"#9db8e8"},{"s":"flat","m":"light","g":"#ecf0f1","a":"#c0392b"},{"s":"flat","m":"dark","g":"#22313f","a":"#ff7f6e"},{"s":"material","m":"light","g":"#eceff1","a":"#6200ee"},{"s":"material","m":"dark","g":"#121212","a":"#bb86fc"},{"s":"editorial","m":"light","g":"#ffffff","a":"#1b3a6b"},{"s":"editorial","m":"dark","g":"#12100e","a":"#b9cdf0"},{"s":"brutal","m":"light","g":"#f5e900","a":"#ff5c00"},{"s":"brutal","m":"dark","g":"#12121a","a":"#ff5c00"},{"s":"terminal","m":"single","g":"#05070a","a":"#46d67f"},{"s":"glass","m":"single","g":"#341d65","a":"#ffffff","note":"gradient — 1-stop"},{"s":"neu","m":"single","g":"#e2e6ee","a":"#4a68b0"},{"s":"clay","m":"light","g":"#ede4ff","a":"#7c3aed"},{"s":"clay","m":"dark","g":"#130d21","a":"#7c3aed"},{"s":"aurora","m":"single","g":"#07070f","a":"#7b2ff7"},{"s":"skeu","m":"single","g":"#b7bfc9","a":"#527d38","note":"accent gradient — 1-stop"}];
+  var BAKED = "#7c3aed";
+  var state = { pal: 15, motion: "full", hook: false };
+
+  function srgb(c) { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  function lum(h) {
+    return 0.2126 * srgb(parseInt(h.slice(1, 3), 16)) +
+           0.7152 * srgb(parseInt(h.slice(3, 5), 16)) +
+           0.0722 * srgb(parseInt(h.slice(5, 7), 16));
+  }
+  function ratio(a, b) {
+    var la = lum(a), lb = lum(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  }
+
+  /* ── SVG maskot: 0 KB runtime, rangi tokendan ─────────────────────── */
+  var stageSvg = document.getElementById("stageSvg");
+  stageSvg.innerHTML =
+    '<svg viewBox="0 0 400 300" role="img" aria-label="SVG maskot">' +
+    '<path d="M30 258 L128 74 L186 156 L252 100 L372 258 Z" fill="var(--pa)"/>' +
+    '<path d="M128 74 L186 156 L150 258 L92 258 Z" fill="var(--pa2)" opacity=".35"/>' +
+    '<g class="animate-bob"><circle cx="200" cy="120" r="30" fill="var(--pa)"/>' +
+    '<g fill="var(--ink)">' +
+    '<ellipse class="animate-blink" cx="189" cy="115" rx="3.6" ry="5"/>' +
+    '<ellipse class="animate-blink" cx="211" cy="115" rx="3.6" ry="5"/></g>' +
+    '<path d="M190 131 q10 9 20 0" fill="none" stroke="var(--ink)" stroke-width="3" ' +
+    'stroke-linecap="round"/></g></svg>';
+
+  var styleEl = document.createElement("style");
+  styleEl.textContent =
+    ".animate-bob{animation:bob 2.6s ease-in-out infinite}" +
+    ".animate-blink{animation:blink 4.2s steps(1,end) infinite;transform-box:fill-box;transform-origin:center}" +
+    "@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}" +
+    "@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}" +
+    '[data-motion="off"] *,[data-motion="reduce"] *{animation-duration:.001ms !important;' +
+    'animation-iteration-count:1 !important}' +
+    '[data-motion="mild"] [class*="animate-"]{animation:none !important}' +
+    "@media (prefers-reduced-motion: reduce){.animate-bob,.animate-blink{animation:none !important}}";
+  document.head.appendChild(styleEl);
+
+  /* ── Lottie ───────────────────────────────────────────────────────── */
+  var lotAnim = null, lotState = "play", lotErr = null;
+  var stageLottie = document.getElementById("stageLottie");
+  var lottieTag = document.getElementById("lottieTag");
+  var lotBox = document.createElement("div");
+  lotBox.style.width = "100%";
+  lotBox.style.maxWidth = "340px";
+  stageLottie.appendChild(lotBox);
+
+  function lottieFail(msg) {
+    if (lotErr) return;
+    lotErr = msg;
+    stageLottie.innerHTML = '<div class="err">lottie_svg yuklanmadi yoki JSON rad etildi.<br>' +
+      msg + "</div>";
+    lottieTag.textContent = "xato";
+    lottieTag.className = "tag bad";
+  }
+
+  function bootLottie() {
+    if (typeof lottie === "undefined" || !lottie.loadAnimation) {
+      lottieFail("window.lottie topilmadi — CDN bloklangan bo'lishi mumkin.");
+      return;
+    }
+    try {
+      lotAnim = lottie.loadAnimation({
+        container: lotBox, renderer: "svg", loop: true, autoplay: true,
+        animationData: LOTTIE
+      });
+      lotAnim.addEventListener("DOMLoaded", function () {
+        lottieTag.textContent = "3 qatlam · 3.0 s";
+        lottieTag.className = "tag ok";
+      });
+      lotAnim.addEventListener("data_failed", function () { lottieFail("data_failed hodisasi"); });
+      setTimeout(function () {
+        if (!lotErr && lotBox.querySelectorAll("svg").length === 0) {
+          lottieFail("3 soniyada SVG chiqmadi — JSON tuzilishi shubhali.");
+        }
+      }, 3000);
+    } catch (e) { lottieFail(e.message); }
+  }
+
+  /* ── Rive ─────────────────────────────────────────────────────────── */
+  var riveInst = null;
+  var riveTag = document.getElementById("riveTag");
+  function bootRive() {
+    if (typeof rive === "undefined" || !rive.Rive) {
+      riveTag.textContent = "CDN yo'q";
+      riveTag.className = "tag bad";
+      return;
+    }
+    try {
+      riveInst = new rive.Rive({
+        src: "https://cdn.rive.app/animations/vehicles.riv",
+        canvas: document.getElementById("riveCanvas"),
+        autoplay: true,
+        layout: new rive.Layout({ fit: rive.Fit.Contain }),
+        onLoad: function () {
+          riveInst.resizeDrawingSurfaceToCanvas();
+          riveTag.textContent = "namuna .riv";
+          riveTag.className = "tag ok";
+        },
+        onLoadError: function () {
+          riveTag.textContent = "yuklanmadi";
+          riveTag.className = "tag bad";
+        }
+      });
+    } catch (e) {
+      riveTag.textContent = "xato";
+      riveTag.className = "tag bad";
+    }
+  }
+
+  /* ── Harakat darvozasi: CSS SVG ni to'xtatadi, Lottie/Rive ni EMAS ── */
+  var gateNote = document.getElementById("gateNote");
+  var svgGate = document.getElementById("svgGate");
+
+  function applyMotion(level) {
+    state.motion = level;
+    document.body.dataset.motion = level;
+    var decorative = (level === "off" || level === "mild");
+
+    svgGate.textContent = decorative
+      ? "CSS darvozasi ushlandi: animatsiya to'xtadi, shakl qoldi." : "";
+
+    if (decorative && state.hook) {
+      if (lotAnim) lotAnim.pause();
+      if (riveInst) riveInst.pause();
+      gateNote.innerHTML = "<b>Hook yoqilgan.</b> JS <code>pause()</code> chaqirildi — " +
+        "Lottie va Rive to'xtadi. Lekin buni <b>qo'lda</b> qilish kerak: " +
+        "<code>prefers-reduced-motion</code> ni tinglab, har player uchun alohida.";
+    } else if (decorative) {
+      if (lotAnim && lotState === "play") lotAnim.play();
+      if (riveInst) riveInst.play();
+      gateNote.innerHTML = "<b>⚠ Darvoza ushlamadi.</b> <code>data-motion=\"" + level + "\"</code> " +
+        "SVG maskotni to'xtatdi, lekin <b>Lottie va Rive hamon o'ynayapti</b> — ular CSS " +
+        "animatsiya emas, o'z dvigateli. Yuqoridagi <b>«qo'lda hook»</b> tugmasini yoqing " +
+        "va farqni ko'ring.";
+    } else {
+      if (lotAnim && lotState === "play") lotAnim.play();
+      if (riveInst) riveInst.play();
+      gateNote.innerHTML = "Harakat darvozasi faqat CSS animatsiyalarni boshqaradi.";
+    }
+  }
+
+  /* ── Palitra ──────────────────────────────────────────────────────── */
+  var palChips = document.getElementById("palChips");
+  PALETTES.forEach(function (p, i) {
+    var b = document.createElement("button");
+    b.innerHTML = '<span class="swatch" style="background:' + p.g + '"></span>' + p.s +
+      (p.m === "single" ? "" : " · " + p.m);
+    b.setAttribute("aria-pressed", String(i === state.pal));
+    b.addEventListener("click", function () {
+      state.pal = i;
+      [].forEach.call(palChips.querySelectorAll("button"), function (x) {
+        x.setAttribute("aria-pressed", "false");
+      });
+      b.setAttribute("aria-pressed", "true");
+      applyPalette();
+    });
+    palChips.appendChild(b);
+  });
+
+  function applyPalette() {
+    var p = PALETTES[state.pal];
+    var ink = lum(p.g) > 0.45 ? "#08111a" : "#f2f4f8";
+    stageSvg.style.background = p.g;
+    stageSvg.style.setProperty("--pa", p.a);
+    stageSvg.style.setProperty("--pa2", p.a);
+    stageSvg.style.setProperty("--ink", ink);
+    document.getElementById("stageLottie").style.background = p.g;
+    document.getElementById("stageRive").style.background = p.g;
+  }
+
+  /* ── Kontrast va moslashuv jadvali ────────────────────────────────── */
+  function dist(a, b) {
+    var pa = [1, 3, 5].map(function (i) { return parseInt(a.substr(i, 2), 16); });
+    var pb = [1, 3, 5].map(function (i) { return parseInt(b.substr(i, 2), 16); });
+    var s = 0;
+    for (var i = 0; i < 3; i++) { s += Math.pow(pa[i] - pb[i], 2); }
+    return Math.round(Math.sqrt(s));
+  }
+
+  var ctBody = document.getElementById("ctBody");
+  var bakedFails = 0, tokenFails = 0, distSum = 0, distMax = 0, distMaxName = "";
+  PALETTES.forEach(function (p) {
+    var rb = ratio(BAKED, p.g), rt = ratio(p.a, p.g), d = dist(BAKED, p.a);
+    if (rb < 3) bakedFails++;
+    if (rt < 3) tokenFails++;
+    distSum += d;
+    if (d > distMax) { distMax = d; distMaxName = p.s; }
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td><span class='swatch' style='background:" + p.a + "'></span>" + p.s +
+        (p.m === "single" ? "" : " · " + p.m) +
+        (p.note ? " <span style='color:var(--muted)'>(" + p.note + ")</span>" : "") + "</td>" +
+      "<td><span class='swatch' style='background:" + p.g + "'></span><code>" + p.g + "</code></td>" +
+      "<td class='num " + (rb < 3 ? "fail" : "pass") + "'>" + rb.toFixed(2) + ":1</td>" +
+      "<td class='num " + (rt < 3 ? "fail" : "pass") + "'>" + rt.toFixed(2) + ":1</td>" +
+      "<td class='num'>" + d + "</td>";
+    ctBody.appendChild(tr);
+  });
+  var distAvg = Math.round(distSum / PALETTES.length);
+  var agg = document.createElement("tr");
+  agg.className = "agg";
+  agg.innerHTML = "<td>Jami 19 palitra</td><td></td>" +
+    "<td class='num " + (bakedFails ? "fail" : "pass") + "'>" + bakedFails + "/19 yiqildi</td>" +
+    "<td class='num " + (tokenFails ? "fail" : "pass") + "'>" + tokenFails + "/19 yiqildi</td>" +
+    "<td class='num'>o'rt. " + distAvg + "</td>";
+  ctBody.appendChild(agg);
+
+  document.getElementById("ctFinding").innerHTML =
+    "<b>Halol xulosa — kontrast o'zi dalil emas.</b> Muzlatilgan rang <b>" + bakedFails +
+    "/19</b> palitrada 3:1 dan past; palitraning o'z tokeni ham <b>" + tokenFails +
+    "/19</b> palitrada past. Ya'ni kontrast bo'yicha hisob <b>teng</b> — bu argument " +
+    "yutmaydi. Yutadigan argument boshqa: <b>moslashuv</b>. Muzlatilgan rang palitraning " +
+    "o'z accent'idan o'rtacha <b>" + distAvg + "</b> masofada (maksimum <b>" + distMax +
+    "</b> — <code>" + distMaxName + "</code>). Shakl to'g'ri, rang begona: terminal'da " +
+    "yashil fonda binafsha, brutal'da sariq fonda binafsha.<br><br>" +
+    "<b>Yo'l-yo'lakay topilgan bo'shliq.</b> <code>--rw-accent</code> ning o'z " +
+    "<code>--rw-ground</code> ustidagi nisbati ikki palitrada 3:1 dan past: " +
+    "<code>brutal</code>·light (<b>2.44</b>) va <code>skeu</code>·single (<b>2.60</b>). " +
+    "<code>check_contrast.py</code> bu juftlikni tekshirmaydi (u accent-fg↔accent va matn " +
+    "zinapoyalarini ko'radi) — alohida qaror talab qiladi.";
+
+  document.getElementById("vNeed").textContent =
+    "Kontrast bo'yicha farq yo'q (" + bakedFails + " ga " + tokenFails +
+    "), lekin moslashuv bo'yicha katta: muzlatilgan rang 19 palitrada o'rtacha " +
+    distAvg + " masofada, eng yomonida " + distMax + ". Ya'ni Lottie texnik jihatdan " +
+    "ishlaydi, brend jihatidan esa faqat BITTA palitrada to'g'ri.";
+  document.getElementById("vGate").textContent =
+    "CSS harakat darvozasi Lottie va Rive ni USHLAMAYDI — ular o'z dvigateli. " +
+    "«off» tanlagan foydalanuvchi hamon harakat ko'rardi. JS hook shart.";
+
+  /* ── 16px testi ───────────────────────────────────────────────────── */
+  var pxRow = document.getElementById("pxRow");
+  [16, 24, 32, 64].forEach(function (size) {
+    var f = document.createElement("figure");
+    f.innerHTML =
+      '<svg viewBox="0 0 400 300" width="' + size + '" height="' + (size * 0.75) +
+      '" aria-hidden="true"><path d="M30 258 L128 74 L186 156 L252 100 L372 258 Z" ' +
+      'fill="#7c3aed"/><circle cx="200" cy="120" r="30" fill="#7c3aed"/></svg>' +
+      "<figcaption>" + size + "px</figcaption>";
+    pxRow.appendChild(f);
+  });
+
+  /* ── Boshqaruv ────────────────────────────────────────────────────── */
+  function wire(id, attr, fn) {
+    var box = document.getElementById(id);
+    box.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      [].forEach.call(box.querySelectorAll("button"), function (x) {
+        x.setAttribute("aria-pressed", "false");
+      });
+      b.setAttribute("aria-pressed", "true");
+      fn(b.getAttribute("data-" + attr));
+    });
+  }
+  wire("motionChips", "motion", applyMotion);
+  wire("hookChips", "hook", function (v) { state.hook = (v === "on"); applyMotion(state.motion); });
+
+  var ctrl = document.querySelector(".ctrl");
+  ctrl.addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b || !lotAnim) return;
+    var a = b.getAttribute("data-lot");
+    [].forEach.call(ctrl.querySelectorAll("button"), function (x) {
+      x.setAttribute("aria-pressed", "false");
+    });
+    b.setAttribute("aria-pressed", "true");
+    if (a === "play") { lotState = "play"; lotAnim.setSpeed(1); lotAnim.play(); }
+    if (a === "pause") { lotState = "pause"; lotAnim.pause(); }
+    if (a === "slow") { lotState = "play"; lotAnim.setSpeed(0.25); lotAnim.play(); }
+  });
+
+  applyPalette();
+  applyMotion("full");
+  bootLottie();
+  bootRive();
+})();
+</script>
+</body>
+</html>
