@@ -97,6 +97,6 @@ production, and the law that applies to them.
 ## 6. Licence inventory status (2026-10-17)
 
 After reading the 21 Go modules' LICENSE files (Apache-2.0, MIT, BSD), UNKNOWN
-fell from 26 to 8: four are this repository's own workspace packages and four are
-`h11` and `uvicorn` (API and dev), whose metadata is missing in the local venv.
+fell from 26 to 4: the four left are this repository's own workspace packages,
+which are not third-party dependencies.
 Needs-a-reading stays at 4; weak copyleft at 50 (LGPL/MPL); strong copyleft 0.
