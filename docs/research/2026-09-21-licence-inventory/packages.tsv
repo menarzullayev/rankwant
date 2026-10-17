@@ -732,7 +732,7 @@ python/api	click-repl	0.3.0	runtime	MIT
 python/api	defusedxml	0.7.1	runtime	PSFL
 python/api	django	5.2.17	runtime	BSD-3-Clause
 python/api	django-cors-headers	4.9.0	runtime	MIT
-python/api	django-filter	26.1	runtime	BSD License
+python/api	django-filter	26.2	runtime	BSD License
 python/api	djangorestframework	3.18.1	runtime	BSD-3-Clause
 python/api	drf-spectacular	0.30.0	runtime	BSD-3-Clause
 python/api	fonttools	4.65.0	runtime	MIT
@@ -788,7 +788,7 @@ python/api-dev	cyclonedx-python-lib	11.12.0	dev	Apache-2.0
 python/api-dev	defusedxml	0.7.1	dev	PSFL
 python/api-dev	django	5.2.17	dev	BSD-3-Clause
 python/api-dev	django-cors-headers	4.9.0	dev	MIT
-python/api-dev	django-filter	26.1	dev	BSD License
+python/api-dev	django-filter	26.2	dev	BSD License
 python/api-dev	django-stubs	6.1.2	dev	MIT
 python/api-dev	django-stubs-ext	6.1.1	dev	MIT
 python/api-dev	djangorestframework	3.18.1	dev	BSD-3-Clause

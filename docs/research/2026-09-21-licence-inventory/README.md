@@ -989,7 +989,7 @@ new dependency cannot make this document quietly false.
 | `defusedxml` | 0.7.1 | runtime | PSFL |
 | `django` | 5.2.17 | runtime | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | runtime | MIT |
-| `django-filter` | 26.1 | runtime | BSD License |
+| `django-filter` | 26.2 | runtime | BSD License |
 | `djangorestframework` | 3.18.1 | runtime | BSD-3-Clause |
 | `drf-spectacular` | 0.30.0 | runtime | BSD-3-Clause |
 | `fonttools` | 4.65.0 | runtime | MIT |
@@ -1050,7 +1050,7 @@ new dependency cannot make this document quietly false.
 | `defusedxml` | 0.7.1 | dev | PSFL |
 | `django` | 5.2.17 | dev | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | dev | MIT |
-| `django-filter` | 26.1 | dev | BSD License |
+| `django-filter` | 26.2 | dev | BSD License |
 | `django-stubs` | 6.1.2 | dev | MIT |
 | `django-stubs-ext` | 6.1.1 | dev | MIT |
 | `djangorestframework` | 3.18.1 | dev | BSD-3-Clause |
