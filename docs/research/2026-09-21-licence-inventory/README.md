@@ -54,12 +54,12 @@ python tools/licence_inventory.py --check    # drift only, offline, CI-safe
 | `go/judge-go` | 21 | 21 | 0 | 21 | 0 | 0 |
 | `node/e2e` | 3 | 0 | 3 | 3 | 0 | 0 |
 | `node/web` | 695 | 220 | 475 | 689 | 2 | 4 |
-| `python/api` | 49 | 49 | 0 | 46 | 1 | 2 |
-| `python/api-dev` | 95 | 0 | 95 | 92 | 1 | 2 |
+| `python/api` | 49 | 49 | 0 | 48 | 1 | 0 |
+| `python/api-dev` | 95 | 0 | 95 | 94 | 1 | 0 |
 | `python/judge-py` | 14 | 14 | 0 | 14 | 0 | 0 |
-| **total** | **877** | | | **865** | **4** | **8** |
+| **total** | **877** | | | **869** | **4** | **4** |
 
-Copyleft: **0 strong**, **50 weak**. Needs a human eye: **4**. UNKNOWN: **8**.
+Copyleft: **0 strong**, **50 weak**. Needs a human eye: **4**. UNKNOWN: **4**.
 
 ## 4. Licences that could not be determined
 
@@ -75,20 +75,6 @@ listed under each group.
 | `apps/web` | 0.1.0 | runtime | **UNKNOWN** |
 | `packages/shared` | 0.1.0 | runtime | **UNKNOWN** |
 | `rankwant-web` | ? | runtime | **UNKNOWN** |
-
-**`python/api` — 2 package(s)**
-
-| Package | Version | Scope | Licence |
-|---|---|---|---|
-| `h11` | 0.16.0 | runtime | **UNKNOWN** |
-| `uvicorn` | 0.54.0 | runtime | **UNKNOWN** |
-
-**`python/api-dev` — 2 package(s)**
-
-| Package | Version | Scope | Licence |
-|---|---|---|---|
-| `h11` | 0.16.0 | dev | **UNKNOWN** |
-| `uvicorn` | 0.54.0 | dev | **UNKNOWN** |
 
 Closing them:
 
@@ -977,7 +963,7 @@ new dependency cannot make this document quietly false.
 | `fonttools` | 4.65.0 | runtime | MIT |
 | `fpdf2` | 2.8.9 | runtime | LGPL-3.0-only |
 | `gunicorn` | 26.2.0 | runtime | MIT |
-| `h11` | 0.16.0 | runtime | **UNKNOWN** |
+| `h11` | 0.16.0 | runtime | MIT |
 | `inflection` | 0.5.1 | runtime | MIT |
 | `jmespath` | 1.1.0 | runtime | MIT |
 | `jsonschema` | 4.26.0 | runtime | MIT |
@@ -1002,7 +988,7 @@ new dependency cannot make this document quietly false.
 | `tzlocal` | 5.4.4 | runtime | MIT |
 | `uritemplate` | 4.2.0 | runtime | BSD 3-Clause OR Apache-2.0 |
 | `urllib3` | 2.7.0 | runtime | MIT |
-| `uvicorn` | 0.54.0 | runtime | **UNKNOWN** |
+| `uvicorn` | 0.54.0 | runtime | BSD-3-Clause |
 | `vine` | 5.1.0 | runtime | BSD |
 | `wcwidth` | 0.8.3 | runtime | MIT |
 | `whitenoise` | 6.12.0 | runtime | MIT |
@@ -1045,7 +1031,7 @@ new dependency cannot make this document quietly false.
 | `fonttools` | 4.65.0 | dev | MIT |
 | `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
 | `gunicorn` | 26.2.0 | dev | MIT |
-| `h11` | 0.16.0 | dev | **UNKNOWN** |
+| `h11` | 0.16.0 | dev | MIT |
 | `hypothesis` | 6.169.0 | dev | MPL-2.0 |
 | `idna` | 3.19 | dev | BSD-3-Clause |
 | `inflection` | 0.5.1 | dev | MIT |
@@ -1102,7 +1088,7 @@ new dependency cannot make this document quietly false.
 | `tzlocal` | 5.4.4 | dev | MIT |
 | `uritemplate` | 4.2.0 | dev | BSD 3-Clause OR Apache-2.0 |
 | `urllib3` | 2.7.0 | dev | MIT |
-| `uvicorn` | 0.54.0 | dev | **UNKNOWN** |
+| `uvicorn` | 0.54.0 | dev | BSD-3-Clause |
 | `vine` | 5.1.0 | dev | BSD |
 | `wcwidth` | 0.8.3 | dev | MIT |
 | `whitenoise` | 6.12.0 | dev | MIT |

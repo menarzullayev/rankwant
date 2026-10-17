@@ -738,7 +738,7 @@ python/api	drf-spectacular	0.30.0	runtime	BSD-3-Clause
 python/api	fonttools	4.65.0	runtime	MIT
 python/api	fpdf2	2.8.9	runtime	LGPL-3.0-only
 python/api	gunicorn	26.2.0	runtime	MIT
-python/api	h11	0.16.0	runtime	UNKNOWN
+python/api	h11	0.16.0	runtime	MIT
 python/api	inflection	0.5.1	runtime	MIT
 python/api	jmespath	1.1.0	runtime	MIT
 python/api	jsonschema	4.26.0	runtime	MIT
@@ -763,7 +763,7 @@ python/api	tzdata	2026.3	runtime	Apache-2.0
 python/api	tzlocal	5.4.4	runtime	MIT
 python/api	uritemplate	4.2.0	runtime	BSD 3-Clause OR Apache-2.0
 python/api	urllib3	2.7.0	runtime	MIT
-python/api	uvicorn	0.54.0	runtime	UNKNOWN
+python/api	uvicorn	0.54.0	runtime	BSD-3-Clause
 python/api	vine	5.1.0	runtime	BSD
 python/api	wcwidth	0.8.3	runtime	MIT
 python/api	whitenoise	6.12.0	runtime	MIT
@@ -801,7 +801,7 @@ python/api-dev	filelock	3.32.6	dev	MIT
 python/api-dev	fonttools	4.65.0	dev	MIT
 python/api-dev	fpdf2	2.8.9	dev	LGPL-3.0-only
 python/api-dev	gunicorn	26.2.0	dev	MIT
-python/api-dev	h11	0.16.0	dev	UNKNOWN
+python/api-dev	h11	0.16.0	dev	MIT
 python/api-dev	hypothesis	6.169.0	dev	MPL-2.0
 python/api-dev	idna	3.19	dev	BSD-3-Clause
 python/api-dev	inflection	0.5.1	dev	MIT
@@ -858,7 +858,7 @@ python/api-dev	tzdata	2026.4	dev	Apache-2.0
 python/api-dev	tzlocal	5.4.4	dev	MIT
 python/api-dev	uritemplate	4.2.0	dev	BSD 3-Clause OR Apache-2.0
 python/api-dev	urllib3	2.7.0	dev	MIT
-python/api-dev	uvicorn	0.54.0	dev	UNKNOWN
+python/api-dev	uvicorn	0.54.0	dev	BSD-3-Clause
 python/api-dev	vine	5.1.0	dev	BSD
 python/api-dev	wcwidth	0.8.3	dev	MIT
 python/api-dev	whitenoise	6.12.0	dev	MIT
