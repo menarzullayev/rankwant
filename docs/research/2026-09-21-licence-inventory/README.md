@@ -200,7 +200,7 @@ attach obligations to distribution. Strong copyleft first.
 | `psycopg-binary` | 3.3.6 | runtime | LGPL-3.0-only |
 | `certifi` | 2026.7.22 | dev | MPL-2.0 |
 | `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
-| `hypothesis` | 6.168.3 | dev | MPL-2.0 |
+| `hypothesis` | 6.169.0 | dev | MPL-2.0 |
 | `pathspec` | 1.1.1 | dev | Mozilla Public License 2.0 (MPL 2.0) |
 | `psycopg` | 3.3.6 | dev | LGPL-3.0-only |
 | `psycopg-binary` | 3.3.6 | dev | LGPL-3.0-only |
@@ -1064,7 +1064,7 @@ new dependency cannot make this document quietly false.
 | `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
 | `gunicorn` | 26.2.0 | dev | MIT |
 | `h11` | 0.16.0 | dev | MIT |
-| `hypothesis` | 6.168.3 | dev | MPL-2.0 |
+| `hypothesis` | 6.169.0 | dev | MPL-2.0 |
 | `idna` | 3.19 | dev | BSD-3-Clause |
 | `inflection` | 0.5.1 | dev | MIT |
 | `iniconfig` | 2.3.0 | dev | MIT |
