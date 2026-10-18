@@ -36,7 +36,7 @@
   ],
   "optionalDependencies": {
     "@img/sharp-linux-x64": "0.35.5",
-    "@next/swc-linux-x64-gnu": "16.4.0",
+    "@next/swc-linux-x64-gnu": "16.4.1",
     "@tailwindcss/oxide-linux-x64-gnu": "4.3.3",
     "@unrs/resolver-binding-linux-x64-gnu": "1.12.2"
   },
