@@ -863,7 +863,7 @@ python/api-dev	vine	5.1.0	dev	BSD
 python/api-dev	wcwidth	0.8.3	dev	MIT
 python/api-dev	whitenoise	6.12.0	dev	MIT
 python/judge-py	ast-serialize	0.11.0	runtime	MIT
-python/judge-py	colorama	0.4.6	runtime	BSD License
+python/judge-py	colorama	0.4.6	runtime	UNKNOWN
 python/judge-py	iniconfig	2.3.0	runtime	MIT
 python/judge-py	librt	0.15.0	runtime	MIT
 python/judge-py	mypy	2.3.1	runtime	MIT

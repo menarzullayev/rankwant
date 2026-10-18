@@ -56,10 +56,10 @@ python tools/licence_inventory.py --check    # drift only, offline, CI-safe
 | `node/web` | 695 | 220 | 475 | 689 | 2 | 4 |
 | `python/api` | 49 | 49 | 0 | 48 | 1 | 0 |
 | `python/api-dev` | 95 | 0 | 95 | 94 | 1 | 0 |
-| `python/judge-py` | 14 | 14 | 0 | 14 | 0 | 0 |
-| **total** | **877** | | | **869** | **4** | **4** |
+| `python/judge-py` | 14 | 14 | 0 | 13 | 0 | 1 |
+| **total** | **877** | | | **868** | **4** | **5** |
 
-Copyleft: **0 strong**, **50 weak**. Needs a human eye: **4**. UNKNOWN: **4**.
+Copyleft: **0 strong**, **50 weak**. Needs a human eye: **4**. UNKNOWN: **5**.
 
 ## 4. Licences that could not be determined
 
@@ -75,6 +75,12 @@ listed under each group.
 | `apps/web` | 0.1.0 | runtime | **UNKNOWN** |
 | `packages/shared` | 0.1.0 | runtime | **UNKNOWN** |
 | `rankwant-web` | ? | runtime | **UNKNOWN** |
+
+**`python/judge-py` — 1 package(s)**
+
+| Package | Version | Scope | Licence |
+|---|---|---|---|
+| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
 
 Closing them:
 
@@ -1098,7 +1104,7 @@ new dependency cannot make this document quietly false.
 | Package | Version | Scope | Licence |
 |---|---|---|---|
 | `ast-serialize` | 0.11.0 | runtime | MIT |
-| `colorama` | 0.4.6 | runtime | BSD License |
+| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
 | `iniconfig` | 2.3.0 | runtime | MIT |
 | `librt` | 0.15.0 | runtime | MIT |
 | `mypy` | 2.3.1 | runtime | MIT |
