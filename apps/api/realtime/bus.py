@@ -56,14 +56,26 @@ def problem_channel(slug: str) -> str:
     return PROBLEM_CHANNEL.format(slug=slug)
 
 
+_clients: dict[str, Redis] = {}
+
+
 def _client() -> Redis:
     """Sinxron klient — faqat nashr tomoni uchun.
 
-    ⚠️ Har chaqiruvda yangi obyekt: Celery worker uzoq yashaydi va
-    global ulanish uzilib qolsa (Redis restart, `maxmemory` eviction)
-    u jimgina o'lik bo'lib qolardi.
+    ⚠️ Ulanish havzasi **qayta ishlatiladi**. Ilgari har chaqiruvda yangi
+    klient ochilardi (uzilgan ulanish jimgina o'lik qolmasin deb), lekin
+    bu har nashrga yangi TCP ulanish degani: 200 urinishlik yuk ostida
+    (har urinish ~100 hodisa) `OSError: [Errno 99] Cannot assign requested
+    address` — vaqtinchalik portlar tugadi (o'lchandi, 2026-10-23).
+    Uzilishdan himoya endi `health_check_interval`: havzadagi ulanish
+    uzoq turib qolsa, ishlatishdan oldin tekshiriladi va qayta ochiladi.
     """
-    return Redis.from_url(settings.REDIS_URL)
+    url = settings.REDIS_URL
+    client = _clients.get(url)
+    if client is None:
+        client = Redis.from_url(url, health_check_interval=30, socket_keepalive=True)
+        _clients[url] = client
+    return client
 
 
 def publish(channel: str, event: str, payload: dict[str, Any]) -> int | None:
