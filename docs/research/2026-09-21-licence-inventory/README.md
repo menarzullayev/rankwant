@@ -970,7 +970,7 @@ new dependency cannot make this document quietly false.
 | `click-plugins` | 1.1.1.2 | runtime | New BSD |
 | `click-repl` | 0.3.0 | runtime | MIT |
 | `defusedxml` | 0.7.1 | runtime | PSFL |
-| `django` | 5.2.17 | runtime | BSD-3-Clause |
+| `django` | 5.2.18 | runtime | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | runtime | MIT |
 | `django-filter` | 26.2 | runtime | BSD License |
 | `djangorestframework` | 3.18.3 | runtime | BSD-3-Clause |
@@ -1031,7 +1031,7 @@ new dependency cannot make this document quietly false.
 | `coverage` | 7.16.1 | dev | Apache-2.0 |
 | `cyclonedx-python-lib` | 11.12.0 | dev | Apache-2.0 |
 | `defusedxml` | 0.7.1 | dev | PSFL |
-| `django` | 5.2.17 | dev | BSD-3-Clause |
+| `django` | 5.2.18 | dev | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | dev | MIT |
 | `django-filter` | 26.2 | dev | BSD License |
 | `django-stubs` | 6.1.2 | dev | MIT |
