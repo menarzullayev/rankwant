@@ -436,7 +436,7 @@ def apply_compilation_finished(result: dict[str, Any]) -> Attempt | None:
 
 
 def apply_test_batch(events: list[dict[str, Any]]) -> list[tuple[Attempt, dict[str, Any]]]:
-    """Writes a run of `test_finished` events with one query set per attempt.
+    """Writes a run of `test_finished` events as one row per attempt.
 
     One event at a time cost ~3.6 ms of database work and a 100-test attempt
     sends 100 of them (measured 2026-10-23: 200 attempts left a 20 000-event
@@ -453,23 +453,24 @@ def apply_test_batch(events: list[dict[str, Any]]) -> list[tuple[Attempt, dict[s
             by_attempt.setdefault(int(attempt_id), []).append(ev)
     out: list[tuple[Attempt, dict[str, Any]]] = []
     for attempt_id, evs in by_attempt.items():
-        rows = {
-            int(e["test_index"]): AttemptTestResult(
-                attempt_id=attempt_id,
-                index=int(e["test_index"]),
-                verdict=str(e.get("verdict") or Verdict.IE),
-                time_ms=int(e.get("time_ms") or 0),
-                memory_kb=int(e.get("memory_kb") or 0),
-            )
-            for e in evs
-        }
+        # Only the latest event is written: the terminal result rewrites every
+        # test row, and live progress needs just the newest index. Writing all
+        # ~100 rows per attempt was what the drain spent its time on.
+        last = evs[-1]
         AttemptTestResult.objects.bulk_create(
-            list(rows.values()),
+            [
+                AttemptTestResult(
+                    attempt_id=attempt_id,
+                    index=int(last["test_index"]),
+                    verdict=str(last.get("verdict") or Verdict.IE),
+                    time_ms=int(last.get("time_ms") or 0),
+                    memory_kb=int(last.get("memory_kb") or 0),
+                )
+            ],
             update_conflicts=True,
             unique_fields=["attempt", "index"],
             update_fields=["verdict", "time_ms", "memory_kb"],
         )
-        last = evs[-1]
         meta = _merge_judge_meta(attempt_id, {"phase": "running"})
         Attempt.objects.filter(
             pk=attempt_id,

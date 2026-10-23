@@ -1235,11 +1235,8 @@ class TestDrainTestBatch:
         assert attempt.verdict == "RUNNING"
         assert attempt.running_test_index == 3
         rows = list(AttemptTestResult.objects.filter(attempt=attempt).order_by("index"))
-        assert [(r.index, r.time_ms, r.memory_kb) for r in rows] == [
-            (1, 1, 10),
-            (2, 2, 20),
-            (3, 3, 30),
-        ]
+        # one row per batch: the final result rewrites them all
+        assert [(r.index, r.time_ms, r.memory_kb) for r in rows] == [(3, 3, 30)]
 
     def test_takroriy_hodisa_qatorni_yangilaydi(
         self, problem, user, language, memory_judge
@@ -1290,7 +1287,9 @@ class TestDrainTestBatch:
 
         drain_results()
 
+        # `a` got a progress event in between, which flushed its first test
+        assert AttemptTestResult.objects.filter(attempt=a).count() == 2
+        assert AttemptTestResult.objects.filter(attempt=b).count() == 1
         for att in (a, b):
-            assert AttemptTestResult.objects.filter(attempt=att).count() == 2
             att.refresh_from_db()
             assert att.running_test_index == 2
