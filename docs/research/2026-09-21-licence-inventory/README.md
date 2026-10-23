@@ -51,21 +51,30 @@ python tools/licence_inventory.py --check    # drift only, offline, CI-safe
 
 | Ecosystem | Packages | runtime | dev | classified | needs review | UNKNOWN |
 |---|---|---|---|---|---|---|
-| `go/judge-go` | 21 | 21 | 0 | 21 | 0 | 0 |
+| `go/judge-go` | 21 | 21 | 0 | 17 | 0 | 4 |
 | `node/e2e` | 3 | 0 | 3 | 3 | 0 | 0 |
 | `node/web` | 695 | 220 | 475 | 689 | 2 | 4 |
 | `python/api` | 49 | 49 | 0 | 48 | 1 | 0 |
 | `python/api-dev` | 95 | 0 | 95 | 94 | 1 | 0 |
 | `python/judge-py` | 14 | 14 | 0 | 13 | 0 | 1 |
-| **total** | **877** | | | **868** | **4** | **5** |
+| **total** | **877** | | | **864** | **4** | **9** |
 
-Copyleft: **0 strong**, **50 weak**. Needs a human eye: **4**. UNKNOWN: **5**.
+Copyleft: **0 strong**, **50 weak**. Needs a human eye: **4**. UNKNOWN: **9**.
 
 ## 4. Licences that could not be determined
 
 These are **not** clean — they are unknown. A lawyer reviewing this
 document must treat them as open, and the cheapest way to close them is
 listed under each group.
+
+**`go/judge-go` — 4 package(s)**
+
+| Package | Version | Scope | Licence |
+|---|---|---|---|
+| `github.com/minio/minio-go/v7` | v7.4.1 | direct | **UNKNOWN** |
+| `golang.org/x/crypto` | v0.57.0 | indirect | **UNKNOWN** |
+| `golang.org/x/net` | v0.60.0 | indirect | **UNKNOWN** |
+| `golang.org/x/text` | v0.42.0 | indirect | **UNKNOWN** |
 
 **`node/web` — 4 package(s)**
 
@@ -223,7 +232,7 @@ new dependency cannot make this document quietly false.
 | `github.com/klauspost/crc32` | v1.3.0 | indirect | BSD-3-Clause |
 | `github.com/minio/crc64nvme` | v1.1.1 | indirect | Apache-2.0 |
 | `github.com/minio/md5-simd` | v1.1.2 | indirect | Apache-2.0 |
-| `github.com/minio/minio-go/v7` | v7.3.0 | direct | Apache-2.0 |
+| `github.com/minio/minio-go/v7` | v7.4.1 | direct | **UNKNOWN** |
 | `github.com/philhofer/fwd` | v1.2.0 | indirect | MIT |
 | `github.com/redis/go-redis/v9` | v9.23.0 | direct | BSD-2-Clause |
 | `github.com/rs/xid` | v1.6.0 | indirect | MIT |
@@ -231,10 +240,10 @@ new dependency cannot make this document quietly false.
 | `github.com/zeebo/xxh3` | v1.1.0 | indirect | BSD-2-Clause |
 | `go.uber.org/atomic` | v1.12.0 | indirect | MIT |
 | `go.yaml.in/yaml/v3` | v3.0.5 | indirect | Apache-2.0 |
-| `golang.org/x/crypto` | v0.55.0 | indirect | BSD-3-Clause |
-| `golang.org/x/net` | v0.58.0 | indirect | BSD-3-Clause |
+| `golang.org/x/crypto` | v0.57.0 | indirect | **UNKNOWN** |
+| `golang.org/x/net` | v0.60.0 | indirect | **UNKNOWN** |
 | `golang.org/x/sys` | v0.48.0 | indirect | BSD-3-Clause |
-| `golang.org/x/text` | v0.41.0 | indirect | BSD-3-Clause |
+| `golang.org/x/text` | v0.42.0 | indirect | **UNKNOWN** |
 | `gopkg.in/ini.v1` | v1.67.3 | indirect | Apache-2.0 |
 
 ### `node/e2e` — 3
