@@ -4,6 +4,23 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
+    inputs:
+      burst:
+        description: 'Also run the judge burst (about 45 minutes; never on the schedule)'
+        type: boolean
+        default: false
+      burst_size:
+        description: 'Submissions sent at once'
+        type: string
+        default: '1000'
+      burst_judges:
+        description: 'Judge replicas taking from the queue'
+        type: string
+        default: '1'
+      burst_canary:
+        description: 'Share of heavy fixed-work solutions (0 to 0.5)'
+        type: string
+        default: '0.10'
 
 # Keep stray `~/.local` packages out of the job (self-hosted runner).
 env:
@@ -600,6 +617,71 @@ jobs:
       # hours later. On a day without other CI they would pile up, the
       # way 420 `rw-smoke-*` images filled the WSL disk to 58 GB on
       # 2026-09-16.
+      - name: Clean images
+        if: always()
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
+            | xargs -r docker rmi -f || true
+
+  #: Judge under a burst (2026-10-23) — only when asked for by hand.
+  #:
+  #: "What if 1000 submissions arrive at once?" is a capacity question, not a
+  #: regression check: it takes about 35 minutes of judge time and would
+  #: double the Nightly's cost for nothing. It runs from a manual dispatch with
+  #: `burst: true`, on this runner — not the production machine — so the
+  #: figures are a floor to compare against, not a promise.
+  burst:
+    name: Judge burst — 1000 at once
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.burst }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_ONLY_STACK: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Stack
+        run: |
+          bash tools/ci_stack.sh
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+            python manage.py seed_demo
+      - name: More judges
+        # Each replica is a separate process taking from the same queue.
+        if: ${{ inputs.burst_judges != '1' }}
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml \
+            up -d --no-build --no-deps --scale judge=${{ inputs.burst_judges }} judge
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml ps judge
+      - name: Burst
+        timeout-minutes: 100
+        run: |
+          set -o pipefail
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml \
+            --profile burst run --rm -e BURST="${{ inputs.burst_size }}" \
+            -e BURST_CANARY="${{ inputs.burst_canary }}" burst \
+            | tee "${RUNNER_TEMP}/burst.log"
+      - name: Record the figures on the run page
+        if: always()
+        run: |
+          {
+            echo '### Judge burst'
+            echo
+            echo "Judge replicas: ${{ inputs.burst_judges }} · heavy share: ${{ inputs.burst_canary }}"
+            echo
+            echo '```'
+            grep -vE '^BURST_JSON' "${RUNNER_TEMP}/burst.log" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Judge log
+        if: always()
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --no-color --tail=40 judge || true
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --no-color worker | grep -E "qotib qolgan|reap" | tail -20 || true
+      - name: Tear down
+        if: always()
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Clean images
         if: always()
         run: |
