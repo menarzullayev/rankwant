@@ -6,7 +6,7 @@ pytest-xdist>=3.8.0
 mypy>=2.4.0
 django-stubs[compatible-mypy]>=6.1.2
 djangorestframework-stubs>=3.18.1
-ruff==0.16.10
+ruff==0.17.1
 hypothesis>=6.170.5
 factory-boy>=3.3.3
 pip-audit>=2.10.1
