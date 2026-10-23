@@ -802,7 +802,7 @@ python/api-dev	fonttools	4.65.0	dev	MIT
 python/api-dev	fpdf2	2.8.9	dev	LGPL-3.0-only
 python/api-dev	gunicorn	26.2.0	dev	MIT
 python/api-dev	h11	0.16.0	dev	MIT
-python/api-dev	hypothesis	6.169.0	dev	MPL-2.0
+python/api-dev	hypothesis	6.170.8	dev	MPL-2.0
 python/api-dev	idna	3.19	dev	BSD-3-Clause
 python/api-dev	inflection	0.5.1	dev	MIT
 python/api-dev	iniconfig	2.3.0	dev	MIT
