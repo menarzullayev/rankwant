@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
+from typing import Any
 
 from celery import shared_task
 
@@ -15,7 +16,7 @@ from judging.services import (
     apply_compilation_started,
     apply_custom_result,
     apply_result,
-    apply_test_finished,
+    apply_test_batch,
 )
 from realtime.events import (
     publish_attempt_progress,
@@ -48,12 +49,35 @@ def drain_results(max_items: int = 500) -> int:
     """
     provider = get_provider()
     applied = 0
+    pending_tests: list[dict[str, Any]] = []
+
+    def flush_tests() -> None:
+        # A run of per-test events is written together (see
+        # `apply_test_batch`); only the latest per attempt is published.
+        if not pending_tests:
+            return
+        batch = list(pending_tests)
+        pending_tests.clear()
+        try:
+            for row, last in apply_test_batch(batch):
+                publish_test_finished(
+                    row,
+                    test_index=int(last["test_index"]),
+                    verdict=str(last.get("verdict") or ""),
+                    time_ms=int(last.get("time_ms") or 0),
+                    memory_kb=int(last.get("memory_kb") or 0),
+                )
+        except Exception:
+            log.exception("test hodisalarini yozib bo'lmadi")
+
     for _ in range(max_items):
         result = provider.poll_nowait()
         if result is None:
             break
         try:
             kind = result.get("kind")
+            if kind != "test_finished":
+                flush_tests()
             if kind == "progress":
                 progress_attempt = apply_attempt_progress(result)
                 if progress_attempt is not None:
@@ -76,15 +100,7 @@ def drain_results(max_items: int = 500) -> int:
                     )
                 continue
             if kind == "test_finished":
-                row = apply_test_finished(result)
-                if row is not None:
-                    publish_test_finished(
-                        row,
-                        test_index=int(result["test_index"]),
-                        verdict=str(result.get("verdict") or ""),
-                        time_ms=int(result.get("time_ms") or 0),
-                        memory_kb=int(result.get("memory_kb") or 0),
-                    )
+                pending_tests.append(result)
                 continue
             # Uch xil natija egasi bor, shuning uchun tur aniq e'lon
             # qilinadi: aks holda birinchi tarmoq turini butun o'zgaruvchiga
@@ -114,6 +130,7 @@ def drain_results(max_items: int = 500) -> int:
                     publish_verdict(handled)
         except Exception:
             log.exception("natijani yozib bo'lmadi: %s", result.get("job_id"))
+    flush_tests()
     return applied
 
 

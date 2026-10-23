@@ -1204,3 +1204,61 @@ class TestAttemptFeedRow:
         client.force_authenticate(user)
         rows = client.get(reverse("attempt-list"), {"mine": "true"}).json()["results"]
         assert [row["id"] for row in rows] == [attempt.pk]
+
+
+class TestDrainTestBatch:
+    """Per-test events are written in one go; the last one wins for progress."""
+
+    def test_bir_urinishning_hodisalari_birga_yoziladi(
+        self, problem, user, language, memory_judge
+    ) -> None:
+        from judging.tasks import drain_results
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x", verdict="PENDING"
+        )
+        for i in (1, 2, 3):
+            memory_judge.results.append(
+                {
+                    "kind": "test_finished",
+                    "attempt_id": attempt.pk,
+                    "test_index": i,
+                    "verdict": "AC",
+                    "time_ms": i,
+                    "memory_kb": 10 * i,
+                }
+            )
+
+        drain_results()
+
+        attempt.refresh_from_db()
+        assert attempt.verdict == "RUNNING"
+        assert attempt.running_test_index == 3
+        rows = list(AttemptTestResult.objects.filter(attempt=attempt).order_by("index"))
+        assert [(r.index, r.time_ms, r.memory_kb) for r in rows] == [
+            (1, 1, 10),
+            (2, 2, 20),
+            (3, 3, 30),
+        ]
+
+    def test_takroriy_hodisa_qatorni_yangilaydi(
+        self, problem, user, language, memory_judge
+    ) -> None:
+        from judging.tasks import drain_results
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x", verdict="PENDING"
+        )
+        for verdict in ("AC", "WA"):
+            memory_judge.results.append(
+                {
+                    "kind": "test_finished",
+                    "attempt_id": attempt.pk,
+                    "test_index": 1,
+                    "verdict": verdict,
+                }
+            )
+            drain_results()
+
+        row = AttemptTestResult.objects.get(attempt=attempt, index=1)
+        assert row.verdict == "WA"
