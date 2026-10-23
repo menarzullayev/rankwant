@@ -51,13 +51,14 @@ def drain_results(max_items: int = 500) -> int:
     applied = 0
     pending_tests: list[dict[str, Any]] = []
 
-    def flush_tests() -> None:
+    def flush_tests(only: object = None) -> None:
         # A run of per-test events is written together (see
         # `apply_test_batch`); only the latest per attempt is published.
-        if not pending_tests:
+        # `only` flushes just one attempt's events, leaving the rest buffered.
+        batch = [r for r in pending_tests if only is None or r.get("attempt_id") == only]
+        if not batch:
             return
-        batch = list(pending_tests)
-        pending_tests.clear()
+        pending_tests[:] = [r for r in pending_tests if r not in batch]
         try:
             for row, last in apply_test_batch(batch):
                 publish_test_finished(
@@ -82,7 +83,7 @@ def drain_results(max_items: int = 500) -> int:
             if kind != "test_finished" and any(
                 r.get("attempt_id") == result.get("attempt_id") for r in pending_tests
             ):
-                flush_tests()
+                flush_tests(result.get("attempt_id"))
             if kind == "progress":
                 progress_attempt = apply_attempt_progress(result)
                 if progress_attempt is not None:
