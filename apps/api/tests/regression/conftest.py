@@ -45,6 +45,9 @@ class ScriptedJudge:
     def pending_jobs(self) -> int:
         return 0
 
+    def pending_results(self) -> int:
+        return len(self.results)
+
     def poll(self, timeout: int = 1) -> dict[str, Any] | None:
         return self.results.pop(0) if self.results else None
 

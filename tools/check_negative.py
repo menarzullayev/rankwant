@@ -4312,6 +4312,16 @@ def neg_decisions_contest_problems_never_released() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_reaper_ignores_waiting_results() -> tuple[bool, str]:
+    """The reaper looks at the job queue only again."""
+    return _decision_broken(
+        "apps/api/judging/tasks.py",
+        "    if provider.pending_jobs() or provider.pending_results():\n",
+        "    if provider.pending_jobs():\n",
+        "yo'qolgan» deb hisoblaydi",
+    )
+
+
 def neg_decisions_guest_gets_the_editor() -> tuple[bool, str]:
     """The solve panel is sent to a guest again."""
     return _decision_broken(
@@ -5172,24 +5182,28 @@ def neg_decisions_pytest_django_floor_old() -> tuple[bool, str]:
     )
 
 
+def _react_pin(name: str) -> tuple[str, str]:
+    """The line `"react": "19.3.x"` as it stands now, and the same at 19.0.0.
+
+    The anchor used to be the literal `19.3.0`; the first Dependabot patch
+    bump (19.3.1, 2026-10-23) removed it and turned the Web job red.
+    """
+    text = (ROOT / "apps/web/package.json").read_text(encoding="utf-8")
+    found = re.search(rf'"{re.escape(name)}": "19\.3\.\d+"', text)
+    old = found.group(0) if found else f'"{name}": "19.3.0"'
+    return old, f'"{name}": "19.0.0"'
+
+
 def neg_decisions_react_dom_mismatch() -> tuple[bool, str]:
     """react 19.3, react-dom 19.0 qolsa tutilsin."""
-    return _decision_broken(
-        "apps/web/package.json",
-        '"react-dom": "19.3.0"',
-        '"react-dom": "19.0.0"',
-        "react va react-dom juft",
-    )
+    old, new = _react_pin("react-dom")
+    return _decision_broken("apps/web/package.json", old, new, "react va react-dom juft")
 
 
 def neg_decisions_react_stays_19_0() -> tuple[bool, str]:
     """react 19.0 ga qaytsa tutilsin (juftlik ham buziladi)."""
-    return _decision_broken(
-        "apps/web/package.json",
-        '"react": "19.3.0"',
-        '"react": "19.0.0"',
-        "react va react-dom juft",
-    )
+    old, new = _react_pin("react")
+    return _decision_broken("apps/web/package.json", old, new, "react va react-dom juft")
 
 
 def neg_decisions_canonical_collapses_lang() -> tuple[bool, str]:
@@ -6289,6 +6303,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/serializers.py",
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
+    "apps/api/judging/tasks.py",
+    "apps/api/judging/provider.py",
 )
 
 
@@ -9616,6 +9632,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bitta urinish muzlatishni chetlasa tutilsin", neg_decisions_single_attempt_ignores_the_freeze),
             ("musobaqa sahifasi masalani erta aytsa tutilsin", neg_decisions_contest_page_names_problems_early),
             ("masalalar arxivga o'tmasa tutilsin", neg_decisions_contest_problems_never_released),
+            ("tozalagich natijani kutmasa tutilsin", neg_decisions_reaper_ignores_waiting_results),
             ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
             ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),
             ("401 e'lon qilinmasa tutilsin", neg_decisions_session_end_goes_unnoticed),

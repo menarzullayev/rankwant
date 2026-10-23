@@ -66,6 +66,8 @@ services:
       THROTTLE_USER: 100000/min
       # Latency harness: 2 warmup + 20 ketma-ket submit (`submit` scope 6/min bo'lsa 429).
       THROTTLE_SUBMIT: 100000/min
+      # The burst harness opens a hundred accounts from one address.
+      THROTTLE_REGISTER: 100000/hour
   web:
     ports: !reset []
 
@@ -119,6 +121,22 @@ services:
     profiles: ['latency']
     volumes: ["${HOST_REPO_ROOT:-.}/tests/latency:/latency:ro"]
     command: ['python', '/latency/check_judge_latency.py']
+    depends_on:
+      api: { condition: service_healthy }
+      worker: { condition: service_started }
+      judge: { condition: service_started }
+
+  # Judge under a burst (`tests/burst/check_judge_burst.py`): a thousand
+  # submissions at once, then how long the queue takes to drain and whether
+  # anybody gets a time limit they did not earn. One-shot, run from the manual
+  # `burst` job of the Nightly workflow only; its size is passed with
+  # `-e BURST=…`.
+  burst:
+    logging: *default-logging
+    image: python:3.13-slim
+    profiles: ['burst']
+    volumes: ["${HOST_REPO_ROOT:-.}/tests/burst:/burst:ro"]
+    command: ['python', '/burst/check_judge_burst.py']
     depends_on:
       api: { condition: service_healthy }
       worker: { condition: service_started }
