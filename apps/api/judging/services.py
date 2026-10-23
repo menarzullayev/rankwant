@@ -435,27 +435,54 @@ def apply_compilation_finished(result: dict[str, Any]) -> Attempt | None:
     return Attempt.objects.select_related("problem", "user").filter(pk=attempt_id).first()
 
 
-def apply_test_finished(result: dict[str, Any]) -> Attempt | None:
-    attempt_id = result.get("attempt_id")
-    if not attempt_id:
-        return None
-    idx = int(result.get("test_index") or 0)
-    if idx <= 0:
-        return None
-    verdict = str(result.get("verdict") or Verdict.IE)
-    time_ms = int(result.get("time_ms") or 0)
-    memory_kb = int(result.get("memory_kb") or 0)
-    AttemptTestResult.objects.update_or_create(
-        attempt_id=attempt_id,
-        index=idx,
-        defaults={"verdict": verdict, "time_ms": time_ms, "memory_kb": memory_kb},
-    )
-    meta = _merge_judge_meta(int(attempt_id), {"phase": "running"})
-    Attempt.objects.filter(
-        pk=attempt_id,
-        verdict__in=[Verdict.PENDING, Verdict.RUNNING],
-    ).update(verdict=Verdict.RUNNING, running_test_index=idx, judge_meta=meta)
-    return Attempt.objects.select_related("problem", "user").filter(pk=attempt_id).first()
+def apply_test_batch(events: list[dict[str, Any]]) -> list[tuple[Attempt, dict[str, Any]]]:
+    """Writes a run of `test_finished` events with one query set per attempt.
+
+    One event at a time cost ~3.6 ms of database work and a 100-test attempt
+    sends 100 of them (measured 2026-10-23: 200 attempts left a 20 000-event
+    backlog and the drain, not the judge, set the ~45 verdicts/min ceiling).
+    The final result rewrites every test row anyway, so these rows are only
+    for live progress. Returns the last event per attempt with its attempt
+    row, for publishing.
+    """
+    by_attempt: dict[int, list[dict[str, Any]]] = {}
+    for ev in events:
+        attempt_id = ev.get("attempt_id")
+        idx = int(ev.get("test_index") or 0)
+        if attempt_id and idx > 0:
+            by_attempt.setdefault(int(attempt_id), []).append(ev)
+    out: list[tuple[Attempt, dict[str, Any]]] = []
+    for attempt_id, evs in by_attempt.items():
+        rows = {
+            int(e["test_index"]): AttemptTestResult(
+                attempt_id=attempt_id,
+                index=int(e["test_index"]),
+                verdict=str(e.get("verdict") or Verdict.IE),
+                time_ms=int(e.get("time_ms") or 0),
+                memory_kb=int(e.get("memory_kb") or 0),
+            )
+            for e in evs
+        }
+        AttemptTestResult.objects.bulk_create(
+            list(rows.values()),
+            update_conflicts=True,
+            unique_fields=["attempt", "index"],
+            update_fields=["verdict", "time_ms", "memory_kb"],
+        )
+        last = evs[-1]
+        meta = _merge_judge_meta(attempt_id, {"phase": "running"})
+        Attempt.objects.filter(
+            pk=attempt_id,
+            verdict__in=[Verdict.PENDING, Verdict.RUNNING],
+        ).update(
+            verdict=Verdict.RUNNING,
+            running_test_index=int(last["test_index"]),
+            judge_meta=meta,
+        )
+        row = Attempt.objects.select_related("problem", "user").filter(pk=attempt_id).first()
+        if row is not None:
+            out.append((row, last))
+    return out
 
 
 #: Contest spike'da 500 submit/10s bo'ladi. Har verdictda to'liq qayta
