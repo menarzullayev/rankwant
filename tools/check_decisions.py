@@ -2578,6 +2578,20 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     return None
 
 
+def reaper_waits_for_unapplied_results() -> str | None:
+    # 2026-10-23: under a burst the judge emptied its queue while the results
+    # still waited to be written to the database. The reaper read "queue empty,
+    # attempt PENDING" as "lost": it requeued 200 attempts (judged twice) and
+    # then gave 53-95 of 1000 correct solutions DENIAL_OF_JUDGEMENT.
+    tasks = read("apps/api/judging/tasks.py")
+    if "if provider.pending_jobs() or provider.pending_results():" not in tasks:
+        return "tozalagich yozilmay turgan natijalarni «yo'qolgan» deb hisoblaydi"
+    provider = read("apps/api/judging/provider.py")
+    if provider.count("def pending_results(self) -> int") < 3:
+        return "pending_results provayderning uchala nusxasida ham yo'q"
+    return None
+
+
 def guest_zones_are_gated() -> str | None:
     # 2026-10-08, measured as a guest on the live site: the solve panel with
     # its editor was drawn for everybody, `/notifications` and 24 admin pages
@@ -3262,9 +3276,13 @@ def judge_latency_gate_is_recorded() -> str | None:
     # uchraydi (o'lchandi), ya'ni bunday tekshiruv haqiqiy qator o'chirilganda
     # ham o'tib ketardi — yolg'on yashil. Ikki qator birga esa faqat kodda
     # bo'ladi va `pipefail` aynan compose buyrug'iga qo'llanganini isbotlaydi.
-    if "          set -o pipefail\n          docker compose" not in nightly:
+    # The `latency` job only: the manual `burst` job below it has the same
+    # two lines, and a whole-file search kept passing when the gate's own
+    # `pipefail` was removed (2026-10-23).
+    latency_job = _workflow_job(nightly, "latency")
+    if "          set -o pipefail\n          docker compose" not in latency_job:
         return f"{NIGHTLY}: `pipefail` compose buyrug'iga qo'llanmagan — byudjet buzilishi job'ni qizil qilmaydi"
-    if "--profile latency run --rm latency" not in nightly:
+    if "--profile latency run --rm latency" not in latency_job:
         return f"{NIGHTLY}: harness umuman chaqirilmaydi"
     record = read(f"{LATENCY_RECORD}/README.md")
     if "Attempt.created_at" not in record:
@@ -3473,6 +3491,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
     ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
     ("musobaqa masalasi arxivdan tashqarida", contest_problems_stay_out_of_the_archive),
+    ("tozalagich natijani kutadi", reaper_waits_for_unapplied_results),
     ("mehmon zonalari yopiq", guest_zones_are_gated),
     ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),

@@ -4312,6 +4312,16 @@ def neg_decisions_contest_problems_never_released() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_reaper_ignores_waiting_results() -> tuple[bool, str]:
+    """The reaper looks at the job queue only again."""
+    return _decision_broken(
+        "apps/api/judging/tasks.py",
+        "    if provider.pending_jobs() or provider.pending_results():\n",
+        "    if provider.pending_jobs():\n",
+        "yo'qolgan» deb hisoblaydi",
+    )
+
+
 def neg_decisions_guest_gets_the_editor() -> tuple[bool, str]:
     """The solve panel is sent to a guest again."""
     return _decision_broken(
@@ -6289,6 +6299,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/serializers.py",
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
+    "apps/api/judging/tasks.py",
+    "apps/api/judging/provider.py",
 )
 
 
@@ -9616,6 +9628,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bitta urinish muzlatishni chetlasa tutilsin", neg_decisions_single_attempt_ignores_the_freeze),
             ("musobaqa sahifasi masalani erta aytsa tutilsin", neg_decisions_contest_page_names_problems_early),
             ("masalalar arxivga o'tmasa tutilsin", neg_decisions_contest_problems_never_released),
+            ("tozalagich natijani kutmasa tutilsin", neg_decisions_reaper_ignores_waiting_results),
             ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
             ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),
             ("401 e'lon qilinmasa tutilsin", neg_decisions_session_end_goes_unnoticed),

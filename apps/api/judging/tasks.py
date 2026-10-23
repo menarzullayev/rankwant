@@ -145,7 +145,15 @@ def reap_stuck() -> dict[str, int]:
     #
     # Judge `RUNNING` holatini yozmaydi, ya'ni «navbatda» va «olingan,
     # yo'qolgan» ni boshqa yo'l bilan ajratib bo'lmaydi.
-    if provider.pending_jobs():
+    #
+    # Natijalar ro'yxati ham shu qoidaga kiradi (2026-10-23). 1000 ta
+    # urinish birdan kelganda judge navbatni tezda bo'shatadi, natijalarni
+    # bazaga yozish esa ortda qoladi (har urinish ~100 ta test hodisasi).
+    # Navbat bo'sh, urinish `PENDING` — ya'ni «yo'qolgan» ko'rinadi, aslida
+    # javob Redis'da turibdi. O'lchandi: bunday urinishlar qayta navbatga
+    # qo'yildi (200 ta ikki marta hakamlandi), besh daqiqadan keyin esa
+    # to'g'ri yechimlar `DENIAL_OF_JUDGEMENT` oldi (1000 dan 53–95 tasi).
+    if provider.pending_jobs() or provider.pending_results():
         return {"requeued": 0, "failed": 0}
 
     cutoff = timezone.now() - timedelta(minutes=STUCK_AFTER_MINUTES)
