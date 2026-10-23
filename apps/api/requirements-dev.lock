@@ -202,7 +202,7 @@ rpds-py==2026.6.3
     # via
     #   jsonschema
     #   referencing
-ruff==0.16.10
+ruff==0.17.1
     # via -r requirements-dev.txt
 s3transfer==0.19.2
     # via boto3
