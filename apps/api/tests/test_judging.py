@@ -1262,3 +1262,35 @@ class TestDrainTestBatch:
 
         row = AttemptTestResult.objects.get(attempt=attempt, index=1)
         assert row.verdict == "WA"
+
+    def test_ikki_urinish_aralash_kelsa_ham_ikkalasi_yoziladi(
+        self, problem, user, language, memory_judge
+    ) -> None:
+        from judging.tasks import drain_results
+
+        a, b = (
+            Attempt.objects.create(
+                user=user, problem=problem, language=language, source_code="x", verdict="PENDING"
+            )
+            for _ in range(2)
+        )
+        for i in (1, 2):
+            for att in (a, b):
+                memory_judge.results.append(
+                    {
+                        "kind": "test_finished",
+                        "attempt_id": att.pk,
+                        "test_index": i,
+                        "verdict": "AC",
+                    }
+                )
+            memory_judge.results.append(
+                {"kind": "progress", "attempt_id": a.pk, "running_test_index": i}
+            )
+
+        drain_results()
+
+        for att in (a, b):
+            assert AttemptTestResult.objects.filter(attempt=att).count() == 2
+            att.refresh_from_db()
+            assert att.running_test_index == 2

@@ -76,7 +76,12 @@ def drain_results(max_items: int = 500) -> int:
             break
         try:
             kind = result.get("kind")
-            if kind != "test_finished":
+            # Several judges interleave attempts, so flush only when this
+            # event is about an attempt that still has buffered tests
+            # (e.g. its final verdict); otherwise batches stay tiny.
+            if kind != "test_finished" and any(
+                r.get("attempt_id") == result.get("attempt_id") for r in pending_tests
+            ):
                 flush_tests()
             if kind == "progress":
                 progress_attempt = apply_attempt_progress(result)
