@@ -501,6 +501,10 @@ jobs:
         run: python3 tools/check_confusables.py
       - name: Judge contract (protocol.md ↔ Go ↔ Python)
         run: python3 tools/check_contract.py
+      # The burst harness can fail, so its "failed" is tested against a stub
+      # (honest judge, false TLE, refused submissions) — see its docstring.
+      - name: Judge burst harness (stub)
+        run: python3 tests/latency/selftest_burst.py
       - name: DRF `ordering` tiebreaker (unstable pagination)
         run: python3 tools/check_ordering.py
       - name: Owner decisions in code (CLAUDE.md § Saidakbar aka qarorlari)
