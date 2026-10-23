@@ -17,6 +17,10 @@ on:
         description: 'Judge replicas taking from the queue'
         type: string
         default: '1'
+      burst_canary:
+        description: 'Share of heavy fixed-work solutions (0 to 0.5)'
+        type: string
+        default: '0.10'
 
 # Keep stray `~/.local` packages out of the job (self-hosted runner).
 env:
@@ -655,7 +659,8 @@ jobs:
         run: |
           set -o pipefail
           docker compose -f docker-compose.yml -f docker-compose.ci.yml \
-            --profile burst run --rm -e BURST="${{ inputs.burst_size }}" burst \
+            --profile burst run --rm -e BURST="${{ inputs.burst_size }}" \
+            -e BURST_CANARY="${{ inputs.burst_canary }}" burst \
             | tee "${RUNNER_TEMP}/burst.log"
       - name: Record the figures on the run page
         if: always()
@@ -663,7 +668,7 @@ jobs:
           {
             echo '### Judge burst'
             echo
-            echo "Judge replicas: ${{ inputs.burst_judges }}"
+            echo "Judge replicas: ${{ inputs.burst_judges }} · heavy share: ${{ inputs.burst_canary }}"
             echo
             echo '```'
             grep -vE '^BURST_JSON' "${RUNNER_TEMP}/burst.log" || true

@@ -36,6 +36,7 @@ Environment (`docker-compose.ci.yml` → `burst`):
 | `BURST_PROBLEM` | `a-plus-b` | seeded problem |
 | `BURST_DEADLINE_S` | `4800` | give up waiting for verdicts after this |
 | `BURST_SEED` | `7` | order of the mix |
+| `BURST_CANARY` | `0.10` | share of fixed-work canaries (each costs ~45 s of judge time) |
 | `BURST_POLL_S` | `5` | seconds between looks at the verdicts |
 
 Output: a human report and one `BURST_JSON: {...}` line.
@@ -74,8 +75,20 @@ REPORT_MARKER = "BURST_JSON: "
 FINAL_BAD = {"IE", "DENIAL_OF_JUDGEMENT", "CHECKER_ERROR", "TESTING_ABORTED"}
 PENDING = {"", "PENDING", "RUNNING", "TESTING"}
 
+#: Share of the burst that are canaries. A canary does ~0.45 s of CPU work on
+#: EVERY test, and a problem has many tests (a-plus-b: about a hundred), so one
+#: canary keeps the judge busy for ~45 s where an ordinary solution takes ~1 s.
+#: The first run (2026-10-23) used 10 % and was dominated by them; the share
+#: is a parameter so the same burst can be run with and without that load.
+CANARY_SHARE = float(os.environ.get("BURST_CANARY", "0.10"))
+LOOP_SHARE = 0.05
+
 #: kind → (share of the mix, expected verdicts)
-MIX = {"ok": (0.85, {"AC"}), "canary": (0.10, {"AC"}), "loop": (0.05, {"TLE"})}
+MIX = {
+    "ok": (1 - CANARY_SHARE - LOOP_SHARE, {"AC"}),
+    "canary": (CANARY_SHARE, {"AC"}),
+    "loop": (LOOP_SHARE, {"TLE"}),
+}
 
 SOURCES = {
     "ok": (
@@ -83,7 +96,7 @@ SOURCES = {
         'int main(){int a,b;scanf("%d %d",&a,&b);printf("%d\\n",a+b);return 0;}\n'
     ),
     # A fixed amount of work, not a fixed time: a time-based loop measures
-    # itself and would never show contention.
+    # itself and would never show contention. Run on every test of the problem.
     "canary": (
         "#include <cstdio>\n"
         "static volatile unsigned long long sink;\n"
