@@ -1089,7 +1089,7 @@ new dependency cannot make this document quietly false.
 | `requests` | 2.34.2 | dev | Apache-2.0 |
 | `rich` | 15.0.0 | dev | MIT |
 | `rpds-py` | 2026.6.3 | dev | MIT |
-| `ruff` | 0.16.10 | dev | MIT |
+| `ruff` | 0.17.1 | dev | MIT |
 | `s3transfer` | 0.19.2 | dev | Apache License 2.0 |
 | `segno` | 1.6.6 | dev | BSD License |
 | `six` | 1.17.0 | dev | MIT |
