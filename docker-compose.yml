@@ -59,6 +59,9 @@ services:
       retries: 5
 
   minio:                      # S3/R2 o'rniga local
+    # PID 1 must reap: health checks and sandboxed children leave zombies
+    # otherwise (measured 222 on the host, 2026-10-23).
+    init: true
     logging: *default-logging
     # ⚠️⚠️ MinIO rasmiy ochiq obrazi ENDI YO'Q. 2026-09-11/12 da MinIO
     # ochiq manbali community nashrini to'xtatdi va obrazlarni o'chirdi:
@@ -227,6 +230,9 @@ services:
   # to'xtatardi. Alohida xizmat bo'lsa to'yingan oqim faqat o'zini yopadi,
   # API esa ishlashda davom etadi.
   realtime:
+    # PID 1 must reap: health checks and sandboxed children leave zombies
+    # otherwise (measured 222 on the host, 2026-10-23).
+    init: true
     logging: *default-logging
     build: *api-build
     #: ⚠️ `--workers 1` ataylab: ulanish hisobi JARAYON ichida
@@ -302,6 +308,9 @@ services:
       migrate: { condition: service_completed_successfully }
 
   web:
+    # PID 1 must reap: health checks and sandboxed children leave zombies
+    # otherwise (measured 222 on the host, 2026-10-23).
+    init: true
     logging: *default-logging
     build:
       # ⚠️ Kontekst — REPO ILDIZI, `./apps/web` emas.
@@ -347,6 +356,9 @@ services:
       start_period: 20s
 
   judge:
+    # PID 1 must reap: health checks and sandboxed children leave zombies
+    # otherwise (measured 222 on the host, 2026-10-23).
+    init: true
     logging: *default-logging
     build:
       context: ./services/judge-go
