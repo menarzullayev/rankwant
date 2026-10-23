@@ -5182,24 +5182,28 @@ def neg_decisions_pytest_django_floor_old() -> tuple[bool, str]:
     )
 
 
+def _react_pin(name: str) -> tuple[str, str]:
+    """The line `"react": "19.3.x"` as it stands now, and the same at 19.0.0.
+
+    The anchor used to be the literal `19.3.0`; the first Dependabot patch
+    bump (19.3.1, 2026-10-23) removed it and turned the Web job red.
+    """
+    text = (ROOT / "apps/web/package.json").read_text(encoding="utf-8")
+    found = re.search(rf'"{re.escape(name)}": "19\.3\.\d+"', text)
+    old = found.group(0) if found else f'"{name}": "19.3.0"'
+    return old, f'"{name}": "19.0.0"'
+
+
 def neg_decisions_react_dom_mismatch() -> tuple[bool, str]:
     """react 19.3, react-dom 19.0 qolsa tutilsin."""
-    return _decision_broken(
-        "apps/web/package.json",
-        '"react-dom": "19.3.0"',
-        '"react-dom": "19.0.0"',
-        "react va react-dom juft",
-    )
+    old, new = _react_pin("react-dom")
+    return _decision_broken("apps/web/package.json", old, new, "react va react-dom juft")
 
 
 def neg_decisions_react_stays_19_0() -> tuple[bool, str]:
     """react 19.0 ga qaytsa tutilsin (juftlik ham buziladi)."""
-    return _decision_broken(
-        "apps/web/package.json",
-        '"react": "19.3.0"',
-        '"react": "19.0.0"',
-        "react va react-dom juft",
-    )
+    old, new = _react_pin("react")
+    return _decision_broken("apps/web/package.json", old, new, "react va react-dom juft")
 
 
 def neg_decisions_canonical_collapses_lang() -> tuple[bool, str]:
