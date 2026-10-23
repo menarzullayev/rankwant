@@ -7,7 +7,7 @@ go/judge-go	github.com/klauspost/cpuid/v2	v2.4.0	indirect	MIT
 go/judge-go	github.com/klauspost/crc32	v1.3.0	indirect	BSD-3-Clause
 go/judge-go	github.com/minio/crc64nvme	v1.1.1	indirect	Apache-2.0
 go/judge-go	github.com/minio/md5-simd	v1.1.2	indirect	Apache-2.0
-go/judge-go	github.com/minio/minio-go/v7	v7.3.0	direct	Apache-2.0
+go/judge-go	github.com/minio/minio-go/v7	v7.4.1	direct	UNKNOWN
 go/judge-go	github.com/philhofer/fwd	v1.2.0	indirect	MIT
 go/judge-go	github.com/redis/go-redis/v9	v9.23.0	direct	BSD-2-Clause
 go/judge-go	github.com/rs/xid	v1.6.0	indirect	MIT
@@ -15,10 +15,10 @@ go/judge-go	github.com/tinylib/msgp	v1.6.4	indirect	MIT
 go/judge-go	github.com/zeebo/xxh3	v1.1.0	indirect	BSD-2-Clause
 go/judge-go	go.uber.org/atomic	v1.12.0	indirect	MIT
 go/judge-go	go.yaml.in/yaml/v3	v3.0.5	indirect	Apache-2.0
-go/judge-go	golang.org/x/crypto	v0.55.0	indirect	BSD-3-Clause
-go/judge-go	golang.org/x/net	v0.58.0	indirect	BSD-3-Clause
+go/judge-go	golang.org/x/crypto	v0.57.0	indirect	UNKNOWN
+go/judge-go	golang.org/x/net	v0.60.0	indirect	UNKNOWN
 go/judge-go	golang.org/x/sys	v0.48.0	indirect	BSD-3-Clause
-go/judge-go	golang.org/x/text	v0.41.0	indirect	BSD-3-Clause
+go/judge-go	golang.org/x/text	v0.42.0	indirect	UNKNOWN
 go/judge-go	gopkg.in/ini.v1	v1.67.3	indirect	Apache-2.0
 node/e2e	@playwright/test	1.63.0	dev	Apache-2.0
 node/e2e	playwright	1.63.0	dev	Apache-2.0
@@ -863,7 +863,7 @@ python/api-dev	vine	5.1.0	dev	BSD
 python/api-dev	wcwidth	0.8.3	dev	MIT
 python/api-dev	whitenoise	6.12.0	dev	MIT
 python/judge-py	ast-serialize	0.11.0	runtime	MIT
-python/judge-py	colorama	0.4.6	runtime	BSD License
+python/judge-py	colorama	0.4.6	runtime	UNKNOWN
 python/judge-py	iniconfig	2.3.0	runtime	MIT
 python/judge-py	librt	0.15.0	runtime	MIT
 python/judge-py	mypy	2.3.1	runtime	MIT
