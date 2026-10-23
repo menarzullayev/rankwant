@@ -13,6 +13,8 @@ import random
 import time
 import urllib.error
 import urllib.request
+from datetime import UTC, datetime, timedelta
+from email.utils import format_datetime
 from typing import Any
 
 import pytest
@@ -141,7 +143,11 @@ def test_backoff_is_capped(monkeypatch: pytest.MonkeyPatch, waits: list[float]) 
 
 def test_retry_after_http_date(monkeypatch: pytest.MonkeyPatch, waits: list[float]) -> None:
     """Ba'zi provayderlar soniya emas, sana yuboradi."""
-    recorder = _Recorder(_http_error(429, {"Retry-After": "Wed, 21 Oct 2026 07:28:00 GMT"}), b"ok")
+    # A date a day ahead, built now: a literal date was in the future when
+    # the test was written and became the past on 2026-10-21, so the wait
+    # came out 0.0 and the Nightly API job went red.
+    tomorrow = format_datetime(datetime.now(UTC) + timedelta(days=1), usegmt=True)
+    recorder = _Recorder(_http_error(429, {"Retry-After": tomorrow}), b"ok")
     _patch(monkeypatch, recorder)
 
     with open_with_retry(urllib.request.Request("https://example.test/x"), timeout=1):
