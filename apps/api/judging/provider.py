@@ -79,6 +79,11 @@ class JudgeProvider(Protocol):
     #: yo'qolganidan ajratish uchun kerak: navbat bo'sh bo'lsa, hali
     #: javob kelmagan ish haqiqatan yo'qolgan.
     def pending_jobs(self) -> int: ...
+    #: Judge tugatgan, lekin hali bazaga yozilmagan natijalar soni. Bu
+    #: ish yo'qolgani EMAS: navbat bo'sh, javob kelmagan — ammo javob
+    #: yo'lda. Ikkalasini ajratmaslik hukmni yo'qotadi (qarang
+    #: `judging.tasks.reap_stuck`).
+    def pending_results(self) -> int: ...
 
 
 class RedisJudgeProvider:
@@ -98,6 +103,9 @@ class RedisJudgeProvider:
 
     def pending_jobs(self) -> int:
         return int(self._redis.llen(settings.JUDGE_JOBS_KEY))  # type: ignore[arg-type]
+
+    def pending_results(self) -> int:
+        return int(self._redis.llen(settings.JUDGE_RESULTS_KEY))  # type: ignore[arg-type]
 
     def poll(self, timeout: int = 1) -> dict[str, Any] | None:
         item = self._redis.brpop([settings.JUDGE_RESULTS_KEY], timeout=timeout)
@@ -127,6 +135,9 @@ class InMemoryJudgeProvider:
 
     def pending_jobs(self) -> int:
         return len(self.jobs)
+
+    def pending_results(self) -> int:
+        return len(self.results)
 
     def poll(self, timeout: int = 1) -> dict[str, Any] | None:
         return self.results.pop(0) if self.results else None

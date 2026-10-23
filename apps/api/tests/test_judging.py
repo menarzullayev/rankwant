@@ -661,6 +661,29 @@ class TestReapStuck:
         assert attempt.requeued_at is None
         assert len(memory_judge.jobs) == 1, "navbat shishmadi"
 
+    def test_natija_yozilmay_turgan_urinishga_tegilmaydi(
+        self, problem, user, language, memory_judge
+    ) -> None:
+        """Navbat bo'sh, lekin natija Redis'da — ish yo'qolmagan.
+
+        1000 urinishlik sinovda judge navbatni tez bo'shatdi, natijalar esa
+        daqiqalab bazaga yozilmay turdi. Tozalagich ularni «yo'qolgan» deb
+        qayta hakamladi, so'ng to'g'ri yechimlarga `DENIAL_OF_JUDGEMENT`
+        qo'ydi.
+        """
+        from judging.tasks import reap_stuck
+
+        waiting = self.stuck(problem, user, language, minutes=10)
+        late = self.stuck(problem, user, language, minutes=20, requeued=True)
+        memory_judge.results.append({"attempt_id": waiting.pk, "verdict": "AC"})
+
+        assert reap_stuck() == {"requeued": 0, "failed": 0}
+        waiting.refresh_from_db()
+        late.refresh_from_db()
+        assert waiting.requeued_at is None and waiting.verdict == "PENDING"
+        assert late.verdict == "PENDING", "hukmsiz qo'yilmadi"
+        assert memory_judge.jobs == [], "qayta navbatga qo'yilmadi"
+
     def test_yangi_urinishga_tegilmaydi(self, problem, user, language, memory_judge) -> None:
         attempt = self.stuck(problem, user, language, minutes=1)
 
