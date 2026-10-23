@@ -13,7 +13,7 @@ and the harness is run three ways:
 The stub replaces the queue, the sandbox and the clock, so this proves the
 harness's logic, not the judge. The real measurement is the `burst` job.
 
-    python tests/latency/selftest_burst.py
+    python tests/burst/selftest_burst.py
 """
 
 from __future__ import annotations

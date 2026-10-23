@@ -504,7 +504,7 @@ jobs:
       # The burst harness can fail, so its "failed" is tested against a stub
       # (honest judge, false TLE, refused submissions) — see its docstring.
       - name: Judge burst harness (stub)
-        run: python3 tests/latency/selftest_burst.py
+        run: python3 tests/burst/selftest_burst.py
       - name: DRF `ordering` tiebreaker (unstable pagination)
         run: python3 tools/check_ordering.py
       - name: Owner decisions in code (CLAUDE.md § Saidakbar aka qarorlari)

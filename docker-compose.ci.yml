@@ -126,7 +126,7 @@ services:
       worker: { condition: service_started }
       judge: { condition: service_started }
 
-  # Judge under a burst (`tests/latency/check_judge_burst.py`): a thousand
+  # Judge under a burst (`tests/burst/check_judge_burst.py`): a thousand
   # submissions at once, then how long the queue takes to drain and whether
   # anybody gets a time limit they did not earn. One-shot, run from the manual
   # `burst` job of the Nightly workflow only; its size is passed with
@@ -135,8 +135,8 @@ services:
     logging: *default-logging
     image: python:3.13-slim
     profiles: ['burst']
-    volumes: ["${HOST_REPO_ROOT:-.}/tests/latency:/latency:ro"]
-    command: ['python', '/latency/check_judge_burst.py']
+    volumes: ["${HOST_REPO_ROOT:-.}/tests/burst:/burst:ro"]
+    command: ['python', '/burst/check_judge_burst.py']
     depends_on:
       api: { condition: service_healthy }
       worker: { condition: service_started }
