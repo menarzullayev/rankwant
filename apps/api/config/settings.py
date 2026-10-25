@@ -25,6 +25,8 @@ def env_bool(key: str, default: bool = False) -> bool:
 # CSRF token and PAT with a public key, so a process that starts without the
 # variable must not start at all. Local runs and tests set a throwaway value;
 # `docker-compose.public.yml` refuses to come up without the real one.
+#: Commit the image was built from (Dockerfile `ENV`); served by `/version/`.
+GIT_SHA = env("GIT_SHA", "unknown")
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     raise ImproperlyConfigured(

@@ -12114,6 +12114,24 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/version/:
+    get:
+      operationId: version_retrieve
+      description: |-
+        Commit this API image was built from.
+
+        Public on purpose: the repository is public, so the SHA is no secret, and
+        "is production on the commit we merged?" had no answer outside the host
+        (the only record was a Docker image label). Nothing else is exposed - no
+        build time, no dependency versions.
+      summary: Ishlayotgan commit
+      tags:
+      - version
+      security:
+      - {}
+      responses:
+        '200':
+          description: '`{sha}`; `unknown` if unset'
 components:
   schemas:
     ActivityEvent:

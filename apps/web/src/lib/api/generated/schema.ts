@@ -5678,6 +5678,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/version/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ishlayotgan commit
+         * @description Commit this API image was built from.
+         *
+         *     Public on purpose: the repository is public, so the SHA is no secret, and
+         *     "is production on the commit we merged?" had no answer outside the host
+         *     (the only record was a Docker image label). Nothing else is exposed - no
+         *     build time, no dependency versions.
+         */
+        get: operations["version_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -19692,6 +19717,24 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    version_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `{sha}`; `unknown` if unset */
             200: {
                 headers: {
                     [name: string]: unknown;
