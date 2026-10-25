@@ -205,7 +205,20 @@ common="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
 LOCK="${RANKWANT_DEPLOY_LOCK:-${common:+$common/rankwant-deploy.lock}}"
 [ -n "$LOCK" ] || die "git katalogi topilmadi"
 if ! mkdir "$LOCK" 2>/dev/null; then
-  exit 0
+  # ⚠️ O'lik egali qulf deploy'ni JIM to'xtatadi: 2026-10-23 da jarayon
+  # sessiya tugashi bilan o'ldi, qulf qoldi va #441/#445 ikki kun chiqmadi
+  # (monitor «OK» dedi — sayt eski kodda ishlayverdi). Egasi `owner` faylida
+  # (`pid N`, auto-deploy ham, deploy.sh ham shunday yozadi). Pid o'qilsa va
+  # jarayon tirik bo'lmasa — qulf eskirgan: logga yozamiz va qayta olamiz.
+  # Pid o'qilmasa qulfga tegmaymiz (egasi noma'lum = xavfsiz tomon).
+  stale_pid="$(sed -n 's/.*pid \([0-9][0-9]*\).*/\1/p' "$LOCK/owner" 2>/dev/null | head -n 1)"
+  if [ -n "$stale_pid" ] && ! kill -0 "$stale_pid" 2>/dev/null; then
+    log "eskirgan qulf olib tashlandi (egasi pid $stale_pid o'lik): $(cat "$LOCK/owner" 2>/dev/null)"
+    rm -rf "$LOCK"
+    mkdir "$LOCK" 2>/dev/null || exit 0
+  else
+    exit 0
+  fi
 fi
 trap 'rm -rf "$LOCK"' EXIT
 printf 'auto-deploy pid %s, %s\n' "$$" "$(date -u '+%Y-%m-%d %H:%M UTC')" > "$LOCK/owner"
