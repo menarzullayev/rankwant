@@ -251,6 +251,23 @@ qoladi.
 
 ## Ish uslubi
 
+**Ish tartibi** (Saidakbar aka bilan kelishilgan, 2026-10-25):
+IDEA → PLAN → IMPLEMENT → TEST & VERIFY → COMMIT → PUSH → PR → REVIEW + CI →
+MERGE → DEPLOY → POST-DEPLOY VERIFY → REPORT. Uch band qat'iy:
+
+1. **TEST**: PR ochishdan oldin tegilgan qismning testi mahalliy YASHIL bo'lishi
+   shart. CI nimani yurgizmasa (API pytest PR'da yurmaydi — `pr_skips_heavy_ci`),
+   uni o'zim yurgizaman. 2026-10-23: #438 mahalliy qizil bilan merge bo'ldi,
+   #439 tuzatdi.
+2. **REVIEW**: murakkab o'zgarishda (mantiq, xavfsizlik, migratsiya, judge)
+   merge'dan oldin o'z diff'imni mustaqil ko'rib chiqaman (`/code-review`).
+   Kichik matn va hujjat o'zgarishida shart emas.
+3. **POST-DEPLOY VERIFY**: deploy'dan keyin qaysi commit chiqqanini
+   (`deploy tugadi: <sha>`) va o'zgargan sahifani jonli saytda o'lchayman;
+   `deploy tugadi` yo'q bo'lsa, watcher'ni (qulf, log) tekshiraman. 2026-10-25:
+   ikki kun deploy to'xtab qolgan edi (o'lik egali qulf), monitor esa «OK»
+   deb turardi.
+
 Issue ishlatilmaydi — **PR asosida**. Vazifa qo'shish
 kerak bo'lsa branch va PR ochiladi, tracker'ga ticket yozilmaydi.
 
