@@ -6011,6 +6011,7 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_decisions.py",
     "apps/web/src/features/account/components/AuthForm.tsx",
     "apps/web/src/features/account/components/OnboardingForm.tsx",
+    "apps/web/src/features/account/useUsernameCheck.ts",
     "tools/_console.py",
     "tools/backup.sh",
     "tools/push_guard.py",
