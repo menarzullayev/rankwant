@@ -260,6 +260,12 @@ export const uz = {
 
   "auth.usernameRequired": "Taxallus 3–30 belgi: bo'sh qolmasin",
   "auth.usernameHint": "3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha",
+  "auth.emailPlaceholder": "siz@example.com",
+  "auth.usernamePlaceholder": "sardor_dev",
+  "auth.usernameOptional": "Taxallus (ixtiyoriy)",
+  "auth.usernameOptionalHint": "Keyinroq ham tanlashingiz mumkin",
+  "auth.firstNamePlaceholder": "Masalan: Sardor",
+  "auth.lastNamePlaceholder": "Masalan: Rahimov",
   "auth.passwordHint": "Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin.",
   "auth.usernameFree": "Bu nom bo'sh",
   "auth.checking": "Tekshirilmoqda…",

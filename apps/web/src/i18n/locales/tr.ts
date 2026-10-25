@@ -256,6 +256,12 @@ export const tr: Record<MessageKey, string> = {
 
   "auth.usernameRequired": "Kullanıcı adı 3–30 karakter: boş kalamaz",
   "auth.usernameHint": "3–30 karakter: Latin harfleri, rakam, nokta, alt çizgi, tire",
+  "auth.emailPlaceholder": "siz@ornek.com",
+  "auth.usernamePlaceholder": "ahmet_dev",
+  "auth.usernameOptional": "Kullanıcı adı (isteğe bağlı)",
+  "auth.usernameOptionalHint": "Daha sonra da seçebilirsiniz",
+  "auth.firstNamePlaceholder": "Örneğin: Ahmet",
+  "auth.lastNamePlaceholder": "Örneğin: Yılmaz",
   "auth.passwordHint": "En az 8 karakter. Yalnızca rakam olmasın.",
   "auth.usernameFree": "Bu ad boşta",
   "auth.checking": "Kontrol ediliyor…",

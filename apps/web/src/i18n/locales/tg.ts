@@ -256,6 +256,12 @@ export const tg: Record<MessageKey, string> = {
 
   "auth.usernameRequired": "Тахаллус 3–30 аломат: холӣ намонад",
   "auth.usernameHint": "3–30 аломат: ҳарфҳои лотинӣ, рақам, нуқта, зерхат, дефис",
+  "auth.emailPlaceholder": "shumo@namuna.tj",
+  "auth.usernamePlaceholder": "rustam_dev",
+  "auth.usernameOptional": "Лақаб (ихтиёрӣ)",
+  "auth.usernameOptionalHint": "Баъдтар низ интихоб кардан мумкин аст",
+  "auth.firstNamePlaceholder": "Масалан: Рустам",
+  "auth.lastNamePlaceholder": "Масалан: Каримов",
   "auth.passwordHint": "Ҳадди ақал 8 аломат. Танҳо рақам набошад.",
   "auth.usernameFree": "Ин ном озод аст",
   "auth.checking": "Санҷида мешавад…",

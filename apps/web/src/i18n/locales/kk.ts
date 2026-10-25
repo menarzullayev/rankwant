@@ -256,6 +256,12 @@ export const kk: Record<MessageKey, string> = {
 
   "auth.usernameRequired": "Лақаб 3–30 таңба: бос қалмасын",
   "auth.usernameHint": "3–30 таңба: латын әріптері, сан, нүкте, астыңғы сызық, дефис",
+  "auth.emailPlaceholder": "siz@mysal.kz",
+  "auth.usernamePlaceholder": "serik_dev",
+  "auth.usernameOptional": "Лақап ат (міндетті емес)",
+  "auth.usernameOptionalHint": "Кейінірек таңдауға болады",
+  "auth.firstNamePlaceholder": "Мысалы: Серік",
+  "auth.lastNamePlaceholder": "Мысалы: Ахметов",
   "auth.passwordHint": "Кемінде 8 таңба. Тек сан болмасын.",
   "auth.usernameFree": "Есім бос",
   "auth.checking": "Тексерілуде…",

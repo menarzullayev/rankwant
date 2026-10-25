@@ -256,6 +256,12 @@ export const en: Record<MessageKey, string> = {
 
   "auth.usernameRequired": "Username 3–30 characters: it can't be empty",
   "auth.usernameHint": "3–30 characters: Latin letters, digits, dot, underscore, hyphen",
+  "auth.emailPlaceholder": "you@example.com",
+  "auth.usernamePlaceholder": "alex_dev",
+  "auth.usernameOptional": "Username (optional)",
+  "auth.usernameOptionalHint": "You can choose one later",
+  "auth.firstNamePlaceholder": "e.g. Sardor",
+  "auth.lastNamePlaceholder": "e.g. Rahimov",
   "auth.passwordHint": "At least 8 characters. Not digits only.",
   "auth.usernameFree": "Name is available",
   "auth.checking": "Checking…",

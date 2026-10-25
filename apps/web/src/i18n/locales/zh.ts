@@ -256,6 +256,12 @@ export const zh: Record<MessageKey, string> = {
 
   "auth.usernameRequired": "用户名 3–30 个字符：不能留空",
   "auth.usernameHint": "3–30 个字符：拉丁字母、数字、点、下划线、连字符",
+  "auth.emailPlaceholder": "you@example.com",
+  "auth.usernamePlaceholder": "wei_dev",
+  "auth.usernameOptional": "用户名（可选）",
+  "auth.usernameOptionalHint": "也可以稍后再选",
+  "auth.firstNamePlaceholder": "例如：伟",
+  "auth.lastNamePlaceholder": "例如：王",
   "auth.passwordHint": "至少 8 个字符，不能全是数字。",
   "auth.usernameFree": "该名称可用",
   "auth.checking": "检查中…",

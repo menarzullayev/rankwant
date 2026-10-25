@@ -17,7 +17,13 @@ import { t, errorText } from "@/i18n/messages";
 import { ApiError, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { strength } from "@rankwant/shared/password";
-import { fieldErrors, loginSchema, registerSchema } from "@rankwant/shared/validation";
+import {
+  fieldErrors,
+  loginSchema,
+  optionalUsernameError,
+  registerSchema,
+  type RuleKey,
+} from "@rankwant/shared/validation";
 import { Turnstile } from "@/features/auth";
 import { safeNext } from "@/lib/site";
 
@@ -35,7 +41,7 @@ type Provider = keyof typeof PROVIDER_LABEL;
 
 /** Inputs that can carry their own error. `terms_accepted` is a checkbox
  *  with no note slot, so its message stays in the form-level alert. */
-type FieldName = "identifier" | "email" | "password" | "password2";
+type FieldName = "identifier" | "email" | "username" | "password" | "password2";
 
 const bad = (text: string | undefined): FieldStatus | undefined =>
   text ? { kind: "bad", text } : undefined;
@@ -166,7 +172,8 @@ export function AuthForm({
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    const form = new FormData(event.currentTarget);
+    const formEl = event.currentTarget;
+    const form = new FormData(formEl);
     const payload = Object.fromEntries(form) as Record<string, string>;
 
     // Tekshiruv `lib/validation.ts` da — sahifa qoidani TAKRORLAMAYDI.
@@ -189,13 +196,22 @@ export function AuthForm({
               password: payload.password ?? "",
             }),
           );
+    // The handle is optional on step 1: only a typed one is checked.
+    const handleIssue =
+      mode === "register" ? optionalUsernameError(payload.username ?? "") : undefined;
+    const all: Partial<Record<FieldName | "terms_accepted", RuleKey>> = {
+      ...issues,
+      ...(handleIssue ? { username: handleIssue } : {}),
+    };
     const order: FieldName[] =
-      mode === "register" ? ["email", "password", "password2"] : ["identifier", "password"];
-    const failed = order.filter((name) => issues[name]);
-    const first = failed.length ? issues[failed[0]] : issues.terms_accepted;
+      mode === "register"
+        ? ["email", "username", "password", "password2"]
+        : ["identifier", "password"];
+    const failed = order.filter((name) => all[name]);
+    const first = failed.length ? all[failed[0]] : all.terms_accepted;
     if (first) {
       setInvalid(
-        Object.fromEntries(failed.map((name) => [name, t(locale, issues[name]!)])),
+        Object.fromEntries(failed.map((name) => [name, t(locale, all[name]!)])),
       );
       // Field errors sit on their fields; only the consent rule, which has
       // no field note, is said in the form-level alert.
@@ -210,12 +226,14 @@ export function AuthForm({
     setBusy(true);
     try {
       if (mode === "register") {
-        // 1-qadam faqat TO'RT maydon (3-qaror): email, parol, tasdiq,
-        // rozilik. Foydalanuvchi nomi, ism va joy 2-qadamda
-        // (`/onboarding`) so'raladi — server ularni ixtiyoriy
-        // deb biladi va nom berilmasa vaqtinchalik nom qo'yadi.
+        // 1-qadam: email, parol, tasdiq, rozilik va IXTIYORIY taxallus
+        // (2026-10-25, CP Club bilan solishtirish). Taxallus bo'sh
+        // bo'lsa server vaqtinchalik nom qo'yadi va 2-qadam (`/onboarding`)
+        // uni baribir so'raydi; ism va joy ham o'sha yerda.
+        const handle = (payload.username ?? "").trim();
         await postJson("/auth/register/", {
           email: payload.email,
+          ...(handle ? { username: handle } : {}),
           password: payload.password,
           terms_accepted: terms,
           marketing_opt_in: marketing,
@@ -284,6 +302,18 @@ export function AuthForm({
       const takenEmail =
         mode === "register" && err instanceof ApiError && err.field("email") !== null;
       setBlocked(takenEmail ? { kind: "email" } : null);
+      // A refused handle (taken, too similar, reserved) belongs to its field.
+      const handleRefused =
+        mode === "register" &&
+        err instanceof ApiError &&
+        err.field("username") !== null &&
+        err.field("email") === null;
+      if (handleRefused) {
+        setInvalid({ username: t(locale, "auth.usernameTaken") });
+        setError("");
+        formEl.querySelector<HTMLInputElement>('[name="username"]')?.focus();
+        return;
+      }
       setError(
         err instanceof ApiError
           ? errorText(locale, err.code, err.text)
@@ -361,6 +391,7 @@ export function AuthForm({
             onChange={(e) => setEmail(e.target.value)}
             autoCapitalize="none"
             spellCheck={false}
+            placeholder={t(locale, "auth.emailPlaceholder")}
             status={bad(invalid.email) ?? emailStatus}
           />
         ) : (
@@ -376,7 +407,21 @@ export function AuthForm({
             autoCapitalize="none"
             spellCheck={false}
             hint={t(locale, "auth.identifierHint")}
+            placeholder={t(locale, "auth.usernamePlaceholder")}
             status={bad(invalid.identifier)}
+          />
+        )}
+        {mode === "register" && (
+          <Field
+            label={t(locale, "auth.usernameOptional")}
+            name="username"
+            autoComplete="username"
+            maxLength={30}
+            autoCapitalize="none"
+            spellCheck={false}
+            placeholder={t(locale, "auth.usernamePlaceholder")}
+            hint={t(locale, "auth.usernameOptionalHint")}
+            status={bad(invalid.username)}
           />
         )}
         <Field

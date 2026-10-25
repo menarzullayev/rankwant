@@ -3058,6 +3058,36 @@ def neg_decisions_openapi_check_step_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_sign_up_loses_the_handle() -> tuple[bool, str]:
+    """The optional handle is no longer sent with the sign-up request."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/AuthForm.tsx",
+        "          ...(handle ? { username: handle } : {}),\n",
+        "",
+        "taxallus ro'yxatdan o'tish so'roviga qo'shilmaydi",
+    )
+
+
+def neg_decisions_onboarding_back_to_one_name() -> tuple[bool, str]:
+    """Step 2 drops the last-name field."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/OnboardingForm.tsx",
+        'name="last_name"',
+        'name="family"',
+        "ism va familiya alohida emas",
+    )
+
+
+def neg_decisions_phone_loses_the_chips() -> tuple[bool, str]:
+    """The phone-width chips under the form go away."""
+    return _decision_broken(
+        "apps/web/src/features/auth/components/AuthShell.tsx",
+        'className="mt-6 flex flex-wrap justify-center gap-2 lg:hidden"',
+        'className="mt-6 flex flex-wrap justify-center gap-2"',
+        "telefonda forma ostida chiplar yo'q",
+    )
+
+
 def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
@@ -5969,6 +5999,8 @@ _TRIAL_WORKFLOW = (
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
     "tools/check_decisions.py",
+    "apps/web/src/features/account/components/AuthForm.tsx",
+    "apps/web/src/features/account/components/OnboardingForm.tsx",
     "tools/_console.py",
     "tools/backup.sh",
     "tools/push_guard.py",
@@ -9668,6 +9700,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ommaviy stack standartga tushsa tutilsin", neg_decisions_public_stack_falls_back),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
+            ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
+            ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_onboarding_back_to_one_name),
+            ("telefonda chiplar yo'qolsa tutilsin", neg_decisions_phone_loses_the_chips),
             ("seed A+B ni bitta tilga yopsa tutilsin", neg_decisions_seed_restricts_a_plus_b),
             ("namunalar qutisi pozitsiyasiz qolsa tutilsin", neg_decisions_samples_scroll_box_not_positioned),
             ("noto'g'ri urinish sanalmasa tutilsin", neg_decisions_login_failures_not_counted),

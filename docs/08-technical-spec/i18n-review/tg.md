@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2297 strings.**
+**2303 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -269,6 +269,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernameInvalid` | Taxallus faqat lotin harflari, raqamlar va pastki chiziqdan iborat bo'lsin | Тахаллус танҳо аз ҳарфҳои лотинӣ, рақамҳо ва зерхат иборат бошад |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Тахаллус 3–30 аломат: холӣ намонад |  |
 | `auth.usernameHint` | 3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha | 3–30 аломат: ҳарфҳои лотинӣ, рақам, нуқта, зерхат, дефис |  |
+| `auth.emailPlaceholder` | siz@example.com | shumo@namuna.tj |  |
+| `auth.usernamePlaceholder` | sardor_dev | rustam_dev |  |
+| `auth.usernameOptional` | Taxallus (ixtiyoriy) | Лақаб (ихтиёрӣ) |  |
+| `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Баъдтар низ интихоб кардан мумкин аст |  |
+| `auth.firstNamePlaceholder` | Masalan: Sardor | Масалан: Рустам |  |
+| `auth.lastNamePlaceholder` | Masalan: Rahimov | Масалан: Каримов |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Ҳадди ақал 8 аломат. Танҳо рақам набошад. |  |
 | `auth.usernameFree` | Bu nom bo'sh | Ин ном озод аст |  |
 | `auth.checking` | Tekshirilmoqda… | Санҷида мешавад… |  |
