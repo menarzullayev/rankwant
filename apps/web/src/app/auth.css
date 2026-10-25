@@ -37,4 +37,5 @@
 @import "./theme.css";
 
 @import "./form-families.css";
+@import "../features/auth/auth-panel.css";
 @import "./kit.css";

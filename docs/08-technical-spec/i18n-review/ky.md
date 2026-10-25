@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2303 strings.**
+**2360 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1270,6 +1270,63 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.skip` | O'tkazib yuborish | Өткөрүп жиберүү |  |
 | `auth.schoolSearch` | Maktab nomi bo'yicha qidirish | Мектеп аты боюнча издөө |  |
 | `auth.tagline` | Reyting xohlaganlar uchun | Рейтинг каалагандар үчүн |  |
+| `auth.panel.carousel` | Platforma haqida | Платформа жөнүндө |  |
+| `auth.panel.prev` | Oldingi slayd | Мурунку слайд |  |
+| `auth.panel.next` | Keyingi slayd | Кийинки слайд |  |
+| `auth.panel.pause` | To'xtatish | Токтотуу |  |
+| `auth.panel.play` | Davom ettirish | Улантуу |  |
+| `auth.panel.go` | {n}-slaydga o'tish | {n}-слайдга өтүү |  |
+| `auth.panel.mascot` | Cho'qqi maskoti | Cho'qqi маскоту |  |
+| `auth.panel.a` | Masala yeching. | Маселе чечиңиз. |  |
+| `auth.panel.b` | Bellashing. | Мелдешиңиз. |  |
+| `auth.panel.c` | O'sing. | Өсүңүз. |  |
+| `auth.panel.s1.lead` | Yechim soniyalarda tekshiriladi, natijalar jadvali jonli yangilanadi. | Чечим секундалар ичинде текшерилет, жыйынтык таблицасы түз жаңырат. |  |
+| `auth.panel.s1.check` | TEKSHIRUV | ТЕКШЕРҮҮ |  |
+| `auth.panel.s1.results` | Natijalar | Жыйынтыктар |  |
+| `auth.panel.s1.live` | JONLI | ТҮЗ |  |
+| `auth.panel.s1.you` | siz | сиз |  |
+| `auth.panel.s1.tests` | {n} / {total} test | {n} / {total} тест |  |
+| `auth.panel.s2.title` | Har qadam — yangi cho'qqi. | Ар бир кадам — жаңы чоку. |  |
+| `auth.panel.s2.lead` | Reytingingiz oshgan sari unvoningiz ham o'zgaradi. | Рейтингиңиз өскөн сайын наамыңыз да өзгөрөт. |  |
+| `auth.panel.s2.bubble` | Birinchi qadam — hisob yarating! | Биринчи кадам — аккаунт түзүңүз! |  |
+| `auth.panel.s3.bubble` | Salom! Men Cho'qqiman. Bugun nechta masala yechamiz? | Салам! Мен Cho'qqi. Бүгүн канча маселе чыгарабыз? |  |
+| `auth.panel.s4.title` | O'z o'ringizni egallang. | Өз ордуңузду ээлеңиз. |  |
+| `auth.panel.s4.lead` | Har musobaqadan keyin reyting yangilanadi. Navbat sizda. | Ар бир мелдештен кийин рейтинг жаңырат. Кезек сизде. |  |
+| `auth.panel.s4.you` | Siz | Сиз |  |
+| `auth.panel.s5.title` | Keyingi musobaqaga tayyormisiz? | Кийинки мелдешке даярсызбы? |  |
+| `auth.panel.s5.lead` | Hisob oching va joyingizni oldindan band qiling. | Аккаунт түзүп, ордуңузду алдын ала ээлеп коюңуз. |  |
+| `auth.panel.s5.next` | KEYINGI MUSOBAQA | КИЙИНКИ МЕЛДЕШ |  |
+| `auth.panel.s5.sample` | namuna | үлгү |  |
+| `auth.panel.s5.name` | Haftalik raund | Жумалык раунд |  |
+| `auth.panel.s5.days` | kun | күн |  |
+| `auth.panel.s5.hours` | soat | саат |  |
+| `auth.panel.s5.minutes` | daqiqa | мүнөт |  |
+| `auth.panel.s5.open` | Ro'yxatdan o'tish ochiq | Катталуу ачык |  |
+| `auth.panel.s6.title` | Har yechim soniyalarda hukm oladi. | Ар бир чечим секундалар ичинде жыйынтык алат. |  |
+| `auth.panel.s6.lead` | AC, WA, TLE — qaysi testda xato qilganingiz ham ko'rinadi. | AC, WA, TLE — кайсы тестте ката кеткениңиз да көрүнөт. |  |
+| `auth.panel.s6.allTests` | Barcha testlar o'tdi | Бардык тест өттү |  |
+| `auth.panel.s6.wrongAt` | {n}-testda xato | {n}-тестте ката |  |
+| `auth.panel.s6.timeAt` | {n}-testda vaqt tugadi | {n}-тестте убакыт бүттү |  |
+| `auth.panel.s6.memoryAt` | {n}-testda xotira oshdi | {n}-тестте эс тутум ашты |  |
+| `auth.panel.s6.compile` | Kompilyatsiya xatosi | Компиляция катасы |  |
+| `auth.panel.s7.title` | Kuniga bitta masala. Seriyani uzmang. | Күнүнө бир маселе. Сериянын үзүлбөсүн. |  |
+| `auth.panel.s7.lead` | Faolligingiz profilingizda butun yil ko'rinib turadi. | Активдүүлүгүңүз профилде бир жыл бою көрүнөт. |  |
+| `auth.panel.s7.streak` | kunlik seriya | күндүк серия |  |
+| `auth.panel.s7.less` | Kam | Аз |  |
+| `auth.panel.s7.more` | Ko'p | Көп |  |
+| `auth.panel.s9.title` | Uch qadamda boshlang. | Үч кадамда баштаңыз. |  |
+| `auth.panel.s9.lead` | Birinchi masalangizni bir daqiqada yechishingiz mumkin. | Биринчи маселени бир мүнөттө чыгара аласыз. |  |
+| `auth.panel.s9.step1` | Hisob oching | Аккаунт түзүңүз |  |
+| `auth.panel.s9.step1d` | Email yoki Telegram bilan | Email же Telegram аркылуу |  |
+| `auth.panel.s9.step2` | Birinchi masalani yeching | Биринчи маселени чыгарыңыз |  |
+| `auth.panel.s9.step2d` | Natija soniyalarda chiqadi | Жыйынтык секундалар ичинде чыгат |  |
+| `auth.panel.s9.step3` | Reytingga chiqing | Рейтингге кириңиз |  |
+| `auth.panel.s9.step3d` | Musobaqada qatnashing, unvon oling | Мелдештерге катышып, наам алыңыз |  |
+| `auth.panel.s10.title` | Birinchi yutug'ingiz sizni kutmoqda. | Биринчи жетишкендигиңиз сизди күтүп турат. |  |
+| `auth.panel.s10.badge` | Birinchi qadam — hisob ochganingizda | Биринчи кадам — аккаунт ачканда |  |
+| `auth.panel.s10.l1` | Birinchi yechim | Биринчи чечим |  |
+| `auth.panel.s10.l2` | Birinchi musobaqa | Биринчи мелдеш |  |
+| `auth.panel.s10.l3` | 7 kunlik seriya | 7 күндүк серия |  |
 | `auth.members` | A'zolar | Катышуучулар |  |
 | `geo.nudgeTitle` | Davlat va maktabingizni qo'shing | Өлкөңүз жана мектебиңизди кошуңуз |  |
 | `geo.nudgeBody` | Maktab reytingida ko'rinish uchun kerak — 20 soniya vaqt oladi. | Мектеп рейтингинде көрүнүү үчүн керек — 20 секунд алат. |  |

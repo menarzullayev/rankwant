@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2303 strings.**
+**2360 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1270,6 +1270,63 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.skip` | O'tkazib yuborish | Гузаштан |  |
 | `auth.schoolSearch` | Maktab nomi bo'yicha qidirish | Ҷустуҷӯ аз рӯи номи мактаб |  |
 | `auth.tagline` | Reyting xohlaganlar uchun | Барои хоҳишмандони рейтинг |  |
+| `auth.panel.carousel` | Platforma haqida | Дар бораи платформа |  |
+| `auth.panel.prev` | Oldingi slayd | Слайди қаблӣ |  |
+| `auth.panel.next` | Keyingi slayd | Слайди баъдӣ |  |
+| `auth.panel.pause` | To'xtatish | Таваққуф |  |
+| `auth.panel.play` | Davom ettirish | Идома додан |  |
+| `auth.panel.go` | {n}-slaydga o'tish | Гузариш ба слайди {n} |  |
+| `auth.panel.mascot` | Cho'qqi maskoti | Маскоти Cho'qqi |  |
+| `auth.panel.a` | Masala yeching. | Масъала ҳал кунед. |  |
+| `auth.panel.b` | Bellashing. | Мусобиқа кунед. |  |
+| `auth.panel.c` | O'sing. | Рушд кунед. |  |
+| `auth.panel.s1.lead` | Yechim soniyalarda tekshiriladi, natijalar jadvali jonli yangilanadi. | Ҳал дар сонияҳо санҷида мешавад, ҷадвали натиҷаҳо зинда навсозӣ мегардад. |  |
+| `auth.panel.s1.check` | TEKSHIRUV | САНҶИШ |  |
+| `auth.panel.s1.results` | Natijalar | Натиҷаҳо |  |
+| `auth.panel.s1.live` | JONLI | ЗИНДА |  |
+| `auth.panel.s1.you` | siz | шумо |  |
+| `auth.panel.s1.tests` | {n} / {total} test | {n} / {total} санҷиш |  |
+| `auth.panel.s2.title` | Har qadam — yangi cho'qqi. | Ҳар қадам — қуллаи нав. |  |
+| `auth.panel.s2.lead` | Reytingingiz oshgan sari unvoningiz ham o'zgaradi. | Бо болоравии рейтинг унвони шумо низ тағйир меёбад. |  |
+| `auth.panel.s2.bubble` | Birinchi qadam — hisob yarating! | Қадами аввал — ҳисоб эҷод кунед! |  |
+| `auth.panel.s3.bubble` | Salom! Men Cho'qqiman. Bugun nechta masala yechamiz? | Салом! Ман Cho'qqi. Имрӯз чанд масъала ҳал мекунем? |  |
+| `auth.panel.s4.title` | O'z o'ringizni egallang. | Ҷои худро ишғол кунед. |  |
+| `auth.panel.s4.lead` | Har musobaqadan keyin reyting yangilanadi. Navbat sizda. | Баъд аз ҳар мусобиқа рейтинг навсозӣ мешавад. Навбат ба шумо. |  |
+| `auth.panel.s4.you` | Siz | Шумо |  |
+| `auth.panel.s5.title` | Keyingi musobaqaga tayyormisiz? | Ба мусобиқаи оянда омодаед? |  |
+| `auth.panel.s5.lead` | Hisob oching va joyingizni oldindan band qiling. | Ҳисоб эҷод карда, ҷои худро пешакӣ банд кунед. |  |
+| `auth.panel.s5.next` | KEYINGI MUSOBAQA | МУСОБИҚАИ ОЯНДА |  |
+| `auth.panel.s5.sample` | namuna | намуна |  |
+| `auth.panel.s5.name` | Haftalik raund | Даври ҳафтагӣ |  |
+| `auth.panel.s5.days` | kun | рӯз |  |
+| `auth.panel.s5.hours` | soat | соат |  |
+| `auth.panel.s5.minutes` | daqiqa | дақиқа |  |
+| `auth.panel.s5.open` | Ro'yxatdan o'tish ochiq | Сабти ном кушода аст |  |
+| `auth.panel.s6.title` | Har yechim soniyalarda hukm oladi. | Ҳар ҳал дар сонияҳо ҳукм мегирад. |  |
+| `auth.panel.s6.lead` | AC, WA, TLE — qaysi testda xato qilganingiz ham ko'rinadi. | AC, WA, TLE — ҳатто дар кадом санҷиш хато кардед, намоён мешавад. |  |
+| `auth.panel.s6.allTests` | Barcha testlar o'tdi | Ҳамаи санҷишҳо гузаштанд |  |
+| `auth.panel.s6.wrongAt` | {n}-testda xato | Хато дар санҷиши {n} |  |
+| `auth.panel.s6.timeAt` | {n}-testda vaqt tugadi | Дар санҷиши {n} вақт тамом шуд |  |
+| `auth.panel.s6.memoryAt` | {n}-testda xotira oshdi | Дар санҷиши {n} хотира зиёд шуд |  |
+| `auth.panel.s6.compile` | Kompilyatsiya xatosi | Хатои компилятсия |  |
+| `auth.panel.s7.title` | Kuniga bitta masala. Seriyani uzmang. | Рӯзе як масъала. Сериярo наканед. |  |
+| `auth.panel.s7.lead` | Faolligingiz profilingizda butun yil ko'rinib turadi. | Фаъолияти шумо дар тамоми сол дар профил намоён аст. |  |
+| `auth.panel.s7.streak` | kunlik seriya | рӯзи пайваста |  |
+| `auth.panel.s7.less` | Kam | Кам |  |
+| `auth.panel.s7.more` | Ko'p | Бисёр |  |
+| `auth.panel.s9.title` | Uch qadamda boshlang. | Бо се қадам оғоз кунед. |  |
+| `auth.panel.s9.lead` | Birinchi masalangizni bir daqiqada yechishingiz mumkin. | Масъалаи аввалро дар як дақиқа ҳал карда метавонед. |  |
+| `auth.panel.s9.step1` | Hisob oching | Ҳисоб эҷод кунед |  |
+| `auth.panel.s9.step1d` | Email yoki Telegram bilan | Бо email ё Telegram |  |
+| `auth.panel.s9.step2` | Birinchi masalani yeching | Масъалаи аввалро ҳал кунед |  |
+| `auth.panel.s9.step2d` | Natija soniyalarda chiqadi | Натиҷа дар сонияҳо мебарояд |  |
+| `auth.panel.s9.step3` | Reytingga chiqing | Ба рейтинг ворид шавед |  |
+| `auth.panel.s9.step3d` | Musobaqada qatnashing, unvon oling | Дар мусобиқа иштирок карда, унвон гиред |  |
+| `auth.panel.s10.title` | Birinchi yutug'ingiz sizni kutmoqda. | Муваффақияти аввали шумо интизор аст. |  |
+| `auth.panel.s10.badge` | Birinchi qadam — hisob ochganingizda | Қадами аввал — ҳангоми кушодани ҳисоб |  |
+| `auth.panel.s10.l1` | Birinchi yechim | Ҳали аввал |  |
+| `auth.panel.s10.l2` | Birinchi musobaqa | Мусобиқаи аввал |  |
+| `auth.panel.s10.l3` | 7 kunlik seriya | Серияи 7 рӯза |  |
 | `auth.members` | A'zolar | Аъзоён |  |
 | `geo.nudgeTitle` | Davlat va maktabingizni qo'shing | Кишвар ва мактаби худро илова кунед |  |
 | `geo.nudgeBody` | Maktab reytingida ko'rinish uchun kerak — 20 soniya vaqt oladi. | Барои дида шудан дар рейтинги мактабҳо лозим — 20 сония мегирад. |  |
