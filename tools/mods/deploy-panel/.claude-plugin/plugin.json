@@ -1,0 +1,6 @@
+{
+  "name": "deploy-panel",
+  "version": "0.1.0",
+  "description": "RankWant deploy panel: origin/main against the commit the live site runs",
+  "types": "./types/index.d.ts"
+}
