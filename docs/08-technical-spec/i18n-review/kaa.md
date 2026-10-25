@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2303 strings.**
+**2360 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1270,6 +1270,63 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.skip` | O'tkazib yuborish | Ótkerip jiberiw |  |
 | `auth.schoolSearch` | Maktab nomi bo'yicha qidirish | Mektep atı boyınsha izlew |  |
 | `auth.tagline` | Reyting xohlaganlar uchun | Reyting qáleytuǵınlar ushın |  |
+| `auth.panel.carousel` | Platforma haqida | Platforma haqqında |  |
+| `auth.panel.prev` | Oldingi slayd | Aldıńǵı slayd |  |
+| `auth.panel.next` | Keyingi slayd | Kelesi slayd |  |
+| `auth.panel.pause` | To'xtatish | Toqtatıw |  |
+| `auth.panel.play` | Davom ettirish | Dawam ettiriw |  |
+| `auth.panel.go` | {n}-slaydga o'tish | {n}-slaydqa ótiw |  |
+| `auth.panel.mascot` | Cho'qqi maskoti | Cho'qqi maskotı |  |
+| `auth.panel.a` | Masala yeching. | Máselelerdi sheshiń. |  |
+| `auth.panel.b` | Bellashing. | Básekilesiń. |  |
+| `auth.panel.c` | O'sing. | Ósiń. |  |
+| `auth.panel.s1.lead` | Yechim soniyalarda tekshiriladi, natijalar jadvali jonli yangilanadi. | Sheshim sekundlarda tekseriledi, nátiyjeler kestesi tikkeley jańalanadı. |  |
+| `auth.panel.s1.check` | TEKSHIRUV | TEKSERIW |  |
+| `auth.panel.s1.results` | Natijalar | Nátiyjeler |  |
+| `auth.panel.s1.live` | JONLI | TIKKELEY |  |
+| `auth.panel.s1.you` | siz | siz |  |
+| `auth.panel.s1.tests` | {n} / {total} test | {n} / {total} test |  |
+| `auth.panel.s2.title` | Har qadam — yangi cho'qqi. | Hár qádem — jańa shıń. |  |
+| `auth.panel.s2.lead` | Reytingingiz oshgan sari unvoningiz ham o'zgaradi. | Reytingińiz ósken sayın unvanıńız da ózgeredi. |  |
+| `auth.panel.s2.bubble` | Birinchi qadam — hisob yarating! | Birinshi qádem — akkaunt jaratıń! |  |
+| `auth.panel.s3.bubble` | Salom! Men Cho'qqiman. Bugun nechta masala yechamiz? | Sálem! Men Cho'qqiman. Búgin neshe másele sheshemiz? |  |
+| `auth.panel.s4.title` | O'z o'ringizni egallang. | Óz orńıńızdı iyeleń. |  |
+| `auth.panel.s4.lead` | Har musobaqadan keyin reyting yangilanadi. Navbat sizda. | Hár básekiden keyin reyting jańalanadı. Gezek sizde. |  |
+| `auth.panel.s4.you` | Siz | Siz |  |
+| `auth.panel.s5.title` | Keyingi musobaqaga tayyormisiz? | Keyingi básekige tayarsızba? |  |
+| `auth.panel.s5.lead` | Hisob oching va joyingizni oldindan band qiling. | Akkaunt jaratıp, orńıńızdı aldın ala band etiń. |  |
+| `auth.panel.s5.next` | KEYINGI MUSOBAQA | KEYINGI BÁSEKI |  |
+| `auth.panel.s5.sample` | namuna | úlgi |  |
+| `auth.panel.s5.name` | Haftalik raund | Háptelik raund |  |
+| `auth.panel.s5.days` | kun | kún |  |
+| `auth.panel.s5.hours` | soat | saat |  |
+| `auth.panel.s5.minutes` | daqiqa | minut |  |
+| `auth.panel.s5.open` | Ro'yxatdan o'tish ochiq | Dizimnen ótiw ashıq |  |
+| `auth.panel.s6.title` | Har yechim soniyalarda hukm oladi. | Hár sheshim sekundlarda húkim aladı. |  |
+| `auth.panel.s6.lead` | AC, WA, TLE — qaysi testda xato qilganingiz ham ko'rinadi. | AC, WA, TLE — qaysı testte qátelesiwińiz de kórinedi. |  |
+| `auth.panel.s6.allTests` | Barcha testlar o'tdi | Barlıq testler ótti |  |
+| `auth.panel.s6.wrongAt` | {n}-testda xato | {n}-testte qátelik |  |
+| `auth.panel.s6.timeAt` | {n}-testda vaqt tugadi | {n}-testte waqıt tawsıldı |  |
+| `auth.panel.s6.memoryAt` | {n}-testda xotira oshdi | {n}-testte yadtan asıp ketti |  |
+| `auth.panel.s6.compile` | Kompilyatsiya xatosi | Kompilyaciya qátesi |  |
+| `auth.panel.s7.title` | Kuniga bitta masala. Seriyani uzmang. | Kúnine bir másele. Seriyanı úzbeń. |  |
+| `auth.panel.s7.lead` | Faolligingiz profilingizda butun yil ko'rinib turadi. | Aktivligińiz profilde pútkil jıl kórinip turadı. |  |
+| `auth.panel.s7.streak` | kunlik seriya | kúnlik seriya |  |
+| `auth.panel.s7.less` | Kam | Az |  |
+| `auth.panel.s7.more` | Ko'p | Kóp |  |
+| `auth.panel.s9.title` | Uch qadamda boshlang. | Úsh qádemde baslań. |  |
+| `auth.panel.s9.lead` | Birinchi masalangizni bir daqiqada yechishingiz mumkin. | Birinshi máseleni bir minutta shesha alasız. |  |
+| `auth.panel.s9.step1` | Hisob oching | Akkaunt jaratıń |  |
+| `auth.panel.s9.step1d` | Email yoki Telegram bilan | Email yamasa Telegram arqalı |  |
+| `auth.panel.s9.step2` | Birinchi masalani yeching | Birinshi máseleni sheshiń |  |
+| `auth.panel.s9.step2d` | Natija soniyalarda chiqadi | Nátiyje sekundlarda shıǵadı |  |
+| `auth.panel.s9.step3` | Reytingga chiqing | Reytingke kiriń |  |
+| `auth.panel.s9.step3d` | Musobaqada qatnashing, unvon oling | Básekilerge qatnasıp, unvan alıń |  |
+| `auth.panel.s10.title` | Birinchi yutug'ingiz sizni kutmoqda. | Birinshi jetiskenligińiz sizdi kútip tur. |  |
+| `auth.panel.s10.badge` | Birinchi qadam — hisob ochganingizda | Birinshi qádem — akkaunt ashqanda |  |
+| `auth.panel.s10.l1` | Birinchi yechim | Birinshi sheshim |  |
+| `auth.panel.s10.l2` | Birinchi musobaqa | Birinshi báseki |  |
+| `auth.panel.s10.l3` | 7 kunlik seriya | 7 kúnlik seriya |  |
 | `auth.members` | A'zolar | Aǵzalar |  |
 | `geo.nudgeTitle` | Davlat va maktabingizni qo'shing | Mámleket hám mektebińizdi qosıń |  |
 | `geo.nudgeBody` | Maktab reytingida ko'rinish uchun kerak — 20 soniya vaqt oladi. | Mektep reytinginde kóriniw ushın kerek — 20 sekund waqıt aladı. |  |

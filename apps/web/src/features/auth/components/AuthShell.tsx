@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import BrandMark from "@/layout/BrandMark";
@@ -6,8 +5,10 @@ import { LocaleSwitch } from "@/layout/LocaleSwitch";
 import { getLocale } from "@/i18n/server";
 import { t, type MessageKey } from "@/i18n/messages";
 
-/** Platform areas named in the brand panel. Existing nav keys, so the
- *  panel adds no new copy to translate. */
+import { AuthPanel } from "./AuthPanel";
+
+/** Platform areas named under the form below `lg`, where the panel is
+ *  hidden. Existing nav keys. */
 const AREAS: MessageKey[] = [
   "nav.problems",
   "nav.contests",
@@ -21,9 +22,10 @@ const AREAS: MessageKey[] = [
  *  This replaces the single centred card of decision 18. That decision
  *  dropped an earlier split screen because its panel rendered
  *  `api.stats()` and `api.contests()`: when the API was slow or down the
- *  panel came up empty. The reason still holds, so this panel is
- *  STATIC — brand, tagline and area names, no request. The sign-in page
- *  must not depend on anything.
+ *  panel came up empty. The reason still holds, so the panel is STATIC —
+ *  since 2026-10-25 a ten-slide carousel (`AuthPanel`) of illustrations and
+ *  the Cho'qqi mascot, no request. The sign-in page must not depend on
+ *  anything.
  *
  *  The site header and footer are not drawn on this route (`FULL` in
  *  `AppShell`), so what they carried lives here: the brand link, the
@@ -37,44 +39,8 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-[5fr_6fr]">
-      {/* Light: the page's own text/ground pair, swapped. Dark: a raised
-          surface with the normal text colour — swapped there, the panel
-          would be the brightest thing on a dark page. Both pairs are
-          contrast-checked in every style. */}
-      <aside className="hidden flex-col justify-between gap-8 bg-[var(--rw-text)] p-12 text-[var(--rw-ground)] lg:flex dark:bg-[var(--rw-surface-2)] dark:text-[var(--rw-text)]">
-        <Link
-          href="/"
-          className="self-start text-2xl font-bold rw-radius-sm rw-focus-ring"
-        >
-          RankWant
-        </Link>
-        <div className="flex flex-col gap-6">
-          <span className="grid h-36 w-36 place-items-center rounded-[2rem] bg-white">
-            <Image
-              src="/brand/mark-crest.svg"
-              alt=""
-              width={112}
-              height={112}
-              unoptimized
-            />
-          </span>
-          <p className="text-4xl font-bold leading-tight">
-            {t(locale, "auth.tagline")}
-          </p>
-          <p className="text-theme-xl">{t(locale, "footer.tagline")}</p>
-        </div>
-        <ul className="flex flex-wrap gap-2.5">
-          {AREAS.map((key) => (
-            <li
-              key={key}
-              className="rounded-full border border-current px-3.5 py-2 text-theme-sm"
-            >
-              {t(locale, key)}
-            </li>
-          ))}
-        </ul>
-      </aside>
+    <div className="grid min-h-screen lg:grid-cols-[minmax(26rem,35%)_1fr]">
+      <AuthPanel locale={locale} />
 
       <div className="flex min-h-screen flex-col">
         <div className="flex items-center justify-between gap-3 px-5 py-4 lg:justify-end lg:px-12">

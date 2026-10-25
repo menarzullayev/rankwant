@@ -3128,6 +3128,46 @@ def neg_decisions_sign_in_panel_calls_api() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_carousel_loses_pause() -> tuple[bool, str]:
+    """The carousel moves by itself and the pause button goes (WCAG 2.2.2)."""
+    return _decision_broken(
+        "apps/web/src/features/auth/components/AuthCarousel.tsx",
+        "aria-label={playing ? labels.pause : labels.play}",
+        "aria-label={labels.play}",
+        "to'xtatish tugmasi yo'q",
+    )
+
+
+def neg_decisions_carousel_ignores_reduced_motion() -> tuple[bool, str]:
+    """Auto-advance no longer looks at `prefers-reduced-motion`."""
+    return _decision_broken(
+        "apps/web/src/features/auth/components/AuthCarousel.tsx",
+        'const query = window.matchMedia("(prefers-reduced-motion: reduce)");',
+        'const query = window.matchMedia("(prefers-color-scheme: dark)");',
+        "prefers-reduced-motion hisobga olinmaydi",
+    )
+
+
+def neg_decisions_carousel_panel_calls_api() -> tuple[bool, str]:
+    """A slide starts reading live data again (decision 18)."""
+    return _decision_broken(
+        "apps/web/src/features/auth/components/AuthPanel.tsx",
+        'import Link from "next/link";',
+        'import Link from "next/link";\nimport { api } from "@/lib/api";',
+        "slaydlar statik bo'lishi shart",
+    )
+
+
+def neg_decisions_carousel_loses_a_slide() -> tuple[bool, str]:
+    """A slide is dropped: the carousel is no longer the agreed ten."""
+    return _decision_broken(
+        "apps/web/src/features/auth/components/AuthPanel.tsx",
+        "    // 10 — the first achievement",
+        "    // x — the first achievement",
+        "10 ta slayd bo'lishi shart",
+    )
+
+
 def neg_decisions_clay_dark_block_removed() -> tuple[bool, str]:
     """The palette goes: a dark-mode device is back on light surfaces."""
     return _decision_broken(
@@ -6194,6 +6234,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/app/auth.css",
     # Two-column sign-in page (2026-10-04): the rule reads the shell too.
     "apps/web/src/features/auth/components/AuthShell.tsx",
+    # Brand-panel carousel (2026-10-25): the rule reads the slides, the
+    # carousel and its stylesheet.
+    "apps/web/src/features/auth/components/AuthPanel.tsx",
+    "apps/web/src/features/auth/components/AuthCarousel.tsx",
+    "apps/web/src/features/auth/auth-panel.css",
     # Clay dark palette (2026-10-05): the rule reads the style catalogue.
     "apps/web/src/layout/styles.ts",
     # Signed-in home dashboard (2026-10-05).
@@ -9753,6 +9798,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kirish sahifasiga sayt chrome'i qaytsa tutilsin", neg_decisions_sign_in_gets_site_chrome_back),
             ("kirish sahifasida til tanlagich yo'qolsa tutilsin", neg_decisions_sign_in_loses_locale_switch),
             ("kirish paneli API'ga bog'lansa tutilsin", neg_decisions_sign_in_panel_calls_api),
+            ("karusel to'xtatish tugmasini yo'qotsa tutilsin", neg_decisions_carousel_loses_pause),
+            ("karusel harakat sozlamasini tinglamasa tutilsin", neg_decisions_carousel_ignores_reduced_motion),
+            ("karusel slaydi API'ga bog'lansa tutilsin", neg_decisions_carousel_panel_calls_api),
+            ("karusel slaydini yo'qotsa tutilsin", neg_decisions_carousel_loses_a_slide),
             ("web filtri sxemani unutsa tutilsin", neg_decisions_schema_filter_dropped),
             ("openapi:check qadami olib tashlansa tutilsin", neg_decisions_openapi_check_step_dropped),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),

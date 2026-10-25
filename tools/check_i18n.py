@@ -125,6 +125,10 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # tillarida bir xil yoziladi; "Supernova", "Pulsar", "Magnetar"
         # hech qaysi tilda o'girilmaydi (ADR-0027).
         "title.atom", "title.supernova", "title.pulsar", "title.magnetar",
+        # Kirish paneli: "siz" / "Siz" ("you") and "{n} / {total} test" are
+        # the same word in uz, tr and kaa (and the unit is the loanword
+        # "test" everywhere); forcing a different one would be artificial.
+        "auth.panel.s1.you", "auth.panel.s4.you", "auth.panel.s1.tests",
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.

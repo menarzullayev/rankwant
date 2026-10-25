@@ -1848,6 +1848,37 @@ def sign_in_page_is_self_contained() -> str | None:
     return None
 
 
+def auth_panel_is_a_static_carousel() -> str | None:
+    """2026-10-25 (HITL): the `/login` brand panel is a ten-slide carousel.
+
+    Decision 18 keeps the sign-in page free of any dependency, so the panel
+    stays static illustration — no request, no data. A carousel moves by
+    itself, so it must also obey WCAG 2.2.2: a pause button, no auto-advance
+    under `prefers-reduced-motion`, inactive slides out of the Tab order
+    (`inert`) and out of the reader's way (`aria-hidden`).
+    """
+    shell = read("apps/web/src/features/auth/components/AuthShell.tsx")
+    if "<AuthPanel" not in shell:
+        return "AuthShell.tsx: brend paneli AuthPanel dan chizilmaydi"
+    panel = read("apps/web/src/features/auth/components/AuthPanel.tsx")
+    slides = re.findall(r"^    // (\d+) — ", panel, re.M)
+    if slides != [str(n) for n in range(1, 11)]:
+        return f"AuthPanel.tsx: karusel 10 ta slayd bo'lishi shart, topildi {len(slides)}"
+    if re.search(r"""from ["']@/lib/api["']""", panel) or "fetch(" in panel:
+        return "AuthPanel.tsx: karusel API'ga bog'liq — slaydlar statik bo'lishi shart"
+    carousel = read("apps/web/src/features/auth/components/AuthCarousel.tsx")
+    if carousel.count("prefers-reduced-motion: reduce") < 2:
+        return "AuthCarousel.tsx: prefers-reduced-motion hisobga olinmaydi (WCAG 2.2.2)"
+    if "aria-label={playing ? labels.pause : labels.play}" not in carousel:
+        return "AuthCarousel.tsx: to'xtatish tugmasi yo'q (WCAG 2.2.2)"
+    if "inert=" not in carousel or "aria-hidden=" not in carousel:
+        return "AuthCarousel.tsx: faol bo'lmagan slaydlar Tab tartibida qoladi"
+    css = read("apps/web/src/features/auth/auth-panel.css")
+    if "prefers-reduced-motion: reduce" not in css:
+        return "auth-panel.css: harakat kamaytirilganda animatsiya to'xtamaydi"
+    return None
+
+
 def sign_up_asks_the_handle_and_names() -> str | None:
     """2026-10-25 (CP Club comparison): handle on step 1, split names on step 2.
 
@@ -3543,6 +3574,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
+    ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),
     ("ro'yxatdan o'tish taxallus va ismni so'raydi", sign_up_asks_the_handle_and_names),
     ("customization invariantlari", customization_invariants_are_written),
     ("Security run o'chiq", security_run_is_disabled),
