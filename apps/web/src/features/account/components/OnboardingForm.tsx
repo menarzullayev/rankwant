@@ -6,16 +6,17 @@ import { useEffect, useState } from "react";
 
 import { TabBar } from "@/components/kit/TabBar";
 import { Button } from "@/components/ui/Button";
-import { Field, type FieldStatus } from "@/components/ui/Field";
+import { Field } from "@/components/ui/Field";
 import { SelectField } from "@/components/ui/SelectField";
 import { CountrySelect } from "@/components/ui/CountrySelect";
 import { Status } from "@/components/ui/Status";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { api, getJson, patchJson, type Me, type School } from "@/lib/api";
+import { api, patchJson, type Me, type School } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { REGION_CODES, regionName } from "@rankwant/shared/regions";
 import { safeNext } from "@/lib/site";
+import { useUsernameCheck } from "../useUsernameCheck";
 import { fieldErrors, onboardingSchema } from "@rankwant/shared/validation";
 
 /** Server bergan VAQTINCHALIK nommi (`u` + 12 ta kichik harf/raqam)?
@@ -86,7 +87,6 @@ export function OnboardingForm({ me }: { me: Me }) {
   const [lastName, setLastName] = useState(
     me.last_name || (me.display_name || "").split(" ").slice(1).join(" "),
   );
-  const [nameCheck, setNameCheck] = useState<{ for: string; status: FieldStatus }>();
   const [country, setCountry] = useState(me.country || "UZ");
   const [region, setRegion] = useState(me.region || "");
   const [city, setCity] = useState(me.city || "");
@@ -102,42 +102,8 @@ export function OnboardingForm({ me }: { me: Me }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  //: Nom bandligi — 1-qadamdan ko'chgan tekshiruv, xatti-harakati bir
-  //: xil: odam yozishdan to'xtaganda bitta so'rov ketadi va oldingisi
-  //: bekor qilinadi. Aks holda «ali» uchun to'rtta javob qaytardi va
-  //: ular tartibsiz kelib, oxirgisi eskisi bo'lib qolishi mumkin edi.
-  useEffect(() => {
-    if (username.length < 3) return;
-    const stop = new AbortController();
-    const timer = setTimeout(() => {
-      getJson<{ available: boolean; reason: string }>(
-        `/auth/username-check/?u=${encodeURIComponent(username)}`,
-        { signal: stop.signal },
-      )
-        .then((data) =>
-          setNameCheck({
-            for: username,
-            status: data.available
-              ? { kind: "ok", text: t(locale, "auth.usernameFree") }
-              : { kind: "bad", text: data.reason },
-          }),
-        )
-        // Tarmoq yiqilsa jim qolamiz: server baribir tekshiradi va
-        // yolg'on «band» yozuvi odamni bekorga qaytarardi.
-        .catch(() => undefined);
-    }, 400);
-    return () => {
-      clearTimeout(timer);
-      stop.abort();
-    };
-  }, [username, locale]);
-
-  const nameStatus: FieldStatus | undefined =
-    username.length < 3
-      ? undefined
-      : nameCheck?.for === username
-        ? nameCheck.status
-        : { kind: "busy", text: t(locale, "auth.checking") };
+  //: Nom bandligi: ikkala qadamda bitta hook (`useUsernameCheck`).
+  const nameStatus = useUsernameCheck(username);
 
   const isUz = country === "UZ";
   const query = school.trim();

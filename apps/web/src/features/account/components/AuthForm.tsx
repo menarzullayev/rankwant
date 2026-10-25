@@ -26,6 +26,7 @@ import {
 } from "@rankwant/shared/validation";
 import { Turnstile } from "@/features/auth";
 import { safeNext } from "@/lib/site";
+import { useUsernameCheck } from "../useUsernameCheck";
 
 type Mode = "login" | "register";
 
@@ -117,6 +118,8 @@ export function AuthForm({
   const [busy, setBusy] = useState(false);
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState("");
+  //: Optional handle on step 1, controlled so its free/taken note can follow it.
+  const [handle, setHandle] = useState("");
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
   //: Shartlar va maxfiylik — MAJBURIY (qaror 13). Ataylab `false` dan
@@ -139,6 +142,16 @@ export function AuthForm({
   //: note). They used to collapse into one alert under the form, which
   //: said what was wrong but not where.
   const [invalid, setInvalid] = useState<Partial<Record<FieldName, string>>>({});
+  //: Step-1 handle note, strongest first: a refusal from the last submit,
+  //: then a format problem, then the live free/taken answer. The format is
+  //: judged locally, so a malformed name never costs a request.
+  const handleFormat = optionalUsernameError(handle);
+  const handleLive = useUsernameCheck(handle, mode === "register" && !handleFormat);
+  const handleStatus =
+    bad(invalid.username) ??
+    (handleFormat && handle.trim().length >= 3
+      ? bad(t(locale, handleFormat))
+      : handleLive);
   //: «Forma boshlandi» hodisasi BIR MARTA yuboriladi (qaror 17). Har
   //: fokusda yuborilsa funnel shishib ketardi va raqam ma'nosini
   //: yo'qotardi.
@@ -419,9 +432,14 @@ export function AuthForm({
             maxLength={30}
             autoCapitalize="none"
             spellCheck={false}
+            value={handle}
+            onChange={(e) => {
+              setHandle(e.target.value);
+              if (invalid.username) setInvalid((prev) => ({ ...prev, username: undefined }));
+            }}
             placeholder={t(locale, "auth.usernamePlaceholder")}
             hint={t(locale, "auth.usernameOptionalHint")}
-            status={bad(invalid.username)}
+            status={handleStatus}
           />
         )}
         <Field
