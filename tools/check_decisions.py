@@ -1871,6 +1871,14 @@ def sign_up_asks_the_handle_and_names() -> str | None:
     for key in ("emailPlaceholder", "usernamePlaceholder"):
         if f'"auth.{key}"' not in form:
             return f"AuthForm.tsx: auth.{key} namunasi yo'q"
+    # Live free/taken note: one hook for both steps, asking the real endpoint.
+    if "useUsernameCheck(" not in form:
+        return "AuthForm.tsx: 1-qadamda taxallus band/bo'sh tekshiruvi yo'q"
+    if "useUsernameCheck(" not in onboarding:
+        return "OnboardingForm.tsx: 2-qadam umumiy useUsernameCheck dan foydalanmaydi"
+    hook = read("apps/web/src/features/account/useUsernameCheck.ts")
+    if "/auth/username-check/?u=" not in hook:
+        return "useUsernameCheck.ts: username-check endpoint'iga murojaat qilmaydi"
     return None
 
 

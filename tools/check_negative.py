@@ -3068,6 +3068,16 @@ def neg_decisions_sign_up_loses_the_handle() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_step_one_stops_checking_the_handle() -> tuple[bool, str]:
+    """Step 1 stops using the live check: a taken handle shows only on submit."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/AuthForm.tsx",
+        "useUsernameCheck(handle,",
+        "unusedCheck(handle,",
+        "1-qadamda taxallus band/bo'sh tekshiruvi yo'q",
+    )
+
+
 def neg_decisions_onboarding_back_to_one_name() -> tuple[bool, str]:
     """Step 2 drops the last-name field."""
     return _decision_broken(
@@ -9701,6 +9711,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
+            ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_onboarding_back_to_one_name),
             ("telefonda chiplar yo'qolsa tutilsin", neg_decisions_phone_loses_the_chips),
             ("seed A+B ni bitta tilga yopsa tutilsin", neg_decisions_seed_restricts_a_plus_b),
