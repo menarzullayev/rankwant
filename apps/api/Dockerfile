@@ -39,6 +39,9 @@ COPY . .
 # label jimgina `unknown` bo'lib qolardi.
 ARG GIT_SHA=unknown
 ARG BUILT_AT=unknown
+# `ENV` too: a `LABEL` is invisible from inside the running container, and
+# `/api/v1/version/` has to report the commit this process was built from.
+ENV GIT_SHA=$GIT_SHA
 LABEL org.rankwant.git-sha=$GIT_SHA
 LABEL org.rankwant.built-at=$BUILT_AT
 

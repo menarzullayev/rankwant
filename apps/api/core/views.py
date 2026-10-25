@@ -137,6 +137,31 @@ class HealthView(APIView):
         )
 
 
+@extend_schema(summary="Ishlayotgan commit")
+class VersionView(APIView):
+    """Commit this API image was built from.
+
+    Public on purpose: the repository is public, so the SHA is no secret, and
+    "is production on the commit we merged?" had no answer outside the host
+    (the only record was a Docker image label). Nothing else is exposed - no
+    build time, no dependency versions.
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+    #: No database, no cache: the answer must not depend on them being up,
+    #: and a throttle would need Redis (see `HealthView`).
+    throttle_classes: list[Any] = []
+
+    @extend_schema(responses={200: OpenApiResponse(description="`{sha}`; `unknown` if unset")})
+    def get(self, request: Request) -> Response:
+        # `no-store`: a CDN holding an old answer would report a deploy that
+        # already happened as missing.
+        response = Response({"sha": settings.GIT_SHA})
+        response["Cache-Control"] = "no-store"
+        return response
+
+
 def _check_database() -> str:
     try:
         connection.ensure_connection()

@@ -316,6 +316,21 @@ class TestApiToken:
         assert token.revoked_at is not None
 
 
+class TestVersion:
+    """`/version/` reports the build commit, publicly, and never cached."""
+
+    def test_ommaviy_va_faqat_sha(self, settings) -> None:
+        settings.GIT_SHA = "abc1234"
+        r = APIClient().get(reverse("version"))
+        assert r.status_code == 200
+        assert r.json() == {"sha": "abc1234"}
+        assert r["Cache-Control"] == "no-store"
+
+    def test_sha_berilmasa_unknown(self, settings) -> None:
+        settings.GIT_SHA = "unknown"
+        assert APIClient().get(reverse("version")).json() == {"sha": "unknown"}
+
+
 @pytest.mark.django_db
 class TestHealth:
     """Readiness bog'liqliklarni haqiqatan tekshirishi kerak.
