@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2297 strings.**
+**2303 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -269,6 +269,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernameInvalid` | Taxallus faqat lotin harflari, raqamlar va pastki chiziqdan iborat bo'lsin | Laqab tek latın háripleri, sanlar hám astı sızıqtan ibarat bolıwı kerek |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Laqab 3–30 belgi: bos qalmasın |  |
 | `auth.usernameHint` | 3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha | 3–30 belgi: latın háripleri, san, noqat, astıńǵı sızıq, sızıqsha |  |
+| `auth.emailPlaceholder` | siz@example.com | siz@misal.uz |  |
+| `auth.usernamePlaceholder` | sardor_dev | aybek_dev |  |
+| `auth.usernameOptional` | Taxallus (ixtiyoriy) | Laqap (ixtiyariy) |  |
+| `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Keyinirek te saylawıńız múmkin |  |
+| `auth.firstNamePlaceholder` | Masalan: Sardor | Mısalı: Sardor |  |
+| `auth.lastNamePlaceholder` | Masalan: Rahimov | Mısalı: Rahimov |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Keminde 8 belgi. Tek sannan ibarat bolmasın. |  |
 | `auth.usernameFree` | Bu nom bo'sh | Bul at bos |  |
 | `auth.checking` | Tekshirilmoqda… | Tekserilip atır… |  |

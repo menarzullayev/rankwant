@@ -256,6 +256,12 @@ export const ru: Record<MessageKey, string> = {
 
   "auth.usernameRequired": "Ник 3–30 символов: не оставляйте пустым",
   "auth.usernameHint": "3–30 символов: латинские буквы, цифры, точка, подчёркивание, дефис",
+  "auth.emailPlaceholder": "name@example.com",
+  "auth.usernamePlaceholder": "ivan_dev",
+  "auth.usernameOptional": "Ник (необязательно)",
+  "auth.usernameOptionalHint": "Можно выбрать позже",
+  "auth.firstNamePlaceholder": "Например: Иван",
+  "auth.lastNamePlaceholder": "Например: Петров",
   "auth.passwordHint": "Не менее 8 символов. Не только цифры.",
   "auth.usernameFree": "Имя свободно",
   "auth.checking": "Проверяем…",

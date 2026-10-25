@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2297 strings.**
+**2303 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -269,6 +269,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernameInvalid` | Taxallus faqat lotin harflari, raqamlar va pastki chiziqdan iborat bo'lsin | Лакап латын тамгалары, сандар жана астыңкы сызыктан гана турушу керек |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Лакап 3–30 белги: бош калбасын |  |
 | `auth.usernameHint` | 3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha | 3–30 белги: латын тамгалары, сан, чекит, астыңкы сызык, дефис |  |
+| `auth.emailPlaceholder` | siz@example.com | siz@misal.kg |  |
+| `auth.usernamePlaceholder` | sardor_dev | erlan_dev |  |
+| `auth.usernameOptional` | Taxallus (ixtiyoriy) | Ник (милдеттүү эмес) |  |
+| `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Кийинчерээк тандасаңыз болот |  |
+| `auth.firstNamePlaceholder` | Masalan: Sardor | Мисалы: Эрлан |  |
+| `auth.lastNamePlaceholder` | Masalan: Rahimov | Мисалы: Асанов |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Эң аз 8 белги. Жалаң сандан турбасын. |  |
 | `auth.usernameFree` | Bu nom bo'sh | Бул ат бош |  |
 | `auth.checking` | Tekshirilmoqda… | Текшерилүүдө… |  |

@@ -256,6 +256,12 @@ export const kaa: Record<MessageKey, string> = {
 
   "auth.usernameRequired": "Laqab 3–30 belgi: bos qalmasın",
   "auth.usernameHint": "3–30 belgi: latın háripleri, san, noqat, astıńǵı sızıq, sızıqsha",
+  "auth.emailPlaceholder": "siz@misal.uz",
+  "auth.usernamePlaceholder": "aybek_dev",
+  "auth.usernameOptional": "Laqap (ixtiyariy)",
+  "auth.usernameOptionalHint": "Keyinirek te saylawıńız múmkin",
+  "auth.firstNamePlaceholder": "Mısalı: Sardor",
+  "auth.lastNamePlaceholder": "Mısalı: Rahimov",
   "auth.passwordHint": "Keminde 8 belgi. Tek sannan ibarat bolmasın.",
   "auth.usernameFree": "Bul at bos",
   "auth.checking": "Tekserilip atır…",

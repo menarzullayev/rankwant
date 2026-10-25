@@ -82,7 +82,21 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
           <LocaleSwitch />
         </div>
         <div className="flex flex-1 items-center justify-center px-5 py-6 lg:px-12">
-          <div className="w-full max-w-md">{children}</div>
+          <div className="w-full max-w-md">
+            {children}
+            {/* The brand panel is hidden below `lg`; its area names follow
+                the form so a phone visitor still sees what the site is. */}
+            <ul className="mt-6 flex flex-wrap justify-center gap-2 lg:hidden">
+              {AREAS.map((key) => (
+                <li
+                  key={key}
+                  className="rounded-full border rw-line px-3 py-1.5 text-theme-xs rw-dim"
+                >
+                  {t(locale, key)}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <p className="px-5 pb-6 text-center text-theme-xs rw-dim lg:px-12">
           <Link href="/terms" className="underline rw-focus-ring">

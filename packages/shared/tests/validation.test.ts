@@ -19,6 +19,7 @@ import {
   fieldErrors,
   loginSchema,
   onboardingSchema,
+  optionalUsernameError,
   passwordChangeSchema,
   registerSchema,
   resetRequestSchema,
@@ -323,5 +324,23 @@ describe("fieldErrors", () => {
     const errors = fieldErrors(r);
     expect(errors.email).toBe("auth.emailInvalid");
     expect(errors.terms_accepted).toBe("auth.termsRequired");
+  });
+});
+
+describe("optionalUsernameError — taxallus 1-qadamda ixtiyoriy", () => {
+  it("bo'sh qiymat xato emas", () => {
+    expect(optionalUsernameError("")).toBeUndefined();
+    expect(optionalUsernameError("   ")).toBeUndefined();
+  });
+
+  it("to'g'ri taxallus o'tadi", () => {
+    expect(optionalUsernameError("sardor_dev")).toBeUndefined();
+    expect(optionalUsernameError("  sardor_dev ")).toBeUndefined();
+  });
+
+  it("noto'g'ri taxallus rad etiladi", () => {
+    expect(optionalUsernameError("ab")).toBe("auth.usernameInvalid");
+    expect(optionalUsernameError("sardor dev")).toBe("auth.usernameInvalid");
+    expect(optionalUsernameError("x".repeat(USERNAME_MAX + 1))).toBe("auth.usernameInvalid");
   });
 });

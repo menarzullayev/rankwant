@@ -166,6 +166,17 @@ export const USERNAME_MAX = 30;
 const USERNAME = /^[a-zA-Z0-9_]{3,30}$/;
 
 /**
+ * The handle on the FIRST sign-up step is optional: blank is fine (the server
+ * gives a temporary one and step 2 asks again); a typed one must already
+ * look right, so a typo is caught before the request.
+ */
+export function optionalUsernameError(value: string): RuleKey | undefined {
+  const name = value.trim();
+  if (!name) return undefined;
+  return USERNAME.test(name) ? undefined : "auth.usernameInvalid";
+}
+
+/**
  * Ro'yxatdan o'tishning 2-qadami.
  *
  * Faqat `username` MAJBURIY (3-qaror) — qolgani ixtiyoriy, ya'ni ular

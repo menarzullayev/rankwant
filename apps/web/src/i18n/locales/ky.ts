@@ -256,6 +256,12 @@ export const ky: Record<MessageKey, string> = {
 
   "auth.usernameRequired": "Лакап 3–30 белги: бош калбасын",
   "auth.usernameHint": "3–30 белги: латын тамгалары, сан, чекит, астыңкы сызык, дефис",
+  "auth.emailPlaceholder": "siz@misal.kg",
+  "auth.usernamePlaceholder": "erlan_dev",
+  "auth.usernameOptional": "Ник (милдеттүү эмес)",
+  "auth.usernameOptionalHint": "Кийинчерээк тандасаңыз болот",
+  "auth.firstNamePlaceholder": "Мисалы: Эрлан",
+  "auth.lastNamePlaceholder": "Мисалы: Асанов",
   "auth.passwordHint": "Эң аз 8 белги. Жалаң сандан турбасын.",
   "auth.usernameFree": "Бул ат бош",
   "auth.checking": "Текшерилүүдө…",

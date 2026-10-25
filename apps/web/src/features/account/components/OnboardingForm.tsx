@@ -77,7 +77,15 @@ export function OnboardingForm({ me }: { me: Me }) {
   const [username, setUsername] = useState(
     isTempUsername(me.username) ? "" : me.username,
   );
-  const [displayName, setDisplayName] = useState(me.display_name || "");
+  //: Ism va familiya alohida (2026-10-25). Ommaviy `display_name` ulardan
+  //: yig'iladi; hisobda faqat eski `display_name` bo'lsa, birinchi so'z ism,
+  //: qolgani familiya deb olinadi.
+  const [firstName, setFirstName] = useState(
+    me.first_name || (me.display_name || "").split(" ")[0] || "",
+  );
+  const [lastName, setLastName] = useState(
+    me.last_name || (me.display_name || "").split(" ").slice(1).join(" "),
+  );
   const [nameCheck, setNameCheck] = useState<{ for: string; status: FieldStatus }>();
   const [country, setCountry] = useState(me.country || "UZ");
   const [region, setRegion] = useState(me.region || "");
@@ -154,6 +162,10 @@ export function OnboardingForm({ me }: { me: Me }) {
     return () => clearTimeout(timer);
   }, [query, region, isUz, me.school_name]);
 
+  function fullName(first: string, last: string): string {
+    return `${first.trim()} ${last.trim()}`.trim();
+  }
+
   async function save(next: "home" | "skip") {
     setError("");
     // Tekshiruv `lib/validation.ts` da — bu forma qoidani TAKRORLAMAYDI.
@@ -161,7 +173,7 @@ export function OnboardingForm({ me }: { me: Me }) {
     const errors = fieldErrors<"username">(
       onboardingSchema.safeParse({
         username,
-        display_name: displayName,
+        display_name: fullName(firstName, lastName),
         city,
         school,
         phone,
@@ -183,7 +195,9 @@ export function OnboardingForm({ me }: { me: Me }) {
     try {
       await claimName();
       await patchJson<Me>("/me/", {
-        display_name: displayName.trim(),
+        display_name: fullName(firstName, lastName),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
         country,
         // O'zbekistonda viloyat — kod, boshqa joyda shahar erkin matn.
         // Ikkalasi birga yuborilsa ham, model faqat mos kelganini
@@ -259,15 +273,27 @@ export function OnboardingForm({ me }: { me: Me }) {
         status={nameStatus}
         hint={t(locale, "auth.usernameHint")}
       />
-      <Field
-        label={t(locale, "auth.displayName")}
-        name="display_name"
-        autoComplete="name"
-        maxLength={100}
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
-        hint={t(locale, "auth.displayNameHint")}
-      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field
+          label={t(locale, "settings.firstName")}
+          name="first_name"
+          autoComplete="given-name"
+          maxLength={50}
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder={t(locale, "auth.firstNamePlaceholder")}
+        />
+        <Field
+          label={t(locale, "settings.lastName")}
+          name="last_name"
+          autoComplete="family-name"
+          maxLength={50}
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder={t(locale, "auth.lastNamePlaceholder")}
+        />
+      </div>
+      <p className="-mt-3 text-theme-xs rw-dim">{t(locale, "auth.displayNameHint")}</p>
 
       <CountrySelect
         label={t(locale, "settings.country")}

@@ -1848,6 +1848,32 @@ def sign_in_page_is_self_contained() -> str | None:
     return None
 
 
+def sign_up_asks_the_handle_and_names() -> str | None:
+    """2026-10-25 (CP Club comparison): handle on step 1, split names on step 2.
+
+    Step 1 gains ONE optional handle field (blank keeps the temporary name and
+    step 2 still asks); step 2 asks first and last name instead of one display
+    name; the brand panel's area chips also follow the form below `lg`.
+    """
+    form = read("apps/web/src/features/account/components/AuthForm.tsx")
+    if 'name="username"' not in form or "optionalUsernameError" not in form:
+        return "AuthForm.tsx: 1-qadamda ixtiyoriy taxallus maydoni yo'q"
+    if "...(handle ? { username: handle } : {})" not in form:
+        return "AuthForm.tsx: taxallus ro'yxatdan o'tish so'roviga qo'shilmaydi"
+    onboarding = read("apps/web/src/features/account/components/OnboardingForm.tsx")
+    if 'name="first_name"' not in onboarding or 'name="last_name"' not in onboarding:
+        return "OnboardingForm.tsx: 2-qadamda ism va familiya alohida emas"
+    if "display_name: fullName(firstName, lastName)" not in onboarding:
+        return "OnboardingForm.tsx: ommaviy ism ism va familiyadan yig'ilmaydi"
+    shell = read("apps/web/src/features/auth/components/AuthShell.tsx")
+    if "lg:hidden" not in shell.split("{children}", 1)[1]:
+        return "AuthShell.tsx: telefonda forma ostida chiplar yo'q"
+    for key in ("emailPlaceholder", "usernamePlaceholder"):
+        if f'"auth.{key}"' not in form:
+            return f"AuthForm.tsx: auth.{key} namunasi yo'q"
+    return None
+
+
 def clay_follows_dark_mode() -> str | None:
     """2026-10-05: the factory style has a dark palette and is marked dual.
 
@@ -3509,6 +3535,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
+    ("ro'yxatdan o'tish taxallus va ismni so'raydi", sign_up_asks_the_handle_and_names),
     ("customization invariantlari", customization_invariants_are_written),
     ("Security run o'chiq", security_run_is_disabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),
