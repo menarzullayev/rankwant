@@ -3062,7 +3062,7 @@ def neg_decisions_sign_up_loses_the_handle() -> tuple[bool, str]:
     """The optional handle is no longer sent with the sign-up request."""
     return _decision_broken(
         "apps/web/src/features/account/components/AuthForm.tsx",
-        "          ...(handle ? { username: handle } : {}),\n",
+        "          ...(typed ? { username: typed } : {}),\n",
         "",
         "taxallus ro'yxatdan o'tish so'roviga qo'shilmaydi",
     )
@@ -3078,13 +3078,33 @@ def neg_decisions_step_one_stops_checking_the_handle() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_onboarding_back_to_one_name() -> tuple[bool, str]:
-    """Step 2 drops the last-name field."""
+def neg_decisions_step_one_drops_the_last_name() -> tuple[bool, str]:
+    """Step 1 stops asking the last name (it moved there on 2026-10-26)."""
     return _decision_broken(
-        "apps/web/src/features/account/components/OnboardingForm.tsx",
+        "apps/web/src/features/account/components/AuthForm.tsx",
         'name="last_name"',
         'name="family"',
-        "ism va familiya alohida emas",
+        "last_name maydoni yo'q",
+    )
+
+
+def neg_decisions_form_loses_no_validate() -> tuple[bool, str]:
+    """The browser's own English validation bubbles come back."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/AuthForm.tsx",
+        "        noValidate\n",
+        "",
+        "noValidate yo'q",
+    )
+
+
+def neg_decisions_consent_checkbox_returns() -> tuple[bool, str]:
+    """A consent checkbox returns to the sign-up form."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/AuthForm.tsx",
+        'await postJson("/auth/register/", {',
+        'await postJson("/auth/register/", { terms_accepted: true,',
+        "rozilik katakchasi qaytgan",
     )
 
 
@@ -9758,7 +9778,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
-            ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_onboarding_back_to_one_name),
+            ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),
+            ("1-qadam noValidate'siz", neg_decisions_form_loses_no_validate),
+            ("rozilik katakchasi qaytadi", neg_decisions_consent_checkbox_returns),
             ("telefonda chiplar yo'qolsa tutilsin", neg_decisions_phone_loses_the_chips),
             ("seed A+B ni bitta tilga yopsa tutilsin", neg_decisions_seed_restricts_a_plus_b),
             ("namunalar qutisi pozitsiyasiz qolsa tutilsin", neg_decisions_samples_scroll_box_not_positioned),

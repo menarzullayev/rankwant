@@ -44,6 +44,7 @@ class TestRegistrationLogin:
                 "username": "roziliksiz",
                 "email": "r@a.uz",
                 "password": "Parol!12345",
+                "terms_accepted": False,
             },
         )
         assert r.status_code == 400
@@ -660,3 +661,38 @@ class TestIchkiRenderChegarasi:
         # Proksi sarlavhasi sozlanmagan joyda hamma so'rov xususiy manzildan
         # keladi — himoya kengayib ketmasligi kerak.
         assert self._scope(settings, "") == "anon"
+
+
+@pytest.mark.django_db
+class TestRegisterNames:
+    """2026-10-26: ism/familiya 1-qadamda; rozilik tugma ostidagi matn bilan."""
+
+    def test_ism_familiya_ommaviy_nomga_yigiladi(self, client: APIClient) -> None:
+        r = client.post(
+            reverse("register"),
+            {
+                "email": "ism@a.uz",
+                "password": "Parol!12345",
+                "first_name": "Aziz",
+                "last_name": "Karimov",
+            },
+        )
+        assert r.status_code == 201, r.content
+        user = User.objects.get(email="ism@a.uz")
+        assert user.first_name == "Aziz"
+        assert user.last_name == "Karimov"
+        assert user.display_name == "Aziz Karimov"
+
+    def test_rozilik_maydonsiz_ham_yoziladi(self, client: APIClient) -> None:
+        r = client.post(reverse("register"), {"email": "m@a.uz", "password": "Parol!12345"})
+        assert r.status_code == 201, r.content
+        assert User.objects.get(email="m@a.uz").terms_accepted_at is not None
+
+    def test_zaif_parol_parol_maydoniga_yoziladi(self, client: APIClient) -> None:
+        """Parol qoidalari xatosi `password` kaliti ostida keladi: forma uni
+        maydonga bog'laydi va sahifa tilida ko'rsatadi."""
+        r = client.post(reverse("register"), {"email": "z@a.uz", "password": "12345678"})
+        assert r.status_code == 400
+        details = r.json()["error"]["details"]
+        assert "password" in details
+        assert any("numeric" in m for m in details["password"])

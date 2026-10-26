@@ -100,6 +100,36 @@ export const loginSchema = z
 
 export const registerSchema = authSchema;
 
+/**
+ * Ro'yxatdan o'tishning 1-qadami (2026-10-26): ism, familiya, email, parol
+ * va uning tasdig'i. Rozilik maydoni YO'Q — u tugma ostidagi matn bilan
+ * olinadi. Taxallus ixtiyoriy va alohida tekshiriladi
+ * (`optionalUsernameError`).
+ */
+export const signUpSchema = z
+  .object({
+    first_name: z.string().trim().min(1, "auth.required"),
+    last_name: z.string().trim().min(1, "auth.required"),
+    email: z.string().trim().min(1, "auth.required"),
+    password: z.string().min(1, "auth.required"),
+    password2: z.string().min(1, "auth.required"),
+  })
+  .superRefine((value, ctx) => {
+    if (value.email && !EMAIL.test(value.email)) {
+      ctx.addIssue({ code: "custom", path: ["email"], message: "auth.emailInvalid" });
+    }
+    if (value.password && value.password.length < PASSWORD_MIN) {
+      ctx.addIssue({ code: "custom", path: ["password"], message: "auth.passwordHint" });
+    }
+    if (value.password2 && value.password !== value.password2) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["password2"],
+        message: "auth.passwordMismatch",
+      });
+    }
+  });
+
 /** Rejimga qarab to'g'ri sxemani beradi. */
 export function authSchemaFor(mode: "login" | "register") {
   return mode === "register" ? registerSchema : loginSchema;

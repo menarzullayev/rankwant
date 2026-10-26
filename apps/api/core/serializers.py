@@ -604,7 +604,10 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
     #: Shartlar va maxfiylik siyosatiga rozilik — MAJBURIY va `True`
     #: bo'lishi shart. GDPR sukut bo'yicha rozilikni tan olmaydi, ya'ni
     #: belgilanmagan checkbox «rozilik» hisoblanmaydi.
-    terms_accepted = serializers.BooleanField(write_only=True)
+    #: 2026-10-26 qarori: rozilik katakchasiz — tugma ostidagi matn bilan
+    #: (browsewrap). Maydon yuborilmasa rozilik FAKTI ro'yxatdan o'tishning
+    #: o'zi hisoblanadi; aniq `False` esa baribir rad etiladi.
+    terms_accepted = serializers.BooleanField(write_only=True, required=False, default=True)
     #: Marketing xatlari — IXTIYORIY va ALOHIDA (GDPR 7-modda: shartlar
     #: roziligi bilan birlashtirib bo'lmaydi). Standart — `False`.
     marketing_opt_in = serializers.BooleanField(write_only=True, required=False, default=False)
@@ -622,6 +625,8 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             "username",
             "email",
             "password",
+            "first_name",
+            "last_name",
             "display_name",
             "country",
             "region",
@@ -664,6 +669,11 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             # `required=False` — «endi so'ralmaydi», «endi qabul
             # qilinmaydi» emas.
             "display_name": {"required": False, "allow_blank": True},
+            # Ism va familiya 1-qadamda so'raladi (2026-10-26); API'da
+            # ixtiyoriy qoladi — eski mijozlar ularni yubormaydi, veb-forma
+            # esa o'zi majburiy qiladi. `display_name` ulardan yig'iladi.
+            "first_name": {"required": False, "allow_blank": True, "max_length": 80},
+            "last_name": {"required": False, "allow_blank": True, "max_length": 80},
             "country": {"required": False, "allow_blank": True},
             # Viloyat ham shu sababdan qoladi: A/B sinovning `b`
             # variantida u ro'yxatdan o'tishning o'zida so'raladi
@@ -722,14 +732,20 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         # `validate_password` ga foydalanuvchi BERILISHI shart: usiz
         # `UserAttributeSimilarityValidator` umuman ishlamaydi va parol
         # sifatida username ni kiritish qabul qilinardi (o'lchandi).
-        validate_password(
-            attrs["password"],
-            User(
-                username=attrs.get("username", ""),
-                email=attrs.get("email", ""),
-                display_name=attrs.get("display_name", ""),
-            ),
-        )
+        # Parol qoidalari xatosi PAROL maydoniga yoziladi (2026-10-26): ilgari
+        # u `non_field_errors` ga tushardi va forma uni maydonga bog'lay
+        # olmasdi — odam umumiy «noto'g'ri ma'lumot» ni ko'rardi.
+        try:
+            validate_password(
+                attrs["password"],
+                User(
+                    username=attrs.get("username", ""),
+                    email=attrs.get("email", ""),
+                    display_name=attrs.get("display_name", ""),
+                ),
+            )
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError({"password": list(exc.messages)}) from None
 
         # Turnstile ENG OXIRIDA: token bir martalik, ya'ni uni parol
         # qoidasi yoki band pochta uchun behuda sarflash odamni qayta
@@ -755,6 +771,11 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         # `turnstile_token` — model maydoni EMAS; u `validate()` da
         # sarflandi va `User(**...)` ga tushsa `TypeError` berardi.
         validated_data.pop("turnstile_token", None)
+        # Ommaviy ko'rinadigan nom ism va familiyadan yig'iladi (ADR-0024:
+        # `first_name`/`last_name` o'zi ommaviy emas, `display_name` esa ha).
+        if not validated_data.get("display_name"):
+            full = f"{validated_data.get('first_name', '')} {validated_data.get('last_name', '')}"
+            validated_data["display_name"] = full.strip()
         # Nom berilmagan bo'lsa VAQTINCHALIK nom: model `unique=True`
         # talab qiladi, ya'ni bo'sh satr ikkinchi ro'yxatdan o'tishda
         # `IntegrityError` berardi. Nom 2-qadamda tanlanadi.

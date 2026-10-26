@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2360 strings.**
+**2370 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -284,7 +284,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.strength1` | Juda zaif | Өте әлсіз |  |
 | `auth.strength2` | Zaif | Әлсіз |  |
 | `auth.strength3` | O'rtacha | Орташа |  |
-| `auth.strength4` | Kuchli | Күшті |  |
+| `auth.strength4` | Yaxshi | Жақсы |  |
+| `auth.strength5` | Kuchli | Күшті |  |
+| `auth.welcomeBack` | Xush kelibsiz | Қайта қош келдіңіз |  |
+| `auth.rulesLabel` | Parol talablari | Құпиясөз талаптары |  |
+| `auth.rule.length` | Kamida 8 belgi | Кемінде 8 таңба |  |
+| `auth.rule.notNumeric` | Faqat raqamlardan iborat emas | Тек сандардан тұрмайды |  |
+| `auth.rule.varied` | Bir xil belgi takrorlanmaydi | Бір таңба қайталанбайды |  |
+| `auth.pwCommon` | Bu parol juda keng tarqalgan. Boshqasini tanlang. | Бұл құпиясөз тым кең таралған. Басқасын таңдаңыз. |  |
+| `auth.pwNumeric` | Parol faqat raqamlardan iborat bo'lmasin. | Құпиясөз тек сандардан тұрмауы керек. |  |
+| `auth.pwSimilar` | Parol taxallus yoki emailga juda o'xshash. | Құпиясөз лақап атқа немесе email-ге тым ұқсас. |  |
+| `auth.waitButton` | Kuting: {time} | Күтіңіз: {time} |  |
 | `auth.socialConsent` | Davom etish orqali siz {terms} va {privacy} siyosatiga rozilik bildirasiz. | Жалғастыру арқылы сіз {terms} және {privacy} саясатына келісесіз. |  |
 | `auth.verifyTitle` | Emailni tasdiqlash | Поштаны растау |  |
 | `auth.verifyPending` | Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing. | Поштаңыз расталмаған. Жіберілген хаттағы сілтемені ашыңыз. |  |

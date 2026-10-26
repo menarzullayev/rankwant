@@ -22,6 +22,7 @@ import {
   optionalUsernameError,
   passwordChangeSchema,
   registerSchema,
+  signUpSchema,
   resetRequestSchema,
   resetSchema,
   sourceSchema,
@@ -342,5 +343,37 @@ describe("optionalUsernameError — taxallus 1-qadamda ixtiyoriy", () => {
     expect(optionalUsernameError("ab")).toBe("auth.usernameInvalid");
     expect(optionalUsernameError("sardor dev")).toBe("auth.usernameInvalid");
     expect(optionalUsernameError("x".repeat(USERNAME_MAX + 1))).toBe("auth.usernameInvalid");
+  });
+});
+
+
+describe("signUpSchema", () => {
+  const base = {
+    first_name: "Aziz",
+    last_name: "Karimov",
+    email: "a@b.co",
+    password: "Parol!12345",
+    password2: "Parol!12345",
+  };
+
+  it("accepts a complete first step", () => {
+    expect(signUpSchema.safeParse(base).success).toBe(true);
+  });
+
+  it("asks for both names", () => {
+    const r = signUpSchema.safeParse({ ...base, first_name: " ", last_name: "" });
+    expect(fieldErrors(r)).toMatchObject({
+      first_name: "auth.required",
+      last_name: "auth.required",
+    });
+  });
+
+  it("has no consent field: the text under the button carries it", () => {
+    expect(Object.keys(signUpSchema.shape)).not.toContain("terms_accepted");
+  });
+
+  it("flags a mismatched confirmation on the confirmation field", () => {
+    const r = signUpSchema.safeParse({ ...base, password2: "boshqa-parol" });
+    expect(fieldErrors(r).password2).toBe("auth.passwordMismatch");
   });
 });

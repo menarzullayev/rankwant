@@ -1285,6 +1285,13 @@ class PasswordResetConfirmView(APIView):
         # Eski sessiyalar qoladi-yu, parol o'zgargani uchun ular
         # `AbstractBaseUser.get_session_auth_hash()` bilan bekor bo'ladi.
         log.info("parol tiklandi: %s", user.pk)
+        # Tiklashdan keyin odam shu qurilmada darhol kiradi (2026-10-26):
+        # havola pochta egasini allaqachon isbotladi. Boshqa qurilmalardagi
+        # sessiyalar parol o'zgargani uchun yuqorida bekor bo'ldi, bu yangi
+        # sessiya esa yangi parol xeshi bilan ochiladi. Javob 204 qoladi —
+        # cookie javob sarlavhasida keladi.
+        user.backend = settings.AUTHENTICATION_BACKENDS[0]
+        login(request, user)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

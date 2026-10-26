@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2360 strings.**
+**2370 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -284,7 +284,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.strength1` | Juda zaif | Júdá álsiz |  |
 | `auth.strength2` | Zaif | Álsiz |  |
 | `auth.strength3` | O'rtacha | Orta |  |
-| `auth.strength4` | Kuchli | Kúshli |  |
+| `auth.strength4` | Yaxshi | Jaqsı |  |
+| `auth.strength5` | Kuchli | Kúshli |  |
+| `auth.welcomeBack` | Xush kelibsiz | Xosh keldińiz |  |
+| `auth.rulesLabel` | Parol talablari | Parol talapları |  |
+| `auth.rule.length` | Kamida 8 belgi | Keminde 8 belgi |  |
+| `auth.rule.notNumeric` | Faqat raqamlardan iborat emas | Tek sanlardan ibarat emes |  |
+| `auth.rule.varied` | Bir xil belgi takrorlanmaydi | Bir belgi qaytalanbaydı |  |
+| `auth.pwCommon` | Bu parol juda keng tarqalgan. Boshqasini tanlang. | Bul parol júdá keń tarqalǵan. Basqasın tańlań. |  |
+| `auth.pwNumeric` | Parol faqat raqamlardan iborat bo'lmasin. | Parol tek sanlardan ibarat bolmawı kerek. |  |
+| `auth.pwSimilar` | Parol taxallus yoki emailga juda o'xshash. | Parol laqapqa yamasa email ǵa júdá uqsas. |  |
+| `auth.waitButton` | Kuting: {time} | Kútiń: {time} |  |
 | `auth.socialConsent` | Davom etish orqali siz {terms} va {privacy} siyosatiga rozilik bildirasiz. | Dawam etiw arqalı siz {terms} hám {privacy} siyasatına kelisim bildiresiz. |  |
 | `auth.verifyTitle` | Emailni tasdiqlash | Emaildi tastıyıqlaw |  |
 | `auth.verifyPending` | Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing. | Pochtańız tastıyıqlanbaǵan. Jiberilgen xattaǵı siltemeni basıń. |  |

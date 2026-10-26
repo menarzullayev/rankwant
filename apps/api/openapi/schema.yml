@@ -18093,6 +18093,12 @@ components:
           type: string
           writeOnly: true
           minLength: 8
+        first_name:
+          type: string
+          maxLength: 80
+        last_name:
+          type: string
+          maxLength: 80
         display_name:
           type: string
           maxLength: 100
@@ -18105,6 +18111,7 @@ components:
         terms_accepted:
           type: boolean
           writeOnly: true
+          default: true
         marketing_opt_in:
           type: boolean
           writeOnly: true
@@ -18116,7 +18123,6 @@ components:
       required:
       - email
       - password
-      - terms_accepted
     Registration:
       type: object
       properties:
