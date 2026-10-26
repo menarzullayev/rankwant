@@ -100,9 +100,12 @@ export const api = {
   /** Maktab katalogi — nom bo'yicha qidiruv, viloyat/tuman bo'yicha filtr.
    *  Katalog moderator to'ldiradi (ADR-0017), ya'ni bu ro'yxat to'liq emas:
    *  topilmagan maktab erkin matn bo'lib qoladi. */
-  schools: (params: { q?: string; region?: string; district?: string } = {}) => {
+  schools: (
+    params: { q?: string; region?: string; district?: string; kind?: string } = {},
+  ) => {
     const query = new URLSearchParams();
     if (params.q) query.set("q", params.q);
+    if (params.kind) query.set("kind", params.kind);
     if (params.region) query.set("region", params.region);
     if (params.district) query.set("district", params.district);
     return get<Paginated<School>>(`/schools/${query.size ? `?${query}` : ""}`);

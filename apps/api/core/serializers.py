@@ -21,7 +21,7 @@ from core.models import (
     UserSession,
 )
 from core.throttling import TrustedClientIdent
-from profiles.catalog import GRADES, UZ_DISTRICTS, UZ_REGIONS
+from profiles.catalog import EDUCATION_LEVELS, GRADES, UZ_DISTRICTS, UZ_REGIONS
 from profiles.titles import TitleField
 
 
@@ -264,6 +264,8 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "school_ref",
             "school_name",
             "grade",
+            "education_level",
+            "specialty",
             "website",
             "websites",
             "gender",
@@ -340,6 +342,12 @@ class MeSerializer(serializers.ModelSerializer[User]):
         if self.instance is not None and value == self.instance.grade:
             return value
         raise serializers.ValidationError("The grade must be chosen from the list")
+
+    def validate_education_level(self, value: str) -> str:
+        """A code from `profiles.catalog.EDUCATION_LEVELS`, or blank."""
+        if value and value not in EDUCATION_LEVELS:
+            raise serializers.ValidationError("The level must be chosen from the list")
+        return value
 
     def validate_first_name(self, value: str) -> str:
         return self._clean_name(value)

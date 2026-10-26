@@ -185,6 +185,9 @@ export type Me = {
   school_name: string;
   school: string;
   grade: string;
+  /** school · lyceum · college · bachelor · master · phd · aspirantura · working · other */
+  education_level: string;
+  specialty: string;
   website: string;
   websites: string[];
   gender: Gender | "";

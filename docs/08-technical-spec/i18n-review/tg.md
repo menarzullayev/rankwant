@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2376 strings.**
+**2407 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1255,6 +1255,37 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `grade.master` | Magistratura, {n}-kurs | Магистратура, курси {n} |  |
 | `grade.teacher` | O'qituvchi | Муаллим |  |
 | `grade.other` | Boshqa | Дигар |  |
+| `settings.gradeCollege` | Kollej / texnikum | Коллеҷ / техникум |  |
+| `settings.gradePostgraduate` | Doktorantura va aspirantura | Докторантура ва аспирантура |  |
+| `grade.college` | Kollej, {n}-kurs | Коллеҷ, курси {n} |  |
+| `grade.doctoral` | PhD / doktorantura, {n}-yil | PhD / докторантура, соли {n} |  |
+| `grade.aspirant` | Aspirantura, {n}-yil | Аспирантура, соли {n} |  |
+| `onboarding.step` | {n} / {total}-qadam | Қадами {n} аз {total} |  |
+| `onboarding.addressTitle` | Qayerdansiz? | Аз куҷо ҳастед? |  |
+| `onboarding.addressBody` | Hududingiz bo'yicha reyting va jamoalarni ko'rsatamiz. Keyin sozlamalarda o'zgartirsa bo'ladi. | Мо рейтингҳо ва дастаҳои минтақаи шуморо нишон медиҳем. Баъд онро дар танзимот тағйир додан мумкин аст. |  |
+| `onboarding.educationTitle` | Qayerda o'qiysiz? | Дар куҷо таҳсил мекунед? |  |
+| `onboarding.educationBody` | Maktab, kollej yoki universitet reytingida ko'rinish uchun. | Барои намоён шудан дар рейтинги мактаб, коллеҷ ё донишгоҳ. |  |
+| `onboarding.extraTitle` | Qo'shimcha ma'lumot | Маълумоти иловагӣ |  |
+| `onboarding.extraBody` | Hammasi ixtiyoriy va keyin Sozlamalarda o'zgartiriladi. | Ҳамааш ихтиёрӣ аст ва баъд дар танзимот тағйир меёбад. |  |
+| `onboarding.next` | Keyingisi | Минбаъда |  |
+| `onboarding.back` | Orqaga | Бозгашт |  |
+| `onboarding.finish` | Tayyor | Тайёр |  |
+| `onboarding.stepAddress` | Manzil | Суроға |  |
+| `onboarding.stepEducation` | Ta'lim | Таҳсилот |  |
+| `onboarding.stepExtra` | Qo'shimcha | Иловагӣ |  |
+| `onboarding.later` | Keyinroq | Баъдтар |  |
+| `onboarding.level` | Ta'lim bosqichi | Сатҳи таҳсилот |  |
+| `onboarding.institution` | Muassasa nomi | Номи муассиса |  |
+| `onboarding.specialty` | Mutaxassislik | Ихтисос |  |
+| `onboarding.level.school` | Maktab | Мактаб |  |
+| `onboarding.level.lyceum` | Litsey | Лисей |  |
+| `onboarding.level.college` | Kollej / texnikum | Коллеҷ / техникум |  |
+| `onboarding.level.bachelor` | Bakalavriat | Бакалавр |  |
+| `onboarding.level.master` | Magistratura | Магистратура |  |
+| `onboarding.level.phd` | PhD / doktorantura | PhD / докторантура |  |
+| `onboarding.level.aspirantura` | Aspirantura | Аспирантура |  |
+| `onboarding.level.working` | Ishlayman | Кор мекунам |  |
+| `onboarding.level.other` | Boshqa | Дигар |  |
 | `settings.fromConnected` | Ulangan hisobdan: @{handle} | Аз ҳисоби пайвастшуда: @{handle} |  |
 | `settings.blogHint` | https:// bilan boshlanadigan manzil | Суроғае, ки бо https:// оғоз мешавад |  |
 | `leaderboard.school` | «{school}» reytingi | Рейтинги «{school}» |  |

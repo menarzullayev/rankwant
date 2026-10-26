@@ -5019,6 +5019,10 @@ paths:
         name: district
         schema:
           type: string
+      - in: query
+        name: kind
+        schema:
+          type: string
       - name: ordering
         required: false
         in: query
@@ -14123,6 +14127,12 @@ components:
         grade:
           type: string
           maxLength: 40
+        education_level:
+          type: string
+          maxLength: 12
+        specialty:
+          type: string
+          maxLength: 150
         website:
           oneOf:
           - type: string
@@ -15992,6 +16002,12 @@ components:
         grade:
           type: string
           maxLength: 40
+        education_level:
+          type: string
+          maxLength: 12
+        specialty:
+          type: string
+          maxLength: 150
         website:
           oneOf:
           - type: string
@@ -18476,12 +18492,14 @@ components:
       enum:
       - school
       - lyceum
+      - college
       - university
       - other
       type: string
       description: |-
         * `school` - Maktab
         * `lyceum` - Litsey
+        * `college` - Kollej
         * `university` - Universitet
         * `other` - Boshqa
     ScopesEnum:

@@ -1960,6 +1960,44 @@ def email_is_confirmed_by_six_digit_code() -> str | None:
     return None
 
 
+def onboarding_is_three_optional_steps() -> str | None:
+    """2026-10-26 (HITL, 48 decisions): the second half of sign-up.
+
+    Everything required (names, e-mail, password) is on the sign-up form, so the
+    onboarding asks only secondary things, in three short steps — address,
+    education, extras — each one skippable ("Later") and each saved on its own.
+    It is drawn in the auth shell. The education step is driven by a LEVEL
+    (school … aspirantura): the level decides which year choices exist, so a
+    schoolchild is never offered "5th year" and a postgraduate never "9th
+    grade". It must not ask for the names again.
+    """
+    form = read("apps/web/src/features/account/components/OnboardingForm.tsx")
+    steps = re.search(r"const STEPS = \[([^\]]*)\] as const", form)
+    if not steps or [x.strip() for x in steps.group(1).split(",") if x.strip()] != [
+        '"address"',
+        '"education"',
+        '"extra"',
+    ]:
+        return "OnboardingForm.tsx: onboarding uch qadam bo'lishi shart: manzil, ta'lim, qo'shimcha"
+    if 'name="first_name"' in form or 'name="last_name"' in form:
+        return "OnboardingForm.tsx: ism va familiya yana so'raladi — ular 1-qadamda"
+    if "onboarding.later" not in form:
+        return "OnboardingForm.tsx: har qadamda «Keyinroq» yo'q"
+    if "gradeCodesFor(" not in form or "education_level" not in form:
+        return "OnboardingForm.tsx: ta'lim bosqichi tanlanmaydi yoki sinf/kurs unga bog'lanmagan"
+    page = read("apps/web/src/app/(auth)/onboarding/page.tsx")
+    if "<AuthShell>" not in page:
+        return "onboarding/page.tsx: sahifa AuthShell'da chizilmaydi"
+    shell = read("apps/web/src/layout/AppShell.tsx")
+    full = re.search(r"const FULL = \[([^\]]*)\]", shell)
+    if not full or '"/onboarding"' not in full.group(1):
+        return "AppShell.tsx: `/onboarding` FULL ro'yxatida emas — sayt header/footer'i qaytadi"
+    grades = read("packages/shared/src/grades.ts")
+    if "export function gradeCodesFor" not in grades:
+        return "grades.ts: bosqichga mos sinf/kurs ro'yxati (gradeCodesFor) yo'q"
+    return None
+
+
 def clay_follows_dark_mode() -> str | None:
     """2026-10-05: the factory style has a dark palette and is marked dual.
 
@@ -3624,6 +3662,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),
     ("ro'yxatdan o'tish taxallus va ismni so'raydi", sign_up_asks_the_handle_and_names),
     ("email 6 xonali kod bilan tasdiqlanadi", email_is_confirmed_by_six_digit_code),
+    ("onboarding uch ixtiyoriy qadam", onboarding_is_three_optional_steps),
     ("customization invariantlari", customization_invariants_are_written),
     ("Security run o'chiq", security_run_is_disabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),

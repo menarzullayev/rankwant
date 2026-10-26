@@ -64,13 +64,31 @@ TECHNOLOGIES: dict[str, str] = {
 #: `tests/test_grades.py` keeps the two equal.
 GRADES: tuple[str, ...] = (
     *(str(n) for n in range(1, 12)),
-    "b1",
-    "b2",
-    "b3",
-    "b4",
+    # College / technical school, years 1-4 (2026-10-26).
+    *(f"c{n}" for n in range(1, 5)),
+    # Bachelor years 1-6 (medicine and some engineering run six).
+    *(f"b{n}" for n in range(1, 7)),
     "m1",
     "m2",
+    # PhD / doctoral years 1-4 and aspirantura years 1-4.
+    *(f"d{n}" for n in range(1, 5)),
+    *(f"a{n}" for n in range(1, 5)),
     "teacher",
+    "other",
+)
+
+#: Where a person studies, in the order the onboarding select lists it
+#: (2026-10-26). `User.education_level` takes one of these codes; the grade
+#: choices that go with each live in `packages/shared/src/grades.ts`.
+EDUCATION_LEVELS: tuple[str, ...] = (
+    "school",
+    "lyceum",
+    "college",
+    "bachelor",
+    "master",
+    "phd",
+    "aspirantura",
+    "working",
     "other",
 )
 

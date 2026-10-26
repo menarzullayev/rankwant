@@ -221,7 +221,7 @@ export type Follower = UserMini & {
 export type School = {
   id: number;
   name: string;
-  kind: "school" | "lyceum" | "university" | "other";
+  kind: "school" | "lyceum" | "college" | "university" | "other";
   region: string;
   district: string;
   city: string;

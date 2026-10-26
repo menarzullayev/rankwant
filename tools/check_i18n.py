@@ -129,10 +129,16 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # the same word in uz, tr and kaa (and the unit is the loanword
         # "test" everywhere); forcing a different one would be artificial.
         "auth.panel.s1.you", "auth.panel.s4.you", "auth.panel.s1.tests",
+        # Onboarding: "Aspirantura" is a loanword spelled the same in uz, tr and es.
+        "onboarding.level.aspirantura",
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
     "kaa": {
+        # Education levels: loanwords written the same in uz and kaa.
+        "onboarding.level.bachelor",
+        "onboarding.level.master",
+        "onboarding.level.phd",
         # "Navigatsiya" — rus tilidan olingan va qaraqalpoqchada ham shunday
         # yoziladi. Majburan o'girish sun'iy ko'rinardi (xuddi `nav.menu`
         # va `settings.language` kabi qo'shnilari).

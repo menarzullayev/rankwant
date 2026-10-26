@@ -3132,9 +3132,39 @@ def neg_decisions_verify_page_loses_the_shell() -> tuple[bool, str]:
     """`/verify-email` goes back to the site chrome."""
     return _decision_broken(
         "apps/web/src/layout/AppShell.tsx",
-        'const FULL = ["/login", "/register", "/reset-password", "/verify-email"];',
-        'const FULL = ["/login", "/register", "/reset-password"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/verify-email", "/onboarding"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/onboarding"];',
         "FULL ro'yxatida emas",
+    )
+
+
+def neg_decisions_onboarding_loses_a_step() -> tuple[bool, str]:
+    """The onboarding drops its education step."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/OnboardingForm.tsx",
+        'const STEPS = ["address", "education", "extra"] as const;',
+        'const STEPS = ["address", "extra"] as const;',
+        "uch qadam bo'lishi shart",
+    )
+
+
+def neg_decisions_onboarding_asks_names_again() -> tuple[bool, str]:
+    """The onboarding asks for the first name again."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/OnboardingForm.tsx",
+        '<Field\n            label={t(locale, "settings.phone")}',
+        '<Field name="first_name" label="x" /><Field\n            label={t(locale, "settings.phone")}',
+        "yana so'raladi",
+    )
+
+
+def neg_decisions_onboarding_page_loses_the_shell() -> tuple[bool, str]:
+    """`/onboarding` goes back to the site chrome."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        '"/verify-email", "/onboarding"];',
+        '"/verify-email"];',
+        "/onboarding` FULL ro'yxatida emas",
     )
 
 
@@ -3152,7 +3182,7 @@ def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
         "apps/web/src/layout/AppShell.tsx",
-        'const FULL = ["/login", "/register", "/reset-password", "/verify-email"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/verify-email", "/onboarding"];',
         'const FULL = ["/register", "/reset-password"];',
         "FULL ro'yxatida emas",
     )
@@ -6098,6 +6128,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "packages/shared/src/grades.ts",
+    "apps/web/src/app/(auth)/onboarding/page.tsx",
     "apps/web/src/features/account/components/EmailVerify.tsx",
     "apps/web/src/features/account/components/OtpInput.tsx",
     "apps/web/src/layout/banners/VerifyBanner.tsx",
@@ -9818,6 +9850,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kod sahifasi taxallus so'raydi", neg_decisions_verify_asks_the_handle_again),
             ("kod maydoni one-time-code'siz", neg_decisions_verify_loses_one_time_code),
             ("kod sahifasi qobiqsiz", neg_decisions_verify_page_loses_the_shell),
+            ("onboarding qadamni yo'qotadi", neg_decisions_onboarding_loses_a_step),
+            ("onboarding ismni qayta so'raydi", neg_decisions_onboarding_asks_names_again),
+            ("onboarding qobiqsiz", neg_decisions_onboarding_page_loses_the_shell),
             ("rozilik katakchasi qaytadi", neg_decisions_consent_checkbox_returns),
             ("telefonda chiplar yo'qolsa tutilsin", neg_decisions_phone_loses_the_chips),
             ("seed A+B ni bitta tilga yopsa tutilsin", neg_decisions_seed_restricts_a_plus_b),

@@ -140,6 +140,13 @@ class User(AbstractUser):
         "core.School", null=True, blank=True, on_delete=models.SET_NULL, related_name="students"
     )
     grade = models.CharField(max_length=40, blank=True)
+    #: Where the person studies (`profiles.catalog.EDUCATION_LEVELS`): school,
+    #: lyceum, college, bachelor, master, PhD, aspirantura, working, other.
+    #: It decides which `grade` choices make sense (a year of study differs by
+    #: level), and the onboarding asks for it before the institution.
+    education_level = models.CharField(max_length=12, blank=True)
+    #: Field of study — for college and above.
+    specialty = models.CharField(max_length=150, blank=True)
     website = models.URLField(blank=True)
     #: Qo'shimcha havolalar (0–5). `website` — birinchisi, maxfiylik kaliti
     #: ham shu; JSON manba, `website` esa moslashuv uchun nusxa.
@@ -746,6 +753,7 @@ class School(CreatedModel):
     class Kind(models.TextChoices):
         SCHOOL = "school", "Maktab"
         LYCEUM = "lyceum", "Litsey"
+        COLLEGE = "college", "Kollej"
         UNIVERSITY = "university", "Universitet"
         OTHER = "other", "Boshqa"
 

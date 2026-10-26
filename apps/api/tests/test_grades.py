@@ -55,3 +55,54 @@ def test_web_list_matches_the_api() -> None:
     block = re.search(r"GRADE_CODES = \[(.*?)\] as const", source, re.S)
     assert block, f"{WEB_GRADES}: GRADE_CODES not found"
     assert tuple(re.findall(r'"([^"]+)"', block.group(1))) == GRADES
+
+
+@pytest.mark.django_db
+class TestEducationLevel:
+    """2026-10-26: the onboarding asks where a person studies."""
+
+    @pytest.mark.parametrize(
+        "level",
+        ["school", "lyceum", "college", "bachelor", "master", "phd", "aspirantura", "working", ""],
+    )
+    def test_levels_are_accepted(self, user: User, level: str) -> None:
+        r = kirgan(user).patch(reverse("me"), {"education_level": level}, format="json")
+        assert r.status_code == 200
+        user.refresh_from_db()
+        assert user.education_level == level
+
+    @pytest.mark.parametrize("value", ["university", "Phd", "5"])
+    def test_unknown_level_is_rejected(self, user: User, value: str) -> None:
+        r = kirgan(user).patch(reverse("me"), {"education_level": value}, format="json")
+        assert r.status_code == 400
+
+    @pytest.mark.parametrize("code", ["c1", "c4", "b5", "b6", "d1", "d4", "a1", "a4"])
+    def test_new_year_codes_are_accepted(self, user: User, code: str) -> None:
+        assert patch(user, {"grade": code}) == 200
+
+    @pytest.mark.parametrize("code", ["c5", "b7", "d5", "a5"])
+    def test_year_beyond_the_range_is_rejected(self, user: User, code: str) -> None:
+        assert patch(user, {"grade": code}) == 400
+
+    def test_specialty_is_saved(self, user: User) -> None:
+        r = kirgan(user).patch(
+            reverse("me"),
+            {"education_level": "bachelor", "specialty": "Informatika"},
+            format="json",
+        )
+        assert r.status_code == 200
+        user.refresh_from_db()
+        assert user.specialty == "Informatika"
+
+
+@pytest.mark.django_db
+def test_catalogue_search_can_be_narrowed_to_a_kind() -> None:
+    from core.models import School
+
+    School.objects.create(name="Texnikum 1", kind=School.Kind.COLLEGE)
+    School.objects.create(name="Universitet 1", kind=School.Kind.UNIVERSITY)
+
+    r = APIClient().get(reverse("school-list"), {"kind": "college"})
+
+    assert r.status_code == 200
+    assert [row["name"] for row in r.json()["results"]] == ["Texnikum 1"]
