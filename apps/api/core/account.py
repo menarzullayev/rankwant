@@ -57,6 +57,8 @@ CLEARED_FIELDS: tuple[str, ...] = (
     "school",
     "school_ref",
     "grade",
+    "education_level",
+    "specialty",
     "website",
     "websites",
     "gender",
@@ -209,6 +211,8 @@ def anonymize(user: User) -> None:
     user.school_ref = None
     user.school = ""
     user.grade = ""
+    user.education_level = ""
+    user.specialty = ""
     user.website = ""
     user.websites = []
     user.gender = ""
@@ -323,6 +327,8 @@ def export(user: User) -> dict[str, Any]:
             "school": user.school,
             "school_ref": user.school_ref.name if user.school_ref is not None else None,
             "grade": user.grade,
+            "education_level": user.education_level,
+            "specialty": user.specialty,
             "website": user.website,
             "websites": user.websites,
             "gender": user.gender,

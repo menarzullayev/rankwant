@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2376 strings.**
+**2407 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1255,6 +1255,37 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `grade.master` | Magistratura, {n}-kurs | Магистратура, {n}-курс |  |
 | `grade.teacher` | O'qituvchi | Мұғалім |  |
 | `grade.other` | Boshqa | Басқа |  |
+| `settings.gradeCollege` | Kollej / texnikum | Колледж / техникум |  |
+| `settings.gradePostgraduate` | Doktorantura va aspirantura | Докторантура және аспирантура |  |
+| `grade.college` | Kollej, {n}-kurs | Колледж, {n}-курс |  |
+| `grade.doctoral` | PhD / doktorantura, {n}-yil | PhD / докторантура, {n}-жыл |  |
+| `grade.aspirant` | Aspirantura, {n}-yil | Аспирантура, {n}-жыл |  |
+| `onboarding.step` | {n} / {total}-qadam | {n} / {total}-қадам |  |
+| `onboarding.addressTitle` | Qayerdansiz? | Қайдансыз? |  |
+| `onboarding.addressBody` | Hududingiz bo'yicha reyting va jamoalarni ko'rsatamiz. Keyin sozlamalarda o'zgartirsa bo'ladi. | Аймағыңыздың рейтингтері мен командаларын көрсетеміз. Кейін баптауларда өзгертуге болады. |  |
+| `onboarding.educationTitle` | Qayerda o'qiysiz? | Қайда оқисыз? |  |
+| `onboarding.educationBody` | Maktab, kollej yoki universitet reytingida ko'rinish uchun. | Мектеп, колледж немесе университет рейтингінде көріну үшін. |  |
+| `onboarding.extraTitle` | Qo'shimcha ma'lumot | Қосымша мәлімет |  |
+| `onboarding.extraBody` | Hammasi ixtiyoriy va keyin Sozlamalarda o'zgartiriladi. | Барлығы міндетті емес, кейін баптауларда өзгертіледі. |  |
+| `onboarding.next` | Keyingisi | Келесі |  |
+| `onboarding.back` | Orqaga | Артқа |  |
+| `onboarding.finish` | Tayyor | Дайын |  |
+| `onboarding.stepAddress` | Manzil | Мекенжай |  |
+| `onboarding.stepEducation` | Ta'lim | Білім |  |
+| `onboarding.stepExtra` | Qo'shimcha | Қосымша |  |
+| `onboarding.later` | Keyinroq | Кейінірек |  |
+| `onboarding.level` | Ta'lim bosqichi | Білім деңгейі |  |
+| `onboarding.institution` | Muassasa nomi | Мекеме атауы |  |
+| `onboarding.specialty` | Mutaxassislik | Мамандық |  |
+| `onboarding.level.school` | Maktab | Мектеп |  |
+| `onboarding.level.lyceum` | Litsey | Лицей |  |
+| `onboarding.level.college` | Kollej / texnikum | Колледж / техникум |  |
+| `onboarding.level.bachelor` | Bakalavriat | Бакалавриат |  |
+| `onboarding.level.master` | Magistratura | Магистратура |  |
+| `onboarding.level.phd` | PhD / doktorantura | PhD / докторантура |  |
+| `onboarding.level.aspirantura` | Aspirantura | Аспирантура |  |
+| `onboarding.level.working` | Ishlayman | Жұмыс істеймін |  |
+| `onboarding.level.other` | Boshqa | Басқа |  |
 | `settings.fromConnected` | Ulangan hisobdan: @{handle} | Байланған аккаунттан: @{handle} |  |
 | `settings.blogHint` | https:// bilan boshlanadigan manzil | https:// деп басталатын мекенжай |  |
 | `leaderboard.school` | «{school}» reytingi | «{school}» рейтингі |  |

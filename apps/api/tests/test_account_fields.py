@@ -58,6 +58,8 @@ def test_anonymize_clears_every_personal_field() -> None:
         school="1-maktab",
         school_ref=school,
         grade="9",
+        education_level="school",
+        specialty="Informatika",
         website="https://example.org",
         websites=["https://example.org", "https://blog.example.org"],
         gender="male",

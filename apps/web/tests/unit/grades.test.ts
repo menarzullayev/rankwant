@@ -19,6 +19,13 @@ describe("gradeLabel", () => {
     expect(gradeLabel("other", "uz")).toBe("Boshqa");
   });
 
+  it("names the college, doctoral and postgraduate years (2026-10-26)", () => {
+    expect(gradeLabel("c2", "uz")).toBe("Kollej, 2-kurs");
+    expect(gradeLabel("b6", "uz")).toBe("Bakalavriat, 6-kurs");
+    expect(gradeLabel("d3", "uz")).toBe("PhD / doktorantura, 3-yil");
+    expect(gradeLabel("a1", "en")).toBe("Postgraduate (aspirantura), year 1");
+  });
+
   it("shows a value saved before the catalogue as written", () => {
     expect(gradeLabel("9-A", "uz")).toBe("9-A");
     expect(isGradeCode("9-A")).toBe(false);

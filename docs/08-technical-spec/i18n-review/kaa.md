@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2376 strings.**
+**2407 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1255,6 +1255,37 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `grade.master` | Magistratura, {n}-kurs | Magistr, {n}-kurs |  |
 | `grade.teacher` | O'qituvchi | Oqıtıwshı |  |
 | `grade.other` | Boshqa | Basqa |  |
+| `settings.gradeCollege` | Kollej / texnikum | Kolledj / texnikum |  |
+| `settings.gradePostgraduate` | Doktorantura va aspirantura | Doktorantura hám aspirantura |  |
+| `grade.college` | Kollej, {n}-kurs | Kolledj, {n}-kurs |  |
+| `grade.doctoral` | PhD / doktorantura, {n}-yil | PhD / doktorantura, {n}-jıl |  |
+| `grade.aspirant` | Aspirantura, {n}-yil | Aspirantura, {n}-jıl |  |
+| `onboarding.step` | {n} / {total}-qadam | {n} / {total}-qádem |  |
+| `onboarding.addressTitle` | Qayerdansiz? | Qayaqtansız? |  |
+| `onboarding.addressBody` | Hududingiz bo'yicha reyting va jamoalarni ko'rsatamiz. Keyin sozlamalarda o'zgartirsa bo'ladi. | Aymaǵıńızdıń reytingleri hám komandaların kórsetemiz. Keyin sazlawlarda ózgertiwge boladı. |  |
+| `onboarding.educationTitle` | Qayerda o'qiysiz? | Qayerde oqıysız? |  |
+| `onboarding.educationBody` | Maktab, kollej yoki universitet reytingida ko'rinish uchun. | Mektep, kolledj yamasa universitet reytinginde kóriniw ushın. |  |
+| `onboarding.extraTitle` | Qo'shimcha ma'lumot | Qosımsha maǵlıwmat |  |
+| `onboarding.extraBody` | Hammasi ixtiyoriy va keyin Sozlamalarda o'zgartiriladi. | Barlıǵı ixtiyarıy, keyin sazlawlarda ózgertiledi. |  |
+| `onboarding.next` | Keyingisi | Keyingi |  |
+| `onboarding.back` | Orqaga | Artqa |  |
+| `onboarding.finish` | Tayyor | Tayın |  |
+| `onboarding.stepAddress` | Manzil | Mánzil |  |
+| `onboarding.stepEducation` | Ta'lim | Bilim |  |
+| `onboarding.stepExtra` | Qo'shimcha | Qosımsha |  |
+| `onboarding.later` | Keyinroq | Keyinirek |  |
+| `onboarding.level` | Ta'lim bosqichi | Bilim dárejesi |  |
+| `onboarding.institution` | Muassasa nomi | Mákemeniń atı |  |
+| `onboarding.specialty` | Mutaxassislik | Mamanlıq |  |
+| `onboarding.level.school` | Maktab | Mektep |  |
+| `onboarding.level.lyceum` | Litsey | Lisey |  |
+| `onboarding.level.college` | Kollej / texnikum | Kolledj / texnikum |  |
+| `onboarding.level.bachelor` | Bakalavriat | Bakalavriat |  |
+| `onboarding.level.master` | Magistratura | Magistratura |  |
+| `onboarding.level.phd` | PhD / doktorantura | PhD / doktorantura |  |
+| `onboarding.level.aspirantura` | Aspirantura | Aspirantura |  |
+| `onboarding.level.working` | Ishlayman | Jumıs isleymen |  |
+| `onboarding.level.other` | Boshqa | Basqa |  |
 | `settings.fromConnected` | Ulangan hisobdan: @{handle} | Baylanǵan akkaunttan: @{handle} |  |
 | `settings.blogHint` | https:// bilan boshlanadigan manzil | https:// menen baslanatuǵın mánzil |  |
 | `leaderboard.school` | «{school}» reytingi | «{school}» reytingi |  |

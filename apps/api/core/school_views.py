@@ -28,7 +28,7 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet[School]):
         q = self.request.query_params.get("q", "").strip()
         if q:
             queryset = queryset.filter(name__icontains=q)
-        for field in ("region", "district"):
+        for field in ("region", "district", "kind"):
             value = self.request.query_params.get(field, "")
             if value:
                 queryset = queryset.filter(**{field: value})
@@ -39,6 +39,7 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet[School]):
             OpenApiParameter("q", str),
             OpenApiParameter("region", str),
             OpenApiParameter("district", str),
+            OpenApiParameter("kind", str),
         ]
     )
     def list(self, request: Request, *args: object, **kwargs: object) -> Response:

@@ -6521,6 +6521,8 @@ export interface components {
             school_ref?: number | null;
             readonly school_name: string;
             grade?: string;
+            education_level?: string;
+            specialty?: string;
             website?: string;
             websites?: string[];
             gender?: components["schemas"]["GenderEnum"] | components["schemas"]["BlankEnum"];
@@ -7627,6 +7629,8 @@ export interface components {
             school_ref?: number | null;
             readonly school_name?: string;
             grade?: string;
+            education_level?: string;
+            specialty?: string;
             website?: string;
             websites?: string[];
             gender?: components["schemas"]["GenderEnum"] | components["schemas"]["BlankEnum"];
@@ -8714,11 +8718,12 @@ export interface components {
         /**
          * @description * `school` - Maktab
          *     * `lyceum` - Litsey
+         *     * `college` - Kollej
          *     * `university` - Universitet
          *     * `other` - Boshqa
          * @enum {string}
          */
-        SchoolKindEnum: "school" | "lyceum" | "university" | "other";
+        SchoolKindEnum: "school" | "lyceum" | "college" | "university" | "other";
         /**
          * @description * `read` - O'qish
          *     * `submit` - Yechim yuborish
@@ -14063,6 +14068,7 @@ export interface operations {
         parameters: {
             query?: {
                 district?: string;
+                kind?: string;
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
                 /** @description A page number within the paginated result set. */
