@@ -583,10 +583,15 @@ class EmailVerifyView(APIView):
     def post(self, request: Request) -> Response:
         serializer = EmailVerifySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        # Kirgan odam faqat 6 xonali kodni yozadi (2026-10-26): taxallus
+        # sessiyadan olinadi. Kirmagan odamda eski yo'l — taxallus + kod.
+        username = serializer.validated_data.get("username", "")
+        if not username and request.user.is_authenticated:
+            username = request.user.get_username()
         user = verification.consume(
             raw=serializer.validated_data.get("token", ""),
             code=serializer.validated_data.get("code", ""),
-            username=serializer.validated_data.get("username", ""),
+            username=username,
         )
         if user is None:
             raise exceptions.ValidationError({"token": "This link is invalid or has expired"})

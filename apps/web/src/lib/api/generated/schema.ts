@@ -8553,6 +8553,7 @@ export interface components {
             first_name?: string;
             last_name?: string;
             display_name?: string;
+            locale?: components["schemas"]["LocaleEnum"];
             country?: string;
             region?: string;
             /** @default true */

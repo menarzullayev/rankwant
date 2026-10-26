@@ -2,33 +2,30 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { EmailVerify } from "@/features/account";
-import { Card } from "@/components/ui/Card";
+import { AuthShell } from "@/features/auth/server";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t(await getLocale(), "auth.verifyTitle"),
-    // Tokenli havola qidiruvga tushmasligi kerak — tiklash sahifasidagi
-    // bilan bir xil sabab.
+    // A link with a token must not reach a search engine — same reason as
+    // the reset page.
     robots: { index: false, follow: false },
   };
 }
 
+/** Confirm the e-mail, drawn in the same two-column shell as the sign-in
+ *  page (2026-10-26): a person arrives here from the sign-up and should not
+ *  find the site's header and footer in the middle of it. */
 export default async function VerifyPage() {
   const locale = await getLocale();
   return (
-    <div className="mx-auto max-w-md py-10">
-      <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold">
-          Rank<span className="rw-accent-ink">Want</span>
-        </h1>
-      </div>
-      <Card title={t(locale, "auth.verifyTitle")}>
-        <Suspense>
-          <EmailVerify />
-        </Suspense>
-      </Card>
-    </div>
+    <AuthShell>
+      <h1 className="mb-5 text-2xl font-bold rw-strong">{t(locale, "auth.verifyTitle")}</h1>
+      <Suspense>
+        <EmailVerify />
+      </Suspense>
+    </AuthShell>
   );
 }

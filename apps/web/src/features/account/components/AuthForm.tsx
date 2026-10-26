@@ -235,6 +235,8 @@ export function AuthForm({
           last_name: payload.last_name.trim(),
           ...(typed ? { username: typed } : {}),
           password: payload.password,
+          // The page language: the confirmation e-mail goes out in it.
+          locale,
           turnstile_token: captcha,
         });
         // Register opens no session (ADR-0008): sign in with this very e-mail.

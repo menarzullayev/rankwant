@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2370 strings.**
+**2376 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -310,6 +310,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.registering` | Ro'yxatdan o'tilmoqda… | Катталууда… |  |
 | `auth.welcome` | Xush kelibsiz! | Кош келиңиз! |  |
 | `auth.verifySentTo` | {email} ga tasdiqlash xati yubordik. Kodni shu yerga kiriting. | {email} дарегине код менен кат жибердик. Кодду ушул жерге киргизиңиз. |  |
+| `auth.verifyCodeLabel` | 6 xonali kod | 6 орундуу код |  |
+| `auth.verifyResendIn` | Qayta yuborish: {time} | Кайра жөнөтүү: {time} |  |
+| `auth.verifyEnterCode` | Kodni kiritish | Кодду киргизүү |  |
+| `auth.verifySignIn` | Kodni kiritish uchun tizimga kiring. | Кодду киргизүү үчүн системага кириңиз. |  |
+| `auth.verifyContinue` | Davom etish | Улантуу |  |
+| `auth.verifyCodeFail` | Kod noto'g'ri yoki muddati tugagan | Код туура эмес же мөөнөтү бүткөн |  |
 | `auth.dismiss` | Yopish | Жабуу |  |
 | `auth.passwordConfirm` | Parolni tasdiqlang | Сырсөздү ырастаңыз |  |
 | `auth.passwordMismatch` | Parollar mos kelmadi | Сырсөздөр дал келбейт |  |

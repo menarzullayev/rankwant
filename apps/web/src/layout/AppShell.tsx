@@ -63,7 +63,7 @@ const BARE = [
  *  links itself. The redirecting addresses are listed for the same reason
  *  as in `BARE`: `usePathname()` still reports the old path while the
  *  redirect is in flight. */
-const FULL = ["/login", "/register", "/reset-password"];
+const FULL = ["/login", "/register", "/reset-password", "/verify-email"];
 
 const SHELL_INSET = "--rw-shell-inset" as string;
 

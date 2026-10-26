@@ -1922,6 +1922,44 @@ def sign_up_asks_the_handle_and_names() -> str | None:
     return None
 
 
+def email_is_confirmed_by_six_digit_code() -> str | None:
+    """2026-10-26 (HITL, 48 decisions): confirming the e-mail.
+
+    `/verify-email` is drawn in the auth shell (no site header and footer) and
+    a signed-in person types ONLY the six digits: the handle comes from the
+    session, so the page must not ask for it. The code is one real input behind
+    six cells (`one-time-code`), so paste and the phone's "from messages"
+    suggestion work. Not mandatory: the banner is a reminder that can be closed
+    for a week, and it links to the code page. The page language rides along
+    with the sign-up so the confirmation e-mail comes in it.
+    """
+    page = read("apps/web/src/app/(auth)/verify-email/page.tsx")
+    if "<AuthShell>" not in page:
+        return "verify-email/page.tsx: sahifa AuthShell'da chizilmaydi"
+    shell = read("apps/web/src/layout/AppShell.tsx")
+    full = re.search(r"const FULL = \[([^\]]*)\]", shell)
+    if not full or '"/verify-email"' not in full.group(1):
+        return "AppShell.tsx: `/verify-email` FULL ro'yxatida emas — sayt header/footer'i qaytadi"
+    verify = read("apps/web/src/features/account/components/EmailVerify.tsx")
+    if "<OtpInput" not in verify:
+        return "EmailVerify.tsx: 6 xonali kod OtpInput bilan kiritilmaydi"
+    if 'name="username"' in verify or "auth.username" in verify:
+        return "EmailVerify.tsx: taxallus so'raladi — u sessiyadan olinadi"
+    otp = read("apps/web/src/features/account/components/OtpInput.tsx")
+    if 'autoComplete="one-time-code"' not in otp:
+        return "OtpInput.tsx: one-time-code yo'q — telefon xabardan kodni taklif qilmaydi"
+    banner = read("apps/web/src/layout/banners/VerifyBanner.tsx")
+    if 'href={"/verify-email"' not in banner or "DISMISS_KEY" not in banner:
+        return "VerifyBanner.tsx: kod sahifasiga havola yoki yopish yo'q"
+    views = read("apps/api/core/views.py")
+    if "request.user.get_username()" not in views:
+        return "views.py: kirgan odamning taxallusi sessiyadan olinmaydi"
+    form = read("apps/web/src/features/account/components/AuthForm.tsx")
+    if not re.search(r"^\s+locale,$", form, re.M):
+        return "AuthForm.tsx: sahifa tili ro'yxatdan o'tish bilan yuborilmaydi"
+    return None
+
+
 def clay_follows_dark_mode() -> str | None:
     """2026-10-05: the factory style has a dark palette and is marked dual.
 
@@ -3585,6 +3623,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),
     ("ro'yxatdan o'tish taxallus va ismni so'raydi", sign_up_asks_the_handle_and_names),
+    ("email 6 xonali kod bilan tasdiqlanadi", email_is_confirmed_by_six_digit_code),
     ("customization invariantlari", customization_invariants_are_written),
     ("Security run o'chiq", security_run_is_disabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),
