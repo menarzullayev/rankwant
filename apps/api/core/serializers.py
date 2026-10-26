@@ -628,6 +628,7 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             "first_name",
             "last_name",
             "display_name",
+            "locale",
             "country",
             "region",
             "terms_accepted",
@@ -675,6 +676,10 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             "first_name": {"required": False, "allow_blank": True, "max_length": 80},
             "last_name": {"required": False, "allow_blank": True, "max_length": 80},
             "country": {"required": False, "allow_blank": True},
+            # Sahifa tili (2026-10-26): tasdiqlash va tiklash xatlari
+            # foydalanuvchi tilida ketishi uchun veb-forma uni yuboradi.
+            # Noma'lum qiymat DRF `choices` bilan rad etiladi.
+            "locale": {"required": False},
             # Viloyat ham shu sababdan qoladi: A/B sinovning `b`
             # variantida u ro'yxatdan o'tishning o'zida so'raladi
             # (8-qaror), ya'ni bu maydon ikki yo'ldan ham keladi va

@@ -3108,6 +3108,36 @@ def neg_decisions_consent_checkbox_returns() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_verify_asks_the_handle_again() -> tuple[bool, str]:
+    """The code page asks for the handle again, though the session knows it."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/EmailVerify.tsx",
+        "<OtpInput",
+        '<Field name="username" /><OtpInput',
+        "taxallus so'raladi",
+    )
+
+
+def neg_decisions_verify_loses_one_time_code() -> tuple[bool, str]:
+    """The code input stops advertising itself as a one-time code."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/OtpInput.tsx",
+        'autoComplete="one-time-code"',
+        'autoComplete="off"',
+        "one-time-code yo'q",
+    )
+
+
+def neg_decisions_verify_page_loses_the_shell() -> tuple[bool, str]:
+    """`/verify-email` goes back to the site chrome."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        'const FULL = ["/login", "/register", "/reset-password", "/verify-email"];',
+        'const FULL = ["/login", "/register", "/reset-password"];',
+        "FULL ro'yxatida emas",
+    )
+
+
 def neg_decisions_phone_loses_the_chips() -> tuple[bool, str]:
     """The phone-width chips under the form go away."""
     return _decision_broken(
@@ -3122,7 +3152,7 @@ def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
         "apps/web/src/layout/AppShell.tsx",
-        'const FULL = ["/login", "/register", "/reset-password"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/verify-email"];',
         'const FULL = ["/register", "/reset-password"];',
         "FULL ro'yxatida emas",
     )
@@ -6068,6 +6098,11 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/web/src/features/account/components/EmailVerify.tsx",
+    "apps/web/src/features/account/components/OtpInput.tsx",
+    "apps/web/src/layout/banners/VerifyBanner.tsx",
+    "apps/web/src/app/(auth)/verify-email/page.tsx",
+    "apps/api/core/views.py",
     "tools/check_decisions.py",
     "apps/web/src/features/account/components/AuthForm.tsx",
     "apps/web/src/features/account/components/OnboardingForm.tsx",
@@ -9780,6 +9815,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),
             ("1-qadam noValidate'siz", neg_decisions_form_loses_no_validate),
+            ("kod sahifasi taxallus so'raydi", neg_decisions_verify_asks_the_handle_again),
+            ("kod maydoni one-time-code'siz", neg_decisions_verify_loses_one_time_code),
+            ("kod sahifasi qobiqsiz", neg_decisions_verify_page_loses_the_shell),
             ("rozilik katakchasi qaytadi", neg_decisions_consent_checkbox_returns),
             ("telefonda chiplar yo'qolsa tutilsin", neg_decisions_phone_loses_the_chips),
             ("seed A+B ni bitta tilga yopsa tutilsin", neg_decisions_seed_restricts_a_plus_b),

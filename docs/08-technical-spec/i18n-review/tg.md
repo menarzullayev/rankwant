@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2370 strings.**
+**2376 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -310,6 +310,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.registering` | Ro'yxatdan o'tilmoqda… | Сабти ном шуда истодааст… |  |
 | `auth.welcome` | Xush kelibsiz! | Хуш омадед! |  |
 | `auth.verifySentTo` | {email} ga tasdiqlash xati yubordik. Kodni shu yerga kiriting. | Ба {email} номаи рамздор фиристодем. Рамзро дар ин ҷо ворид кунед. |  |
+| `auth.verifyCodeLabel` | 6 xonali kod | Рамзи 6-рақама |  |
+| `auth.verifyResendIn` | Qayta yuborish: {time} | Бозфиристодан: {time} |  |
+| `auth.verifyEnterCode` | Kodni kiritish | Рамзро ворид кунед |  |
+| `auth.verifySignIn` | Kodni kiritish uchun tizimga kiring. | Барои ворид кардани рамз ба система дароед. |  |
+| `auth.verifyContinue` | Davom etish | Идома |  |
+| `auth.verifyCodeFail` | Kod noto'g'ri yoki muddati tugagan | Рамз нодуруст аст ё мӯҳлаташ гузаштааст |  |
 | `auth.dismiss` | Yopish | Пӯшидан |  |
 | `auth.passwordConfirm` | Parolni tasdiqlang | Рамзро тасдиқ кунед |  |
 | `auth.passwordMismatch` | Parollar mos kelmadi | Рамзҳо мувофиқат намекунанд |  |

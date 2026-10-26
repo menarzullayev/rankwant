@@ -18102,6 +18102,8 @@ components:
         display_name:
           type: string
           maxLength: 100
+        locale:
+          $ref: '#/components/schemas/LocaleEnum'
         country:
           type: string
           maxLength: 2

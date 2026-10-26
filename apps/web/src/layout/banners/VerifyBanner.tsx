@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import type { Route } from "next";
+import Link from "next/link";
+import { useState, useSyncExternalStore } from "react";
 
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -31,13 +33,43 @@ import { ApiError, postJson } from "@/lib/api";
  * (throttle) da esa kutish kerakligi umuman aytilmasdi. Endi server
  * aytgan kutish soniyasi (`Retry-After`) ham ko'rsatiladi.
  */
+/** The banner can be closed for a week: it is a reminder, and a person who
+ *  chose to wait should not meet it on every page. Per device — nothing here
+ *  is a setting worth saving to the account. */
+const DISMISS_KEY = "rw:verify-dismissed";
+const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
+
+function dismissedUntil(): number {
+  try {
+    return Number(localStorage.getItem(DISMISS_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function subscribe(notify: () => void) {
+  window.addEventListener("storage", notify);
+  window.addEventListener("rw:verify-dismissed", notify);
+  return () => {
+    window.removeEventListener("storage", notify);
+    window.removeEventListener("rw:verify-dismissed", notify);
+  };
+}
+
 export function VerifyBanner() {
   const locale = useLocale();
   const { user } = useSession();
+  // Server and first client render both say "not dismissed"; the stored value
+  // is read after hydration, so the markup never disagrees.
+  const dismissed = useSyncExternalStore(
+    subscribe,
+    () => dismissedUntil() > Date.now(),
+    () => false,
+  );
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [retryAfter, setRetryAfter] = useState(0);
 
-  if (!user || user.email_verified !== false) return null;
+  if (!user || user.email_verified !== false || dismissed) return null;
 
   const send = () => {
     setState("sending");
@@ -71,7 +103,7 @@ export function VerifyBanner() {
           <button
             type="button"
             onClick={send}
-            className="font-medium underline rw-focus-ring"
+            className="min-h-11 font-medium underline rw-focus-ring"
           >
             {t(locale, "auth.verifyResend")}
           </button>
@@ -81,11 +113,33 @@ export function VerifyBanner() {
         <button
           type="button"
           onClick={send}
-          className="font-medium underline rw-focus-ring"
+          className="min-h-11 font-medium underline rw-focus-ring"
         >
           {t(locale, "auth.verifyResend")}
         </button>
       )}
+      {" · "}
+      <Link
+        href={"/verify-email" as Route}
+        className="inline-flex min-h-11 items-center font-medium underline rw-focus-ring"
+      >
+        {t(locale, "auth.verifyEnterCode")}
+      </Link>
+      {" · "}
+      <button
+        type="button"
+        onClick={() => {
+          try {
+            localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS));
+          } catch {
+            // Private window: the banner simply stays until the tab closes.
+          }
+          window.dispatchEvent(new Event("rw:verify-dismissed"));
+        }}
+        className="min-h-11 underline rw-focus-ring"
+      >
+        {t(locale, "auth.dismiss")}
+      </button>
     </div>
   );
 }

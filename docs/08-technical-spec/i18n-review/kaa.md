@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2370 strings.**
+**2376 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -310,6 +310,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.registering` | Ro'yxatdan o'tilmoqda… | Dizimnen ótip atır… |  |
 | `auth.welcome` | Xush kelibsiz! | Xosh kelipsiz! |  |
 | `auth.verifySentTo` | {email} ga tasdiqlash xati yubordik. Kodni shu yerga kiriting. | {email} ge tastıyıqlaw xatı jiberildi. Kodtı usı jerge kiritiń. |  |
+| `auth.verifyCodeLabel` | 6 xonali kod | 6 xanalı kod |  |
+| `auth.verifyResendIn` | Qayta yuborish: {time} | Qayta jiberiw: {time} |  |
+| `auth.verifyEnterCode` | Kodni kiritish | Kodtı kiritiw |  |
+| `auth.verifySignIn` | Kodni kiritish uchun tizimga kiring. | Kodtı kiritiw ushın sistemaǵa kiriń. |  |
+| `auth.verifyContinue` | Davom etish | Dawam etiw |  |
+| `auth.verifyCodeFail` | Kod noto'g'ri yoki muddati tugagan | Kod nadurıs yamasa múddeti ótken |  |
 | `auth.dismiss` | Yopish | Jabıw |  |
 | `auth.passwordConfirm` | Parolni tasdiqlang | Paroldi tastıyıqlaw |  |
 | `auth.passwordMismatch` | Parollar mos kelmadi | Paroller sáykes kelmedi |  |

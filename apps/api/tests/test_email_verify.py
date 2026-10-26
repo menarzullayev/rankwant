@@ -172,3 +172,59 @@ class TestQaytaYuborish:
 
         with pytest.raises(verification.TooManyRequests):
             verification.issue(odam)
+
+
+@pytest.mark.django_db
+class TestKodFaqatKirganOdamga:
+    """2026-10-26: kirgan odam faqat 6 xonali kodni yozadi — taxallus
+    sessiyadan olinadi. Kirmagan odamda eski yo'l (taxallus + kod) qoladi."""
+
+    def test_kirgan_odam_taxallussiz_kod_bilan_tasdiqlaydi(self, odam: User) -> None:
+        issued = verification.issue(odam, enforce_limit=False)
+        client = APIClient()
+        client.force_login(odam)
+
+        r = client.post(reverse("email-verify"), {"code": issued.code}, format="json")
+
+        assert r.status_code == 204
+        odam.refresh_from_db()
+        assert odam.email_verified_at is not None
+
+    def test_kirmagan_odam_taxallussiz_kod_bilan_tasdiqlay_olmaydi(self, odam: User) -> None:
+        issued = verification.issue(odam, enforce_limit=False)
+
+        r = APIClient().post(reverse("email-verify"), {"code": issued.code}, format="json")
+
+        assert r.status_code == 400
+        odam.refresh_from_db()
+        assert odam.email_verified_at is None
+
+    def test_boshqa_odamning_kodi_ishlamaydi(self, odam: User) -> None:
+        boshqa = User.objects.create_user(username="vali", email="vali@example.com", password="x")
+        issued = verification.issue(boshqa, enforce_limit=False)
+        client = APIClient()
+        client.force_login(odam)
+
+        r = client.post(reverse("email-verify"), {"code": issued.code}, format="json")
+
+        assert r.status_code == 400
+
+
+@pytest.mark.django_db
+class TestRoyxatTili:
+    def test_sahifa_tili_saqlanadi(self) -> None:
+        r = APIClient().post(
+            reverse("register"),
+            {"email": "til@example.com", "password": "Parol!12345", "locale": "ru"},
+            format="json",
+        )
+        assert r.status_code == 201, r.content
+        assert User.objects.get(email="til@example.com").locale == "ru"
+
+    def test_nomalum_til_rad_etiladi(self) -> None:
+        r = APIClient().post(
+            reverse("register"),
+            {"email": "til2@example.com", "password": "Parol!12345", "locale": "xx"},
+            format="json",
+        )
+        assert r.status_code == 400
