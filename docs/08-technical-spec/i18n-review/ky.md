@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2360 strings.**
+**2370 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -284,7 +284,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.strength1` | Juda zaif | Абдан алсыз |  |
 | `auth.strength2` | Zaif | Алсыз |  |
 | `auth.strength3` | O'rtacha | Орточо |  |
-| `auth.strength4` | Kuchli | Күчтүү |  |
+| `auth.strength4` | Yaxshi | Жакшы |  |
+| `auth.strength5` | Kuchli | Күчтүү |  |
+| `auth.welcomeBack` | Xush kelibsiz | Кайра кош келиңиз |  |
+| `auth.rulesLabel` | Parol talablari | Сырсөз талаптары |  |
+| `auth.rule.length` | Kamida 8 belgi | Кеминде 8 белги |  |
+| `auth.rule.notNumeric` | Faqat raqamlardan iborat emas | Бир гана цифралардан турбайт |  |
+| `auth.rule.varied` | Bir xil belgi takrorlanmaydi | Бир белги кайталанбайт |  |
+| `auth.pwCommon` | Bu parol juda keng tarqalgan. Boshqasini tanlang. | Бул сырсөз өтө кеңири таралган. Башкасын тандаңыз. |  |
+| `auth.pwNumeric` | Parol faqat raqamlardan iborat bo'lmasin. | Сырсөз бир гана цифралардан турбашы керек. |  |
+| `auth.pwSimilar` | Parol taxallus yoki emailga juda o'xshash. | Сырсөз каймана атка же email'ге өтө окшош. |  |
+| `auth.waitButton` | Kuting: {time} | Күтүңүз: {time} |  |
 | `auth.socialConsent` | Davom etish orqali siz {terms} va {privacy} siyosatiga rozilik bildirasiz. | Улантуу менен сиз {terms} жана {privacy} саясатына макул болосуз. |  |
 | `auth.verifyTitle` | Emailni tasdiqlash | Почтаны ырастоо |  |
 | `auth.verifyPending` | Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing. | Почтаңыз ырасталган эмес. Жиберилген каттагы шилтемени ачыңыз. |  |

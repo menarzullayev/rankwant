@@ -12,6 +12,7 @@ export function Field({
   hint,
   status,
   trailing,
+  labelAction,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;
@@ -24,6 +25,12 @@ export function Field({
   status?: FieldStatus;
   /** Maydon ichidagi o'ng tugma — parolni ko'rsatish uchun. */
   trailing?: React.ReactNode;
+  /** A link beside the label (e.g. "Forgot password?"). It cannot live
+   *  INSIDE the `<label>`: the input's accessible name would then read
+   *  "Password Forgot password?". The visible label moves to a row above,
+   *  the real `<label>` text stays for assistive technology. */
+  labelAction?: React.ReactNode;
+  ref?: React.Ref<HTMLInputElement>;
 }) {
   // Label maydonni O'RAB turadi, ya'ni bog'lanish o'rashdan ham kelib
   // chiqadi. `htmlFor` qo'shimcha: parol menejerlari va avtomatik
@@ -61,8 +68,17 @@ export function Field({
   }
 
   return (
+    <div className="block">
+      {labelAction && (
+        <span className="flex min-h-11 items-center justify-between gap-3">
+          <span aria-hidden className={FM_LAB}>
+            {label}
+          </span>
+          {labelAction}
+        </span>
+      )}
     <label className={FM_CTL} htmlFor={fieldId}>
-      <span className={FM_LAB}>{label}</span>
+      <span className={labelAction ? "sr-only" : FM_LAB}>{label}</span>
       {/* The positioned box holds ONLY the input and its button. It used
           to hold the note as well, so `inset-y-0` centred the button on
           input + note: with a hint under the password field the eye sat
@@ -94,5 +110,6 @@ export function Field({
         )}
       </span>
     </label>
+    </div>
   );
 }

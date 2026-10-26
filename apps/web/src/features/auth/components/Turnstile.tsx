@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/** Cloudflare Turnstile — KO'RINADIGAN vidjet (9-qaror).
+/** Cloudflare Turnstile — KO'RINMAS rejim (2026-10-26 qarori).
  *
- * `size: "flexible"` — bu boshqariladigan (managed) vidjet: forma ostida
- * «Verify you are human» katagi ko'rinadi va ko'pchilik odam uchun o'zi
- * o'tadi. Izohda ilgari «ko'rinmas rejim» deb yozilgan edi, jonli sahifada
- * esa vidjet ko'rinib turardi (2026-09-18 da o'lchandi) — egasining
- * qarori bilan ko'rinadigan vidjet qoldirildi, izoh haqiqatga moslandi.
+ * `appearance: "interaction-only"`: vidjet faqat Cloudflare odamdan
+ * harakat so'raganda ko'rinadi, aks holda sahifada joy ham egallamaydi.
+ * Ilgari «Verify you are human» katagi har doim ko'rinardi (inglizcha,
+ * ~65 px) va tor ekranda sahifa kengligini oshirardi. Ko'ringanda ham
+ * u SAHIFA TILIDA chiziladi (`language`).
  *
  * Tema saytdan olinadi: `theme` berilmaganda Cloudflare o'z standartini
  * ishlatadi va qorong'i vidjet ochiq fonda (yoki aksincha) turib qoladi.
@@ -33,6 +33,8 @@ type TurnstileApi = {
       "expired-callback"?: () => void;
       theme?: string;
       size?: string;
+      appearance?: string;
+      language?: string;
     },
   ) => string;
   remove: (id: string) => void;
@@ -47,11 +49,29 @@ declare global {
 const SCRIPT_ID = "cf-turnstile-api";
 const SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
+/** Turnstile `language` codes for the site's languages. Cloudflare has no
+ *  Uzbek, Kazakh, Kyrgyz, Tajik or Karakalpak; Russian is read across the
+ *  region, so it stands in. */
+const WIDGET_LANGUAGE: Record<string, string> = {
+  en: "en",
+  ru: "ru",
+  tr: "tr",
+  es: "es",
+  zh: "zh-cn",
+  uz: "ru",
+  kk: "ru",
+  ky: "ru",
+  tg: "ru",
+  kaa: "ru",
+};
+
 export function Turnstile({
   siteKey,
+  locale,
   onToken,
 }: {
   siteKey: string;
+  locale: string;
   onToken: (token: string) => void;
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -99,6 +119,8 @@ export function Turnstile({
     const id = api.render(box.current, {
       sitekey: siteKey,
       size: "flexible",
+      appearance: "interaction-only",
+      language: WIDGET_LANGUAGE[locale] ?? "auto",
       // Tema `<html>` dagi `dark` klassidan o'qiladi — `ThemeContext` ham
       // shuni yagona haqiqat manbai deb biladi. Vidjet faqat shu yerda,
       // yasalayotganda o'qiydi: keyin tema almashsa qayta yasalmaydi va
@@ -112,7 +134,7 @@ export function Turnstile({
       "expired-callback": () => emit.current(""),
     });
     return () => api.remove(id);
-  }, [ready, siteKey]);
+  }, [ready, siteKey, locale]);
 
   // Vidjet tayyor bo'lmaguncha ham joy egallamaydi (`size: flexible`
   // o'lchamni o'zi oladi), ya'ni forma sakramaydi.

@@ -1841,8 +1841,13 @@ def sign_in_page_is_self_contained() -> str | None:
         return "AuthShell.tsx: ikki ustunli tuzilma yo'q"
     if "<LocaleSwitch" not in auth:
         return "AuthShell.tsx: til tanlagich yo'q — header'siz sahifada til almashmaydi"
-    if 'href="/terms"' not in auth or 'href="/privacy"' not in auth:
-        return "AuthShell.tsx: Shartlar/Maxfiylik havolasi yo'q (ADR-0016)"
+    # 2026-10-26: the legal text is ONE place — under the form's button — so the
+    # shell must not repeat the links (it used to: three places on one screen).
+    form = read("apps/web/src/features/account/components/AuthForm.tsx")
+    if 'href="/terms"' not in form or 'href="/privacy"' not in form or "<Legal />" not in form:
+        return "AuthForm.tsx: Shartlar/Maxfiylik havolasi yo'q (ADR-0016)"
+    if 'href="/terms"' in auth or 'href="/privacy"' in auth:
+        return "AuthShell.tsx: huquqiy havolalar takrorlanadi — matn faqat forma tugmasi ostida"
     if re.search(r"""from ["']@/lib/api["']""", auth) or "fetch(" in auth:
         return "AuthShell.tsx: brend paneli API'ga bog'liq — panel statik bo'lishi shart"
     return None
@@ -1880,31 +1885,35 @@ def auth_panel_is_a_static_carousel() -> str | None:
 
 
 def sign_up_asks_the_handle_and_names() -> str | None:
-    """2026-10-25 (CP Club comparison): handle on step 1, split names on step 2.
+    """2026-10-26 (HITL, 48 decisions): every required field is on step 1.
 
-    Step 1 gains ONE optional handle field (blank keeps the temporary name and
-    step 2 still asks); step 2 asks first and last name instead of one display
-    name; the brand panel's area chips also follow the form below `lg`.
+    Step 1 asks first name, last name, e-mail, an OPTIONAL handle and the
+    password with its confirmation. Consent is the text under the button, not a
+    checkbox. The browser's own validation bubbles are off (`noValidate`), so
+    the notes on the fields are the page's own, in the page language.
     """
     form = read("apps/web/src/features/account/components/AuthForm.tsx")
     if 'name="username"' not in form or "optionalUsernameError" not in form:
         return "AuthForm.tsx: 1-qadamda ixtiyoriy taxallus maydoni yo'q"
-    if "...(handle ? { username: handle } : {})" not in form:
+    if "...(typed ? { username: typed } : {})" not in form:
         return "AuthForm.tsx: taxallus ro'yxatdan o'tish so'roviga qo'shilmaydi"
-    onboarding = read("apps/web/src/features/account/components/OnboardingForm.tsx")
-    if 'name="first_name"' not in onboarding or 'name="last_name"' not in onboarding:
-        return "OnboardingForm.tsx: 2-qadamda ism va familiya alohida emas"
-    if "display_name: fullName(firstName, lastName)" not in onboarding:
-        return "OnboardingForm.tsx: ommaviy ism ism va familiyadan yig'ilmaydi"
+    for name in ("first_name", "last_name"):
+        if f'name="{name}"' not in form:
+            return f"AuthForm.tsx: 1-qadamda {name} maydoni yo'q"
+    if not re.search(r"^\s+noValidate$", form, re.M):
+        return "AuthForm.tsx: noValidate yo'q — brauzer pufagi o'z xabarini ustiga qo'yadi"
+    if "terms_accepted" in form or "marketing_opt_in" in form:
+        return "AuthForm.tsx: rozilik katakchasi qaytgan — rozilik tugma ostidagi matn bilan"
     shell = read("apps/web/src/features/auth/components/AuthShell.tsx")
     if "lg:hidden" not in shell.split("{children}", 1)[1]:
         return "AuthShell.tsx: telefonda forma ostida chiplar yo'q"
-    for key in ("emailPlaceholder", "usernamePlaceholder"):
+    for key in ("emailPlaceholder", "usernamePlaceholder", "firstNamePlaceholder"):
         if f'"auth.{key}"' not in form:
             return f"AuthForm.tsx: auth.{key} namunasi yo'q"
     # Live free/taken note: one hook for both steps, asking the real endpoint.
     if "useUsernameCheck(" not in form:
         return "AuthForm.tsx: 1-qadamda taxallus band/bo'sh tekshiruvi yo'q"
+    onboarding = read("apps/web/src/features/account/components/OnboardingForm.tsx")
     if "useUsernameCheck(" not in onboarding:
         return "OnboardingForm.tsx: 2-qadam umumiy useUsernameCheck dan foydalanmaydi"
     hook = read("apps/web/src/features/account/useUsernameCheck.ts")

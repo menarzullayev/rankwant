@@ -8550,9 +8550,12 @@ export interface components {
              */
             email: string;
             password: string;
+            first_name?: string;
+            last_name?: string;
             display_name?: string;
             country?: string;
             region?: string;
+            /** @default true */
             terms_accepted: boolean;
             /** @default false */
             marketing_opt_in: boolean;

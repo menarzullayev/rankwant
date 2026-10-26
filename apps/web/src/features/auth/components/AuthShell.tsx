@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import BrandMark from "@/layout/BrandMark";
 import { LocaleSwitch } from "@/layout/LocaleSwitch";
 import { getLocale } from "@/i18n/server";
@@ -44,10 +42,14 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-h-screen flex-col">
         <div className="flex items-center justify-between gap-3 px-5 py-4 lg:justify-end lg:px-12">
-          <BrandMark variant="full" className="lg:hidden" />
+          <BrandMark variant="full" className="inline-flex min-h-11 items-center lg:hidden" />
           <LocaleSwitch />
         </div>
-        <div className="flex flex-1 items-center justify-center px-5 py-6 lg:px-12">
+        {/* Pinned to the top: the heading sits at the same height on every tab.
+            Centring moves it when a short tab (reset) follows a tall one
+            (register) — 111 px vs 268 px, measured 2026-10. Only a tall screen
+            gets some air above. */}
+        <div className="flex flex-1 items-start justify-center px-5 pb-8 pt-2 lg:px-12 [@media(min-height:900px)]:pt-[6vh]">
           <div className="w-full max-w-md">
             {children}
             {/* The brand panel is hidden below `lg`; its area names follow
@@ -64,15 +66,6 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
             </ul>
           </div>
         </div>
-        <p className="px-5 pb-6 text-center text-theme-xs rw-dim lg:px-12">
-          <Link href="/terms" className="underline rw-focus-ring">
-            {t(locale, "footer.terms")}
-          </Link>
-          {" · "}
-          <Link href="/privacy" className="underline rw-focus-ring">
-            {t(locale, "footer.privacy")}
-          </Link>
-        </p>
       </div>
     </div>
   );

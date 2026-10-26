@@ -15,7 +15,7 @@ import { t, type MessageKey } from "@/i18n/messages";
  *  says what is being done ("Create account") while the button says the
  *  action. */
 const TITLE: Record<TabId, MessageKey> = {
-  login: "auth.login",
+  login: "auth.welcomeBack",
   register: "auth.createAccount",
   "reset-password": "reset.title",
 };
@@ -49,7 +49,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const params = await searchParams;
   const [locale, tab] = [await getLocale(), tabOf(params)];
-  const title = TITLE[tab];
+  // The window title names the action; the heading may be warmer.
+  const title: MessageKey = tab === "login" ? "auth.login" : TITLE[tab];
   return {
     title: t(locale, title),
     //: Tiklash bo'limida tokenli havola bo'lishi mumkin — qidiruvda

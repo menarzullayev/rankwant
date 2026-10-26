@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2360 strings.**
+**2370 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -284,7 +284,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.strength1` | Juda zaif | Хеле заиф |  |
 | `auth.strength2` | Zaif | Заиф |  |
 | `auth.strength3` | O'rtacha | Миёна |  |
-| `auth.strength4` | Kuchli | Қавӣ |  |
+| `auth.strength4` | Yaxshi | Хуб |  |
+| `auth.strength5` | Kuchli | Қавӣ |  |
+| `auth.welcomeBack` | Xush kelibsiz | Хуш омадед |  |
+| `auth.rulesLabel` | Parol talablari | Талаботи парол |  |
+| `auth.rule.length` | Kamida 8 belgi | Ақаллан 8 аломат |  |
+| `auth.rule.notNumeric` | Faqat raqamlardan iborat emas | Танҳо аз рақамҳо иборат нест |  |
+| `auth.rule.varied` | Bir xil belgi takrorlanmaydi | Як аломат такрор намешавад |  |
+| `auth.pwCommon` | Bu parol juda keng tarqalgan. Boshqasini tanlang. | Ин парол хеле маъмул аст. Дигареро интихоб кунед. |  |
+| `auth.pwNumeric` | Parol faqat raqamlardan iborat bo'lmasin. | Парол набояд танҳо аз рақамҳо иборат бошад. |  |
+| `auth.pwSimilar` | Parol taxallus yoki emailga juda o'xshash. | Парол ба номи корбар ё email хеле монанд аст. |  |
+| `auth.waitButton` | Kuting: {time} | Интизор шавед: {time} |  |
 | `auth.socialConsent` | Davom etish orqali siz {terms} va {privacy} siyosatiga rozilik bildirasiz. | Бо идома додан шумо ба {terms} ва сиёсати {privacy} розӣ мешавед. |  |
 | `auth.verifyTitle` | Emailni tasdiqlash | Тасдиқи почта |  |
 | `auth.verifyPending` | Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing. | Почтаи шумо тасдиқ нашудааст. Пайвандро аз номаи фиристодашуда кушоед. |  |

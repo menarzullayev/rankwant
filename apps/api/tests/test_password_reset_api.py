@@ -96,6 +96,25 @@ class TestTasdiq:
         odam.refresh_from_db()
         assert odam.check_password("YangiParol!99")
 
+    def test_tiklashdan_keyin_shu_qurilmada_kiriladi(self, odam: User) -> None:
+        """Havola pochta egasini isbotladi: odam yana kirish formasini
+        to'ldirmaydi, boshqa qurilmalardagi sessiyalar esa tugaydi."""
+        eski = APIClient()
+        eski.force_login(odam)
+        assert eski.get(reverse("me")).status_code == 200
+
+        issued = recovery.issue(odam)
+        yangi = APIClient()
+        r = yangi.post(
+            reverse("password-reset-confirm"),
+            {"token": issued.raw, "password": "YangiParol!99"},
+            format="json",
+        )
+
+        assert r.status_code == 204
+        assert yangi.get(reverse("me")).status_code == 200
+        assert eski.get(reverse("me")).status_code in (401, 403)
+
     def test_kod_bilan_parol_ozgaradi(self, odam: User) -> None:
         issued = recovery.issue(odam)
 
