@@ -142,6 +142,9 @@ ENV NODE_ENV=production
 # va 2026-09-13 dagi «eski image» hodisasi sezilmay qoldi.
 ARG GIT_SHA=unknown
 ARG BUILT_AT=unknown
+# `ENV` too: a `LABEL` is invisible from inside the container, and `/version`
+# (src/app/version/route.ts) answers from here.
+ENV GIT_SHA=$GIT_SHA
 LABEL org.rankwant.git-sha=$GIT_SHA
 LABEL org.rankwant.built-at=$BUILT_AT
 # Runtime faqat `apps/web` ni ishlatadi: `next start` shu katalogdan

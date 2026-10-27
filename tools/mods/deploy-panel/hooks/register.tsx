@@ -4,7 +4,11 @@ import type { Register } from 'claude-code'
 import type { Snapshot } from '../types'
 
 const PANE = 'deploy-panel'
-const VERSION_URL = 'https://rankwant.uz/api/v1/version/'
+// Two images report their own commit: the API at /api/v1/version/ and the web
+// app at /version. A deploy rebuilds only what changed, so one of them can
+// honestly sit behind main; the site is current when EITHER matches.
+const API_URL = 'https://rankwant.uz/api/v1/version/'
+const WEB_URL = 'https://rankwant.uz/version'
 // The watcher polls once a minute and CI takes a few; past this the deploy is
 // not merely in flight (2026-10-23: a dead lock held it for two days).
 const STUCK_AFTER_MS = 15 * 60 * 1000
@@ -14,6 +18,7 @@ const MIN_GAP_MS = 30 * 1000
 const EMPTY: Snapshot = {
   main: null,
   live: null,
+  web: null,
   checkedAt: 0,
   behindSince: 0,
   error: null,
@@ -21,7 +26,7 @@ const EMPTY: Snapshot = {
 // Change the tag when Snapshot's fields change: it declines what an earlier
 // version stored, which outlives a reload.
 const snapshot = atom({ plugin: 'deploy-panel', key: 'snapshot' } as const, EMPTY, {
-  shape: 'snapshot-1',
+  shape: 'snapshot-2',
 })
 
 const short = (sha: string | null) => (sha ? sha.slice(0, 7) : 'noma’lum')
@@ -30,18 +35,19 @@ async function refresh($: any, cwd?: string): Promise<Snapshot> {
   const now: number = await $.clock.now()
   const errors: string[] = []
 
-  let live: string | null = null
-  try {
-    const res = await $.http.fetch(VERSION_URL)
-    const sha = res.ok ? JSON.parse(res.text)?.sha : null
-    if (typeof sha === 'string' && /^[0-9a-f]{7,40}$/.test(sha)) {
-      live = sha
-    } else {
-      errors.push(`sayt: ${res.ok ? 'sha yo‘q' : `HTTP ${res.status}`}`)
+  const readSha = async (url: string, name: string): Promise<string | null> => {
+    try {
+      const res = await $.http.fetch(url)
+      const sha = res.ok ? JSON.parse(res.text)?.sha : null
+      if (typeof sha === 'string' && /^[0-9a-f]{7,40}$/.test(sha)) return sha
+      errors.push(`${name}: ${res.ok ? 'sha yo‘q' : `HTTP ${res.status}`}`)
+    } catch (err) {
+      errors.push(`${name}: ${String(err)}`)
     }
-  } catch (err) {
-    errors.push(`sayt: ${String(err)}`)
+    return null
   }
+  const live = await readSha(API_URL, 'api')
+  const web = await readSha(WEB_URL, 'web')
 
   let main: string | null = null
   try {
@@ -60,11 +66,12 @@ async function refresh($: any, cwd?: string): Promise<Snapshot> {
   }
 
   return update($, snapshot, (prev: Snapshot) => {
-    const isBehind = main !== null && live !== null && main !== live
+    const unread = main === null || (live === null && web === null)
+    const isBehind = !unread && main !== live && main !== web
     // Keep the first sighting of a difference; clear it when they match.
     // An unreadable side changes nothing: it is not evidence either way.
     const behindSince =
-      main === null || live === null
+      unread
         ? prev.behindSince
         : isBehind
           ? prev.behindSince || now
@@ -73,6 +80,7 @@ async function refresh($: any, cwd?: string): Promise<Snapshot> {
     return {
       main,
       live,
+      web,
       checkedAt: now,
       behindSince,
       error: errors.length ? errors.join('; ') : null,
@@ -82,10 +90,10 @@ async function refresh($: any, cwd?: string): Promise<Snapshot> {
 
 function verdict(s: Snapshot, now: number) {
   if (s.checkedAt === 0) return { label: 'tekshirilmagan', tone: 'dim' } as const
-  if (s.main === null || s.live === null) {
+  if (s.main === null || (s.live === null && s.web === null)) {
     return { label: 'o‘qilmadi', tone: 'dim' } as const
   }
-  if (s.main === s.live) return { label: 'jonli sayt main bilan bir xil', tone: 'ok' } as const
+  if (s.main === s.live || s.main === s.web) return { label: 'jonli sayt main bilan bir xil', tone: 'ok' } as const
   const minutes = Math.floor((now - s.behindSince) / 60000)
   return minutes * 60000 >= STUCK_AFTER_MS
     ? ({ label: `deploy ${minutes} daqiqadan beri chiqmayapti`, tone: 'bad' } as const)
@@ -110,7 +118,7 @@ export const register: Register = on => {
     const v = verdict(s, await $.clock.now())
 
     return {
-      text: `main ${short(s.main)}, jonli ${short(s.live)}: ${v.label}`,
+      text: `main ${short(s.main)}, api ${short(s.live)}, web ${short(s.web)}: ${v.label}`,
     }
   })
 
@@ -133,7 +141,8 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column">
         <Text>origin/main  {short(s.main)}</Text>
-        <Text>jonli sayt   {short(s.live)}</Text>
+        <Text>jonli api    {short(s.live)}</Text>
+        <Text>jonli web    {short(s.web)}</Text>
         <Text color={color} dimColor={v.tone === 'dim'}>
           {v.label}
         </Text>

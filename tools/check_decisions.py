@@ -2613,6 +2613,25 @@ def row_dividers_colour_every_row() -> str | None:
     return None
 
 
+def web_reports_its_own_commit() -> str | None:
+    """2026-10-27: `/version` — web ham o'z commitini aytadi.
+
+    `/api/v1/version/` faqat `api` obrazining sha'sini beradi. Deploy faqat
+    o'zgargan servisni quradi, shuning uchun web-only o'zgarishdan keyin u eski
+    commitni ko'rsatib «deploy chiqmadi» degan yolg'on signal berdi (2026-10-23
+    va 2026-10-27). Web obrazi `GIT_SHA` ni `ENV` sifatida ham olishi shart
+    (yorliq konteyner ichidan ko'rinmaydi).
+    """
+    if "ENV GIT_SHA=$GIT_SHA\n" not in read("apps/web/Dockerfile"):
+        return "apps/web/Dockerfile: `ENV GIT_SHA` yo'q — /version konteyner ichidan sha'ni o'qiy olmaydi"
+    route = read("apps/web/src/app/version/route.ts")
+    if "process.env.GIT_SHA" not in route or '"Cache-Control": "no-store"' not in route:
+        return "version/route.ts: sha yoki `no-store` yo'q — keshlangan javob deploy'ni yo'q deb ko'rsatadi"
+    if "https://rankwant.uz/version" not in read("tools/mods/deploy-panel/hooks/register.tsx"):
+        return "deploy-panel: web sha'sini o'qimaydi — web-only deploy yana «chiqmadi» bo'lib ko'rinadi"
+    return None
+
+
 def evaluation_paths_are_proven() -> str | None:
     """2026-10-07: special checker, interactive va scorer haqiqiy judge'da isbotlangan.
 
@@ -3697,6 +3716,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
+    ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("jadval chiziqlari har qatorga rang oladi", row_dividers_colour_every_row),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),

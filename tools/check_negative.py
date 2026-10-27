@@ -5495,6 +5495,15 @@ def neg_decisions_copy_burn_returns() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_web_version_env_dropped() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/Dockerfile",
+        "ENV GIT_SHA=$GIT_SHA\n",
+        "",
+        "web ham o'z commitini aytadi",
+    )
+
+
 def neg_decisions_raw_clipboard_returns() -> tuple[bool, str]:
     """Xom `navigator.clipboard` boshqa faylga qaytsa tutilsin."""
     return _decision_broken(
@@ -6289,6 +6298,8 @@ _DECISIONS_SANDBOX_FILES = (
     # Missing here, `check_decisions.py` exits 2.
     "apps/web/src/lib/theme/kit.ts",
     "apps/web/src/components/kit/CopyControl.tsx",
+    "apps/web/src/app/version/route.ts",
+    "tools/mods/deploy-panel/hooks/register.tsx",
     "apps/web/src/app/kit.css",
     "apps/web/src/components/kit/CommandPalette.tsx",
     "apps/web/src/features/profile/components/ShareButton.tsx",
@@ -10115,6 +10126,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "xom clipboard qaytsa tutilsin",
                 neg_decisions_raw_clipboard_returns,
+            ),
+            (
+                "web ENV GIT_SHA olib tashlansa tutilsin",
+                neg_decisions_web_version_env_dropped,
             ),
             (
                 "watcher tiriklikni tekshirmasa tutilsin",

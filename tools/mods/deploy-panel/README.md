@@ -1,7 +1,9 @@
 # deploy-panel
 
 A Claude Code mod: a pane showing `origin/main` next to the commit the live
-site reports at `/api/v1/version/`, and how long they have differed.
+site reports, and how long they have differed. Two images answer: the API at
+`/api/v1/version/` and the web app at `/version`. A deploy rebuilds only what
+changed, so the site counts as current when either one matches main.
 
 ```bash
 claude --plugin-dir tools/mods/deploy-panel   # then /deploy-panel
