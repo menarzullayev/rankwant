@@ -199,7 +199,7 @@ export function CustomizerProvider({
   const [previous, setPrevious] = useState<AppearancePrefs | null>(null);
 
   const { setStyle } = useStyle();
-  const { mode, setMode } = useTheme();
+  const { mode, setMode, theme } = useTheme();
   const { user } = useSession();
 
   // APP-13: at sign-in the account's saved templates join this device's.
@@ -241,6 +241,7 @@ export function CustomizerProvider({
           fg: read("--rw-accent-fg"),
           soft: read("--rw-accent-soft"),
           ink: read("--rw-accent-ink"),
+          dark: document.documentElement.classList.contains("dark"),
         };
         rememberAccent(stored);
       }
@@ -427,6 +428,17 @@ export function CustomizerProvider({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // The accent is derived against the page's own backgrounds, so it belongs to
+  // one mode. When the applied theme changes (the toggle, the OS switching at
+  // dusk) — and on mount, where it also heals a device cache the boot script
+  // refused for the wrong mode — it is derived again. Same path as `commit`;
+  // nothing here sets state, only the DOM and the device cache.
+  useEffect(() => {
+    if (appearance.accent) applyAndCacheAccent(appearance);
+    // Only `theme` triggers it: a change of the accent itself goes through `commit`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme]);
 
   const template = useMemo(
     () => matchTemplate(appearance, a11y, mode),

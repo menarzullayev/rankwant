@@ -53,6 +53,12 @@ export type StoredAccent = {
   fg: string;
   soft: string;
   ink: string;
+  /** The mode (`<html class="dark">`) these values were derived for. The
+   *  chip background and the ink are measured against the page, so a pair
+   *  derived in dark mode is wrong on a light page and the other way round:
+   *  the boot script applies a cache only when this matches the current mode.
+   *  Absent on caches written before the field existed — treated as unknown. */
+  dark?: boolean;
 };
 
 const SOUND_KEY = "rw:sound";

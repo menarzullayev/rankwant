@@ -100,6 +100,13 @@ def main() -> int:
             problems += 1
             continue
         packs[path.stem] = parsed[1]
+        # A <rect> without `width`/`height` draws nothing. The generator once
+        # stripped them from every child element and the "copy" glyph on the
+        # live site showed only its corner arc (2026-10-27).
+        bare = [m for m in re.findall(r"<rect\b[^>]*>", text) if "width=" not in m]
+        if bare:
+            fail(f"{path.name}: {len(bare)} ta <rect> width/height'siz — chizilmaydi, masalan {bare[0]}")
+            problems += 1
 
     if not packs:
         print("Hech qanday to'plam o'qilmadi.")

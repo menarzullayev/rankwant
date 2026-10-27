@@ -108,7 +108,10 @@ const ATTR = {
 function toJsx(inner) {
   let s = inner;
   // Drop attributes the wrapper already sets, and non-JSX ones.
-  s = s.replace(/\s(?:class|width|height|xmlns)="[^"]*"/g, "");
+  // ⚠️ NOT `width`/`height`: `inner` is the content of the root <svg>, and a
+  // child <rect width="14" height="14"> needs them. Stripping them left 36
+  // Lucide shapes (the big square of "copy", for one) with nothing to draw.
+  s = s.replace(/\s(?:class|xmlns)="[^"]*"/g, "");
   s = s.replace(/\sfill="currentColor"/g, "");
   s = s.replace(/\sstroke="currentColor"/g, "");
   s = s.replace(/\saria-hidden="[^"]*"/g, "");
