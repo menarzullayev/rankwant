@@ -3946,6 +3946,71 @@ def neg_notification_catalogue_stale() -> tuple[bool, str]:
     return True, "bildirishnoma katalogi: eskirgan holat tutildi (exit 1)"
 
 
+def neg_decisions_wire_name_dropped() -> tuple[bool, str]:
+    """The SSE frame goes out with the bare event name again."""
+    return _decision_broken(
+        "apps/api/realtime/asgi.py",
+        "bus.wire_name(item['event'])",
+        "item['event']",
+        "SSE hodisa nomi versiyasiz ketadi",
+    )
+
+
+def neg_decisions_newer_protocol_accepted() -> tuple[bool, str]:
+    """The judge stops refusing a job from a newer protocol."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "job.ProtocolVersion > ProtocolVersion",
+        "job.ProtocolVersion < 0",
+        "yangiroq protokoldagi ish rad etilmaydi",
+    )
+
+
+def neg_notification_code_removed() -> tuple[bool, str]:
+    """A code the baseline knows is gone from the catalogue.
+
+    Stored rows keep `code` + `params` and are drawn later; a removed code
+    leaves them undrawable. The gate is `check_notification_codes.py`. The
+    baseline gains a code the catalogue lacks — the same state as a removal.
+    """
+    path = ROOT / "tools/notification-codes.json"
+    old = '{\n  "contest_result": ['
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "bildirishnoma kodi: langar topilmadi (notification-codes.json)"
+    with Mutation(path, old, '{\n  "ghost_code": ["x"],\n  "contest_result": ['):
+        code, out = run([PY, "tools/check_notification_codes.py"])
+    if code != 1:
+        return False, f"bildirishnoma kodi: o'chirilgan kod exit {code} berdi (1 kerak)"
+    if "removed from the catalog" not in out:
+        return False, f"bildirishnoma kodi: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, "bildirishnoma kodi: o'chirilgan kod tutildi (exit 1)"
+
+
+def neg_openapi_path_removed() -> tuple[bool, str]:
+    """A path of /api/v1/ is renamed away.
+
+    The old schema is a copy taken before the mutation (`--old`), not a git
+    ref: CI runs this where git state cannot be read.
+    """
+    import shutil
+    import tempfile
+
+    path = ROOT / "apps/api/openapi/schema.yml"
+    old = "  /api/v1/version/:\n"
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "openapi buzuvchi o'zgarish: langar topilmadi (schema.yml)"
+    with tempfile.TemporaryDirectory() as tmp:
+        before = Path(tmp) / "schema.yml"
+        shutil.copyfile(path, before)
+        with Mutation(path, old, "  /api/v1/version-renamed/:\n"):
+            code, out = run([PY, "tools/check_openapi_breaking.py", "--old", str(before)])
+    if code != 1:
+        return False, f"openapi buzuvchi o'zgarish: o'chirilgan yo'l exit {code} berdi (1 kerak)"
+    if "path removed" not in out:
+        return False, f"openapi buzuvchi o'zgarish: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, "openapi buzuvchi o'zgarish: o'chirilgan yo'l tutildi (exit 1)"
+
+
 def neg_decisions_search_unthrottled() -> tuple[bool, str]:
     """The search endpoint loses its own rate limit."""
     return _decision_broken(
@@ -6511,6 +6576,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/contests/services.py",
     "apps/api/judging/tasks.py",
     "apps/api/judging/provider.py",
+    "services/judge-go/protocol.go",
+    "apps/api/judging/models.py",
+    "apps/api/ratings/models.py",
+    "apps/web/src/lib/useEventStream.ts",
 )
 
 
@@ -9804,6 +9873,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qo'ng'iroq o'zi o'qilgan qilsa tutilsin", neg_decisions_notif_bell_marks_read),
             ("yashirin tab oqim ushlasa tutilsin", neg_decisions_notif_hidden_tab_holds_stream),
             ("bildirishnoma katalogi eskirsa tutilsin", neg_notification_catalogue_stale),
+            ("bildirishnoma kodi o'chirilsa tutilsin", neg_notification_code_removed),
+            ("SSE nomi versiyasiz ketsa tutilsin", neg_decisions_wire_name_dropped),
+            ("yangi protokol ishi qabul qilinsa tutilsin", neg_decisions_newer_protocol_accepted),
+            ("API v1 yo'li o'chirilsa tutilsin", neg_openapi_path_removed),
             ("qidiruv chegarasiz qolsa tutilsin", neg_decisions_search_unthrottled),
             ("qidiruv katta jadvalni skanerlasa tutilsin", neg_decisions_search_large_table_unguarded),
             ("eng mos natija taxmin bo'lsa tutilsin", neg_decisions_search_top_hit_guesses),

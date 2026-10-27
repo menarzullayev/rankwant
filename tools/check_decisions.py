@@ -2632,6 +2632,37 @@ def web_reports_its_own_commit() -> str | None:
     return None
 
 
+def versioning_points_are_wired() -> str | None:
+    """2026-10-27: versiya qo'yiladigan nuqtalar - nima uchun har biri kerak.
+
+    Deploy paytida eski va yangi qism bir necha daqiqa yonma-yon yuradi
+    (2026-yil iyul-oktabr: eski worker yangi verdiktni tanimay `IE` berdi),
+    brauzer va keshda esa eski qiymat deploy'dan keyin ham qoladi. Versiya
+    shuni jim buzilish emas, ko'rinadigan rad etishga aylantiradi.
+    """
+    if "const ProtocolVersion = " not in read("services/judge-go/protocol.go"):
+        return "protocol.go: judge protokol versiyasi yo'q - yangi shakldagi ish eski judge'ga jim yetib boradi"
+    if "job.ProtocolVersion > ProtocolVersion" not in read("services/judge-go/judge.go"):
+        return "judge.go: yangiroq protokoldagi ish rad etilmaydi - noma'lum maydonlar bilan hukm qilinadi"
+    if "result_is_understood(result)" not in read("apps/api/judging/tasks.py"):
+        return "tasks.py: yangiroq protokoldagi natija tekshirilmaydi - taxmin bilan yoziladi"
+    if "self.problem_revision_id = (" not in read("apps/api/judging/models.py"):
+        return "judging/models.py: urinish revision belgisini olmaydi - qaysi paket bilan hukm qilingani noma'lum"
+    if "FORMULA_VERSION" not in read("apps/api/ratings/models.py"):
+        return "ratings/models.py: RatingHistory formula versiyasini yozmaydi - qaysi qoida bilan hisoblangani noma'lum"
+    if '"VERSION": CACHE_VERSION' not in read("apps/api/config/settings.py"):
+        return "settings.py: kesh versiyasi kalitga kirmaydi - o'zgargan shakl eski qiymat bilan aralashadi"
+    if "bus.wire_name(item['event'])" not in read("apps/api/realtime/asgi.py"):
+        return "asgi.py: SSE hodisa nomi versiyasiz ketadi - eski sahifa yangi yukni noto'g'ri o'qiydi"
+    if "wireName(name)" not in read("apps/web/src/lib/useEventStream.ts"):
+        return "useEventStream.ts: mijoz versiyali nomni tinglamaydi - hodisalar kelmaydi"
+    if "tools/check_notification_codes.py" not in read(".github/workflows/ci.yml"):
+        return "ci.yml: bildirishnoma kodlari tekshirilmaydi - saqlangan xabar chizilmay qolishi mumkin"
+    if "tools/check_openapi_breaking.py" not in read(".github/workflows/ci.yml"):
+        return "ci.yml: API v1 buzuvchi o'zgarishi tekshirilmaydi - ishlayotgan mijoz jim sinadi"
+    return None
+
+
 def evaluation_paths_are_proven() -> str | None:
     """2026-10-07: special checker, interactive va scorer haqiqiy judge'da isbotlangan.
 
@@ -3717,6 +3748,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
+    ("versiya nuqtalari ulangan", versioning_points_are_wired),
     ("jadval chiziqlari har qatorga rang oladi", row_dividers_colour_every_row),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),

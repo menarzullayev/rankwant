@@ -12,6 +12,12 @@ import math
 from collections import Counter
 from collections.abc import Callable
 
+#: Version of every formula in this module. Written into each `RatingHistory`
+#: row so a stored delta says which rules produced it. Change a constant or a
+#: formula here and this number goes up in the same commit — and 04-prd (locked)
+#: needs a new ADR first. Rows written before the field existed stay `null`.
+FORMULA_VERSION = 1
+
 # ── Skills — ADR-0006, ADR-0007 ──────────────────────────────────────
 SKILLS_DECAY = 0.95
 

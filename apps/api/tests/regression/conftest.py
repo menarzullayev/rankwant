@@ -42,6 +42,9 @@ class ScriptedJudge:
         )
         return job.job_id
 
+    def park(self, result: dict[str, Any]) -> None:
+        """Part of the provider protocol; this judge never writes a newer shape."""
+
     def pending_jobs(self) -> int:
         return 0
 

@@ -1,0 +1,1 @@
+# Deliberate breaks of /api/v1/ (decision 2026-10-27). One entry per line, with the reason on the line above.

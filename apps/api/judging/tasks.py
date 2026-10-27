@@ -9,7 +9,7 @@ from typing import Any
 from celery import shared_task
 
 from judging.models import Attempt
-from judging.provider import get_provider
+from judging.provider import JUDGE_PROTOCOL_VERSION, get_provider, result_is_understood
 from judging.services import (
     apply_attempt_progress,
     apply_compilation_finished,
@@ -76,6 +76,18 @@ def drain_results(max_items: int = 500) -> int:
         if result is None:
             break
         try:
+            if not result_is_understood(result):
+                # Written by a newer judge than this API: applying it would
+                # be guessing. Parked, not dropped — it can be replayed once
+                # the API is current.
+                log.error(
+                    "natija yangiroq protokolda (v%s > v%s): to'xtatib qo'yildi, job=%s",
+                    result.get("protocol_version"),
+                    JUDGE_PROTOCOL_VERSION,
+                    result.get("job_id"),
+                )
+                provider.park(result)
+                continue
             kind = result.get("kind")
             # Several judges interleave attempts, so flush only when this
             # event is about an attempt that still has buffered tests

@@ -121,10 +121,18 @@ func subst(args []string, src, bin string) []string {
 // judge — bitta job ni to'liq bajaradi.
 func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 	t0 := time.Now()
-	res := &Result{JobID: job.JobID, AttemptID: job.AttemptID, CustomRunID: job.CustomRunID,
+	res := &Result{ProtocolVersion: ProtocolVersion, JobID: job.JobID, AttemptID: job.AttemptID, CustomRunID: job.CustomRunID,
 		HackID: job.HackID, HackStage: job.HackStage,
 		Verdict: VIE, PerTest: []TestResult{},
 		Meta: JudgeMeta{Worker: "judge-go", Sandbox: "nsjail"}}
+
+	// A job written for a newer shape than this build knows: fail closed.
+	if job.ProtocolVersion > ProtocolVersion {
+		res.CompileOutput = fmt.Sprintf("unsupported protocol_version %d (judge speaks %d)",
+			job.ProtocolVersion, ProtocolVersion)
+		res.Meta.TotalMS = time.Since(t0).Milliseconds()
+		return res
+	}
 
 	// The submission's language decides /proc and the open-file limit for
 	// every sandbox run of this job: compile, tests and the interactive run.

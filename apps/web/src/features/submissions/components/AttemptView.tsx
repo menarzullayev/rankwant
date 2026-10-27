@@ -22,6 +22,7 @@ import type { AttemptDetail } from "@/lib/api";
 import { highlight, type TokenKind } from "@/lib/highlight";
 import { useLoad } from "@/lib/hooks";
 import { isPendingVerdict } from "@/lib/theme/verdict";
+import { pack } from "@/lib/versioned-storage";
 
 /** Token colours come from the theme's own inks, so the code reads in
  *  every style and in both modes. */
@@ -69,7 +70,10 @@ export function AttemptView({ id }: { id: number }) {
    *  is the whole hand-off, so nothing new travels in the URL. */
   const editAndResubmit = () => {
     try {
-      localStorage.setItem(`rw:draft:${data.problem}:${data.language}`, data.source_code ?? "");
+      localStorage.setItem(
+        `rw:draft:${data.problem}:${data.language}`,
+        pack(1, data.source_code ?? ""),
+      );
       localStorage.setItem("rw:language", data.language);
     } catch {
       // Storage is closed (private mode): the problem still opens, with

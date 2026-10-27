@@ -5,12 +5,19 @@
  *  blocked site data), and then there simply is no history.
  */
 
+import { pack, unpack } from "@/lib/versioned-storage";
+
 const KEY = "rw:search-recent";
+const VERSION = 1;
 export const RECENT_LIMIT = 6;
 
 export function readRecent(): string[] {
   try {
-    const parsed: unknown = JSON.parse(window.localStorage.getItem(KEY) ?? "[]");
+    const raw = window.localStorage.getItem(KEY);
+    const got = unpack(raw, VERSION);
+    // A bare array is the list from before versioning.
+    const parsed: unknown =
+      got.kind === "current" ? got.data : got.kind === "legacy" ? JSON.parse(got.raw) : [];
     if (!Array.isArray(parsed)) return [];
     return parsed.filter((item): item is string => typeof item === "string").slice(0, RECENT_LIMIT);
   } catch {
@@ -29,7 +36,7 @@ export function pushRecent(list: string[], query: string): string[] {
 export function rememberRecent(query: string): string[] {
   const next = pushRecent(readRecent(), query);
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(next));
+    window.localStorage.setItem(KEY, pack(VERSION, next));
   } catch {
     // No storage — the search itself still works.
   }

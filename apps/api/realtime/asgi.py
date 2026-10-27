@@ -397,7 +397,7 @@ async def _events(scope: dict[str, Any]) -> None:
 
 def _frame(item: dict[str, Any]) -> str:
     payload = json.dumps(item["data"], ensure_ascii=False)
-    return f"id: {item['id']}\nevent: {item['event']}\ndata: {payload}\n\n"
+    return f"id: {item['id']}\nevent: {bus.wire_name(item['event'])}\ndata: {payload}\n\n"
 
 
 def _live_frame(raw: str) -> str | None:

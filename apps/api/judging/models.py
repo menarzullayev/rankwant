@@ -22,7 +22,10 @@ class Attempt(models.Model):
     #: ⚠️ Bu maydon `null` bo'lishi mumkin va shunday qoladi: 2026-09-30
     #: gacha olingan urinishlar qaysi paketda yurgizilganini bilib
     #: bo'lmaydi — ularni «birinchi revision» deb yozish tarixni
-    #: o'ylab topish bo'lardi. Yangi urinishlarda to'ldiriladi.
+    #: o'ylab topish bo'lardi. Yangi urinishlarda `save()` to'ldiradi
+    #: (masalaning o'sha paytdagi `current_revision`i; nashr qilinmagan
+    #: masalada u `null` qoladi). Qayta hukm uni O'ZGARTIRMAYDI — faqat
+    #: `rejudge --adopt-current-revision`.
     problem_revision = models.ForeignKey(
         "problems.ProblemRevision",
         null=True,
@@ -83,6 +86,15 @@ class Attempt(models.Model):
 
     def save(self, *args: object, **kwargs: object) -> None:
         self.source_size = len(self.source_code.encode())
+        if self._state.adding and self.problem_revision_id is None:
+            # Stamped where every attempt is born, so no creation path (web,
+            # answers, hacks) can forget it. `bulk_create` bypasses `save`.
+            self.problem_revision_id = (
+                type(self.problem)
+                .objects.filter(pk=self.problem_id)
+                .values_list("current_revision_id", flat=True)
+                .first()
+            )
         super().save(*args, **kwargs)  # type: ignore[arg-type]
 
     @property

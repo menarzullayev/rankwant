@@ -41,6 +41,11 @@ class Command(BaseCommand):
         parser.add_argument("--verdict", help="Faqat shu verdict (masalan AC)")
         parser.add_argument("--limit", type=int, default=500, help="Bir partiyada nechta")
         parser.add_argument("--dry-run", action="store_true")
+        parser.add_argument(
+            "--adopt-current-revision",
+            action="store_true",
+            help="Urinishni masalaning HOZIRGI revision'iga o'tkazadi (standart: eskisida qoladi)",
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         # Filtrsiz rejudge butun arxivni navbatga tiqardi. Buni tasodifan
@@ -77,9 +82,14 @@ class Command(BaseCommand):
             # farq qilmasdi va eski natija qayoqqa ketganini tushunmasdi.
             # `TESTING_ABORTED` — «oldingi natija bekor qilindi, qayta
             # tekshirilmoqda».
-            Attempt.objects.filter(pk=attempt.pk).update(
-                verdict=Verdict.TESTING_ABORTED, judged_at=None, requeued_at=None
-            )
+            changes: dict[str, Any] = {
+                "verdict": Verdict.TESTING_ABORTED,
+                "judged_at": None,
+                "requeued_at": None,
+            }
+            if options["adopt_current_revision"]:
+                changes["problem_revision_id"] = attempt.problem.current_revision_id
+            Attempt.objects.filter(pk=attempt.pk).update(**changes)
             sent += 1
 
         qoldi = total - sent
