@@ -958,7 +958,13 @@
    u bilan chizilgan har qanday ajratgich ko'rinmay qolardi. `--rw-divider`
    esa matn rangidan hosil qilinadi va barcha uslublarda 3:1 dan o'tadi. */
 .rw-divider { border-color: var(--rw-divider); }
-.rw-divide > * + * { border-color: var(--rw-divider); }
+/* Tailwind 4 `divide-y` draws the line on every child EXCEPT THE LAST (its
+   bottom edge), not on every child but the first. The colour has to cover
+   the same set: `> * + *` left the first row's line in the default border
+   colour, so the first two table rows ran together (measured 2026-10-27,
+   sample tests on a phone). `> *` also colours the last child's border,
+   which has no width, so it costs nothing. */
+.rw-divide > * { border-color: var(--rw-divider); }
 .rw-shadow { box-shadow: var(--rw-shadow); }
 .rw-strong { color: var(--rw-text); text-shadow: var(--rw-text-emboss, none); }
 .rw-dim-2 { color: var(--rw-text-2); }

@@ -3248,6 +3248,15 @@ def neg_decisions_carousel_loses_a_slide() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_row_dividers_next_sibling_only() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/app/theme.css",
+        ".rw-divide > * { border-color: var(--rw-divider); }",
+        ".rw-divide > * + * { border-color: var(--rw-divider); }",
+        "jadval chiziqlari har qatorga rang oladi",
+    )
+
+
 def neg_decisions_clay_dark_block_removed() -> tuple[bool, str]:
     """The palette goes: a dark-mode device is back on light surfaces."""
     return _decision_broken(
@@ -9889,6 +9898,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bugun faol ro'yxati maxfiylikni e'tiborsiz qoldirsa tutilsin", neg_decisions_presence_ignores_privacy),
             ("panel ko'rinish-prefetch qilsa tutilsin", neg_decisions_signed_in_home_viewport_prefetch),
             ("clay qorong'i palitrasi olib tashlansa tutilsin", neg_decisions_clay_dark_block_removed),
+            ("jadval chiziqlari faqat 2-qatordan boshlansa tutilsin", neg_decisions_row_dividers_next_sibling_only),
             ("clay yana bir muhitli bo'lsa tutilsin", neg_decisions_clay_single_environment_again),
             ("kirish sahifasiga sayt chrome'i qaytsa tutilsin", neg_decisions_sign_in_gets_site_chrome_back),
             ("kirish sahifasida til tanlagich yo'qolsa tutilsin", neg_decisions_sign_in_loses_locale_switch),
