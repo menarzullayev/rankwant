@@ -759,14 +759,7 @@ function EditorTools({
         accept=".cpp,.cc,.cxx,.c,.py,.java,.kt,.go,.rs,.cs,.js,.ts,.txt"
         onFile={(file) => void upload(file)}
       />
-      <CopyButton
-        text={source}
-        tone="kbd"
-        kbd="Ctrl+C"
-        label={t(locale, "settings.teamCopy")}
-        copiedLabel={t(locale, "settings.teamCopied")}
-        className={action}
-      />
+      <CopyButton text={source} shape="label" size="sm" />
       <button type="button" onClick={() => onSource("")} className={action}>
         {t(locale, "common.clear")}
       </button>

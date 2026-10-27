@@ -5489,9 +5489,19 @@ def neg_decisions_copy_burn_returns() -> tuple[bool, str]:
     """Copy v9 `burn` katalogga qaytsa tutilsin."""
     return _decision_broken(
         "apps/web/src/lib/theme/kit.ts",
-        '  "all",\n  "kbd",\n];',
-        '  "all",\n  "kbd",\n  "burn",\n];',
+        'export const COPY_SHAPES: CopyShape[] = ["icon", "label", "field", "cell"];',
+        'export const COPY_SHAPES: CopyShape[] = ["icon", "label", "field", "cell"];\nexport const BURN = "burn";',
         "tanlangan kit muzlatilgan",
+    )
+
+
+def neg_decisions_raw_clipboard_returns() -> tuple[bool, str]:
+    """Xom `navigator.clipboard` boshqa faylga qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/features/profile/components/ShareButton.tsx",
+        'import { CopyButton } from "@/components/kit/CopyControl";',
+        'import { CopyButton } from "@/components/kit/CopyControl";\nvoid navigator.clipboard;',
+        "nusxalash bitta tugma",
     )
 
 
@@ -6279,6 +6289,7 @@ _DECISIONS_SANDBOX_FILES = (
     # Missing here, `check_decisions.py` exits 2.
     "apps/web/src/lib/theme/kit.ts",
     "apps/web/src/components/kit/CopyControl.tsx",
+    "apps/web/src/app/kit.css",
     "apps/web/src/components/kit/CommandPalette.tsx",
     "apps/web/src/features/profile/components/ShareButton.tsx",
     # ?lang= self-canonical + hreflang (2026-09-20). Missing here,
@@ -10100,6 +10111,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "copy v9 burn qaytsa tutilsin",
                 neg_decisions_copy_burn_returns,
+            ),
+            (
+                "xom clipboard qaytsa tutilsin",
+                neg_decisions_raw_clipboard_returns,
             ),
             (
                 "watcher tiriklikni tekshirmasa tutilsin",

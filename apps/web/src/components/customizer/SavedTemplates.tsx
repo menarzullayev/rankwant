@@ -56,10 +56,10 @@ export function SavedTemplates() {
     <div>
       <CopyButton
         text={shareLink()}
-        tone="text"
+        shape="label"
         label={t(locale, "customizer.copyLink")}
         copiedLabel={t(locale, "customizer.linkCopied")}
-        className="mb-2 w-full justify-center"
+        className="mb-2 w-full"
       />
 
       <div className="mb-2 flex gap-2">

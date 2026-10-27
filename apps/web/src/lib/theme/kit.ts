@@ -43,15 +43,8 @@ export type TimeTone =
   | "locale"
   | "cal";
 
-export type CopyTone =
-  | "text"
-  | "ghost"
-  | "code"
-  | "chip"
-  | "hover"
-  | "cell"
-  | "all"
-  | "kbd";
+/** One copy control in four shapes (2026-10-27); the seven tones are gone. */
+export type CopyShape = "icon" | "label" | "field" | "cell";
 
 export type TabTone =
   | "underline"
@@ -111,16 +104,7 @@ export const TIME_TONES: TimeTone[] = [
   "duration",
 ];
 
-export const COPY_TONES: CopyTone[] = [
-  "text",
-  "ghost",
-  "code",
-  "chip",
-  "hover",
-  "cell",
-  "all",
-  "kbd",
-];
+export const COPY_SHAPES: CopyShape[] = ["icon", "label", "field", "cell"];
 
 export const TAB_TONES: TabTone[] = [
   "underline",

@@ -59,7 +59,7 @@ export function ProblemDescription({
       />
       <VerdictPresentationLayer placement="column" />
       <header>
-        <div className="rw-kit-hover flex flex-wrap items-baseline gap-x-3 gap-y-2">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
           {problem.code !== null && (
             <span className="font-mono text-theme-sm rw-faint tabular-nums">
               #{String(problem.code).padStart(4, "0")}
@@ -72,7 +72,7 @@ export function ProblemDescription({
             MB
           </span>
           <StatementTextSizeControls />
-          <CopyButton text={slug} tone="hover" />
+          <CopyButton text={slug} size="sm" />
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <DifficultyBadge value={problem.difficulty} />

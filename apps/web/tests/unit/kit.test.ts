@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   CHECK_SHAPES,
   CONFIRM_KINDS,
-  COPY_TONES,
+  COPY_SHAPES,
   TAB_TONES,
   TIME_TONES,
   TIP_KINDS,
@@ -35,9 +35,8 @@ describe("kit catalogs", () => {
     expect(CHECK_SHAPES).toHaveLength(9);
   });
 
-  it("omits token-burn copy", () => {
-    expect(COPY_TONES).not.toContain("burn");
-    expect(COPY_TONES).toHaveLength(8);
+  it("has one copy control in four shapes, no tones", () => {
+    expect(COPY_SHAPES).toEqual(["icon", "label", "field", "cell"]);
   });
 
   it("keeps ten time and tab tones", () => {
@@ -55,7 +54,8 @@ describe("kit CSS", () => {
   it("ships the chosen chrome", () => {
     expect(css).toContain('[data-kit-tip="balloon"]');
     expect(css).toContain('[data-kit-confirm="cmdk"]');
-    expect(css).toContain('[data-kit-copy="ghost"]');
+    expect(css).toContain('[data-copy-shape="icon"]');
+    expect(css).toContain(".rw-copy-field");
     expect(css).toContain('[data-kit-tabs="vertical"]');
     expect(css).toContain('[data-kit-check="switch"]');
     expect(css).toContain(".rw-kit-hold");
@@ -129,30 +129,33 @@ describe("kit product surfaces", () => {
     );
     expect(
       src("../../src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx"),
-    ).toContain('tone="hover"');
+    ).toContain("<CopyButton");
     expect(src("../../src/features/problems/components/SampleTests.tsx")).toContain(
-      'tone="ghost"',
+      "<CopyButton",
     );
     expect(src("../../src/features/problems/components/Editorial.tsx")).toContain("CodeCopy");
     expect(src("../../src/features/account/components/TeamsSection.tsx")).toContain(
-      'tone="chip"',
+      'shape="field"',
     );
     expect(src("../../src/components/admin/CrudPage.tsx")).toContain("CopyCell");
     expect(src("../../src/features/contests/components/StandingsTable.tsx")).toContain(
-      "CopyAllBar",
+      "<CopyButton",
     );
-    expect(src("../../src/features/problems/components/SubmitPanel.tsx")).toContain('tone="kbd"');
+    expect(src("../../src/features/problems/components/SubmitPanel.tsx")).toContain(
+      'shape="label"',
+    );
     expect(src("../../src/components/kit/CopyControl.tsx")).toContain(
       "overlay.toast",
     );
     expect(src("../../src/components/kit/CopyControl.tsx")).toContain(
       "problem.copyFailed",
     );
-    expect(src("../../src/components/kit/CommandPalette.tsx")).toContain(
-      "problem.copyFailed",
-    );
+    // Palettes and the share button no longer touch the clipboard: they go
+    // through `useCopy` / `CopyButton`, which raise the failure toast.
+    expect(src("../../src/components/kit/CommandPalette.tsx")).toContain("useCopy");
+    expect(src("../../src/components/search/SearchPalette.tsx")).toContain("useCopy");
     expect(src("../../src/features/profile/components/ShareButton.tsx")).toContain(
-      "problem.copyFailed",
+      "CopyButton",
     );
     expect(src("../../src/app/(site)/contests/[slug]/page.tsx")).toContain(
       'tone="dual"',

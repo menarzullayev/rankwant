@@ -80,14 +80,12 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
       <div className="mt-4 space-y-2">
         <p className="text-theme-sm font-medium rw-strong">{t(locale, "settings.teamInvite")}</p>
         <div className="flex flex-wrap items-center gap-2">
-          <code className="min-w-0 flex-1 truncate rw-radius-sm rw-chip px-3 py-2 text-theme-xs">
-            {inviteLink(team)}
-          </code>
           <CopyButton
+            shape="field"
             text={inviteLink(team)}
-            tone="chip"
             label={t(locale, "settings.teamCopy")}
             copiedLabel={t(locale, "settings.teamCopied")}
+            className="min-w-0 flex-1"
           />
           {owner && (
             <Button

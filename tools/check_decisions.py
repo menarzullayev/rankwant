@@ -2980,8 +2980,10 @@ SHARE_BUTTON = "apps/web/src/features/profile/components/ShareButton.tsx"
 def selected_kit_frozen() -> str | None:
     """2026-09-20 HITL fail-toast-freeze: tanlangan kit + clipboard xato toast.
 
-    Omitted variants (confirm v2/v3/v6/v7/v8, check v10 `big`, copy v9 `burn`)
-    and MiniCal/Notificationsi/countdown polish stay out unless asked.
+    Omitted variants (confirm v2/v3/v6/v7/v8, check v10 `big`) and
+    MiniCal/Notificationsi/countdown polish stay out unless asked.
+    2026-10-27: nusxalash bitta komponent (`copy_is_one_control`); copy tonlari
+    va v9 `burn` yo'q.
     """
     kit = read(KIT_TS)
     if '"burn"' in kit:
@@ -2989,16 +2991,36 @@ def selected_kit_frozen() -> str | None:
     if '"big"' in kit:
         return f"{KIT_TS}: check v10 `big` qaytdi — tanlangan kitda yo'q"
     copy = read(COPY_CONTROL)
-    if copy.count("problem.copyFailed") < 2:
+    if copy.count('overlay.toast(t(locale, "problem.copyFailed"))') < 2:
         return f"{COPY_CONTROL}: clipboard xatoda `problem.copyFailed` toast to'liq emas"
-    cmdk = read(CMD_PALETTE)
-    if "problem.copyFailed" not in cmdk:
-        return f"{CMD_PALETTE}: clipboard xatoda `problem.copyFailed` toast yo'q"
-    if ".catch(() => {})" in cmdk:
-        return f"{CMD_PALETTE}: clipboard xatoni yutadi"
-    share = read(SHARE_BUTTON)
-    if "problem.copyFailed" not in share:
-        return f"{SHARE_BUTTON}: clipboard xatoda `problem.copyFailed` toast yo'q"
+    return None
+
+
+def copy_is_one_control() -> str | None:
+    """2026-10-27: nusxalash — bitta tugma, bitta yozish yo'li.
+
+    O'lchandi: 14 nuqta, 4 uslub (`CopyButton` ning 6 toni, `CodeCopy`,
+    `CopySource`, xom `clipboard`); belgi hover'da `opacity: 0` edi (telefonda
+    ko'rinmasdi), bosish maydoni ~22 px. Endi `CopyControl.tsx` — yagona
+    `write()`; boshqa hech qayerda `navigator.clipboard` yo'q, aks holda
+    xato toasti va holat har joyda boshqacha bo'lib qaytadi.
+    """
+    copy = read(COPY_CONTROL)
+    if "navigator.clipboard.writeText" not in copy:
+        return f"{COPY_CONTROL}: yagona `write()` yo'q"
+    if "COPY_TONES" in read(KIT_TS):
+        return f"{KIT_TS}: copy tonlari qaytdi — nusxalash bitta komponent, to'rt shakl"
+    css = read("apps/web/src/app/kit.css")
+    if ".rw-kit-copy" in css:
+        return "kit.css: eski `.rw-kit-copy` tonlari qaytdi"
+    if "@media (pointer: coarse)" not in css.split(".rw-copy {")[1].split(".rw-copy:hover")[0]:
+        return "kit.css: `.rw-copy` sensorli ekranda 44 px bo'lmaydi"
+    for path in sorted((ROOT / "apps/web/src").rglob("*.ts*")):
+        rel = path.relative_to(ROOT).as_posix()
+        if rel == COPY_CONTROL:
+            continue
+        if "navigator.clipboard" in path.read_text(encoding="utf-8", errors="ignore"):
+            return f"{rel}: xom `navigator.clipboard` — `useCopy` / `CopyButton` orqali yozing"
     return None
 
 
@@ -3674,6 +3696,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
+    ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("jadval chiziqlari har qatorga rang oladi", row_dividers_colour_every_row),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),

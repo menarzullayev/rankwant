@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 
+import { useCopy } from "@/components/kit/CopyControl";
 import { useOverlay } from "@/components/overlay/OverlayHost";
 import { Icon } from "@/components/ui/Icon";
 import { useCustomizer } from "@/context/CustomizerContext";
@@ -98,6 +99,7 @@ export function SearchPalette({
   const locale = useLocale();
   const router = useRouter();
   const overlay = useOverlay();
+  const { run: copyRun } = useCopy();
   const { user } = useSession();
   const { style } = useStyle();
   const { theme, toggleTheme } = useTheme();
@@ -224,10 +226,9 @@ export function SearchPalette({
       hint: "",
       run: () => {
         onClose();
-        void navigator.clipboard
-          .writeText(window.location.href)
-          .then(() => overlay.toast(t(locale, "problem.copied")))
-          .catch(() => overlay.toast(t(locale, "problem.copyFailed")));
+        void copyRun(window.location.href).then((ok) => {
+          if (ok) overlay.toast(t(locale, "problem.copied"));
+        });
       },
     });
 
@@ -375,6 +376,7 @@ export function SearchPalette({
     locale,
     onClose,
     overlay,
+    copyRun,
     query,
     recent,
     remote,

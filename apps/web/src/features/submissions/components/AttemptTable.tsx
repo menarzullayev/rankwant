@@ -8,6 +8,7 @@ import { useCallback, useMemo, useState } from "react";
 import { numericStamp } from "@rankwant/shared/format";
 
 import { SortHeader, TBody, TD, TH, THead, Table, type SortDirection } from "@/components/ui/Table";
+import { CopyButton } from "@/components/kit/CopyControl";
 import { UserName } from "@/components/ui/Identity";
 import { Loading } from "@/components/ui/Loading";
 import { Verdict } from "@/components/ui/Verdict";
@@ -386,45 +387,22 @@ export function AttemptTable({
  */
 function CopySource({ id }: { id: number }) {
   const locale = useLocale();
-  const [state, setState] = useState<"idle" | "busy" | "done" | "fail">("idle");
-
-  const copy = useCallback(async () => {
-    setState("busy");
-    try {
-      const response = await fetch(`${API_BASE}/attempts/${id}/`, {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error(String(response.status));
-      const body = (await response.json()) as { source_code?: string };
-      if (!body.source_code) throw new Error("empty source");
-      await navigator.clipboard.writeText(body.source_code);
-      setState("done");
-    } catch {
-      setState("fail");
-    }
-    window.setTimeout(() => setState("idle"), 1500);
+  const fetchSource = useCallback(async () => {
+    const response = await fetch(`${API_BASE}/attempts/${id}/`, {
+      credentials: "include",
+    });
+    if (!response.ok) throw new Error(String(response.status));
+    const body = (await response.json()) as { source_code?: string };
+    if (!body.source_code) throw new Error("empty source");
+    return body.source_code;
   }, [id]);
 
-  const label =
-    state === "done"
-      ? t(locale, "problem.copied")
-      : state === "fail"
-        ? t(locale, "problem.copyFailed")
-        : t(locale, "attempts.copySource");
-
   return (
-    <button
-      type="button"
-      onClick={(event) => {
-        event.stopPropagation();
-        void copy();
-      }}
-      disabled={state === "busy"}
-      title={label}
-      aria-label={label}
-      className="rw-radius-sm rw-faint rw-hover-bg rw-focus-ring px-1 py-0.5 text-theme-xs"
-    >
-      {state === "done" ? "✓" : state === "fail" ? "!" : "⧉"}
-    </button>
+    <CopyButton
+      text={fetchSource}
+      size="sm"
+      label={t(locale, "attempts.copySource")}
+      stopPropagation
+    />
   );
 }

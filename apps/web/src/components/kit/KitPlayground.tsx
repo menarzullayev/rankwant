@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { FormCheck, FormRadios } from "@/components/form/FormKit";
 import { HoldButton, InlineConfirm } from "@/components/kit/ConfirmExtras";
-import { CopyAllBar, CopyButton, CopyCell } from "@/components/kit/CopyControl";
+import { CopyButton, CopyCell } from "@/components/kit/CopyControl";
 import {
   FormIconSwitch,
   FormSeg3,
@@ -243,18 +243,12 @@ export function KitSection() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <CopyButton text="rankwant.uz" tone="text" />
-        <CopyButton text="rankwant.uz" tone="ghost" />
-        <CopyButton text="print(1)" tone="code" />
-        <CopyButton text="https://rankwant.uz" tone="chip" />
-        <span className="rw-kit-hover inline-flex items-center gap-1">
-          {"id"}
-          <CopyButton text="a-plus-b" tone="hover" />
-        </span>
-        <CopyButton text="Ctrl+C" tone="kbd" kbd="Ctrl+C" />
+        <CopyButton text="rankwant.uz" />
+        <CopyButton text="print(1)" shape="label" />
+        <CopyButton text="https://rankwant.uz" shape="field" />
         <CopyCell text="1042" />
       </div>
-      <CopyAllBar text={SAMPLE_TSV} />
+      <CopyButton text={SAMPLE_TSV} shape="label" size="sm" />
 
       <TabBar
         tone="underline"

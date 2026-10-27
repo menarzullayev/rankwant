@@ -8,6 +8,7 @@ import { useSession } from "@/context/SessionContext";
 import { useCan } from "@/components/kit/Can";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
+import { useCopy } from "@/components/kit/CopyControl";
 import { useOverlay } from "@/components/overlay/OverlayHost";
 
 type Cmd = { id: string; label: string; run: () => void };
@@ -16,6 +17,7 @@ export function CommandPalette() {
   const locale = useLocale();
   const router = useRouter();
   const overlay = useOverlay();
+  const { run: copyRun } = useCopy();
   const { user } = useSession();
   const canStaff = useCan("staff");
   const [open, setOpen] = useState(false);
@@ -59,10 +61,11 @@ export function CommandPalette() {
         label: t(locale, "kit.paletteCopyUrl"),
         run: () => {
           setOpen(false);
-          void navigator.clipboard
-            .writeText(window.location.href)
-            .then(() => overlay.toast(t(locale, "problem.copied")))
-            .catch(() => overlay.toast(t(locale, "problem.copyFailed")));
+          // The palette closes, so the button's own «copied» cannot show;
+          // the failure toast comes from `useCopy`, the success one here.
+          void copyRun(window.location.href).then((ok) => {
+            if (ok) overlay.toast(t(locale, "problem.copied"));
+          });
         },
       },
     ];
@@ -74,7 +77,7 @@ export function CommandPalette() {
       });
     }
     return items;
-  }, [locale, overlay, router, canStaff]);
+  }, [locale, overlay, router, canStaff, copyRun]);
 
   const needle = q.trim().toLocaleLowerCase();
   const shown = cmds.filter((c) =>
