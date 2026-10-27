@@ -49,7 +49,7 @@ export const LuXCircle = (p: IconProps) => (
 /** Lucide `clipboard` (ISC). */
 export const LuClipboard = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="8" y="2" rx="1" ry="1" />
+    <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
   </svg>
 );
@@ -57,7 +57,7 @@ export const LuClipboard = (p: IconProps) => (
 /** Lucide `copy` (ISC). */
 export const LuCopy = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="8" y="8" rx="2" ry="2" />
+    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
     <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
   </svg>
 );
@@ -162,7 +162,7 @@ export const LuPrinter = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
     <path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" />
-    <rect x="6" y="14" rx="1" />
+    <rect width="12" height="8" x="6" y="14" rx="1" />
   </svg>
 );
 
@@ -274,7 +274,7 @@ export const LuNewspaper = (p: IconProps) => (
     <path d="M15 18h-5" />
     <path d="M18 14h-8" />
     <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2" />
-    <rect x="10" y="6" rx="1" />
+    <rect width="8" height="4" x="10" y="6" rx="1" />
   </svg>
 );
 
@@ -320,7 +320,7 @@ export const LuFile = (p: IconProps) => (
 /** Lucide `image` (ISC). */
 export const LuImage = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="3" y="3" rx="2" ry="2" />
+    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
     <circle cx="9" cy="9" r="2" />
     <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
   </svg>
@@ -402,7 +402,7 @@ export const LuBeaker = (p: IconProps) => (
 export const LuVideo = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
-    <rect x="2" y="6" rx="2" />
+    <rect width="14" height="12" x="2" y="6" rx="2" />
   </svg>
 );
 
@@ -420,7 +420,7 @@ export const LuCalendar = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path d="M8 2v4" />
     <path d="M16 2v4" />
-    <rect x="3" y="4" rx="2" />
+    <rect width="18" height="18" x="3" y="4" rx="2" />
     <path d="M3 10h18" />
   </svg>
 );
@@ -487,7 +487,7 @@ export const LuRadio = (p: IconProps) => (
 /** Lucide `lock` (ISC). */
 export const LuLock = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="3" y="11" rx="2" ry="2" />
+    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
   </svg>
 );
@@ -503,7 +503,7 @@ export const LuTrendingUp = (p: IconProps) => (
 /** Lucide `clipboard-check` (ISC). */
 export const LuClipboardCheck = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="8" y="2" rx="1" ry="1" />
+    <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
     <path d="m9 14 2 2 4-4" />
   </svg>
@@ -543,7 +543,7 @@ export const LuGlobe = (p: IconProps) => (
 /** Lucide `monitor` (ISC). */
 export const LuMonitor = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="2" y="3" rx="2" />
+    <rect width="20" height="14" x="2" y="3" rx="2" />
     <line x1="8" x2="16" y1="21" y2="21" />
     <line x1="12" x2="12" y1="17" y2="21" />
   </svg>
@@ -560,7 +560,7 @@ export const LuLaptop = (p: IconProps) => (
 /** Lucide `smartphone` (ISC). */
 export const LuSmartphone = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="5" y="2" rx="2" ry="2" />
+    <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
     <path d="M12 18h.01" />
   </svg>
 );
@@ -568,9 +568,9 @@ export const LuSmartphone = (p: IconProps) => (
 /** Lucide `qr-code` (ISC). */
 export const LuQrCode = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="3" y="3" rx="1" />
-    <rect x="16" y="3" rx="1" />
-    <rect x="3" y="16" rx="1" />
+    <rect width="5" height="5" x="3" y="3" rx="1" />
+    <rect width="5" height="5" x="16" y="3" rx="1" />
+    <rect width="5" height="5" x="3" y="16" rx="1" />
     <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
     <path d="M21 21v.01" />
     <path d="M12 7v3a2 2 0 0 1-2 2H7" />
@@ -586,7 +586,7 @@ export const LuQrCode = (p: IconProps) => (
 /** Lucide `tablet` (ISC). */
 export const LuTablet = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="4" y="2" rx="2" ry="2" />
+    <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
     <line x1="12" x2="12.01" y1="18" y2="18" />
   </svg>
 );
@@ -605,7 +605,7 @@ export const LuPointer = (p: IconProps) => (
 /** Lucide `clipboard-list` (ISC). */
 export const LuClipboardList = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="8" y="2" rx="1" ry="1" />
+    <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
     <path d="M12 11h4" />
     <path d="M12 16h4" />
@@ -728,7 +728,7 @@ export const LuCodeSquare = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path d="m10 9-3 3 3 3" />
     <path d="m14 15 3-3-3-3" />
-    <rect x="3" y="3" rx="2" />
+    <rect width="18" height="18" x="3" y="3" rx="2" />
   </svg>
 );
 
@@ -796,7 +796,7 @@ export const LuQuote = (p: IconProps) => (
 export const LuTable = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path d="M12 3v18" />
-    <rect x="3" y="3" rx="2" />
+    <rect width="18" height="18" x="3" y="3" rx="2" />
     <path d="M3 9h18" />
     <path d="M3 15h18" />
   </svg>
@@ -828,8 +828,8 @@ export const LuSkipForward = (p: IconProps) => (
 /** Lucide `pause` (ISC). */
 export const LuPause = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="14" y="3" rx="1" />
-    <rect x="5" y="3" rx="1" />
+    <rect width="5" height="18" x="14" y="3" rx="1" />
+    <rect width="5" height="18" x="5" y="3" rx="1" />
   </svg>
 );
 
@@ -894,7 +894,7 @@ export const LuX = (p: IconProps) => (
 /** Lucide `panel-left-close` (ISC). */
 export const LuPanelLeftClose = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="3" y="3" rx="2" />
+    <rect width="18" height="18" x="3" y="3" rx="2" />
     <path d="M9 3v18" />
     <path d="m16 15-3-3 3-3" />
   </svg>
@@ -934,10 +934,10 @@ export const LuArrowRight = (p: IconProps) => (
 /** Lucide `layout-grid` (ISC). */
 export const LuLayoutGrid = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="3" y="3" rx="1" />
-    <rect x="14" y="3" rx="1" />
-    <rect x="14" y="14" rx="1" />
-    <rect x="3" y="14" rx="1" />
+    <rect width="7" height="7" x="3" y="3" rx="1" />
+    <rect width="7" height="7" x="14" y="3" rx="1" />
+    <rect width="7" height="7" x="14" y="14" rx="1" />
+    <rect width="7" height="7" x="3" y="14" rx="1" />
   </svg>
 );
 
@@ -1026,7 +1026,7 @@ export const LuMessageSquare = (p: IconProps) => (
 export const LuMail = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-    <rect x="2" y="4" rx="2" />
+    <rect width="20" height="16" x="2" y="4" rx="2" />
   </svg>
 );
 
@@ -1163,7 +1163,7 @@ export const LuShoppingBag = (p: IconProps) => (
 /** Lucide `credit-card` (ISC). */
 export const LuCreditCard = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="2" y="5" rx="2" />
+    <rect width="20" height="14" x="2" y="5" rx="2" />
     <line x1="2" x2="22" y1="10" y2="10" />
   </svg>
 );
@@ -1199,7 +1199,7 @@ export const LuPercent = (p: IconProps) => (
 /** Lucide `gift` (ISC). */
 export const LuGift = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="3" y="8" rx="1" />
+    <rect width="18" height="4" x="3" y="8" rx="1" />
     <path d="M12 8v13" />
     <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
     <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
@@ -1235,7 +1235,7 @@ export const LuWallet = (p: IconProps) => (
 /** Lucide `calculator` (ISC). */
 export const LuCalculator = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="4" y="2" rx="2" />
+    <rect width="16" height="20" x="4" y="2" rx="2" />
     <line x1="8" x2="16" y1="6" y2="6" />
     <line x1="16" x2="16" y1="14" y2="18" />
     <path d="M16 10h.01" />
@@ -1279,16 +1279,16 @@ export const LuCpu = (p: IconProps) => (
     <path d="M20 7h2" />
     <path d="M7 20v2" />
     <path d="M7 2v2" />
-    <rect x="4" y="4" rx="2" />
-    <rect x="8" y="8" rx="1" />
+    <rect width="16" height="16" x="4" y="4" rx="2" />
+    <rect width="8" height="8" x="8" y="8" rx="1" />
   </svg>
 );
 
 /** Lucide `server` (ISC). */
 export const LuServer = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="2" y="2" rx="2" ry="2" />
-    <rect x="2" y="14" rx="2" ry="2" />
+    <rect width="20" height="8" x="2" y="2" rx="2" ry="2" />
+    <rect width="20" height="8" x="2" y="14" rx="2" ry="2" />
     <line x1="6" x2="6.01" y1="6" y2="6" />
     <line x1="6" x2="6.01" y1="18" y2="18" />
   </svg>
@@ -1356,7 +1356,7 @@ export const LuTimer = (p: IconProps) => (
 /** Lucide `lock-open` (ISC). */
 export const LuLockOpen = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
-    <rect x="3" y="11" rx="2" ry="2" />
+    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
     <path d="M7 11V7a5 5 0 0 1 9.9-1" />
   </svg>
 );
@@ -1429,7 +1429,7 @@ export const LuMonitorSmartphone = (p: IconProps) => (
     <path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8" />
     <path d="M10 19v-3.96 3.15" />
     <path d="M7 19h5" />
-    <rect x="16" y="12" rx="2" />
+    <rect width="6" height="10" x="16" y="12" rx="2" />
   </svg>
 );
 
@@ -1508,7 +1508,7 @@ export const LuUserMinus = (p: IconProps) => (
 export const LuBriefcase = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-    <rect x="2" y="6" rx="2" />
+    <rect width="20" height="14" x="2" y="6" rx="2" />
   </svg>
 );
 

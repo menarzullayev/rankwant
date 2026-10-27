@@ -196,7 +196,9 @@ if(k.motion==="reduce")r.dataset.motion="reduce";
 if(k.bigTargets)r.dataset.targets="big";
 if(k.strongFocus)r.dataset.focus="strong";
 var c=JSON.parse(localStorage.getItem("rw:accent")||"null");
-if(c&&c.style===r.dataset.style){
+// The pair was derived against one mode: a cache from the other mode is
+// skipped here and derived again once the panel mounts (CustomizerContext).
+if(c&&c.style===r.dataset.style&&c.dark===r.classList.contains("dark")){
 r.style.setProperty("--rw-accent",c.accent);
 r.style.setProperty("--rw-accent-fg",c.fg);
 r.style.setProperty("--rw-accent-soft",c.soft);
