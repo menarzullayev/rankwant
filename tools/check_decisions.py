@@ -2632,6 +2632,24 @@ def web_reports_its_own_commit() -> str | None:
     return None
 
 
+def accent_cache_follows_the_mode() -> str | None:
+    """2026-10-27: urg'u rang keshi rejimga bog'liq.
+
+    Chip foni (`--rw-accent-soft`) va yozuv rangi sahifaning fonlariga qarshi
+    hisoblanadi, ya'ni bitta rejimga tegishli. Qorong'i rejimda tanlangan rang
+    keshlandi va yorug' sahifada ham qo'llanib, to'q ko'k chiplar berdi
+    (jonli saytda nusxalash tugmasi: `#12233b` o'rniga `#ede4ff`).
+    """
+    if 'c.dark===r.classList.contains("dark")' not in read("apps/web/src/app/layout.tsx"):
+        return "layout.tsx: boot skripti keshni rejimga qaramay qo'llaydi - qorong'idagi rang yorug' sahifaga tushadi"
+    ctx = read("apps/web/src/context/CustomizerContext.tsx")
+    if 'dark: document.documentElement.classList.contains("dark")' not in ctx:
+        return "CustomizerContext.tsx: kesh qaysi rejim uchun hisoblangani yozilmaydi"
+    if "}, [theme]);" not in ctx:
+        return "CustomizerContext.tsx: rejim almashganda urg'u rang qayta hisoblanmaydi"
+    return None
+
+
 def versioning_points_are_wired() -> str | None:
     """2026-10-27: versiya qo'yiladigan nuqtalar - nima uchun har biri kerak.
 
@@ -3749,6 +3767,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("versiya nuqtalari ulangan", versioning_points_are_wired),
+    ("urg'u rang keshi rejimga bog'liq", accent_cache_follows_the_mode),
     ("jadval chiziqlari har qatorga rang oladi", row_dividers_colour_every_row),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),

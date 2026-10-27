@@ -3966,6 +3966,16 @@ def neg_decisions_newer_protocol_accepted() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_accent_cache_any_mode() -> tuple[bool, str]:
+    """The boot script applies the accent cache in any mode again."""
+    return _decision_broken(
+        "apps/web/src/app/layout.tsx",
+        '&&c.dark===r.classList.contains("dark")',
+        "",
+        "boot skripti keshni rejimga qaramay qo'llaydi",
+    )
+
+
 def neg_notification_code_removed() -> tuple[bool, str]:
     """A code the baseline knows is gone from the catalogue.
 
@@ -6580,6 +6590,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/judging/models.py",
     "apps/api/ratings/models.py",
     "apps/web/src/lib/useEventStream.ts",
+    "apps/web/src/context/CustomizerContext.tsx",
 )
 
 
@@ -9875,6 +9886,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bildirishnoma katalogi eskirsa tutilsin", neg_notification_catalogue_stale),
             ("bildirishnoma kodi o'chirilsa tutilsin", neg_notification_code_removed),
             ("SSE nomi versiyasiz ketsa tutilsin", neg_decisions_wire_name_dropped),
+            ("urg'u rang keshi rejimsiz qo'llansa tutilsin", neg_decisions_accent_cache_any_mode),
             ("yangi protokol ishi qabul qilinsa tutilsin", neg_decisions_newer_protocol_accepted),
             ("API v1 yo'li o'chirilsa tutilsin", neg_openapi_path_removed),
             ("qidiruv chegarasiz qolsa tutilsin", neg_decisions_search_unthrottled),
