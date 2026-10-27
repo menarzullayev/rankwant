@@ -17,13 +17,18 @@ const PANE = {
   },
 } as const
 
-async function start($: any, on: any, live: string, clock: { now: number }) {
+async function start($: any, on: any, live: string, clock: { now: number }, web: string = live) {
   on('command.register', () => ({ value: { command: 'deploy-panel' } }))
   on('ui.open', () => ({ value: { isPlaced: true } }))
   on('session.start', (_: unknown, e: { cwd: string }) => ({ cwd: e.cwd }))
   on('clock.now', () => ({ value: clock.now }))
-  on('http.fetch', () => ({
-    value: { status: 200, ok: true, headers: {}, text: JSON.stringify({ sha: live }) },
+  on('http.fetch', (_: unknown, e: { url: string }) => ({
+    value: {
+      status: 200,
+      ok: true,
+      headers: {},
+      text: JSON.stringify({ sha: e.url.includes('/api/') ? live : web }),
+    },
   }))
   on('process.run', () => ({
     value: { exitCode: 0, stdout: `${MAIN}\trefs/heads/main\n`, stderr: '' },
@@ -59,5 +64,15 @@ test('a short lag is only waiting', async ($, on) => {
   const ui = await $.ui.mount({ ...PANE, surface: 'desktop' })
 
   expect(await ui.find({ type: 'Text', text: /deploy kutilyapti/ })).toBeTruthy()
+  await ui.unmount()
+})
+
+test('an untouched API behind main is fine while the web app is current', async ($, on) => {
+  await start($, on, OLD, { now: 1_000_000 }, MAIN)
+  const ui = await $.ui.mount({ ...PANE, surface: 'desktop' })
+
+  expect(await ui.find({ type: 'Text', text: /jonli api\s+bbbbbbb/ })).toBeTruthy()
+  expect(await ui.find({ type: 'Text', text: /jonli web\s+aaaaaaa/ })).toBeTruthy()
+  expect(await ui.find({ type: 'Text', text: /main bilan bir xil/ })).toBeTruthy()
   await ui.unmount()
 })
