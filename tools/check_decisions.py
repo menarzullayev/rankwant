@@ -2597,6 +2597,22 @@ def scroll_is_one_vocabulary() -> str | None:
     return None
 
 
+def row_dividers_colour_every_row() -> str | None:
+    """2026-10-27: jadval qatorlari orasidagi chiziq birinchi qatorda yo'q edi.
+
+    Tailwind 4 `divide-y` chiziqni oxirgisidan boshqa HAR bola ostiga
+    chizadi; `.rw-divide > * + *` esa rangni faqat 2-bolaga berardi.
+    Birinchi qatorning chizig'i standart rangda qolib ko'rinmasdi (telefonda
+    namunalar jadvalida 1- va 2-qator qo'shilib ketgan).
+    """
+    css = read("apps/web/src/app/theme.css")
+    if ".rw-divide > * { border-color: var(--rw-divider); }\n" not in css:
+        return "theme.css: `.rw-divide` rangni har bolaga bermaydi — birinchi qator chizig'i ko'rinmaydi"
+    if ".rw-divide > * + *" in css:
+        return "theme.css: `.rw-divide > * + *` qaytgan — birinchi qatorning chizig'i rangsiz qoladi"
+    return None
+
+
 def evaluation_paths_are_proven() -> str | None:
     """2026-10-07: special checker, interactive va scorer haqiqiy judge'da isbotlangan.
 
@@ -3658,6 +3674,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
+    ("jadval chiziqlari har qatorga rang oladi", row_dividers_colour_every_row),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),
     ("ro'yxatdan o'tish taxallus va ismni so'raydi", sign_up_asks_the_handle_and_names),
