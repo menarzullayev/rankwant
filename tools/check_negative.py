@@ -3661,8 +3661,8 @@ def neg_decisions_samples_scroll_box_not_positioned() -> tuple[bool, str]:
     """The samples table lets its hidden labels widen the page."""
     return _decision_broken(
         "apps/web/src/features/problems/components/SampleTests.tsx",
-        '<div className="relative min-w-0 rw-scroll-x">',
-        '<div className="min-w-0 rw-scroll-x">',
+        '<div className="@container relative min-w-0 rw-scroll-x">',
+        '<div className="@container min-w-0 rw-scroll-x">',
         "`sr-only` yorliq sahifani kengaytiradi",
     )
 
