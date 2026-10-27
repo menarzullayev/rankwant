@@ -1436,13 +1436,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.sectionMode.space` | Bo‘shliq | Фосила |  |
 | `problem.sectionMode.line` | Chiziq | Хат |  |
 | `problem.sectionMode.card` | Karta | Корт |  |
-| `problem.sectionNav.label` | Shart bo‘limlari | Бахшҳои шарт |  |
-| `problem.sectionNav.statement` | Tavsif | Шарт |  |
-| `problem.sectionNav.input` | Kirish | Вуруд |  |
-| `problem.sectionNav.output` | Chiqish | Хуруҷ |  |
-| `problem.sectionNav.notes` | Izohlar | Эзоҳҳо |  |
-| `problem.sectionNav.samples` | Namunalar | Намунаҳо |  |
-| `problem.sectionNav.editorial` | Tahlil | Тahlili hal |  |
 | `problem.sampleRun` | {order}-namunani sinash | Санҷидани намунаи {order} |  |
 | `problem.verdictLayout.label` | Natija ko‘rinishi | Ҷойгиршавии натиҷа |  |
 | `problem.verdictLayout.tab` | Yorliq | Tab |  |

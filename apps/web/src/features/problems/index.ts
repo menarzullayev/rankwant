@@ -7,7 +7,6 @@
 
 export { ProblemStatementCard } from "./components/ProblemStatementCard";
 
-export { StatementSectionNav } from "./components/StatementSectionNav";
 
 export { VerdictPresentationLayer } from "./components/VerdictPresentationLayer";
 
