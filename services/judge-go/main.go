@@ -111,6 +111,7 @@ func main() {
 		}
 
 		res := judge(ctx, &job, tests, func(msg map[string]any) {
+			msg["protocol_version"] = ProtocolVersion
 			payload, err := json.Marshal(msg)
 			if err != nil {
 				return

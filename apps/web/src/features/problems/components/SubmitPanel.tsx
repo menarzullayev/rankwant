@@ -23,6 +23,7 @@ import { Status } from "@/components/ui/Status";
 import { Verdict } from "@/components/ui/Verdict";
 import { defaultLanguage, editorLanguage, starterSource } from "@/lib/editor-language";
 import { isPendingVerdict } from "@/lib/theme/verdict";
+import { pack, readString } from "@/lib/versioned-storage";
 import {
   EVENT_ATTEMPT_PROGRESS,
   EVENT_ATTEMPT_QUEUED,
@@ -139,13 +140,17 @@ function writeStorage(key: string, value: string) {
  * qiymat qo'yiladi, ya'ni effektda setState chaqirilmaydi. */
 const NO_SUBSCRIBE = () => () => {};
 
-function useStored(key: string): string | null {
+function useStored(key: string, decode?: (raw: string | null) => string | null): string | null {
   return useSyncExternalStore(
     NO_SUBSCRIBE,
-    () => readStorage(key),
+    () => (decode ? decode(readStorage(key)) : readStorage(key)),
     () => null,
   );
 }
+
+/** Drafts are stored versioned (see `lib/versioned-storage.ts`). */
+const DRAFT_VERSION = 1;
+const decodeDraft = (raw: string | null) => readString(raw, DRAFT_VERSION);
 
 type Tab = "verdict" | "samples" | "custom";
 
@@ -294,7 +299,7 @@ export function SubmitPanel({
   // avvalgi kod joyida turadi.
   const key = draftKey(problem, language);
   const [edits, setEdits] = useState<Record<string, string>>({});
-  const storedDraft = useStored(key);
+  const storedDraft = useStored(key, decodeDraft);
   const picked = languages.find((l) => l.code === language);
   // Masala shabloni umumiy zagotovkadan ustun: Django/SQL masalasida
   // yechim aynan berilgan funksiya imzosini to'ldirishdan iborat.
@@ -311,7 +316,7 @@ export function SubmitPanel({
 
   useEffect(() => {
     if (!language || edits[key] === undefined) return;
-    const handle = setTimeout(() => writeStorage(key, edits[key]), 500);
+    const handle = setTimeout(() => writeStorage(key, pack(DRAFT_VERSION, edits[key])), 500);
     return () => clearTimeout(handle);
   }, [language, key, edits]);
 

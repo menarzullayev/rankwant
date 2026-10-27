@@ -170,6 +170,11 @@ jobs:
             exit 1
           }
         working-directory: apps/api
+      - name: /api/v1/ only grows (a break is /api/v2/)
+        if: steps.check.outputs.ready == 'true' && github.event_name == 'pull_request'
+        run: |
+          git fetch --depth=1 origin "${{ github.base_ref }}"
+          python3 tools/check_openapi_breaking.py --base FETCH_HEAD
       - uses: actions/cache@v6
         if: steps.check.outputs.ready == 'true'
         with:
@@ -517,6 +522,8 @@ jobs:
         run: python3 tools/licence_inventory.py --check
       - name: Notification wording (the API catalogue matches the web dictionaries)
         run: python3 tools/export_notification_messages.py --check
+      - name: Notification codes (none removed or renamed since the baseline)
+        run: python3 tools/check_notification_codes.py
       - name: .env.example completeness (variables read by code and compose)
         run: python3 tools/check_env_example.py
 

@@ -78,6 +78,21 @@ def _client() -> Redis:
     return client
 
 
+#: Shape of the events on the wire. The name a browser listens for is
+#: `<event>.v<WIRE_VERSION>` (`verdict.v1`): when a payload changes shape the
+#: version goes up, and a tab still running the old page — which listens for
+#: the old name — hears nothing instead of misreading the new shape. `resync`
+#: is a control frame, not an event, and stays unversioned so that every
+#: client, old or new, still recovers by re-reading REST.
+#: Bump together with `WIRE_VERSION` in apps/web/src/lib/useEventStream.ts.
+WIRE_VERSION = 1
+UNVERSIONED_EVENTS = frozenset({"resync"})
+
+
+def wire_name(event: str) -> str:
+    return event if event in UNVERSIONED_EVENTS else f"{event}.v{WIRE_VERSION}"
+
+
 def publish(channel: str, event: str, payload: dict[str, Any]) -> int | None:
     """Hodisani kanalga yuboradi va replay buferiga yozadi.
 

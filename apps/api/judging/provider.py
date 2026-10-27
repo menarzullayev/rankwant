@@ -13,6 +13,19 @@ from typing import Any, Protocol, cast
 
 from django.conf import settings
 
+#: Shape of the job and of the results the judge sends back. A judge refuses a
+#: job from a NEWER shape; the API parks a result from a newer shape instead of
+#: guessing at it. Bump together with `ProtocolVersion` in
+#: services/judge-go/protocol.go.
+JUDGE_PROTOCOL_VERSION = 1
+
+
+def result_is_understood(result: dict[str, Any]) -> bool:
+    """A result written by a judge speaking a shape this API does not know is
+    not. Absent means a judge from before the field existed: understood."""
+    version = result.get("protocol_version")
+    return not isinstance(version, int) or version <= JUDGE_PROTOCOL_VERSION
+
 
 @dataclass(frozen=True)
 class JudgeJob:
@@ -51,6 +64,7 @@ class JudgeJob:
         # umuman yetib bormaydi va hech qanday xato chiqmaydi.
         return json.dumps(
             {
+                "protocol_version": JUDGE_PROTOCOL_VERSION,
                 "job_id": self.job_id,
                 "attempt_id": self.attempt_id,
                 "language": self.language,
@@ -75,6 +89,8 @@ class JudgeProvider(Protocol):
     def submit(self, job: JudgeJob) -> str: ...
     def poll(self, timeout: int = 1) -> dict[str, Any] | None: ...
     def poll_nowait(self) -> dict[str, Any] | None: ...
+    #: Sets a result aside that this API cannot read (newer protocol).
+    def park(self, result: dict[str, Any]) -> None: ...
     #: Navbatda kutayotgan ishlar soni. Qotib qolgan urinishni
     #: yo'qolganidan ajratish uchun kerak: navbat bo'sh bo'lsa, hali
     #: javob kelmagan ish haqiqatan yo'qolgan.
@@ -114,6 +130,9 @@ class RedisJudgeProvider:
         payload: dict[str, Any] = json.loads(item[1])  # type: ignore[index]
         return payload
 
+    def park(self, result: dict[str, Any]) -> None:
+        self._redis.lpush(f"{settings.JUDGE_RESULTS_KEY}:parked", json.dumps(result))
+
     def poll_nowait(self) -> dict[str, Any] | None:
         raw = self._redis.rpop(settings.JUDGE_RESULTS_KEY)
         if raw is None:
@@ -128,6 +147,10 @@ class InMemoryJudgeProvider:
     def __init__(self) -> None:
         self.jobs: list[JudgeJob] = []
         self.results: list[dict[str, Any]] = []
+        self.parked: list[dict[str, Any]] = []
+
+    def park(self, result: dict[str, Any]) -> None:
+        self.parked.append(result)
 
     def submit(self, job: JudgeJob) -> str:
         self.jobs.append(job)

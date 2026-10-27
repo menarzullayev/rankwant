@@ -224,13 +224,23 @@ CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE = not DEBUG
 
 REDIS_URL = env("REDIS_URL", "redis://localhost:6379/0")
+#: Bump when the SHAPE of a cached value changes (a serializer field, a
+#: stats payload): Django folds it into every key, so the old values are
+#: simply never read again and expire on their own. One number for every
+#: cache user — rate-limit counters included, which restart from zero.
+CACHE_VERSION = 1
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": REDIS_URL,
+        "VERSION": CACHE_VERSION,
     }
     if env("REDIS_URL")
-    else {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+    else {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "VERSION": CACHE_VERSION,
+    }
 }
 
 CORS_ALLOWED_ORIGINS = [

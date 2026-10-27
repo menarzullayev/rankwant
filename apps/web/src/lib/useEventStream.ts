@@ -8,6 +8,17 @@ import { REALTIME_BASE } from "@/lib/api/client";
 export type StreamState = "connecting" | "open" | "fallback";
 
 /** Server hodisalari — `realtime/events.py` bilan AYNAN bir xil bo'lishi shart. */
+/** Version of the event names on the wire: the browser listens for
+ *  `<event>.v<WIRE_VERSION>`. A page older than the server hears nothing for a
+ *  renamed event instead of misreading a changed payload; `resync` is a control
+ *  frame and stays unversioned. Bump with `WIRE_VERSION` in
+ *  apps/api/realtime/bus.py. */
+export const WIRE_VERSION = 1;
+
+export function wireName(event: string): string {
+  return event === "resync" ? event : `${event}.v${WIRE_VERSION}`;
+}
+
 export const EVENT_VERDICT = "verdict";
 export const EVENT_ATTEMPT_FINISHED = "attempt_finished";
 export const EVENT_ATTEMPT_PROGRESS = "attempt_progress";
@@ -136,7 +147,7 @@ export function useEventStream({
         const eventId = event.lastEventId || undefined;
         handler.current(name, data, eventId ? { eventId } : undefined);
       };
-      source.addEventListener(name, listener as EventListener);
+      source.addEventListener(wireName(name), listener as EventListener);
       return [name, listener] as const;
     });
 
@@ -163,7 +174,7 @@ export function useEventStream({
 
     return () => {
       for (const [name, listener] of listeners) {
-        source.removeEventListener(name, listener as EventListener);
+        source.removeEventListener(wireName(name), listener as EventListener);
       }
       source.close();
     };

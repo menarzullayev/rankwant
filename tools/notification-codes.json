@@ -1,0 +1,68 @@
+{
+  "contest_result": [
+    "after",
+    "before",
+    "contest",
+    "delta",
+    "rank"
+  ],
+  "duel_accepted": [
+    "duel",
+    "start_at",
+    "user"
+  ],
+  "duel_cancelled": [
+    "duel"
+  ],
+  "duel_draw": [
+    "a",
+    "a_solved",
+    "b",
+    "b_solved",
+    "duel"
+  ],
+  "duel_lost": [
+    "a",
+    "a_solved",
+    "b",
+    "b_solved",
+    "duel"
+  ],
+  "duel_won": [
+    "a",
+    "a_solved",
+    "b",
+    "b_solved",
+    "duel"
+  ],
+  "hack_crashed": [
+    "problem"
+  ],
+  "hack_failed": [
+    "problem"
+  ],
+  "hack_ignored": [
+    "problem"
+  ],
+  "hack_invalid": [
+    "problem"
+  ],
+  "hack_received": [
+    "problem",
+    "verdict"
+  ],
+  "hack_succeeded": [
+    "problem"
+  ],
+  "hackathon_scored": [
+    "score"
+  ],
+  "problem_rerated": [
+    "after",
+    "before",
+    "delta"
+  ],
+  "streak": [
+    "days"
+  ]
+}

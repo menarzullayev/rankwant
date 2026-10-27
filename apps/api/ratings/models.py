@@ -7,6 +7,7 @@ from typing import ClassVar
 from django.db import models
 
 from core.bases import CreatedModel
+from ratings import formulas
 
 
 class UserSolvedProblem(models.Model):
@@ -67,6 +68,12 @@ class RatingHistory(CreatedModel):
     # Contest holatida Elo hisobini ko'rsatish uchun
     seed = models.FloatField(null=True, blank=True)
     rank = models.PositiveIntegerField(null=True, blank=True)
+    #: `ratings.formulas.FORMULA_VERSION` at the time of writing. `null` for
+    #: rows older than the field: their rules were not recorded, and writing
+    #: "1" would invent history.
+    formula_version = models.PositiveSmallIntegerField(
+        null=True, blank=True, default=formulas.FORMULA_VERSION
+    )
 
     class Meta:
         ordering: ClassVar = ["-created_at"]

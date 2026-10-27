@@ -154,7 +154,7 @@ class TestLiveFrame:
         assert frame is not None
         lines = frame.split("\n")
         assert lines[0] == "id: 7"
-        assert lines[1] == "event: notification"
+        assert lines[1] == "event: notification.v1"
         assert json.loads(lines[2].removeprefix("data: ")) == {"id": 40, "kind": "duel"}
         # The blank line is what ends an event; without it nothing fires.
         assert frame.endswith("\n\n")
@@ -179,3 +179,14 @@ class TestLiveFrame:
         source = (Path(__file__).resolve().parents[1] / "realtime/asgi.py").read_text("utf-8")
         assert "await write(raw)" not in source
         assert source.count("frame = _live_frame(raw)") == 2
+
+
+class TestWireVersion:
+    """Events are named `<event>.v<WIRE_VERSION>` on the wire (2026-10-27)."""
+
+    def test_events_carry_the_version_and_resync_does_not(self) -> None:
+        from realtime import bus
+
+        assert bus.wire_name("verdict") == f"verdict.v{bus.WIRE_VERSION}"
+        assert bus.wire_name("standings") == f"standings.v{bus.WIRE_VERSION}"
+        assert bus.wire_name("resync") == "resync"

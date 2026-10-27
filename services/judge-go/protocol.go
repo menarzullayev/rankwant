@@ -130,9 +130,17 @@ const (
 	TaskTwoPass = "two_pass"
 )
 
+// ProtocolVersion is the job/result shape this judge speaks. The API writes
+// the same number into every job; a job from a NEWER shape is refused (IE)
+// instead of being judged with fields this build does not know about.
+// Absent (0) is a job from before the field existed and is accepted.
+// Bump together with `JUDGE_PROTOCOL_VERSION` in apps/api/judging/provider.py.
+const ProtocolVersion = 1
+
 type Job struct {
-	JobID     string `json:"job_id"`
-	AttemptID int64  `json:"attempt_id"`
+	ProtocolVersion int    `json:"protocol_version,omitempty"`
+	JobID           string `json:"job_id"`
+	AttemptID       int64  `json:"attempt_id"`
 	//: Custom test bo'lsa to'ldiriladi; natijada qaytariladi.
 	CustomRunID *int64    `json:"custom_run_id,omitempty"`
 	Language    Language  `json:"language"`
@@ -194,7 +202,8 @@ type JudgeMeta struct {
 }
 
 type Result struct {
-	JobID string `json:"job_id"`
+	ProtocolVersion int    `json:"protocol_version"`
+	JobID           string `json:"job_id"`
 	// API natijani shu maydon orqali urinishga bog'laydi. Tushib qolsa
 	// verdict hech qachon yozilmaydi va urinish PENDING qoladi.
 	AttemptID   int64  `json:"attempt_id"`
