@@ -21,11 +21,14 @@ import { useProblemSolve } from "./problem-solve-context";
 function Cell({ text, label }: { text: string; label: string }) {
   return (
     <td className="border-l rw-divider px-2 py-1.5 align-top">
-      <div className="flex items-start gap-1">
+      {/* Below ~36rem of TABLE width the button goes under the value instead
+          of beside it: next to it, a 44 px target left the value ~90 px on
+          a phone and a line like `100 -40` ran under the button. */}
+      <div className="flex flex-col items-stretch gap-1 @xl:flex-row @xl:items-start">
         <pre tabIndex={0} className="min-w-0 grow rw-scroll rw-radius-sm rw-field-bg p-2 font-mono text-theme-xs rw-strong [max-height:14rem]">
           {text}
         </pre>
-        <CopyButton text={text} size="sm" label={label} />
+        <CopyButton text={text} size="sm" label={label} className="self-end @xl:self-auto" />
       </div>
     </td>
   );
@@ -42,7 +45,7 @@ export function SampleTests({ samples }: { samples: Sample[] }) {
           positioned. Without a positioned ancestor here they escape the
           scroll box and widen the PAGE - measured 2026-10-05 at 375 px:
           document 553 px wide, one 1 px span at x=552. */}
-      <div className="relative min-w-0 rw-scroll-x">
+      <div className="@container relative min-w-0 rw-scroll-x">
         <table className="w-full table-fixed">
           <thead>
             <tr className="border-b rw-divider">

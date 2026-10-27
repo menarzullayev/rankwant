@@ -2336,7 +2336,7 @@ def nightly_stack_matches_production() -> str | None:
     seed = read("apps/api/core/management/commands/seed_demo.py")
     if "for language in Language.objects.filter(is_active=True):" not in seed:
         return "seed_demo.py: A+B ga bitta til qatori yoziladi — masala faqat o'sha tilga ochiladi"
-    if '<div className="relative min-w-0 rw-scroll-x">' not in read("apps/web/src/features/problems/components/SampleTests.tsx"):
+    if '<div className="@container relative min-w-0 rw-scroll-x">' not in read("apps/web/src/features/problems/components/SampleTests.tsx"):
         return "SampleTests.tsx: aylantirish qutisi `relative` emas — `sr-only` yorliq sahifani kengaytiradi"
     ignore = ROOT / "tools/ci.Dockerfile.dockerignore"
     if not ignore.exists() or "!apps/api/requirements-dev.lock" not in ignore.read_text(encoding="utf-8"):
