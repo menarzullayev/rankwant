@@ -1,9 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
-import { Button } from "@/components/ui/Button";
-import { useOverlay } from "@/components/overlay/OverlayHost";
+import { CopyButton } from "@/components/kit/CopyControl";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 
@@ -11,30 +8,14 @@ import { t } from "@/i18n/messages";
  *  Havola ulashilganda OG karta (`opengraph-image.tsx`) chiqadi. */
 export function ShareButton({ username, name }: { username: string; name: string }) {
   const locale = useLocale();
-  const overlay = useOverlay();
-  const [copied, setCopied] = useState(false);
-
-  async function share() {
-    const url = `${window.location.origin}/users/${username}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: `${name} · RankWant`, url });
-      } catch {
-        // Odam oynani yopdi — xato emas.
-      }
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-    } catch {
-      overlay.toast(t(locale, "problem.copyFailed"));
-    }
-  }
-
   return (
-    <Button variant="outline" onClick={share} aria-live="polite">
-      {copied ? t(locale, "profile.shareCopied") : t(locale, "profile.share")}
-    </Button>
+    <CopyButton
+      shape="label"
+      icon="action.share"
+      text={async () => `${window.location.origin}/users/${username}`}
+      shareTitle={`${name} · RankWant`}
+      label={t(locale, "profile.share")}
+      copiedLabel={t(locale, "profile.shareCopied")}
+    />
   );
 }

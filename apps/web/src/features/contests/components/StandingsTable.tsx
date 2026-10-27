@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { CopyAllBar } from "@/components/kit/CopyControl";
+import { CopyButton } from "@/components/kit/CopyControl";
 import { UserName } from "@/components/ui/Identity";
 import { API_BASE, getJson, type Standing } from "@/lib/api";
 import { type Locale, t } from "@/i18n/messages";
@@ -107,7 +107,9 @@ export function StandingsTable({
           {t(locale, "standings.frozen")}
         </div>
       )}
-      <CopyAllBar text={tsv} label={t(locale, "problem.copy")} />
+      <div className="flex justify-end border-b rw-divider px-3 py-2">
+        <CopyButton text={tsv} shape="label" size="sm" label={t(locale, "problem.copy")} />
+      </div>
       {/* `<table>` va `<tbody>` saqlanadi — E2E shu selektorlarga tayanadi. */}
       <Table>
         <THead>

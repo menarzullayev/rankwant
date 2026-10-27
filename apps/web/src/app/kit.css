@@ -295,83 +295,149 @@
   box-shadow: 0 10px 24px color-mix(in srgb, var(--rw-text) 12%, transparent);
 }
 
-.rw-kit-copy {
+/* The one copy control (look C, 2026-10-27): a soft accent chip that turns
+   solid on hover, green when copied, red when it failed. Always visible. */
+.rw-copy {
+  --rw-copy-h: 2rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: var(--rw-copy-h);
+  min-height: var(--rw-copy-h);
+  padding: 0 0.6rem;
+  border: 0;
   border-radius: 8px;
+  background: var(--rw-accent-soft);
+  color: var(--rw-accent-ink);
   font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
-  color: inherit;
-  background: transparent;
+  transition: background-color 0.12s, color 0.12s;
 }
 
-.rw-kit-copy[data-kit-copy="text"] {
-  border: 1px solid color-mix(in srgb, var(--rw-text) 22%, transparent);
-  padding: 0.25rem 0.55rem;
-  font-size: 0.75rem;
+.rw-copy[data-size="sm"] {
+  --rw-copy-h: 1.75rem;
+  padding: 0 0.45rem;
 }
 
-.rw-kit-copy[data-kit-copy="ghost"] {
-  border: 0;
-  padding: 0.25rem;
+.rw-copy[data-copy-shape="icon"] {
+  padding: 0;
 }
 
-.rw-kit-copy[data-kit-copy="code"] {
-  border: 0;
-  padding: 0.2rem 0.45rem;
-  font-size: 0.7rem;
-  font-weight: 650;
+/* A fingertip needs 44 px; a mouse does not. */
+@media (pointer: coarse) {
+  .rw-copy,
+  .rw-copy[data-size="sm"] {
+    --rw-copy-h: 2.75rem;
+  }
 }
 
-.rw-kit-copy[data-kit-copy="chip"] {
-  border: 1px solid color-mix(in srgb, var(--rw-text) 18%, transparent);
-  border-radius: 999px;
-  padding: 0.15rem 0.55rem;
-  font-size: 0.75rem;
-  max-width: 16rem;
+.rw-copy:hover:not(:disabled) {
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
 }
 
-.rw-kit-copy[data-kit-copy="chip"] .rw-kit-copy-lab {
+.rw-copy[data-state="busy"] {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+/* Same specificity as the hover rule on purpose: with the pointer still on
+   the button the result must stay green or red, not turn accent again. */
+.rw-copy[data-state="done"],
+.rw-copy[data-state="done"]:hover:not(:disabled) {
+  background: var(--rw-ok-soft);
+  color: var(--rw-ok-ink);
+}
+
+.rw-copy[data-state="fail"],
+.rw-copy[data-state="fail"]:hover:not(:disabled) {
+  background: var(--rw-bad-soft);
+  color: var(--rw-bad-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rw-copy {
+    transition: none;
+  }
+}
+
+/* The value with the button attached. `user-select: all` makes one press
+   select all of it, which is also the fallback when copying is refused. */
+.rw-copy-field {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
   overflow: hidden;
+  border: 1px solid var(--rw-divider);
+  border-radius: 10px;
+}
+
+.rw-copy-field .rw-copy {
+  flex: none;
+  border-radius: 0;
+  padding: 0 0.85rem;
+}
+
+.rw-copy-val {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  overflow: hidden;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.8125rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+  user-select: all;
 }
 
-.rw-kit-copy[data-kit-copy="hover"] {
+/* A table cell whose value is the button. */
+.rw-copy-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  padding: 0.15rem 0.35rem;
+  margin: -0.15rem -0.35rem;
   border: 0;
-  padding: 0.2rem;
-  opacity: 0;
-}
-
-.rw-kit-hover:hover .rw-kit-copy[data-kit-copy="hover"],
-.rw-kit-hover:focus-within .rw-kit-copy[data-kit-copy="hover"] {
-  opacity: 1;
-}
-
-.rw-kit-copy[data-kit-copy="cell"] {
-  border: 0;
-  width: 100%;
-  justify-content: flex-start;
-  padding: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
   font: inherit;
   font-variant-numeric: tabular-nums;
-  text-align: left;
   cursor: copy;
 }
 
-.rw-kit-copy[data-kit-copy="kbd"] {
-  border: 1px solid color-mix(in srgb, var(--rw-text) 22%, transparent);
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+.rw-copy-cell > svg {
+  flex: none;
+  opacity: 0;
 }
 
-.rw-kit-copy-all {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
-  border-bottom: 1px solid var(--rw-divider, color-mix(in srgb, var(--rw-text) 12%, transparent));
+.rw-copy-cell:hover > svg,
+.rw-copy-cell:focus-visible > svg,
+.rw-copy-cell[data-state="done"] > svg {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .rw-copy-cell > svg {
+    opacity: 0.7;
+  }
+}
+
+.rw-copy-cell:hover {
+  background: var(--rw-accent-soft);
+}
+
+.rw-copy-cell[data-state="done"] {
+  background: var(--rw-ok-soft);
+  color: var(--rw-ok-ink);
 }
 
 .rw-kit-code {

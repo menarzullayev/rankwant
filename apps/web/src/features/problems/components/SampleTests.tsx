@@ -25,7 +25,7 @@ function Cell({ text, label }: { text: string; label: string }) {
         <pre tabIndex={0} className="min-w-0 grow rw-scroll rw-radius-sm rw-field-bg p-2 font-mono text-theme-xs rw-strong [max-height:14rem]">
           {text}
         </pre>
-        <CopyButton text={text} tone="ghost" label={label} />
+        <CopyButton text={text} size="sm" label={label} />
       </div>
     </td>
   );
