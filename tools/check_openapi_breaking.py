@@ -14,7 +14,7 @@ Adding paths, operations, optional parameters, properties and enum values is
 free. A deliberate exception goes in `tools/openapi-breaking-allow.txt` with a
 reason on the line above it, so the exception is reviewed like any other change.
 
-    python tools/check_openapi_breaking.py [--base origin/main]
+    python tools/check_openapi_breaking.py [--base origin/main | --old <schema.yml>]
 """
 
 from __future__ import annotations
@@ -88,8 +88,12 @@ def allowed() -> set[str]:
 
 
 def main() -> int:
-    ref = sys.argv[sys.argv.index("--base") + 1] if "--base" in sys.argv else "origin/main"
-    old = load_base(ref)
+    if "--old" in sys.argv:  # a schema file instead of a git ref (self-tests)
+        old = yaml.safe_load(pathlib.Path(sys.argv[sys.argv.index("--old") + 1]).read_text(encoding="utf-8"))
+        ref = "the given file"
+    else:
+        ref = sys.argv[sys.argv.index("--base") + 1] if "--base" in sys.argv else "origin/main"
+        old = load_base(ref)
     if old is None:
         print(f"· {ref} has no schema to compare with — skipped")
         return 0

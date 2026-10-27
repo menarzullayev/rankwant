@@ -3987,13 +3987,23 @@ def neg_notification_code_removed() -> tuple[bool, str]:
 
 
 def neg_openapi_path_removed() -> tuple[bool, str]:
-    """A path of /api/v1/ is renamed away. The base here is HEAD, which has it."""
+    """A path of /api/v1/ is renamed away.
+
+    The old schema is a copy taken before the mutation (`--old`), not a git
+    ref: CI runs this where git state cannot be read.
+    """
+    import shutil
+    import tempfile
+
     path = ROOT / "apps/api/openapi/schema.yml"
     old = "  /api/v1/version/:\n"
     if old not in path.read_bytes().decode("utf-8"):
         return False, "openapi buzuvchi o'zgarish: langar topilmadi (schema.yml)"
-    with Mutation(path, old, "  /api/v1/version-renamed/:\n"):
-        code, out = run([PY, "tools/check_openapi_breaking.py", "--base", "HEAD"])
+    with tempfile.TemporaryDirectory() as tmp:
+        before = Path(tmp) / "schema.yml"
+        shutil.copyfile(path, before)
+        with Mutation(path, old, "  /api/v1/version-renamed/:\n"):
+            code, out = run([PY, "tools/check_openapi_breaking.py", "--old", str(before)])
     if code != 1:
         return False, f"openapi buzuvchi o'zgarish: o'chirilgan yo'l exit {code} berdi (1 kerak)"
     if "path removed" not in out:
@@ -6570,7 +6580,6 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/judging/models.py",
     "apps/api/ratings/models.py",
     "apps/web/src/lib/useEventStream.ts",
-    ".github/workflows/ci.yml",
 )
 
 
