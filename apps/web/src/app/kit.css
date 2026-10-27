@@ -346,12 +346,16 @@
   opacity: 0.7;
 }
 
-.rw-copy[data-state="done"] {
+/* Same specificity as the hover rule on purpose: with the pointer still on
+   the button the result must stay green or red, not turn accent again. */
+.rw-copy[data-state="done"],
+.rw-copy[data-state="done"]:hover:not(:disabled) {
   background: var(--rw-ok-soft);
   color: var(--rw-ok-ink);
 }
 
-.rw-copy[data-state="fail"] {
+.rw-copy[data-state="fail"],
+.rw-copy[data-state="fail"]:hover:not(:disabled) {
   background: var(--rw-bad-soft);
   color: var(--rw-bad-ink);
 }
