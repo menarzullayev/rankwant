@@ -10,7 +10,6 @@ import {
   ProblemStatementCard,
   ReportProblem,
   SampleTests,
-  StatementSectionNav,
   StatementTextSizeControls,
   VerdictPresentationLayer,
 } from "@/features/problems";
@@ -53,10 +52,6 @@ export function ProblemDescription({
   return (
     <article className="min-w-0 space-y-6">
       <ProblemSolveTimer contest={contest} />
-      <StatementSectionNav
-        showEditorial={problem.editorial_state.available}
-        showNotes={Boolean(problem.note)}
-      />
       <VerdictPresentationLayer placement="column" />
       <header>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
