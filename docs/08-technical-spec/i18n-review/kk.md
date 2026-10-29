@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2407 strings.**
+**2416 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1103,6 +1103,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `title.galaxy` | Galaktika | Galaxy |  |
 | `title.supercluster` | Superklaster | Supercluster |  |
 | `title.cosmos` | Koinot | Cosmos |  |
+| `title.tooltip` | {name} · {total} tadan {level}-pog'ona · keyingisi: {next} ({min} dan) | {name} · {total} баспалдақтың {level}-і · келесісі: {next} ({min}-ден) |  |
+| `title.tooltipTop` | {name} · {total} tadan {level}-pog'ona · eng yuqori pog'ona | {name} · {total} баспалдақтың {level}-і · ең жоғары деңгей |  |
+| `title.ladder.heading` | Unvonlar zinapoyasi | Атақ баспалдағы |  |
+| `title.ladder.current` | Hozirgi | Қазір |  |
+| `title.ladder.position` | {total} tadan {level}-pog'ona | {total} ішінен {level}-деңгей |  |
+| `title.ladder.progress` | {next} gacha {points} ball | {next} дейін {points} ұпай |  |
+| `title.ladder.top` | Eng yuqori pog'ona | Ең жоғары деңгей |  |
+| `title.ladder.showAll` | Barcha {total} pog'onani ko'rsatish | Барлық {total} деңгейді көрсету |  |
+| `title.ladder.hide` | Yopish | Жасыру |  |
+| `title.ladder.none` | Hali unvon yo'q. Reytingli musobaqada qatnashing. | Атақ әлі жоқ. Рейтингті жарысқа қатысыңыз. |  |
+| `title.block.matter` | Materiya | Материя |  |
+| `title.block.cosmicBody` | Kosmik jismlar | Ғарыш денелері |  |
+| `title.block.stellar` | Yulduzlar | Жұлдыздар |  |
+| `title.block.extreme` | Ekstremal | Экстремалды |  |
+| `title.block.structure` | Kosmik tuzilmalar | Ғарыштық құрылымдар |  |
+| `title.block.everything` | Hamma narsa | Бәрі |  |
 | `cfTier.newbie` | Yangi boshlovchi | Жаңадан бастаушы |  |
 | `cfTier.pupil` | O'quvchi | Оқушы |  |
 | `cfTier.specialist` | Mutaxassis | Маман |  |

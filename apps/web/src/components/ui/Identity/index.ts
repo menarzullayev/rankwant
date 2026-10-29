@@ -7,4 +7,5 @@
 
 export { Avatar } from "./Avatar";
 export { MarkerText, splitMarker } from "./MarkerText";
+export { TitleIcon, TITLE_ICON_CODES } from "./TitleIcon";
 export { UserName, rankClass } from "./UserName";

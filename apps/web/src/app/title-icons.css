@@ -1,0 +1,59 @@
+/* Contest title icons (ADR-0027). Drawing: components/ui/Identity/TitleIcon.tsx.
+   An icon is a still everywhere; it moves only inside `.rw-ticon-live`
+   (profile card and title ladder), so a table of 50 rows never runs 50
+   animations. Reduced motion keeps every icon still. */
+:root {
+  --ti-glint: #ffffff;
+  --ti-shade: #000000;
+  --ti-void: #0a0c12;
+}
+.dark {
+  --ti-void: #000000;
+}
+.rw-ticon {
+  overflow: visible;
+}
+.rw-ticon .ti-fb {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes ti-spin { to { transform: rotate(360deg); } }
+@keyframes ti-spinr { to { transform: rotate(-360deg); } }
+@keyframes ti-pulse { 0%, 100% { transform: scale(.84); opacity: .8; } 50% { transform: scale(1.16); opacity: 1; } }
+@keyframes ti-twk { 0%, 100% { transform: scale(.3); opacity: .2; } 50% { transform: scale(1); opacity: 1; } }
+@keyframes ti-rip { 0% { transform: scale(.15); opacity: .9; } 100% { transform: scale(1); opacity: 0; } }
+@keyframes ti-flowd { to { stroke-dashoffset: -28; } }
+@keyframes ti-flick { 0%, 100% { opacity: .25; } 35% { opacity: 1; } 60% { opacity: .5; } }
+@keyframes ti-bob { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(2px); } }
+@keyframes ti-wob { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+@keyframes ti-ox { from { transform: translateX(calc(var(--ax) * -1)); } to { transform: translateX(var(--ax)); } }
+@keyframes ti-oy { from { transform: translateY(calc(var(--ay) * -1)); } to { transform: translateY(var(--ay)); } }
+@keyframes ti-slide { from { transform: translateX(-12px); opacity: 0; } 25%, 75% { opacity: .6; } to { transform: translateX(12px); opacity: 0; } }
+@keyframes ti-drift { from { transform: translate(0, 0); opacity: .9; } to { transform: translate(-14px, -14px); opacity: 0; } }
+@keyframes ti-cruise { 0%, 100% { transform: translate(-2px, -2px); } 50% { transform: translate(3px, 3px); } }
+@keyframes ti-shake { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(.8px, -.6px); } 50% { transform: translate(-.7px, .7px); } 75% { transform: translate(.6px, .8px); } }
+@keyframes ti-brth { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+@keyframes ti-sway { 0%, 100% { transform: rotate(calc(var(--r, 7deg) * -1)); } 50% { transform: rotate(var(--r, 7deg)); } }
+@keyframes ti-twst { 0%, 100% { transform: scale(.94) rotate(-5deg); } 50% { transform: scale(1.1) rotate(5deg); } }
+@keyframes ti-burst { 0%, 100% { transform: scale(.88); opacity: .75; } 50% { transform: scale(1.08); opacity: 1; } }
+@media (prefers-reduced-motion: no-preference) {
+  .rw-ticon-live .ti-spin { animation: ti-spin var(--t, 10s) linear infinite; }
+  .rw-ticon-live .ti-spinr { animation: ti-spinr var(--t, 10s) linear infinite; }
+  .rw-ticon-live .ti-pulse { animation: ti-pulse var(--t, 2s) ease-in-out infinite; }
+  .rw-ticon-live .ti-tw { animation: ti-twk var(--t, 2.4s) ease-in-out infinite; }
+  .rw-ticon-live .ti-rip { animation: ti-rip var(--t, 2.5s) ease-out infinite; }
+  .rw-ticon-live .ti-flowd { animation: ti-flowd var(--t, 1.5s) linear infinite; }
+  .rw-ticon-live .ti-flick { animation: ti-flick var(--t, 1s) ease-in-out infinite; }
+  .rw-ticon-live .ti-bob { animation: ti-bob var(--t, 3s) ease-in-out infinite; }
+  .rw-ticon-live .ti-wob { animation: ti-wob var(--t, 6s) ease-in-out infinite; }
+  .rw-ticon-live .ti-ox { animation: ti-ox calc(var(--t) / 2) cubic-bezier(.37, 0, .63, 1) infinite alternate; }
+  .rw-ticon-live .ti-oy { animation: ti-oy calc(var(--t) / 2) cubic-bezier(.37, 0, .63, 1) infinite alternate; animation-delay: calc(var(--t) / -4); }
+  .rw-ticon-live .ti-slide { animation: ti-slide var(--t, 3s) linear infinite; }
+  .rw-ticon-live .ti-drift { animation: ti-drift var(--t, 1.6s) ease-out infinite; }
+  .rw-ticon-live .ti-cruise { animation: ti-cruise var(--t, 3s) ease-in-out infinite; }
+  .rw-ticon-live .ti-shake { animation: ti-shake var(--t, .5s) linear infinite; }
+  .rw-ticon-live .ti-brth { animation: ti-brth var(--t, 2s) ease-in-out infinite; }
+  .rw-ticon-live .ti-sway { animation: ti-sway var(--t, 6s) ease-in-out infinite; }
+  .rw-ticon-live .ti-twst { animation: ti-twst var(--t, 3s) ease-in-out infinite; }
+  .rw-ticon-live .ti-burst { animation: ti-burst var(--t, 2s) ease-in-out infinite; }
+}

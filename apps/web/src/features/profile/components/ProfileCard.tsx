@@ -1,7 +1,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 
-import { Avatar } from "@/components/ui/Identity";
+import { Avatar, TitleIcon } from "@/components/ui/Identity";
 import { MarkerText } from "@/components/ui/Identity";
 import { RankTitle } from "@/features/profile";
 import { UserName } from "@/components/ui/Identity";
@@ -130,8 +130,9 @@ export function ProfileCard({
             {profile.title && (
               <span
                 title={t(locale, "profile.titleHint")}
-                className={`inline-flex items-center rounded-full border border-current px-2.5 py-0.5 text-theme-xs font-semibold ${rank}`}
+                className={`inline-flex items-center gap-1.5 rounded-full border border-current py-0.5 pl-1 pr-2.5 text-theme-xs font-semibold ${rank}`}
               >
+                <TitleIcon code={profile.title.code} live className="size-6" />
                 <RankTitle
                   locale={locale}
                   code={profile.title.code}

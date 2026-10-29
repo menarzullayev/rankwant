@@ -5,6 +5,7 @@
 @import "./form-families.css";
 @import "./kit.css";
 @import "./theme-toggle.css";
+@import "./title-icons.css";
 
 /* Customizer on a touch screen: 44 px targets. A mouse keeps the compact
    32-36 px controls - the panel is 352 px wide on a desktop and would grow

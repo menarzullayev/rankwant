@@ -8,6 +8,7 @@ import { RatingChart } from "@/features/profile";
 import { RatingHistoryTable } from "@/features/profile";
 import { SectionHint } from "@/features/profile";
 import { SolvedOverview } from "@/features/profile";
+import { TitleLadder } from "@/features/profile";
 import { TopicStrength } from "@/features/profile";
 import { Card } from "@/components/ui/Card";
 import { t } from "@/i18n/messages";
@@ -51,9 +52,19 @@ export default async function ProfileOverviewPage({ params, searchParams }: Prop
     api.ratingHistory(username),
   ]);
 
+  // Latest contest rating: the ladder needs the number for "N points to the
+  // next tier". An imported (Codeforces) rating has no point here, so the
+  // ladder then shows the tier without a distance rather than inventing one.
+  const contestPoints = series.series.contest;
+  const rating = contestPoints.length > 0 ? contestPoints[contestPoints.length - 1].after : null;
+
   return (
     <div className="space-y-6">
       <SolvedOverview stats={stats} locale={locale} />
+
+      <Card title={t(locale, "title.ladder.heading")}>
+        <TitleLadder title={series.title} bands={series.bands} rating={rating} locale={locale} />
+      </Card>
 
       <Card title={t(locale, "profile.history")} bodyClassName="space-y-4">
         <SectionHint>{t(locale, "profile.ratingHint")}</SectionHint>
