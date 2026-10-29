@@ -2650,6 +2650,44 @@ def accent_cache_follows_the_mode() -> str | None:
     return None
 
 
+def title_ladder_is_readable() -> str | None:
+    """2026-10-29: unvon zinapoyasi o'qiladi - nomdan tartib bilinmaydi.
+
+    Pulsar Kometadan yuqorimi? Nomdan buni aytib bo'lmaydi (o'q aralash:
+    o'lcham, yulduz hayoti, ekstremallik), shuning uchun tartib ko'rsatiladi:
+    hover matni, profildagi zinapoya va har pog'onaning animatsion ikonkasi.
+    Ikonka faqat profil kartasi va zinapoyada harakatlanadi; ro'yxatda statik
+    (50 qatorli jadvalda 50 animatsiya bo'lmasin).
+    """
+    api = read("apps/api/profiles/titles.py")
+    block = api[api.index("TITLES: tuple") :]
+    block = block[: block.index("\n)\n")]
+    api_rows = re.findall(r'\(\s*(\d+),\s*"(\w+)",\s*\d+\s*\)', block)
+    web = read("apps/web/src/lib/title-ladder.ts")
+    web_rows = [(c, b) for c, b in re.findall(r'\["(\w+)",\s*(\d+),\s*"\w+"\]', web)]
+    if [(c, b) for b, c in api_rows] != web_rows or not api_rows:
+        return "title-ladder.ts: zinapoya API'dagi TITLES bilan mos emas - hover matni va zinapoya boshqa chegarani aytadi"
+    icons = read("apps/web/src/components/ui/Identity/TitleIcon.tsx")
+    for _, code in api_rows:
+        if f"\n  {code}: (uid) =>" not in icons:
+            return f"TitleIcon.tsx: {code} uchun ikonka yo'q - pog'ona rasmsiz qoladi"
+    css = read("apps/web/src/app/title-icons.css")
+    if "prefers-reduced-motion: no-preference" not in css:
+        return "title-icons.css: harakat 'harakatni kamaytir' sozlamasiga qaramay yuradi"
+    for line in css.splitlines():
+        if "animation:" in line and ".rw-ticon-live" not in line:
+            return "title-icons.css: ikonka zinapoya va profil kartasidan tashqarida ham harakatlanadi - ro'yxatda statik bo'lishi kerak"
+    if "TitleIcon" in read("apps/web/src/components/ui/Identity/UserName.tsx"):
+        return "UserName.tsx: har ism yonida ikonka chiziladi - ro'yxatlarda 50 ta animatsiya bo'ladi"
+    if "titleTooltip(locale, title.code)" not in read("apps/web/src/components/ui/Identity/UserName.tsx"):
+        return "UserName.tsx: unvon hover matni pog'ona va keyingisini aytmaydi - tartib nomdan bilinmaydi"
+    if "<TitleLadder" not in read("apps/web/src/app/(site)/users/[username]/page.tsx"):
+        return "users/[username]/page.tsx: profilda unvon zinapoyasi yo'q"
+    if "<TitleIcon code={profile.title.code} live" not in read("apps/web/src/features/profile/components/ProfileCard.tsx"):
+        return "ProfileCard.tsx: profil kartasidagi unvon ikonkasi jonli emas"
+    return None
+
+
 def versioning_points_are_wired() -> str | None:
     """2026-10-27: versiya qo'yiladigan nuqtalar - nima uchun har biri kerak.
 
@@ -3768,6 +3806,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("versiya nuqtalari ulangan", versioning_points_are_wired),
     ("urg'u rang keshi rejimga bog'liq", accent_cache_follows_the_mode),
+    ("unvon zinapoyasi o'qiladi", title_ladder_is_readable),
     ("jadval chiziqlari har qatorga rang oladi", row_dividers_colour_every_row),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("kirish paneli statik karusel", auth_panel_is_a_static_carousel),

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2407 strings.**
+**2416 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1103,6 +1103,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `title.galaxy` | Galaktika | Galaxy |  |
 | `title.supercluster` | Superklaster | Supercluster |  |
 | `title.cosmos` | Koinot | Cosmos |  |
+| `title.tooltip` | {name} · {total} tadan {level}-pog'ona · keyingisi: {next} ({min} dan) | {name} · {total} basqıshtan {level}-si · keyingisi: {next} ({min} den) |  |
+| `title.tooltipTop` | {name} · {total} tadan {level}-pog'ona · eng yuqori pog'ona | {name} · {total} basqıshtan {level}-si · eń joqarı basqısh |  |
+| `title.ladder.heading` | Unvonlar zinapoyasi | Ataq basqıshları |  |
+| `title.ladder.current` | Hozirgi | Házir |  |
+| `title.ladder.position` | {total} tadan {level}-pog'ona | {total} basqıshtan {level}-si |  |
+| `title.ladder.progress` | {next} gacha {points} ball | {next} ge shekem {points} bal |  |
+| `title.ladder.top` | Eng yuqori pog'ona | Eń joqarı basqısh |  |
+| `title.ladder.showAll` | Barcha {total} pog'onani ko'rsatish | Barlıq {total} basqıshtı kórsetiw |  |
+| `title.ladder.hide` | Yopish | Jasırıw |  |
+| `title.ladder.none` | Hali unvon yo'q. Reytingli musobaqada qatnashing. | Ele ataq joq. Reytingli jarısta qatnasıń. |  |
+| `title.block.matter` | Materiya | Zat |  |
+| `title.block.cosmicBody` | Kosmik jismlar | Kosmos deneleri |  |
+| `title.block.stellar` | Yulduzlar | Juldızlar |  |
+| `title.block.extreme` | Ekstremal | Ekstremal obyektler |  |
+| `title.block.structure` | Kosmik tuzilmalar | Kosmos dúzilisleri |  |
+| `title.block.everything` | Hamma narsa | Hámme zat |  |
 | `cfTier.newbie` | Yangi boshlovchi | Jańa baslawshı |  |
 | `cfTier.pupil` | O'quvchi | Oqıwshı |  |
 | `cfTier.specialist` | Mutaxassis | Qánige |  |

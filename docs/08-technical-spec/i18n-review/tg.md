@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2407 strings.**
+**2416 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1103,6 +1103,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `title.galaxy` | Galaktika | Galaxy |  |
 | `title.supercluster` | Superklaster | Supercluster |  |
 | `title.cosmos` | Koinot | Cosmos |  |
+| `title.tooltip` | {name} · {total} tadan {level}-pog'ona · keyingisi: {next} ({min} dan) | {name} · зинаи {level} аз {total} · навбатӣ: {next} (аз {min}) |  |
+| `title.tooltipTop` | {name} · {total} tadan {level}-pog'ona · eng yuqori pog'ona | {name} · зинаи {level} аз {total} · баландтарин зина |  |
+| `title.ladder.heading` | Unvonlar zinapoyasi | Зинаи унвонҳо |  |
+| `title.ladder.current` | Hozirgi | Ҳозира |  |
+| `title.ladder.position` | {total} tadan {level}-pog'ona | Зинаи {level} аз {total} |  |
+| `title.ladder.progress` | {next} gacha {points} ball | То {next} {points} хол |  |
+| `title.ladder.top` | Eng yuqori pog'ona | Баландтарин зина |  |
+| `title.ladder.showAll` | Barcha {total} pog'onani ko'rsatish | Нишон додани ҳамаи {total} зина |  |
+| `title.ladder.hide` | Yopish | Пинҳон кардан |  |
+| `title.ladder.none` | Hali unvon yo'q. Reytingli musobaqada qatnashing. | Ҳанӯз унвон нест. Дар озмуни рейтингӣ иштирок кунед. |  |
+| `title.block.matter` | Materiya | Модда |  |
+| `title.block.cosmicBody` | Kosmik jismlar | Ҷисмҳои кайҳонӣ |  |
+| `title.block.stellar` | Yulduzlar | Ситораҳо |  |
+| `title.block.extreme` | Ekstremal | Шадид |  |
+| `title.block.structure` | Kosmik tuzilmalar | Сохторҳои кайҳонӣ |  |
+| `title.block.everything` | Hamma narsa | Ҳама чиз |  |
 | `cfTier.newbie` | Yangi boshlovchi | Навкор |  |
 | `cfTier.pupil` | O'quvchi | Донишҷӯ |  |
 | `cfTier.specialist` | Mutaxassis | Мутахассис |  |

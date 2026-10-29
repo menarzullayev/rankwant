@@ -46,6 +46,7 @@ export { PROFILE_TABS, ProfileNav } from "./components/ProfileNav";
 export { RankTitle } from "./components/RankTitle";
 
 export { RatingChart } from "./components/RatingChart";
+export { TitleLadder } from "./components/TitleLadder";
 
 export { RatingHistoryTable } from "./components/RatingHistoryTable";
 

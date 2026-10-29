@@ -1,8 +1,9 @@
 import type { Route } from "next";
 import Link from "next/link";
 
-import { t, type Locale } from "@/i18n/messages";
+import type { Locale } from "@/i18n/messages";
 import type { UserTitle } from "@/lib/identity";
+import { titleTooltip } from "@/lib/title-ladder";
 
 import { MarkerText } from "@/components/ui/Identity";
 
@@ -33,7 +34,7 @@ export function UserName({
   return (
     <Link
       href={`/users/${username}` as Route}
-      title={title ? t(locale, `title.${title.code}`) : undefined}
+      title={title ? titleTooltip(locale, title.code) : undefined}
       className={`font-medium rw-link-hover ${rankClass(title)} ${className}`}
     >
       {title && title.marker > 0 ? (

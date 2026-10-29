@@ -3976,6 +3976,36 @@ def neg_decisions_accent_cache_any_mode() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_title_ladder_drifts() -> tuple[bool, str]:
+    """The web ladder disagrees with the API about a tier bound."""
+    return _decision_broken(
+        "apps/web/src/lib/title-ladder.ts",
+        '["comet", 1400, "cosmicBody"]',
+        '["comet", 1450, "cosmicBody"]',
+        "zinapoya API'dagi TITLES bilan mos emas",
+    )
+
+
+def neg_decisions_title_icon_runs_in_lists() -> tuple[bool, str]:
+    """A title icon animates outside the profile card and the ladder."""
+    return _decision_broken(
+        "apps/web/src/app/title-icons.css",
+        ".rw-ticon-live .ti-spin { animation:",
+        ".ti-spin { animation:",
+        "ro'yxatda statik bo'lishi kerak",
+    )
+
+
+def neg_decisions_title_tooltip_dropped() -> tuple[bool, str]:
+    """A username's hover text stops naming the tier and the next one."""
+    return _decision_broken(
+        "apps/web/src/components/ui/Identity/UserName.tsx",
+        "titleTooltip(locale, title.code)",
+        "title.code",
+        "unvon hover matni pog'ona va keyingisini aytmaydi",
+    )
+
+
 def neg_notification_code_removed() -> tuple[bool, str]:
     """A code the baseline knows is gone from the catalogue.
 
@@ -6591,6 +6621,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/ratings/models.py",
     "apps/web/src/lib/useEventStream.ts",
     "apps/web/src/context/CustomizerContext.tsx",
+    "apps/web/src/lib/title-ladder.ts",
+    "apps/web/src/app/title-icons.css",
+    "apps/web/src/components/ui/Identity/TitleIcon.tsx",
+    "apps/web/src/features/profile/components/ProfileCard.tsx",
+    "apps/web/src/app/(site)/users/[username]/page.tsx",
 )
 
 
@@ -9887,6 +9922,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bildirishnoma kodi o'chirilsa tutilsin", neg_notification_code_removed),
             ("SSE nomi versiyasiz ketsa tutilsin", neg_decisions_wire_name_dropped),
             ("urg'u rang keshi rejimsiz qo'llansa tutilsin", neg_decisions_accent_cache_any_mode),
+            ("zinapoya API bilan ajralsa tutilsin", neg_decisions_title_ladder_drifts),
+            ("ikonka ro'yxatda harakatlansa tutilsin", neg_decisions_title_icon_runs_in_lists),
+            ("unvon hover matni olib tashlansa tutilsin", neg_decisions_title_tooltip_dropped),
             ("yangi protokol ishi qabul qilinsa tutilsin", neg_decisions_newer_protocol_accepted),
             ("API v1 yo'li o'chirilsa tutilsin", neg_openapi_path_removed),
             ("qidiruv chegarasiz qolsa tutilsin", neg_decisions_search_unthrottled),
