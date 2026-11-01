@@ -153,7 +153,7 @@ attach obligations to distribution. Strong copyleft first.
 | `@img/sharp-win32-ia32` | 0.35.5 | runtime | Apache-2.0 AND LGPL-3.0-or-later |
 | `@img/sharp-win32-x64` | 0.35.5 | runtime | Apache-2.0 AND LGPL-3.0-or-later |
 | `axe-core` | 4.13.0 | dev | MPL-2.0 |
-| `dompurify` | 3.4.16 | runtime | (MPL-2.0 OR Apache-2.0) |
+| `dompurify` | 3.4.17 | runtime | (MPL-2.0 OR Apache-2.0) |
 | `lightningcss` | 1.32.0 | dev | MPL-2.0 |
 | `lightningcss` | 1.33.0 | dev | MPL-2.0 |
 | `lightningcss-android-arm64` | 1.32.0 | dev | MPL-2.0 |
@@ -183,7 +183,7 @@ attach obligations to distribution. Strong copyleft first.
 | `psycopg-binary` | 3.3.6 | runtime | LGPL-3.0-only |
 | `certifi` | 2026.7.22 | dev | MPL-2.0 |
 | `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
-| `hypothesis` | 6.170.8 | dev | MPL-2.0 |
+| `hypothesis` | 6.170.14 | dev | MPL-2.0 |
 | `pathspec` | 1.1.1 | dev | Mozilla Public License 2.0 (MPL 2.0) |
 | `psycopg` | 3.3.6 | dev | LGPL-3.0-only |
 | `psycopg-binary` | 3.3.6 | dev | LGPL-3.0-only |
@@ -347,16 +347,16 @@ new dependency cannot make this document quietly false.
 | `@monaco-editor/loader` | 1.7.0 | runtime | MIT |
 | `@monaco-editor/react` | 4.7.0 | runtime | MIT |
 | `@napi-rs/wasm-runtime` | 1.2.4 | dev | MIT |
-| `@next/env` | 16.4.0 | runtime | MIT |
-| `@next/eslint-plugin-next` | 16.4.0 | dev | MIT |
-| `@next/swc-darwin-arm64` | 16.4.0 | runtime | MIT |
-| `@next/swc-darwin-x64` | 16.4.0 | runtime | MIT |
-| `@next/swc-linux-arm64-gnu` | 16.4.0 | runtime | MIT |
-| `@next/swc-linux-arm64-musl` | 16.4.0 | runtime | MIT |
-| `@next/swc-linux-x64-gnu` | 16.4.0 | runtime | MIT |
-| `@next/swc-linux-x64-musl` | 16.4.0 | runtime | MIT |
-| `@next/swc-win32-arm64-msvc` | 16.4.0 | runtime | MIT |
-| `@next/swc-win32-x64-msvc` | 16.4.0 | runtime | MIT |
+| `@next/env` | 16.4.1 | runtime | MIT |
+| `@next/eslint-plugin-next` | 16.4.1 | dev | MIT |
+| `@next/swc-darwin-arm64` | 16.4.1 | runtime | MIT |
+| `@next/swc-darwin-x64` | 16.4.1 | runtime | MIT |
+| `@next/swc-linux-arm64-gnu` | 16.4.1 | runtime | MIT |
+| `@next/swc-linux-arm64-musl` | 16.4.1 | runtime | MIT |
+| `@next/swc-linux-x64-gnu` | 16.4.1 | runtime | MIT |
+| `@next/swc-linux-x64-musl` | 16.4.1 | runtime | MIT |
+| `@next/swc-win32-arm64-msvc` | 16.4.1 | runtime | MIT |
+| `@next/swc-win32-x64-msvc` | 16.4.1 | runtime | MIT |
 | `@nodelib/fs.scandir` | 2.1.5 | dev | MIT |
 | `@nodelib/fs.stat` | 2.0.5 | dev | MIT |
 | `@nodelib/fs.walk` | 1.2.8 | dev | MIT |
@@ -540,7 +540,7 @@ new dependency cannot make this document quietly false.
 | `detect-libc` | 2.1.2 | runtime | Apache-2.0 |
 | `devlop` | 1.1.0 | runtime | MIT |
 | `doctrine` | 2.1.0 | dev | Apache-2.0 |
-| `dompurify` | 3.4.16 | runtime | (MPL-2.0 OR Apache-2.0) |
+| `dompurify` | 3.4.17 | runtime | (MPL-2.0 OR Apache-2.0) |
 | `dunder-proto` | 1.0.1 | dev | MIT |
 | `electron-to-chromium` | 1.5.439 | dev | ISC |
 | `emoji-regex` | 9.2.2 | dev | MIT |
@@ -561,7 +561,7 @@ new dependency cannot make this document quietly false.
 | `escape-string-regexp` | 4.0.0 | dev | MIT |
 | `eslint` | 10.12.0 | dev | MIT |
 | `eslint` | 9.39.5 | dev | MIT |
-| `eslint-config-next` | 16.4.0 | dev | MIT |
+| `eslint-config-next` | 16.4.1 | dev | MIT |
 | `eslint-import-resolver-node` | 0.3.10 | dev | MIT |
 | `eslint-import-resolver-typescript` | 3.10.1 | dev | ISC |
 | `eslint-module-utils` | 2.14.0 | dev | MIT |
@@ -796,7 +796,7 @@ new dependency cannot make this document quietly false.
 | `nanoid` | 3.3.20 | runtime | MIT |
 | `napi-postinstall` | 0.3.4 | dev | MIT |
 | `natural-compare` | 1.4.0 | dev | MIT |
-| `next` | 16.4.0 | runtime | MIT |
+| `next` | 16.4.1 | runtime | MIT |
 | `node-exports-info` | 1.6.2 | dev | MIT |
 | `node-releases` | 2.0.57 | dev | MIT |
 | `object-assign` | 4.1.1 | dev | MIT |
@@ -835,9 +835,9 @@ new dependency cannot make this document quietly false.
 | `qified` | 0.10.1 | dev | MIT |
 | `queue-microtask` | 1.2.3 | dev | MIT |
 | `rankwant-web` | ? | runtime | **UNKNOWN** |
-| `react` | 19.3.0 | runtime | MIT |
+| `react` | 19.3.1 | runtime | MIT |
 | `react-aria` | 3.52.1 | runtime | Apache-2.0 |
-| `react-dom` | 19.3.0 | runtime | MIT |
+| `react-dom` | 19.3.1 | runtime | MIT |
 | `react-is` | 16.13.1 | dev | MIT |
 | `react-markdown` | 10.1.0 | runtime | MIT |
 | `react-stately` | 3.50.0 | runtime | Apache-2.0 |
@@ -985,7 +985,7 @@ new dependency cannot make this document quietly false.
 | `jsonschema-specifications` | 2025.9.1 | runtime | MIT |
 | `kombu` | 5.6.2 | runtime | BSD-3-Clause |
 | `packaging` | 26.3 | runtime | Apache-2.0 OR BSD-2-Clause |
-| `pillow` | 12.3.0 | runtime | MIT-CMU |
+| `pillow` | 13.0.0 | runtime | MIT-CMU |
 | `prompt-toolkit` | 3.0.53 | runtime | BSD License |
 | `psycopg` | 3.3.6 | runtime | LGPL-3.0-only |
 | `psycopg-binary` | 3.3.6 | runtime | LGPL-3.0-only |
@@ -1002,7 +1002,7 @@ new dependency cannot make this document quietly false.
 | `tzdata` | 2026.3 | runtime | Apache-2.0 |
 | `tzlocal` | 5.4.4 | runtime | MIT |
 | `uritemplate` | 4.2.0 | runtime | BSD 3-Clause OR Apache-2.0 |
-| `urllib3` | 2.7.0 | runtime | MIT |
+| `urllib3` | 2.8.0 | runtime | MIT |
 | `uvicorn` | 0.54.0 | runtime | BSD-3-Clause |
 | `vine` | 5.1.0 | runtime | BSD |
 | `wcwidth` | 0.8.3 | runtime | MIT |
@@ -1047,7 +1047,7 @@ new dependency cannot make this document quietly false.
 | `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
 | `gunicorn` | 26.2.0 | dev | MIT |
 | `h11` | 0.16.0 | dev | MIT |
-| `hypothesis` | 6.170.8 | dev | MPL-2.0 |
+| `hypothesis` | 6.170.14 | dev | MPL-2.0 |
 | `idna` | 3.19 | dev | BSD-3-Clause |
 | `inflection` | 0.5.1 | dev | MIT |
 | `iniconfig` | 2.3.0 | dev | MIT |
@@ -1065,7 +1065,7 @@ new dependency cannot make this document quietly false.
 | `packageurl-python` | 0.17.6 | dev | MIT |
 | `packaging` | 26.3 | dev | Apache-2.0 OR BSD-2-Clause |
 | `pathspec` | 1.1.1 | dev | Mozilla Public License 2.0 (MPL 2.0) |
-| `pillow` | 12.3.0 | dev | MIT-CMU |
+| `pillow` | 13.0.0 | dev | MIT-CMU |
 | `pip` | 26.2.1 | dev | MIT |
 | `pip-api` | 0.0.35 | dev | Apache License |
 | `pip-audit` | 2.10.1 | dev | Apache Software License |
@@ -1102,7 +1102,7 @@ new dependency cannot make this document quietly false.
 | `tzdata` | 2026.4 | dev | Apache-2.0 |
 | `tzlocal` | 5.4.4 | dev | MIT |
 | `uritemplate` | 4.2.0 | dev | BSD 3-Clause OR Apache-2.0 |
-| `urllib3` | 2.7.0 | dev | MIT |
+| `urllib3` | 2.8.0 | dev | MIT |
 | `uvicorn` | 0.54.0 | dev | BSD-3-Clause |
 | `vine` | 5.1.0 | dev | BSD |
 | `wcwidth` | 0.8.3 | dev | MIT |
