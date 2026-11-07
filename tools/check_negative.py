@@ -3178,6 +3178,26 @@ def neg_decisions_phone_loses_the_chips() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_api_tests_job_removed() -> tuple[bool, str]:
+    """PR CI stops running API pytest: the job name changes so it is gone."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "  api_tests:\n",
+        "  api_tests_off:\n",
+        "`api_tests` job'i yo'q",
+    )
+
+
+def neg_decisions_api_tests_lose_path_filter() -> tuple[bool, str]:
+    """API pytest would run on every PR, including web-only ones."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "    if: ${{ needs.filter.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}\n    runs-on: ubuntu-latest\n    timeout-minutes: 8\n",
+        "    if: ${{ github.event_name != 'x' }}\n    runs-on: ubuntu-latest\n    timeout-minutes: 8\n",
+        "yo'l filtrisiz",
+    )
+
+
 def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
@@ -9997,6 +10017,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ommaviy stack standartga tushsa tutilsin", neg_decisions_public_stack_falls_back),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
+            ("api_tests job olib tashlansa tutilsin", neg_decisions_api_tests_job_removed),
+            ("api_tests yo'l filtrisiz qolsa tutilsin", neg_decisions_api_tests_lose_path_filter),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),
