@@ -254,6 +254,61 @@ jobs:
   # changed `tools/` — including #13 rewriting `check_negative.py`
   # and #14 adding a new group — left this job `skipped`. The suite
   # that tests the checks did not run when those checks changed.
+  # API pytest runs on a PR only when `apps/api/**` changed (2026-11-08,
+  # HITL; amends the 2026-09-20 "pytest only in Nightly" decision for the
+  # API path). Measured: #438 reached `main` with a red local suite, and the
+  # Nightly API suite once stayed red for days with nothing stopping it.
+  # Same three shards as Nightly `coverage`, without coverage (faster).
+  api_tests:
+    name: API tests (${{ matrix.shard }}/3)
+    needs: filter
+    if: ${{ needs.filter.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      # One red shard must not hide what the other two would have said.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: rankwant_test
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+        ports: ['5432']
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s
+          --health-timeout 5s --health-retries 5
+        ports: ['6379']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: apps/api/requirements-dev.lock
+      - run: pip install -r requirements-dev.lock
+        working-directory: apps/api
+      - name: Every test file is in exactly one shard
+        run: python3 tools/pytest_shard.py --check 3
+      - name: pytest
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
+          REDIS_URL: redis://localhost:${{ job.services.redis.ports['6379'] }}/0
+          CELERY_EAGER: '1'
+          # Settings fail fast without it (ADR-0044); a throwaway value.
+          DJANGO_SECRET_KEY: ci-django-secret
+        run: |
+          mapfile -t files < <(python3 ../../tools/pytest_shard.py ${{ matrix.shard }} 3)
+          pytest -n 4 "${files[@]}"
+        working-directory: apps/api
+
   web:
     name: Web — lint, types, build, and check suite
     needs: filter

@@ -802,7 +802,15 @@ def pr_skips_heavy_ci() -> str | None:
     if re.search(r"(?m)^\s+- name: pytest\b", _workflow_job(ci, "api")) or re.search(
         r"(?m)^\s+pytest\b", _workflow_job(ci, "api")
     ):
-        return "ci.yml api pytest yugurtiradi — pytest faqat Nightly coverage"
+        return "ci.yml `api` (lint) job'i pytest yugurtiradi — pytest alohida `api_tests` job'ida"
+    # 2026-11-08: API pytest returned to PR CI, but only when apps/api changed.
+    tests = _workflow_job(ci, "api_tests")
+    if not tests:
+        return "ci.yml da `api_tests` job'i yo'q — API pytest PR'da yurmaydi (2026-11-08 qarori)"
+    if "needs.filter.outputs.api" not in tests:
+        return "api_tests yo'l filtrisiz — har PR'da yuguradi (faqat apps/api o'zgarganda kerak)"
+    if "pytest_shard.py" not in tests or "pytest -n 4" not in tests:
+        return "api_tests shardlangan pytest yugurtirmaydi"
     nightly = read(".github/workflows/nightly.yml")
     e2e = _workflow_job(nightly, "e2e")
     if "run --rm smoke" not in e2e:
