@@ -227,17 +227,17 @@ that in mind.
 
 | Claim | Reality (measured 2026-09-21) |
 |---|---|
-| `10-operations § Ochiq risklar`: demo accounts (`ustoz`, `oquvchi1..3`) have weak passwords | Those accounts do not exist. `demo` exists but its password field is empty, so it cannot log in. The row is stale |
-| `08 § Xavfsizlik checklist`: judge isolation, PAT hashing, rate limits all unchecked | All three are implemented in code; the checklist is behind the code, not the code behind the checklist |
+| `10-operations § Ochiq risklar`: demo accounts (`ustoz`, `oquvchi1..3`) have weak passwords | Those accounts do not exist. `demo` exists but its password field is empty, so it cannot log in. **Fixed in the doc 2026-11-10** |
+| `08 § Xavfsizlik checklist`: judge isolation, PAT hashing, rate limits all unchecked | All three are implemented in code; the checklist is behind the code, not the code behind the checklist. **Ticked 2026-11-10** with the owner's approval, each against a measurement (the external audit stays open) |
 
 ## 11. Open items, mapped to launch gates
 
 | Item | Gate | Owner |
 |---|---|---|
 | External security audit | ADR-0004 — **on the critical path** | owner |
-| Judge latency p50 < 5 s / p95 < 15 s measured | `docs/09` launch gate — the Nightly gate exists, no number yet | agent |
+| Judge latency p50 < 5 s / p95 < 15 s measured | `docs/09` launch gate — **met**: production 2026-10-17, p50 2045 ms / p95 2129 ms over 20 samples ([record](../research/2026-09-21-judge-latency/README.md)); box ticked 2026-11-10 | done |
 | Dependency licence inventory → lawyer | `docs/09` launch gate — **inventory generated 2026-09-21** ([record](../research/2026-09-21-licence-inventory/README.md)); the lawyer's sign-off is still open | owner + lawyer |
-| A-2 MinIO credentials | cheap, do before launch | agent |
+| A-2 MinIO credentials | **closed 2026-11-10** — rotated, and `deploy.sh` refuses the defaults | done |
 | A-3 escape suite / scanning back into automation | owner decision | owner |
 
 ## 12. Review triggers
