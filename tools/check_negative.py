@@ -3203,6 +3203,46 @@ def neg_decisions_api_tests_lose_path_filter() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_required_ignores_api_tests() -> tuple[bool, str]:
+    """The aggregator stops reading the API test matrix: red tests merge."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "    needs: [filter, api, api_tests, web, judge, integrity]\n",
+        "    needs: [filter, api, web, judge, integrity]\n",
+        "`api_tests` natijasini o'qimaydi",
+    )
+
+
+def neg_decisions_required_skips_on_cancel() -> tuple[bool, str]:
+    """`!cancelled()` instead of `always()`: a skipped required check is green."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "    needs: [filter, api, api_tests, web, judge, integrity]\n    if: ${{ always() }}\n",
+        "    needs: [filter, api, api_tests, web, judge, integrity]\n    if: ${{ !cancelled() }}\n",
+        "`always()` siz",
+    )
+
+
+def neg_decisions_required_renamed() -> tuple[bool, str]:
+    """The job name the ruleset waits for changes: every PR would hang."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "    name: Required checks\n",
+        "    name: CI passed\n",
+        "«Required checks» emas",
+    )
+
+
+def neg_decisions_runner_selftest_on_push() -> tuple[bool, str]:
+    """The self-hosted self-test gets a push trigger back (L-04)."""
+    return _decision_broken(
+        ".github/workflows/runner-selftest.yml",
+        "on:\n  workflow_dispatch:\n",
+        "on:\n  workflow_dispatch:\n  push:\n    branches: [feat/single-engine-runner]\n",
+        "self-hosted noutbukda o'zi yuradi",
+    )
+
+
 def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
@@ -10119,6 +10159,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("api_tests job olib tashlansa tutilsin", neg_decisions_api_tests_job_removed),
             ("api_tests yo'l filtrisiz qolsa tutilsin", neg_decisions_api_tests_lose_path_filter),
+            ("umumlashtiruvchi API testlarini o'qimasa tutilsin", neg_decisions_required_ignores_api_tests),
+            ("umumlashtiruvchi bekor qilinganda skipped bo'lsa tutilsin", neg_decisions_required_skips_on_cancel),
+            ("umumlashtiruvchi nomi o'zgarsa tutilsin", neg_decisions_required_renamed),
+            ("runner self-test push bilan yursa tutilsin", neg_decisions_runner_selftest_on_push),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),

@@ -18,10 +18,14 @@ name: Runner self-test
 # production CI. A runner must not carry the production label before a full
 # CI run has passed on it: on 2026-09-17 one did, took real CI jobs, and
 # failed them.
+#
+# Manual only (2026-11-10, audit L-04). A `push` trigger for
+# `feat/single-engine-runner` stayed here after that branch was merged and
+# deleted; it named nothing, but any branch re-created under that name would
+# have started a job on the self-hosted laptop. `check_decisions.py` keeps
+# this workflow on `workflow_dispatch` alone.
 on:
   workflow_dispatch:
-  push:
-    branches: [feat/single-engine-runner]
 
 permissions:
   contents: read
