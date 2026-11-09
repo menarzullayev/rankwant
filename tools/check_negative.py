@@ -2167,7 +2167,12 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
         # this suite's own mutations can be. A clean fixture keeps the case about encoding.
         compose = Path(tmp) / "compose.json"
         compose.write_text("[]", encoding="utf-8")
+        # `check_env_secrets.py` reads an env file; strong fixture values keep
+        # this case about the `✓` line rather than about any real host.
+        secrets_env = Path(tmp) / "secrets.env"
+        secrets_env.write_text(_env(), encoding="utf-8")
         extra = {
+            "check_env_secrets.py": [str(secrets_env)],
             "check_deploy_gate.py": [
                 "--head",
                 _GATE_SHA,
@@ -3725,6 +3730,86 @@ def neg_decisions_public_stack_falls_back() -> tuple[bool, str]:
         "${MINIO_ROOT_PASSWORD:-devdevdev}${X:-",
         "ommaviy stack standart sir bilan ko'tariladi",
     )
+
+
+def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
+    """The deploy preflight stops calling the secrets checker."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '"$SECRETS_PY" tools/check_env_secrets.py "$ENV_ABS" \\\n',
+        ': tools/check_env_secrets.py "$ENV_ABS" \\\n',
+        "preflight sirlarni tekshirmaydi",
+    )
+
+
+def neg_decisions_deploy_ignores_secret_failure() -> tuple[bool, str]:
+    """The checker still runs, but a refusal no longer stops the deploy."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '  || die "env-faylda standart yoki kuchsiz sir',
+        '  || echo "env-faylda standart yoki kuchsiz sir',
+        "sir tekshiruvi yiqilsa ham deploy davom etadi",
+    )
+
+
+STRONG_SECRET = "Q7m2Zr8Lx4Tn9Bv1Kc6Hw3Pd5Yf0Sg"
+
+
+def _env_secrets_case(body: str | None, want: int, expect: str) -> tuple[bool, str]:
+    """Run check_env_secrets on a throwaway env file; `None` = no file at all."""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "env"
+        if body is not None:
+            path.write_text(body, encoding="utf-8")
+        code, out = run_check("env_secrets", str(path))
+    if code != want:
+        return False, f"env_secrets/{expect}: exit {code} ({want} kerak) — {out.strip()[-160:]}"
+    if expect not in out and want != 0:
+        return False, f"env_secrets/{expect}: exit {code}, lekin boshqa sabab — {out.strip()[-160:]}"
+    if STRONG_SECRET in out:
+        return False, f"env_secrets/{expect}: sir qiymati chiqishga tushdi"
+    return True, f"env_secrets/{expect}: exit {code}"
+
+
+def _env(**over: str) -> str:
+    values = {name: STRONG_SECRET for name in ("POSTGRES_PASSWORD", "MINIO_ROOT_PASSWORD", "JUDGE_S3_SECRET")}
+    values.update(over)
+    return "".join(f"{k}={v}\n" for k, v in values.items() if v != "<drop>")
+
+
+def neg_env_secrets_known_default() -> tuple[bool, str]:
+    """The judge key is still the repository default."""
+    return _env_secrets_case(_env(JUDGE_S3_SECRET="judge-ro-dev"), 1, "standart qiymat")
+
+
+def neg_env_secrets_short() -> tuple[bool, str]:
+    """A fresh but short password."""
+    return _env_secrets_case(_env(POSTGRES_PASSWORD="Ab3dE6"), 1, "belgidan qisqa")
+
+
+def neg_env_secrets_missing() -> tuple[bool, str]:
+    """The MinIO root password line is gone."""
+    return _env_secrets_case(_env(MINIO_ROOT_PASSWORD="<drop>"), 1, "yo'q")
+
+
+def neg_env_secrets_unreadable_is_not_green() -> tuple[bool, str]:
+    """No env file must be exit 2, never 0."""
+    return _env_secrets_case(None, 2, "o'qilmadi")
+
+
+def neg_env_secrets_new_compose_default() -> tuple[bool, str]:
+    """A new fallback in docker-compose.yml is refused without editing the checker."""
+    fallback = "Fresh0Default0Value0Long"
+    old = "${POSTGRES_PASSWORD:-dev}"
+    if old not in (ROOT / "docker-compose.yml").read_text(encoding="utf-8"):
+        return False, "env_secrets/compose standarti: langar topilmadi (docker-compose.yml)"
+    with Mutation(ROOT / "docker-compose.yml", old, "${POSTGRES_PASSWORD:-" + fallback + "}"):
+        return _env_secrets_case(_env(POSTGRES_PASSWORD=fallback), 1, "standart qiymat")
+
+
+def neg_env_secrets_strong_passes() -> tuple[bool, str]:
+    """Positive control: three strong, unknown values pass."""
+    return _env_secrets_case(_env(), 0, "ijobiy nazorat")
 
 
 def neg_decisions_team_roles_dropped_from_page() -> tuple[bool, str]:
@@ -6558,6 +6643,8 @@ _DECISIONS_SANDBOX_FILES = (
     # Developer tools (2026-09-21): the `adminer` rule reads the boundary tool
     # to prove the tools overlay is actually measured, not merely declared.
     "tools/check_security_boundary.py",
+    # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
+    "tools/check_env_secrets.py",
     # Judge latency gate (2026-09-21): the rule reads the harness to prove the
     # budget comparison still exists — a gate whose comparison is gone still
     # exits 0, i.e. green but measuring nothing. The compose service and the
@@ -9777,6 +9864,17 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ],
     ),
     (
+        "env_secrets",
+        [
+            ("standart sir tutilsin", neg_env_secrets_known_default),
+            ("qisqa sir tutilsin", neg_env_secrets_short),
+            ("yo'q sir tutilsin", neg_env_secrets_missing),
+            ("o'qilmagan fayl yashil bo'lmasin", neg_env_secrets_unreadable_is_not_green),
+            ("compose'dagi yangi standart tutilsin", neg_env_secrets_new_compose_default),
+            ("kuchli sirlar o'tsin", neg_env_secrets_strong_passes),
+        ],
+    ),
+    (
         "css_sources",
         [
             ("o'lik CSS skan yo'li tutilsin", neg_css_source_path_dead),
@@ -10015,6 +10113,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
             ("ommaviy stack standartga tushsa tutilsin", neg_decisions_public_stack_falls_back),
+            ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
+            ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("api_tests job olib tashlansa tutilsin", neg_decisions_api_tests_job_removed),

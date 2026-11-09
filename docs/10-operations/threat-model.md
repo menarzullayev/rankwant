@@ -159,7 +159,7 @@ silently. There is no check that it exists.
 
 | | Threat | Control | Residual |
 |---|---|---|---|
-| S | **Shared static credentials** | `S3_KEY=rankwant` / `S3_SECRET=devdevdev`, the same value in `docker-compose.yml` and in the judge's environment — in a **public** repository | **open** — A-2. Not reachable from the internet, so this is defence-in-depth, not an open door |
+| S | **Shared static credentials** | `S3_KEY=rankwant` / `S3_SECRET=devdevdev`, the same value in `docker-compose.yml` and in the judge's environment — in a **public** repository | **closed 2026-11-10** — A-2. Production had all three defaults (`dev`, `devdevdev`, `judge-ro-dev`, measured); they were rotated to 40-character random values, and `tools/check_env_secrets.py` now stops `deploy.sh` on a default, short or missing secret |
 | I | Hidden tests readable | bucket is not published (`curl 127.0.0.1:9000` → `HTTP 000`); only api/worker/judge hold credentials | any of those three can read every test |
 
 ### ⑦ Judge — the critical boundary
@@ -197,7 +197,7 @@ inputs, not as findings.
 | # | Risk | Why accepted | Decided | Revisit when |
 |---|---|---|---|---|
 | **A-1** | Judge runs `privileged: true` with `cgroup: host`, on the same machine as Postgres and Redis | Narrowing capabilities is not possible while nsjail needs namespaces; the owner chose to keep the model and let the external audit verify it | 2026-09-21 | the audit reports; or the target four-host topology lands |
-| **A-2** | MinIO root credentials are the literal `devdevdev`, in a public repo | Not internet-reachable; judged defence-in-depth rather than exposure | 2026-09-21 (recorded) | before public launch — this is cheap to fix and should be |
+| **A-2** | ~~MinIO root credentials are the literal `devdevdev`, in a public repo~~ **Closed 2026-11-10:** database, MinIO root and judge keys rotated; the deploy preflight refuses the repository defaults | Not internet-reachable; judged defence-in-depth rather than exposure | 2026-09-21 (recorded) · 2026-11-10 (closed) | — |
 | **A-3** | Secret scanning, dependency audit and the static security checks run nowhere (`security.yml` disabled) | The owner turned the run off; the deploy gate is `CI` only | 2026-09-21 | if the escape suite or scanning is wanted back, it belongs in Nightly, not PR CI |
 | **A-4** | The Cloudflare Free Worker quota (100 k/day) can be spent by crawlers before noon | Mitigated by the zone-side WAF rule; upgrading is a cost decision | 2026-09-18 (ADR-0023) | a second quota exhaustion, or launch traffic |
 | **A-5** | Backups are local-only; `RANKWANT_BACKUP_OFFSITE=off`; one NVMe hosts both `C:` and `D:` | The owner deferred it until after launch | 2026-09-21 | after launch, or after the first real user data |
