@@ -158,7 +158,7 @@ export const tr: Record<MessageKey, string> = {
   "update.module.arena": "Arena",
   "update.module.judge": "Değerlendirme",
   "update.module.ratings": "Sıralama",
-  "update.module.qvant": "Kuant",
+  "update.module.qvant": "Qvant",
   "update.module.profile": "Profil",
   "update.module.classroom": "Sınıf",
   "update.module.quizzes": "Testler",
@@ -1125,7 +1125,6 @@ export const tr: Record<MessageKey, string> = {
   "loading.style.progress": "İlerleme çubuğu",
   "loading.style.progressHint": "Sayfa üstü veya uzun işler için.",
 
-  // TODO i18n: translate 16 new tier names to tr
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1583,7 +1582,7 @@ export const tr: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "Mevcut olan — yumuşak kartlar",
-  "style.swiss.label": "İsviçre",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "Çizgiler ve tipografi",
   "style.flat.label": "Flat",
   "style.flat.hint": "Gölgesiz, temiz renkler",
@@ -1591,7 +1590,7 @@ export const tr: Record<MessageKey, string> = {
   "style.material.hint": "Yükseklik ve gölgeler",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "Serif, dergi görünümü",
-  "style.brutal.label": "Neo-brutalizm",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "Kalın kenarlık, sert gölge",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "Eşaralıklı, konsol",
@@ -1603,7 +1602,7 @@ export const tr: Record<MessageKey, string> = {
   "style.clay.hint": "Kil, hacimli",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "Gradyan arka plan",
-  "style.skeu.label": "Skeomorfizm",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "Metal ve kabartma",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----
