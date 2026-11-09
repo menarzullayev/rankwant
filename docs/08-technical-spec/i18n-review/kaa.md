@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2471 strings.**
+**2508 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2485,6 +2485,43 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.testers` | Sinovchilar | Testlewshiler |  |
 | `contest.crew.jury` | Hakamlar | Tóreshiler |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Olar máselelerdi aldın ala biledi, sonıń ushın reytingsiz qatnasadı. |  |
+| `contest.qa.title` | Savol-javob | Soraw-juwap |  |
+| `contest.qa.general` | Umumiy | Ulıwma |  |
+| `contest.qa.problem` | Masala | Másele |  |
+| `contest.qa.askTitle` | Savol berish | Soraw beriw |  |
+| `contest.qa.askHint` | Faqat shart va qoidalar haqida. Yechim yoki kod so'ramang — javob «Izoh yo'q» bo'ladi. | Tek shárt hám qaǵıydalar haqqında. Sheshim yamasa kod soramań — juwap «Túsindirme joq» boladı. |  |
+| `contest.qa.send` | Yuborish | Jiberiw |  |
+| `contest.qa.left` | Yana {count} ta savol berishingiz mumkin | Jáne {count} soraw bere alasız |  |
+| `contest.qa.announceTitle` | E'lon yozish | Daǵaza jazıw |  |
+| `contest.qa.announce` | E'lon qilish | Daǵazalaw |  |
+| `contest.qa.announceNote` | Barcha ro'yxatdan o'tganlarga bildirishnoma ketadi | Barlıq dizimnen ótkenlerge xabarlama jiberiledi |  |
+| `contest.qa.waiting` | Javob kutayotgan savollar: {count} | Juwap kútip turǵan sorawlar: {count} |  |
+| `contest.qa.mine` | Mening savollarim | Meniń sorawlarım |  |
+| `contest.qa.answered` | Javob berilgan savollar | Juwap berilgen sorawlar |  |
+| `contest.qa.public` | Hammaga e'lon qilindi | Hámmege daǵazalandı |  |
+| `contest.qa.pending` | Javob kutilmoqda… | Juwap kútilmekte… |  |
+| `contest.qa.answer` | Javob berish | Juwap beriw |  |
+| `contest.qa.answerLabel` | Javob | Juwap |  |
+| `contest.qa.answerPlaceholder` | Yoki o'z javobingiz… | Yamasa óz juwabıńız… |  |
+| `contest.qa.makePublic` | Hammaga e'lon qilish | Hámmege daǵazalaw |  |
+| `contest.qa.waitSeconds` | Keyingi savolni {seconds} soniyadan keyin bera olasiz | Keyingi sorawdı {seconds} sekundtan keyin bere alasız |  |
+| `contest.qa.quick.yes` | Ha. | Awa. |  |
+| `contest.qa.quick.no` | Yo'q. | Yaq. |  |
+| `contest.qa.quick.read_statement` | Shartni diqqat bilan o'qing. | Shártti dıqqat penen oqıń. |  |
+| `contest.qa.quick.no_comment` | Izoh yo'q. | Túsindirme joq. |  |
+| `error.problems_closed` | Masalalar musobaqa boshlanganda ochiladi | Máseleler jarıs baslanǵanda ashıladı |  |
+| `error.problem_not_found` | Bu masala musobaqada yo'q | Bul másele jarısta joq |  |
+| `error.text_empty` | Avval matnni yozing | Aldın tekstti jazıń |  |
+| `error.text_too_long` | Matn juda uzun | Tekst júdá uzın |  |
+| `error.too_many_questions` | Bu musobaqada savollar chegarasiga yetdingiz | Bul jarıstaǵı sorawlar shegine jettińiz |  |
+| `error.question_too_soon` | Daqiqasiga bitta savol berish mumkin | Minutına bir soraw beriwge boladı |  |
+| `error.unknown_answer` | Noma'lum tez javob | Belgisiz tez juwap |  |
+| `notif.msg.contest_question.title` | «{contest}»: yangi savol | «{contest}»: jańa soraw |  |
+| `notif.msg.contest_question.body` | Savol: {text} | Soraw: {text} |  |
+| `notif.msg.contest_answer.title` | «{contest}»: savolingizga javob berildi | «{contest}»: sorawıńızǵa juwap berildi |  |
+| `notif.msg.contest_answer.body` | Savol: {question} | Soraw: {question} |  |
+| `notif.msg.contest_announcement.title` | «{contest}»: hakamlar e'loni | «{contest}»: tóreshiler daǵazası |  |
+| `notif.msg.contest_announcement.body` | E'lon: {text} | Daǵaza: {text} |  |
 | `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Jarısqa jazılıw ushın sistemaǵa kiriń |  |
 | `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Testlewshiler (laqap atlar, útir menen) |  |
 | `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Tóreshiler (laqap atlar, útir menen) |  |

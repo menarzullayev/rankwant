@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2471 strings.**
+**2508 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2485,6 +2485,43 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.testers` | Sinovchilar | Санҷишгарон |  |
 | `contest.crew.jury` | Hakamlar | Ҳакамон |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Онҳо масъалаҳоро пешакӣ медонанд, бинобар ин бе рейтинг иштирок мекунанд. |  |
+| `contest.qa.title` | Savol-javob | Савол-ҷавоб |  |
+| `contest.qa.general` | Umumiy | Умумӣ |  |
+| `contest.qa.problem` | Masala | Масъала |  |
+| `contest.qa.askTitle` | Savol berish | Савол додан |  |
+| `contest.qa.askHint` | Faqat shart va qoidalar haqida. Yechim yoki kod so'ramang — javob «Izoh yo'q» bo'ladi. | Танҳо дар бораи шарт ва қоидаҳо. Ҳал ё код напурсед — ҷавоб «Шарҳ нест» мешавад. |  |
+| `contest.qa.send` | Yuborish | Фиристодан |  |
+| `contest.qa.left` | Yana {count} ta savol berishingiz mumkin | Боз {count} савол дода метавонед |  |
+| `contest.qa.announceTitle` | E'lon yozish | Навиштани эълон |  |
+| `contest.qa.announce` | E'lon qilish | Эълон кардан |  |
+| `contest.qa.announceNote` | Barcha ro'yxatdan o'tganlarga bildirishnoma ketadi | Ба ҳамаи сабтиномшудагон огоҳинома меравад |  |
+| `contest.qa.waiting` | Javob kutayotgan savollar: {count} | Саволҳои интизори ҷавоб: {count} |  |
+| `contest.qa.mine` | Mening savollarim | Саволҳои ман |  |
+| `contest.qa.answered` | Javob berilgan savollar | Саволҳои ҷавобдодашуда |  |
+| `contest.qa.public` | Hammaga e'lon qilindi | Ба ҳама эълон шуд |  |
+| `contest.qa.pending` | Javob kutilmoqda… | Интизори ҷавоб… |  |
+| `contest.qa.answer` | Javob berish | Ҷавоб додан |  |
+| `contest.qa.answerLabel` | Javob | Ҷавоб |  |
+| `contest.qa.answerPlaceholder` | Yoki o'z javobingiz… | Ё ҷавоби худатон… |  |
+| `contest.qa.makePublic` | Hammaga e'lon qilish | Ба ҳама эълон кардан |  |
+| `contest.qa.waitSeconds` | Keyingi savolni {seconds} soniyadan keyin bera olasiz | Саволи навбатиро пас аз {seconds} сония дода метавонед |  |
+| `contest.qa.quick.yes` | Ha. | Ҳа. |  |
+| `contest.qa.quick.no` | Yo'q. | Не. |  |
+| `contest.qa.quick.read_statement` | Shartni diqqat bilan o'qing. | Шартро бодиққат хонед. |  |
+| `contest.qa.quick.no_comment` | Izoh yo'q. | Шарҳ нест. |  |
+| `error.problems_closed` | Masalalar musobaqa boshlanganda ochiladi | Масъалаҳо ҳангоми оғози мусобиқа кушода мешаванд |  |
+| `error.problem_not_found` | Bu masala musobaqada yo'q | Ин масъала дар мусобиқа нест |  |
+| `error.text_empty` | Avval matnni yozing | Аввал матнро нависед |  |
+| `error.text_too_long` | Matn juda uzun | Матн хеле дароз аст |  |
+| `error.too_many_questions` | Bu musobaqada savollar chegarasiga yetdingiz | Шумо ба ҳадди саволҳои ин мусобиқа расидед |  |
+| `error.question_too_soon` | Daqiqasiga bitta savol berish mumkin | Дар як дақиқа як савол |  |
+| `error.unknown_answer` | Noma'lum tez javob | Ҷавоби зуди номаълум |  |
+| `notif.msg.contest_question.title` | «{contest}»: yangi savol | «{contest}»: саволи нав |  |
+| `notif.msg.contest_question.body` | Savol: {text} | Савол: {text} |  |
+| `notif.msg.contest_answer.title` | «{contest}»: savolingizga javob berildi | «{contest}»: ба саволатон ҷавоб доданд |  |
+| `notif.msg.contest_answer.body` | Savol: {question} | Савол: {question} |  |
+| `notif.msg.contest_announcement.title` | «{contest}»: hakamlar e'loni | «{contest}»: эълони ҳакамон |  |
+| `notif.msg.contest_announcement.body` | E'lon: {text} | Эълон: {text} |  |
 | `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Барои сабти ном дар мусобиқа ворид шавед |  |
 | `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Санҷишгарон (тахаллусҳо, бо вергул) |  |
 | `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Ҳакамон (тахаллусҳо, бо вергул) |  |

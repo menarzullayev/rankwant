@@ -3298,6 +3298,33 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     return None
 
 
+def contest_questions_stay_private() -> str | None:
+    # 2026-11-10 (ADR-0055, part 3, HITL): any signed-in user asks until the
+    # contest ends; the jury, organizers and staff-ops answer and announce. A
+    # question is its author's and the moderators'; an answer reaches the
+    # author or, when published, everybody. 20 questions, one a minute.
+    # Once the contest is finalized every answered question is public — the
+    # author's name never is.
+    qa = read("apps/api/contests/clarifications.py")
+    if "    shown = Q(is_public=True, answered_at__isnull=False)" not in qa:
+        return "savol yopiq emas — hamma ko'radi"
+    if "contest.organizers.filter(pk=user.pk).exists()" not in qa:
+        return "tashkilotchi javob bera olmaydi"
+    if "    if mine.count() >= MAX_QUESTIONS:" not in qa or "MAX_QUESTIONS = 20" not in qa:
+        return "savollar soni cheklanmagan"
+    if "    if last is not None and now - last < INTERVAL:" not in qa:
+        return "daqiqasiga bitta savol cheklovi yo'q"
+    if "    if contest.ratings_applied_at is not None:" not in qa:
+        return "yakunlangach savol-javob ochilmaydi"
+    views = read("apps/api/contests/views.py")
+    if views.count("if not qa.can_moderate(contest, request.user):") < 2:
+        return "javob yoki e'lonni hakam bo'lmagan ham yozadi"
+    serializers = read("apps/api/contests/serializers.py")
+    if 'if not self.context.get("moderator") or row.author is None:' not in serializers:
+        return "savol muallifining ismi hakamdan boshqaga ko'rinadi"
+    return None
+
+
 def contest_insiders_play_unrated() -> str | None:
     # 2026-11-10 (ADR-0055, part 2, HITL): the problem authors, testers, jury
     # and organizers know the problems before the start. A tester opens and
@@ -4277,6 +4304,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("musobaqa masalasi arxivdan tashqarida", contest_problems_stay_out_of_the_archive),
     ("tozalagich natijani kutadi", reaper_waits_for_unapplied_results),
     ("ichkaridagilar reytingsiz qatnashadi", contest_insiders_play_unrated),
+    ("musobaqa savoli yopiq, javobni hakam beradi", contest_questions_stay_private),
     ("mehmon zonalari yopiq", guest_zones_are_gated),
     ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),

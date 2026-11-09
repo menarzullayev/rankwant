@@ -4924,10 +4924,12 @@ def neg_notification_code_removed() -> tuple[bool, str]:
     baseline gains a code the catalogue lacks — the same state as a removal.
     """
     path = ROOT / "tools/notification-codes.json"
-    old = '{\n  "contest_result": ['
+    # Anchored on the entry itself, not on it being first: a new code that
+    # sorts before it would move it down and leave the anchor nowhere.
+    old = '\n  "contest_result": ['
     if old not in path.read_bytes().decode("utf-8"):
         return False, "bildirishnoma kodi: langar topilmadi (notification-codes.json)"
-    with Mutation(path, old, '{\n  "ghost_code": ["x"],\n  "contest_result": ['):
+    with Mutation(path, old, '\n  "ghost_code": ["x"],\n  "contest_result": ['):
         code, out = run([PY, "tools/check_notification_codes.py"])
     if code != 1:
         return False, f"bildirishnoma kodi: o'chirilgan kod exit {code} berdi (1 kerak)"
@@ -5483,6 +5485,46 @@ def neg_decisions_contest_page_names_problems_early() -> tuple[bool, str]:
         "        if timezone.now() < contest.start_at:\n",
         "        if False:\n",
         "boshlanishdan oldin ko'rsatadi",
+    )
+
+
+def neg_decisions_question_is_public() -> tuple[bool, str]:
+    """A participant's question is shown to everybody."""
+    return _decision_broken(
+        "apps/api/contests/clarifications.py",
+        "    shown = Q(is_public=True, answered_at__isnull=False)",
+        "    shown = Q()",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_anybody_answers() -> tuple[bool, str]:
+    """A participant answers another's question."""
+    return _decision_broken(
+        "apps/api/contests/views.py",
+        "if not qa.can_moderate(contest, request.user):",
+        "if False:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_question_limit_dropped() -> tuple[bool, str]:
+    """The questions per contest are not limited."""
+    return _decision_broken(
+        "apps/api/contests/clarifications.py",
+        "    if mine.count() >= MAX_QUESTIONS:",
+        "    if False:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_asker_named() -> tuple[bool, str]:
+    """The asker's name is shown to everybody."""
+    return _decision_broken(
+        "apps/api/contests/serializers.py",
+        'if not self.context.get("moderator") or row.author is None:',
+        "if row.author is None:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
     )
 
 
@@ -7612,6 +7654,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
     "apps/api/contests/certificates.py",
+    "apps/api/contests/clarifications.py",
     "apps/api/contests/views.py",
     "apps/api/ratings/services.py",
     "apps/api/tournaments/services.py",
@@ -11000,6 +11043,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sinov urinishi yechilgan sanalsa tutilsin", neg_decisions_testing_attempt_counts_as_solved),
             ("sinov urinishi lentada ko'rinsa tutilsin", neg_decisions_testing_attempt_in_the_feed),
             ("har kim erta yuborsa tutilsin", neg_decisions_anybody_tests_early),
+            ("savol hammaga ochilsa tutilsin", neg_decisions_question_is_public),
+            ("hakam bo'lmagan javob bersa tutilsin", neg_decisions_anybody_answers),
+            ("savol chegarasi tushsa tutilsin", neg_decisions_question_limit_dropped),
+            ("so'raganning ismi ochilsa tutilsin", neg_decisions_asker_named),
             ("tozalagich natijani kutmasa tutilsin", neg_decisions_reaper_ignores_waiting_results),
             ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
             ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),

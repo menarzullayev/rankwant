@@ -1255,6 +1255,142 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContestDetail'
           description: ''
+  /api/v1/contests/{slug}/announcements/:
+    post:
+      operationId: contests_announcements_create
+      summary: E'lon qilish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContestAnnouncement'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContestAnnouncement'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContestAnnouncement'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clarification'
+          description: ''
+  /api/v1/contests/{slug}/clarifications/:
+    get:
+      operationId: contests_clarifications_retrieve
+      description: Questions, answers and announcements; POST asks a question.
+      summary: Savol-javob va e'lonlar
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClarificationList'
+          description: ''
+    post:
+      operationId: contests_clarifications_create
+      description: Questions, answers and announcements; POST asks a question.
+      summary: Savol-javob va e'lonlar
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClarificationAsk'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClarificationAsk'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClarificationAsk'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clarification'
+          description: ''
+        '400':
+          description: No response body
+        '429':
+          description: No response body
+  /api/v1/contests/{slug}/clarifications/{row_id}/answer/:
+    post:
+      operationId: contests_clarifications_answer_create
+      summary: Savolga javob berish
+      parameters:
+      - in: path
+        name: row_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClarificationAnswer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClarificationAnswer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClarificationAnswer'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clarification'
+          description: ''
   /api/v1/contests/{slug}/register/:
     post:
       operationId: contests_register_create
@@ -12372,6 +12508,18 @@ components:
       required:
       - choice_id
       - question_id
+    AnswerCodeEnum:
+      enum:
+      - 'yes'
+      - 'no'
+      - read_statement
+      - no_comment
+      type: string
+      description: |-
+        * `yes` - Ha
+        * `no` - Yo'q
+        * `read_statement` - Shartni o'qing
+        * `no_comment` - Izoh yo'q
     AnswerResult:
       type: object
       properties:
@@ -13068,6 +13216,96 @@ components:
       - id
       - order
       - text
+    Clarification:
+      type: object
+      description: |-
+        One question, answer or announcement (ADR-0055, part 3).
+
+        `author` is filled for the moderators only; everybody else is told
+        whether the row is theirs (`mine`) and nothing about whose it is.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        problem:
+          type: string
+          nullable: true
+        question:
+          type: string
+        answer:
+          type: string
+        answer_code:
+          oneOf:
+          - $ref: '#/components/schemas/AnswerCodeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        is_public:
+          type: boolean
+        is_announcement:
+          type: boolean
+          readOnly: true
+        mine:
+          type: boolean
+          readOnly: true
+        author:
+          type: string
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        answered_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - author
+      - created_at
+      - id
+      - is_announcement
+      - mine
+    ClarificationAnswer:
+      type: object
+      properties:
+        answer:
+          type: string
+          maxLength: 4000
+        answer_code:
+          type: string
+          maxLength: 16
+        public:
+          type: boolean
+          default: false
+    ClarificationAsk:
+      type: object
+      properties:
+        problem:
+          type: string
+          nullable: true
+          maxLength: 3
+        question:
+          type: string
+          maxLength: 4000
+      required:
+      - question
+    ClarificationList:
+      type: object
+      properties:
+        moderator:
+          type: boolean
+        can_ask:
+          type: boolean
+        questions_left:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Clarification'
+      required:
+      - can_ask
+      - moderator
+      - questions_left
+      - results
     Classroom:
       type: object
       properties:
@@ -13203,6 +13441,18 @@ components:
       - slug
       - start_at
       - title
+    ContestAnnouncement:
+      type: object
+      properties:
+        problem:
+          type: string
+          nullable: true
+          maxLength: 3
+        text:
+          type: string
+          maxLength: 4000
+      required:
+      - text
     ContestDetail:
       type: object
       properties:

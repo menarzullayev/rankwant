@@ -7,6 +7,18 @@ The sentences live in `apps/web/src/i18n/locales/*.ts` (`notif.msg.*`).
 
 CATALOG: dict[str, dict[str, dict[str, str]]] = {
     "en": {
+        "contest_announcement": {
+            "title": "“{contest}”: an announcement from the jury",
+            "body": "Announcement: {text}",
+        },
+        "contest_answer": {
+            "title": "“{contest}”: your question was answered",
+            "body": "Question: {question}",
+        },
+        "contest_question": {
+            "title": "“{contest}”: a new question",
+            "body": "Question: {text}",
+        },
         "contest_result": {
             "title": "{contest}: place {rank}, rating {delta}",
             "body": "Contests rating: {before} → {after}",
@@ -67,6 +79,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "es": {
+        "contest_announcement": {
+            "title": "«{contest}»: anuncio del jurado",
+            "body": "Anuncio: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: respondieron tu pregunta",
+            "body": "Pregunta: {question}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: nueva pregunta",
+            "body": "Pregunta: {text}",
+        },
         "contest_result": {
             "title": "{contest}: puesto {rank}, rating {delta}",
             "body": "Rating de Contests: {before} → {after}",
@@ -127,6 +151,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kaa": {
+        "contest_announcement": {
+            "title": "«{contest}»: tóreshiler daǵazası",
+            "body": "Daǵaza: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: sorawıńızǵa juwap berildi",
+            "body": "Soraw: {question}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: jańa soraw",
+            "body": "Soraw: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-orın, reyting {delta}",
             "body": "Contests reytingi: {before} → {after}.",
@@ -187,6 +223,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kk": {
+        "contest_announcement": {
+            "title": "«{contest}»: қазылар хабарландыруы",
+            "body": "Хабарландыру: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: сұрағыңызға жауап берілді",
+            "body": "Сұрақ: {question}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: жаңа сұрақ",
+            "body": "Сұрақ: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-орын, рейтинг {delta}",
             "body": "Contests рейтингі: {before} → {after}",
@@ -247,6 +295,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ky": {
+        "contest_announcement": {
+            "title": "«{contest}»: калыстардын жарыясы",
+            "body": "Жарыя: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: сурооңузга жооп берилди",
+            "body": "Суроо: {question}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: жаңы суроо",
+            "body": "Суроо: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-орун, рейтинг {delta}",
             "body": "Contests рейтинги: {before} → {after}",
@@ -307,6 +367,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ru": {
+        "contest_announcement": {
+            "title": "«{contest}»: объявление жюри",
+            "body": "Объявление: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: на ваш вопрос ответили",
+            "body": "Вопрос: {question}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: новый вопрос",
+            "body": "Вопрос: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-е место, рейтинг {delta}",
             "body": "Рейтинг Contests: {before} → {after}",
@@ -367,6 +439,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tg": {
+        "contest_announcement": {
+            "title": "«{contest}»: эълони ҳакамон",
+            "body": "Эълон: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: ба саволатон ҷавоб доданд",
+            "body": "Савол: {question}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: саволи нав",
+            "body": "Савол: {text}",
+        },
         "contest_result": {
             "title": "{contest}: ҷойи {rank}, рейтинг {delta}",
             "body": "Рейтинги Contests: {before} → {after}",
@@ -427,6 +511,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tr": {
+        "contest_announcement": {
+            "title": "“{contest}”: jüri duyurusu",
+            "body": "Duyuru: {text}",
+        },
+        "contest_answer": {
+            "title": "“{contest}”: sorunuz cevaplandı",
+            "body": "Soru: {question}",
+        },
+        "contest_question": {
+            "title": "“{contest}”: yeni soru",
+            "body": "Soru: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}. sıra, puan {delta}",
             "body": "Contests puanı: {before} → {after}",
@@ -487,6 +583,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "uz": {
+        "contest_announcement": {
+            "title": "«{contest}»: hakamlar e'loni",
+            "body": "E'lon: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: savolingizga javob berildi",
+            "body": "Savol: {question}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: yangi savol",
+            "body": "Savol: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-o'rin, reyting {delta}",
             "body": "Contests reytingi: {before} → {after}",
@@ -547,6 +655,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "zh": {
+        "contest_announcement": {
+            "title": "“{contest}”：评委公告",
+            "body": "公告：{text}",
+        },
+        "contest_answer": {
+            "title": "“{contest}”：你的问题已得到回答",
+            "body": "问题：{question}",
+        },
+        "contest_question": {
+            "title": "“{contest}”：新问题",
+            "body": "问题：{text}",
+        },
         "contest_result": {
             "title": "{contest}:第 {rank} 名,评分 {delta}",
             "body": "Contests 评分:{before} → {after}",
