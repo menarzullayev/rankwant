@@ -158,7 +158,7 @@ export const ky: Record<MessageKey, string> = {
   "update.module.arena": "Арена",
   "update.module.judge": "Текшерүү",
   "update.module.ratings": "Рейтинг",
-  "update.module.qvant": "Квант",
+  "update.module.qvant": "Qvant",
   "update.module.profile": "Профиль",
   "update.module.classroom": "Класс",
   "update.module.quizzes": "Тесттер",
@@ -1125,7 +1125,6 @@ export const ky: Record<MessageKey, string> = {
   "loading.style.progress": "Прогресс тилкеси",
   "loading.style.progressHint": "Барактын үстү же узак аракет үчүн.",
 
-  // TODO i18n: translate 16 new tier names to ky
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1583,7 +1582,7 @@ export const ky: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "Учурдагы — жумшак карталар",
-  "style.swiss.label": "Швейцариялык",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "Сызыктар жана типография",
   "style.flat.label": "Flat",
   "style.flat.hint": "Көлөкөсүз, таза түстөр",
@@ -1591,7 +1590,7 @@ export const ky: Record<MessageKey, string> = {
   "style.material.hint": "Бийиктик жана көлөкөлөр",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "Serif, журнал көрүнүшү",
-  "style.brutal.label": "Нео-брутализм",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "Калың чек, катуу көлөкө",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "Моноширин, консоль",
@@ -1603,7 +1602,7 @@ export const ky: Record<MessageKey, string> = {
   "style.clay.hint": "Ылай, көлөмдүү",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "Градиент фон",
-  "style.skeu.label": "Скевоморфизм",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "Металл жана рельеф",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----
@@ -1816,7 +1815,7 @@ export const ky: Record<MessageKey, string> = {
   "admin.label.text.source": "Булак",
   "admin.label.misc.tests": "Тесттер",
   "admin.label.text.reward": "Сыйлык",
-  "admin.label.text.qvant": "Квант",
+  "admin.label.text.qvant": "Qvant",
   "admin.label.text.problem": "Маселе",
   "admin.label.text.reason": "Себеби",
   "admin.label.text.who": "Ким",

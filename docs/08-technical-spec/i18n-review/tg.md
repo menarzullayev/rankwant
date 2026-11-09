@@ -172,7 +172,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `update.module.arena` | Bellashuvlar | Арена |  |
 | `update.module.judge` | Tekshiruv | Санҷиш |  |
 | `update.module.ratings` | Reyting | Рейтинг |  |
-| `update.module.qvant` | Qvant | Квант |  |
+| `update.module.qvant` | Qvant | Qvant |  |
 | `update.module.profile` | Profil | Профил |  |
 | `update.module.classroom` | Sinf | Синф |  |
 | `update.module.quizzes` | Testlar | Тестҳо |  |
@@ -1087,22 +1087,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `loading.style.pulseIconHint` | Live indikator uchun. | Барои индикатори зинда. |  |
 | `loading.style.progress` | Progress chizig'i | Хатти пешрафт |  |
 | `loading.style.progressHint` | Sahifa yuqorisi yoki uzoq amal uchun. | Барои болои саҳифа ё кори тӯлонӣ. |  |
-| `title.quark` | Kvark | Quark |  |
+| `title.quark` | Quark | Quark |  |
 | `title.atom` | Atom | Atom |  |
-| `title.molecule` | Molekula | Molecule |  |
-| `title.droplet` | Tomchi | Droplet |  |
-| `title.meteorite` | Meteorit | Meteorite |  |
-| `title.comet` | Kometa | Comet |  |
-| `title.moon` | Oy | Moon |  |
-| `title.planet` | Sayyora | Planet |  |
-| `title.star` | Yulduz | Star |  |
+| `title.molecule` | Molecule | Molecule |  |
+| `title.droplet` | Droplet | Droplet |  |
+| `title.meteorite` | Meteorite | Meteorite |  |
+| `title.comet` | Comet | Comet |  |
+| `title.moon` | Moon | Moon |  |
+| `title.planet` | Planet | Planet |  |
+| `title.star` | Star | Star |  |
 | `title.supernova` | Supernova | Supernova |  |
 | `title.pulsar` | Pulsar | Pulsar |  |
 | `title.magnetar` | Magnetar | Magnetar |  |
-| `title.black_hole` | Qora tuynuk | Black Hole |  |
-| `title.galaxy` | Galaktika | Galaxy |  |
-| `title.supercluster` | Superklaster | Supercluster |  |
-| `title.cosmos` | Koinot | Cosmos |  |
+| `title.black_hole` | Black Hole | Black Hole |  |
+| `title.galaxy` | Galaxy | Galaxy |  |
+| `title.supercluster` | Supercluster | Supercluster |  |
+| `title.cosmos` | Cosmos | Cosmos |  |
 | `title.tooltip` | {name} · {total} tadan {level}-pog'ona · keyingisi: {next} ({min} dan) | {name} · зинаи {level} аз {total} · навбатӣ: {next} (аз {min}) |  |
 | `title.tooltipTop` | {name} · {total} tadan {level}-pog'ona · eng yuqori pog'ona | {name} · зинаи {level} аз {total} · баландтарин зина |  |
 | `title.ladder.heading` | Unvonlar zinapoyasi | Зинаи унвонҳо |  |
@@ -1532,7 +1532,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.contrast_unreachable` | Bu tus bilan yetarli kontrast chiqmadi — boshqa tus tanlang. | Бо ин рангин контрасти кофӣ ба даст наомад — ранги дигар интихоб кунед. |  |
 | `style.dashboard.label` | Dashboard | Dashboard |  |
 | `style.dashboard.hint` | Hozirgi — yumshoq kartalar | Ҷорӣ — кортҳои мулоим |  |
-| `style.swiss.label` | Shveycha | Швейтсарӣ |  |
+| `style.swiss.label` | Swiss | Swiss |  |
 | `style.swiss.hint` | Chiziq va tipografika | Хатҳо ва типографика |  |
 | `style.flat.label` | Flat | Flat |  |
 | `style.flat.hint` | Soyasiz, toza ranglar | Бе соя, рангҳои тоза |  |
@@ -1540,7 +1540,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `style.material.hint` | Balandlik va soyalar | Баландӣ ва сояҳо |  |
 | `style.editorial.label` | Editorial | Editorial |  |
 | `style.editorial.hint` | Serif, jurnal ko'rinishi | Serif, намуди маҷалла |  |
-| `style.brutal.label` | Neo-brutalizm | Нео-брутализм |  |
+| `style.brutal.label` | Neo-brutalism | Neo-brutalism |  |
 | `style.brutal.hint` | Qalin chegara, qattiq soya | Ҳудудҳои ғафс, сояҳои сахт |  |
 | `style.terminal.label` | Terminal | Terminal |  |
 | `style.terminal.hint` | Monospace, konsol | Моноширин, консол |  |
@@ -1552,7 +1552,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `style.clay.hint` | Gil, hajmli | Гил, ҳаҷмдор |  |
 | `style.aurora.label` | Aurora | Aurora |  |
 | `style.aurora.hint` | Gradient fon | Заминаи градиентӣ |  |
-| `style.skeu.label` | Skeuomorfizm | Скевоморфизм |  |
+| `style.skeu.label` | Skeuomorphism | Skeuomorphism |  |
 | `style.skeu.hint` | Metall va relyef | Металл ва рельеф |  |
 | `external.blog` | Blog | Блог |  |
 | `admin.section.problems` | Masalalar | Масъалаҳо |  |
@@ -1757,7 +1757,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.text.source` | Manba | Сарчашма |  |
 | `admin.label.misc.tests` | Testlar | Тестҳо |  |
 | `admin.label.text.reward` | Mukofot | Мукофот |  |
-| `admin.label.text.qvant` | Qvant | Квант |  |
+| `admin.label.text.qvant` | Qvant | Qvant |  |
 | `admin.label.text.problem` | Masala | Масъала |  |
 | `admin.label.text.reason` | Sabab | Сабаб |  |
 | `admin.label.text.who` | Kim | Кӣ |  |
