@@ -2448,6 +2448,27 @@ def privacy_text_matches_the_data() -> str | None:
     return None
 
 
+def names_are_not_translated() -> str | None:
+    """2026-11-10 (HITL, audit Q-15): tarjima qilinmaydigan nomlar glossariyda.
+
+    Unvon nomlari hamma tilda inglizcha (o'zbekcha ham), uslub nomlari xos
+    nom, reyting nomlari va Qvant — bir xil. `check_i18n` glossariy
+    kalitlarini va atamalarini, hamda inglizcha nusxalar ratchet'ini
+    tekshiradi; bu qoida o'sha tekshiruvlar uzilmasligini qo'riqlaydi.
+    """
+    checker = read("tools/check_i18n.py")
+    for call in ("problems += check_glossary(", "problems += check_english_copies("):
+        if call not in checker:
+            return f"tools/check_i18n.py: `{call.split('(')[0].split()[-1]}` chaqirilmaydi"
+    glossary = read("apps/web/src/i18n/glossary.ts")
+    for key in ('"title.quark",', '"style.glass.label",', '"leaderboard.skills",', '"nav.qvant",'):
+        if key not in glossary:
+            return f"glossary.ts: {key.rstrip(',')} tarjima qilinmaydigan ro'yxatda yo'q"
+    if '"title.quark": "Quark",' not in read("apps/web/src/i18n/locales/uz.ts"):
+        return "uz.ts: unvon nomi yana tarjima qilingan (hamma tilda inglizcha)"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -4067,6 +4088,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
+    ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),

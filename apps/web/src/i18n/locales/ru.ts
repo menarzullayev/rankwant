@@ -158,7 +158,7 @@ export const ru: Record<MessageKey, string> = {
   "update.module.arena": "Арена",
   "update.module.judge": "Проверка",
   "update.module.ratings": "Рейтинг",
-  "update.module.qvant": "Квант",
+  "update.module.qvant": "Qvant",
   "update.module.profile": "Профиль",
   "update.module.classroom": "Класс",
   "update.module.quizzes": "Тесты",
@@ -1125,7 +1125,6 @@ export const ru: Record<MessageKey, string> = {
   "loading.style.progress": "Полоса прогресса",
   "loading.style.progressHint": "Для верха страницы или долгой задачи.",
 
-  // TODO i18n: translate 16 new tier names to ru
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1584,7 +1583,7 @@ export const ru: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "Текущий — мягкие карточки",
-  "style.swiss.label": "Швейцарский",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "Линии и типографика",
   "style.flat.label": "Flat",
   "style.flat.hint": "Без теней, чистые цвета",
@@ -1592,7 +1591,7 @@ export const ru: Record<MessageKey, string> = {
   "style.material.hint": "Высота и тени",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "Serif, вид журнала",
-  "style.brutal.label": "Нео-брутализм",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "Толстые границы, жёсткие тени",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "Моноширинный, консоль",
@@ -1604,7 +1603,7 @@ export const ru: Record<MessageKey, string> = {
   "style.clay.hint": "Глина, объёмный",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "Градиентный фон",
-  "style.skeu.label": "Скевоморфизм",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "Металл и рельеф",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----
@@ -1817,7 +1816,7 @@ export const ru: Record<MessageKey, string> = {
   "admin.label.text.source": "Источник",
   "admin.label.misc.tests": "Тесты",
   "admin.label.text.reward": "Награда",
-  "admin.label.text.qvant": "Квант",
+  "admin.label.text.qvant": "Qvant",
   "admin.label.text.problem": "Задача",
   "admin.label.text.reason": "Причина",
   "admin.label.text.who": "Кто",

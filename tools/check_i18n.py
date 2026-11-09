@@ -28,6 +28,12 @@ LOCALES_DIR = ROOT / "apps/web/src/i18n/locales"
 #: Ilgari bu `messages.ts` edi va tekshiruv shu faylni o'qirdi.
 INDEX = ROOT / "packages/shared/src/i18n/core.ts"
 SOURCE = "uz"
+#: Audit Q-15 (2026-11-10): names that are never translated.
+GLOSSARY = ROOT / "apps/web/src/i18n/glossary.ts"
+#: Values that are still a copy of the English one, per locale — a ratchet.
+#: A new copy fails (translate it, or add a real term to the glossary); an
+#: entry that is no longer a copy fails too, so the list only shrinks.
+ENGLISH_COPIES = ROOT / "tools/i18n-english-copies.txt"
 #: Manba bilan bir xil qolishi ATAYIN bo'lgan kalitlar.
 #:
 #: Bir xillikni xato deb hisoblash muhim — u odatda tarjima qilishni
@@ -318,6 +324,7 @@ def main() -> int:
         sys.exit(f"{SOURCE}.ts bo'sh yoki o'qib bo'lmadi")
 
     problems: list[str] = []
+    glossary_keys, glossary_terms = load_glossary()
     values_by_locale: dict[str, dict[str, str]] = {}
     for code in codes:
         path = LOCALES_DIR / f"{code}.ts"
@@ -329,7 +336,7 @@ def main() -> int:
         missing = [k for k in source if k not in values]
         extra = [k for k in values if k not in source]
         blank = [k for k, v in values.items() if not v.strip()]
-        allowed = UNTRANSLATED_OK["*"] | UNTRANSLATED_OK.get(code, set())
+        allowed = UNTRANSLATED_OK["*"] | UNTRANSLATED_OK.get(code, set()) | set(glossary_keys)
         same = [
             k
             for k, v in values.items()
@@ -346,6 +353,8 @@ def main() -> int:
     # ochilardi — avval paritet tuzatiladi, keyin navbatdagi qoida
     # qizaradi. Endi hammasi BIR o'tishda yig'iladi.
     problems += check_consent_links(values_by_locale)
+    problems += check_glossary(values_by_locale, source, glossary_keys, glossary_terms)
+    problems += check_english_copies(values_by_locale, glossary_keys)
     problems += check_usage(source)
     problems += check_templates(source)
     problems += check_server_registry()
@@ -741,6 +750,97 @@ def check_country_table_coverage() -> list[str]:
 #: va odam nimaga rozilik berayotganini o'qiy olmaydi.
 CONSENT_KEYS = ("auth.termsAccept", "auth.socialConsent")
 CONSENT_SLOTS = ("{terms}", "{privacy}")
+
+
+def load_glossary() -> tuple[list[str], list[str]]:
+    """`SAME_IN_EVERY_LOCALE` keys and `DO_NOT_TRANSLATE` terms from glossary.ts."""
+    try:
+        text = GLOSSARY.read_text(encoding="utf-8")
+    except OSError:
+        sys.exit(f"{GLOSSARY.name} o'qilmadi")
+
+    def block(name: str) -> list[str]:
+        match = re.search(r"export const " + name + r" = \[(.*?)\] as const;", text, re.S)
+        if match is None:
+            sys.exit(f"{GLOSSARY.name}: `{name}` topilmadi")
+        found = re.findall(r'^\s*"([^"]+)",', match.group(1), re.M)
+        if not found:
+            sys.exit(f"{GLOSSARY.name}: `{name}` bo'sh")
+        return found
+
+    return block("SAME_IN_EVERY_LOCALE"), block("DO_NOT_TRANSLATE")
+
+
+def check_glossary(
+    values_by_locale: dict[str, dict[str, str]],
+    source: dict[str, str],
+    keys: list[str],
+    terms: list[str],
+) -> list[str]:
+    """Q-15: glossary keys are identical everywhere; glossary terms survive translation."""
+    problems: list[str] = []
+    for key in keys:
+        if key not in source:
+            problems.append(f"{GLOSSARY.name}: `{key}` lug'atda yo'q")
+            continue
+        for code, values in values_by_locale.items():
+            if key in values and values[key] != source[key]:
+                problems.append(
+                    f"{code}: `{key}` tarjima qilinmaydi — «{source[key]}» bo'lishi kerak ({GLOSSARY.name})"
+                )
+    for term in terms:
+        # Uzbek glues suffixes onto the term ("Codeforcesdagi"), so long terms
+        # need only a left boundary; three letters ("Elo", "IOI") need both,
+        # or they would match inside an ordinary word.
+        right = r"(?![A-Za-z])" if len(term) <= 3 else ""
+        pattern = re.compile(r"(?<![A-Za-z])" + re.escape(term) + right)
+        for key, value in source.items():
+            if not pattern.search(value):
+                continue
+            for code, values in values_by_locale.items():
+                if key in values and term not in values[key]:
+                    problems.append(
+                        f"{code}: `{key}` da «{term}» yo'q — atama tarjima qilinmaydi ({GLOSSARY.name})"
+                    )
+    return problems
+
+
+def english_copies(values_by_locale: dict[str, dict[str, str]], skip: list[str]) -> set[str]:
+    """`"<locale> <key>"` for every value that is still the English one."""
+    english = values_by_locale.get("en", {})
+    skipped = set(skip)
+    found: set[str] = set()
+    for code, values in values_by_locale.items():
+        if code == "en":
+            continue
+        for key, value in values.items():
+            if key in skipped or value != english.get(key):
+                continue
+            if re.search(r"[A-Za-z]{2}", value):
+                found.add(f"{code} {key}")
+    return found
+
+
+def check_english_copies(values_by_locale: dict[str, dict[str, str]], skip: list[str]) -> list[str]:
+    try:
+        lines = ENGLISH_COPIES.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return [f"{ENGLISH_COPIES.name} yo'q — inglizcha nusxalar ratchet'i o'lchanmadi"]
+    allowed = {line.strip() for line in lines if line.strip() and not line.startswith("#")}
+    found = english_copies(values_by_locale, skip)
+    problems: list[str] = []
+    new = sorted(found - allowed)
+    stale = sorted(allowed - found)
+    if new:
+        problems.append(
+            f"{len(new)} ta yangi inglizcha nusxa (tarjima qilinmagan) — {new[:5]}; "
+            f"tarjima qiling yoki haqiqiy atama bo'lsa {GLOSSARY.name} ga qo'shing"
+        )
+    if stale:
+        problems.append(
+            f"{ENGLISH_COPIES.name}: {len(stale)} ta yozuv endi nusxa emas — ro'yxatdan o'chiring: {stale[:5]}"
+        )
+    return problems
 
 
 def check_consent_links(values_by_locale: dict[str, dict[str, str]]) -> list[str]:

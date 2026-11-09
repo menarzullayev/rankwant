@@ -158,7 +158,7 @@ export const tg: Record<MessageKey, string> = {
   "update.module.arena": "Арена",
   "update.module.judge": "Санҷиш",
   "update.module.ratings": "Рейтинг",
-  "update.module.qvant": "Квант",
+  "update.module.qvant": "Qvant",
   "update.module.profile": "Профил",
   "update.module.classroom": "Синф",
   "update.module.quizzes": "Тестҳо",
@@ -1126,7 +1126,6 @@ export const tg: Record<MessageKey, string> = {
   "loading.style.progress": "Хатти пешрафт",
   "loading.style.progressHint": "Барои болои саҳифа ё кори тӯлонӣ.",
 
-  // TODO i18n: translate 16 new tier names to tg
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1585,7 +1584,7 @@ export const tg: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "Ҷорӣ — кортҳои мулоим",
-  "style.swiss.label": "Швейтсарӣ",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "Хатҳо ва типографика",
   "style.flat.label": "Flat",
   "style.flat.hint": "Бе соя, рангҳои тоза",
@@ -1593,7 +1592,7 @@ export const tg: Record<MessageKey, string> = {
   "style.material.hint": "Баландӣ ва сояҳо",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "Serif, намуди маҷалла",
-  "style.brutal.label": "Нео-брутализм",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "Ҳудудҳои ғафс, сояҳои сахт",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "Моноширин, консол",
@@ -1605,7 +1604,7 @@ export const tg: Record<MessageKey, string> = {
   "style.clay.hint": "Гил, ҳаҷмдор",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "Заминаи градиентӣ",
-  "style.skeu.label": "Скевоморфизм",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "Металл ва рельеф",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----
@@ -1818,7 +1817,7 @@ export const tg: Record<MessageKey, string> = {
   "admin.label.text.source": "Сарчашма",
   "admin.label.misc.tests": "Тестҳо",
   "admin.label.text.reward": "Мукофот",
-  "admin.label.text.qvant": "Квант",
+  "admin.label.text.qvant": "Qvant",
   "admin.label.text.problem": "Масъала",
   "admin.label.text.reason": "Сабаб",
   "admin.label.text.who": "Кӣ",

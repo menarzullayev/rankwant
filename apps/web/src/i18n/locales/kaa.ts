@@ -158,7 +158,7 @@ export const kaa: Record<MessageKey, string> = {
   "update.module.arena": "Bellesiwler",
   "update.module.judge": "Tekseriw",
   "update.module.ratings": "Reyting",
-  "update.module.qvant": "Kvant",
+  "update.module.qvant": "Qvant",
   "update.module.profile": "Profil",
   "update.module.classroom": "Klass",
   "update.module.quizzes": "Testler",
@@ -1125,7 +1125,6 @@ export const kaa: Record<MessageKey, string> = {
   "loading.style.progress": "Ilgerilew sızıǵı",
   "loading.style.progressHint": "Bettiń joqarısı yamasa uzın jumıs ushın.",
 
-  // TODO i18n: translate 16 new tier names to kaa
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1584,7 +1583,7 @@ export const kaa: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "Házirgi — jumsaq kartalar",
-  "style.swiss.label": "Shveycariya",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "Sızıqlar hám tipografika",
   "style.flat.label": "Flat",
   "style.flat.hint": "Sáyelesiz, taza reńler",
@@ -1592,7 +1591,7 @@ export const kaa: Record<MessageKey, string> = {
   "style.material.hint": "Biyiklik hám sáyeler",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "Serif, jurnal kórinisi",
-  "style.brutal.label": "Neo-brutalizm",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "Qalıń shegara, qattı sáye",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "Monoshrift, konsol",
@@ -1604,7 +1603,7 @@ export const kaa: Record<MessageKey, string> = {
   "style.clay.hint": "Lay, kólemli",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "Gradient arqa fon",
-  "style.skeu.label": "Skeomorfizm",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "Metall hám relyef",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----

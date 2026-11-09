@@ -158,7 +158,7 @@ export const zh: Record<MessageKey, string> = {
   "update.module.arena": "竞技场",
   "update.module.judge": "评测",
   "update.module.ratings": "排名",
-  "update.module.qvant": "量子币",
+  "update.module.qvant": "Qvant",
   "update.module.profile": "个人资料",
   "update.module.classroom": "班级",
   "update.module.quizzes": "测验",
@@ -1122,7 +1122,6 @@ export const zh: Record<MessageKey, string> = {
   "loading.style.progress": "进度条",
   "loading.style.progressHint": "用于页面顶部或耗时任务。",
 
-  // TODO i18n: translate 16 new tier names to zh
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1581,7 +1580,7 @@ export const zh: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "当前样式 — 柔和卡片",
-  "style.swiss.label": "瑞士风",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "线条与排版",
   "style.flat.label": "Flat",
   "style.flat.hint": "无阴影，干净的色彩",
@@ -1589,7 +1588,7 @@ export const zh: Record<MessageKey, string> = {
   "style.material.hint": "层次与阴影",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "衬线体，杂志风格",
-  "style.brutal.label": "新粗野主义",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "粗边框，硬阴影",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "等宽字体，控制台",
@@ -1601,7 +1600,7 @@ export const zh: Record<MessageKey, string> = {
   "style.clay.hint": "黏土，立体",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "渐变背景",
-  "style.skeu.label": "拟物化",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "金属与浮雕",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----

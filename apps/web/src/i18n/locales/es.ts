@@ -1125,7 +1125,6 @@ export const es: Record<MessageKey, string> = {
   "loading.style.progress": "Barra de progreso",
   "loading.style.progressHint": "Para la parte superior de la página o una tarea larga.",
 
-  // TODO i18n: translate 16 new tier names to es
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1584,7 +1583,7 @@ export const es: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "El actual — tarjetas suaves",
-  "style.swiss.label": "Suizo",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "Líneas y tipografía",
   "style.flat.label": "Flat",
   "style.flat.hint": "Sin sombras, colores limpios",
@@ -1592,7 +1591,7 @@ export const es: Record<MessageKey, string> = {
   "style.material.hint": "Elevación y sombras",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "Serif, aspecto de revista",
-  "style.brutal.label": "Neobrutalismo",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "Bordes gruesos, sombras duras",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "Monoespaciada, consola",
@@ -1604,7 +1603,7 @@ export const es: Record<MessageKey, string> = {
   "style.clay.hint": "Arcilla, volumétrico",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "Fondo degradado",
-  "style.skeu.label": "Esqueumorfismo",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "Metal y relieve",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----
