@@ -1,6 +1,6 @@
 # ADR 0055 — Musobaqa masalalari: oldin yopiq, paytida manzil bo'yicha ochiq, keyin arxivda
 
-**STATUS:** accepted (qamrov va tartib); 2–4-qismlarning tafsiloti o'z PR'ida aniqlanadi
+**STATUS:** accepted (qamrov va tartib); 2-qism — § 6; 3–4-qismlarning tafsiloti o'z PR'ida aniqlanadi
 **Sana:** 2026-10-08
 **Tasdiqlagan:** Saidakbar (owner) — 2026-10-08, 16 savol
 **Ta'sir doirasi:** `problems/visibility.py`, `problems/views.py`, `problems/serializers.py`, `judging/`, `contests/services.py`, `contests/serializers.py`, masala va musobaqa sahifalari
@@ -114,3 +114,75 @@ ochiq va shunday deb yoziladi:
   arxiv masalasi uchun beriladi).
 - Musobaqa masalasi boshlanguncha qidiruv tizimiga ham, ishtirokchiga ham
   yopiq; tayyorlovchilar uni xodim va tashkilotchi API'si orqali ko'radi.
+
+## 6. 2-qism: sinovchi va reytingsiz qatnashish (2026-11-10)
+
+**Tasdiqlagan:** Saidakbar (owner) — 2026-11-10, 4 savol, prototip
+(`prototypes/contest-insiders.html`); to'rttasida ham tavsiya tanlandi.
+**O'lchov:** production'da 3 musobaqa (uchalasi demo), ro'yxatdan o'tgan 0,
+hakam 0, tashkilotchi 0, masala muallifi (M2M) 0 — ya'ni hammasi noldan.
+
+### 6.1. Kim «ichkarida»
+
+Masalalarni boshlanishdan oldin biladigan to'rt rol — `contests.insiders`:
+
+| Rol | Manba |
+|---|---|
+| muallif | musobaqa masalalarining `Problem.authors` va `Problem.author` |
+| sinovchi | yangi `Contest.testers` (M2M) |
+| hakam | `Contest.jury` |
+| tashkilotchi | `Contest.organizers` |
+
+Bir odam bir necha rolda bo'lsa, shu tartibda birinchisi aytiladi.
+Barcha xodimlar ataylab kirmaydi: aks holda egasi va har xodim hech bir
+reytingli musobaqada reyting ololmasdi.
+
+### 6.2. Sinovchi boshlanishdan oldin
+
+- Masalalarni ochadi (`visibility.openable_q(user=...)`) va yechim yuboradi —
+  ro'yxatdan o'tmasdan.
+- **Sinov urinishi** — musobaqaga boshlanishidan oldin yuborilgan urinish.
+  U hakamlanadi va hech qayerda sanalmaydi: jadvalda, «yechilgan» hisobida,
+  Skills reytingida, masalaning `attempt_count`, statistikasi va yechganlar
+  ro'yxatida yo'q.
+- Musobaqa tugaguncha uni faqat muallifi (va xodim) ko'radi — lenta va
+  bitta urinish sahifasi muzlatish bilan bir xil qoida orqali
+  (`testing_windows`).
+- Boshqalar uchun hech narsa o'zgarmaydi: musobaqa sahifasi masalalar
+  sonini aytadi, masala sahifasi 404.
+
+### 6.3. Reytingsiz qatnashish
+
+- Ichkaridagi odam ro'yxatdan o'tib qatnasha oladi. Jadvalda u **«*» bilan,
+  o'rinsiz** turadi (`Standing.insider_role`, `rank = 0`); rasmiy o'rinlar
+  faqat rasmiylar orasida sanaladi, jadval `Standing.position` bo'yicha.
+- Reyting, sertifikat, Qvant (+30), yutuqlar, «chempion» nishoni va
+  chempionat bali — faqat `Standing.objects.official()`. Rasmiy minimum
+  (10 ishtirokchi) ham ularsiz sanaladi.
+- Uning sinov urinishlari musobaqa jadvaliga kirmaydi; musobaqa paytidagi
+  urinishlari kiradi (reytingsiz qatorda).
+
+### 6.4. Ommaga
+
+- Musobaqa sahifasida doim «Musobaqani tayyorlaganlar»: mualliflar,
+  sinovchilar, hakamlar (nofaol import akkauntlari chiqarilmaydi).
+- Profilda «Sinovchi» nishoni (ADR-0018 dagi «Hakam» kabi).
+- Sinovchi qilib qo'shilgan odamga bildirishnoma (`contest_tester`).
+- Sinovchilarni xodim (admin panel) va tashkilotchi (`contests/mine/`)
+  tayinlaydi; hakamni faqat xodim.
+
+### 6.5. Yo'lda topilgan
+
+Saytda musobaqaga **ro'yxatdan o'tish tugmasi yo'q edi**: API bor edi,
+web uni hech qayerda chaqirmasdi — masala sahifasidagi «Musobaqa sahifasi»
+kartasi odamni tugmasiz sahifaga olib borardi. Endi musobaqa sahifasida
+ishtirok bloki bor.
+
+### 6.6. Hal qilinmagan
+
+- Sinovchi musobaqa **nashr qilingandan keyin** ishlaydi (`is_public=True`):
+  qoralama musobaqa sinovchiga ham yopiq.
+- Sinovchining mulohazasi uchun alohida kanal yo'q (3-qism — savol-javob).
+- `start_at` musobaqa boshlangandan keyin kechroqqa surilsa, undan oldingi
+  urinishlar «sinov» bo'lib qoladi — bunday surish o'zi xato amal.
+

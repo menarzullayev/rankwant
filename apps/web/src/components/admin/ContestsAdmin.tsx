@@ -39,6 +39,8 @@ type ContestRow = {
   problems: ContestProblemRow[];
   is_running: boolean;
   is_finished: boolean;
+  testers: string[];
+  jury: string[];
   [key: string]: unknown;
 };
 
@@ -76,6 +78,15 @@ const FIELDS: FieldDef[] = [
   { name: "is_rated", labelKey: "admin.label.flag.rated", type: "checkbox" },
   { name: "is_virtual", labelKey: "admin.label.flag.virtual", type: "checkbox" },
   { name: "is_public", labelKey: "admin.label.flag.public", type: "checkbox" },
+  // Insiders (ADR-0055, part 2): they see the problems before the start
+  // and take part unrated. Usernames, comma-separated.
+  {
+    name: "testers",
+    labelKey: "admin.label.text.testers",
+    type: "list",
+    helpKey: "admin.help.contestTesters",
+  },
+  { name: "jury", labelKey: "admin.label.text.jury", type: "list" },
   {
     name: "description",
     labelKey: "admin.label.text.descriptionMarkdown",

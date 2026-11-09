@@ -48,6 +48,15 @@ class Contest(TimeWindowMixin, CreatedModel):
         related_name="organized_contests",
         help_text="O'z kontestini draft qilib yaratadi/tahrirlaydi; nashr — staff-ops (ADR-0025)",
     )
+    #: Testers (ADR-0055, part 2): open the problems and send solutions
+    #: before the start. Like every other insider they may take part, but
+    #: unrated — see `contests.insiders`.
+    testers = models.ManyToManyField(
+        "core.User",
+        blank=True,
+        related_name="tested_contests",
+        help_text="Boshlanishdan oldin masalalarni sinaydi; qatnashsa reytingsiz (ADR-0055)",
+    )
 
     # ── Hacking (ADR-0020) ───────────────────────────────────────────
     #: `contest_room` siyosati: raund davomida xona ichida hack.
@@ -142,13 +151,38 @@ class ContestRegistration(models.Model):
         return f"{self.contest_id}/{self.user_id}"
 
 
+class StandingQuerySet(models.QuerySet["Standing"]):
+    def official(self) -> StandingQuerySet:
+        """Rows that count: ratings, places, certificates, prizes.
+
+        An insider's row (ADR-0055, part 2) is shown in the table with a
+        star and no place; everything that ranks people reads this.
+        """
+        return self.filter(insider_role="")
+
+
 class Standing(UpdatedModel):
     """MATERIALLASHTIRILGAN — live hisoblash 500 parallel submit ostida
     standings so'rovini buzadi (04-prd NFR)."""
 
+    class InsiderRole(models.TextChoices):
+        AUTHOR = "author", "Muallif"
+        TESTER = "tester", "Sinovchi"
+        JURY = "jury", "Hakam"
+        ORGANIZER = "organizer", "Tashkilotchi"
+
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="standings")
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="standings")
+    #: Official place, 1..N among official rows. An insider's row has 0:
+    #: it has no place, and a reader that forgot `official()` cannot
+    #: mistake it for a winner.
     rank = models.PositiveIntegerField(default=0)
+    #: Order in the full table, insiders included — what the public table
+    #: sorts by.
+    position = models.PositiveIntegerField(default=0)
+    #: Set when the participant knew the problems beforehand: the row is
+    #: unofficial (ADR-0055, part 2).
+    insider_role = models.CharField(max_length=12, choices=InsiderRole.choices, blank=True)
     solved_count = models.PositiveIntegerField(default=0)
     penalty = models.PositiveIntegerField(default=0)
     total_score = models.PositiveIntegerField(default=0)
@@ -160,12 +194,21 @@ class Standing(UpdatedModel):
     hacks_successful = models.PositiveSmallIntegerField(default=0)
     hacks_unsuccessful = models.PositiveSmallIntegerField(default=0)
 
+    objects = StandingQuerySet.as_manager()
+
     class Meta:
-        ordering: ClassVar = ["rank"]
+        ordering: ClassVar = ["position"]
         constraints: ClassVar = [
             models.UniqueConstraint(fields=["contest", "user"], name="uniq_contest_standing")
         ]
-        indexes: ClassVar = [models.Index(fields=["contest", "rank"], name="standing_board")]
+        indexes: ClassVar = [
+            models.Index(fields=["contest", "rank"], name="standing_board"),
+            models.Index(fields=["contest", "position"], name="standing_table"),
+        ]
+
+    @property
+    def is_official(self) -> bool:
+        return not self.insider_role
 
     def __str__(self) -> str:
         return f"{self.contest.slug} #{self.rank} {self.user_id}"

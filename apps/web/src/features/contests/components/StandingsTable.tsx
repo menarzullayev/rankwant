@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 
 import { CopyButton } from "@/components/kit/CopyControl";
+import { Badge } from "@/components/ui/Badge";
 import { UserName } from "@/components/ui/Identity";
+import { Checkbox } from "@/components/ui/SelectField";
 import { API_BASE, getJson, type Standing } from "@/lib/api";
 import { type Locale, t } from "@/i18n/messages";
 import {
@@ -39,6 +41,38 @@ function HackCell({ row }: { row: Standing }) {
         </span>
       )}
     </TD>
+  );
+}
+
+/** Place cell: an insider has none — a star, read out as «unrated»
+ *  (ADR-0055, part 2). */
+function PlaceCell({
+  row,
+  locale,
+  mine = false,
+}: {
+  row: Standing;
+  locale: Locale;
+  mine?: boolean;
+}) {
+  const tone = mine ? "rw-accent-ink" : "rw-strong";
+  if (!row.insider_role) {
+    return <TD className={`font-semibold ${tone}`}>{row.rank}</TD>;
+  }
+  return (
+    <TD className={`font-semibold ${tone}`}>
+      <span aria-hidden="true">*</span>
+      <span className="sr-only">{t(locale, "standings.unofficial")}</span>
+    </TD>
+  );
+}
+
+function InsiderBadge({ row, locale }: { row: Standing; locale: Locale }) {
+  if (!row.insider_role) return null;
+  return (
+    <span className="ml-2" data-insider={row.insider_role}>
+      <Badge>{t(locale, `contest.role.${row.insider_role}`)}</Badge>
+    </span>
   );
 }
 
@@ -94,10 +128,20 @@ export function StandingsTable({
     return () => clearInterval(timer);
   }, [slug, live]);
 
+  // Insiders take part unrated; a reader may hide them (ADR-0055, part 2).
+  const [showInsiders, setShowInsiders] = useState(true);
+  const hasInsiders = data.results.some((row) => row.insider_role);
+  const rows = showInsiders
+    ? data.results
+    : data.results.filter((row) => !row.insider_role);
+
   const meShown =
     me !== null && !data.results.some((row) => row.username === me.username);
-  const tsv = data.results
-    .map((row) => `${row.rank}\t${row.username}\t${row.solved_count}\t${row.penalty}`)
+  const tsv = rows
+    .map(
+      (row) =>
+        `${row.insider_role ? "*" : row.rank}\t${row.username}\t${row.solved_count}\t${row.penalty}`,
+    )
     .join("\n");
 
   return (
@@ -107,7 +151,16 @@ export function StandingsTable({
           {t(locale, "standings.frozen")}
         </div>
       )}
-      <div className="flex justify-end border-b rw-divider px-3 py-2">
+      <div className="flex flex-wrap items-center justify-end gap-3 border-b rw-divider px-3 py-2">
+        {hasInsiders && (
+          <Checkbox
+            checked={showInsiders}
+            onChange={(event) => setShowInsiders(event.target.checked)}
+            data-show-insiders=""
+          >
+            {t(locale, "standings.showInsiders")}
+          </Checkbox>
+        )}
         <CopyButton text={tsv} shape="label" size="sm" label={t(locale, "problem.copy")} />
       </div>
       {/* `<table>` va `<tbody>` saqlanadi — E2E shu selektorlarga tayanadi. */}
@@ -120,11 +173,12 @@ export function StandingsTable({
           <TH align="right">{t(locale, "standings.penalty")}</TH>
         </THead>
         <TBody>
-          {data.results.map((row) => (
+          {rows.map((row) => (
             <TR key={row.username}>
-              <TD className="font-semibold rw-strong">{row.rank}</TD>
+              <PlaceCell row={row} locale={locale} />
               <TD>
                 <UserName username={row.username} title={row.user_title} locale={locale} />
+                <InsiderBadge row={row} locale={locale} />
               </TD>
               <TD align="right">{row.solved_count}</TD>
               {hacks && <HackCell row={row} />}
@@ -135,10 +189,11 @@ export function StandingsTable({
           ))}
           {meShown && me && (
             <TR key={me.username}>
-              <TD className="font-semibold rw-accent-ink">{me.rank}</TD>
+              <PlaceCell row={me} locale={locale} mine />
               <TD className="rw-accent-ink">
                 {me.username}{" "}
                 <span className="rw-dim-2">· {t(locale, "standings.you")}</span>
+                <InsiderBadge row={me} locale={locale} />
               </TD>
               <TD align="right">{me.solved_count}</TD>
               {hacks && <HackCell row={me} />}
@@ -147,7 +202,7 @@ export function StandingsTable({
               </TD>
             </TR>
           )}
-          {data.results.length === 0 && !meShown && (
+          {rows.length === 0 && !meShown && (
             <EmptyRow colSpan={hacks ? 5 : 4}>{t(locale, "common.empty")}</EmptyRow>
           )}
         </TBody>

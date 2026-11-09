@@ -19,6 +19,7 @@ export type GateReason =
   | "arena"
   | "hackathon"
   | "duel"
+  | "contest"
   | "classroom"
   | "qvant"
   | "follow"

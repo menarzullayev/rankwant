@@ -908,6 +908,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/contests/{slug}/viewer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mening musobaqadagi holatim
+         * @description The visitor's own standing with the contest (ADR-0055, part 2).
+         *
+         *     Their insider role, whether they are registered, and — for an
+         *     insider before the start — the problems they test.
+         */
+        get: operations["contests_viewer_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contests/{slug}/virtual/": {
         parameters: {
             query?: never;
@@ -6079,6 +6102,7 @@ export interface components {
             description?: string;
             readonly problems: components["schemas"]["ContestProblem"][];
             readonly problem_count: number;
+            readonly crew: components["schemas"]["Crew"];
         };
         ContestProblem: {
             index_letter: string;
@@ -6086,6 +6110,28 @@ export interface components {
             readonly title: string;
             /** Format: int64 */
             points?: number;
+        };
+        /**
+         * @description The signed-in visitor's own standing with a contest.
+         *
+         *     Kept off the contest itself so that the contest stays one answer for
+         *     everybody.
+         */
+        ContestViewer: {
+            role: string;
+            registered: boolean;
+            testing: boolean;
+            problems: components["schemas"]["ContestProblem"][];
+        };
+        /** @description Who prepared the contest — told on its page, always (ADR-0055, part 2). */
+        Crew: {
+            authors: components["schemas"]["CrewPerson"][];
+            testers: components["schemas"]["CrewPerson"][];
+            jury: components["schemas"]["CrewPerson"][];
+        };
+        CrewPerson: {
+            username: string;
+            user_title: components["schemas"]["UserTitle"] | null;
         };
         CurrentQuestion: {
             index: number;
@@ -6420,6 +6466,14 @@ export interface components {
             readonly accepts_submissions: boolean;
             readonly is_finished: boolean;
         };
+        /**
+         * @description * `author` - Muallif
+         *     * `tester` - Sinovchi
+         *     * `jury` - Hakam
+         *     * `organizer` - Tashkilotchi
+         * @enum {string}
+         */
+        InsiderRoleEnum: "author" | "tester" | "jury" | "organizer";
         Inventory: {
             readonly id: number;
             readonly item: components["schemas"]["ShopItem"];
@@ -6649,6 +6703,8 @@ export interface components {
          *
          *     `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
          *     staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+         *     The organizer picks the testers (ADR-0055, part 2); the jury is a
+         *     staff decision.
          */
         OrganizerContest: {
             slug: string;
@@ -6666,6 +6722,7 @@ export interface components {
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             readonly is_public: boolean;
             readonly is_rated: boolean;
+            testers?: string[];
         };
         OrganizerParticipant: {
             username: string;
@@ -7688,6 +7745,8 @@ export interface components {
          *
          *     `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
          *     staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+         *     The organizer picks the testers (ADR-0055, part 2); the jury is a
+         *     staff decision.
          */
         PatchedOrganizerContest: {
             slug?: string;
@@ -7705,6 +7764,7 @@ export interface components {
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             readonly is_public?: boolean;
             readonly is_rated?: boolean;
+            testers?: string[];
         };
         PatchedStaffArena: {
             slug?: string;
@@ -7779,6 +7839,8 @@ export interface components {
             readonly problems?: components["schemas"]["StaffContestProblem"][];
             readonly is_running?: boolean;
             readonly is_finished?: boolean;
+            testers?: string[];
+            jury?: string[];
         };
         PatchedStaffHackathon: {
             slug?: string;
@@ -8947,6 +9009,8 @@ export interface components {
             readonly problems: components["schemas"]["StaffContestProblem"][];
             readonly is_running: boolean;
             readonly is_finished: boolean;
+            testers?: string[];
+            jury?: string[];
         };
         /** @description `PUT staff/contests/<slug>/problems/` ro'yxatining bitta elementi. */
         StaffContestProblem: {
@@ -9512,6 +9576,7 @@ export interface components {
             hacks_unsuccessful?: number;
             /** Format: date-time */
             last_ac_at?: string | null;
+            insider_role?: components["schemas"]["InsiderRoleEnum"] | components["schemas"]["BlankEnum"];
         };
         Submission: {
             readonly id: number;
@@ -11079,6 +11144,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    contests_viewer_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContestViewer"];
+                };
             };
         };
     };

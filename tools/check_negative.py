@@ -4755,7 +4755,7 @@ def neg_decisions_contest_problem_in_the_archive_list() -> tuple[bool, str]:
     """The archive list uses the wider "may be opened" scope."""
     return _decision_broken(
         "apps/api/problems/views.py",
-        'scope = Q(is_public=True) if self.action == "list" else visibility.openable_q()',
+        'scope = Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)',
         "scope = visibility.openable_q()",
         "arxiv ro'yxati musobaqa masalasini ham beradi",
     )
@@ -4788,6 +4788,66 @@ def neg_decisions_contest_page_names_problems_early() -> tuple[bool, str]:
         "        if timezone.now() < contest.start_at:\n",
         "        if False:\n",
         "boshlanishdan oldin ko'rsatadi",
+    )
+
+
+def neg_decisions_insider_testing_in_the_table() -> tuple[bool, str]:
+    """A tester's attempt from before the start counts in the table."""
+    return _decision_broken(
+        "apps/api/contests/services.py",
+        "attempts.exclude(user_id__in=list(roles), created_at__lt=contest.start_at)",
+        "attempts.exclude(pk__in=[])",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_insider_gets_a_place() -> tuple[bool, str]:
+    """An insider's row is given an official place."""
+    return _decision_broken(
+        "apps/api/contests/services.py",
+        "        if row.user_id in roles:\n            places.append(0)",
+        "        if False:\n            places.append(0)",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_insider_is_rated() -> tuple[bool, str]:
+    """The rating is applied to an insider's row too."""
+    return _decision_broken(
+        "apps/api/ratings/services.py",
+        "Standing.objects.filter(contest=contest).official()",
+        "Standing.objects.filter(contest=contest)",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_testing_attempt_counts_as_solved() -> tuple[bool, str]:
+    """A testing attempt is written as a solved problem."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        "    testing = is_testing(attempt)\n    if not testing:\n",
+        "    testing = False\n    if not testing:\n",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_testing_attempt_in_the_feed() -> tuple[bool, str]:
+    """Other people's feed shows a testing attempt."""
+    return _decision_broken(
+        "apps/api/judging/views.py",
+        "for contest_id, start_at in testing_windows()",
+        "for contest_id, start_at in []",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_anybody_tests_early() -> tuple[bool, str]:
+    """Anybody, not only an insider, sends before the start."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        "timezone.now() < contest.start_at and bool(role_of(contest, user))",
+        "timezone.now() < contest.start_at",
+        "ichkaridagilar reytingsiz qatnashadi",
     )
 
 
@@ -6838,6 +6898,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/serializers.py",
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
+    "apps/api/contests/certificates.py",
+    "apps/api/contests/views.py",
+    "apps/api/ratings/services.py",
+    "apps/api/tournaments/services.py",
     "apps/api/judging/tasks.py",
     "apps/api/judging/provider.py",
     "services/judge-go/protocol.go",
@@ -10196,6 +10260,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bitta urinish muzlatishni chetlasa tutilsin", neg_decisions_single_attempt_ignores_the_freeze),
             ("musobaqa sahifasi masalani erta aytsa tutilsin", neg_decisions_contest_page_names_problems_early),
             ("masalalar arxivga o'tmasa tutilsin", neg_decisions_contest_problems_never_released),
+            ("sinov urinishi jadvalga tushsa tutilsin", neg_decisions_insider_testing_in_the_table),
+            ("ichkaridagi rasmiy o'rin olsa tutilsin", neg_decisions_insider_gets_a_place),
+            ("ichkaridagiga reyting berilsa tutilsin", neg_decisions_insider_is_rated),
+            ("sinov urinishi yechilgan sanalsa tutilsin", neg_decisions_testing_attempt_counts_as_solved),
+            ("sinov urinishi lentada ko'rinsa tutilsin", neg_decisions_testing_attempt_in_the_feed),
+            ("har kim erta yuborsa tutilsin", neg_decisions_anybody_tests_early),
             ("tozalagich natijani kutmasa tutilsin", neg_decisions_reaper_ignores_waiting_results),
             ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
             ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),

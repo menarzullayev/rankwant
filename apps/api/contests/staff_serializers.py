@@ -7,7 +7,9 @@ from typing import Any
 
 from rest_framework import serializers
 
+from contests.insiders import notify_new_testers
 from contests.models import Contest, ContestProblem
+from core.models import User
 from problems.models import Problem
 from problems.readiness import GRADED_READY, enforcing, graded_gate_error
 
@@ -26,10 +28,24 @@ class StaffContestProblemSerializer(serializers.ModelSerializer[ContestProblem])
         extra_kwargs = {"points": {"required": False}}
 
 
+def crew_field() -> serializers.SlugRelatedField[User]:
+    """A list of people by username — testers, jury (ADR-0055, part 2)."""
+    return serializers.SlugRelatedField(
+        slug_field="username",
+        queryset=User.objects.filter(is_active=True),
+        many=True,
+        required=False,
+    )
+
+
 class StaffContestSerializer(serializers.ModelSerializer[Contest]):
     mirror_of = serializers.SlugRelatedField(
         slug_field="slug", queryset=Contest.objects.all(), allow_null=True, required=False
     )
+    #: Insiders the staff appoint (ADR-0055, part 2). They see the problems
+    #: early and take part unrated.
+    testers = crew_field()
+    jury = crew_field()
     problems = StaffContestProblemSerializer(many=True, read_only=True)
     is_running = serializers.BooleanField(read_only=True)
     is_finished = serializers.BooleanField(read_only=True)
@@ -53,8 +69,21 @@ class StaffContestSerializer(serializers.ModelSerializer[Contest]):
             "problems",
             "is_running",
             "is_finished",
+            "testers",
+            "jury",
         ]
         read_only_fields = ["ratings_applied_at", "created_at"]
+
+    def create(self, validated_data: dict[str, Any]) -> Contest:
+        contest = super().create(validated_data)
+        notify_new_testers(contest, set())
+        return contest
+
+    def update(self, instance: Contest, validated_data: dict[str, Any]) -> Contest:
+        before = set(instance.testers.values_list("pk", flat=True))
+        contest = super().update(instance, validated_data)
+        notify_new_testers(contest, before)
+        return contest
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         start_at = attrs.get("start_at", getattr(self.instance, "start_at", None))

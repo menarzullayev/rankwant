@@ -124,12 +124,23 @@ export default async function ProblemPage({ params, searchParams }: Props) {
   // who cannot send to it gets a card in place of the solve panel.
   const held = problem.contest ?? null;
   const contestSlug = contest ?? held?.slug;
+  // An insider before the start tests the problem: no registration, no
+  // gate — a notice says the attempt counts nowhere (ADR-0055, part 2).
+  const testing = held?.testing === true;
   const contestGate =
-    held && !held.registered ? (
+    !held || testing ? undefined : !held.registered ? (
       <ContestGate held={held} kind="register" locale={locale} />
-    ) : held && !held.is_running ? (
+    ) : !held.is_running ? (
       <ContestGate held={held} kind="ended" locale={locale} />
     ) : undefined;
+  const testingNotice = testing ? (
+    <p
+      className="rw-radius-sm rw-accent-soft px-3 py-2 text-theme-sm rw-accent-ink"
+      data-testing-notice=""
+    >
+      {t(locale, "contest.insider.testingProblem")}
+    </p>
+  ) : null;
 
   const jsonLdDescription = fill(t(locale, "problem.difficultyDescription"), {
     title: problem.title,
@@ -160,6 +171,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
         <ProblemWorkspace
           statement={
             <div className="min-w-0 space-y-6">
+              {testingNotice}
               <ProblemTabs
                 slug={slug}
                 current={tab}

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2418 strings.**
+**2447 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1207,6 +1207,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `role.staff` | Xodim | Xızmetker |  |
 | `role.author` | Masala muallifi | Másele avtorı |  |
 | `role.jury` | Hakam | Tóreshi |  |
+| `role.tester` | Sinovchi | Testlewshi |  |
 | `role.champion` | Chempion | Chempion |  |
 | `role.championOf` | {contest} g'olibi | {contest} jeńimpazı |  |
 | `profile.online` | Onlayn | Onlayn |  |
@@ -2438,4 +2439,32 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.gate.endedTitle` | Musobaqa tugadi | Jarıs tamamlandı |  |
 | `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Nátiyjeler juwmaqlanǵannan keyin másele arxivke ótedi hám jiberiw qayta ashıladı. |  |
 | `contest.gate.cta` | Musobaqa sahifasi | Jarıs beti |  |
+| `standings.unofficial` | Reytingsiz | Reytingten tıs |  |
+| `standings.showInsiders` | Reytingsizlarni ko'rsatish | Reytingsiz qatnasıwshılardı kórsetiw |  |
+| `contest.role.author` | muallif | avtor |  |
+| `contest.role.tester` | sinovchi | testlewshi |  |
+| `contest.role.jury` | hakam | tóreshi |  |
+| `contest.role.organizer` | tashkilotchi | shólkemlestiriwshi |  |
+| `contest.insider.title.author` | Siz bu musobaqa masalalaridan birining muallifisiz | Siz bul jarıstaǵı máselelerdiń biriniń avtorısız |  |
+| `contest.insider.title.tester` | Siz bu musobaqaning sinovchisisiz | Siz bul jarıstıń testlewshisisiz |  |
+| `contest.insider.title.jury` | Siz bu musobaqaning hakamisiz | Siz bul jarıstıń tóreshisisiz |  |
+| `contest.insider.title.organizer` | Siz bu musobaqaning tashkilotchisisiz | Siz bul jarıstıń shólkemlestiriwshisisiz |  |
+| `contest.insider.testing` | Masalalar sizga hozirdan ochiq. Sinov yechimlari jadvalga, «yechilgan» hisobiga va boshqalarning lentasiga tushmaydi. Musobaqada qatnashsangiz — reytingsiz. | Máseleler sizge házirden ashıq. Sınaq sheshimleri kestege, «sheshilgen» sanına hám basqalardıń lentasına túspeydi. Jarısqa qatnassańız — reytingsiz. |  |
+| `contest.insider.unrated` | Masalalarni oldindan bilasiz: qatnashsangiz — reytingsiz, jadvalda «*» bilan va o'rinsiz. | Máselelerdi aldın ala bilesiz: qatnassańız — reytingsiz, kestede «*» belgisi menen hám orınsız. |  |
+| `contest.insider.testingProblem` | Sinov rejimi: musobaqa hali boshlanmagan. Bu yechim jadvalga, «yechilgan» hisobiga va masala statistikasiga tushmaydi. | Sınaq rejimi: jarıs ele baslanbaǵan. Bul sheshim kestege, «sheshilgen» sanına hám máseleniń statistikasına túspeydi. |  |
+| `contest.entry.title` | Ishtirok | Qatnasıw |  |
+| `contest.entry.register` | Ro'yxatdan o'tish | Dizimnen ótiw |  |
+| `contest.entry.registered` | Siz ro'yxatdan o'tgansiz | Siz dizimnen ótkensiz |  |
+| `contest.entry.unratedNote` | Reytingsiz qatnashasiz | Reytingsiz qatnasasız |  |
+| `contest.crew.title` | Musobaqani tayyorlaganlar | Jarıstı tayarlaǵanlar |  |
+| `contest.crew.authors` | Masala mualliflari | Másele avtorları |  |
+| `contest.crew.testers` | Sinovchilar | Testlewshiler |  |
+| `contest.crew.jury` | Hakamlar | Tóreshiler |  |
+| `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Olar máselelerdi aldın ala biledi, sonıń ushın reytingsiz qatnasadı. |  |
+| `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Jarısqa jazılıw ushın sistemaǵa kiriń |  |
+| `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Testlewshiler (laqap atlar, útir menen) |  |
+| `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Tóreshiler (laqap atlar, útir menen) |  |
+| `admin.help.contestTesters` | Boshlanishdan oldin masalalarni ko'radi va sinaydi; qatnashsa — reytingsiz. | Baslanıwdan aldın máselelerdi kórip sınaydı; qatnassa — reytingsiz. |  |
+| `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Siz «{contest}» jarısına testlewshi bolıp qosıldıńız |  |
+| `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Máseleler sizge baslanıwdan aldın ashıq. Qatnassańız — reytingsiz. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} másele — jarıs baslanǵanda ashıladı. |  |

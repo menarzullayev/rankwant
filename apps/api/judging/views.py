@@ -61,17 +61,24 @@ class AttemptCursorPagination(SortableCursorPagination):
 
 
 def _outside_the_freeze(qs: QuerySet[Attempt], viewer: Any) -> QuerySet[Attempt]:
-    """Drop what a frozen contest hides from this viewer (ADR-0055).
+    """Drop what a contest hides from this viewer (ADR-0055).
 
     Attempts made after a contest's scoreboard froze are shown to their
-    authors only, until the contest ends. Staff see everything.
+    authors only, until the contest ends. So are the testing attempts its
+    insiders sent before the start (part 2). Staff see everything.
     """
     if viewer.is_authenticated and viewer.is_staff:
         return qs
-    from contests.services import frozen_windows
+    from contests.services import frozen_windows, testing_windows
 
-    for contest_id, freeze_at in frozen_windows():
-        hidden = Q(contest_id=contest_id, created_at__gte=freeze_at)
+    hidden_windows = [
+        Q(contest_id=contest_id, created_at__gte=freeze_at)
+        for contest_id, freeze_at in frozen_windows()
+    ] + [
+        Q(contest_id=contest_id, created_at__lt=start_at)
+        for contest_id, start_at in testing_windows()
+    ]
+    for hidden in hidden_windows:
         if viewer.is_authenticated:
             hidden &= ~Q(user=viewer)
         qs = qs.exclude(hidden)

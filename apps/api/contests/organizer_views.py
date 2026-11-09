@@ -22,7 +22,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from contests.insiders import notify_new_testers
 from contests.models import Contest
+from contests.staff_serializers import crew_field
 from core.models import User
 from core.openapi_docs import crud_summaries
 from core.permissions import CanManageContest
@@ -33,7 +35,22 @@ class OrganizerContestSerializer(serializers.ModelSerializer[Contest]):
 
     `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
     staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+    The organizer picks the testers (ADR-0055, part 2); the jury is a
+    staff decision.
     """
+
+    testers = crew_field()
+
+    def create(self, validated_data: dict[str, Any]) -> Contest:
+        contest = super().create(validated_data)
+        notify_new_testers(contest, set())
+        return contest
+
+    def update(self, instance: Contest, validated_data: dict[str, Any]) -> Contest:
+        before = set(instance.testers.values_list("pk", flat=True))
+        contest = super().update(instance, validated_data)
+        notify_new_testers(contest, before)
+        return contest
 
     class Meta:
         model = Contest
@@ -47,6 +64,7 @@ class OrganizerContestSerializer(serializers.ModelSerializer[Contest]):
             "scoring_type",
             "is_public",
             "is_rated",
+            "testers",
         ]
         read_only_fields = ["is_public", "is_rated"]
 

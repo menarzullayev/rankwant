@@ -6,6 +6,8 @@
  */
 
 
+export { ContestCrew } from "./components/ContestCrew";
+export { ContestEntry } from "./components/ContestEntry";
 export { StandingsTable } from "./components/StandingsTable";
 
-export type { Arena, ArenaCurrent, ArenaDetail, ArenaStanding, CalendarEvent, Contest, ContestDetail, ContestProblem, Duel, DuelRecord, Hackathon, HackathonSubmission, Standing, Tournament, TournamentDetail, TournamentStage, TournamentStanding } from "./api/contests";
+export type { Arena, ArenaCurrent, ArenaDetail, ArenaStanding, CalendarEvent, Contest, ContestDetail, ContestProblem, ContestViewer, CrewPerson, InsiderRole, Duel, DuelRecord, Hackathon, HackathonSubmission, Standing, Tournament, TournamentDetail, TournamentStage, TournamentStanding } from "./api/contests";

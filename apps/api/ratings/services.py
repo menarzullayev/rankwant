@@ -297,8 +297,10 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
     if not contest.is_rated:
         return 0
 
+    # Insiders took part unrated (ADR-0055, part 2): their rows have no
+    # place and do not count towards the minimum either.
     standings = list(
-        Standing.objects.filter(contest=contest).select_related("user").order_by("rank")
+        Standing.objects.filter(contest=contest).official().select_related("user").order_by("rank")
     )
     if len(standings) < formulas.MIN_RATED_PARTICIPANTS:
         log.info("contest %s: %s ishtirokchi — reyting hisoblanmadi", contest.pk, len(standings))

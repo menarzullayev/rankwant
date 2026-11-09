@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2418 strings.**
+**2447 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1207,6 +1207,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `role.staff` | Xodim | Корманд |  |
 | `role.author` | Masala muallifi | Муаллифи масъала |  |
 | `role.jury` | Hakam | Ҳакам |  |
+| `role.tester` | Sinovchi | Санҷишгар |  |
 | `role.champion` | Chempion | Қаҳрамон |  |
 | `role.championOf` | {contest} g'olibi | Ғолиби {contest} |  |
 | `profile.online` | Onlayn | Онлайн |  |
@@ -2438,4 +2439,32 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.gate.endedTitle` | Musobaqa tugadi | Мусобиқа ба охир расид |  |
 | `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Пас аз ҷамъбасти натиҷаҳо масъала ба бойгонӣ мегузарад ва фиристодан боз кушода мешавад. |  |
 | `contest.gate.cta` | Musobaqa sahifasi | Саҳифаи мусобиқа |  |
+| `standings.unofficial` | Reytingsiz | Бе рейтинг |  |
+| `standings.showInsiders` | Reytingsizlarni ko'rsatish | Нишон додани иштирокчиёни бе рейтинг |  |
+| `contest.role.author` | muallif | муаллиф |  |
+| `contest.role.tester` | sinovchi | санҷишгар |  |
+| `contest.role.jury` | hakam | ҳакам |  |
+| `contest.role.organizer` | tashkilotchi | ташкилотчӣ |  |
+| `contest.insider.title.author` | Siz bu musobaqa masalalaridan birining muallifisiz | Шумо муаллифи яке аз масъалаҳои ин мусобиқа ҳастед |  |
+| `contest.insider.title.tester` | Siz bu musobaqaning sinovchisisiz | Шумо санҷишгари ин мусобиқа ҳастед |  |
+| `contest.insider.title.jury` | Siz bu musobaqaning hakamisiz | Шумо ҳаками ин мусобиқа ҳастед |  |
+| `contest.insider.title.organizer` | Siz bu musobaqaning tashkilotchisisiz | Шумо ташкилотчии ин мусобиқа ҳастед |  |
+| `contest.insider.testing` | Masalalar sizga hozirdan ochiq. Sinov yechimlari jadvalga, «yechilgan» hisobiga va boshqalarning lentasiga tushmaydi. Musobaqada qatnashsangiz — reytingsiz. | Масъалаҳо ҳоло барои шумо кушодаанд. Ҳалли санҷишӣ ба ҷадвал, ба шумораи «ҳалшуда» ва ба лентаи дигарон намеафтад. Агар дар мусобиқа иштирок кунед — бе рейтинг. |  |
+| `contest.insider.unrated` | Masalalarni oldindan bilasiz: qatnashsangiz — reytingsiz, jadvalda «*» bilan va o'rinsiz. | Шумо масъалаҳоро пешакӣ медонед: агар иштирок кунед — бе рейтинг, дар ҷадвал бо «*» ва бе ҷой. |  |
+| `contest.insider.testingProblem` | Sinov rejimi: musobaqa hali boshlanmagan. Bu yechim jadvalga, «yechilgan» hisobiga va masala statistikasiga tushmaydi. | Реҷаи санҷиш: мусобиқа ҳанӯз оғоз нашудааст. Ин ҳал ба ҷадвал, ба шумораи «ҳалшуда» ва ба омори масъала намеафтад. |  |
+| `contest.entry.title` | Ishtirok | Иштирок |  |
+| `contest.entry.register` | Ro'yxatdan o'tish | Сабти ном |  |
+| `contest.entry.registered` | Siz ro'yxatdan o'tgansiz | Шумо сабти ном шудаед |  |
+| `contest.entry.unratedNote` | Reytingsiz qatnashasiz | Бе рейтинг иштирок мекунед |  |
+| `contest.crew.title` | Musobaqani tayyorlaganlar | Омодакунандагони мусобиқа |  |
+| `contest.crew.authors` | Masala mualliflari | Муаллифони масъалаҳо |  |
+| `contest.crew.testers` | Sinovchilar | Санҷишгарон |  |
+| `contest.crew.jury` | Hakamlar | Ҳакамон |  |
+| `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Онҳо масъалаҳоро пешакӣ медонанд, бинобар ин бе рейтинг иштирок мекунанд. |  |
+| `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Барои сабти ном дар мусобиқа ворид шавед |  |
+| `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Санҷишгарон (тахаллусҳо, бо вергул) |  |
+| `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Ҳакамон (тахаллусҳо, бо вергул) |  |
+| `admin.help.contestTesters` | Boshlanishdan oldin masalalarni ko'radi va sinaydi; qatnashsa — reytingsiz. | То оғоз масъалаҳоро мебинад ва месанҷад; агар иштирок кунад — бе рейтинг. |  |
+| `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Шумо ба мусобиқаи «{contest}» ҳамчун санҷишгар илова шудед |  |
+| `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Масъалаҳо то оғоз барои шумо кушодаанд. Агар иштирок кунед — бе рейтинг. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} масъала — бо оғози мусобиқа кушода мешаванд. |  |

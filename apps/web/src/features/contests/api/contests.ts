@@ -31,11 +31,30 @@ export type ContestProblem = {
   points: number;
 };
 
+/** Someone who knew the problems beforehand (ADR-0055, part 2). */
+export type InsiderRole = "author" | "tester" | "jury" | "organizer";
+
+export type CrewPerson = { username: string; user_title: UserTitle | null };
+
 export type ContestDetail = Contest & {
   description: string;
   /** Empty until the contest starts — a title is a hint (ADR-0055). */
   problems: ContestProblem[];
   problem_count: number;
+  /** Who prepared the contest — told always. */
+  crew: { authors: CrewPerson[]; testers: CrewPerson[]; jury: CrewPerson[] };
+};
+
+/** The signed-in visitor's own standing with a contest (`/viewer/`). */
+export type ContestViewer = {
+  /** "" for a participant. */
+  role: InsiderRole | "";
+  registered: boolean;
+  /** An insider before the start: the problems are open to them and
+   *  what they send is a testing attempt that counts nowhere. */
+  testing: boolean;
+  /** Filled while `testing`. */
+  problems: ContestProblem[];
 };
 
 export type Standing = {
@@ -52,6 +71,8 @@ export type Standing = {
   hacks_successful: number;
   hacks_unsuccessful: number;
   last_ac_at: string | null;
+  /** Set on an insider's row: unrated, no place (`rank` is 0). */
+  insider_role: InsiderRole | "";
 };
 
 export type Arena = {

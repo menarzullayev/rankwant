@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from contests.models import Certificate, Contest, ContestProblem, ContestRegistration, Standing
-from profiles.titles import TitleField
+from profiles.titles import TitleField, UserTitleSerializer
 
 
 class ContestProblemSerializer(serializers.ModelSerializer[ContestProblem]):
@@ -51,15 +52,41 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
         ]
 
 
+class CrewPersonSerializer(serializers.Serializer[Any]):
+    username = serializers.CharField()
+    user_title = UserTitleSerializer(allow_null=True)
+
+
+class CrewSerializer(serializers.Serializer[Any]):
+    """Who prepared the contest — told on its page, always (ADR-0055, part 2)."""
+
+    authors = CrewPersonSerializer(many=True)
+    testers = CrewPersonSerializer(many=True)
+    jury = CrewPersonSerializer(many=True)
+
+
 class ContestDetailSerializer(ContestSerializer):
     problems = ContestProblemSerializer(many=True, read_only=True)
     problem_count = serializers.SerializerMethodField()
+    crew = serializers.SerializerMethodField()
 
     class Meta(ContestSerializer.Meta):
-        fields = [*ContestSerializer.Meta.fields, "description", "problems", "problem_count"]
+        fields = [
+            *ContestSerializer.Meta.fields,
+            "description",
+            "problems",
+            "problem_count",
+            "crew",
+        ]
 
     def get_problem_count(self, contest: Contest) -> int:
         return len(contest.problems.all())
+
+    @extend_schema_field(CrewSerializer)
+    def get_crew(self, contest: Contest) -> dict[str, Any]:
+        from contests.insiders import crew
+
+        return crew(contest)
 
     def to_representation(self, contest: Contest) -> dict[str, Any]:
         data = super().to_representation(contest)
@@ -95,7 +122,27 @@ class StandingSerializer(serializers.ModelSerializer[Standing]):
             "hacks_successful",
             "hacks_unsuccessful",
             "last_ac_at",
+            # Set on an insider's row: no place, shown with a star
+            # (ADR-0055, part 2). `rank` is 0 on such a row.
+            "insider_role",
         ]
+
+
+class ContestViewerSerializer(serializers.Serializer[Any]):
+    """The signed-in visitor's own standing with a contest.
+
+    Kept off the contest itself so that the contest stays one answer for
+    everybody.
+    """
+
+    #: "" for a participant; otherwise the insider role (ADR-0055, part 2).
+    role = serializers.CharField()
+    registered = serializers.BooleanField()
+    #: An insider before the start: the problems are open to them and
+    #: what they send is a testing attempt.
+    testing = serializers.BooleanField()
+    #: Filled while `testing` — nobody else sees them before the start.
+    problems = ContestProblemSerializer(many=True)
 
 
 class RegistrationSerializer(serializers.ModelSerializer[ContestRegistration]):

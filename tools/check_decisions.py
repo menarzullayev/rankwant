@@ -2953,7 +2953,7 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     if "contest_entries__contest__is_public=True" not in visibility:
         return "qoralama musobaqa ham masalani ochadi"
     views = read("apps/api/problems/views.py")
-    if 'Q(is_public=True) if self.action == "list" else visibility.openable_q()' not in views:
+    if 'Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)' not in views:
         return "arxiv ro'yxati musobaqa masalasini ham beradi (yoki masala sahifasi uni ochmaydi)"
     submit = read("apps/api/judging/serializers.py")
     if "This problem belongs to a contest" not in submit:
@@ -2972,6 +2972,48 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     serializer = read("apps/api/problems/serializers.py")
     if "if not problem.editorial or not problem.is_public:" not in serializer:
         return "tahlil musobaqa paytida ochiq"
+    return None
+
+
+def contest_insiders_play_unrated() -> str | None:
+    # 2026-11-10 (ADR-0055, part 2, HITL): the problem authors, testers, jury
+    # and organizers know the problems before the start. A tester opens and
+    # sends to them early — the attempt counts nowhere and only its author
+    # sees it — and every insider who takes part is unrated: a star in the
+    # table, no place, no rating, no certificate, no championship points.
+    services = read("apps/api/contests/services.py")
+    if "attempts.exclude(user_id__in=list(roles), created_at__lt=contest.start_at)" not in services:
+        return "sinovchining musobaqadan oldingi urinishi jadvalga tushadi"
+    if 'insider_role=roles.get(row.user_id, ""),' not in services:
+        return "ichkaridagi ishtirokchi qatori rasmiy bo'lib yoziladi"
+    if "        if row.user_id in roles:\n            places.append(0)" not in services:
+        return "ichkaridagi ishtirokchi rasmiy o'rin oladi"
+    ratings = read("apps/api/ratings/services.py")
+    if "Standing.objects.filter(contest=contest).official()" not in ratings:
+        return "reyting ichkaridagi ishtirokchiga ham hisoblanadi"
+    certificates = read("apps/api/contests/certificates.py")
+    if ".official()" not in certificates:
+        return "ichkaridagi ishtirokchi sertifikat oladi"
+    tournaments = read("apps/api/tournaments/services.py")
+    if "Standing.objects.filter(contest=stage.contest).official()" not in tournaments:
+        return "ichkaridagi ishtirokchi chempionat bali oladi"
+    judging = read("apps/api/judging/services.py")
+    if "    testing = is_testing(attempt)\n    if not testing:\n" not in judging:
+        return "sinov urinishi «yechilgan» va reytingga yoziladi"
+    feed = read("apps/api/judging/views.py")
+    if "for contest_id, start_at in testing_windows()" not in feed:
+        return "sinov urinishi boshqalarning lentasida ko'rinadi"
+    problems = read("apps/api/problems/views.py")
+    if problems.count("visibility.without_testing(") < 2:
+        return "sinov urinishi masala statistikasi yoki yechganlar ro'yxatiga tushadi"
+    submit = read("apps/api/judging/serializers.py")
+    if "if registration is None and not testing:" not in submit:
+        return "sinovchi boshlanishdan oldin yubora olmaydi (yoki hamma yuboradi)"
+    if "timezone.now() < contest.start_at and bool(role_of(contest, user))" not in submit:
+        return "boshlanishdan oldin ichkaridagi bo'lmagan ham yuboradi"
+    board = read("apps/api/contests/views.py")
+    if '.order_by("position")[:STANDINGS_TOP]' not in board:
+        return "ommaviy jadval ichkaridagilarni o'z joyida ko'rsatmaydi"
     return None
 
 
@@ -3911,6 +3953,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
     ("musobaqa masalasi arxivdan tashqarida", contest_problems_stay_out_of_the_archive),
     ("tozalagich natijani kutadi", reaper_waits_for_unapplied_results),
+    ("ichkaridagilar reytingsiz qatnashadi", contest_insiders_play_unrated),
     ("mehmon zonalari yopiq", guest_zones_are_gated),
     ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),
