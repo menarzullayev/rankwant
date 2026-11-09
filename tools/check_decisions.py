@@ -2489,6 +2489,42 @@ def nightly_bakeoff_is_a_gate() -> str | None:
     return None
 
 
+def required_checks_cover_every_gate() -> str | None:
+    """2026-11-10 (HITL, audit Q-09 + L-04): `main` bitta umumlashtiruvchi tekshiruvni talab qiladi.
+
+    Ruleset faqat `Path filter` va `Docs and contract integrity` ni talab
+    qilardi — API testlari, Web build va Judge testlari qizil PR ham merge
+    bo'lardi. Ular bittalab talab qilinmaydi: yo'l filtri ularni o'tkazib
+    yuboradi, o'tkazilgan matritsa job'i esa `API tests (${{ matrix.shard }}/3)`
+    nomi bilan chiqadi. Shuning uchun `ci.yml` → `required` («Required checks»)
+    hammasining natijasini o'qiydi va ruleset aynan shu nomni talab qiladi —
+    nom o'zgarsa har PR kutib qoladi.
+
+    L-04: `runner-selftest.yml` (self-hosted) faqat qo'lda; `judge` job'ida
+    «not scaffolded yet» qo'riqchisi yo'q — u modul o'chsa ham yashil berardi.
+    """
+    ci = read(".github/workflows/ci.yml")
+    job = _workflow_job(ci, "required")
+    if not job:
+        return "ci.yml: `required` job'i yo'q — API, Web va Judge qizil bo'lsa ham merge bo'ladi"
+    if not re.search(r"^    name: Required checks$", job, re.M):
+        return "ci.yml: `required` nomi «Required checks» emas — ruleset kutgan tekshiruv hech qachon kelmaydi"
+    needs = re.search(r"^    needs: \[([^\]]*)\]", job, re.M)
+    listed = {n.strip() for n in needs.group(1).split(",")} if needs else set()
+    for gate in ("filter", "api", "api_tests", "web", "judge"):
+        if gate not in listed:
+            return f"ci.yml: `required` `{gate}` natijasini o'qimaydi — u qizil bo'lsa ham merge bo'ladi"
+    if not re.search(r"^    if: \$\{\{ always\(\) \}\}$", job, re.M):
+        return "ci.yml: `required` `always()` siz — bekor qilingan gate uni skipped (= yashil) qiladi"
+    if 'if [ "$job" = "filter" ] && [ "$result" != "success" ]' not in job:
+        return "ci.yml: `required` filtr yiqilganini sezmaydi — hamma gate skipped bo'lib yashil chiqadi"
+    if _workflow_triggers(".github/workflows/runner-selftest.yml") != {"workflow_dispatch"}:
+        return "runner-selftest.yml: qo'ldan boshqa trigger bor — self-hosted noutbukda o'zi yuradi"
+    if "is not scaffolded yet" in _workflow_job(ci, "judge"):
+        return "ci.yml: judge job'ida «not scaffolded yet» qo'riqchisi — modul yo'qolsa ham yashil"
+    return None
+
+
 def team_page_is_managed_data() -> str | None:
     """2026-10-05: «Jamoa» sahifasi admin paneldan boshqariladi.
 
@@ -3925,6 +3961,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
+    ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
