@@ -3253,6 +3253,36 @@ def neg_decisions_smoke_skipped_after_visual() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_gitleaks_loses_default_rules() -> tuple[bool, str]:
+    """`useDefault` goes: gitleaks runs with zero rules and reports nothing."""
+    return _decision_broken(
+        ".gitleaks.toml",
+        "[extend]\nuseDefault = true\n",
+        "",
+        "gitleaks nol qoida bilan yuradi",
+    )
+
+
+def neg_decisions_gitleaks_canary_dropped() -> tuple[bool, str]:
+    """The planted-token step goes: a blind scanner reads as a clean history."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "      - name: The scanner sees a planted token (canary)\n",
+        "      - name: The scanner sees a planted token\n",
+        "`scan-secrets` kanareykasiz",
+    )
+
+
+def neg_decisions_scanner_blocks_prs() -> tuple[bool, str]:
+    """pip-audit lands in PR CI: an upstream advisory would block every merge."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "      - name: Ruff\n",
+        "      - name: Audit\n        run: pip install pip-audit && pip-audit -r requirements.lock\n      - name: Ruff\n",
+        "`pip-audit` PR CI'da",
+    )
+
+
 def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
@@ -6530,6 +6560,8 @@ _DECISIONS_SANDBOX_FILES = (
     "docker-compose.yml",
     "docker-compose.public.yml",
     "docker-compose.ci.yml",
+    # Q-11 (2026-11-10): gitleaks loads zero rules without `useDefault`.
+    ".gitleaks.toml",
     "docker-compose.replicas.yml",
     # Developer tools (2026-09-21): `check_security_boundary.py` measures this
     # overlay, and the `adminer` rule reads it directly. Missing here,
@@ -10169,6 +10201,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("api_tests job olib tashlansa tutilsin", neg_decisions_api_tests_job_removed),
             ("api_tests yo'l filtrisiz qolsa tutilsin", neg_decisions_api_tests_lose_path_filter),
+            ("gitleaks standart qoidalarsiz qolsa tutilsin", neg_decisions_gitleaks_loses_default_rules),
+            ("gitleaks kanareykasi olib tashlansa tutilsin", neg_decisions_gitleaks_canary_dropped),
+            ("skaner PR CI'ga tushsa tutilsin", neg_decisions_scanner_blocks_prs),
             ("bake-off yana yumshatilsa tutilsin", neg_decisions_bakeoff_soft_again),
             ("bake-off vizualdan keyin o'tkazilsa tutilsin", neg_decisions_bakeoff_skipped_after_visual),
             ("smoke vizualdan keyin o'tkazilsa tutilsin", neg_decisions_smoke_skipped_after_visual),
