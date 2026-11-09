@@ -533,6 +533,171 @@ jobs:
           SECURITY_STATIC_ONLY: '1'
         run: tests/security/run.sh
 
+  #: ── Dependency and secret scanners — REPORT ONLY (2026-11-10, audit Q-11)
+  #:
+  #: gitleaks, pip-audit and npm audit lived only in `security.yml`, which is
+  #: disabled (owner decision 2026-09-21: `workflow_dispatch` + `if: false`),
+  #: so none of them ran anywhere. The owner chose Nightly, report-only:
+  #:   * a FINDING never fails the job — it is a `::warning::` and a table on
+  #:     the run page, so a new advisory upstream cannot turn Nightly red and
+  #:     hide the gates that do block;
+  #:   * a BROKEN SCANNER does fail it. Each job first feeds its tool a planted
+  #:     finding (a canary) and fails when the tool does not see it, and the
+  #:     real report must parse. "0 findings" from a blind scanner is the dead
+  #:     gate this repo keeps finding: measured 2026-11-10, `.gitleaks.toml`
+  #:     had no `[extend] useDefault = true`, so gitleaks loaded ZERO rules
+  #:     and `security.yml` would have reported a clean history forever.
+  #:
+  #: Not on PRs: nothing here may block a merge (`pr_skips_heavy_ci`).
+  scan-secrets:
+    name: Scan — secrets (gitleaks, report only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GITLEAKS: zricethezav/gitleaks:v8.30.1
+    steps:
+      # gitleaks reads the whole history, so a full clone.
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - name: The scanner sees a planted token (canary)
+        # The token is generated here, never committed: a committed one would
+        # itself be a finding in every later history scan.
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/canary"
+          python3 -c "import secrets, string; a = string.ascii_letters + string.digits; print('token = \"ghp_' + ''.join(secrets.choice(a) for _ in range(36)) + '\"')" \
+            > "$RUNNER_TEMP/canary/settings.py"
+          rc=0
+          docker run --rm -v "$RUNNER_TEMP/canary:/scan:ro" -v "$PWD/.gitleaks.toml:/cfg.toml:ro" "$GITLEAKS" \
+            dir /scan --config /cfg.toml --no-banner --redact --exit-code 7 > /dev/null 2>&1 || rc=$?
+          if [ "$rc" -ne 7 ]; then
+            echo "::error::gitleaks did not report a planted ghp_ token (exit $rc, 7 expected) — the history scan below would be blind"
+            exit 1
+          fi
+          echo "canary seen ✓"
+      - name: gitleaks — full history
+        run: |
+          set -euo pipefail
+          # `--exit-code 0`: findings are reported, not fatal. An error in
+          # gitleaks itself still exits non-zero and fails this step.
+          docker run --rm -v "$PWD:/repo" "$GITLEAKS" git /repo --config /repo/.gitleaks.toml \
+            --no-banner --redact --exit-code 0 --report-format json --report-path /repo/gitleaks.json
+          n=$(jq length gitleaks.json)
+          {
+            echo "### gitleaks — $n finding(s) in the full history (redacted)"
+            if [ "$n" -gt 0 ]; then
+              echo
+              echo "| Rule | File | Commit |"
+              echo "| ---- | ---- | ------ |"
+              jq -r '.[] | "| \(.RuleID) | `\(.File)` | `\(.Commit[0:8])` |"' gitleaks.json
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$n" -gt 0 ]; then echo "::warning::gitleaks: $n finding(s) — see the run summary"; fi
+
+  scan-python:
+    name: Scan — Python advisories (pip-audit, report only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: pip-audit
+        run: pip install pip-audit==2.10.1
+      # `--no-deps --disable-pip`: the locks are fully pinned, so nothing is
+      # resolved or installed — the pins themselves are looked up.
+      - name: The auditor sees a known advisory (canary)
+        run: |
+          set -euo pipefail
+          echo "django==3.2.0" > "$RUNNER_TEMP/canary.txt"
+          pip-audit -r "$RUNNER_TEMP/canary.txt" --no-deps --disable-pip --progress-spinner off \
+            -f json -o "$RUNNER_TEMP/canary.json" > /dev/null || true
+          n=$(jq '[.dependencies[] | (.vulns // [])[]] | length' "$RUNNER_TEMP/canary.json")
+          if [ "${n:-0}" -eq 0 ]; then
+            echo "::error::pip-audit found no advisory for django==3.2.0 — the audit below would be blind"
+            exit 1
+          fi
+          echo "canary seen ✓ ($n advisories)"
+      - name: pip-audit — API runtime and dev locks
+        run: |
+          set -euo pipefail
+          total=0
+          echo "### pip-audit" >> "$GITHUB_STEP_SUMMARY"
+          for lock in apps/api/requirements.lock apps/api/requirements-dev.lock; do
+            out="$RUNNER_TEMP/$(basename "$lock").json"
+            # Exit 1 means "vulnerabilities found" — reported, not fatal. A
+            # report that does not parse means the audit did not run.
+            pip-audit -r "$lock" --no-deps --disable-pip --progress-spinner off -f json -o "$out" > /dev/null || true
+            jq -e '.dependencies' "$out" > /dev/null \
+              || { echo "::error::pip-audit produced no readable report for $lock"; exit 1; }
+            n=$(jq '[.dependencies[] | (.vulns // [])[]] | length' "$out")
+            total=$((total + n))
+            {
+              echo
+              echo "**\`$lock\`** — $n advisory(ies)"
+              if [ "$n" -gt 0 ]; then
+                echo
+                echo "| Package | Version | Advisory | Fixed in |"
+                echo "| ------- | ------- | -------- | -------- |"
+                jq -r '.dependencies[] | . as $d | (.vulns // [])[] | "| \($d.name) | \($d.version) | \(.id) | \(.fix_versions | join(", ")) |"' "$out"
+              fi
+            } >> "$GITHUB_STEP_SUMMARY"
+          done
+          if [ "$total" -gt 0 ]; then echo "::warning::pip-audit: $total advisory(ies) — see the run summary"; fi
+
+  scan-node:
+    name: Scan — npm advisories (npm audit, report only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      # Node 22's bundled npm falls back to the retired quick-audit endpoint
+      # (400 "Invalid package tree", then 410); npm 11 uses /advisories/bulk.
+      NPM: npm@11.21.1
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: The auditor sees a known advisory (canary)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/canary" && cd "$RUNNER_TEMP/canary"
+          echo '{"name":"canary","version":"0.0.0","private":true,"dependencies":{"lodash":"4.17.15"}}' > package.json
+          npx --yes "$NPM" install --package-lock-only --ignore-scripts --no-audit --no-fund > /dev/null
+          npx --yes "$NPM" audit --json > audit.json || true
+          n=$(jq '.metadata.vulnerabilities.total // 0' audit.json)
+          if [ "$n" -eq 0 ]; then
+            echo "::error::npm audit found no advisory for lodash@4.17.15 — the audit below would be blind"
+            exit 1
+          fi
+          echo "canary seen ✓ ($n advisories)"
+      - name: npm audit — workspace and e2e lockfiles
+        run: |
+          set -euo pipefail
+          total=0
+          echo "### npm audit" >> "$GITHUB_STEP_SUMMARY"
+          for dir in . tests/e2e; do
+            out="$RUNNER_TEMP/npm-audit-$(echo "$dir" | tr '/.' '__').json"
+            # Exit 1 means "vulnerabilities found" — reported, not fatal.
+            (cd "$dir" && npx --yes "$NPM" audit --json > "$out") || true
+            jq -e '.metadata.vulnerabilities' "$out" > /dev/null \
+              || { echo "::error::npm audit produced no readable report for $dir/package-lock.json"; exit 1; }
+            n=$(jq '.metadata.vulnerabilities.total' "$out")
+            total=$((total + n))
+            {
+              echo
+              echo "**\`$dir/package-lock.json\`** — $n package(s): $(jq -r '.metadata.vulnerabilities | "critical \(.critical), high \(.high), moderate \(.moderate), low \(.low)"' "$out")"
+              if [ "$n" -gt 0 ]; then
+                echo
+                echo "| Package | Severity | Fix available |"
+                echo "| ------- | -------- | ------------- |"
+                jq -r '.vulnerabilities | to_entries[] | "| \(.key) | \(.value.severity) | \(.value.fixAvailable | if type == "object" then "\(.name)@\(.version)" else tostring end) |"' "$out"
+              fi
+            } >> "$GITHUB_STEP_SUMMARY"
+          done
+          if [ "$total" -gt 0 ]; then echo "::warning::npm audit: $total vulnerable package(s) — see the run summary"; fi
+
   latency:
     name: Latency — judge budget
     runs-on: ubuntu-latest

@@ -10,6 +10,16 @@
 # safar qaytadan qo'shish kerak edi — bu texnik qarzga aylanardi.
 title = "RankWant gitleaks"
 
+# ⚠️ SHART (2026-11-10, audit Q-11). gitleaks standart qoidalarni faqat
+# `.gitleaks.toml` umuman BO'LMAGANDA yuklaydi (`cmd/root.go`, v8.30.1).
+# Fayl bor-u `useDefault` yo'q bo'lsa, qoidalar ro'yxati — faqat shu
+# fayldagilar, ya'ni NOL: tepadagi `generic-api-key` o'lchovi fayl
+# qo'shilishidan oldin qilingan, fayl qo'shilgach esa skaner hech narsa
+# ko'rmay qoldi. Nightly `scan-secrets` job'i ataylab qo'yilgan token
+# (kanareyka) bilan buni har yurishda tekshiradi.
+[extend]
+useDefault = true
+
 [allowlist]
 description = "Raqobatchi audit tasvirlari — ochiq captcha site key, sir emas"
 paths = [
