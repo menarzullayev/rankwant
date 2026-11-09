@@ -7641,6 +7641,138 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/staff/problems/{slug}/languages/:
+    get:
+      operationId: staff_problems_languages_list
+      description: 'Per-language rows: limit overrides, editor template, function
+        harness.'
+      summary: Masala tillari (limit, shablon, hakam dasturi)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffProblemLanguageList'
+          description: ''
+  /api/v1/staff/problems/{slug}/languages/{code}/:
+    put:
+      operationId: staff_problems_languages_update
+      description: Create, replace or remove one language row (audit Q-12).
+      summary: Bitta til qatorini yozish yoki o'chirish
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+          pattern: ^[\w.+-]+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffProblemLanguage'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffProblemLanguage'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffProblemLanguage'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblemLanguage'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblemLanguage'
+          description: ''
+        '204':
+          description: No response body
+    delete:
+      operationId: staff_problems_languages_destroy
+      description: Create, replace or remove one language row (audit Q-12).
+      summary: Bitta til qatorini yozish yoki o'chirish
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+          pattern: ^[\w.+-]+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblemLanguage'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblemLanguage'
+          description: ''
+        '204':
+          description: No response body
   /api/v1/staff/problems/{slug}/reference-solution/:
     get:
       operationId: staff_problems_reference_solution_retrieve
@@ -15212,6 +15344,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffPost'
+    PaginatedStaffProblemLanguageList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffProblemLanguage'
     PaginatedStaffProblemList:
       type: object
       required:
@@ -19437,6 +19592,45 @@ components:
       - test_count
       - title
       - updated_at
+    StaffProblemLanguage:
+      type: object
+      description: |-
+        One language row of a problem (audit Q-12, 2026-11-10).
+
+        The row carries a limit override, the editor template and — for a
+        `function` problem — the harness the submission is inserted into. It
+        used to be editable only in the Django admin, which production does
+        not route, so a new function problem could not be authored at all.
+
+        ⚠️ The rows also act as the problem's language allow-list (G-09 in the
+        2026-11-10 audit): once a problem has a row, only languages with a row
+        are offered.
+      properties:
+        language:
+          type: string
+          readOnly: true
+        language_name:
+          type: string
+          readOnly: true
+        time_limit_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        memory_limit_kb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        code_template:
+          type: string
+        harness:
+          type: string
+      required:
+      - language
+      - language_name
     StaffProblemReport:
       type: object
       description: |-

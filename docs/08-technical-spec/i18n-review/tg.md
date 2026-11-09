@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2418 strings.**
+**2424 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2003,6 +2003,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.testsStoredRemotely` | Judge testlarni DB dan emas, S3 dan o'qiydi: matn yuklanganda tests/{slug}/<order>.in/.out sifatida saqlanadi, bu yerda faqat havola ko'rinadi. Bir xil tartib raqami qayta yuklansa — ustiga yoziladi. | Довар тестҳоро аз S3 мехонад, на аз пойгоҳи дода: матни боршуда ҳамчун tests/{slug}/<order>.in/.out нигоҳ дошта мешавад, дар ин ҷо танҳо ҳавола дида мешавад. Ҳамон рақам боз бор шуда, рӯйи он навишта мешавад. |  |
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Ҳанӯз тест нест — ҳалҳо санҷида намешаванд. |  |
 | `admin.text.addTest` | Test qo'shish | Илова кардани тест |  |
+| `admin.text.problemLanguages` | Tillar: limit, shablon va hakam dasturi | Забонҳо: маҳдудиятҳо, қолиб ва ғилоф |  |
+| `admin.help.problemLanguages` | Har til uchun alohida limit va muharrir shabloni. Masalada kamida bitta til qatori bo'lsa, faqat qatori bor tillar taklif qilinadi. | Барои ҳар забон маҳдудият ва қолиби муҳаррир алоҳида. Агар масъала ақаллан як сатри забон дошта бошад, танҳо забонҳои сатрдор пешниҳод мешаванд. |  |
+| `admin.help.harness` | Funksiya masalasi: hakam dasturida yechim o'rni bir marta, alohida qatorda turishi shart: | Масъалаи функсия: дар ғилоф аломати ҳал бояд маҳз як бор, дар сатри алоҳида ояд: |  |
+| `admin.text.harness` | Hakam dasturi | Ғилоф |  |
+| `admin.text.codeTemplate` | Muharrir shabloni | Қолиби муҳаррир |  |
+| `admin.text.noLanguageRows` | Til qatori yo'q — hamma faol tillar umumiy limit bilan taklif qilinadi. | Сатри забон нест — ҳамаи забонҳои фаъол бо маҳдудиятҳои умумии масъала пешниҳод мешаванд. |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Пурбинанда |  |
 | `archive.mostLiked` | Ko'p yoqtirilgan | Бештар маъқул |  |
 | `archive.tagCloud` | Mavzular | Мавзӯъҳо |  |

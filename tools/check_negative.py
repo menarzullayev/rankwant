@@ -4018,6 +4018,26 @@ def neg_decisions_uz_tier_name_translated() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_harness_saved_unchecked() -> tuple[bool, str]:
+    """The staff serializer stops validating the harness marker."""
+    return _decision_broken(
+        "apps/api/problems/staff_serializers.py",
+        "            error = taskkinds.harness_error(harness)\n",
+        "            error = None\n",
+        "hakam dasturi tekshirilmasdan saqlanadi",
+    )
+
+
+def neg_decisions_languages_panel_unmounted() -> tuple[bool, str]:
+    """The languages panel is no longer rendered under a problem row."""
+    return _decision_broken(
+        "apps/web/src/components/admin/ProblemsAdmin.tsx",
+        "            <ProblemLanguagesPanel problem={p} />\n",
+        "",
+        "tillar paneli xodim panelida chizilmaydi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -6933,6 +6953,10 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Staff harness editor (2026-11-10).
+    "apps/api/problems/staff_views.py",
+    "apps/api/problems/staff_serializers.py",
+    "apps/web/src/components/admin/ProblemsAdmin.tsx",
     # Untranslated names (2026-11-10): the checker, the glossary and Uzbek tier names.
     "tools/check_i18n.py",
     "apps/web/src/i18n/glossary.ts",
@@ -10426,6 +10450,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
             ("glossariy tekshiruvi uzilsa tutilsin", neg_decisions_glossary_check_unwired),
             ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),
+            ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),
+            ("tillar paneli chizilmasa tutilsin", neg_decisions_languages_panel_unmounted),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),

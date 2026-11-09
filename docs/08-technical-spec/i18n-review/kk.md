@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2418 strings.**
+**2424 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2003,6 +2003,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.testsStoredRemotely` | Judge testlarni DB dan emas, S3 dan o'qiydi: matn yuklanganda tests/{slug}/<order>.in/.out sifatida saqlanadi, bu yerda faqat havola ko'rinadi. Bir xil tartib raqami qayta yuklansa — ustiga yoziladi. | Төреші тесттерді ДБ-дан емес, S3-тен оқиды: жүктелген мәтін tests/{slug}/<order>.in/.out түрінде сақталады, мұнда тек сілтеме көрінеді. Сол нөмір қайта жүктелсе — үстіне жазылады. |  |
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Әзірге тест жоқ — шешімдер тексерілмейді. |  |
 | `admin.text.addTest` | Test qo'shish | Тест қосу |  |
+| `admin.text.problemLanguages` | Tillar: limit, shablon va hakam dasturi | Тілдер: шектеулер, үлгі және қаптама |  |
+| `admin.help.problemLanguages` | Har til uchun alohida limit va muharrir shabloni. Masalada kamida bitta til qatori bo'lsa, faqat qatori bor tillar taklif qilinadi. | Әр тілге жеке шектеу және редактор үлгісі. Есепте кемінде бір тіл жолы болса, тек жолы бар тілдер ұсынылады. |  |
+| `admin.help.harness` | Funksiya masalasi: hakam dasturida yechim o'rni bir marta, alohida qatorda turishi shart: | Функция есебі: қаптамада шешім белгісі дәл бір рет, жеке жолда тұруы керек: |  |
+| `admin.text.harness` | Hakam dasturi | Қаптама |  |
+| `admin.text.codeTemplate` | Muharrir shabloni | Редактор үлгісі |  |
+| `admin.text.noLanguageRows` | Til qatori yo'q — hamma faol tillar umumiy limit bilan taklif qilinadi. | Тіл жолы жоқ — барлық белсенді тілдер есептің жалпы шектеулерімен ұсынылады. |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Көп қаралған |  |
 | `archive.mostLiked` | Ko'p yoqtirilgan | Көп ұнайтын |  |
 | `archive.tagCloud` | Mavzular | Тақырыптар |  |

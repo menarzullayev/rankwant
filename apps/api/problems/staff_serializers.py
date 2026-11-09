@@ -2,15 +2,16 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 from rest_framework import serializers
 
-from problems import evaluation, readiness, release, testgroups
+from problems import evaluation, readiness, release, taskkinds, testgroups
 from problems.models import (
     DIFFICULTY_STEP,
     Language,
     Problem,
+    ProblemLanguage,
     ProblemReport,
     ProblemRevision,
     ReferenceSolution,
@@ -182,6 +183,56 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         if value % DIFFICULTY_STEP:
             raise serializers.ValidationError(f"Value must be a multiple of {DIFFICULTY_STEP}")
         return value
+
+
+class StaffProblemLanguageSerializer(serializers.ModelSerializer[ProblemLanguage]):
+    """One language row of a problem (audit Q-12, 2026-11-10).
+
+    The row carries a limit override, the editor template and — for a
+    `function` problem — the harness the submission is inserted into. It
+    used to be editable only in the Django admin, which production does
+    not route, so a new function problem could not be authored at all.
+
+    ⚠️ The rows also act as the problem's language allow-list (G-09 in the
+    2026-11-10 audit): once a problem has a row, only languages with a row
+    are offered.
+    """
+
+    language = serializers.CharField(source="language.code", read_only=True)
+    language_name = serializers.CharField(source="language.name", read_only=True)
+
+    class Meta:
+        model = ProblemLanguage
+        fields = [
+            "language",
+            "language_name",
+            "time_limit_ms",
+            "memory_limit_kb",
+            "code_template",
+            "harness",
+        ]
+        # Code: DRF trims a CharField by default, which dropped the harness's
+        # final newline (caught by the round-trip test).
+        extra_kwargs: ClassVar[dict[str, dict[str, Any]]] = {
+            "code_template": {"trim_whitespace": False},
+            "harness": {"trim_whitespace": False},
+        }
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        problem: Problem = self.context["problem"]
+        language: Language = self.context["language"]
+        harness = attrs.get("harness", "")
+        if problem.task_kind == Problem.TaskKind.FUNCTION:
+            if not taskkinds.supports_function(language.code):
+                raise serializers.ValidationError(
+                    {"language": f"{language.code} cannot run function problems"}
+                )
+            error = taskkinds.harness_error(harness)
+            if error:
+                raise serializers.ValidationError({"harness": error})
+        elif harness.strip():
+            raise serializers.ValidationError({"harness": "only function problems use a harness"})
+        return attrs
 
 
 class StaffTestCaseSerializer(serializers.ModelSerializer[TestCase]):
