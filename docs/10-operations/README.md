@@ -368,8 +368,8 @@ tekinga beradigan narsani qimmat qiladi.
 | Risk | Holat |
 | ---- | ----- |
 | Judge ommaviy koddan bajaradi | Sandbox 14/14 izolyatsiya sinovidan o'tgan, lekin konteyner `--privileged`. To'xtatish: `docker compose ... stop judge` |
-| Demo hisoblar (`ustoz`, `oquvchi1..3`) zaif parolli | Ko'rsatuv uchun ataylab qoldirilgan; ommaviy e'lon oldidan o'chirilsin |
-| Ro'yxatdan o'tish ochiq | Cheklov yo'q — abuse qatlami ([test-strategy § 12](test-strategy.md)) hali qurilmagan |
+| ~~Demo hisoblar (`ustoz`, `oquvchi1..3`) zaif parolli~~ | **Yopilgan.** Bu hisoblar mavjud emas; `demo` ning paroli bo'sh, ya'ni u bilan kirib bo'lmaydi (2026-09-21 o'lchandi, 2026-11-10 hujjatda tuzatildi) |
+| Ro'yxatdan o'tish ochiq | Turnstile (faqat ro'yxatdan o'tishda), `THROTTLE_REGISTER` va noto'g'ri kirish cheklovi (2026-10-05) bor; to'liq abuse qatlami ([test-strategy § 12](test-strategy.md)) hali qurilmagan |
 | 10 tilning tarjimasi ona tilida so'zlashuvchi tomonidan ko'rilmagan | Kalitlar to'liq va `check_i18n.py` buni qo'riqlaydi, lekin matn sifati tekshirilmagan — ayniqsa qoraqalpoq, tojik va qirg'iz. Qaror (2026-09-10): shikoyat kelganda tuzatiladi |
 
 ## Muhitlar
@@ -377,10 +377,10 @@ tekinga beradigan narsani qimmat qiladi.
 | Muhit    | Manzil                  | Izoh                                       |
 | -------- | ----------------------- | ------------------------------------------ |
 | Local    | docker-compose          | api + postgres + redis + 1 judge worker    |
-| Staging  | `staging.rankwant.uz`   | production bilan bir xil topologiya, kichik |
-| Prod     | `rankwant.uz`           | judge alohida hostlarda                    |
+| Staging  | —                       | **yo'q** — ADR-0040 kechiktirilgan; 2026-09-24 qarori: development bosqichida qurilmaydi |
+| Prod     | `rankwant.uz`           | **bitta mashina** (Docker Desktop); judge shu hostda alohida konteynerda — to'rt-hostli topologiya qurilmagan (ADR-0047) |
 
-Staging'da ham judge **alohida** konteynerda — izolyatsiyani local'da sinash uchun.
+Yuqoridagi «staging» va «judge alohida hostlarda» qatorlari 2026-11-10 gacha shu yerda turardi — ular reja edi, holat emas (audit Q-14).
 
 ## Deploy qoidalari
 
@@ -390,7 +390,7 @@ Quyidagilar — qoidalar, buyruqlar emas.
 1. **Live contest paytida deploy YO'Q.** Bu qattiq qoida — contest davomida verdict yoki standings o'zgarishi natijani buzadi. Deploy oynasi contest jadvalidan tekshiriladi.
 2. Migration'lar oldinga mos: `add column → backfill → switch → drop`, alohida deploylarda ([08](../08-technical-spec/README.md) 🔒)
 3. Judge worker'lar **navbatni bo'shatib** to'xtaydi (graceful drain) — ishlayotgan submit yo'qolmaydi
-4. Rollback: oldingi image tegi; migration rollback **rejalashtirilgan** bo'lishi shart
+4. Rollback: SHA image teglari **saqlanmaydi** (2026-09-20 — disk o'sishi) — kod kerakli commit'ni `tools/deploy.sh` bilan qayta qurib qaytariladi; sxema faqat deploy oldidagi `pg-deploy` dump'idan **qo'lda** tiklanadi. 2026-09-24 qarori: development bosqichida rollback infratuzilmasi qurilmaydi
 5. **Kod o'zgargach deploy qilinadi — CI yashilligi deploy qilinganini bildirmaydi.** Pastdagi bo'limga qarang.
 
 ### Eskirgan konteyner — CI ko'rmaydigan nosozlik sinfi
@@ -729,8 +729,8 @@ Judge izolyatsiya sinovlari (fork bomb, fayl, tarmoq, `/proc`, symlink) — **CI
 
 ## CI/CD
 
-GitHub Actions: lint → `mypy` strict → test → OpenAPI diff → build → staging deploy.
-Prod deploy **qo'lda tasdiqlash** bilan (contest oynasi tekshiruvi tufayli).
+GitHub Actions (PR): lint → `mypy` strict → test → OpenAPI diff → build; bitta `Required checks` yig'uvchisi merge'ni to'xtatadi.
+Deploy — **host watcher** (`RankWant Auto Deploy`, `tools/auto_deploy.sh`): `main` CI yashil bo'lgach avtomatik, contest oynasi `tools/check_deploy_window.py` bilan tekshiriladi (2026-09-19 qarori). Staging yo'q.
 
 ### Runner
 
@@ -962,8 +962,8 @@ Hosting qarori keyinga qoldirilgan (pastga qarang).
 
 ## Release va rollback
 
-**Release:** CI → staging → **prod qo'lda tasdiqlash** (contest oynasi
-tekshiriladi).
+**Release:** PR → CI yashil → merge → host watcher avtomatik deploy
+(contest oynasi tekshiriladi). Staging bosqichi yo'q.
 
 **Rollback:**
 
