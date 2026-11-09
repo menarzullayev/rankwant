@@ -2090,6 +2090,8 @@ export const kk: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — қиындығы {difficulty}. RankWant есептер мұрағаты.",
   "problem.partialScoring": "Ішінара балл",
   "problem.testsPreparing": "Тесттер дайындалуда",
+  "problem.samplesOnly": "Тек мысал тесттері",
+  "problem.samplesOnlyHint": "Жасырын тест жоқ: шешім профильде қалады, бірақ Skills рейтингіне және Qvant-қа есептелмейді.",
   "problem.backToContest": "Жарысқа қайту",
   "problem.countedInContest": "Шешім {contest} жарысының есебіне жазылады.",
   "problem.inputFormat": "Кіріс деректері",

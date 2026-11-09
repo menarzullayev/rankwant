@@ -17450,6 +17450,9 @@ components:
         has_tests:
           type: boolean
           readOnly: true
+        has_hidden_tests:
+          type: boolean
+          readOnly: true
         likes_count:
           type: integer
           maximum: 9223372036854775807
@@ -17602,6 +17605,7 @@ components:
       - editorial
       - editorial_state
       - has_editorial
+      - has_hidden_tests
       - has_tests
       - is_favourite
       - is_solved
@@ -17730,6 +17734,9 @@ components:
         has_tests:
           type: boolean
           readOnly: true
+        has_hidden_tests:
+          type: boolean
+          readOnly: true
         likes_count:
           type: integer
           maximum: 9223372036854775807
@@ -17753,6 +17760,7 @@ components:
       - author
       - difficulty
       - has_editorial
+      - has_hidden_tests
       - has_tests
       - is_favourite
       - is_solved
