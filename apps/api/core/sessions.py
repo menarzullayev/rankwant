@@ -57,6 +57,19 @@ def record(request: Any, *, force: bool = False) -> None:
     cache.set(mark, 1, TOUCH_EVERY)
 
 
+def prune_dead() -> int:
+    """Delete the IP and browser rows of sessions that no longer exist.
+
+    `live()` prunes one user's rows only when that user opens the device
+    list, so a row of an expired session could stay forever. The privacy
+    policy says the row lives as long as the session (audit Q-06), and the
+    daily beat task makes that true for everyone.
+    """
+    alive = Session.objects.filter(expire_date__gt=timezone.now()).values("session_key")
+    deleted, _ = UserSession.objects.exclude(session_key__in=alive).delete()
+    return deleted
+
+
 def live(user: User) -> list[UserSession]:
     rows = list(UserSession.objects.filter(user=user))
     alive = set(

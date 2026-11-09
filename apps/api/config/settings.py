@@ -525,6 +525,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "core.finalize_deletions",
         "schedule": 3600.0,
     },
+    # Audit Q-06: an expired session's IP and browser row is not kept.
+    "prune-dead-sessions": {
+        "task": "core.prune_dead_sessions",
+        "schedule": 86400.0,
+    },
     "finalize-due-arena": {
         "task": "arena.finalize_due",
         "schedule": 60.0,
