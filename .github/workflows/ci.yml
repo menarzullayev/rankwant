@@ -505,7 +505,12 @@ jobs:
     needs: filter
     if: ${{ needs.filter.outputs.judge == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    # 5, not 3 (2026-11-10, audit Q-09): this job now blocks merges through
+    # `required`, so a cancel for time is a blocked PR. Measured on a full
+    # run of this branch: every step green (Go 43 s, judge-py 10 s), then
+    # the pip cache save in `Post Run actions/setup-python` took 116 s and
+    # the 3-minute cap cancelled a passing job.
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
