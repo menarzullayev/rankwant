@@ -539,7 +539,7 @@ jobs:
   #: disabled (owner decision 2026-09-21: `workflow_dispatch` + `if: false`),
   #: so none of them ran anywhere. The owner chose Nightly, report-only:
   #:   * a FINDING never fails the job — it is a `::warning::` and a table on
-  #:     the run page, so a new advisory upstream cannot turn Nightly red and
+  #:     the run page (also in the log), so a new advisory upstream cannot turn Nightly red and
   #:     hide the gates that do block;
   #:   * a BROKEN SCANNER does fail it. Each job first feeds its tool a planted
   #:     finding (a canary) and fails when the tool does not see it, and the
@@ -591,7 +591,7 @@ jobs:
               echo "| ---- | ---- | ------ |"
               jq -r '.[] | "| \(.RuleID) | `\(.File)` | `\(.Commit[0:8])` |"' gitleaks.json
             fi
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
           if [ "$n" -gt 0 ]; then echo "::warning::gitleaks: $n finding(s) — see the run summary"; fi
 
   scan-python:
@@ -623,7 +623,7 @@ jobs:
         run: |
           set -euo pipefail
           total=0
-          echo "### pip-audit" >> "$GITHUB_STEP_SUMMARY"
+          echo "### pip-audit" | tee -a "$GITHUB_STEP_SUMMARY"
           for lock in apps/api/requirements.lock apps/api/requirements-dev.lock; do
             out="$RUNNER_TEMP/$(basename "$lock").json"
             # Exit 1 means "vulnerabilities found" — reported, not fatal. A
@@ -642,7 +642,7 @@ jobs:
                 echo "| ------- | ------- | -------- | -------- |"
                 jq -r '.dependencies[] | . as $d | (.vulns // [])[] | "| \($d.name) | \($d.version) | \(.id) | \(.fix_versions | join(", ")) |"' "$out"
               fi
-            } >> "$GITHUB_STEP_SUMMARY"
+            } | tee -a "$GITHUB_STEP_SUMMARY"
           done
           if [ "$total" -gt 0 ]; then echo "::warning::pip-audit: $total advisory(ies) — see the run summary"; fi
 
@@ -676,7 +676,7 @@ jobs:
         run: |
           set -euo pipefail
           total=0
-          echo "### npm audit" >> "$GITHUB_STEP_SUMMARY"
+          echo "### npm audit" | tee -a "$GITHUB_STEP_SUMMARY"
           for dir in . tests/e2e; do
             out="$RUNNER_TEMP/npm-audit-$(echo "$dir" | tr '/.' '__').json"
             # Exit 1 means "vulnerabilities found" — reported, not fatal.
@@ -694,7 +694,7 @@ jobs:
                 echo "| ------- | -------- | ------------- |"
                 jq -r '.vulnerabilities | to_entries[] | "| \(.key) | \(.value.severity) | \(.value.fixAvailable | if type == "object" then "\(.name)@\(.version)" else tostring end) |"' "$out"
               fi
-            } >> "$GITHUB_STEP_SUMMARY"
+            } | tee -a "$GITHUB_STEP_SUMMARY"
           done
           if [ "$total" -gt 0 ]; then echo "::warning::npm audit: $total vulnerable package(s) — see the run summary"; fi
 
