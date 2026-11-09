@@ -2420,6 +2420,34 @@ def samples_only_problems_earn_nothing() -> str | None:
     return None
 
 
+def privacy_text_matches_the_data() -> str | None:
+    """2026-11-10 (HITL, audit Q-06): maxfiylik matni haqiqiy yig'iladigan ma'lumotni aytadi.
+
+    O'lchandi: matn telefon, tug'ilgan sana, manzil, ta'lim, sessiya IP'si va
+    Codeforces'dan import qilingan ~974 ming profilni tilga olmasdi, «yosh
+    so'ralmaydi» derdi — onboarding esa 2026-10-26 dan tug'ilgan sanani
+    so'raydi. Matn uch tilda moslandi; sessiya IP yozuvi «sessiya amal
+    qilguncha» saqlanishi uchun kunlik tozalash vazifasi qo'shildi.
+    """
+    legal = read("apps/web/src/content/legal.ts")
+    privacy = legal.split("export const PRIVACY", 1)[-1].split("export const TERMS", 1)[0]
+    blocks = {"uz": privacy.split("  ru: {", 1)[0], "ru": privacy.split("  ru: {", 1)[-1].split("  en: {", 1)[0], "en": privacy.split("  en: {", 1)[-1]}
+    must = {
+        "uz": ("telefon raqami", "tug'ilgan sana", "Codeforces", "IP manzil", "14 kun"),
+        "ru": ("номер телефона", "дата рождения", "Codeforces", "IP-адрес", "14 дней"),
+        "en": ("phone number", "date of birth", "Codeforces", "IP address", "14 days"),
+    }
+    for locale, words in must.items():
+        for word in words:
+            if word not in blocks[locale]:
+                return f"legal.ts: maxfiylik matni ({locale}) «{word}» ni aytmaydi"
+    if "yosh haqida ma'lumot so'ramaymiz" in privacy:
+        return "legal.ts: «yosh so'ralmaydi» qaytdi — onboarding tug'ilgan sanani so'raydi"
+    if '"task": "core.prune_dead_sessions"' not in read("apps/api/config/settings.py"):
+        return "settings.py: muddati o'tgan sessiya IP yozuvlari tozalanmaydi"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -2522,6 +2550,36 @@ def required_checks_cover_every_gate() -> str | None:
         return "runner-selftest.yml: qo'ldan boshqa trigger bor — self-hosted noutbukda o'zi yuradi"
     if "is not scaffolded yet" in _workflow_job(ci, "judge"):
         return "ci.yml: judge job'ida «not scaffolded yet» qo'riqchisi — modul yo'qolsa ham yashil"
+    return None
+
+
+def scanners_report_in_nightly() -> str | None:
+    """2026-11-10 (HITL, audit Q-11): gitleaks, pip-audit, npm audit — Nightly'da, faqat hisobot.
+
+    Uchalasi faqat o'chirilgan `security.yml` da edi (egasi qarori 2026-09-21),
+    ya'ni hech qayerda yurmasdi. Endi Nightly'da: topilma — ogohlantirish va
+    jadval, job'ni yiqitmaydi; skanerning o'zi ko'r bo'lsa — yiqiladi (har
+    job avval ataylab qo'yilgan topilmani ko'rishi shart).
+
+    O'lchandi: `.gitleaks.toml` da `[extend] useDefault = true` yo'q edi ⇒
+    gitleaks NOL qoida bilan yurardi. PR'da esa hech biri yo'q — birlashtirishni
+    to'smasin.
+    """
+    nightly = read(".github/workflows/nightly.yml")
+    for job, tool in (("scan-secrets", "gitleaks"), ("scan-python", "pip-audit"), ("scan-node", "npm audit")):
+        body = _workflow_job(nightly, job)
+        if not body:
+            return f"nightly.yml: `{job}` job'i yo'q — {tool} hech qayerda yurmaydi"
+        if not re.search(r"^      - name: .*\(canary\)$", body, re.M):
+            return f"nightly.yml: `{job}` kanareykasiz — ko'r {tool} «0 topilma» deb yashil chiqadi"
+    if "--exit-code 0 --report-format json" not in _workflow_job(nightly, "scan-secrets"):
+        return "nightly.yml: gitleaks topilmada yiqiladi — skanerlar faqat hisobot beradi"
+    if not re.search(r"^\[extend\]\nuseDefault = true$", read(".gitleaks.toml"), re.M):
+        return ".gitleaks.toml: `[extend] useDefault = true` yo'q — gitleaks nol qoida bilan yuradi"
+    ci = read(".github/workflows/ci.yml")
+    for tool in ("gitleaks", "pip-audit", "npm audit", "npm@11 audit"):
+        if re.search(rf"^\s+(?!#).*\b{re.escape(tool)}\b", ci, re.M):
+            return f"ci.yml: `{tool}` PR CI'da — skanerlar birlashtirishni to'smasligi kerak"
     return None
 
 
@@ -3961,9 +4019,11 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
+    ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
+    ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
