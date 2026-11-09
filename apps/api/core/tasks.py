@@ -164,3 +164,14 @@ def finalize_deletions() -> int:
     if count:
         log.info("accounts anonymized after the grace period: %s", count)
     return count
+
+
+@shared_task(name="core.prune_dead_sessions")
+def prune_dead_sessions() -> int:
+    """Removes the IP and browser rows of expired sessions (audit Q-06)."""
+    from core import sessions
+
+    count = sessions.prune_dead()
+    if count:
+        log.info("expired session rows removed: %s", count)
+    return count

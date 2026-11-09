@@ -510,18 +510,22 @@ jobs:
     needs: filter
     if: ${{ needs.filter.outputs.judge == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    # 5, not 3 (2026-11-10, audit Q-09): this job now blocks merges through
+    # `required`, so a cancel for time is a blocked PR. Measured on a full
+    # run of this branch: every step green (Go 43 s, judge-py 10 s), then
+    # the pip cache save in `Post Run actions/setup-python` took 116 s and
+    # the 3-minute cap cancelled a passing job.
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
           go-version: '1.26'
+      # No "not scaffolded yet" guards (2026-11-10, audit L-04): both judges
+      # exist, and a guard that exits 0 on a missing file would turn a
+      # deleted or renamed module into a green job.
       - name: Go — vet, format, build, test
         run: |
-          if [ ! -f services/judge-go/go.mod ]; then
-            echo "judge-go is not scaffolded yet — skipped"
-            exit 0
-          fi
           cd services/judge-go
           test -z "$(gofmt -l .)" || { echo "::error::gofmt: $(gofmt -l .)"; exit 1; }
           go vet ./...
@@ -534,10 +538,6 @@ jobs:
           cache-dependency-path: services/judge-py/pyproject.toml
       - name: Python judge — lint, types, test
         run: |
-          if [ ! -f services/judge-py/pyproject.toml ]; then
-            echo "judge-py is not scaffolded yet — skipped"
-            exit 0
-          fi
           cd services/judge-py
           pip install -e '.[dev]'
           ruff check .
@@ -586,4 +586,43 @@ jobs:
         run: python3 tools/check_notification_codes.py
       - name: .env.example completeness (variables read by code and compose)
         run: python3 tools/check_env_example.py
+
+  # ONE check the `main` ruleset requires for every gate (2026-11-10, audit
+  # Q-09). Before, the ruleset required only `Path filter` and `Docs and
+  # contract integrity`, so a PR whose API tests, Web build or Judge tests
+  # were red could still be merged. Those jobs cannot be required one by
+  # one: path filters skip them, and a skipped matrix job reports under its
+  # unexpanded name (`API tests (${{ matrix.shard }}/3)`), which no required
+  # check can match. This job reads every result instead.
+  #
+  # ⚠️ `always()`, not `!cancelled()`: a SKIPPED required check counts as
+  # passed on GitHub, so this job must run — and fail — when a gate was
+  # cancelled or timed out. `filter` must be `success`: when it fails every
+  # gate below it is skipped, and "all skipped" would otherwise read green.
+  required:
+    name: Required checks
+    needs: [filter, api, api_tests, web, judge, integrity]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Every gate passed or was skipped by the path filter
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+          echo "$NEEDS" | jq -r 'to_entries[] | "\(.key)\t\(.value.result)"' | tee results.tsv
+          bad=0
+          while IFS=$'\t' read -r job result; do
+            if [ "$job" = "filter" ] && [ "$result" != "success" ]; then
+              echo "::error::Path filter ${result} — the gates behind it never ran"
+              bad=1
+            elif [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+              echo "::error::${job}: ${result}"
+              bad=1
+            fi
+          done < results.tsv
+          # An empty table would pass the loop: `needs` was not read.
+          [ "$(wc -l < results.tsv)" -eq 6 ] || { echo "::error::expected 6 gates, read $(wc -l < results.tsv)"; exit 1; }
+          exit "$bad"
 

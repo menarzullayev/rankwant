@@ -3253,6 +3253,76 @@ def neg_decisions_smoke_skipped_after_visual() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_required_ignores_api_tests() -> tuple[bool, str]:
+    """The aggregator stops reading the API test matrix: red tests merge."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "    needs: [filter, api, api_tests, web, judge, integrity]\n",
+        "    needs: [filter, api, web, judge, integrity]\n",
+        "`api_tests` natijasini o'qimaydi",
+    )
+
+
+def neg_decisions_required_skips_on_cancel() -> tuple[bool, str]:
+    """`!cancelled()` instead of `always()`: a skipped required check is green."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "    needs: [filter, api, api_tests, web, judge, integrity]\n    if: ${{ always() }}\n",
+        "    needs: [filter, api, api_tests, web, judge, integrity]\n    if: ${{ !cancelled() }}\n",
+        "`always()` siz",
+    )
+
+
+def neg_decisions_required_renamed() -> tuple[bool, str]:
+    """The job name the ruleset waits for changes: every PR would hang."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "    name: Required checks\n",
+        "    name: CI passed\n",
+        "«Required checks» emas",
+    )
+
+
+def neg_decisions_runner_selftest_on_push() -> tuple[bool, str]:
+    """The self-hosted self-test gets a push trigger back (L-04)."""
+    return _decision_broken(
+        ".github/workflows/runner-selftest.yml",
+        "on:\n  workflow_dispatch:\n",
+        "on:\n  workflow_dispatch:\n  push:\n    branches: [feat/single-engine-runner]\n",
+        "self-hosted noutbukda o'zi yuradi",
+    )
+
+
+def neg_decisions_gitleaks_loses_default_rules() -> tuple[bool, str]:
+    """`useDefault` goes: gitleaks runs with zero rules and reports nothing."""
+    return _decision_broken(
+        ".gitleaks.toml",
+        "[extend]\nuseDefault = true\n",
+        "",
+        "gitleaks nol qoida bilan yuradi",
+    )
+
+
+def neg_decisions_gitleaks_canary_dropped() -> tuple[bool, str]:
+    """The planted-token step goes: a blind scanner reads as a clean history."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "      - name: The scanner sees a planted token (canary)\n",
+        "      - name: The scanner sees a planted token\n",
+        "`scan-secrets` kanareykasiz",
+    )
+
+
+def neg_decisions_scanner_blocks_prs() -> tuple[bool, str]:
+    """pip-audit lands in PR CI: an upstream advisory would block every merge."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "      - name: Ruff\n",
+        "      - name: Audit\n        run: pip install pip-audit && pip-audit -r requirements.lock\n      - name: Ruff\n",
+        "`pip-audit` PR CI'da",
+    )
+
+
 def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
@@ -3839,6 +3909,26 @@ def neg_decisions_recount_signal_not_loaded() -> tuple[bool, str]:
         "        from problems import signals  # noqa: F401\n",
         "        pass\n",
         "yashirin test qo'shilganda Skills qayta hisoblanmaydi",
+    )
+
+
+def neg_decisions_privacy_forgets_imported_profiles() -> tuple[bool, str]:
+    """The Russian privacy text stops saying where the imported accounts come from."""
+    return _decision_broken(
+        "apps/web/src/content/legal.ts",
+        "открытых профилей Codeforces",
+        "открытых профилей",
+        "«Codeforces» ni aytmaydi",
+    )
+
+
+def neg_decisions_session_rows_kept() -> tuple[bool, str]:
+    """The daily task that drops expired session rows is unscheduled."""
+    return _decision_broken(
+        "apps/api/config/settings.py",
+        '"task": "core.prune_dead_sessions"',
+        '"task": "core.prune_dead_sessions_off"',
+        "sessiya IP yozuvlari tozalanmaydi",
     )
 
 
@@ -6650,6 +6740,8 @@ _DECISIONS_SANDBOX_FILES = (
     "docker-compose.yml",
     "docker-compose.public.yml",
     "docker-compose.ci.yml",
+    # Q-11 (2026-11-10): gitleaks loads zero rules without `useDefault`.
+    ".gitleaks.toml",
     "docker-compose.replicas.yml",
     # Developer tools (2026-09-21): `check_security_boundary.py` measures this
     # overlay, and the `adminer` rule reads it directly. Missing here,
@@ -6822,6 +6914,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/qvant/marathon.py",
     "apps/api/problems/apps.py",
     "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
+    # Privacy text (2026-11-10): the policy and the session-retention task.
+    "apps/web/src/content/legal.ts",
     # Judge latency gate (2026-09-21): the rule reads the harness to prove the
     # budget comparison still exists — a gate whose comparison is gone still
     # exits 0, i.e. green but measuring nothing. The compose service and the
@@ -10304,12 +10398,21 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("namunasiz masala Qvant bersa tutilsin", neg_decisions_samples_only_pays_qvant),
             ("marafon namunasiz masalani tanlasa tutilsin", neg_decisions_marathon_draws_samples_only),
             ("qayta hisoblash signali yuklanmasa tutilsin", neg_decisions_recount_signal_not_loaded),
+            ("maxfiylik matni importni unutsa tutilsin", neg_decisions_privacy_forgets_imported_profiles),
+            ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("api_tests job olib tashlansa tutilsin", neg_decisions_api_tests_job_removed),
             ("api_tests yo'l filtrisiz qolsa tutilsin", neg_decisions_api_tests_lose_path_filter),
+            ("gitleaks standart qoidalarsiz qolsa tutilsin", neg_decisions_gitleaks_loses_default_rules),
+            ("gitleaks kanareykasi olib tashlansa tutilsin", neg_decisions_gitleaks_canary_dropped),
+            ("skaner PR CI'ga tushsa tutilsin", neg_decisions_scanner_blocks_prs),
+            ("umumlashtiruvchi API testlarini o'qimasa tutilsin", neg_decisions_required_ignores_api_tests),
+            ("umumlashtiruvchi bekor qilinganda skipped bo'lsa tutilsin", neg_decisions_required_skips_on_cancel),
+            ("umumlashtiruvchi nomi o'zgarsa tutilsin", neg_decisions_required_renamed),
+            ("runner self-test push bilan yursa tutilsin", neg_decisions_runner_selftest_on_push),
             ("bake-off yana yumshatilsa tutilsin", neg_decisions_bakeoff_soft_again),
             ("bake-off vizualdan keyin o'tkazilsa tutilsin", neg_decisions_bakeoff_skipped_after_visual),
             ("smoke vizualdan keyin o'tkazilsa tutilsin", neg_decisions_smoke_skipped_after_visual),
