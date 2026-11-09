@@ -1125,7 +1125,6 @@ export const es: Record<MessageKey, string> = {
   "loading.style.progress": "Barra de progreso",
   "loading.style.progressHint": "Para la parte superior de la página o una tarea larga.",
 
-  // TODO i18n: translate 16 new tier names to es
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1583,7 +1582,7 @@ export const es: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "El actual — tarjetas suaves",
-  "style.swiss.label": "Suizo",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "Líneas y tipografía",
   "style.flat.label": "Flat",
   "style.flat.hint": "Sin sombras, colores limpios",
@@ -1591,7 +1590,7 @@ export const es: Record<MessageKey, string> = {
   "style.material.hint": "Elevación y sombras",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "Serif, aspecto de revista",
-  "style.brutal.label": "Neobrutalismo",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "Bordes gruesos, sombras duras",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "Monoespaciada, consola",
@@ -1603,7 +1602,7 @@ export const es: Record<MessageKey, string> = {
   "style.clay.hint": "Arcilla, volumétrico",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "Fondo degradado",
-  "style.skeu.label": "Esqueumorfismo",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "Metal y relieve",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----
@@ -2066,6 +2065,12 @@ export const es: Record<MessageKey, string> = {
   "admin.help.testsStoredRemotely": "El juez lee las pruebas de S3, no de la base de datos: el texto subido se guarda como tests/{slug}/<order>.in/.out, y aquí solo se muestra la referencia. Volver a subir el mismo número lo sobrescribe.",
   "admin.text.noTestsYet": "Todavía no hay pruebas: los envíos no se evalúan.",
   "admin.text.addTest": "Añadir una prueba",
+  "admin.text.problemLanguages": "Lenguajes: límites, plantilla y arnés",
+  "admin.help.problemLanguages": "Un límite y una plantilla de editor por lenguaje. Si el problema tiene alguna fila de lenguaje, solo se ofrecen los lenguajes con fila.",
+  "admin.help.harness": "Problema de función: el arnés debe contener la marca de la solución exactamente una vez, en su propia línea:",
+  "admin.text.harness": "Arnés",
+  "admin.text.codeTemplate": "Plantilla del editor",
+  "admin.text.noLanguageRows": "Sin filas de lenguaje: se ofrecen todos los lenguajes activos con los límites del problema.",
   "archive.mostViewed": "Más vistos",
   "archive.mostLiked": "Más gustados",
   "archive.tagCloud": "Temas",

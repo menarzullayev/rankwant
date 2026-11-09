@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2418 strings.**
+**2424 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -172,7 +172,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `update.module.arena` | Bellashuvlar | Bellesiwler |  |
 | `update.module.judge` | Tekshiruv | Tekseriw |  |
 | `update.module.ratings` | Reyting | Reyting |  |
-| `update.module.qvant` | Qvant | Kvant |  |
+| `update.module.qvant` | Qvant | Qvant |  |
 | `update.module.profile` | Profil | Profil |  |
 | `update.module.classroom` | Sinf | Klass |  |
 | `update.module.quizzes` | Testlar | Testler |  |
@@ -1087,22 +1087,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `loading.style.pulseIconHint` | Live indikator uchun. | Tiri indikator ushın. |  |
 | `loading.style.progress` | Progress chizig'i | Ilgerilew sızıǵı |  |
 | `loading.style.progressHint` | Sahifa yuqorisi yoki uzoq amal uchun. | Bettiń joqarısı yamasa uzın jumıs ushın. |  |
-| `title.quark` | Kvark | Quark |  |
+| `title.quark` | Quark | Quark |  |
 | `title.atom` | Atom | Atom |  |
-| `title.molecule` | Molekula | Molecule |  |
-| `title.droplet` | Tomchi | Droplet |  |
-| `title.meteorite` | Meteorit | Meteorite |  |
-| `title.comet` | Kometa | Comet |  |
-| `title.moon` | Oy | Moon |  |
-| `title.planet` | Sayyora | Planet |  |
-| `title.star` | Yulduz | Star |  |
+| `title.molecule` | Molecule | Molecule |  |
+| `title.droplet` | Droplet | Droplet |  |
+| `title.meteorite` | Meteorite | Meteorite |  |
+| `title.comet` | Comet | Comet |  |
+| `title.moon` | Moon | Moon |  |
+| `title.planet` | Planet | Planet |  |
+| `title.star` | Star | Star |  |
 | `title.supernova` | Supernova | Supernova |  |
 | `title.pulsar` | Pulsar | Pulsar |  |
 | `title.magnetar` | Magnetar | Magnetar |  |
-| `title.black_hole` | Qora tuynuk | Black Hole |  |
-| `title.galaxy` | Galaktika | Galaxy |  |
-| `title.supercluster` | Superklaster | Supercluster |  |
-| `title.cosmos` | Koinot | Cosmos |  |
+| `title.black_hole` | Black Hole | Black Hole |  |
+| `title.galaxy` | Galaxy | Galaxy |  |
+| `title.supercluster` | Supercluster | Supercluster |  |
+| `title.cosmos` | Cosmos | Cosmos |  |
 | `title.tooltip` | {name} · {total} tadan {level}-pog'ona · keyingisi: {next} ({min} dan) | {name} · {total} basqıshtan {level}-si · keyingisi: {next} ({min} den) |  |
 | `title.tooltipTop` | {name} · {total} tadan {level}-pog'ona · eng yuqori pog'ona | {name} · {total} basqıshtan {level}-si · eń joqarı basqısh |  |
 | `title.ladder.heading` | Unvonlar zinapoyasi | Ataq basqıshları |  |
@@ -1532,7 +1532,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.contrast_unreachable` | Bu tus bilan yetarli kontrast chiqmadi — boshqa tus tanlang. | Bul reń menen jetkilikli kontrast shıqpadı — basqa reń tańlań. |  |
 | `style.dashboard.label` | Dashboard | Dashboard |  |
 | `style.dashboard.hint` | Hozirgi — yumshoq kartalar | Házirgi — jumsaq kartalar |  |
-| `style.swiss.label` | Shveycha | Shveycariya |  |
+| `style.swiss.label` | Swiss | Swiss |  |
 | `style.swiss.hint` | Chiziq va tipografika | Sızıqlar hám tipografika |  |
 | `style.flat.label` | Flat | Flat |  |
 | `style.flat.hint` | Soyasiz, toza ranglar | Sáyelesiz, taza reńler |  |
@@ -1540,7 +1540,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `style.material.hint` | Balandlik va soyalar | Biyiklik hám sáyeler |  |
 | `style.editorial.label` | Editorial | Editorial |  |
 | `style.editorial.hint` | Serif, jurnal ko'rinishi | Serif, jurnal kórinisi |  |
-| `style.brutal.label` | Neo-brutalizm | Neo-brutalizm |  |
+| `style.brutal.label` | Neo-brutalism | Neo-brutalism |  |
 | `style.brutal.hint` | Qalin chegara, qattiq soya | Qalıń shegara, qattı sáye |  |
 | `style.terminal.label` | Terminal | Terminal |  |
 | `style.terminal.hint` | Monospace, konsol | Monoshrift, konsol |  |
@@ -1552,7 +1552,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `style.clay.hint` | Gil, hajmli | Lay, kólemli |  |
 | `style.aurora.label` | Aurora | Aurora |  |
 | `style.aurora.hint` | Gradient fon | Gradient arqa fon |  |
-| `style.skeu.label` | Skeuomorfizm | Skeomorfizm |  |
+| `style.skeu.label` | Skeuomorphism | Skeuomorphism |  |
 | `style.skeu.hint` | Metall va relyef | Metall hám relyef |  |
 | `external.blog` | Blog | Blog |  |
 | `admin.section.problems` | Masalalar | Máseleler |  |
@@ -2003,6 +2003,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.testsStoredRemotely` | Judge testlarni DB dan emas, S3 dan o'qiydi: matn yuklanganda tests/{slug}/<order>.in/.out sifatida saqlanadi, bu yerda faqat havola ko'rinadi. Bir xil tartib raqami qayta yuklansa — ustiga yoziladi. | Sudya testlerdi DB den emes, S3 ten oqıydı: júklengen mátn tests/{slug}/<order>.in/.out túrinde saqlanadı, bul jerde tek silteme kórinedi. Sol tártip nomeri qayta júklense — ústine jazıladı. |  |
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Ele test joq — sheshimler tekserilmeydi. |  |
 | `admin.text.addTest` | Test qo'shish | Test qosıw |  |
+| `admin.text.problemLanguages` | Tillar: limit, shablon va hakam dasturi | Tiller: sheklewler, úlgi hám qabıq |  |
+| `admin.help.problemLanguages` | Har til uchun alohida limit va muharrir shabloni. Masalada kamida bitta til qatori bo'lsa, faqat qatori bor tillar taklif qilinadi. | Hár til ushın bólek sheklew hám redaktor úlgisi. Máselede keminde bir til qatarı bolsa, tek qatarı bar tiller usınıladı. |  |
+| `admin.help.harness` | Funksiya masalasi: hakam dasturida yechim o'rni bir marta, alohida qatorda turishi shart: | Funkciya máselesi: qabıqta sheshim belgisi tap bir ret, bólek qatarda turıwı shárt: |  |
+| `admin.text.harness` | Hakam dasturi | Qabıq |  |
+| `admin.text.codeTemplate` | Muharrir shabloni | Redaktor úlgisi |  |
+| `admin.text.noLanguageRows` | Til qatori yo'q — hamma faol tillar umumiy limit bilan taklif qilinadi. | Til qatarı joq — barlıq aktiv tiller máseleniń ulıwma sheklewleri menen usınıladı. |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Kóp kórilgen |  |
 | `archive.mostLiked` | Ko'p yoqtirilgan | Kóp unatılǵan |  |
 | `archive.tagCloud` | Mavzular | Temalar |  |

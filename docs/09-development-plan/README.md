@@ -75,7 +75,7 @@ Lua, PowerShell, Common Lisp, PyPy, F#.
 
 - [ ] [08 § Xavfsizlik checklist](../08-technical-spec/README.md) to'liq bajarilgan
 - [ ] **Tashqi xavfsizlik auditi** o'tkazilgan ([ADR-0004](../07-adr/0004-judge-engine.md) sharti)
-- [ ] Judge latency o'lchangan: p50 < 5s, p95 < 15s
+- [x] Judge latency o'lchangan: p50 < 5s, p95 < 15s — production 2026-10-17: p50 2045 ms, p95 2129 ms, 20 namuna ([yozuv](../research/2026-09-21-judge-latency/README.md)); katakcha 2026-11-10 egasi tasdig'i bilan
 - [x] 4 reyting formulasi **UI da ochiq** (principle #2) — `/rating` sahifasi
 - [x] Faqat Phase 0 reytinglari ko'rinadi (Skills, Contests) — [ADR-0006](../07-adr/0006-rating-model.md) fazali ochilish
 - [ ] Huquqiy: litsenziya tahlili yurist tomonidan tasdiqlangan ([ADR-0003](../07-adr/0003-stack-django-next.md))

@@ -4000,6 +4000,50 @@ export interface paths {
         patch: operations["staff_problems_partial_update"];
         trace?: never;
     };
+    "/api/v1/staff/problems/{slug}/languages/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Masala tillari (limit, shablon, hakam dasturi)
+         * @description Per-language rows: limit overrides, editor template, function harness.
+         */
+        get: operations["staff_problems_languages_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/problems/{slug}/languages/{code}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Bitta til qatorini yozish yoki o'chirish
+         * @description Create, replace or remove one language row (audit Q-12).
+         */
+        put: operations["staff_problems_languages_update"];
+        post?: never;
+        /**
+         * Bitta til qatorini yozish yoki o'chirish
+         * @description Create, replace or remove one language row (audit Q-12).
+         */
+        delete: operations["staff_problems_languages_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/staff/problems/{slug}/reference-solution/": {
         parameters: {
             query?: never;
@@ -7145,6 +7189,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["StaffPost"][];
         };
+        PaginatedStaffProblemLanguageList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffProblemLanguage"][];
+        };
         PaginatedStaffProblemList: {
             /** @example 123 */
             count: number;
@@ -9092,6 +9151,28 @@ export interface components {
             readonly created_at: string;
             /** Format: date-time */
             readonly updated_at: string;
+        };
+        /**
+         * @description One language row of a problem (audit Q-12, 2026-11-10).
+         *
+         *     The row carries a limit override, the editor template and — for a
+         *     `function` problem — the harness the submission is inserted into. It
+         *     used to be editable only in the Django admin, which production does
+         *     not route, so a new function problem could not be authored at all.
+         *
+         *     ⚠️ The rows also act as the problem's language allow-list (G-09 in the
+         *     2026-11-10 audit): once a problem has a row, only languages with a row
+         *     are offered.
+         */
+        StaffProblemLanguage: {
+            readonly language: string;
+            readonly language_name: string;
+            /** Format: int64 */
+            time_limit_ms?: number | null;
+            /** Format: int64 */
+            memory_limit_kb?: number | null;
+            code_template?: string;
+            harness?: string;
         };
         /**
          * @description Xabar — xodim uchun. Faqat `status` o'zgartiriladi.
@@ -16106,6 +16187,116 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["StaffProblem"];
                 };
+            };
+        };
+    };
+    staff_problems_languages_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffProblemLanguageList"];
+                };
+            };
+        };
+    };
+    staff_problems_languages_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["StaffProblemLanguage"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffProblemLanguage"];
+                "multipart/form-data": components["schemas"]["StaffProblemLanguage"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblemLanguage"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblemLanguage"];
+                };
+            };
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    staff_problems_languages_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblemLanguage"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblemLanguage"];
+                };
+            };
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

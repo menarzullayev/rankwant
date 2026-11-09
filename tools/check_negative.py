@@ -382,6 +382,72 @@ def csp_nonce_precondition() -> str | None:
 # ── i18n ─────────────────────────────────────────────────────────────────
 
 
+def _i18n_glossary_broken(rel: str, old: str, new: str, reason: str) -> tuple[bool, str]:
+    """Break one glossary or English-copy rule in `rel`; check_i18n must name it."""
+    path = ROOT / rel
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, f"i18n/{reason}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("i18n")
+    if code != 1:
+        return False, f"i18n/{reason}: buzilgan holat exit {code} berdi (1 kerak)"
+    if reason not in out:
+        return False, f"i18n/{reason}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"i18n/{reason}: tutildi (exit 1)"
+
+
+def neg_i18n_glossary_key_translated() -> tuple[bool, str]:
+    """A tier name gets translated in one locale (Q-15: English everywhere)."""
+    return _i18n_glossary_broken(
+        "apps/web/src/i18n/locales/ru.ts",
+        '"title.quark": "Quark",',
+        '"title.quark": "Кварк",',
+        "tarjima qilinmaydi",
+    )
+
+
+def neg_i18n_glossary_term_translated() -> tuple[bool, str]:
+    """A brand term inside a sentence is transliterated in one locale.
+
+    The rule reads the Uzbek source, so the key is chosen there: a Russian
+    line that mentions Codeforces where Uzbek does not would test nothing.
+    """
+    pair = re.compile(r'^\s*"([\w.]+)": "((?:[^"\\]|\\.)*)",\s*$', re.M)
+    uz = dict(pair.findall((ROOT / "apps/web/src/i18n/locales/uz.ts").read_text(encoding="utf-8")))
+    ru_text = (ROOT / "apps/web/src/i18n/locales/ru.ts").read_bytes().decode("utf-8")
+    ru = dict(pair.findall(ru_text))
+    key = next((k for k, v in uz.items() if "Codeforces" in v and "Codeforces" in ru.get(k, "")), None)
+    if key is None:
+        return False, "i18n/atama: uz va ru da «Codeforces» li umumiy kalit topilmadi"
+    line = f'"{key}": "{ru[key]}",'
+    return _i18n_glossary_broken(
+        "apps/web/src/i18n/locales/ru.ts",
+        line,
+        line.replace("Codeforces", "Кодфорсес"),
+        "atama tarjima qilinmaydi",
+    )
+
+
+def neg_i18n_new_english_copy() -> tuple[bool, str]:
+    """A translated value is replaced by the English one (a new untranslated copy)."""
+    return _i18n_glossary_broken(
+        "apps/web/src/i18n/locales/ru.ts",
+        '"problem.samplesOnly": "Только тесты из примеров",',
+        '"problem.samplesOnly": "Sample tests only",',
+        "yangi inglizcha nusxa",
+    )
+
+
+def neg_i18n_stale_english_copy() -> tuple[bool, str]:
+    """The ratchet list keeps a line for a value that is translated now."""
+    return _i18n_glossary_broken(
+        "tools/i18n-english-copies.txt",
+        "# jami:",
+        "ru problem.samplesOnly\n# jami:",
+        "endi nusxa emas",
+    )
+
+
 def neg_i18n_blank_value() -> tuple[bool, str]:
     """Bitta tarjima bo'sh qolsa — tutilsinmi?"""
     path = ROOT / "apps/web/src/i18n/locales/zh.ts"
@@ -3932,6 +3998,46 @@ def neg_decisions_session_rows_kept() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_glossary_check_unwired() -> tuple[bool, str]:
+    """check_i18n stops running the glossary check."""
+    return _decision_broken(
+        "tools/check_i18n.py",
+        "    problems += check_glossary(",
+        "    _ = (",
+        "`check_glossary` chaqirilmaydi",
+    )
+
+
+def neg_decisions_uz_tier_name_translated() -> tuple[bool, str]:
+    """The Uzbek tier name is translated again."""
+    return _decision_broken(
+        "apps/web/src/i18n/locales/uz.ts",
+        '"title.quark": "Quark",',
+        '"title.quark": "Kvark",',
+        "unvon nomi yana tarjima qilingan",
+    )
+
+
+def neg_decisions_harness_saved_unchecked() -> tuple[bool, str]:
+    """The staff serializer stops validating the harness marker."""
+    return _decision_broken(
+        "apps/api/problems/staff_serializers.py",
+        "            error = taskkinds.harness_error(harness)\n",
+        "            error = None\n",
+        "hakam dasturi tekshirilmasdan saqlanadi",
+    )
+
+
+def neg_decisions_languages_panel_unmounted() -> tuple[bool, str]:
+    """The languages panel is no longer rendered under a problem row."""
+    return _decision_broken(
+        "apps/web/src/components/admin/ProblemsAdmin.tsx",
+        "            <ProblemLanguagesPanel problem={p} />\n",
+        "",
+        "tillar paneli xodim panelida chizilmaydi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -6847,6 +6953,14 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Staff harness editor (2026-11-10).
+    "apps/api/problems/staff_views.py",
+    "apps/api/problems/staff_serializers.py",
+    "apps/web/src/components/admin/ProblemsAdmin.tsx",
+    # Untranslated names (2026-11-10): the checker, the glossary and Uzbek tier names.
+    "tools/check_i18n.py",
+    "apps/web/src/i18n/glossary.ts",
+    "apps/web/src/i18n/locales/uz.ts",
     # Samples-only problems (2026-11-10): Skills, Qvant, the marathon, the
     # recount signal and both badges.
     "apps/api/ratings/services.py",
@@ -9898,6 +10012,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         "i18n",
         [
             ("bo'sh qiymat", neg_i18n_blank_value),
+            ("glossariy kaliti tarjima qilinsa tutilsin", neg_i18n_glossary_key_translated),
+            ("glossariy atamasi tarjima qilinsa tutilsin", neg_i18n_glossary_term_translated),
+            ("yangi inglizcha nusxa tutilsin", neg_i18n_new_english_copy),
+            ("eskirgan ratchet yozuvi tutilsin", neg_i18n_stale_english_copy),
             ("rozilik matnida havola o'rni yo'q", neg_i18n_consent_link_dropped),
             ("yetishmayotgan kalit", neg_i18n_missing_key),
             ("kodda bor, manbada yo'q", neg_i18n_used_but_absent),
@@ -10330,6 +10448,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qayta hisoblash signali yuklanmasa tutilsin", neg_decisions_recount_signal_not_loaded),
             ("maxfiylik matni importni unutsa tutilsin", neg_decisions_privacy_forgets_imported_profiles),
             ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
+            ("glossariy tekshiruvi uzilsa tutilsin", neg_decisions_glossary_check_unwired),
+            ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),
+            ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),
+            ("tillar paneli chizilmasa tutilsin", neg_decisions_languages_panel_unmounted),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
