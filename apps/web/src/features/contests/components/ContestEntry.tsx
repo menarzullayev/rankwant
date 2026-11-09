@@ -49,6 +49,9 @@ export function ContestEntry({
   }
 
   const role = viewer?.role ?? "";
+  // A finished contest has nothing to register for; only an insider has
+  // something to be told.
+  if (finished && !role) return null;
   return (
     <section
       aria-labelledby="contest-entry"

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, serializers, viewsets
 from rest_framework.decorators import action
@@ -40,6 +41,21 @@ class OrganizerContestSerializer(serializers.ModelSerializer[Contest]):
     """
 
     testers = crew_field()
+
+    def validate_testers(self, value: list[User]) -> list[User]:
+        """Once the contest has started the testers are fixed.
+
+        A tester is unrated: adding one mid-contest would take a
+        participant's official place away retroactively. Staff-ops can
+        still correct it.
+        """
+        contest = self.instance
+        if contest is not None and timezone.now() >= contest.start_at:
+            if {u.pk for u in value} != set(contest.testers.values_list("pk", flat=True)):
+                raise serializers.ValidationError(
+                    "The testers cannot change after the contest has started"
+                )
+        return value
 
     def create(self, validated_data: dict[str, Any]) -> Contest:
         contest = super().create(validated_data)

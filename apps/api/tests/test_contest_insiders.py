@@ -337,3 +337,18 @@ class TestCrewAndAppointment:
         contest.testers.add(tester)
         body = client.get(reverse("user-profile", args=[tester.username])).json()
         assert {"code": "tester"} in body["roles"]
+
+
+@pytest.mark.django_db
+def test_an_organizer_cannot_add_testers_after_the_start() -> None:
+    """A tester added mid-contest would lose a participant's place retroactively."""
+    client = APIClient()
+    organizer, late = people(2, "late")
+    contest = make_contest(starts_in=-10)
+    contest.organizers.add(organizer)
+    client.force_login(organizer)
+    response = client.patch(
+        f"/api/v1/contests/mine/{contest.slug}/", {"testers": [late.username]}, format="json"
+    )
+    assert response.status_code == 400
+    assert not contest.testers.exists()
