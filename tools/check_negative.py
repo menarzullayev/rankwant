@@ -3512,6 +3512,26 @@ def neg_decisions_deplocks_run_not_approved() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_deplocks_npm_not_watched() -> tuple[bool, str]:
+    """An npm bump no longer wakes the workflow (the #474 state)."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        "      - package-lock.json\n",
+        "",
+        "`package-lock.json` o'zgargan PR'da inventar qayta yasalmaydi",
+    )
+
+
+def neg_decisions_deplocks_inventory_gated_on_pip() -> tuple[bool, str]:
+    """The inventory is regenerated only for pip pull requests again."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        "      - name: Regenerate the licence inventory\n",
+        "      - name: Regenerate the licence inventory\n        if: steps.pr.outputs.pip == 'true'\n",
+        "inventar shartli yasaladi",
+    )
+
+
 def neg_decisions_deploy_ignores_lock() -> tuple[bool, str]:
     """A merge that only changes installed packages is never deployed."""
     return _decision_broken(
@@ -10148,6 +10168,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("44 px qoidasi ilgaksiz qolsa tutilsin", neg_decisions_customizer_touch_rule_orphaned),
             ("deploy lock farqini ko'rmasa tutilsin", neg_decisions_deploy_ignores_lock),
             ("kutayotgan CI tasdiqlanmasa tutilsin", neg_decisions_deplocks_run_not_approved),
+            ("npm PR'i kuzatilmasa tutilsin", neg_decisions_deplocks_npm_not_watched),
+            ("inventar faqat pip uchun yasalsa tutilsin", neg_decisions_deplocks_inventory_gated_on_pip),
             ("CI run_all o'qilmasa tutilsin", neg_decisions_ci_run_all_ignored),
             ("lock commit'i rebase'ni to'ssa tutilsin", neg_decisions_deplocks_blocks_rebase),
             ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),

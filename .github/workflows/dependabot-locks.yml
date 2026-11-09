@@ -21,6 +21,16 @@ name: Dependabot locks
 # A push made with the workflow token starts no CI run, so the last step
 # starts one itself (`ci.yml` has `workflow_dispatch`). Its checks land on
 # the new commit, which is where the branch rules look.
+#
+# npm and Go pull requests too (2026-11-10, audit Q-08). Dependabot writes
+# `package-lock.json` / `go.mod` itself, but not the licence inventory, and
+# `licence_inventory.py --check` in CI compares package names with those
+# files. A bump that adds or drops one package therefore left the pull
+# request red until someone ran the generator by hand (#474: BLOCKED on
+# "Litsenziya inventari lockfile'lardan chetlashgan"). For those pull
+# requests only the inventory is regenerated; the API locks are compiled
+# only when an API requirement file changed, so an npm bump never drags
+# Python pins along.
 
 on:
   pull_request_target:
@@ -28,6 +38,14 @@ on:
     paths:
       - apps/api/requirements.txt
       - apps/api/requirements-dev.txt
+      # Every file `tools/licence_inventory.py` reads a package list from.
+      - package.json
+      - package-lock.json
+      - apps/web/package.json
+      - packages/*/package.json
+      - tests/e2e/package.json
+      - tests/e2e/package-lock.json
+      - services/judge-go/go.mod
   # For a pull request opened before this workflow existed.
   workflow_dispatch:
     inputs:
@@ -61,6 +79,7 @@ jobs:
     outputs:
       branch: ${{ steps.pr.outputs.branch }}
       changed: ${{ steps.diff.outputs.changed }}
+      pip: ${{ steps.pr.outputs.pip }}
     steps:
       - name: Resolve the pull request
         id: pr
@@ -79,12 +98,22 @@ jobs:
             exit 1
           fi
           echo "branch=$(jq -r .head.ref pr.json)" >> "$GITHUB_OUTPUT"
+          # Which ecosystem: the API locks are recompiled only for a pip
+          # bump. Recompiling them on an npm one could move Python pins that
+          # pull request never asked to touch.
+          if gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${NUMBER}/files" --jq '.[].filename' \
+              | grep -qxE 'apps/api/requirements(-dev)?\.txt'; then
+            echo "pip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pip=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v7
         with:
           ref: ${{ steps.pr.outputs.branch }}
           persist-credentials: false
       - uses: astral-sh/setup-uv@v10.3.0
       - name: uv pip compile
+        if: steps.pr.outputs.pip == 'true'
         working-directory: apps/api
         run: |
           set -euo pipefail
@@ -92,9 +121,14 @@ jobs:
           uv pip compile requirements-dev.txt -o requirements-dev.lock --python-version 3.12 --quiet
       # A bump can pull in a package the inventory has never seen, and
       # `licence_inventory.py --check` then fails CI on the pull request.
-      # The inventory reads licences from installed metadata, so the dev
-      # lock (a superset of the runtime one) is installed into a scratch
-      # environment first.
+      # The inventory reads Python licences from installed metadata, so the
+      # dev lock (a superset of the runtime one) is installed into a scratch
+      # environment first — on an npm pull request too: without it every
+      # Python row would be rewritten as UNKNOWN. Node and Go licences come
+      # straight from the lockfiles, so nothing of theirs is installed.
+      #
+      # ⚠️ No `if:` here, on purpose: this step is the whole point for an
+      # npm or Go pull request (`tools/check_decisions.py` guards it).
       - name: Regenerate the licence inventory
         run: |
           set -euo pipefail
@@ -148,16 +182,22 @@ jobs:
       - name: Commit and push
         env:
           BRANCH: ${{ needs.compile.outputs.branch }}
+          PIP: ${{ needs.compile.outputs.pip }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           read -r -a FILES <<< "$GENERATED"
           git add -- "${FILES[@]}"
+          if [ "$PIP" = "true" ]; then
+            subject="chore(deps): recompile the API locks"
+          else
+            subject="chore(deps): regenerate the licence inventory"
+          fi
           # `[dependabot skip]`: without it Dependabot treats the branch as
           # edited by someone else and stops rebasing it; with it, it
           # force-pushes over this commit and this workflow runs again.
-          git commit -m "chore(deps): recompile the API locks" -m "[dependabot skip]"
+          git commit -m "$subject" -m "[dependabot skip]"
           git push origin "HEAD:${BRANCH}"
       - name: Start CI on the new commit
         env:
