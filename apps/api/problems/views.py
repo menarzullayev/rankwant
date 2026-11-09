@@ -4,7 +4,7 @@ from collections import Counter
 from typing import Any
 
 from django.db import transaction
-from django.db.models import Avg, Count, Exists, F, Max, Min, OuterRef, Q
+from django.db.models import Avg, Count, F, Max, Min, Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -23,7 +23,7 @@ from core.models import User
 from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 from judging.verdicts import Verdict
-from problems import visibility
+from problems import testsets, visibility
 from problems.filters import ProblemFilter
 from problems.models import (
     DIFFICULTY_LEVELS,
@@ -34,7 +34,6 @@ from problems.models import (
     ProblemRating,
     ProblemReport,
     ProblemVote,
-    TestCase,
     Topic,
     difficulty_level,
 )
@@ -131,7 +130,9 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
                 rating_count=Count("ratings", distinct=True),
                 # `Exists` — `Count` emas: qo'shimcha JOIN boshqa
                 # agregatlarni ko'paytirib yuborardi.
-                has_tests=Exists(TestCase.objects.filter(problem=OuterRef("pk"))),
+                has_tests=testsets.any_tests_exist(),
+                # Audit Q-05: only samples means a printed sample passes.
+                has_hidden_tests=testsets.hidden_tests_exist(),
             )
             .order_by("difficulty", "slug")
         )

@@ -2086,6 +2086,8 @@ export const zh: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — 难度 {difficulty}。RankWant 题目库。",
   "problem.partialScoring": "部分给分",
   "problem.testsPreparing": "测试正在准备中",
+  "problem.samplesOnly": "仅样例测试",
+  "problem.samplesOnlyHint": "没有隐藏测试：解答会保留在个人资料中，但不计入 Skills 评分，也不获得 Qvant。",
   "problem.backToContest": "返回比赛",
   "problem.countedInContest": "解答将计入 {contest} 比赛。",
   "problem.inputFormat": "输入",

@@ -2372,6 +2372,39 @@ def public_stack_requires_its_secrets() -> str | None:
     return None
 
 
+def samples_only_problems_earn_nothing() -> str | None:
+    """2026-11-10 (HITL, audit Q-05): namunasiz masala Skills va Qvant bermaydi.
+
+    O'lchandi: 1 236 ommaviy masaladan 1 225 tasida yashirin test yo'q —
+    namunani chop etgan dastur ham qabul qilinadi. Ular arxivda belgi bilan
+    qoladi, lekin yechim Skills'ga ham, Qvant'ga (streak, kunlik quest,
+    marafon) ham hisoblanmaydi.
+    """
+    ratings = read("apps/api/ratings/services.py")
+    if '.filter(hidden_tests_exist("problem_id"))' not in ratings.split("def recalc_skills", 1)[-1].split(
+        "def _profile_stats_changed", 1
+    )[0]:
+        return "ratings/services.py: Skills namunasiz masalani ham sanaydi"
+    judged = ratings.split("def on_attempt_judged", 1)[-1].split("def on_accept_revoked", 1)[0]
+    if not re.search(r"if not has_hidden_tests\(attempt\.problem_id\):\n\s+return\n", judged):
+        return "ratings/services.py: namunasiz masala yechimi Qvant beradi"
+    if '.filter(hidden_tests_exist("problem_id"))' not in read("apps/api/qvant/services.py"):
+        return "qvant/services.py: kunlik quest namunasiz masalani sanaydi"
+    if ".filter(hidden_tests_exist())" not in read("apps/api/qvant/marathon.py"):
+        return "qvant/marathon.py: marafon namunasiz masalani tanlaydi"
+    if "from problems import signals" not in read("apps/api/problems/apps.py"):
+        return "problems/apps.py: yashirin test qo'shilganda Skills qayta hisoblanmaydi"
+    if '"has_hidden_tests",' not in read("apps/api/problems/serializers.py"):
+        return "problems/serializers.py: `has_hidden_tests` API'da yo'q"
+    for page in (
+        "apps/web/src/app/(site)/problems/page.tsx",
+        "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
+    ):
+        if "!p.has_hidden_tests" not in read(page) and "!problem.has_hidden_tests" not in read(page):
+            return f"{page}: «faqat namuna testlari» belgisi ko'rsatilmaydi"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -3878,6 +3911,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
+    ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),

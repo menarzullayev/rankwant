@@ -2089,6 +2089,8 @@ export const kaa: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — qıyınlıǵı {difficulty}. RankWant máseleler arxivi.",
   "problem.partialScoring": "Qısmıy ball",
   "problem.testsPreparing": "Testler tayarlanbaqta",
+  "problem.samplesOnly": "Tek úlgi testleri",
+  "problem.samplesOnlyHint": "Jasırın test joq: sheshim profilde qaladı, biraq Skills reytingine hám Qvant'qa esaplanbaydı.",
   "problem.backToContest": "Jarısqa qaytıw",
   "problem.countedInContest": "Sheshim {contest} jarısı esabına jazıladı.",
   "problem.inputFormat": "Kirisiw maǵlıwmatı",

@@ -3782,6 +3782,46 @@ def neg_decisions_public_stack_falls_back() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_skills_counts_samples_only() -> tuple[bool, str]:
+    """Skills sums every solved problem again, samples-only included."""
+    return _decision_broken(
+        "apps/api/ratings/services.py",
+        '        .filter(hidden_tests_exist("problem_id"))\n        .values_list("problem__difficulty"',
+        '        .values_list("problem__difficulty"',
+        "Skills namunasiz masalani ham sanaydi",
+    )
+
+
+def neg_decisions_samples_only_pays_qvant() -> tuple[bool, str]:
+    """The early return before the Qvant event is gone."""
+    return _decision_broken(
+        "apps/api/ratings/services.py",
+        "    if not has_hidden_tests(attempt.problem_id):\n        return\n",
+        "",
+        "namunasiz masala yechimi Qvant beradi",
+    )
+
+
+def neg_decisions_marathon_draws_samples_only() -> tuple[bool, str]:
+    """The marathon draws from the whole public archive again."""
+    return _decision_broken(
+        "apps/api/qvant/marathon.py",
+        "        .filter(hidden_tests_exist())\n",
+        "",
+        "marafon namunasiz masalani tanlaydi",
+    )
+
+
+def neg_decisions_recount_signal_not_loaded() -> tuple[bool, str]:
+    """The signal module is no longer imported, so a first hidden test changes nothing."""
+    return _decision_broken(
+        "apps/api/problems/apps.py",
+        "        from problems import signals  # noqa: F401\n",
+        "        pass\n",
+        "yashirin test qo'shilganda Skills qayta hisoblanmaydi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -6695,6 +6735,13 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Samples-only problems (2026-11-10): Skills, Qvant, the marathon, the
+    # recount signal and both badges.
+    "apps/api/ratings/services.py",
+    "apps/api/qvant/services.py",
+    "apps/api/qvant/marathon.py",
+    "apps/api/problems/apps.py",
+    "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
     # Judge latency gate (2026-09-21): the rule reads the harness to prove the
     # budget comparison still exists — a gate whose comparison is gone still
     # exits 0, i.e. green but measuring nothing. The compose service and the
@@ -10163,6 +10210,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
             ("ommaviy stack standartga tushsa tutilsin", neg_decisions_public_stack_falls_back),
+            ("Skills namunasiz masalani sanasa tutilsin", neg_decisions_skills_counts_samples_only),
+            ("namunasiz masala Qvant bersa tutilsin", neg_decisions_samples_only_pays_qvant),
+            ("marafon namunasiz masalani tanlasa tutilsin", neg_decisions_marathon_draws_samples_only),
+            ("qayta hisoblash signali yuklanmasa tutilsin", neg_decisions_recount_signal_not_loaded),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),

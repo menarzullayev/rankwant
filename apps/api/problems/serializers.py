@@ -6,7 +6,7 @@ from typing import Any
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from problems import storage
+from problems import storage, testsets
 from problems.models import (
     Language,
     Problem,
@@ -116,7 +116,10 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
     level_label = serializers.CharField(read_only=True)
     #: Judge tekshira oladimi. Import qilingan arxivning 41 % ida test
     #: yo'q va u yerda har qanday yuborish IE bilan tugaydi.
-    has_tests = serializers.BooleanField(read_only=True)
+    has_tests = serializers.SerializerMethodField()
+    #: Audit Q-05 (2026-11-10): `false` means only sample tests — a solve
+    #: earns neither Skills nor Qvant, and the page says so.
+    has_hidden_tests = serializers.SerializerMethodField()
     topics = serializers.SlugRelatedField[Topic](many=True, read_only=True, slug_field="slug")
     author = serializers.SerializerMethodField()
 
@@ -133,6 +136,20 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
             "display_name": author.display_name or author.username,
             "has_profile": author.is_active,
         }
+
+    # The archive queryset annotates both flags in one query. The marathon
+    # and the recommendations pass plain `Problem` rows, and a read-only
+    # `BooleanField` on a missing attribute is silently DROPPED by DRF, so
+    # the web read `undefined` as "no tests" there. Fall back to a query.
+    def get_has_tests(self, problem: Problem) -> bool:
+        annotated = getattr(problem, "has_tests", None)
+        return bool(annotated) if annotated is not None else testsets.has_any_tests(problem.pk)
+
+    def get_has_hidden_tests(self, problem: Problem) -> bool:
+        annotated = getattr(problem, "has_hidden_tests", None)
+        if annotated is not None:
+            return bool(annotated)
+        return testsets.has_hidden_tests(problem.pk)
 
     def get_is_favourite(self, problem: Problem) -> bool:
         return problem.pk in (self.context.get("favourite_ids") or ())
@@ -188,6 +205,7 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
             "my_verdict",
             "code",
             "has_tests",
+            "has_hidden_tests",
             "likes_count",
             "dislikes_count",
             "author",

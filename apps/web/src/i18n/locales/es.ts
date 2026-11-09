@@ -2089,6 +2089,8 @@ export const es: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — dificultad {difficulty}. Archivo de problemas de RankWant.",
   "problem.partialScoring": "Puntuación parcial",
   "problem.testsPreparing": "Los tests se están preparando",
+  "problem.samplesOnly": "Solo pruebas de ejemplo",
+  "problem.samplesOnlyHint": "Sin pruebas ocultas: la solución queda en tu perfil, pero no cuenta para el rating Skills ni para Qvant.",
   "problem.backToContest": "Volver al concurso",
   "problem.countedInContest": "Tu solución se contará para el concurso {contest}.",
   "problem.inputFormat": "Entrada",
