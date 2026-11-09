@@ -298,6 +298,16 @@ ok "$ENV_FILE joyida"
 ENV_ABS="$(cd "$(dirname "$ENV_FILE")" && pwd)/$(basename "$ENV_FILE")" \
   || die "env-fayl yo'lini aniqlab bo'lmadi: $ENV_FILE"
 ok "env-fayl: $ENV_ABS"
+
+# Ochiq repodagi standart sir (`dev`, `devdevdev`, `judge-ro-dev`) bilan
+# ommaviy stack ko'tarilmaydi (ADR-0044). `${VAR:?}` faqat BO'SH qiymatni
+# rad etadi; 2026-11-10 da production uchala standart qiymatda ishlayotgan
+# edi. O'qilmasa ham (exit 2) to'xtaydi — tekshirilmagan sir «yaxshi» emas.
+SECRETS_PY="$(bash tools/pick-python.sh 2>/dev/null)" || SECRETS_PY=""
+[ -n "$SECRETS_PY" ] || die "Python topilmadi — sirlar tekshirilmadi (tools/check_env_secrets.py)"
+"$SECRETS_PY" tools/check_env_secrets.py "$ENV_ABS" \
+  || die "env-faylda standart yoki kuchsiz sir — tools/check_env_secrets.py (ADR-0044)"
+ok "sirlar standart emas"
 time_finish preflight
 
 # ── 1. Live contest oynasi (qoida №1) ────────────────────────────────

@@ -2372,6 +2372,28 @@ def public_stack_requires_its_secrets() -> str | None:
     return None
 
 
+def deploy_refuses_default_secrets() -> str | None:
+    """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
+
+    `${VAR:?}` faqat bo'sh qiymatni rad etadi, standart qiymatni emas —
+    production `dev`, `devdevdev` va `judge-ro-dev` da ishlagan (o'lchandi).
+    Uchalasi o'sha kuni aylantirildi; endi `deploy.sh` preflight'i
+    `check_env_secrets.py` ni chaqiradi va u chiqmasa deploy to'xtaydi.
+    """
+    deploy = read("tools/deploy.sh")
+    if not re.search(r'^"\$SECRETS_PY" tools/check_env_secrets\.py "\$ENV_ABS" \\$', deploy, re.M):
+        return "tools/deploy.sh: preflight sirlarni tekshirmaydi (`check_env_secrets.py` chaqirilmaydi)"
+    if not re.search(r"^\s+\|\| die \"env-faylda standart yoki kuchsiz sir", deploy, re.M):
+        return "tools/deploy.sh: sir tekshiruvi yiqilsa ham deploy davom etadi"
+    checker = read("tools/check_env_secrets.py")
+    for name in ("POSTGRES_PASSWORD", "MINIO_ROOT_PASSWORD", "JUDGE_S3_SECRET"):
+        if f'"{name}"' not in checker.split("SECRETS = ", 1)[-1].split("\n", 1)[0]:
+            return f"tools/check_env_secrets.py: `{name}` tekshirilmaydi"
+    if "compose_defaults(compose)" not in checker:
+        return "tools/check_env_secrets.py: docker-compose.yml dagi standart qiymatlar o'qilmaydi"
+    return None
+
+
 def team_page_is_managed_data() -> str | None:
     """2026-10-05: «Jamoa» sahifasi admin paneldan boshqariladi.
 
@@ -3807,6 +3829,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
+    ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),

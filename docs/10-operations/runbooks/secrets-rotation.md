@@ -1,7 +1,14 @@
 # Secrets rotation runbook
 
-**STATUS:** draft (2026-09-29) — WP4 (D5) wiring va fail-fast bajarildi;
-**rotation hali bajarilmagan** (tartib qulflangan).
+**STATUS:** draft (2026-09-29) — WP4 (D5) wiring va fail-fast bajarildi.
+**2026-11-10: rotation bajarildi** (audit Q-02, HITL) — `POSTGRES_PASSWORD`,
+`MINIO_ROOT_PASSWORD` va `JUDGE_S3_SECRET` production'da repodagi standart
+qiymatda edi (`dev`, `devdevdev`, `judge-ro-dev`, o'lchandi). Har biri 40
+belgilik tasodifiy qiymatga almashtirildi; qiymat skript ichida yaratilib
+to'g'ridan-to'g'ri `.env.public` ga yozildi (hech qayerga chiqarilmadi),
+Postgres'ga parol emas, SCRAM-SHA-256 xeshi yuborildi. Endi
+`tools/deploy.sh` preflight'i `tools/check_env_secrets.py` ni chaqiradi:
+standart, 16 belgidan qisqa yoki yo'q sir bo'lsa deploy to'xtaydi.
 **Manba:** [ADR-0044](../../07-adr/0044-secrets-management.md) · D5
 **Til qoidasi:** Hujjat **o'zbek (lotin)**. Texnik atama, fayl yo'li va kod **inglizcha**.
 
@@ -19,7 +26,7 @@ Uch bosqich **ketma-ket**, orasidan sakrab bo'lmaydi:
 |---|---|---|---|
 | 1 | **Wiring** | ✅ bajarildi | Compose sirlari env'ga o'tdi (`${VAR:?}`), `.env.example` yangilandi |
 | 2 | **Fail-fast** | ✅ bajarildi | `config/settings.py` `SECRET_KEY` yo'q/bo'sh bo'lsa `ImproperlyConfigured` |
-| 3 | **Rotation** | ⛔ **keyin** | Sir qiymatlarini almashtirish — quyidagi bo'limlar |
+| 3 | **Rotation** | ✅ 2026-11-10 | Sir qiymatlarini almashtirish — quyidagi bo'limlar; qaytmasligini `check_env_secrets.py` qo'riqlaydi |
 
 **Nega bu tartib.** Rotation wiring'dan oldin bajarilsa eski sir hali ham
 compose ichida hardcode bo'lib qoladi — ya'ni yangi qiymat hech narsani
