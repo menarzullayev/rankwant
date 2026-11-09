@@ -2089,6 +2089,8 @@ export const ru: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — сложность {difficulty}. Архив задач RankWant.",
   "problem.partialScoring": "Частичный балл",
   "problem.testsPreparing": "Тесты готовятся",
+  "problem.samplesOnly": "Только тесты из примеров",
+  "problem.samplesOnlyHint": "Скрытых тестов нет: решение останется в профиле, но не учитывается в рейтинге Skills и не приносит Qvant.",
   "problem.backToContest": "Вернуться к соревнованию",
   "problem.countedInContest": "Решение будет засчитано в соревновании {contest}.",
   "problem.inputFormat": "Входные данные",

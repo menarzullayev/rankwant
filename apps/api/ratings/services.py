@@ -11,6 +11,7 @@ from django.utils import timezone
 from core.models import User
 from judging.models import Attempt
 from judging.verdicts import Verdict
+from problems.testsets import has_hidden_tests, hidden_tests_exist
 from ratings import formulas
 from ratings.models import RatingHistory, UserSolvedProblem
 
@@ -70,10 +71,15 @@ def _record(
 def recalc_skills(
     user: User, reason: str = RatingHistory.Reason.PROBLEM_SOLVED, ref_id: str = ""
 ) -> int:
-    """Skills ni JORIY qiyinliklardan qayta hisoblaydi (ADR-0007)."""
+    """Skills ni JORIY qiyinliklardan qayta hisoblaydi (ADR-0007).
+
+    Only problems judged on hidden tests count (audit Q-05, 2026-11-10):
+    a samples-only problem accepts a printed sample, so it stays solved
+    on the profile but adds nothing to Skills.
+    """
     difficulties = list(
         UserSolvedProblem.objects.filter(user=user)
-        .select_related("problem")
+        .filter(hidden_tests_exist("problem_id"))
         .values_list("problem__difficulty", flat=True)
     )
     new_value = formulas.skills_rating(difficulties)
@@ -151,6 +157,11 @@ def on_attempt_judged(attempt: Attempt) -> None:
     if attempt.problem.is_public:
         User.objects.filter(pk=attempt.user_id).update(solved_count=F("solved_count") + 1)
     recalc_skills(attempt.user, ref_id=attempt.problem.slug)
+
+    # Audit Q-05: a samples-only problem pays no Qvant — no streak, daily
+    # quest or marathon credit — since printing the sample solves it.
+    if not has_hidden_tests(attempt.problem_id):
+        return
 
     # Phase 1 — Qvant va Activity. Qvant hodisasi Skills dan KEYIN:
     # reyting yozuvi Qvant xatosidan qat'i nazar saqlanishi kerak.
