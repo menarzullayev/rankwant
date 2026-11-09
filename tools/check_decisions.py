@@ -2469,6 +2469,26 @@ def names_are_not_translated() -> str | None:
     return None
 
 
+def function_harness_is_editable_by_staff() -> str | None:
+    """2026-11-10 (HITL, audit Q-12): hakam dasturi xodim panelida tahrirlanadi.
+
+    `ProblemLanguage.harness` faqat Django admin'da edi, production esa uni
+    yo'naltirmaydi — yangi funksiya masalasini umuman yaratib bo'lmasdi.
+    """
+    views = read("apps/api/problems/staff_views.py")
+    if 'url_path=r"languages/(?P<code>' not in views:
+        return "staff_views.py: til qatorini yozadigan xodim endpointi yo'q"
+    serializers = read("apps/api/problems/staff_serializers.py")
+    body = serializers.split("class StaffProblemLanguageSerializer", 1)[-1].split("\nclass ", 1)[0]
+    if "taskkinds.harness_error(harness)" not in body:
+        return "staff_serializers.py: hakam dasturi tekshirilmasdan saqlanadi"
+    if '"harness": {"trim_whitespace": False}' not in body:
+        return "staff_serializers.py: hakam dasturi bo'shliqlari kesiladi"
+    if "<ProblemLanguagesPanel problem={p} />" not in read("apps/web/src/components/admin/ProblemsAdmin.tsx"):
+        return "ProblemsAdmin.tsx: tillar paneli xodim panelida chizilmaydi"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -4046,6 +4066,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
+    ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
