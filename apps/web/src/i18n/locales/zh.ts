@@ -158,7 +158,7 @@ export const zh: Record<MessageKey, string> = {
   "update.module.arena": "竞技场",
   "update.module.judge": "评测",
   "update.module.ratings": "排名",
-  "update.module.qvant": "量子币",
+  "update.module.qvant": "Qvant",
   "update.module.profile": "个人资料",
   "update.module.classroom": "班级",
   "update.module.quizzes": "测验",
@@ -1122,7 +1122,6 @@ export const zh: Record<MessageKey, string> = {
   "loading.style.progress": "进度条",
   "loading.style.progressHint": "用于页面顶部或耗时任务。",
 
-  // TODO i18n: translate 16 new tier names to zh
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1580,7 +1579,7 @@ export const zh: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "当前样式 — 柔和卡片",
-  "style.swiss.label": "瑞士风",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "线条与排版",
   "style.flat.label": "Flat",
   "style.flat.hint": "无阴影，干净的色彩",
@@ -1588,7 +1587,7 @@ export const zh: Record<MessageKey, string> = {
   "style.material.hint": "层次与阴影",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "衬线体，杂志风格",
-  "style.brutal.label": "新粗野主义",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "粗边框，硬阴影",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "等宽字体，控制台",
@@ -1600,7 +1599,7 @@ export const zh: Record<MessageKey, string> = {
   "style.clay.hint": "黏土，立体",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "渐变背景",
-  "style.skeu.label": "拟物化",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "金属与浮雕",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----
@@ -2063,6 +2062,12 @@ export const zh: Record<MessageKey, string> = {
   "admin.help.testsStoredRemotely": "评测机从 S3 而非数据库读取测试数据：上传的文本保存为 tests/{slug}/<order>.in/.out，此处只显示引用。重新上传相同序号会覆盖原文件。",
   "admin.text.noTestsYet": "尚无测试数据——不会评测提交。",
   "admin.text.addTest": "添加测试",
+  "admin.text.problemLanguages": "语言：限制、模板和外壳程序",
+  "admin.help.problemLanguages": "每种语言可单独设置限制和编辑器模板。题目一旦有任何语言行，只提供有语言行的语言。",
+  "admin.help.harness": "函数题：外壳程序中解答标记必须恰好出现一次，并单独占一行：",
+  "admin.text.harness": "外壳程序",
+  "admin.text.codeTemplate": "编辑器模板",
+  "admin.text.noLanguageRows": "没有语言行——所有启用的语言都以题目的限制提供。",
   "archive.mostViewed": "浏览最多",
   "archive.mostLiked": "最多喜欢",
   "archive.tagCloud": "专题",

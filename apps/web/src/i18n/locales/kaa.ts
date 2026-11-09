@@ -158,7 +158,7 @@ export const kaa: Record<MessageKey, string> = {
   "update.module.arena": "Bellesiwler",
   "update.module.judge": "Tekseriw",
   "update.module.ratings": "Reyting",
-  "update.module.qvant": "Kvant",
+  "update.module.qvant": "Qvant",
   "update.module.profile": "Profil",
   "update.module.classroom": "Klass",
   "update.module.quizzes": "Testler",
@@ -1125,7 +1125,6 @@ export const kaa: Record<MessageKey, string> = {
   "loading.style.progress": "Ilgerilew sızıǵı",
   "loading.style.progressHint": "Bettiń joqarısı yamasa uzın jumıs ushın.",
 
-  // TODO i18n: translate 16 new tier names to kaa
   "title.quark": "Quark",
   "title.atom": "Atom",
   "title.molecule": "Molecule",
@@ -1583,7 +1582,7 @@ export const kaa: Record<MessageKey, string> = {
   // ---- Vizual uslublar (layout/styles.ts) ----
   "style.dashboard.label": "Dashboard",
   "style.dashboard.hint": "Házirgi — jumsaq kartalar",
-  "style.swiss.label": "Shveycariya",
+  "style.swiss.label": "Swiss",
   "style.swiss.hint": "Sızıqlar hám tipografika",
   "style.flat.label": "Flat",
   "style.flat.hint": "Sáyelesiz, taza reńler",
@@ -1591,7 +1590,7 @@ export const kaa: Record<MessageKey, string> = {
   "style.material.hint": "Biyiklik hám sáyeler",
   "style.editorial.label": "Editorial",
   "style.editorial.hint": "Serif, jurnal kórinisi",
-  "style.brutal.label": "Neo-brutalizm",
+  "style.brutal.label": "Neo-brutalism",
   "style.brutal.hint": "Qalıń shegara, qattı sáye",
   "style.terminal.label": "Terminal",
   "style.terminal.hint": "Monoshrift, konsol",
@@ -1603,7 +1602,7 @@ export const kaa: Record<MessageKey, string> = {
   "style.clay.hint": "Lay, kólemli",
   "style.aurora.label": "Aurora",
   "style.aurora.hint": "Gradient arqa fon",
-  "style.skeu.label": "Skeomorfizm",
+  "style.skeu.label": "Skeuomorphism",
   "style.skeu.hint": "Metall hám relyef",
 
   // ---- Tashqi havolalar (lib/external-links.ts) ----
@@ -2066,6 +2065,12 @@ export const kaa: Record<MessageKey, string> = {
   "admin.help.testsStoredRemotely": "Sudya testlerdi DB den emes, S3 ten oqıydı: júklengen mátn tests/{slug}/<order>.in/.out túrinde saqlanadı, bul jerde tek silteme kórinedi. Sol tártip nomeri qayta júklense — ústine jazıladı.",
   "admin.text.noTestsYet": "Ele test joq — sheshimler tekserilmeydi.",
   "admin.text.addTest": "Test qosıw",
+  "admin.text.problemLanguages": "Tiller: sheklewler, úlgi hám qabıq",
+  "admin.help.problemLanguages": "Hár til ushın bólek sheklew hám redaktor úlgisi. Máselede keminde bir til qatarı bolsa, tek qatarı bar tiller usınıladı.",
+  "admin.help.harness": "Funkciya máselesi: qabıqta sheshim belgisi tap bir ret, bólek qatarda turıwı shárt:",
+  "admin.text.harness": "Qabıq",
+  "admin.text.codeTemplate": "Redaktor úlgisi",
+  "admin.text.noLanguageRows": "Til qatarı joq — barlıq aktiv tiller máseleniń ulıwma sheklewleri menen usınıladı.",
   "archive.mostViewed": "Kóp kórilgen",
   "archive.mostLiked": "Kóp unatılǵan",
   "archive.tagCloud": "Temalar",

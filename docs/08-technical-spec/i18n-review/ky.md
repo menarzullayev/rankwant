@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2418 strings.**
+**2424 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -172,7 +172,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `update.module.arena` | Bellashuvlar | Арена |  |
 | `update.module.judge` | Tekshiruv | Текшерүү |  |
 | `update.module.ratings` | Reyting | Рейтинг |  |
-| `update.module.qvant` | Qvant | Квант |  |
+| `update.module.qvant` | Qvant | Qvant |  |
 | `update.module.profile` | Profil | Профиль |  |
 | `update.module.classroom` | Sinf | Класс |  |
 | `update.module.quizzes` | Testlar | Тесттер |  |
@@ -1087,22 +1087,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `loading.style.pulseIconHint` | Live indikator uchun. | Түз эфир индикатору үчүн. |  |
 | `loading.style.progress` | Progress chizig'i | Прогресс тилкеси |  |
 | `loading.style.progressHint` | Sahifa yuqorisi yoki uzoq amal uchun. | Барактын үстү же узак аракет үчүн. |  |
-| `title.quark` | Kvark | Quark |  |
+| `title.quark` | Quark | Quark |  |
 | `title.atom` | Atom | Atom |  |
-| `title.molecule` | Molekula | Molecule |  |
-| `title.droplet` | Tomchi | Droplet |  |
-| `title.meteorite` | Meteorit | Meteorite |  |
-| `title.comet` | Kometa | Comet |  |
-| `title.moon` | Oy | Moon |  |
-| `title.planet` | Sayyora | Planet |  |
-| `title.star` | Yulduz | Star |  |
+| `title.molecule` | Molecule | Molecule |  |
+| `title.droplet` | Droplet | Droplet |  |
+| `title.meteorite` | Meteorite | Meteorite |  |
+| `title.comet` | Comet | Comet |  |
+| `title.moon` | Moon | Moon |  |
+| `title.planet` | Planet | Planet |  |
+| `title.star` | Star | Star |  |
 | `title.supernova` | Supernova | Supernova |  |
 | `title.pulsar` | Pulsar | Pulsar |  |
 | `title.magnetar` | Magnetar | Magnetar |  |
-| `title.black_hole` | Qora tuynuk | Black Hole |  |
-| `title.galaxy` | Galaktika | Galaxy |  |
-| `title.supercluster` | Superklaster | Supercluster |  |
-| `title.cosmos` | Koinot | Cosmos |  |
+| `title.black_hole` | Black Hole | Black Hole |  |
+| `title.galaxy` | Galaxy | Galaxy |  |
+| `title.supercluster` | Supercluster | Supercluster |  |
+| `title.cosmos` | Cosmos | Cosmos |  |
 | `title.tooltip` | {name} · {total} tadan {level}-pog'ona · keyingisi: {next} ({min} dan) | {name} · {total} баскычтын {level}-си · кийинкиси: {next} ({min}дан) |  |
 | `title.tooltipTop` | {name} · {total} tadan {level}-pog'ona · eng yuqori pog'ona | {name} · {total} баскычтын {level}-си · эң жогорку баскыч |  |
 | `title.ladder.heading` | Unvonlar zinapoyasi | Наам тепкичи |  |
@@ -1532,7 +1532,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.contrast_unreachable` | Bu tus bilan yetarli kontrast chiqmadi — boshqa tus tanlang. | Бул түс менен жетиштүү контраст чыкпады — башка түс тандаңыз. |  |
 | `style.dashboard.label` | Dashboard | Dashboard |  |
 | `style.dashboard.hint` | Hozirgi — yumshoq kartalar | Учурдагы — жумшак карталар |  |
-| `style.swiss.label` | Shveycha | Швейцариялык |  |
+| `style.swiss.label` | Swiss | Swiss |  |
 | `style.swiss.hint` | Chiziq va tipografika | Сызыктар жана типография |  |
 | `style.flat.label` | Flat | Flat |  |
 | `style.flat.hint` | Soyasiz, toza ranglar | Көлөкөсүз, таза түстөр |  |
@@ -1540,7 +1540,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `style.material.hint` | Balandlik va soyalar | Бийиктик жана көлөкөлөр |  |
 | `style.editorial.label` | Editorial | Editorial |  |
 | `style.editorial.hint` | Serif, jurnal ko'rinishi | Serif, журнал көрүнүшү |  |
-| `style.brutal.label` | Neo-brutalizm | Нео-брутализм |  |
+| `style.brutal.label` | Neo-brutalism | Neo-brutalism |  |
 | `style.brutal.hint` | Qalin chegara, qattiq soya | Калың чек, катуу көлөкө |  |
 | `style.terminal.label` | Terminal | Terminal |  |
 | `style.terminal.hint` | Monospace, konsol | Моноширин, консоль |  |
@@ -1552,7 +1552,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `style.clay.hint` | Gil, hajmli | Ылай, көлөмдүү |  |
 | `style.aurora.label` | Aurora | Aurora |  |
 | `style.aurora.hint` | Gradient fon | Градиент фон |  |
-| `style.skeu.label` | Skeuomorfizm | Скевоморфизм |  |
+| `style.skeu.label` | Skeuomorphism | Skeuomorphism |  |
 | `style.skeu.hint` | Metall va relyef | Металл жана рельеф |  |
 | `external.blog` | Blog | Блог |  |
 | `admin.section.problems` | Masalalar | Маселелер |  |
@@ -1757,7 +1757,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.text.source` | Manba | Булак |  |
 | `admin.label.misc.tests` | Testlar | Тесттер |  |
 | `admin.label.text.reward` | Mukofot | Сыйлык |  |
-| `admin.label.text.qvant` | Qvant | Квант |  |
+| `admin.label.text.qvant` | Qvant | Qvant |  |
 | `admin.label.text.problem` | Masala | Маселе |  |
 | `admin.label.text.reason` | Sabab | Себеби |  |
 | `admin.label.text.who` | Kim | Ким |  |
@@ -2003,6 +2003,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.testsStoredRemotely` | Judge testlarni DB dan emas, S3 dan o'qiydi: matn yuklanganda tests/{slug}/<order>.in/.out sifatida saqlanadi, bu yerda faqat havola ko'rinadi. Bir xil tartib raqami qayta yuklansa — ustiga yoziladi. | Каттоочу тесттерди БДдан эмес, S3тен окуйт: жүктөлгөн текст tests/{slug}/<order>.in/.out түрүндө сакталат, бул жерде шилтеме гана көрүнөт. Ошол номер кайра жүктөлсө — үстүнө жазылат. |  |
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Азырынча тест жок — чечимдер текшерилбейт. |  |
 | `admin.text.addTest` | Test qo'shish | Тест кошуу |  |
+| `admin.text.problemLanguages` | Tillar: limit, shablon va hakam dasturi | Тилдер: чектөөлөр, үлгү жана кабык |  |
+| `admin.help.problemLanguages` | Har til uchun alohida limit va muharrir shabloni. Masalada kamida bitta til qatori bo'lsa, faqat qatori bor tillar taklif qilinadi. | Ар бир тил үчүн өзүнчө чектөө жана редактор үлгүсү. Маселеде жок дегенде бир тил сабы болсо, сабы бар тилдер гана сунушталат. |  |
+| `admin.help.harness` | Funksiya masalasi: hakam dasturida yechim o'rni bir marta, alohida qatorda turishi shart: | Функция маселеси: кабыкта чечимдин белгиси так бир жолу, өзүнчө сапта турушу керек: |  |
+| `admin.text.harness` | Hakam dasturi | Кабык |  |
+| `admin.text.codeTemplate` | Muharrir shabloni | Редактор үлгүсү |  |
+| `admin.text.noLanguageRows` | Til qatori yo'q — hamma faol tillar umumiy limit bilan taklif qilinadi. | Тил сабы жок — бардык активдүү тилдер маселенин жалпы чектөөлөрү менен сунушталат. |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Көп көрүлгөн |  |
 | `archive.mostLiked` | Ko'p yoqtirilgan | Көп жактырылган |  |
 | `archive.tagCloud` | Mavzular | Темалар |  |
