@@ -2553,6 +2553,36 @@ def required_checks_cover_every_gate() -> str | None:
     return None
 
 
+def scanners_report_in_nightly() -> str | None:
+    """2026-11-10 (HITL, audit Q-11): gitleaks, pip-audit, npm audit — Nightly'da, faqat hisobot.
+
+    Uchalasi faqat o'chirilgan `security.yml` da edi (egasi qarori 2026-09-21),
+    ya'ni hech qayerda yurmasdi. Endi Nightly'da: topilma — ogohlantirish va
+    jadval, job'ni yiqitmaydi; skanerning o'zi ko'r bo'lsa — yiqiladi (har
+    job avval ataylab qo'yilgan topilmani ko'rishi shart).
+
+    O'lchandi: `.gitleaks.toml` da `[extend] useDefault = true` yo'q edi ⇒
+    gitleaks NOL qoida bilan yurardi. PR'da esa hech biri yo'q — birlashtirishni
+    to'smasin.
+    """
+    nightly = read(".github/workflows/nightly.yml")
+    for job, tool in (("scan-secrets", "gitleaks"), ("scan-python", "pip-audit"), ("scan-node", "npm audit")):
+        body = _workflow_job(nightly, job)
+        if not body:
+            return f"nightly.yml: `{job}` job'i yo'q — {tool} hech qayerda yurmaydi"
+        if not re.search(r"^      - name: .*\(canary\)$", body, re.M):
+            return f"nightly.yml: `{job}` kanareykasiz — ko'r {tool} «0 topilma» deb yashil chiqadi"
+    if "--exit-code 0 --report-format json" not in _workflow_job(nightly, "scan-secrets"):
+        return "nightly.yml: gitleaks topilmada yiqiladi — skanerlar faqat hisobot beradi"
+    if not re.search(r"^\[extend\]\nuseDefault = true$", read(".gitleaks.toml"), re.M):
+        return ".gitleaks.toml: `[extend] useDefault = true` yo'q — gitleaks nol qoida bilan yuradi"
+    ci = read(".github/workflows/ci.yml")
+    for tool in ("gitleaks", "pip-audit", "npm audit", "npm@11 audit"):
+        if re.search(rf"^\s+(?!#).*\b{re.escape(tool)}\b", ci, re.M):
+            return f"ci.yml: `{tool}` PR CI'da — skanerlar birlashtirishni to'smasligi kerak"
+    return None
+
+
 def team_page_is_managed_data() -> str | None:
     """2026-10-05: «Jamoa» sahifasi admin paneldan boshqariladi.
 
@@ -3989,6 +4019,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
+    ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
