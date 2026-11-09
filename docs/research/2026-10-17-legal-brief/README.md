@@ -94,6 +94,21 @@ whatever counsel decides about the rest.
 Not checked by the agent: whether each of those fields is actually filled in
 production, and the law that applies to them.
 
+**Update 2026-11-10 (audit Q-06, owner decision "align the text"):** the
+Privacy policy in `legal.ts` (uz/ru/en, dated 2026-11-10; Terms unchanged) now
+names the data actually kept: first and last name, the optional profile
+fields (address, education, phone, date of birth, gender, T-shirt size), prize
+delivery with separate consent, per-session IP and browser, hashed failed
+sign-in counters, the ~974 thousand profiles imported from public Codeforces
+data (no email or password, closed to search engines), which fields are
+public by default (date of birth and gender included; email hidden), who can
+see solution code (staff, and contest participants during a hacking phase),
+and the 14-day deletion grace. It no longer says age is never asked. Measured
+the same day: among imported accounts 212 758 have a name, 259 862 a country,
+202 291 a city, 204 303 an organisation, all an avatar link, none an email.
+Expired session rows are now pruned daily, as the text says. **Counsel has not
+reviewed this text**; the launch-gate box stays unchecked.
+
 ## 6. Licence inventory status (2026-10-17)
 
 After reading the 21 Go modules' LICENSE files (Apache-2.0, MIT, BSD), UNKNOWN

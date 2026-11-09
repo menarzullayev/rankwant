@@ -2420,6 +2420,34 @@ def samples_only_problems_earn_nothing() -> str | None:
     return None
 
 
+def privacy_text_matches_the_data() -> str | None:
+    """2026-11-10 (HITL, audit Q-06): maxfiylik matni haqiqiy yig'iladigan ma'lumotni aytadi.
+
+    O'lchandi: matn telefon, tug'ilgan sana, manzil, ta'lim, sessiya IP'si va
+    Codeforces'dan import qilingan ~974 ming profilni tilga olmasdi, «yosh
+    so'ralmaydi» derdi — onboarding esa 2026-10-26 dan tug'ilgan sanani
+    so'raydi. Matn uch tilda moslandi; sessiya IP yozuvi «sessiya amal
+    qilguncha» saqlanishi uchun kunlik tozalash vazifasi qo'shildi.
+    """
+    legal = read("apps/web/src/content/legal.ts")
+    privacy = legal.split("export const PRIVACY", 1)[-1].split("export const TERMS", 1)[0]
+    blocks = {"uz": privacy.split("  ru: {", 1)[0], "ru": privacy.split("  ru: {", 1)[-1].split("  en: {", 1)[0], "en": privacy.split("  en: {", 1)[-1]}
+    must = {
+        "uz": ("telefon raqami", "tug'ilgan sana", "Codeforces", "IP manzil", "14 kun"),
+        "ru": ("номер телефона", "дата рождения", "Codeforces", "IP-адрес", "14 дней"),
+        "en": ("phone number", "date of birth", "Codeforces", "IP address", "14 days"),
+    }
+    for locale, words in must.items():
+        for word in words:
+            if word not in blocks[locale]:
+                return f"legal.ts: maxfiylik matni ({locale}) «{word}» ni aytmaydi"
+    if "yosh haqida ma'lumot so'ramaymiz" in privacy:
+        return "legal.ts: «yosh so'ralmaydi» qaytdi — onboarding tug'ilgan sanani so'raydi"
+    if '"task": "core.prune_dead_sessions"' not in read("apps/api/config/settings.py"):
+        return "settings.py: muddati o'tgan sessiya IP yozuvlari tozalanmaydi"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -3964,6 +3992,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
+    ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
