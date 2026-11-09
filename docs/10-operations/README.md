@@ -174,6 +174,14 @@ docker compose --env-file .env.public \
 
 ### Ikki tizimli preview (dual-boot)
 
+> ⚠️ **Linux tomonida judge (ADR-0046, 2026-11-10).** Judge endi capability'siz
+> user namespace yaratadi. Ubuntu ≥ 23.10 buni AppArmor bilan cheklaydi
+> (`kernel.apparmor_restrict_unprivileged_userns=1`): judge cgroup'ini ulay
+> olmaydi va ishga tushmaydi (`cgroup delegatsiyasi qurilmadi`). Linux'da
+> preview uchun bir marta: `sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0`
+> (doimiy qilish — `/etc/sysctl.d/` fayli). Windows (Docker Desktop) va CI
+> bunga muhtoj emas / o'zi qiladi. Linux host'da o'lchanmagan.
+
 Preview mashinasi dual-boot: bitta diskda Linux va Windows. Sayt qaysi tizim
 yoniq bo'lsa, o'shandan ishlaydi, lekin har tizimning **o'z** bazasi va
 MinIO'si bor. Ma'lumot tizimdan tizimga Cloudflare R2 dagi eksport orqali
@@ -367,7 +375,7 @@ tekinga beradigan narsani qimmat qiladi.
 
 | Risk | Holat |
 | ---- | ----- |
-| Judge ommaviy koddan bajaradi | Sandbox 14/14 izolyatsiya sinovidan o'tgan, lekin konteyner `--privileged`. To'xtatish: `docker compose ... stop judge` |
+| Judge ommaviy koddan bajaradi | Sandbox bake-off'ning 33 case'idan o'tadi; 2026-11-10 dan konteyner **privileged emas**, worker va yechim uid 10001 ([ADR-0046](../07-adr/0046-judge-privilege-model.md)). Judge hamon Postgres/Redis bilan bir mashinada (threat model A-1). To'xtatish: `docker compose ... stop judge` |
 | ~~Demo hisoblar (`ustoz`, `oquvchi1..3`) zaif parolli~~ | **Yopilgan.** Bu hisoblar mavjud emas; `demo` ning paroli bo'sh, ya'ni u bilan kirib bo'lmaydi (2026-09-21 o'lchandi, 2026-11-10 hujjatda tuzatildi) |
 | Ro'yxatdan o'tish ochiq | Turnstile (faqat ro'yxatdan o'tishda), `THROTTLE_REGISTER` va noto'g'ri kirish cheklovi (2026-10-05) bor; to'liq abuse qatlami ([test-strategy § 12](test-strategy.md)) hali qurilmagan |
 | 10 tilning tarjimasi ona tilida so'zlashuvchi tomonidan ko'rilmagan | Kalitlar to'liq va `check_i18n.py` buni qo'riqlaydi, lekin matn sifati tekshirilmagan — ayniqsa qoraqalpoq, tojik va qirg'iz. Qaror (2026-09-10): shikoyat kelganda tuzatiladi |

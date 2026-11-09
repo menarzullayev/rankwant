@@ -15,6 +15,7 @@ not be read (never treated as "fine").
 from __future__ import annotations
 
 import importlib.util
+import json
 import re
 import sys
 from collections.abc import Callable
@@ -2580,6 +2581,80 @@ def scanners_report_in_nightly() -> str | None:
     for tool in ("gitleaks", "pip-audit", "npm audit", "npm@11 audit"):
         if re.search(rf"^\s+(?!#).*\b{re.escape(tool)}\b", ci, re.M):
             return f"ci.yml: `{tool}` PR CI'da — skanerlar birlashtirishni to'smasligi kerak"
+JUDGE_SECCOMP = "services/judge-go/seccomp.json"
+#: What the judge container's profile adds to Docker's default, and nothing
+#: more: nsjail needs these to build its namespaces without CAP_SYS_ADMIN.
+#: Measured 2026-11-10 by removing each in turn; `unshare`, `setns` and
+#: `chroot` were not needed and must stay closed.
+JUDGE_SECCOMP_ADDED = ("clone", "clone3", "mount", "umount2", "pivot_root", "sethostname")
+#: The launcher's three, used once to write the id map (measured likewise).
+JUDGE_CAPS = frozenset({"SETUID", "SETGID", "SETFCAP"})
+
+
+def _compose_service(src: str, name: str) -> str:
+    """One top-level service block of a compose file ('' when it has none)."""
+    match = re.search(rf"^  {re.escape(name)}:\n(.*?)(?=^  \S|^\S|\Z)", src, re.M | re.S)
+    return match.group(1) if match else ""
+
+
+def judge_is_not_privileged() -> str | None:
+    """2026-11-10 (HITL, audit Q-03 → ADR-0046): the judge container is not privileged.
+
+    It ran `privileged: true` with `cgroup: host` — every capability, no
+    seccomp, the host's cgroup tree — and the sandboxed program was host uid 0.
+    Now: three capabilities used once by the launcher, Docker's seccomp plus
+    six syscalls, the worker and the sandbox as uid 10001. Any compose file
+    that gives the judge one of the old keys back, an extra capability or an
+    unconfined seccomp undoes it with every other check green.
+    """
+    for path in sorted(ROOT.glob("docker-compose*.yml")):
+        block = _compose_service(read(path.name), "judge")
+        if re.search(r"^\s*privileged:\s*true", block, re.M):
+            return f"{path.name}: judge yana `privileged: true` (ADR-0046)"
+        if re.search(r"^\s*cgroup:\s*host", block, re.M):
+            return f"{path.name}: judge yana `cgroup: host` (ADR-0046)"
+        if re.search(r"seccomp[=:]\s*unconfined", block):
+            return f"{path.name}: judge seccomp'siz (`seccomp=unconfined`)"
+        if path.name != "docker-compose.yml" and re.search(r"^\s*cap_add:", block, re.M):
+            return f"{path.name}: judge'ga capability overlay'da qo'shilgan"
+    base = _compose_service(read("docker-compose.yml"), "judge")
+    if not re.search(r"^    cap_drop: \[ALL\]$", base, re.M):
+        return "docker-compose.yml: judge `cap_drop: [ALL]` siz"
+    match = re.search(r"^    cap_add: \[([A-Z_, ]*)\]$", base, re.M)
+    caps = {cap.strip() for cap in match.group(1).split(",")} if match else set()
+    if caps - JUDGE_CAPS:
+        return f"docker-compose.yml: judge'da ortiqcha capability — {', '.join(sorted(caps - JUDGE_CAPS))}"
+    for opt in ("no-new-privileges:true", f"seccomp=./{JUDGE_SECCOMP}"):
+        if f"      - {opt}\n" not in base:
+            return f"docker-compose.yml: judge `security_opt` da `{opt}` yo'q"
+    if "      JUDGE_USERNS: '1'\n" not in base:
+        return "docker-compose.yml: judge launcher'siz (`JUDGE_USERNS`) — worker root qoladi"
+    try:
+        profile = json.loads(read(JUDGE_SECCOMP))
+    except ValueError as exc:
+        return f"{JUDGE_SECCOMP}: JSON emas — {exc}"
+    if profile.get("defaultAction") != "SCMP_ACT_ERRNO":
+        return f"{JUDGE_SECCOMP}: standart amal ERRNO emas — profil hammasini ochadi"
+    open_always = {
+        name
+        for rule in profile.get("syscalls", [])
+        if rule.get("action") == "SCMP_ACT_ALLOW" and not rule.get("includes") and not rule.get("args")
+        for name in rule.get("names", [])
+    }
+    added = next(
+        (rule["names"] for rule in profile.get("syscalls", []) if "ADR-0046" in rule.get("comment", "")),
+        None,
+    )
+    if added is None or tuple(added) != JUDGE_SECCOMP_ADDED:
+        return f"{JUDGE_SECCOMP}: nsjail qo'shimchasi o'zgargan — {added}"
+    if open_always & {"unshare", "setns", "chroot", "bpf", "keyctl", "ptrace", "userfaultfd"}:
+        return f"{JUDGE_SECCOMP}: yopiq qolishi kerak bo'lgan syscall ochilgan"
+    if '"--seccomp_string", sandboxSeccomp,' not in read("services/judge-go/sandbox.go"):
+        return "services/judge-go/sandbox.go: sandbox siyosatisiz — dastur namespace yarata oladi"
+    main = read("services/judge-go/main.go")
+    for call in ("PreflightIdentity()", "PreflightSandbox(ctx)"):
+        if f"if err := {call}; err != nil" not in main:
+            return f"services/judge-go/main.go: `{call}` chaqirilmaydi — fail-closed tekshiruv yo'q"
     return None
 
 
@@ -4024,6 +4099,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
+    ("judge privileged emas", judge_is_not_privileged),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),

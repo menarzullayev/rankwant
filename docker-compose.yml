@@ -357,8 +357,9 @@ services:
 
   judge:
     # PID 1 must reap: health checks and sandboxed children leave zombies
-    # otherwise (measured 222 on the host, 2026-10-23).
-    init: true
+    # otherwise (measured 222 on the host, 2026-10-23). Here PID 1 is the
+    # judge's own launcher (ADR-0046), which reaps; `init: true` would put
+    # a root `docker-init` in front of it that could not signal it.
     logging: *default-logging
     build:
       context: ./services/judge-go
@@ -366,9 +367,36 @@ services:
         GIT_SHA: ${GIT_SHA:-${IMAGE_TAG:-unknown}}
         # `check_deploy.sh` shu yorliqni o'qiydi (web bilan bir xil naqsh).
         BUILT_AT: ${BUILT_AT:-unknown}
-    privileged: true          # nsjail namespace va cgroup uchun
-    cgroup: host
+    # ADR-0046: NOT privileged, no `cgroup: host` (until 2026-11-10 it was
+    # both: every capability, no seccomp, the host's cgroup tree, and the
+    # sandboxed program running as host uid 0). Each line below was
+    # measured by removing it (docs/07-adr/0046-judge-privilege-model.md):
+    #
+    # - three capabilities, used once: the launcher (PID 1, root for its
+    #   first ~100 ms) writes a two-line id map (SETUID, SETGID) that maps
+    #   uid 0 (SETFCAP), mounts a writable cgroup of its own in the new
+    #   namespace, hands it to uid 10001 and drops to it. No process keeps
+    #   uid 0; the worker refuses to start if it does (PreflightIdentity).
+    # - seccomp: Docker's default profile plus the six syscalls nsjail
+    #   needs (clone, clone3, mount, umount2, pivot_root, sethostname);
+    #   the sandboxed program gets them closed again by nsjail.
+    # - `systempaths=unconfined`: Docker's /proc masks are submounts nsjail
+    #   cannot remount once its own /proc tmpfs hides them; with them every
+    #   run failed (CE). `privileged` had none either.
+    # - `apparmor=unconfined`: `docker-default` denies every mount, nsjail's
+    #   too. No-op where AppArmor is off (Docker Desktop); `privileged` was
+    #   unconfined as well.
+    cap_drop: [ALL]
+    cap_add: [SETUID, SETGID, SETFCAP]
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=./services/judge-go/seccomp.json
+      - systempaths=unconfined
+      - apparmor=unconfined
     environment:
+      # ADR-0046: the launcher builds the delegated cgroup and runs
+      # everything else as uid 10001 (services/judge-go/userns.go).
+      JUDGE_USERNS: '1'
       # ADR-0028: navbat endi ALOHIDA `judge-queue` Redis'da (sessiya
       # Redis'iga tarmoq darajasida yo'q).
       REDIS_URL: redis://judge-queue:6379/0

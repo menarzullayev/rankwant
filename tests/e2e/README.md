@@ -117,8 +117,8 @@ qolmasligi kerak.
 
 ## Nega PR da ishlamaydi
 
-Judge konteyneri `--privileged` talab qiladi va uni har PR da ko'tarish
-qimmat. Bu testlar **staging deploy'dan keyin** ishlaydi
+Testlar to'liq stack'ni (judge bilan) talab qiladi va uni har PR da
+ko'tarish qimmat. Bu testlar **staging deploy'dan keyin** ishlaydi
 ([10-operations § CI/CD](../../docs/10-operations/README.md)) — vizual
 regressiya ham Nightly'da, `tools/ci_playwright.sh` orqali.
 

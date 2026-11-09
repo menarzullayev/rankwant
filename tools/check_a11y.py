@@ -5,7 +5,7 @@
 `axe` — HAQIQIY brauzerda ishlaydi va faqat brauzer ko'radigan narsani
 topadi: hisoblangan kontrast, DOM tartibi, `aria-labelledby` haqiqatan
 mavjud elementga ishora qiladimi. Bu — eng ishonchli o'lchov, lekin u
-**ishlayotgan stack** talab qiladi (compose + judge `--privileged`),
+**ishlayotgan stack** talab qiladi (compose + judge),
 ya'ni PR'da ishlamaydi (`tests/e2e/README.md`).
 
 Natijada eng ko'p uchraydigan uchta xato PR'da **umuman ko'rinmasdi**:
