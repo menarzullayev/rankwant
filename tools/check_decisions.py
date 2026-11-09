@@ -2206,6 +2206,21 @@ def dependabot_locks_are_recompiled() -> str | None:
     for name in ("requirements.lock", "requirements-dev.lock"):
         if "--python-version 3.12" not in read("apps/api/" + name).split("\n", 2)[1]:
             return f"apps/api/{name}: lock Python 3.12 uchun yasalmagan (sarlavhaga qarang)"
+    # 2026-11-10 (HITL, audit Q-08): npm and Go pull requests too. Dependabot
+    # writes their lockfiles but not the licence inventory, so #474 sat
+    # BLOCKED on `licence_inventory.py --check`.
+    paths = re.search(r"^    paths:\n((?:      .*\n)+)", workflow, re.M)
+    listed = set(re.findall(r"^      - (\S+)", paths.group(1), re.M)) if paths else set()
+    for rel in ("package-lock.json", "tests/e2e/package-lock.json", "services/judge-go/go.mod"):
+        if rel not in listed:
+            return f"dependabot-locks.yml: `{rel}` o'zgargan PR'da inventar qayta yasalmaydi"
+    inventory = re.search(
+        r"^      - name: Regenerate the licence inventory\n(.*?)(?=^      - )", workflow, re.S | re.M
+    )
+    if not inventory:
+        return "dependabot-locks.yml: litsenziya inventarini yasaydigan qadam yo'q"
+    if re.search(r"^        if:", inventory.group(1), re.M):
+        return "dependabot-locks.yml: inventar shartli yasaladi — npm PR'i yana BLOCKED qoladi"
     return None
 
 

@@ -317,7 +317,12 @@ jobs:
           || needs.filter.outputs.tools == 'true'
           || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    # 6, not 3 (2026-11-10, audit Q-08). With warm caches the job takes
+    # 40-140 s, but a pull request that changes `package-lock.json` misses
+    # both the npm and the Next build cache. Measured on Dependabot #474:
+    # `npm ci` 52 s, `next build` 57 s, and the negative tests were cut at
+    # 39 s by the 3-minute cap — every npm bump was cancelled, never judged.
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v7
       - name: Scaffolded?
