@@ -2431,6 +2431,13 @@ def nightly_bakeoff_is_a_gate() -> str | None:
     bake = steps["Bake-off — validator cases (real nsjail)"]
     if re.search(r"^        continue-on-error:", bake, re.M):
         return "nightly.yml: bake-off `continue-on-error` bilan — yiqilsa ham Nightly yashil"
+    # The harness itself must be what `compose run bakeoff` starts. #253 lost
+    # this line and the service ran the api image's gunicorn for six weeks.
+    service = re.search(r"^  bakeoff:\n(.*?)(?=^  \S|\Z)", read("docker-compose.ci.yml"), re.S | re.M)
+    if not service:
+        return "docker-compose.ci.yml: `bakeoff` servisi topilmadi"
+    if not re.search(r"^    command: \['python', '/bakeoff/harness/runner\.py'", service.group(1), re.M):
+        return "docker-compose.ci.yml: `bakeoff` harness'ni yurgizmaydi — obrazning standart buyrug'i ishlaydi"
     return None
 
 

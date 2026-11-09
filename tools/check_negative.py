@@ -3229,6 +3229,20 @@ def neg_decisions_bakeoff_skipped_after_visual() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_bakeoff_runs_the_image_default() -> tuple[bool, str]:
+    """The bake-off service loses its `command:` again (#253, 2026-09-24).
+
+    The container then starts the api image's gunicorn instead of the
+    harness, and nothing about isolation is measured.
+    """
+    return _decision_broken(
+        "docker-compose.ci.yml",
+        "    command: ['python', '/bakeoff/harness/runner.py', '--worker', 'judge-go']\n",
+        "",
+        "harness'ni yurgizmaydi",
+    )
+
+
 def neg_decisions_smoke_skipped_after_visual() -> tuple[bool, str]:
     """Smoke is gated on `success()` again."""
     return _decision_broken(
@@ -10158,6 +10172,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bake-off yana yumshatilsa tutilsin", neg_decisions_bakeoff_soft_again),
             ("bake-off vizualdan keyin o'tkazilsa tutilsin", neg_decisions_bakeoff_skipped_after_visual),
             ("smoke vizualdan keyin o'tkazilsa tutilsin", neg_decisions_smoke_skipped_after_visual),
+            ("bake-off harness'siz qolsa tutilsin", neg_decisions_bakeoff_runs_the_image_default),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),
