@@ -8263,6 +8263,7 @@ export interface components {
             /** Format: int64 */
             code?: number | null;
             readonly has_tests: boolean;
+            readonly has_hidden_tests: boolean;
             /** Format: int64 */
             likes_count?: number;
             /** Format: int64 */
@@ -8393,6 +8394,7 @@ export interface components {
             /** Format: int64 */
             code?: number | null;
             readonly has_tests: boolean;
+            readonly has_hidden_tests: boolean;
             /** Format: int64 */
             likes_count?: number;
             /** Format: int64 */

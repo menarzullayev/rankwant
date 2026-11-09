@@ -194,6 +194,16 @@ services:
       # ADR-0028: bake-off navbatni endi alohida `judge-queue` Redis'da
       # topadi (`runner.py` JUDGE_QUEUE_URL ni birinchi o'qiydi).
       JUDGE_QUEUE_URL: redis://judge-queue:6379/0
+    # ⚠️ `command:` SHART (2026-11-10, audit Q-04). #253 (ADR-0028,
+    # 2026-09-24) shu qatorni `JUDGE_QUEUE_URL` bilan almashtirib yuborgan
+    # edi: o'shandan beri `compose run bakeoff` api obrazining standart
+    # buyrug'ini — `gunicorn` ni — yurgizdi. Harness BIR MARTA HAM
+    # yurmagan: 2026-09-28 dagi «natija kelmaydi, timeout» aslida hech
+    # qachon tugamaydigan veb-server edi, 2026-10-05 dan keyin esa
+    # `DJANGO_SECRET_KEY` siz gunicorn darhol `exit 1` berdi — va
+    # `continue-on-error` ikkalasini ham yashirdi.
+    command: ['python', '/bakeoff/harness/runner.py', '--worker', 'judge-go']
     depends_on:
       redis: { condition: service_healthy }
+      judge-queue: { condition: service_healthy }
       judge: { condition: service_started }

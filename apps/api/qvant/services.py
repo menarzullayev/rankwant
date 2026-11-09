@@ -29,9 +29,12 @@ class PurchaseError(Exception):
 def _distinct_ac_count(user: User, day: date) -> int:
     from judging.models import Attempt
     from judging.verdicts import Verdict
+    from problems.testsets import hidden_tests_exist
 
+    # Audit Q-05: a samples-only problem does not count towards a daily quest.
     return (
         Attempt.objects.filter(user=user, verdict=Verdict.AC, created_at__date=day)
+        .filter(hidden_tests_exist("problem_id"))
         .values("problem_id")
         .distinct()
         .count()

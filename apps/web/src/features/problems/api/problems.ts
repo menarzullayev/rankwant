@@ -26,6 +26,9 @@ export type Problem = {
   /** Judge tekshira oladimi. Import qilingan masalalarning bir qismida
    * hali test yo'q va ularga yuborish qabul qilinmaydi. */
   has_tests: boolean;
+  /** Audit Q-05: `false` — faqat namuna testlari bor; namunani chop etgan
+   * yechim ham qabul qilinadi, shuning uchun Skills va Qvant'ga hisoblanmaydi. */
+  has_hidden_tests: boolean;
   slug: string;
   title: string;
   difficulty: number;

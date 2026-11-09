@@ -2090,6 +2090,8 @@ export const tg: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — мураккабӣ {difficulty}. Бойгонии масъалаҳои RankWant.",
   "problem.partialScoring": "Холи қисмӣ",
   "problem.testsPreparing": "Тестҳо омода карда мешаванд",
+  "problem.samplesOnly": "Танҳо тестҳои намунавӣ",
+  "problem.samplesOnlyHint": "Тести пинҳонӣ нест: ҳал дар профил мемонад, вале ба рейтинги Skills ва Qvant ҳисоб намешавад.",
   "problem.backToContest": "Бозгашт ба мусобиқа",
   "problem.countedInContest": "Ҳал ба мусобиқаи {contest} ҳисоб карда мешавад.",
   "problem.inputFormat": "Маълумоти вуруд",

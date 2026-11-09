@@ -56,8 +56,13 @@ def marathon_problems(user: User, when: date | None = None) -> list[Problem]:
     already = UserSolvedProblem.objects.filter(user=user, first_ac_at__date__lt=start).values(
         "problem_id"
     )
+    from problems.testsets import hidden_tests_exist
+
+    # Audit Q-05: only problems judged on hidden tests — the marathon pays
+    # Qvant, and a samples-only problem accepts a printed sample.
     ids = list(
         Problem.objects.filter(is_public=True)
+        .filter(hidden_tests_exist())
         .exclude(pk__in=already)
         .order_by("pk")
         .values_list("pk", flat=True)

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2416 strings.**
+**2418 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2026,6 +2026,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.difficultyDescription` | {title} — qiyinlik {difficulty}. RankWant masala arxivi. | {title} — мураккабӣ {difficulty}. Бойгонии масъалаҳои RankWant. |  |
 | `problem.partialScoring` | Qisman ball | Холи қисмӣ |  |
 | `problem.testsPreparing` | Testlar tayyorlanmoqda | Тестҳо омода карда мешаванд |  |
+| `problem.samplesOnly` | Faqat namuna testlari | Танҳо тестҳои намунавӣ |  |
+| `problem.samplesOnlyHint` | Yashirin test yo'q: yechim profilda qoladi, lekin Skills reytingi va Qvant'ga hisoblanmaydi. | Тести пинҳонӣ нест: ҳал дар профил мемонад, вале ба рейтинги Skills ва Qvant ҳисоб намешавад. |  |
 | `problem.backToContest` | Musobaqaga qaytish | Бозгашт ба мусобиқа |  |
 | `problem.countedInContest` | Yechim {contest} musobaqasi hisobiga yoziladi. | Ҳал ба мусобиқаи {contest} ҳисоб карда мешавад. |  |
 | `problem.inputFormat` | Kiruvchi ma'lumot | Маълумоти вуруд |  |

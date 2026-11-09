@@ -2088,6 +2088,8 @@ export const en: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — difficulty {difficulty}. The RankWant problem archive.",
   "problem.partialScoring": "Partial scoring",
   "problem.testsPreparing": "Tests are being prepared",
+  "problem.samplesOnly": "Sample tests only",
+  "problem.samplesOnlyHint": "No hidden tests: a solve stays on your profile but counts toward neither the Skills rating nor Qvant.",
   "problem.backToContest": "Back to the contest",
   "problem.countedInContest": "Your solution will be counted towards the {contest} contest.",
   "problem.inputFormat": "Input",

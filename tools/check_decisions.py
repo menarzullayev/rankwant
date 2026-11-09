@@ -2372,6 +2372,39 @@ def public_stack_requires_its_secrets() -> str | None:
     return None
 
 
+def samples_only_problems_earn_nothing() -> str | None:
+    """2026-11-10 (HITL, audit Q-05): namunasiz masala Skills va Qvant bermaydi.
+
+    O'lchandi: 1 236 ommaviy masaladan 1 225 tasida yashirin test yo'q —
+    namunani chop etgan dastur ham qabul qilinadi. Ular arxivda belgi bilan
+    qoladi, lekin yechim Skills'ga ham, Qvant'ga (streak, kunlik quest,
+    marafon) ham hisoblanmaydi.
+    """
+    ratings = read("apps/api/ratings/services.py")
+    if '.filter(hidden_tests_exist("problem_id"))' not in ratings.split("def recalc_skills", 1)[-1].split(
+        "def _profile_stats_changed", 1
+    )[0]:
+        return "ratings/services.py: Skills namunasiz masalani ham sanaydi"
+    judged = ratings.split("def on_attempt_judged", 1)[-1].split("def on_accept_revoked", 1)[0]
+    if not re.search(r"if not has_hidden_tests\(attempt\.problem_id\):\n\s+return\n", judged):
+        return "ratings/services.py: namunasiz masala yechimi Qvant beradi"
+    if '.filter(hidden_tests_exist("problem_id"))' not in read("apps/api/qvant/services.py"):
+        return "qvant/services.py: kunlik quest namunasiz masalani sanaydi"
+    if ".filter(hidden_tests_exist())" not in read("apps/api/qvant/marathon.py"):
+        return "qvant/marathon.py: marafon namunasiz masalani tanlaydi"
+    if "from problems import signals" not in read("apps/api/problems/apps.py"):
+        return "problems/apps.py: yashirin test qo'shilganda Skills qayta hisoblanmaydi"
+    if '"has_hidden_tests",' not in read("apps/api/problems/serializers.py"):
+        return "problems/serializers.py: `has_hidden_tests` API'da yo'q"
+    for page in (
+        "apps/web/src/app/(site)/problems/page.tsx",
+        "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
+    ):
+        if "!p.has_hidden_tests" not in read(page) and "!problem.has_hidden_tests" not in read(page):
+            return f"{page}: «faqat namuna testlari» belgisi ko'rsatilmaydi"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -2391,6 +2424,53 @@ def deploy_refuses_default_secrets() -> str | None:
             return f"tools/check_env_secrets.py: `{name}` tekshirilmaydi"
     if "compose_defaults(compose)" not in checker:
         return "tools/check_env_secrets.py: docker-compose.yml dagi standart qiymatlar o'qilmaydi"
+    return None
+
+
+def _workflow_steps(job: str) -> dict[str, str]:
+    """Steps of one job body (`_workflow_job`), keyed by `- name:`.
+
+    A step starts at a six-space `- ` item; unnamed steps (`- uses: …`) are
+    split off too, so their lines never leak into the previous named step.
+    """
+    steps: dict[str, str] = {}
+    for chunk in re.split(r"(?m)^(?=      - )", job):
+        m = re.match(r"      - name: (.+)", chunk)
+        if m:
+            steps[m.group(1).strip()] = chunk
+    return steps
+
+
+def nightly_bakeoff_is_a_gate() -> str | None:
+    """2026-11-10 (HITL, audit Q-04): bake-off va smoke Nightly'da haqiqiy darvoza.
+
+    O'lchandi: `login.png` eskirgani uchun Nightly 2026-10-26 dan 15 kun
+    ketma-ket qizil bo'ldi. Smoke va bake-off vizual qadamdan keyin turadi
+    va standart `success()` sharti bilan har safar `skipped` bo'ldi — ya'ni
+    haqiqiy nsjail'dagi izolyatsiya ikki hafta tekshirilmadi. Undan oldin
+    esa bake-off'da 2026-09-28 dan beri «vaqtincha» `continue-on-error: true`
+    turardi: u yiqilsa ham Nightly yashil chiqardi.
+
+    Qo'riqlanadigan ikki narsa: ikkala qadam ham `!cancelled()` bilan
+    (vizual farqdan qat'i nazar yuradi), bake-off'da `continue-on-error` yo'q.
+    """
+    steps = _workflow_steps(_workflow_job(read(".github/workflows/nightly.yml"), "e2e"))
+    for name in ("Smoke", "Bake-off — validator cases (real nsjail)"):
+        step = steps.get(name)
+        if step is None:
+            return f"nightly.yml: e2e job'ida `{name}` qadami yo'q"
+        if not re.search(r"^        if: \$\{\{ !cancelled\(\) && ", step, re.M):
+            return f"nightly.yml: `{name}` `!cancelled()` siz — vizual farq uni o'tkazib yuboradi"
+    bake = steps["Bake-off — validator cases (real nsjail)"]
+    if re.search(r"^        continue-on-error:", bake, re.M):
+        return "nightly.yml: bake-off `continue-on-error` bilan — yiqilsa ham Nightly yashil"
+    # The harness itself must be what `compose run bakeoff` starts. #253 lost
+    # this line and the service ran the api image's gunicorn for six weeks.
+    service = re.search(r"^  bakeoff:\n(.*?)(?=^  \S|\Z)", read("docker-compose.ci.yml"), re.S | re.M)
+    if not service:
+        return "docker-compose.ci.yml: `bakeoff` servisi topilmadi"
+    if not re.search(r"^    command: \['python', '/bakeoff/harness/runner\.py'", service.group(1), re.M):
+        return "docker-compose.ci.yml: `bakeoff` harness'ni yurgizmaydi — obrazning standart buyrug'i ishlaydi"
     return None
 
 
@@ -3867,6 +3947,8 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
+    ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
+    ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),

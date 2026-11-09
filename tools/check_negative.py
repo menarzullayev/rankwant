@@ -3203,6 +3203,56 @@ def neg_decisions_api_tests_lose_path_filter() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_bakeoff_soft_again() -> tuple[bool, str]:
+    """The «temporary» `continue-on-error` comes back on the bake-off step.
+
+    It sat there from 2026-09-28: a failing isolation suite left Nightly green.
+    """
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        if: ${{ !cancelled() && vars.STAGING_URL == '' }}\n        # ⚠️ `continue-on-error` YO'Q",
+        "        if: ${{ !cancelled() && vars.STAGING_URL == '' }}\n        continue-on-error: true\n        # ⚠️ `continue-on-error` YO'Q",
+        "yiqilsa ham Nightly yashil",
+    )
+
+
+def neg_decisions_bakeoff_skipped_after_visual() -> tuple[bool, str]:
+    """The bake-off is gated on `success()` again: a pixel diff skips it.
+
+    That is how it ran zero times between 2026-10-26 and 2026-11-09.
+    """
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "      - name: Bake-off — validator cases (real nsjail)\n        if: ${{ !cancelled() && vars.STAGING_URL == '' }}\n",
+        "      - name: Bake-off — validator cases (real nsjail)\n        if: ${{ vars.STAGING_URL == '' }}\n",
+        "`Bake-off — validator cases (real nsjail)` `!cancelled()` siz",
+    )
+
+
+def neg_decisions_bakeoff_runs_the_image_default() -> tuple[bool, str]:
+    """The bake-off service loses its `command:` again (#253, 2026-09-24).
+
+    The container then starts the api image's gunicorn instead of the
+    harness, and nothing about isolation is measured.
+    """
+    return _decision_broken(
+        "docker-compose.ci.yml",
+        "    command: ['python', '/bakeoff/harness/runner.py', '--worker', 'judge-go']\n",
+        "",
+        "harness'ni yurgizmaydi",
+    )
+
+
+def neg_decisions_smoke_skipped_after_visual() -> tuple[bool, str]:
+    """Smoke is gated on `success()` again."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "      - name: Smoke\n        if: ${{ !cancelled() && vars.STAGING_URL == '' }}\n",
+        "      - name: Smoke\n        if: ${{ vars.STAGING_URL == '' }}\n",
+        "`Smoke` `!cancelled()` siz",
+    )
+
+
 def neg_decisions_required_ignores_api_tests() -> tuple[bool, str]:
     """The aggregator stops reading the API test matrix: red tests merge."""
     return _decision_broken(
@@ -3769,6 +3819,46 @@ def neg_decisions_public_stack_falls_back() -> tuple[bool, str]:
         "${MINIO_ROOT_PASSWORD:?",
         "${MINIO_ROOT_PASSWORD:-devdevdev}${X:-",
         "ommaviy stack standart sir bilan ko'tariladi",
+    )
+
+
+def neg_decisions_skills_counts_samples_only() -> tuple[bool, str]:
+    """Skills sums every solved problem again, samples-only included."""
+    return _decision_broken(
+        "apps/api/ratings/services.py",
+        '        .filter(hidden_tests_exist("problem_id"))\n        .values_list("problem__difficulty"',
+        '        .values_list("problem__difficulty"',
+        "Skills namunasiz masalani ham sanaydi",
+    )
+
+
+def neg_decisions_samples_only_pays_qvant() -> tuple[bool, str]:
+    """The early return before the Qvant event is gone."""
+    return _decision_broken(
+        "apps/api/ratings/services.py",
+        "    if not has_hidden_tests(attempt.problem_id):\n        return\n",
+        "",
+        "namunasiz masala yechimi Qvant beradi",
+    )
+
+
+def neg_decisions_marathon_draws_samples_only() -> tuple[bool, str]:
+    """The marathon draws from the whole public archive again."""
+    return _decision_broken(
+        "apps/api/qvant/marathon.py",
+        "        .filter(hidden_tests_exist())\n",
+        "",
+        "marafon namunasiz masalani tanlaydi",
+    )
+
+
+def neg_decisions_recount_signal_not_loaded() -> tuple[bool, str]:
+    """The signal module is no longer imported, so a first hidden test changes nothing."""
+    return _decision_broken(
+        "apps/api/problems/apps.py",
+        "        from problems import signals  # noqa: F401\n",
+        "        pass\n",
+        "yashirin test qo'shilganda Skills qayta hisoblanmaydi",
     )
 
 
@@ -6685,6 +6775,13 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Samples-only problems (2026-11-10): Skills, Qvant, the marathon, the
+    # recount signal and both badges.
+    "apps/api/ratings/services.py",
+    "apps/api/qvant/services.py",
+    "apps/api/qvant/marathon.py",
+    "apps/api/problems/apps.py",
+    "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
     # Judge latency gate (2026-09-21): the rule reads the harness to prove the
     # budget comparison still exists — a gate whose comparison is gone still
     # exits 0, i.e. green but measuring nothing. The compose service and the
@@ -10153,6 +10250,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
             ("ommaviy stack standartga tushsa tutilsin", neg_decisions_public_stack_falls_back),
+            ("Skills namunasiz masalani sanasa tutilsin", neg_decisions_skills_counts_samples_only),
+            ("namunasiz masala Qvant bersa tutilsin", neg_decisions_samples_only_pays_qvant),
+            ("marafon namunasiz masalani tanlasa tutilsin", neg_decisions_marathon_draws_samples_only),
+            ("qayta hisoblash signali yuklanmasa tutilsin", neg_decisions_recount_signal_not_loaded),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
@@ -10163,6 +10264,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("umumlashtiruvchi bekor qilinganda skipped bo'lsa tutilsin", neg_decisions_required_skips_on_cancel),
             ("umumlashtiruvchi nomi o'zgarsa tutilsin", neg_decisions_required_renamed),
             ("runner self-test push bilan yursa tutilsin", neg_decisions_runner_selftest_on_push),
+            ("bake-off yana yumshatilsa tutilsin", neg_decisions_bakeoff_soft_again),
+            ("bake-off vizualdan keyin o'tkazilsa tutilsin", neg_decisions_bakeoff_skipped_after_visual),
+            ("smoke vizualdan keyin o'tkazilsa tutilsin", neg_decisions_smoke_skipped_after_visual),
+            ("bake-off harness'siz qolsa tutilsin", neg_decisions_bakeoff_runs_the_image_default),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),
