@@ -3842,6 +3842,26 @@ def neg_decisions_recount_signal_not_loaded() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_privacy_forgets_imported_profiles() -> tuple[bool, str]:
+    """The Russian privacy text stops saying where the imported accounts come from."""
+    return _decision_broken(
+        "apps/web/src/content/legal.ts",
+        "открытых профилей Codeforces",
+        "открытых профилей",
+        "«Codeforces» ni aytmaydi",
+    )
+
+
+def neg_decisions_session_rows_kept() -> tuple[bool, str]:
+    """The daily task that drops expired session rows is unscheduled."""
+    return _decision_broken(
+        "apps/api/config/settings.py",
+        '"task": "core.prune_dead_sessions"',
+        '"task": "core.prune_dead_sessions_off"',
+        "sessiya IP yozuvlari tozalanmaydi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -6762,6 +6782,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/qvant/marathon.py",
     "apps/api/problems/apps.py",
     "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
+    # Privacy text (2026-11-10): the policy and the session-retention task.
+    "apps/web/src/content/legal.ts",
     # Judge latency gate (2026-09-21): the rule reads the harness to prove the
     # budget comparison still exists — a gate whose comparison is gone still
     # exits 0, i.e. green but measuring nothing. The compose service and the
@@ -10234,6 +10256,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("namunasiz masala Qvant bersa tutilsin", neg_decisions_samples_only_pays_qvant),
             ("marafon namunasiz masalani tanlasa tutilsin", neg_decisions_marathon_draws_samples_only),
             ("qayta hisoblash signali yuklanmasa tutilsin", neg_decisions_recount_signal_not_loaded),
+            ("maxfiylik matni importni unutsa tutilsin", neg_decisions_privacy_forgets_imported_profiles),
+            ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),

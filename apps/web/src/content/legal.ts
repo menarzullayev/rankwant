@@ -29,35 +29,51 @@ export type LegalLocale = "uz" | "ru" | "en";
 
 const UPDATED = "2026-09-10";
 
+/** Maxfiylik matni sanasi — shartlardan alohida: 2026-11-10 da faqat shu
+ *  matn yangilandi (audit Q-06). ⚠️ Yurist hali ko'rmagan — legal brief § 5. */
+const PRIVACY_UPDATED = "2026-11-10";
+
 export const PRIVACY: Record<LegalLocale, LegalDoc> = {
   uz: {
     title: "Maxfiylik siyosati",
-    updated: UPDATED,
+    updated: PRIVACY_UPDATED,
     intro:
       "Bu sahifa RankWant qanday ma'lumot yig'ishini, nima uchun va qancha vaqt saqlashini aytadi. Har bir band platformada haqiqatan bajariladigan ishni tasvirlaydi.",
     sections: [
       {
         h: "Nima yig'iladi",
         p: [
-          "Hisob: taxallus, email manzil va parolning kriptografik xesh qiymati. Parolning o'zi hech qachon saqlanmaydi va uni tiklab bo'lmaydi.",
-          "Ixtiyoriy: ko'rsatiladigan ism, qisqa ma'lumot, avatar havolasi, til, Telegram identifikatori.",
-          "Faoliyat: yuborilgan yechimlar va ularning kodi, verdiktlar, reytinglar, musobaqa natijalari, Qvant tranzaksiyalari.",
-          "Texnik: parolni tiklash so'rovi yuborilganda IP manzil va brauzer nomi. Ular xatda ko'rsatiladi — foydalanuvchi so'rovni o'zi yubormaganini bilishi uchun.",
+          "Hisob: taxallus, email manzil, ism va familiya hamda parolning kriptografik xesh qiymati. Parolning o'zi hech qachon saqlanmaydi va uni tiklab bo'lmaydi. Ism va familiyadan profilda ko'rinadigan ism yasaladi.",
+          "Profil — ixtiyoriy, o'zingiz to'ldirasiz: qisqa ma'lumot, avatar havolasi, til, Telegram identifikatori, mamlakat, viloyat, tuman yoki shahar, ta'lim bosqichi, maktab yoki o'quv yurti, sinf yoki kurs, mutaxassislik, ta'lim va ish tarixi, ko'nikmalar, jamoalar, boshqa saytlardagi profillaringiz va veb-sayt havolalari, telefon raqami, tug'ilgan sana, jins va futbolka o'lchami.",
+          "Sovrin yetkazish — faqat alohida rozilik bersangiz: qabul qiluvchining ismi va pochta manzili.",
+          "Faoliyat: yuborilgan yechimlar va ularning kodi, verdiktlar, reytinglar, musobaqa natijalari, Qvant tranzaksiyalari va saytdagi faollik tarixi (yechilgan masalalar, yutuqlar).",
+          "Texnik: har bir kirish sessiyasi uchun IP manzil va brauzer nomi — ularni sozlamalardagi «Qurilmalar» bo'limida ko'rasiz va istalgan sessiyani yopasiz. Parolni tiklash so'rovida IP manzil va brauzer nomi xatda ham ko'rsatiladi — so'rovni o'zingiz yubormaganingizni bilishingiz uchun. Noto'g'ri kirish urinishlari IP manzil va kiritilgan nomning xesh qiymati bo'yicha sanaladi (nomning o'zi emas).",
+          "Import qilingan profillar: platformada Codeforces'ning ochiq profillaridan olingan 974 mingga yaqin hisob bor — taxallus, egasi o'sha saytda ochiq ko'rsatgan ism, mamlakat, shahar va tashkilot hamda avatar havolasi. Ularda email va parol yo'q: bu hisoblar orqali kirib bo'lmaydi va ularning sahifalari qidiruv tizimlariga yopiq.",
         ],
       },
       {
         h: "Nima uchun",
         p: [
           "Platformani ishlatish: hisobingizni tanish, yechimlarni tekshirish, reyting hisoblash, musobaqa jadvalini qurish.",
-          "Suiiste'moldan himoya: so'rovlar sonini cheklash, ko'p hisob va taqlidning oldini olish.",
+          "Profil ma'lumotlari — profilingizda ko'rsatish uchun. Qaysi maydon ommaviy bo'lishini o'zingiz tanlaysiz (pastda «Kim ko'radi»).",
+          "Suiiste'moldan himoya: so'rovlar sonini cheklash, ko'p hisob va taqlidning oldini olish, ro'yxatdan o'tishda bot tekshiruvi.",
           "Hisobni tiklash: parolni unutganda pochtaga havola yuborish.",
+          "Sovrin yuborish — faqat rozilik berganingizda.",
+        ],
+      },
+      {
+        h: "Kim ko'radi",
+        p: [
+          "Profilning ommaviy qismi saytga kirgan har kimga ko'rinadi. Doim ommaviy: taxallus, ko'rsatiladigan ism, qisqa ma'lumot, avatar, reyting va yechilgan masalalar. Standart holatda ommaviy, lekin sozlamalardagi maxfiylik jadvalida yashirish mumkin: mamlakat va hudud, maktab, sinf, tug'ilgan sana, jins, veb-sayt, boshqa saytlardagi profillar, murabbiylar va onlayn holat. Email standart holatda yashirin.",
+          "Telefon raqami, sovrin manzili, ta'lim bosqichi va mutaxassislik hech qachon ommaviy ko'rsatilmaydi — ularni faqat siz ko'rasiz.",
+          "Yechimlaringiz kodini siz va platforma xodimlari ko'radi; hack bosqichi bor musobaqada shu bosqich davomida shu musobaqa ishtirokchilari ham ko'rishi mumkin. Verdikt va natijalar jadvallarda ko'rinadi.",
         ],
       },
       {
         h: "Kim bilan ulashiladi",
         p: [
           "Xat yuborish provayderlari — Brevo, Mailjet, Resend, MailerSend. Ularga faqat qabul qiluvchi manzil va xat matni beriladi.",
-          "Cloudflare — sayt trafigi shu tarmoq orqali o'tadi.",
+          "Cloudflare — sayt trafigi shu tarmoq orqali o'tadi; ro'yxatdan o'tishdagi bot tekshiruvi (Turnstile) ham Cloudflare'niki.",
           "Ijtimoiy kirishdan foydalansangiz, tanlagan provayderingiz (Google, GitHub, Telegram) bizga sizning identifikatoringiz va email manzilingizni beradi.",
           "Boshqa hech kimga berilmaydi va hech qachon sotilmaydi.",
         ],
@@ -66,55 +82,71 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
         h: "Qancha saqlanadi",
         p: [
           "Hisob va faoliyat — hisob mavjud ekan.",
+          "Kirish sessiyasining IP manzili va brauzer nomi — sessiya amal qilguncha («Meni eslab qol» bilan eng ko'pi 30 kun); muddati tugagan yozuvlar har kuni o'chiriladi.",
+          "Noto'g'ri kirish urinishlari hisobi — bir soat.",
           "Parolni tiklash havolasi va kodi — bir soat, keyin ular ishlamaydi.",
           "Yuborilgan xatlarning TANASI umuman saqlanmaydi: tiklash havolasi tokendir, uni bazaga ko'chirish uni ikkinchi joyda qoldirish bo'lardi. Faqat qachon, kimga va qaysi provayder orqali yuborilgani yoziladi.",
+          "Hisobni o'chirish so'rovi 14 kun kutadi — shu vaqt ichida bekor qilishingiz mumkin — keyin shaxsiy ma'lumot o'chiriladi.",
         ],
       },
       {
         h: "Sizning huquqingiz",
         p: [
           "Ma'lumotingizni istalgan vaqt yuklab olishingiz mumkin — sozlamalar sahifasida eksport tugmasi bor.",
-          "Hisobni o'chirishingiz mumkin. O'chirilganda shaxsiy ma'lumot (taxallus, email, ism, avatar, Telegram) olib tashlanadi va hisob anonim nom oladi. Yechimlar va musobaqa natijalari saqlanib qoladi, chunki ular boshqa ishtirokchilarning jadvaliga ham tegishli.",
-          "Savol bo'lsa yozing — aloqa manzili sayt pastida.",
+          "Hisobni o'chirishingiz mumkin. So'rovdan 14 kun o'tgach shaxsiy ma'lumot — taxallus, email, ism va familiya, avatar, Telegram, manzil, ta'lim, telefon, tug'ilgan sana, jins, sovrin manzili va boshqa profil maydonlari — o'chiriladi va hisob anonim nom oladi. Yechimlar va musobaqa natijalari saqlanib qoladi, chunki ular boshqa ishtirokchilarning jadvaliga ham tegishli.",
+          "Qaysi profil maydoni ommaviy bo'lishini maxfiylik jadvalida o'zgartirasiz.",
+          "Import qilingan profil sizniki bo'lsa yoki savolingiz bo'lsa yozing — aloqa manzili sayt pastida.",
         ],
       },
       {
         h: "Bolalar",
         p: [
-          "Platforma maktab o'quvchilari uchun ham mo'ljallangan. Biz yosh haqida ma'lumot so'ramaymiz va uni saqlamaymiz.",
+          "Platforma maktab o'quvchilari uchun ham mo'ljallangan. Tug'ilgan sana ixtiyoriy: onboarding uni so'raydi, lekin bo'sh qoldirish mumkin. Kiritilsa, u standart holatda ommaviy profilda ko'rinadi — maxfiylik jadvalida yashirish mumkin. Yosh tekshirilmaydi.",
         ],
       },
     ],
   },
   ru: {
     title: "Политика конфиденциальности",
-    updated: UPDATED,
+    updated: PRIVACY_UPDATED,
     intro:
-      "Эта страница описывает, какие данные собирает RankWant, зачем и как долго их хранит. Каждый пункт описывает то, что действительно происходит на платформе.",
+      "Эта страница рассказывает, какие данные собирает RankWant, зачем и как долго их хранит. Каждый пункт описывает то, что платформа действительно делает.",
     sections: [
       {
         h: "Что собирается",
         p: [
-          "Аккаунт: имя пользователя, адрес электронной почты и криптографический хеш пароля. Сам пароль не хранится и не может быть восстановлен.",
-          "По желанию: отображаемое имя, краткое описание, ссылка на аватар, язык, идентификатор Telegram.",
-          "Активность: отправленные решения и их код, вердикты, рейтинги, результаты соревнований, транзакции Qvant.",
-          "Технические данные: IP-адрес и название браузера в момент запроса на восстановление пароля. Они показываются в письме, чтобы вы могли понять, что запрос сделали не вы.",
+          "Аккаунт: имя пользователя, адрес email, имя и фамилия, а также криптографический хеш пароля. Сам пароль никогда не хранится, и восстановить его нельзя. Из имени и фамилии составляется имя, видимое в профиле.",
+          "Профиль — по желанию, заполняете вы сами: краткая информация, ссылка на аватар, язык, идентификатор Telegram, страна, область, район или город, ступень образования, школа или учебное заведение, класс или курс, специальность, история учёбы и работы, навыки, команды, ваши профили на других сайтах и ссылки на сайты, номер телефона, дата рождения, пол и размер футболки.",
+          "Доставка призов — только с отдельного согласия: имя получателя и почтовый адрес.",
+          "Активность: отправленные решения и их код, вердикты, рейтинги, результаты соревнований, транзакции Qvant и история активности на сайте (решённые задачи, достижения).",
+          "Технические данные: для каждого входа — IP-адрес и название браузера; их видно в настройках в разделе «Устройства», там же любую сессию можно завершить. При запросе сброса пароля IP-адрес и браузер указываются и в письме — чтобы вы знали, если запрос отправили не вы. Неудачные попытки входа считаются по IP-адресу и хешу введённого имени (не по самому имени).",
+          "Импортированные профили: на платформе около 974 тысяч аккаунтов из открытых профилей Codeforces — имя пользователя, имя, которое владелец открыто указал на том сайте, страна, город, организация и ссылка на аватар. У них нет email и пароля: через них нельзя войти, а их страницы закрыты для поисковых систем.",
         ],
       },
       {
         h: "Зачем",
         p: [
-          "Работа платформы: распознавание аккаунта, проверка решений, расчёт рейтинга, построение таблицы результатов.",
-          "Защита от злоупотреблений: ограничение частоты запросов, предотвращение множественных аккаунтов и подражания.",
-          "Восстановление доступа: отправка ссылки на почту, если пароль забыт.",
+          "Работа платформы: узнать ваш аккаунт, проверить решения, посчитать рейтинг, построить таблицу соревнования.",
+          "Данные профиля — чтобы показать их в вашем профиле. Какие поля публичны, выбираете вы сами (см. ниже «Кто видит»).",
+          "Защита от злоупотреблений: ограничение числа запросов, предотвращение мультиаккаунтов и выдачи себя за других, проверка на ботов при регистрации.",
+          "Восстановление аккаунта: отправить ссылку на почту, если вы забыли пароль.",
+          "Отправка призов — только если вы дали согласие.",
+        ],
+      },
+      {
+        h: "Кто видит",
+        p: [
+          "Публичная часть профиля видна любому посетителю сайта. Всегда публичны: имя пользователя, отображаемое имя, краткая информация, аватар, рейтинг и решённые задачи. По умолчанию публичны, но их можно скрыть в таблице приватности в настройках: страна и регион, школа, класс, дата рождения, пол, сайт, профили на других сайтах, тренеры и статус «в сети». Email по умолчанию скрыт.",
+          "Номер телефона, адрес для призов, ступень образования и специальность никогда не показываются публично — их видите только вы.",
+          "Код ваших решений видите вы и сотрудники платформы; в соревновании с фазой взломов его в эту фазу могут видеть и участники этого соревнования. Вердикты и результаты видны в таблицах.",
         ],
       },
       {
         h: "Кому передаётся",
         p: [
-          "Почтовым провайдерам — Brevo, Mailjet, Resend, MailerSend. Им передаются только адрес получателя и текст письма.",
-          "Cloudflare — через эту сеть проходит трафик сайта.",
-          "Если вы используете вход через соцсети, выбранный провайдер (Google, GitHub, Telegram) передаёт нам ваш идентификатор и адрес почты.",
+          "Сервисам отправки писем — Brevo, Mailjet, Resend, MailerSend. Им передаются только адрес получателя и текст письма.",
+          "Cloudflare — трафик сайта проходит через эту сеть; проверка на ботов при регистрации (Turnstile) тоже принадлежит Cloudflare.",
+          "Если вы входите через соцсеть, выбранный провайдер (Google, GitHub, Telegram) передаёт нам ваш идентификатор и адрес email.",
           "Больше никому не передаётся и никогда не продаётся.",
         ],
       },
@@ -122,78 +154,98 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
         h: "Сколько хранится",
         p: [
           "Аккаунт и активность — пока существует аккаунт.",
-          "Ссылка и код восстановления — один час, после чего перестают работать.",
-          "ТЕЛО отправленных писем не сохраняется вовсе: ссылка восстановления — это токен, и запись её в базу оставила бы вторую копию. Сохраняется только когда, кому и через какого провайдера письмо ушло.",
+          "IP-адрес и браузер сессии входа — пока сессия действует (с «Запомнить меня» не более 30 дней); записи истёкших сессий удаляются ежедневно.",
+          "Счётчик неудачных попыток входа — один час.",
+          "Ссылка и код сброса пароля — один час, после этого они не работают.",
+          "ТЕЛО отправленных писем не хранится вовсе: ссылка сброса — это токен, и копия в базе оставила бы его во втором месте. Записывается только когда, кому и через какого провайдера отправлено.",
+          "Запрос на удаление аккаунта ждёт 14 дней — за это время его можно отменить, — затем личные данные удаляются.",
         ],
       },
       {
         h: "Ваши права",
         p: [
-          "Вы можете выгрузить свои данные в любой момент — кнопка экспорта на странице настроек.",
-          "Вы можете удалить аккаунт. При удалении личные данные (имя пользователя, почта, имя, аватар, Telegram) удаляются, а аккаунт получает анонимное имя. Решения и результаты соревнований сохраняются, так как они относятся и к таблицам других участников.",
-          "Если есть вопросы — напишите нам, контакт указан внизу сайта.",
+          "Вы можете в любой момент скачать свои данные — в настройках есть кнопка экспорта.",
+          "Вы можете удалить аккаунт. Через 14 дней после запроса личные данные — имя пользователя, email, имя и фамилия, аватар, Telegram, адрес, образование, телефон, дата рождения, пол, адрес для призов и остальные поля профиля — удаляются, а аккаунт получает анонимное имя. Решения и результаты соревнований сохраняются, потому что они относятся и к таблицам других участников.",
+          "Какие поля профиля публичны, вы меняете в таблице приватности.",
+          "Если импортированный профиль ваш или у вас есть вопрос, напишите нам — адрес для связи внизу сайта.",
         ],
       },
       {
         h: "Дети",
         p: [
-          "Платформа рассчитана в том числе на школьников. Мы не спрашиваем возраст и не храним его.",
+          "Платформа рассчитана в том числе на школьников. Дата рождения необязательна: онбординг её спрашивает, но поле можно оставить пустым. Если её указать, по умолчанию она видна в публичном профиле — её можно скрыть в таблице приватности. Возраст не проверяется.",
         ],
       },
     ],
   },
   en: {
     title: "Privacy policy",
-    updated: UPDATED,
+    updated: PRIVACY_UPDATED,
     intro:
-      "This page describes what RankWant collects, why, and for how long. Each item describes something the platform actually does.",
+      "This page says what data RankWant collects, why, and how long it keeps it. Every item describes something the platform actually does.",
     sections: [
       {
         h: "What is collected",
         p: [
-          "Account: username, email address, and a cryptographic hash of the password. The password itself is never stored and cannot be recovered.",
-          "Optional: display name, short bio, avatar link, language, Telegram identifier.",
-          "Activity: submitted solutions and their source code, verdicts, ratings, contest results, Qvant transactions.",
-          "Technical: the IP address and browser name at the moment a password reset is requested. They appear in the message so you can tell that the request was not yours.",
+          "Account: username, email address, first and last name, and a cryptographic hash of your password. The password itself is never stored and cannot be recovered. Your first and last name make up the name shown on your profile.",
+          "Profile — optional, filled in by you: a short bio, avatar link, language, Telegram id, country, region, district or city, education stage, school or institution, grade or year, specialty, education and work history, skills, teams, your profiles on other sites and website links, phone number, date of birth, gender and T-shirt size.",
+          "Prize delivery — only with separate consent: the recipient's name and postal address.",
+          "Activity: submitted solutions and their code, verdicts, ratings, contest results, Qvant transactions and your activity history on the site (solved problems, achievements).",
+          "Technical: for every sign-in session, the IP address and browser name — you see them under Devices in your settings and can end any session there. A password reset request also shows the IP address and browser in the email, so you know if someone else sent it. Failed sign-in attempts are counted by IP address and by a hash of the name typed (not the name itself).",
+          "Imported profiles: the platform holds about 974 thousand accounts taken from public Codeforces profiles — the username, the name the owner made public there, country, city, organisation and avatar link. They have no email or password: no one can sign in through them, and their pages are closed to search engines.",
         ],
       },
       {
         h: "Why",
         p: [
-          "Running the platform: recognising your account, judging solutions, computing ratings, building standings.",
-          "Preventing abuse: rate limiting, and blocking duplicate accounts and impersonation.",
-          "Account recovery: sending a link to your mailbox when a password is forgotten.",
+          "Running the platform: recognising your account, judging solutions, computing ratings, building contest standings.",
+          "Profile details — to show them on your profile. You choose which fields are public (see Who can see it, below).",
+          "Abuse protection: rate limits, preventing multiple accounts and impersonation, a bot check at sign-up.",
+          "Account recovery: emailing you a link when you forget your password.",
+          "Sending prizes — only if you consented.",
+        ],
+      },
+      {
+        h: "Who can see it",
+        p: [
+          "The public part of your profile is visible to any visitor. Always public: username, display name, bio, avatar, ratings and solved problems. Public by default, but you can hide them in the privacy table in your settings: country and region, school, grade, date of birth, gender, website, profiles on other sites, coaches and online status. Email is hidden by default.",
+          "Your phone number, prize address, education stage and specialty are never shown publicly — only you see them.",
+          "Your solution code is seen by you and platform staff; in a contest with a hacking phase, that contest's participants may see it during the phase. Verdicts and results appear in standings.",
         ],
       },
       {
         h: "Who it is shared with",
         p: [
           "Email providers — Brevo, Mailjet, Resend, MailerSend. They receive only the recipient address and the message body.",
-          "Cloudflare — the site's traffic passes through this network.",
-          "If you use social sign-in, the provider you choose (Google, GitHub, Telegram) gives us your identifier and email address.",
-          "It is shared with nobody else and never sold.",
+          "Cloudflare — site traffic passes through its network; the bot check at sign-up (Turnstile) is Cloudflare's too.",
+          "If you sign in with a social account, the provider you choose (Google, GitHub, Telegram) gives us your identifier and email address.",
+          "Nobody else receives it, and it is never sold.",
         ],
       },
       {
         h: "How long it is kept",
         p: [
-          "Account and activity — for as long as the account exists.",
-          "Reset links and codes — one hour, after which they stop working.",
-          "The BODY of sent messages is not stored at all: a reset link is a token, and writing it to the database would leave a second copy. Only the time, the recipient and the provider used are recorded.",
+          "Account and activity — as long as the account exists.",
+          "A sign-in session's IP address and browser — while the session is valid (at most 30 days with Remember me); rows of expired sessions are deleted daily.",
+          "The count of failed sign-in attempts — one hour.",
+          "Password reset link and code — one hour, after which they stop working.",
+          "The BODY of sent emails is not stored at all: a reset link is a token, and copying it into the database would leave it in a second place. Only when, to whom and through which provider an email went is recorded.",
+          "An account deletion request waits 14 days — you can cancel it in that time — and then personal data is removed.",
         ],
       },
       {
         h: "Your rights",
         p: [
-          "You can download your data at any time — there is an export button on the settings page.",
-          "You can delete your account. Deletion removes personal data (username, email, name, avatar, Telegram) and the account is given an anonymous name. Solutions and contest results remain, because they also belong to other participants' standings.",
-          "If you have questions, write to us — the contact is at the bottom of the site.",
+          "You can download your data at any time — the settings page has an export button.",
+          "You can delete your account. Fourteen days after the request, personal data — username, email, first and last name, avatar, Telegram, address, education, phone, date of birth, gender, prize address and the other profile fields — is removed and the account gets an anonymous name. Solutions and contest results are kept, because they also belong to other participants' standings.",
+          "You change which profile fields are public in the privacy table.",
+          "If an imported profile is yours, or you have a question, write to us — the contact address is at the bottom of the site.",
         ],
       },
       {
         h: "Children",
         p: [
-          "The platform is intended for school students among others. We do not ask for an age and do not store one.",
+          "The platform is meant for school students too. Date of birth is optional: onboarding asks for it, but you can leave it empty. If you enter it, it is shown on your public profile by default — you can hide it in the privacy table. Age is not verified.",
         ],
       },
     ],
