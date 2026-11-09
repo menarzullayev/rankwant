@@ -25,7 +25,9 @@ from core.permissions import STAFF_GROUP_OPS, StaffOps, has_staff_group
 from core.staff import SessionOnly, StaffViewSet
 from problems import release, storage
 from problems.models import (
+    Language,
     Problem,
+    ProblemLanguage,
     ProblemReport,
     ProblemRevision,
     ReferenceSolution,
@@ -34,6 +36,7 @@ from problems.models import (
     Validator,
 )
 from problems.staff_serializers import (
+    StaffProblemLanguageSerializer,
     StaffProblemReportSerializer,
     StaffProblemSerializer,
     StaffReferenceSolutionSerializer,
@@ -84,6 +87,8 @@ class StaffProblemReportViewSet(StaffViewSet):
         "delete_test": "Testni o'chirish",
         "validator": "Tekshiruvchi (validator) yuklash",
         "reference_solution": "Namuna yechim yuklash",
+        "languages": "Masala tillari (limit, shablon, hakam dasturi)",
+        "language_row": "Bitta til qatorini yozish yoki o'chirish",
     },
 )
 class StaffProblemViewSet(StaffViewSet):
@@ -294,6 +299,47 @@ class StaffProblemViewSet(StaffViewSet):
         masala bilan keladi va faqat xodim yuklaydi.
         """
         return self._program(request, ReferenceSolution, StaffReferenceSolutionSerializer)
+
+    @extend_schema(request=None, responses={200: StaffProblemLanguageSerializer(many=True)})
+    @action(detail=True, methods=["get"], url_path="languages")
+    def languages(self, request: Request, slug: str | None = None) -> Response:
+        """Per-language rows: limit overrides, editor template, function harness."""
+        problem = self.get_object()
+        rows = problem.languages.select_related("language").order_by("language__code")
+        return Response(StaffProblemLanguageSerializer(rows, many=True).data)
+
+    @extend_schema(
+        request=StaffProblemLanguageSerializer,
+        responses={
+            200: StaffProblemLanguageSerializer,
+            201: StaffProblemLanguageSerializer,
+            204: None,
+        },
+    )
+    @action(detail=True, methods=["put", "delete"], url_path=r"languages/(?P<code>[\w.+-]+)")
+    def language_row(
+        self, request: Request, slug: str | None = None, code: str | None = None
+    ) -> Response:
+        """Create, replace or remove one language row (audit Q-12)."""
+        problem = self.get_object()
+        language = Language.objects.filter(code=code).first()
+        if language is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        existing = ProblemLanguage.objects.filter(problem=problem, language=language).first()
+        if request.method == "DELETE":
+            if existing is None:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            existing.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        serializer = StaffProblemLanguageSerializer(
+            existing, data=request.data, context={"problem": problem, "language": language}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(problem=problem, language=language)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK if existing else status.HTTP_201_CREATED,
+        )
 
     @extend_schema(request=None, responses={204: None})
     @action(detail=True, methods=["delete"], url_path=r"tests/(?P<order>\d+)")

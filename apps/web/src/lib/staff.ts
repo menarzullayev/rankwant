@@ -58,6 +58,7 @@ export const staff = {
   get: <T>(path: string) => staffFetch<T>("GET", path),
   create: <T>(path: string, body: unknown) => staffFetch<T>("POST", path, body),
   update: <T>(path: string, body: unknown) => staffFetch<T>("PATCH", path, body),
+  put: <T>(path: string, body: unknown) => staffFetch<T>("PUT", path, body),
   remove: (path: string) => staffFetch<void>("DELETE", path),
   action: <T>(path: string, body: unknown = {}) => staffFetch<T>("POST", path, body),
 };

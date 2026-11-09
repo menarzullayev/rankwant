@@ -11,7 +11,7 @@ import { Status } from "@/components/ui/Status";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
-import { ApiError } from "@/lib/api";
+import { api, ApiError, type Language } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
 type StaffProblem = {
@@ -141,7 +141,7 @@ const PROBLEM_FIELDS: FieldDef[] = [
   },
   {
     // What the solver submits (ADR-0053). The per-language harness of a
-    // function problem is edited in the Django admin.
+    // function problem is edited in the languages panel under the row.
     name: "task_kind",
     labelKey: "admin.label.text.taskKind",
     type: "select",
@@ -428,6 +428,248 @@ function ProblemTestsPanel({
   );
 }
 
+type StaffProblemLanguage = {
+  language: string;
+  language_name: string;
+  time_limit_ms: number | null;
+  memory_limit_kb: number | null;
+  code_template: string;
+  harness: string;
+};
+
+/** Per-language rows: limit overrides, editor template and — for a function
+ *  problem — the harness (audit Q-12). The harness used to be editable only
+ *  in the Django admin, which production does not route. */
+function ProblemLanguagesPanel({ problem }: { problem: StaffProblem }) {
+  const locale = useLocale();
+  const confirm = useConfirm();
+  const path = `/staff/problems/${problem.slug}/languages/`;
+  const isFunction = problem.task_kind === "function";
+  const [rows, setRows] = useState<StaffProblemLanguage[]>([]);
+  const [catalogue, setCatalogue] = useState<Language[]>([]);
+  const [editing, setEditing] = useState<StaffProblemLanguage | null>(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const fail = useCallback(
+    (e: unknown) =>
+      setError(e instanceof ApiError ? errorText(locale, e.code, e.message) : String(e)),
+    [locale],
+  );
+
+  const load = useCallback(async () => {
+    try {
+      setRows(await staff.get<StaffProblemLanguage[]>(path));
+      setError("");
+    } catch (e) {
+      fail(e);
+    }
+  }, [path, fail]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void load();
+    api
+      .languages()
+      .then((page) => setCatalogue(page.results))
+      .catch(() => setCatalogue([]));
+  }, [load]);
+
+  async function save(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const code = String(form.get("language") ?? "");
+    if (!code) return;
+    const number = (name: string) => {
+      const raw = String(form.get(name) ?? "").trim();
+      return raw ? Number(raw) : null;
+    };
+    setBusy(true);
+    setError("");
+    setSaved(false);
+    try {
+      await staff.put(`${path}${code}/`, {
+        time_limit_ms: number("time_limit_ms"),
+        memory_limit_kb: number("memory_limit_kb"),
+        code_template: String(form.get("code_template") ?? ""),
+        harness: isFunction ? String(form.get("harness") ?? "") : "",
+      });
+      setSaved(true);
+      setEditing(null);
+      await load();
+    } catch (err) {
+      fail(err);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function remove(row: StaffProblemLanguage) {
+    if (!(await confirm(t(locale, "admin.confirmDelete"), { danger: true }))) return;
+    try {
+      await staff.remove(`${path}${row.language}/`);
+      await load();
+    } catch (err) {
+      fail(err);
+    }
+  }
+
+  const current = editing;
+  return (
+    <div className="space-y-3">
+      <p className="text-theme-sm font-medium rw-strong">
+        {t(locale, "admin.text.problemLanguages")}
+      </p>
+      <p className="text-theme-xs rw-dim">{t(locale, "admin.help.problemLanguages")}</p>
+      {isFunction && (
+        <p className="text-theme-xs rw-dim">
+          {t(locale, "admin.help.harness")}{" "}
+          <code className="font-mono">{"{{SOLUTION}}"}</code>
+        </p>
+      )}
+
+      {error && <Status status="bad" variant="alert" alert label={error} />}
+
+      <table className="min-w-full text-left text-theme-xs">
+        <thead className="rw-dim uppercase">
+          <tr>
+            <th className="px-2 py-1">{t(locale, "admin.label.text.language")}</th>
+            <th className="px-2 py-1">{t(locale, "admin.label.value.timeLimit")}</th>
+            <th className="px-2 py-1">{t(locale, "admin.label.value.memoryLimit")}</th>
+            <th className="px-2 py-1">{t(locale, "admin.text.harness")}</th>
+            <th className="px-2 py-1 text-right">{t(locale, "admin.actions")}</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y rw-divide">
+          {rows.map((row) => (
+            <tr key={row.language}>
+              <td className="px-2 py-1 font-medium">{row.language_name}</td>
+              <td className="px-2 py-1 tabular-nums">{row.time_limit_ms ?? "—"}</td>
+              <td className="px-2 py-1 tabular-nums">{row.memory_limit_kb ?? "—"}</td>
+              <td className="px-2 py-1">{row.harness ? "✓" : "—"}</td>
+              <td className="px-2 py-1 text-right">
+                <button
+                  type="button"
+                  onClick={() => setEditing(row)}
+                  className="mr-3 hover:underline"
+                >
+                  {t(locale, "admin.edit")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => remove(row)}
+                  className="rw-bad-ink hover:underline"
+                >
+                  {t(locale, "admin.delete")}
+                </button>
+              </td>
+            </tr>
+          ))}
+          {rows.length === 0 && (
+            <tr>
+              <td colSpan={5} className="px-2 py-3 text-center rw-faint">
+                {t(locale, "admin.text.noLanguageRows")}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <form
+        key={`${problem.slug}-${current?.language ?? "new"}-${rows.length}`}
+        onSubmit={save}
+        className="grid gap-3 md:grid-cols-3"
+      >
+        <label className="block">
+          <span className="mb-1 block text-theme-xs rw-dim-2">
+            {t(locale, "admin.label.text.language")}
+          </span>
+          <select
+            name="language"
+            required
+            defaultValue={current?.language ?? ""}
+            className={`${input} h-9`}
+          >
+            <option value="" disabled>
+              —
+            </option>
+            {catalogue.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name} {lang.version}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-theme-xs rw-dim-2">
+            {t(locale, "admin.label.value.timeLimit")}
+          </span>
+          <input
+            name="time_limit_ms"
+            type="number"
+            min={100}
+            defaultValue={current?.time_limit_ms ?? ""}
+            className={`${input} h-9`}
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-theme-xs rw-dim-2">
+            {t(locale, "admin.label.value.memoryLimit")}
+          </span>
+          <input
+            name="memory_limit_kb"
+            type="number"
+            min={1024}
+            defaultValue={current?.memory_limit_kb ?? ""}
+            className={`${input} h-9`}
+          />
+        </label>
+        <label className="block md:col-span-3">
+          <span className="mb-1 block text-theme-xs rw-dim-2">
+            {t(locale, "admin.text.codeTemplate")}
+          </span>
+          <textarea
+            name="code_template"
+            rows={5}
+            defaultValue={current?.code_template ?? ""}
+            className={`${input} py-2 font-mono`}
+            spellCheck={false}
+          />
+        </label>
+        {isFunction && (
+          <label className="block md:col-span-3">
+            <span className="mb-1 block text-theme-xs rw-dim-2">
+              {t(locale, "admin.text.harness")}
+            </span>
+            <textarea
+              name="harness"
+              rows={10}
+              required
+              defaultValue={current?.harness ?? ""}
+              className={`${input} py-2 font-mono`}
+              spellCheck={false}
+            />
+          </label>
+        )}
+        <div className="flex items-center justify-end gap-2 md:col-span-3">
+          {saved && (
+            <span className="text-theme-xs rw-ok-ink">{t(locale, "admin.saved")}</span>
+          )}
+          {current && (
+            <Button type="button" variant="outline" className="h-9" onClick={() => setEditing(null)}>
+              {t(locale, "admin.cancel")}
+            </Button>
+          )}
+          <Button type="submit" className="h-9" disabled={busy}>
+            {t(locale, "admin.save")}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export function ProblemsAdmin() {
   const locale = useLocale();
   return (
@@ -475,7 +717,10 @@ export function ProblemsAdmin() {
           memory_limit_kb: values.memory_limit_kb ?? 262144,
         })}
         rowExtra={(p, reload) => (
-          <ProblemTestsPanel problem={p} reload={reload} />
+          <div className="space-y-6">
+            <ProblemTestsPanel problem={p} reload={reload} />
+            <ProblemLanguagesPanel problem={p} />
+          </div>
         )}
       />
 
