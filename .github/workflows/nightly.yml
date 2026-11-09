@@ -589,7 +589,7 @@ jobs:
               echo
               echo "| Rule | File | Commit |"
               echo "| ---- | ---- | ------ |"
-              jq -r '.[] | "| \(.RuleID) | `\(.File)` | `\(.Commit[0:8])` |"' gitleaks.json
+              jq -r '.[] | "| \(.RuleID) | `\(.File):\(.StartLine)` | `\(.Commit[0:8])` |"' gitleaks.json
             fi
           } | tee -a "$GITHUB_STEP_SUMMARY"
           if [ "$n" -gt 0 ]; then echo "::warning::gitleaks: $n finding(s) — see the run summary"; fi
