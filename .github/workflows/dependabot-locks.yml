@@ -111,7 +111,7 @@ jobs:
         with:
           ref: ${{ steps.pr.outputs.branch }}
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v10.3.0
+      - uses: astral-sh/setup-uv@v10.3.3
       - name: uv pip compile
         if: steps.pr.outputs.pip == 'true'
         working-directory: apps/api
