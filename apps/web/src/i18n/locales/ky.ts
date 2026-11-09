@@ -2089,6 +2089,8 @@ export const ky: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — татаалдыгы {difficulty}. RankWant маселелер архиви.",
   "problem.partialScoring": "Жарым-жартылай балл",
   "problem.testsPreparing": "Тесттер даярдалууда",
+  "problem.samplesOnly": "Мисал тесттери гана",
+  "problem.samplesOnlyHint": "Жашыруун тест жок: чечим профилде калат, бирок Skills рейтингине жана Qvant'ка эсептелбейт.",
   "problem.backToContest": "Мелдешке кайтуу",
   "problem.countedInContest": "Чечим {contest} мелдешинин эсебине жазылат.",
   "problem.inputFormat": "Кирүүчү маалымат",

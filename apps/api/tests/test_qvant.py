@@ -30,6 +30,21 @@ from qvant.services import PurchaseError, purchase, recalc_activity
 from ratings.models import RatingHistory
 
 
+def _judged(problem):  # type: ignore[no-untyped-def]
+    """Give a test problem a hidden test, as a real archive problem has.
+
+    Audit Q-05 (2026-11-10): a samples-only problem pays no Qvant, so a
+    problem created without tests no longer counts for quests or the
+    marathon.
+    """
+    from problems.models import TestCase
+
+    TestCase.objects.create(
+        problem=problem, order=99, input_ref="s3://x/99.in", output_ref="s3://x/99.out"
+    )
+    return problem
+
+
 @pytest.fixture
 def catalogue(db) -> None:
     quests.sync_catalogue()
@@ -512,12 +527,14 @@ class TestMarathon:
         from problems.models import Problem
 
         for i in range(n):
-            Problem.objects.create(
-                slug=f"m{i}",
-                title=f"M{i}",
-                statement="…",
-                difficulty=800 + (i % 10) * 100,
-                is_public=True,
+            _judged(
+                Problem.objects.create(
+                    slug=f"m{i}",
+                    title=f"M{i}",
+                    statement="…",
+                    difficulty=800 + (i % 10) * 100,
+                    is_public=True,
+                )
             )
 
     def test_kichik_arxivda_marafon_yoq(self, user, catalogue) -> None:
@@ -822,8 +839,10 @@ class TestRejudgeQaytarish:
     def test_kunda_boshqa_yechim_qolsa_pul_qolaveradi(self, user, problem, language) -> None:
         """Quest kunga bog'langan: bitta AC yiqilsa ham mukofot haqli."""
         quests.sync_catalogue()
-        second = type(problem).objects.create(
-            slug="ikkinchi", title="Ikkinchi", statement="…", difficulty=1000, is_public=True
+        second = _judged(
+            type(problem).objects.create(
+                slug="ikkinchi", title="Ikkinchi", statement="…", difficulty=1000, is_public=True
+            )
         )
         attempt = self._solve(user, problem, language)
         self._solve(user, second, language)
@@ -839,12 +858,14 @@ class TestRejudgeQaytarish:
     def test_uchtalik_quest_shart_buzilganda_qaytariladi(self, user, problem, language) -> None:
         quests.sync_catalogue()
         extra = [
-            type(problem).objects.create(
-                slug=f"qoshimcha-{i}",
-                title=f"Q{i}",
-                statement="…",
-                difficulty=1000,
-                is_public=True,
+            _judged(
+                type(problem).objects.create(
+                    slug=f"qoshimcha-{i}",
+                    title=f"Q{i}",
+                    statement="…",
+                    difficulty=1000,
+                    is_public=True,
+                )
             )
             for i in range(2)
         ]
@@ -937,8 +958,10 @@ def test_marafon_endpointi_toplamni_va_progressni_beradi(user, catalogue) -> Non
     from ratings.models import UserSolvedProblem
 
     for i in range(30):
-        Problem.objects.create(
-            slug=f"mm{i}", title=f"MM{i}", statement="…", difficulty=800, is_public=True
+        _judged(
+            Problem.objects.create(
+                slug=f"mm{i}", title=f"MM{i}", statement="…", difficulty=800, is_public=True
+            )
         )
     chosen = marathon_problems(user)
     UserSolvedProblem.objects.create(

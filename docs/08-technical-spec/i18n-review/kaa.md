@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2416 strings.**
+**2418 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2026,6 +2026,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.difficultyDescription` | {title} — qiyinlik {difficulty}. RankWant masala arxivi. | {title} — qıyınlıǵı {difficulty}. RankWant máseleler arxivi. |  |
 | `problem.partialScoring` | Qisman ball | Qısmıy ball |  |
 | `problem.testsPreparing` | Testlar tayyorlanmoqda | Testler tayarlanbaqta |  |
+| `problem.samplesOnly` | Faqat namuna testlari | Tek úlgi testleri |  |
+| `problem.samplesOnlyHint` | Yashirin test yo'q: yechim profilda qoladi, lekin Skills reytingi va Qvant'ga hisoblanmaydi. | Jasırın test joq: sheshim profilde qaladı, biraq Skills reytingine hám Qvant'qa esaplanbaydı. |  |
 | `problem.backToContest` | Musobaqaga qaytish | Jarısqa qaytıw |  |
 | `problem.countedInContest` | Yechim {contest} musobaqasi hisobiga yoziladi. | Sheshim {contest} jarısı esabına jazıladı. |  |
 | `problem.inputFormat` | Kiruvchi ma'lumot | Kirisiw maǵlıwmatı |  |

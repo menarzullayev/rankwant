@@ -2089,6 +2089,8 @@ export const tr: Record<MessageKey, string> = {
   "problem.difficultyDescription": "{title} — zorluk {difficulty}. RankWant problem arşivi.",
   "problem.partialScoring": "Kısmi puanlama",
   "problem.testsPreparing": "Testler hazırlanıyor",
+  "problem.samplesOnly": "Yalnızca örnek testler",
+  "problem.samplesOnlyHint": "Gizli test yok: çözüm profilinde kalır, ancak Skills puanına ve Qvant'a sayılmaz.",
   "problem.backToContest": "Yarışmaya dön",
   "problem.countedInContest": "Çözümünüz {contest} yarışmasına sayılacak.",
   "problem.inputFormat": "Girdi",

@@ -2206,6 +2206,21 @@ def dependabot_locks_are_recompiled() -> str | None:
     for name in ("requirements.lock", "requirements-dev.lock"):
         if "--python-version 3.12" not in read("apps/api/" + name).split("\n", 2)[1]:
             return f"apps/api/{name}: lock Python 3.12 uchun yasalmagan (sarlavhaga qarang)"
+    # 2026-11-10 (HITL, audit Q-08): npm and Go pull requests too. Dependabot
+    # writes their lockfiles but not the licence inventory, so #474 sat
+    # BLOCKED on `licence_inventory.py --check`.
+    paths = re.search(r"^    paths:\n((?:      .*\n)+)", workflow, re.M)
+    listed = set(re.findall(r"^      - (\S+)", paths.group(1), re.M)) if paths else set()
+    for rel in ("package-lock.json", "tests/e2e/package-lock.json", "services/judge-go/go.mod"):
+        if rel not in listed:
+            return f"dependabot-locks.yml: `{rel}` o'zgargan PR'da inventar qayta yasalmaydi"
+    inventory = re.search(
+        r"^      - name: Regenerate the licence inventory\n(.*?)(?=^      - )", workflow, re.S | re.M
+    )
+    if not inventory:
+        return "dependabot-locks.yml: litsenziya inventarini yasaydigan qadam yo'q"
+    if re.search(r"^        if:", inventory.group(1), re.M):
+        return "dependabot-locks.yml: inventar shartli yasaladi — npm PR'i yana BLOCKED qoladi"
     return None
 
 
@@ -2372,6 +2387,39 @@ def public_stack_requires_its_secrets() -> str | None:
     return None
 
 
+def samples_only_problems_earn_nothing() -> str | None:
+    """2026-11-10 (HITL, audit Q-05): namunasiz masala Skills va Qvant bermaydi.
+
+    O'lchandi: 1 236 ommaviy masaladan 1 225 tasida yashirin test yo'q —
+    namunani chop etgan dastur ham qabul qilinadi. Ular arxivda belgi bilan
+    qoladi, lekin yechim Skills'ga ham, Qvant'ga (streak, kunlik quest,
+    marafon) ham hisoblanmaydi.
+    """
+    ratings = read("apps/api/ratings/services.py")
+    if '.filter(hidden_tests_exist("problem_id"))' not in ratings.split("def recalc_skills", 1)[-1].split(
+        "def _profile_stats_changed", 1
+    )[0]:
+        return "ratings/services.py: Skills namunasiz masalani ham sanaydi"
+    judged = ratings.split("def on_attempt_judged", 1)[-1].split("def on_accept_revoked", 1)[0]
+    if not re.search(r"if not has_hidden_tests\(attempt\.problem_id\):\n\s+return\n", judged):
+        return "ratings/services.py: namunasiz masala yechimi Qvant beradi"
+    if '.filter(hidden_tests_exist("problem_id"))' not in read("apps/api/qvant/services.py"):
+        return "qvant/services.py: kunlik quest namunasiz masalani sanaydi"
+    if ".filter(hidden_tests_exist())" not in read("apps/api/qvant/marathon.py"):
+        return "qvant/marathon.py: marafon namunasiz masalani tanlaydi"
+    if "from problems import signals" not in read("apps/api/problems/apps.py"):
+        return "problems/apps.py: yashirin test qo'shilganda Skills qayta hisoblanmaydi"
+    if '"has_hidden_tests",' not in read("apps/api/problems/serializers.py"):
+        return "problems/serializers.py: `has_hidden_tests` API'da yo'q"
+    for page in (
+        "apps/web/src/app/(site)/problems/page.tsx",
+        "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
+    ):
+        if "!p.has_hidden_tests" not in read(page) and "!problem.has_hidden_tests" not in read(page):
+            return f"{page}: «faqat namuna testlari» belgisi ko'rsatilmaydi"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -2438,6 +2486,42 @@ def nightly_bakeoff_is_a_gate() -> str | None:
         return "docker-compose.ci.yml: `bakeoff` servisi topilmadi"
     if not re.search(r"^    command: \['python', '/bakeoff/harness/runner\.py'", service.group(1), re.M):
         return "docker-compose.ci.yml: `bakeoff` harness'ni yurgizmaydi — obrazning standart buyrug'i ishlaydi"
+    return None
+
+
+def required_checks_cover_every_gate() -> str | None:
+    """2026-11-10 (HITL, audit Q-09 + L-04): `main` bitta umumlashtiruvchi tekshiruvni talab qiladi.
+
+    Ruleset faqat `Path filter` va `Docs and contract integrity` ni talab
+    qilardi — API testlari, Web build va Judge testlari qizil PR ham merge
+    bo'lardi. Ular bittalab talab qilinmaydi: yo'l filtri ularni o'tkazib
+    yuboradi, o'tkazilgan matritsa job'i esa `API tests (${{ matrix.shard }}/3)`
+    nomi bilan chiqadi. Shuning uchun `ci.yml` → `required` («Required checks»)
+    hammasining natijasini o'qiydi va ruleset aynan shu nomni talab qiladi —
+    nom o'zgarsa har PR kutib qoladi.
+
+    L-04: `runner-selftest.yml` (self-hosted) faqat qo'lda; `judge` job'ida
+    «not scaffolded yet» qo'riqchisi yo'q — u modul o'chsa ham yashil berardi.
+    """
+    ci = read(".github/workflows/ci.yml")
+    job = _workflow_job(ci, "required")
+    if not job:
+        return "ci.yml: `required` job'i yo'q — API, Web va Judge qizil bo'lsa ham merge bo'ladi"
+    if not re.search(r"^    name: Required checks$", job, re.M):
+        return "ci.yml: `required` nomi «Required checks» emas — ruleset kutgan tekshiruv hech qachon kelmaydi"
+    needs = re.search(r"^    needs: \[([^\]]*)\]", job, re.M)
+    listed = {n.strip() for n in needs.group(1).split(",")} if needs else set()
+    for gate in ("filter", "api", "api_tests", "web", "judge"):
+        if gate not in listed:
+            return f"ci.yml: `required` `{gate}` natijasini o'qimaydi — u qizil bo'lsa ham merge bo'ladi"
+    if not re.search(r"^    if: \$\{\{ always\(\) \}\}$", job, re.M):
+        return "ci.yml: `required` `always()` siz — bekor qilingan gate uni skipped (= yashil) qiladi"
+    if 'if [ "$job" = "filter" ] && [ "$result" != "success" ]' not in job:
+        return "ci.yml: `required` filtr yiqilganini sezmaydi — hamma gate skipped bo'lib yashil chiqadi"
+    if _workflow_triggers(".github/workflows/runner-selftest.yml") != {"workflow_dispatch"}:
+        return "runner-selftest.yml: qo'ldan boshqa trigger bor — self-hosted noutbukda o'zi yuradi"
+    if "is not scaffolded yet" in _workflow_job(ci, "judge"):
+        return "ci.yml: judge job'ida «not scaffolded yet» qo'riqchisi — modul yo'qolsa ham yashil"
     return None
 
 
@@ -3908,7 +3992,9 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
     ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
+    ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
+    ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),

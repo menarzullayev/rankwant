@@ -2139,6 +2139,8 @@ export const uz = {
   "problem.difficultyDescription": "{title} — qiyinlik {difficulty}. RankWant masala arxivi.",
   "problem.partialScoring": "Qisman ball",
   "problem.testsPreparing": "Testlar tayyorlanmoqda",
+  "problem.samplesOnly": "Faqat namuna testlari",
+  "problem.samplesOnlyHint": "Yashirin test yo'q: yechim profilda qoladi, lekin Skills reytingi va Qvant'ga hisoblanmaydi.",
   "problem.backToContest": "Musobaqaga qaytish",
   "problem.countedInContest": "Yechim {contest} musobaqasi hisobiga yoziladi.",
   "problem.inputFormat": "Kiruvchi ma'lumot",

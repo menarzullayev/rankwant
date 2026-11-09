@@ -299,6 +299,15 @@ export default async function ProblemsPage({ searchParams }: Props) {
                           {t(locale, "problems.noTests")}
                         </span>
                       )}
+                      {/* Audit Q-05: samples only — no Skills, no Qvant. */}
+                      {p.has_tests && !p.has_hidden_tests && (
+                        <span
+                          title={t(locale, "problem.samplesOnlyHint")}
+                          className="shrink-0 rw-radius-sm rw-warn-soft px-1.5 py-0.5 text-theme-xs rw-warn-ink"
+                        >
+                          {t(locale, "problem.samplesOnly")}
+                        </span>
+                      )}
                       {/* Yechilmagan, lekin urinilgan — «WA oldim» signali */}
                       {!p.is_solved && p.my_verdict && (
                         <Verdict verdict={p.my_verdict} />

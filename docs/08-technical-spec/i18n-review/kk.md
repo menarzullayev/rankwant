@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2416 strings.**
+**2418 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2026,6 +2026,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.difficultyDescription` | {title} — qiyinlik {difficulty}. RankWant masala arxivi. | {title} — қиындығы {difficulty}. RankWant есептер мұрағаты. |  |
 | `problem.partialScoring` | Qisman ball | Ішінара балл |  |
 | `problem.testsPreparing` | Testlar tayyorlanmoqda | Тесттер дайындалуда |  |
+| `problem.samplesOnly` | Faqat namuna testlari | Тек мысал тесттері |  |
+| `problem.samplesOnlyHint` | Yashirin test yo'q: yechim profilda qoladi, lekin Skills reytingi va Qvant'ga hisoblanmaydi. | Жасырын тест жоқ: шешім профильде қалады, бірақ Skills рейтингіне және Qvant-қа есептелмейді. |  |
 | `problem.backToContest` | Musobaqaga qaytish | Жарысқа қайту |  |
 | `problem.countedInContest` | Yechim {contest} musobaqasi hisobiga yoziladi. | Шешім {contest} жарысының есебіне жазылады. |  |
 | `problem.inputFormat` | Kiruvchi ma'lumot | Кіріс деректері |  |

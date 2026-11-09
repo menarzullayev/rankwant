@@ -85,6 +85,13 @@ export function ProblemDescription({
           {!problem.has_tests && (
             <Badge color="warning">{t(locale, "problem.testsPreparing")}</Badge>
           )}
+          {/* Audit Q-05: only samples — a printed sample is accepted, so
+              the solve earns no Skills or Qvant. Say it before the attempt. */}
+          {problem.has_tests && !problem.has_hidden_tests && (
+            <span title={t(locale, "problem.samplesOnlyHint")}>
+              <Badge color="warning">{t(locale, "problem.samplesOnly")}</Badge>
+            </span>
+          )}
           <span className="ml-auto text-theme-xs rw-dim tabular-nums">
             {fill(t(locale, "problem.solvedAttempts"), {
               solved: problem.solved_count,
