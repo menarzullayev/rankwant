@@ -2409,6 +2409,53 @@ def deploy_refuses_default_secrets() -> str | None:
     return None
 
 
+def _workflow_steps(job: str) -> dict[str, str]:
+    """Steps of one job body (`_workflow_job`), keyed by `- name:`.
+
+    A step starts at a six-space `- ` item; unnamed steps (`- uses: …`) are
+    split off too, so their lines never leak into the previous named step.
+    """
+    steps: dict[str, str] = {}
+    for chunk in re.split(r"(?m)^(?=      - )", job):
+        m = re.match(r"      - name: (.+)", chunk)
+        if m:
+            steps[m.group(1).strip()] = chunk
+    return steps
+
+
+def nightly_bakeoff_is_a_gate() -> str | None:
+    """2026-11-10 (HITL, audit Q-04): bake-off va smoke Nightly'da haqiqiy darvoza.
+
+    O'lchandi: `login.png` eskirgani uchun Nightly 2026-10-26 dan 15 kun
+    ketma-ket qizil bo'ldi. Smoke va bake-off vizual qadamdan keyin turadi
+    va standart `success()` sharti bilan har safar `skipped` bo'ldi — ya'ni
+    haqiqiy nsjail'dagi izolyatsiya ikki hafta tekshirilmadi. Undan oldin
+    esa bake-off'da 2026-09-28 dan beri «vaqtincha» `continue-on-error: true`
+    turardi: u yiqilsa ham Nightly yashil chiqardi.
+
+    Qo'riqlanadigan ikki narsa: ikkala qadam ham `!cancelled()` bilan
+    (vizual farqdan qat'i nazar yuradi), bake-off'da `continue-on-error` yo'q.
+    """
+    steps = _workflow_steps(_workflow_job(read(".github/workflows/nightly.yml"), "e2e"))
+    for name in ("Smoke", "Bake-off — validator cases (real nsjail)"):
+        step = steps.get(name)
+        if step is None:
+            return f"nightly.yml: e2e job'ida `{name}` qadami yo'q"
+        if not re.search(r"^        if: \$\{\{ !cancelled\(\) && ", step, re.M):
+            return f"nightly.yml: `{name}` `!cancelled()` siz — vizual farq uni o'tkazib yuboradi"
+    bake = steps["Bake-off — validator cases (real nsjail)"]
+    if re.search(r"^        continue-on-error:", bake, re.M):
+        return "nightly.yml: bake-off `continue-on-error` bilan — yiqilsa ham Nightly yashil"
+    # The harness itself must be what `compose run bakeoff` starts. #253 lost
+    # this line and the service ran the api image's gunicorn for six weeks.
+    service = re.search(r"^  bakeoff:\n(.*?)(?=^  \S|\Z)", read("docker-compose.ci.yml"), re.S | re.M)
+    if not service:
+        return "docker-compose.ci.yml: `bakeoff` servisi topilmadi"
+    if not re.search(r"^    command: \['python', '/bakeoff/harness/runner\.py'", service.group(1), re.M):
+        return "docker-compose.ci.yml: `bakeoff` harness'ni yurgizmaydi — obrazning standart buyrug'i ishlaydi"
+    return None
+
+
 def team_page_is_managed_data() -> str | None:
     """2026-10-05: «Jamoa» sahifasi admin paneldan boshqariladi.
 
@@ -3845,6 +3892,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
+    ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
