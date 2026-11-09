@@ -6660,6 +6660,8 @@ _DECISIONS_SANDBOX_FILES = (
     "docker-compose.yml",
     "docker-compose.public.yml",
     "docker-compose.ci.yml",
+    # Q-11 (2026-11-10): gitleaks loads zero rules without `useDefault`.
+    ".gitleaks.toml",
     "docker-compose.replicas.yml",
     # Developer tools (2026-09-21): `check_security_boundary.py` measures this
     # overlay, and the `adminer` rule reads it directly. Missing here,
