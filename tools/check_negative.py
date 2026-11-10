@@ -4405,6 +4405,36 @@ def neg_decisions_email_column_gone() -> tuple[bool, str]:
         "Email ustuni sozlamalarda yo'q",
     )
 
+def neg_decisions_graphite_unflagged() -> tuple[bool, str]:
+    """The graphite palette is applied without the flag."""
+    return _decision_broken(
+        "apps/web/src/app/layout.tsx",
+        'data-palette={isOnServer("newPalette", undefined) ? GRAPHITE_PALETTE : undefined}',
+        "data-palette={GRAPHITE_PALETTE}",
+        "Grafit palitrasi `newPalette` bayrog'iga bog'lanmagan",
+    )
+
+
+def neg_decisions_graphite_leaks_into_light() -> tuple[bool, str]:
+    """The graphite block loses `.dark` and repaints the light mode too."""
+    return _decision_broken(
+        "apps/web/src/app/theme.css",
+        '[data-style="clay"].dark[data-palette="graphite"] {',
+        '[data-style="clay"][data-palette="graphite"] {',
+        "Grafit bloki faqat clay + qorong'i rejimga tegishli emas",
+    )
+
+
+def neg_decisions_graphite_changes_accent() -> tuple[bool, str]:
+    """The graphite palette swaps the brand accent."""
+    return _decision_broken(
+        "apps/web/src/app/theme.css",
+        "  --rw-faint: #959cab;\n  --rw-accent: #7c3aed;\n",
+        "  --rw-faint: #959cab;\n  --rw-accent: #5b6cff;\n",
+        "Grafit blokida `--rw-accent: #7c3aed",
+    )
+
+
 def neg_decisions_session_rows_kept() -> tuple[bool, str]:
     """The daily task that drops expired session rows is unscheduled."""
     return _decision_broken(
@@ -11551,6 +11581,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("hisob xatlari zaxirasi yo'qolsa tutilsin", neg_decisions_email_spends_the_reserve),
             ("GET obunani bekor qilsa tutilsin", neg_decisions_unsubscribe_on_get),
             ("Email ustuni yo'qolsa tutilsin", neg_decisions_email_column_gone),
+            ("Grafit bayroqsiz qo'llansa tutilsin", neg_decisions_graphite_unflagged),
+            ("Grafit yorug' rejimga o'tsa tutilsin", neg_decisions_graphite_leaks_into_light),
+            ("Grafit urg'uni almashtirsa tutilsin", neg_decisions_graphite_changes_accent),
             ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
             ("rail bayroqsiz chizilsa tutilsin", neg_decisions_rail_unflagged),
             ("rail telefonda drawer'ni olib qo'ysa tutilsin", neg_decisions_rail_drops_the_drawer),

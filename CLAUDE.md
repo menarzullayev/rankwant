@@ -228,6 +228,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-flags-reach-build.md) · `NEXT_PUBLIC_FLAG_*` web obrazi build'iga uzatiladi; bo'sh = o'chiq · `flags_reach_the_web_build`
 - [2026-11-10](docs/decisions/2026-11-10-studio-problems.md) · Muallif qoralamasi `/studio/problems` da: 20 ta chegara, ko'rik so'rovi, xodim navbati · `studio_problems_panel`
 - [2026-11-10](docs/decisions/2026-11-10-studio-contests.md) · Organizator musobaqasi `/studio/contests` da: 5 ta chegara, faqat o'z qoralama masalalari · `studio_contests_panel`
+- [2026-11-10](docs/decisions/2026-11-10-graphite-palette.md) · `newPalette`: clay qorong'isi uchun «Grafit», standart o'chiq · `graphite_palette_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`
 
 ## Tekshiruvlar

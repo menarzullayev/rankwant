@@ -804,6 +804,51 @@
   --rw-rank-red: #ff8d88;
 }
 
+/* ── Clay qorong'i — «Grafit» palitra (`newPalette` bayrog'i, 2026-11-10).
+   HITL: prototipda uch variant (`prototypes/dark-palette.html`) → A «Grafit».
+   Yuzalar neytral kulrang, binafsha faqat urg'u, havola va tanlangan holatda
+   qoladi. Sabab o'lchangan: binafsha sirt (#1e1632) ichida masala muharriri
+   (Monaco `vs-dark`, #1e1e1e) begona blok bo'lib turardi va uzun shart rang
+   tusi bilan o'qilardi; grafit sirt bilan muharrir orasidagi farq ~1.0:1.
+   `data-palette` ni `layout.tsx` faqat bayroq yoniq bo'lsa qo'yadi; urg'u
+   (#7c3aed, oq matn 5.70:1) clay'dan meros — bu yerda ochiq takrorlanadi,
+   chunki kontrast darvozasi har blokni o'z tokenlari bilan o'lchaydi. */
+[data-style="clay"].dark[data-palette="graphite"] {
+  --rw-ground: #0e1014;
+  --rw-surface: #16191f;
+  --rw-surface-2: #1e222a;
+  --rw-divider: #7d8494;
+  --rw-shadow: 0 14px 28px rgba(0, 0, 0, .5),
+               inset 0 -6px 12px rgba(0, 0, 0, .3),
+               inset 0 6px 10px rgba(255, 255, 255, .04);
+  --rw-text: #e7e9ee;
+  --rw-text-2: #c8ccd6;
+  --rw-muted: #a6acba;
+  --rw-faint: #959cab;
+  --rw-accent: #7c3aed;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #bba4ff;
+  --rw-accent-soft: #221c36;
+  --rw-ok-ink: #5fd6a4;   --rw-ok-soft: #102a22;
+  --rw-warn-ink: #f0c36a; --rw-warn-soft: #2e2510;
+  --rw-bad-ink: #ff9dbd;  --rw-bad-soft: #331722;
+  --rw-chip: #252a33;
+  --rw-hover: #1e222a;
+  --rw-field: #111317;
+  --rw-btn-shadow: 0 8px 16px rgba(0, 0, 0, .45),
+                   inset 0 -4px 8px rgba(0, 0, 0, .3),
+                   inset 0 3px 6px rgba(255, 255, 255, .14);
+  --rw-level-1: #959cab; --rw-level-2: #5fd6a4; --rw-level-3: #7fb0ff;
+  --rw-level-4: #bba4ff; --rw-level-5: #ff9dbd;
+  --rw-rank-grey: #a3abba;
+  --rw-rank-green: #4cc47d;
+  --rw-rank-cyan: #3fc3d2;
+  --rw-rank-blue: #7fa8f5;
+  --rw-rank-violet: #b99af0;
+  --rw-rank-orange: #f29a4a;
+  --rw-rank-red: #ff8d88;
+}
+
 /* ── Aurora: qorong'u fonda xiralashgan rangli dog'lar. ── */
 [data-style="aurora"] {
   --rw-ground: #07070f;
