@@ -215,12 +215,16 @@ export function PrefsSync() {
       if (chosen !== user.alphabet) patch.alphabet = chosen;
     } else if (user.alphabet === OLD_ALPHABET) {
       document.cookie = alphabetCookieLine(OLD_ALPHABET);
-      // The guest CDN rules skip a request carrying `rw_locale`.
-      if (!cookie) {
-        document.cookie = `rw_locale=${ALPHABET_LOCALE}; path=/; max-age=31536000; samesite=lax`;
+      // Reload only when the cookie took: a browser that refuses cookies
+      // would otherwise reload forever.
+      if (/(?:^|;\s*)rw_alphabet=old/.test(document.cookie)) {
+        // The guest CDN rules skip a request carrying `rw_locale`.
+        if (!cookie) {
+          document.cookie = `rw_locale=${ALPHABET_LOCALE}; path=/; max-age=31536000; samesite=lax`;
+        }
+        window.location.reload();
+        return;
       }
-      window.location.reload();
-      return;
     }
 
     rememberPrefs({ sound: prefs.sound, effect: prefs.effect });
