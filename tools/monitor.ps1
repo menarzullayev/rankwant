@@ -59,6 +59,8 @@ SINOV ILMOQLARI (tools/check_negative.py ishlatadi, oddiy yurishda YO'Q):
     MONITOR_FORCE_UNREADABLE  vergul bilan: docker, owner
     MONITOR_WORK_DIR      .handoff o'rniga (test haqiqiy jurnalni ifloslantirmasin)
     MONITOR_DRY_RUN       1 - hech narsa qayta ishga tushirilmaydi
+    MONITOR_RESOURCE_STUB free_gb;commit_used_gb;commit_limit_gb;top (C: va commit)
+    MONITOR_DISK_MIN_FREE_GB / MONITOR_COMMIT_MAX_PCT  chegaralar (15 / 90)
 
     XAVFSIZLIK: har qanday STUB berilsa dry-run MAJBURIY yoqiladi (pastda
     $dryRun). Ya'ni salbiy test HECH QACHON haqiqiy konteynerni yoki
@@ -295,9 +297,9 @@ function Get-TunnelProcess {
     }
   }
   # PID faylida yo'q, lekin xuddi shu config bilan ishlayotgan tunnel bormi?
-  # Host'dagi «Cloudflared tunnel autostart» vazifasi tunnelni PID faylini
+  # Host'dagi "Cloudflared tunnel autostart" vazifasi tunnelni PID faylini
   # yozmasdan ko'taradi. 2026-11-07 01:05 da tarmoq uzilganda monitor shuni
-  # «tunnel yo'q» deb o'qib IKKINCHI tunnelni ko'tardi va ikkalasi 3 kun bir
+  # "tunnel yo'q" deb o'qib IKKINCHI tunnelni ko'tardi va ikkalasi 3 kun bir
   # log faylga yozib turdi (audit Q-16, L-08). Endi u o'zlashtiriladi.
   $running = Get-CimInstance Win32_Process -Filter "Name='cloudflared.exe'" -ErrorAction SilentlyContinue |
     Where-Object { $_.CommandLine -and $_.CommandLine.Contains($script:cfConfig) } |
@@ -393,10 +395,90 @@ function Start-Tunnel {
 }
 
 # ---------------------------------------------------------------------
+# Host resources: C: free space and commit charge
+# ---------------------------------------------------------------------
+# Owner decision 2026-11-10. That day C: fell from 20.7 to 10.6 GB and the
+# commit charge reached 52.3 of 57.4 GB; Windows logged "low virtual memory"
+# (Event 2004 at 12:10 and 12:17 local, vmmemWSL 10.8 GB on top), grew
+# C:\pagefile.sys to 25.6 GB, a Claude session crashed and Docker stopped -
+# while every line of this monitor said OK. These checks do not change the
+# exit code (that contract is about the site). A line is written once when a
+# limit is crossed, once when it clears, and names what holds the space.
+$diskMinFreeGB = 15
+if ($env:MONITOR_DISK_MIN_FREE_GB) { $diskMinFreeGB = [double]$env:MONITOR_DISK_MIN_FREE_GB }
+$commitMaxPct = 90
+if ($env:MONITOR_COMMIT_MAX_PCT) { $commitMaxPct = [double]$env:MONITOR_COMMIT_MAX_PCT }
+$resourceState = Join-Path $work 'monitor-resources.txt'
+
+function Get-HostResources {
+  # MONITOR_RESOURCE_STUB: free_gb;commit_used_gb;commit_limit_gb;top text
+  if ($env:MONITOR_RESOURCE_STUB) {
+    $p = $env:MONITOR_RESOURCE_STUB -split ';'
+    return @{ FreeGB = [double]$p[0]; UsedGB = [double]$p[1]; LimitGB = [double]$p[2];
+              Top = $p[3]; PagefileGB = 0; VhdxGB = 0 }
+  }
+  try {
+    $disk = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='C:'" -ErrorAction Stop
+    $os = Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
+  } catch {
+    return $null
+  }
+  $limit = $os.TotalVirtualMemorySize / 1MB
+  $used = ($os.TotalVirtualMemorySize - $os.FreeVirtualMemory) / 1MB
+  $top = (Get-Process -ErrorAction SilentlyContinue | Group-Object Name | ForEach-Object {
+      [pscustomobject]@{ N = $_.Name; C = $_.Count;
+        GB = (($_.Group | Measure-Object PrivateMemorySize64 -Sum).Sum) / 1GB }
+    } | Sort-Object GB -Descending | Select-Object -First 5 | ForEach-Object {
+      '{0} {1:N1}GB x{2}' -f $_.N, $_.GB, $_.C
+    }) -join ', '
+  $pf = 0
+  Get-CimInstance Win32_PageFileUsage -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'C:*' } |
+    ForEach-Object { $pf += $_.AllocatedBaseSize / 1024 }
+  $vhdx = 0
+  $vhdxPath = Join-Path $env:LOCALAPPDATA 'Docker\wsl\disk\docker_data.vhdx'
+  if (Test-Path $vhdxPath) { $vhdx = (Get-Item $vhdxPath).Length / 1GB }
+  return @{ FreeGB = $disk.FreeSpace / 1GB; UsedGB = $used; LimitGB = $limit;
+            Top = $top; PagefileGB = $pf; VhdxGB = $vhdx }
+}
+
+function Test-HostResources {
+  # In stub mode only an explicit resource stub is measured: the site tests
+  # must not depend on this machine's disk.
+  if ($script:stubMode -and -not $env:MONITOR_RESOURCE_STUB) { return }
+  $r = Get-HostResources
+  if ($null -eq $r) { return }
+  $pct = 0
+  if ($r.LimitGB -gt 0) { $pct = [math]::Round(100 * $r.UsedGB / $r.LimitGB) }
+  $keys = @()
+  $lines = @()
+  if ($r.FreeGB -lt $script:diskMinFreeGB) {
+    $keys += 'disk'
+    $lines += ("LOW DISK C: {0:N1} GB free (< {1} GB) - pagefile {2:N1} GB, Docker VHDX {3:N1} GB" -f
+      $r.FreeGB, $script:diskMinFreeGB, $r.PagefileGB, $r.VhdxGB)
+  }
+  if ($pct -ge $script:commitMaxPct) {
+    $keys += 'commit'
+    $lines += ("HIGH COMMIT {0:N1} / {1:N1} GB ({2}% >= {3}%) - top: {4}" -f
+      $r.UsedGB, $r.LimitGB, $pct, $script:commitMaxPct, $r.Top)
+  }
+  $state = ($keys -join ',')
+  $prev = ''
+  if (Test-Path $script:resourceState) { $prev = ([string](Get-Content $script:resourceState -Raw)).Trim() }
+  if ($state -eq $prev) { return }
+  foreach ($line in $lines) { Write-Log $line }
+  if ($state -eq '' -and $prev -ne '') {
+    Write-Log ("RESOURCES OK - C: {0:N1} GB free, commit {1}%" -f $r.FreeGB, $pct)
+  }
+  Set-Content -Path $script:resourceState -Value $state
+}
+
+# ---------------------------------------------------------------------
 # Qaror
 # ---------------------------------------------------------------------
 
 function Test-Once {
+  # Host resources first: they are logged whatever the site says.
+  try { Test-HostResources } catch { Write-Log "RESOURCES UNMEASURED: $_" }
   # 1-qadam: IKKALA ommaviy manzil. Arzon yo'l - hech qanday docker,
   # hech qanday R2. Ilgari bu yerda faqat sayt ildizi turardi.
   $probe = @()
