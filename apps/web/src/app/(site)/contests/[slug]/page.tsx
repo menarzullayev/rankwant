@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { api, ApiError, type ContestViewer } from "@/lib/api";
+import { api, ApiError, type ClarificationList, type ContestViewer } from "@/lib/api";
 import { getSessionUser, getWithSession } from "@/lib/api.server";
 import { getLocale } from "@/i18n/server";
 import { Countdown, TimeStamp } from "@/components/kit/TimeStamp";
 import { fill, t } from "@/i18n/messages";
-import { ContestCrew, ContestEntry, StandingsTable } from "@/features/contests";
+import {
+  ContestClarifications,
+  ContestCrew,
+  ContestEntry,
+  StandingsTable,
+} from "@/features/contests";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { SITE_URL, jsonLd } from "@/lib/site";
@@ -53,6 +58,11 @@ export default async function ContestPage({ params }: Props) {
   const viewer = signedIn
     ? await getWithSession<ContestViewer>(`/contests/${slug}/viewer/`).catch(() => null)
     : null;
+  // Questions and announcements (ADR-0055, part 3): the visitor's own and
+  // the public ones; the jury reads everything.
+  const clarifications = await getWithSession<ClarificationList>(
+    `/contests/${slug}/clarifications/`,
+  ).catch(() => null);
   // Before the start the problems are shown to the people who test them.
   const problems =
     contest.problems.length > 0 ? contest.problems : viewer?.testing ? viewer.problems : [];
@@ -165,6 +175,14 @@ export default async function ContestPage({ params }: Props) {
           </ul>
         </Card>
       )}
+
+      <ContestClarifications
+        slug={slug}
+        initial={clarifications}
+        letters={problems.map((entry) => entry.index_letter)}
+        started={contest.is_running || contest.is_finished}
+        finished={contest.is_finished}
+      />
 
       <Card title={t(locale, "standings.title")} bodyClassName="p-0">
         {/* Contest ketayotgan bo'lsa SSE bilan jonli, aks holda statik */}

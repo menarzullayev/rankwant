@@ -1,6 +1,6 @@
 # ADR 0055 — Musobaqa masalalari: oldin yopiq, paytida manzil bo'yicha ochiq, keyin arxivda
 
-**STATUS:** accepted (qamrov va tartib); 2-qism — § 6; 3–4-qismlarning tafsiloti o'z PR'ida aniqlanadi
+**STATUS:** accepted (qamrov va tartib); 2-qism — § 6; 3-qism — § 7; 4-qismning tafsiloti o'z PR'ida aniqlanadi
 **Sana:** 2026-10-08
 **Tasdiqlagan:** Saidakbar (owner) — 2026-10-08, 16 savol
 **Ta'sir doirasi:** `problems/visibility.py`, `problems/views.py`, `problems/serializers.py`, `judging/`, `contests/services.py`, `contests/serializers.py`, masala va musobaqa sahifalari
@@ -185,4 +185,38 @@ ishtirok bloki bor.
 - Sinovchining mulohazasi uchun alohida kanal yo'q (3-qism — savol-javob).
 - `start_at` musobaqa boshlangandan keyin kechroqqa surilsa, undan oldingi
   urinishlar «sinov» bo'lib qoladi — bunday surish o'zi xato amal.
+
+## 7. 3-qism: savol-javob va e'lonlar (2026-11-10)
+
+**Tasdiqlagan:** Saidakbar (owner) — 2026-11-10, 4 savol, prototip
+(`prototypes/contest-clarifications.html`). Bitta savolda tavsiyadan farq
+qildi: savolni **har qanday kirgan foydalanuvchi** beradi (tavsiya — faqat
+ro'yxatdan o'tgan ishtirokchi edi). Qo'shimchalarning to'rttasi ham tanlandi.
+
+| Qaror | Tafsilot |
+|---|---|
+| Kim so'raydi | har qanday kirgan foydalanuvchi, musobaqa tugaguncha; masala bo'yicha savol — faqat boshlangandan keyin (oldin masalalar yopiq, faqat «umumiy») |
+| Kim javob beradi va e'lon yozadi | hakam, tashkilotchi, staff-ops (`can_moderate`) |
+| Yopiqlik | savol — muallifi va moderatorlarniki; javob muallifga yoki «hammaga» |
+| Yetkazish | bildirishnoma (mavjud SSE; Telegram — sozlamaga ko'ra) + musobaqa sahifasidagi «Savol-javob» bloki, e'lonlar tepada |
+| Tez javoblar | Ha / Yo'q / Shartni o'qing / Izoh yo'q — **kod** bo'lib saqlanadi, har o'quvchi o'z tilida o'qiydi |
+| Chegaralar | bir kishiga musobaqada 20 savol, 1000 belgi, daqiqasiga bitta (`429` + `Retry-After`) |
+| Hakamga xabar | har yangi savolda hakam va tashkilotchilarga; ular yo'q bo'lsa staff-ops'ga |
+| Yakunlangach | javob berilgan barcha savollar hammaga ochiq; so'raganning ismi hech qachon ommaga chiqmaydi |
+
+Model — `contests.Clarification`: savol, javob va e'lon bitta jadvalda (e'lon
+— muallifsiz, savolsiz, ommaviy qator). Endpoint'lar:
+`GET/POST contests/<slug>/clarifications/`,
+`POST contests/<slug>/clarifications/<id>/answer/`,
+`POST contests/<slug>/announcements/`. Bildirishnoma kodlari:
+`contest_question`, `contest_answer`, `contest_announcement`
+(`ref_type = contest_qa` → sahifaning `#clarifications` qismi).
+
+### 7.1. Hal qilinmagan
+
+- 200 dan ortiq qabul qiluvchili e'lon qo'ng'iroqqa darhol emas, keyingi
+  so'rovda (60 s) yetadi — mavjud `announce` qoidasi.
+- Sahifadagi blok musobaqa davomida 30 s da qayta o'qiladi (SSE emas).
+- Savolni tahrirlash yoki o'chirish yo'q; javobni o'zgartirish — qayta
+  javob berish bilan.
 

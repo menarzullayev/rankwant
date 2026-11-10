@@ -6,7 +6,14 @@ from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from contests.models import Certificate, Contest, ContestProblem, ContestRegistration, Standing
+from contests.models import (
+    Certificate,
+    Clarification,
+    Contest,
+    ContestProblem,
+    ContestRegistration,
+    Standing,
+)
 from profiles.titles import TitleField, UserTitleSerializer
 
 
@@ -165,3 +172,70 @@ class CertificateSerializer(serializers.ModelSerializer[Certificate]):
             "title": cert.contest.title,
             "end_at": cert.contest.end_at,
         }
+
+
+class ClarificationSerializer(serializers.ModelSerializer[Clarification]):
+    """One question, answer or announcement (ADR-0055, part 3).
+
+    `author` is filled for the moderators only; everybody else is told
+    whether the row is theirs (`mine`) and nothing about whose it is.
+    """
+
+    problem = serializers.CharField(source="problem.index_letter", allow_null=True, default=None)
+    is_announcement = serializers.SerializerMethodField()
+    mine = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Clarification
+        fields = [
+            "id",
+            "problem",
+            "question",
+            "answer",
+            "answer_code",
+            "is_public",
+            "is_announcement",
+            "mine",
+            "author",
+            "created_at",
+            "answered_at",
+        ]
+
+    def get_is_announcement(self, row: Clarification) -> bool:
+        return row.author_id is None
+
+    def get_mine(self, row: Clarification) -> bool:
+        user = getattr(self.context.get("request"), "user", None)
+        return bool(user is not None and user.is_authenticated and row.author_id == user.pk)
+
+    def get_author(self, row: Clarification) -> str | None:
+        if not self.context.get("moderator") or row.author is None:
+            return None
+        return row.author.username
+
+
+class ClarificationListSerializer(serializers.Serializer[Any]):
+    #: The viewer answers and announces.
+    moderator = serializers.BooleanField()
+    #: The viewer may ask now (signed in, contest not over).
+    can_ask = serializers.BooleanField()
+    #: Questions this viewer may still ask in this contest.
+    questions_left = serializers.IntegerField()
+    results = ClarificationSerializer(many=True)
+
+
+class ClarificationAskSerializer(serializers.Serializer[Any]):
+    problem = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=3)
+    question = serializers.CharField(max_length=4000, trim_whitespace=True)
+
+
+class ClarificationAnswerSerializer(serializers.Serializer[Any]):
+    answer = serializers.CharField(required=False, allow_blank=True, max_length=4000)
+    answer_code = serializers.CharField(required=False, allow_blank=True, max_length=16)
+    public = serializers.BooleanField(default=False)
+
+
+class ContestAnnouncementSerializer(serializers.Serializer[Any]):
+    problem = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=3)
+    text = serializers.CharField(max_length=4000)

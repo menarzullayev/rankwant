@@ -246,3 +246,59 @@ class Certificate(models.Model):
 
     def __str__(self) -> str:
         return f"{self.contest_id}:{self.user_id} ({self.tier})"
+
+
+class Clarification(CreatedModel):
+    """A participant's question and the jury's answer — or a jury announcement
+    (ADR-0055, part 3).
+
+    A question is private: its author and the moderators see it. The answer
+    goes to the author, or to everybody when the jury makes it public. An
+    announcement is a public row with no question and no author. Once the
+    contest is finalized every answered row is public; the author's name
+    never is.
+    """
+
+    class QuickAnswer(models.TextChoices):
+        # Drawn in the reader's language on the site, so stored as a code.
+        YES = "yes", "Ha"
+        NO = "no", "Yo'q"
+        READ_STATEMENT = "read_statement", "Shartni o'qing"
+        NO_COMMENT = "no_comment", "Izoh yo'q"
+
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="clarifications")
+    #: `None` — about the contest as a whole.
+    problem = models.ForeignKey(
+        ContestProblem, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    #: `None` for a jury announcement.
+    author = models.ForeignKey(
+        "core.User",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="contest_questions",
+    )
+    question = models.TextField(blank=True)
+    answer = models.TextField(blank=True)
+    answer_code = models.CharField(max_length=16, choices=QuickAnswer.choices, blank=True)
+    answered_by = models.ForeignKey(
+        "core.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    answered_at = models.DateTimeField(null=True, blank=True)
+    #: Shown to everybody: an announcement, or an answer the jury published.
+    is_public = models.BooleanField(default=False)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at", "-pk"]
+        indexes: ClassVar = [
+            models.Index(fields=["contest", "-created_at"], name="clarification_feed"),
+            models.Index(fields=["contest", "author"], name="clarification_author"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.contest_id}/{self.pk}"
+
+    @property
+    def is_answered(self) -> bool:
+        return self.answered_at is not None

@@ -845,6 +845,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/contests/{slug}/announcements/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** E'lon qilish */
+        post: operations["contests_announcements_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/{slug}/clarifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Savol-javob va e'lonlar
+         * @description Questions, answers and announcements; POST asks a question.
+         */
+        get: operations["contests_clarifications_retrieve"];
+        put?: never;
+        /**
+         * Savol-javob va e'lonlar
+         * @description Questions, answers and announcements; POST asks a question.
+         */
+        post: operations["contests_clarifications_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/{slug}/clarifications/{row_id}/answer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Savolga javob berish */
+        post: operations["contests_clarifications_answer_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contests/{slug}/register/": {
         parameters: {
             query?: never;
@@ -5812,6 +5870,14 @@ export interface components {
             question_id: number;
             choice_id: number;
         };
+        /**
+         * @description * `yes` - Ha
+         *     * `no` - Yo'q
+         *     * `read_statement` - Shartni o'qing
+         *     * `no_comment` - Izoh yo'q
+         * @enum {string}
+         */
+        AnswerCodeEnum: "yes" | "no" | "read_statement" | "no_comment";
         AnswerResult: {
             is_correct: boolean;
             points: number;
@@ -6062,6 +6128,43 @@ export interface components {
             order: number;
             text: string;
         };
+        /**
+         * @description One question, answer or announcement (ADR-0055, part 3).
+         *
+         *     `author` is filled for the moderators only; everybody else is told
+         *     whether the row is theirs (`mine`) and nothing about whose it is.
+         */
+        Clarification: {
+            readonly id: number;
+            problem?: string | null;
+            question?: string;
+            answer?: string;
+            answer_code?: components["schemas"]["AnswerCodeEnum"] | components["schemas"]["BlankEnum"];
+            is_public?: boolean;
+            readonly is_announcement: boolean;
+            readonly mine: boolean;
+            readonly author: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            answered_at?: string | null;
+        };
+        ClarificationAnswer: {
+            answer?: string;
+            answer_code?: string;
+            /** @default false */
+            public: boolean;
+        };
+        ClarificationAsk: {
+            problem?: string | null;
+            question: string;
+        };
+        ClarificationList: {
+            moderator: boolean;
+            can_ask: boolean;
+            questions_left: number;
+            results: components["schemas"]["Clarification"][];
+        };
         Classroom: {
             slug: string;
             name: string;
@@ -6118,6 +6221,10 @@ export interface components {
             readonly hack_open_until: string;
             /** @default 0 */
             readonly participant_count: number;
+        };
+        ContestAnnouncement: {
+            problem?: string | null;
+            text: string;
         };
         ContestDetail: {
             slug: string;
@@ -11147,6 +11254,123 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ContestDetail"];
+                };
+            };
+        };
+    };
+    contests_announcements_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContestAnnouncement"];
+                "application/x-www-form-urlencoded": components["schemas"]["ContestAnnouncement"];
+                "multipart/form-data": components["schemas"]["ContestAnnouncement"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
+                };
+            };
+        };
+    };
+    contests_clarifications_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClarificationList"];
+                };
+            };
+        };
+    };
+    contests_clarifications_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClarificationAsk"];
+                "application/x-www-form-urlencoded": components["schemas"]["ClarificationAsk"];
+                "multipart/form-data": components["schemas"]["ClarificationAsk"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    contests_clarifications_answer_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                row_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ClarificationAnswer"];
+                "application/x-www-form-urlencoded": components["schemas"]["ClarificationAnswer"];
+                "multipart/form-data": components["schemas"]["ClarificationAnswer"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
                 };
             };
         };

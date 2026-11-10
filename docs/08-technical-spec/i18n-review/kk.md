@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2471 strings.**
+**2508 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2485,6 +2485,43 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.testers` | Sinovchilar | Тестерлер |  |
 | `contest.crew.jury` | Hakamlar | Қазылар |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Олар есептерді алдын ала біледі, сондықтан рейтингсіз қатысады. |  |
+| `contest.qa.title` | Savol-javob | Сұрақ-жауап |  |
+| `contest.qa.general` | Umumiy | Жалпы |  |
+| `contest.qa.problem` | Masala | Есеп |  |
+| `contest.qa.askTitle` | Savol berish | Сұрақ қою |  |
+| `contest.qa.askHint` | Faqat shart va qoidalar haqida. Yechim yoki kod so'ramang — javob «Izoh yo'q» bo'ladi. | Тек шарт пен ережелер туралы. Шешім немесе код сұрамаңыз — жауап «Түсініктеме жоқ» болады. |  |
+| `contest.qa.send` | Yuborish | Жіберу |  |
+| `contest.qa.left` | Yana {count} ta savol berishingiz mumkin | Тағы {count} сұрақ қоя аласыз |  |
+| `contest.qa.announceTitle` | E'lon yozish | Хабарландыру жазу |  |
+| `contest.qa.announce` | E'lon qilish | Хабарлау |  |
+| `contest.qa.announceNote` | Barcha ro'yxatdan o'tganlarga bildirishnoma ketadi | Барлық тіркелгендерге хабарлама жіберіледі |  |
+| `contest.qa.waiting` | Javob kutayotgan savollar: {count} | Жауап күткен сұрақтар: {count} |  |
+| `contest.qa.mine` | Mening savollarim | Менің сұрақтарым |  |
+| `contest.qa.answered` | Javob berilgan savollar | Жауап берілген сұрақтар |  |
+| `contest.qa.public` | Hammaga e'lon qilindi | Барлығына хабарланды |  |
+| `contest.qa.pending` | Javob kutilmoqda… | Жауап күтілуде… |  |
+| `contest.qa.answer` | Javob berish | Жауап беру |  |
+| `contest.qa.answerLabel` | Javob | Жауап |  |
+| `contest.qa.answerPlaceholder` | Yoki o'z javobingiz… | Немесе өз жауабыңыз… |  |
+| `contest.qa.makePublic` | Hammaga e'lon qilish | Барлығына хабарлау |  |
+| `contest.qa.waitSeconds` | Keyingi savolni {seconds} soniyadan keyin bera olasiz | Келесі сұрақты {seconds} секундтан кейін қоя аласыз |  |
+| `contest.qa.quick.yes` | Ha. | Иә. |  |
+| `contest.qa.quick.no` | Yo'q. | Жоқ. |  |
+| `contest.qa.quick.read_statement` | Shartni diqqat bilan o'qing. | Шартты мұқият оқыңыз. |  |
+| `contest.qa.quick.no_comment` | Izoh yo'q. | Түсініктеме жоқ. |  |
+| `error.problems_closed` | Masalalar musobaqa boshlanganda ochiladi | Есептер жарыс басталғанда ашылады |  |
+| `error.problem_not_found` | Bu masala musobaqada yo'q | Бұл есеп жарыста жоқ |  |
+| `error.text_empty` | Avval matnni yozing | Алдымен мәтінді жазыңыз |  |
+| `error.text_too_long` | Matn juda uzun | Мәтін тым ұзын |  |
+| `error.too_many_questions` | Bu musobaqada savollar chegarasiga yetdingiz | Бұл жарыстағы сұрақтар шегіне жеттіңіз |  |
+| `error.question_too_soon` | Daqiqasiga bitta savol berish mumkin | Минутына бір сұрақ қоюға болады |  |
+| `error.unknown_answer` | Noma'lum tez javob | Белгісіз жылдам жауап |  |
+| `notif.msg.contest_question.title` | «{contest}»: yangi savol | «{contest}»: жаңа сұрақ |  |
+| `notif.msg.contest_question.body` | Savol: {text} | Сұрақ: {text} |  |
+| `notif.msg.contest_answer.title` | «{contest}»: savolingizga javob berildi | «{contest}»: сұрағыңызға жауап берілді |  |
+| `notif.msg.contest_answer.body` | Savol: {question} | Сұрақ: {question} |  |
+| `notif.msg.contest_announcement.title` | «{contest}»: hakamlar e'loni | «{contest}»: қазылар хабарландыруы |  |
+| `notif.msg.contest_announcement.body` | E'lon: {text} | Хабарландыру: {text} |  |
 | `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Жарысқа тіркелу үшін жүйеге кіріңіз |  |
 | `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Тестерлер (лақап аттар, үтір арқылы) |  |
 | `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Қазылар (лақап аттар, үтір арқылы) |  |
