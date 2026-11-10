@@ -5001,6 +5001,38 @@ def neg_decisions_npm_ci_ignores_cache() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_paid_video_from_youtube() -> tuple[bool, str]:
+    """A paid course may again embed YouTube or Vimeo (the link can be shared)."""
+    return _decision_broken(
+        "apps/api/courses/models.py",
+        "            if paid and self.video_provider != self.VideoProvider.HLS:\n",
+        "            if False:\n",
+        "pullik kurs videosi R2",
+    )
+
+
+def neg_decisions_certificate_threshold_lowered() -> tuple[bool, str]:
+    """The default certificate threshold drops below the owner's 70%."""
+    return _decision_broken(
+        "apps/api/courses/models.py",
+        "        default=70,\n        validators=[MinValueValidator(1), MaxValueValidator(100)],\n"
+        '        help_text="Final quiz',
+        "        default=50,\n        validators=[MinValueValidator(1), MaxValueValidator(100)],\n"
+        '        help_text="Final quiz',
+        "sertifikat chegarasi standart 70% emas",
+    )
+
+
+def neg_decisions_course_flag_on() -> tuple[bool, str]:
+    """The Courses section is switched on by default before the owner opens it."""
+    return _decision_broken(
+        "apps/web/src/lib/flags.ts",
+        "  courses: false,\n",
+        "  courses: true,\n",
+        "standart holatda o'chiq emas",
+    )
+
+
 def neg_decisions_revive_touches_manual_stops() -> tuple[bool, str]:
     """The revive script stops filtering on `.State.Error` (would start bake-off's stopped worker)."""
     return _decision_broken(
@@ -8111,6 +8143,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/courses/models.py",
     "tools/monitor.ps1",
     "tools/check_negative.py",
     "tools/pr_update_queue.py",
@@ -12237,6 +12270,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("CI pip'ga qaytsa tutilsin", neg_decisions_ci_back_to_pip),
             ("node_modules kaliti lockfile'siz bo'lsa tutilsin", neg_decisions_node_modules_key_loose),
             ("kesh topilganda npm ci yursa tutilsin", neg_decisions_npm_ci_ignores_cache),
+            ("pullik kurs YouTube videosi tutilsin", neg_decisions_paid_video_from_youtube),
+            ("kurslar bayrog'i standart yoniq bo'lsa tutilsin", neg_decisions_course_flag_on),
+            ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),
             ("Docker o'chiqda deploy'ga urinilsa tutilsin", neg_decisions_watcher_deploys_without_docker),

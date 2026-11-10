@@ -48,6 +48,9 @@ const isDev = process.env.NODE_ENV !== "production";
 /** Barcha bayroqlar — **yagona ro'yxat**. Yangi bayroq shu yerga
  *  qo'shiladi, boshqa hech qayerda ro'yxat yo'q. */
 export const FLAGS = {
+  /** Kurslar bo'limi (ADR-0056) — bosqichma-bosqich quriladi; egasi
+   *  «ochamiz» deguncha o'chiq. */
+  courses: false,
   /** Viloyatni ro'yxatdan o'tishning o'zida so'rash (8-qaror A/B).
    *
    *  Ikki kalit: `NEXT_PUBLIC_FLAG_GEO_EARLY_REGION` sinovni YOQADI,
@@ -93,6 +96,9 @@ export const FLAG_OVERRIDES = "rw_flags";
 function fromEnv(name: FlagName): boolean | undefined {
   let raw: string | undefined;
   switch (name) {
+    case "courses":
+      raw = process.env.NEXT_PUBLIC_FLAG_COURSES;
+      break;
     case "geoEarlyRegion":
       raw = process.env.NEXT_PUBLIC_FLAG_GEO_EARLY_REGION;
       break;
