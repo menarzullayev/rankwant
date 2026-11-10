@@ -114,6 +114,22 @@ qisqartiriladi; har PR o'z testlari va salbiy testlari bilan.
 | 7 | Xarid, 3 tarif, Payme/Click (sinov rejimi) |
 | 8 | Auditoriyaga kurs berish va o'qituvchi progressi |
 
+**2-qism qanday qurildi.** Katalog va kurs sahifasi (dastur bilan) mehmonga
+ochiq, dars esa kirgan va yozilgan o'quvchiga; `is_preview` dars yozilmasdan
+ochiladi (ADR-0054). Til: `?lang=` (faqat `uz`/`ru`/`en`), bo'lmasa so'rov
+tili, tarjima yo'q bo'lsa kursning asosiy tili; javobdagi `locale` qaysi til
+berilganini aytadi. Ketma-ket ochilish faqat **majburiy** darslarga qaraydi —
+ixtiyoriy dars hech narsani yopmaydi, foiz ham faqat majburiylardan.
+Matn va video darsni o'quvchi o'zi tugatadi; masala darsi birinchi qabul
+qilingan urinishda (`ratings.UserSolvedProblem`), test darsi `quiz_pass_percent`
+dan past bo'lmagan natijada o'zi yoziladi — signal satr nomi bilan ulanadi
+va uning xatosi urinish yoki test natijasini bekor qilmaydi. Yopiq dars
+tugatilmaydi, yozilmagan o'quvchining yechimi progressga yozilmaydi.
+HLS videoning R2 kaliti javobda **hech qachon** berilmaydi (imzolangan
+havola 5-qismda). Arxivda bo'lmagan masala darsda havolasiz qoladi.
+Qvant va pullik kursga bepul yozilish 402 bilan rad etiladi
+(`qvant_required`, `payment_required`) — ularning yo'li 6- va 7-qismda.
+
 ## 4. Ochiq qolganlar
 
 - Robocontest tariflari va pullik xizmatlarining chuqur tahlili — egasi

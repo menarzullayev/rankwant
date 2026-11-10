@@ -5023,6 +5023,26 @@ def neg_decisions_certificate_threshold_lowered() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_hls_key_exposed() -> tuple[bool, str]:
+    """A lesson answer hands out the raw R2 key of a paid video."""
+    return _decision_broken(
+        "apps/api/courses/serializers.py",
+        "        ref = None if hls else obj.video_ref\n",
+        "        ref = obj.video_ref\n",
+        "R2 kaliti javobda",
+    )
+
+
+def neg_decisions_course_progress_unhooked() -> tuple[bool, str]:
+    """Solving a course problem no longer moves the course forward."""
+    return _decision_broken(
+        "apps/api/courses/services.py",
+        'sender="ratings.UserSolvedProblem"',
+        'sender="ratings.RatingHistory"',
+        "progress signali ulanmagan",
+    )
+
+
 def neg_decisions_course_flag_on() -> tuple[bool, str]:
     """The Courses section is switched on by default before the owner opens it."""
     return _decision_broken(
@@ -8144,6 +8164,8 @@ _TRIAL_WORKFLOW = (
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
     "apps/api/courses/models.py",
+    "apps/api/courses/serializers.py",
+    "apps/api/courses/services.py",
     "tools/monitor.ps1",
     "tools/check_negative.py",
     "tools/pr_update_queue.py",
@@ -12272,6 +12294,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kesh topilganda npm ci yursa tutilsin", neg_decisions_npm_ci_ignores_cache),
             ("pullik kurs YouTube videosi tutilsin", neg_decisions_paid_video_from_youtube),
             ("kurslar bayrog'i standart yoniq bo'lsa tutilsin", neg_decisions_course_flag_on),
+            ("HLS video kaliti javobda chiqsa tutilsin", neg_decisions_hls_key_exposed),
+            ("kurs progressi signalsiz qolsa tutilsin", neg_decisions_course_progress_unhooked),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),
