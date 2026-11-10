@@ -5113,6 +5113,26 @@ def neg_decisions_video_on_judge_queue() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_qvant_price_unconfirmed() -> tuple[bool, str]:
+    """A Qvant course takes whatever price it has, unconfirmed."""
+    return _decision_broken(
+        "apps/api/courses/services.py",
+        "    if confirm_price != course.price_qvant:\n",
+        "    if False:\n",
+        "tasdiqsiz yechiladi",
+    )
+
+
+def neg_decisions_certificate_without_quiz() -> tuple[bool, str]:
+    """A certificate is issued without the final quiz threshold."""
+    return _decision_broken(
+        "apps/api/courses/services.py",
+        "        if score is None or score < course.certificate_threshold:\n",
+        "        if False:\n",
+        "chegarasini tekshirmaydi",
+    )
+
+
 def neg_decisions_course_flag_on() -> tuple[bool, str]:
     """The Courses section is switched on by default before the owner opens it."""
     return _decision_broken(
@@ -8237,6 +8257,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/courses/serializers.py",
     "apps/api/courses/services.py",
     "apps/api/courses/review.py",
+    "apps/api/qvant/ledger.py",
     "apps/api/courses/author_serializers.py",
     "apps/api/courses/hls.py",
     "apps/api/courses/video_views.py",
@@ -12383,6 +12404,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kurs videosi shifrsiz yozilsa tutilsin", neg_decisions_course_video_unencrypted),
             ("boshqa kurs videosi o'ynasa tutilsin", neg_decisions_course_video_foreign_asset),
             ("video kodlash judge navbatiga tushsa tutilsin", neg_decisions_video_on_judge_queue),
+            ("Qvant narxi tasdiqsiz yechilsa tutilsin", neg_decisions_qvant_price_unconfirmed),
+            ("sertifikat testsiz berilsa tutilsin", neg_decisions_certificate_without_quiz),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

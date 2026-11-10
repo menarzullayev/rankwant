@@ -236,6 +236,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-pr-update-queue.md) · Orqada qolgan auto-merge PR'larni watcher navbat bilan, bittadan yangilaydi; agentlar o'zi `update-branch` qilmaydi · `behind_prs_update_one_at_a_time`
 - [2026-11-10](docs/decisions/2026-11-10-pr-negative-scope.md) · PR CI qaror salbiy testlarini faqat o'zgargan fayllar uchun yuritadi; main va Nightly — to'liq · `pr_runs_decision_cases_for_changed_files`
 - [2026-11-10](docs/decisions/2026-11-10-host-memory-and-disk.md) · C: va xotira bosimi: pagefile D: ga (24 GB), faol bo'lmagan sessiyalar arxivda, og'ir MCP'lar mux, monitor C: < 15 GB va commit >= 90% ni yozadi · `monitor_watches_disk_and_commit`
+- [2026-11-10](docs/decisions/2026-11-10-courses-certificate.md) · Kurs sertifikati (musobaqa kabi), yakuniy test >= chegara, bir martalik mukofot, Qvant narxi tasdiqlanadi va qaytarilmaydi · `course_rewards_and_certificate`
 - [2026-11-10](docs/decisions/2026-11-10-courses-video-worker.md) · Video kodlash: alohida video-worker (1 vazifa, 2 CPU), musobaqa paytida ham · `course_video_is_encrypted_and_own`
 - [2026-11-10](docs/decisions/2026-11-10-courses-video.md) · Kurs videosi: ffmpeg va tayyor HLS, manba sifatigacha, AES-128 kalit API'dan, R2 keyin, brauzerdan to'g'ridan yuklash · `course_video_is_encrypted_and_own`
 - [2026-11-10](docs/decisions/2026-11-10-courses-studio.md) · Kurs studio'si: har kim yozadi (3 qoralama), matn darhol, tuzilma va narx xodimda · `course_studio_rules`

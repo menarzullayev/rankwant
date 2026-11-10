@@ -15,6 +15,7 @@ import {
   nextLesson,
   Programme,
   ProgressBar,
+  UnlockButton,
   type CourseDetail,
 } from "@/features/courses";
 import { getLocale } from "@/i18n/server";
@@ -54,7 +55,28 @@ function Join({ course, locale, signedIn }: { course: CourseDetail; locale: Loca
       <div className="space-y-4">
         <ProgressBar progress={course.progress} />
         {course.progress.completed ? (
-          <p className="text-theme-sm font-medium rw-ok-ink">{t(locale, "course.completed")}</p>
+          <div className="space-y-3">
+            <p className="text-theme-sm font-medium rw-ok-ink">{t(locale, "course.completed")}</p>
+            {course.enrollment.certificate ? (
+              <ButtonLink href={`/certificates/${course.enrollment.certificate}` as Route}>
+                {t(locale, "course.certificateView")}
+              </ButtonLink>
+            ) : (
+              course.final_quiz_slug && (
+                <div className="space-y-2">
+                  <p className="text-theme-sm rw-dim">
+                    {fill(t(locale, "course.certificatePending"), { percent: course.certificate_threshold })}
+                  </p>
+                  <ButtonLink
+                    href={`/quizzes/${encodeURIComponent(course.final_quiz_slug)}` as Route}
+                    variant="outline"
+                  >
+                    {t(locale, "course.lesson.openQuiz")}
+                  </ButtonLink>
+                </div>
+              )
+            )}
+          </div>
         ) : (
           next && (
             <ButtonLink href={lessonHref(course.slug, next.id)}>
@@ -67,11 +89,8 @@ function Join({ course, locale, signedIn }: { course: CourseDetail; locale: Loca
   }
   if (!signedIn) return <SignInGate reason="course" />;
   if (course.access === "free") return <EnrollButton slug={course.slug} />;
-  return (
-    <p className="text-theme-sm rw-dim">
-      {t(locale, course.access === "qvant" ? "course.soonQvant" : "course.soonPaid")}
-    </p>
-  );
+  if (course.access === "qvant") return <UnlockButton slug={course.slug} price={course.price_qvant ?? 0} />;
+  return <p className="text-theme-sm rw-dim">{t(locale, "course.soonPaid")}</p>;
 }
 
 function Block({ title, text }: { title: string; text: string }) {

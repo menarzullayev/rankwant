@@ -81,3 +81,15 @@ def submit(user: User, quiz: Quiz, answers: dict[int, int]) -> tuple[QuizAttempt
         qvant_awarded=awarded,
     )
     return attempt, review
+
+
+def best_percent(user: User, quiz: Quiz) -> int | None:
+    """The user's best score on `quiz` in percent, or None if never taken."""
+    best = None
+    for score, total in QuizAttempt.objects.filter(user=user, quiz=quiz).values_list(
+        "score", "total"
+    ):
+        if total:
+            percent = (100 * score) // total
+            best = percent if best is None else max(best, percent)
+    return best

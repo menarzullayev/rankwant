@@ -6,6 +6,7 @@ import { cache } from "react";
 import { CertificateCard } from "@/features/profile/server";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
+import { CourseCertificateView, type CourseCertificate } from "@/features/courses";
 import { ApiError, type Certificate } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { formatDate } from "@rankwant/shared/format";
@@ -17,26 +18,38 @@ export const dynamic = "force-dynamic";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-/** QR shu sahifaga olib keladi: sertifikat haqiqiyligi va egasi. */
-const load = cache(async (id: string): Promise<Certificate | null> => {
-  if (!UUID.test(id)) return null;
+/** QR shu sahifaga olib keladi: sertifikat haqiqiyligi va egasi. A course
+ *  certificate (ADR-0056) shares the address: one place to verify. */
+type Loaded = { kind: "contest"; cert: Certificate } | { kind: "course"; cert: CourseCertificate };
+
+async function tryGet<T>(path: string): Promise<T | null> {
   try {
-    return await getWithSession<Certificate>(`/certificates/${id}/`);
+    return await getWithSession<T>(path);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
   }
+}
+
+const load = cache(async (id: string): Promise<Loaded | null> => {
+  if (!UUID.test(id)) return null;
+  const contest = await tryGet<Certificate>(`/certificates/${id}/`);
+  if (contest) return { kind: "contest", cert: contest };
+  const course = await tryGet<CourseCertificate>(`/courses/certificates/${id}/`);
+  return course ? { kind: "course", cert: course } : null;
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const cert = await load((await params).id);
-  return { title: cert ? `${t(await getLocale(), "cert.title")} — ${cert.name}` : "404" };
+  const found = await load((await params).id);
+  return { title: found ? `${t(await getLocale(), "cert.title")} — ${found.cert.name}` : "404" };
 }
 
 export default async function CertificatePage({ params }: Props) {
-  const cert = await load((await params).id);
-  if (!cert) notFound();
+  const found = await load((await params).id);
+  if (!found) notFound();
   const locale = await getLocale();
+  if (found.kind === "course") return <CourseCertificateView cert={found.cert} locale={locale} />;
+  const cert = found.cert;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">

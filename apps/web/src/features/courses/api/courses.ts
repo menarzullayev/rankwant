@@ -41,8 +41,14 @@ export function langQuery(locale: string): string {
   return (COURSE_LOCALES as readonly string[]).includes(locale) ? `lang=${locale}` : "";
 }
 
-export const enrollCourse = (slug: string) =>
-  postJson<Schemas["Enrollment"]>(`/courses/${encodeURIComponent(slug)}/enroll/`, {});
+/** `confirmPrice`: for a Qvant course, the price the reader agreed to. */
+export const enrollCourse = (slug: string, confirmPrice?: number) =>
+  postJson<Schemas["Enrollment"]>(
+    `/courses/${encodeURIComponent(slug)}/enroll/`,
+    confirmPrice === undefined ? {} : { confirm_price: confirmPrice },
+  );
+
+export type CourseCertificate = Schemas["CourseCertificate"];
 
 export const completeLesson = (slug: string, lessonId: number) =>
   postJson<CourseProgress>(

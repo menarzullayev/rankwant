@@ -104,6 +104,26 @@ def credit(
 
 
 @transaction.atomic
+def credit_once(
+    user: User, amount: int, reason: str, *, ref_type: str, ref_id: str
+) -> QvantTransaction | None:
+    """A one-time reward: nothing if this user already got this `ref`.
+
+    Outside the daily cap (owner decision 2026-11-10 for course rewards):
+    the reference makes it unrepeatable, and a cap would silently cut a
+    reward staff set on purpose. The wallet lock serialises two finishes
+    racing for the same reward.
+    """
+    if amount <= 0:
+        return None
+    lock_wallet(user)
+    if QvantTransaction.objects.filter(
+        user=user, reason=reason, ref_type=ref_type, ref_id=ref_id
+    ).exists():
+        return None
+    return credit(user, amount, reason, ref_type=ref_type, ref_id=ref_id, respect_cap=False)
+
+
 def debit(
     user: User, amount: int, reason: str, *, ref_type: str = "", ref_id: str = ""
 ) -> QvantTransaction:

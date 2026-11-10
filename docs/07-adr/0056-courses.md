@@ -223,6 +223,16 @@ qoidasi `tools/r2-video-cors.json` da. **Yoqish tartibi** (egasi): R2 bucket
 va token → `.env.public` da `COURSE_VIDEO_*` va `NEXT_PUBLIC_VIDEO_ORIGIN` →
 bucket'ga CORS → `video-worker` ni deploy ro'yxatiga qo'shadigan kichik PR.
 
+**6-qism qanday qurildi** ([qaror yozuvi](../decisions/2026-11-10-courses-certificate.md)).
+`CourseCertificate` — musobaqa sertifikati kabi: UUID tekshirish kaliti,
+muzlatilgan ism va kurs nomi, yakuniy test natijasi; ochiq sahifa
+`/certificates/<id>` avval musobaqa, keyin kurs sertifikatini qidiradi; PDF
+musobaqa renderi uslubida (shriftlar o'sha papkadan, model importisiz).
+Sertifikat majburiy darslar tugaganda yoki yakuniy test keyin topshirilganda
+beriladi. Mukofotlar `ledger.credit_once` bilan — bir marta va shiftdan
+tashqarida. Qvant kursi: `enroll` `confirm_price` ni talab qiladi, hamyon
+qulfi ostida yechadi (`Reason.COURSE`), yozilish manbai `qvant`.
+
 ## 4. Ochiq qolganlar
 
 - Robocontest tariflari va pullik xizmatlarining chuqur tahlili — egasi
