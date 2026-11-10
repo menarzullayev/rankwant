@@ -5185,6 +5185,36 @@ def neg_decisions_search_skips_translations() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_search_keeps_tutuq() -> tuple[bool, str]:
+    """The new alphabet's tutuq belgisi is not dropped by the search fold."""
+    return _decision_broken(
+        "apps/api/core/search.py",
+        'APOSTROPHES = "\'’ʻ‘`´ʼ"\n',
+        'APOSTROPHES = "\'’ʻ‘`´"\n',
+        "tutuq belgisi",
+    )
+
+
+def neg_decisions_search_one_alphabet() -> tuple[bool, str]:
+    """`normalize_search` stops folding the new letters."""
+    return _decision_broken(
+        "apps/api/core/search.py",
+        '    return " ".join(_APOSTROPHE_RE.sub("", text).translate(_ALPHABET_TABLE).lower().split())\n',
+        '    return " ".join(_APOSTROPHE_RE.sub("", text).lower().split())\n',
+        "normalize_search yangi alifbo",
+    )
+
+
+def neg_decisions_browser_fold_one_alphabet() -> tuple[bool, str]:
+    """The browser's search fold stops folding the new letters."""
+    return _decision_broken(
+        "apps/web/src/lib/search/model.ts",
+        "    for (const lower of (ALPHABET_FOLD[char] ?? char).toLowerCase()) {\n",
+        "    for (const lower of char.toLowerCase()) {\n",
+        "brauzer katlamasi",
+    )
+
+
 def neg_decisions_plus_opens_courses() -> tuple[bool, str]:
     """Plus opens paid courses too."""
     return _decision_broken(
@@ -8821,6 +8851,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/lib/flags.ts",
     "apps/web/src/features/account/components/SaveBar.tsx",
     "apps/web/src/features/account/save-queue.ts",
+    "apps/web/src/lib/search/model.ts",
+    "apps/api/tests/test_alphabet.py",
+    "apps/web/tests/unit/alphabet.test.ts",
 )
 
 
@@ -12646,6 +12679,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tarjima yopiq tahlilni ochsa tutilsin", neg_decisions_translation_opens_editorial),
             ("muallif nashr tarjimasini o'zgartirsa tutilsin", neg_decisions_author_translates_published),
             ("qidiruv tarjima nomini topmasa tutilsin", neg_decisions_search_skips_translations),
+            ("qidiruv yangi tutuqni tashlamasa tutilsin", neg_decisions_search_keeps_tutuq),
+            ("qidiruv yangi harflarni katlamasa tutilsin", neg_decisions_search_one_alphabet),
+            ("brauzer yangi harflarni katlamasa tutilsin", neg_decisions_browser_fold_one_alphabet),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

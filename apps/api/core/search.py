@@ -46,9 +46,25 @@ from django.db.models import (
 
 #: Uzbek Latin writes its apostrophe with several characters and imported
 #: titles carry all of them. Search must not tell them apart: «yig'indi»
-#: and «yigindi» are the same query.
-APOSTROPHES = "'’ʻ‘`´"
+#: and «yigindi» are the same query. `ʼ` is the new alphabet's tutuq
+#: belgisi (ADR-0059).
+APOSTROPHES = "'’ʻ‘`´ʼ"
 _APOSTROPHE_RE = re.compile(f"[{re.escape(APOSTROPHES)}]")
+
+#: The new alphabet's letters folded onto the old spelling (ADR-0059), so
+#: «Özbekiston», «O'zbekiston» and «Ozbekiston» are one query. Both cases:
+#: PostgreSQL's LOWER depends on the database locale.
+ALPHABET_FOLD = {
+    "ö": "o",
+    "Ö": "o",
+    "ğ": "g",
+    "Ğ": "g",
+    "ş": "sh",
+    "Ş": "sh",
+    "ç": "ch",
+    "Ç": "ch",
+}
+_ALPHABET_TABLE = str.maketrans(ALPHABET_FOLD)
 
 #: Shortest needle worth a query, and the longest one accepted.
 MIN_QUERY = 2
@@ -86,18 +102,33 @@ TYPES = ("problem", "user", "topic", "contest", "learn", "news", "shop")
 
 
 def normalize_search(text: str) -> str:
-    """Fold text for matching: no apostrophes, lower case, single spaces."""
-    return " ".join(_APOSTROPHE_RE.sub("", text).lower().split())
+    """Fold text for matching: no apostrophes, one alphabet, lower case,
+    single spaces."""
+    return " ".join(_APOSTROPHE_RE.sub("", text).translate(_ALPHABET_TABLE).lower().split())
 
 
 def _sql_literal(text: str) -> str:
     return "'" + text.replace("'", "''") + "'"
 
 
+def _fold_sql(column: str) -> str:
+    # TRANSLATE maps one character to one and drops the characters it has no
+    # partner for; `ş` and `ç` become two letters, so they need REPLACE.
+    single = {k: v for k, v in ALPHABET_FOLD.items() if len(v) == 1}
+    sql = (
+        f"TRANSLATE({column}, {_sql_literal(''.join(single) + APOSTROPHES)}, "
+        f"{_sql_literal(''.join(single.values()))})"
+    )
+    for char, value in ALPHABET_FOLD.items():
+        if len(value) > 1:
+            sql = f"REPLACE({sql}, {_sql_literal(char)}, {_sql_literal(value)})"
+    return f"LOWER({sql})"
+
+
 #: The PostgreSQL form of `Fold`, shared with the migration that builds
 #: the trigram indexes — an expression index is only used when the query
 #: spells the expression the same way.
-FOLD_PG = "LOWER(TRANSLATE({column}, " + _sql_literal(APOSTROPHES) + ", ''))"
+FOLD_PG = _fold_sql("{column}")
 
 
 class Fold(Func):
@@ -117,6 +148,8 @@ class Fold(Func):
         sql = inner
         for char in APOSTROPHES:
             sql = f"REPLACE({sql}, {_sql_literal(char)}, '')"
+        for char, value in ALPHABET_FOLD.items():
+            sql = f"REPLACE({sql}, {_sql_literal(char)}, {_sql_literal(value)})"
         return f"LOWER({sql})", list(params)
 
 
