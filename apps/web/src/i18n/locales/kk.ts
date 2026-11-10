@@ -2631,6 +2631,7 @@ export const kk: Record<MessageKey, string> = {
   "form.file.empty": "Файл таңдалмаған",
   "form.cal.prev": "Алдыңғы ай",
   "form.cal.next": "Келесі ай",
+  "form.cal.weekdays": "дс,сс,ср,бс,жм,сб,жс",
   "admin.text.correct": "Дұрыс",
   "admin.text.sampleTest": "Үлгі тест (шартта көрсетіледі)",
   "customizer.iconPack": "Иконка жинағы",

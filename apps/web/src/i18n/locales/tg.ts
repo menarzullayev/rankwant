@@ -2631,6 +2631,7 @@ export const tg: Record<MessageKey, string> = {
   "form.file.empty": "Файл интихоб нашудааст",
   "form.cal.prev": "Моҳи қаблӣ",
   "form.cal.next": "Моҳи баъдӣ",
+  "form.cal.weekdays": "Дшб,Сшб,Чшб,Пшб,Ҷмъ,Шнб,Яшб",
   "admin.text.correct": "Дуруст",
   "admin.text.sampleTest": "Тести намунавӣ (дар шарт нишон дода мешавад)",
   "customizer.iconPack": "Маҷмӯи нишонаҳо",

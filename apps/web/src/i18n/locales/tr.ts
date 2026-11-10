@@ -2630,6 +2630,7 @@ export const tr: Record<MessageKey, string> = {
   "form.file.empty": "Dosya seçilmedi",
   "form.cal.prev": "Önceki ay",
   "form.cal.next": "Sonraki ay",
+  "form.cal.weekdays": "Pzt,Sal,Çar,Per,Cum,Cmt,Paz",
   "admin.text.correct": "Doğru",
   "admin.text.sampleTest": "Örnek test (koşulda gösterilir)",
   "customizer.iconPack": "Simge seti",

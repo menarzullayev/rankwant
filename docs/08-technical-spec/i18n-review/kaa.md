@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3550 strings.**
+**3551 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2568,6 +2568,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `form.file.empty` | Fayl tanlanmagan | Hújjet saylanbaǵan |  |
 | `form.cal.prev` | Oldingi oy | Aldıńǵı ay |  |
 | `form.cal.next` | Keyingi oy | Keyingi ay |  |
+| `form.cal.weekdays` | Dush,Sesh,Chor,Pay,Jum,Shan,Yak | Dú,Si,Sá,Pi,Ju,Sh,Ek |  |
 | `admin.text.correct` | To'g'ri | Durıs |  |
 | `admin.text.sampleTest` | Namuna test (shartda ko'rsatiladi) | Úlgi test (shárttiń ishinde kórsetiledi) |  |
 | `customizer.iconPack` | Ikonka to'plami | Ikonka toplamı |  |

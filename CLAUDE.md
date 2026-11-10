@@ -246,6 +246,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-revive-failed-containers.md) · Docker ko'tara olmagan konteynerni watcher ko'taradi (qo'lda to'xtatilgani emas); Docker o'chiqda deploy to'sig'i yo'q · `failed_containers_are_revived`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-public-env-reaches-build.md) · Web o'qiydigan har `NEXT_PUBLIC_*` build'ga uzatiladi; bo'sh `SITE_URL` = API origin'i · `flags_reach_the_web_build`
+- [2026-11-10](docs/decisions/2026-11-10-form-date-without-intl.md) · `FormDate` kalendari `Intl` siz: oy va kun raqamda, hafta kunlari lug'atdan · `form_date_skips_intl`
 - [2026-11-11](docs/decisions/2026-11-11-ai-tutor.md) · AI ustoz: maslahat, yechim yo'q; 5/100/250/500; musobaqada o'chiq; adapter (API + `claude -p` zaxira), 90 kun, byudjet · `ai_tutor_answers_without_solutions`
 - [2026-11-11](docs/decisions/2026-11-11-plan-contents.md) · Judge: mualliflik kvotasi, yopiq va GYM musobaqa; Plus: tahlillar tekin, yechim kodlari, profil nishoni · `hali kod yo'q`
 - [2026-11-11](docs/decisions/2026-11-11-teacher-tools.md) · Sinfga tasdiq bilan kirish, murabbiy, savollar banki va sinfga test, serverdagi test generatori (to'rt bosqich kodda) · `test_generator_is_bounded`

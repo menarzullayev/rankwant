@@ -2630,6 +2630,7 @@ export const en: Record<MessageKey, string> = {
   "form.file.empty": "No file chosen",
   "form.cal.prev": "Previous month",
   "form.cal.next": "Next month",
+  "form.cal.weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
   "admin.text.correct": "Correct",
   "admin.text.sampleTest": "Sample test (shown in the statement)",
   "customizer.iconPack": "Icon pack",

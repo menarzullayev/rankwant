@@ -5903,6 +5903,43 @@ def neg_decisions_client_date_in_locale() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_form_date_month_in_intl() -> tuple[bool, str]:
+    """FormDate writes its month label through `Intl` again."""
+    return _decision_broken(
+        "apps/web/src/components/form/FormKit.tsx",
+        "  const monthLabel = formatMonth(cursor.y, cursor.m);\n",
+        "  const monthLabel = new Intl.DateTimeFormat(locale, {\n"
+        '    month: "long",\n'
+        '    year: "numeric",\n'
+        "  }).format(new Date(cursor.y, cursor.m, 1));\n",
+        "klient komponent sanani Intl bilan yozadi",
+    )
+
+
+def neg_decisions_intl_ratchet_stale() -> tuple[bool, str]:
+    """A listed component stops using `Intl`, the list keeps it."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/CareerSection.tsx",
+        'new Intl.DateTimeFormat([locale, "uz"], { month: "long" })',
+        'new Intl.NumberFormat([locale, "uz"])',
+        "INTL_DATE_CLIENTS dan olib tashlang",
+    )
+
+
+def neg_decisions_form_date_variant_on_server() -> tuple[bool, str]:
+    """Hydration reads the «Jadval» variant the server could not see."""
+    return _decision_broken(
+        "apps/web/src/components/form/FormKit.tsx",
+        "  const tabular = useSyncExternalStore(\n"
+        "    watchFormVariant,\n"
+        '    () => currentFormVariant() === "jadval",\n'
+        '    () => DEFAULT_FORM_VARIANT === "jadval",\n'
+        "  );\n",
+        '  const tabular = currentFormVariant() === "jadval";\n',
+        "«Jadval» varianti serverda bilinmaydi",
+    )
+
+
 def neg_decisions_optimistic_save_on_by_default() -> tuple[bool, str]:
     """The flag ships switched on."""
     return _decision_broken(
@@ -14135,6 +14172,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qidiruv yangi harflarni katlamasa tutilsin", neg_decisions_search_one_alphabet),
             ("brauzer yangi harflarni katlamasa tutilsin", neg_decisions_browser_fold_one_alphabet),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
+            ("FormDate oyi Intl ga qaytsa tutilsin", neg_decisions_form_date_month_in_intl),
+            ("Intl ro'yxati eskirsa tutilsin", neg_decisions_intl_ratchet_stale),
+            ("Jadval varianti serverda o'qilsa tutilsin", neg_decisions_form_date_variant_on_server),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),
             ("Docker o'chiqda deploy'ga urinilsa tutilsin", neg_decisions_watcher_deploys_without_docker),

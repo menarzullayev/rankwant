@@ -2627,6 +2627,7 @@ export const zh: Record<MessageKey, string> = {
   "form.file.empty": "未选择文件",
   "form.cal.prev": "上个月",
   "form.cal.next": "下个月",
+  "form.cal.weekdays": "周一,周二,周三,周四,周五,周六,周日",
   "admin.text.correct": "正确",
   "admin.text.sampleTest": "样例测试（显示在题面中）",
   "customizer.iconPack": "图标集",

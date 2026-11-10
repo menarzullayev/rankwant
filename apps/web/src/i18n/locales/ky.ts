@@ -2630,6 +2630,7 @@ export const ky: Record<MessageKey, string> = {
   "form.file.empty": "Файл тандалган эмес",
   "form.cal.prev": "Мурунку ай",
   "form.cal.next": "Кийинки ай",
+  "form.cal.weekdays": "дүй.,шейш.,шарш.,бейш.,жума,ишм.,жек.",
   "admin.text.correct": "Туура",
   "admin.text.sampleTest": "Үлгү тест (шартта көрсөтүлөт)",
   "customizer.iconPack": "Иконка топтому",
