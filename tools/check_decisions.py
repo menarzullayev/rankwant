@@ -2972,6 +2972,29 @@ def monitor_watches_disk_and_commit() -> str | None:
     return None
 
 
+def course_given_to_a_class() -> str | None:
+    """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
+
+    Sinf faqat BEPUL kursni o'quvchilarga ochadi (har kim sinf yaratib kod
+    tarqata oladi — pullik kurs tekin ochilmasin); hisobotni faqat sinf egasi
+    ko'radi; berilgan kurs tugamaguncha «ish kutyapti» belgisida qoladi.
+    """
+    teaching_py = read("apps/api/courses/teaching.py")
+    if '    return course.is_published and course.access == Course.Access.FREE\n' not in teaching_py:
+        return "courses/teaching.py: sinf pullik yoki Qvant kursni ham ochadi"
+    views_py = read("apps/api/classroom/views.py")
+    if (
+        '        """Each student\'s standing in the course given to the class."""\n'
+        '        classroom = self.get_object()\n'
+        '        if classroom.owner_id != request.user.pk:\n'
+    ) not in views_py:
+        return "classroom/views.py: kurs hisobotini sinf egasidan boshqasi ham ko'radi"
+    services_py = read("apps/api/classroom/services.py")
+    if '        or (assignment_id in courses and courses[assignment_id] not in finished)\n' not in services_py:
+        return "classroom/services.py: berilgan kurs «ish kutyapti» belgisiga kirmaydi"
+    return None
+
+
 def course_rewards_and_certificate() -> str | None:
     """2026-11-10 (HITL, ADR-0056 6-qism): sertifikat, mukofot, Qvant bilan ochish.
 
@@ -5110,6 +5133,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kurs studio'si: limit 3, tuzilma va narx xodimda", course_studio_rules),
     ("kurs videosi: shifrlangan HLS, kalit eshik ortida, o'z kursi", course_video_is_encrypted_and_own),
     ("kurs sertifikati, bir martalik mukofot, tasdiqlangan Qvant narxi", course_rewards_and_certificate),
+    ("sinfga kurs: faqat bepul ochiladi, hisobot egasiga, kutilayotgan ish", course_given_to_a_class),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),

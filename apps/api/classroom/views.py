@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.db import transaction
 from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -10,10 +12,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from classroom.models import Assignment, Classroom
+from classroom.models import Assignment, Classroom, ClassroomMember
 from classroom.serializers import (
     AssignmentCreateSerializer,
     AssignmentSerializer,
+    ClassCourseReportSerializer,
     ClassroomCreateSerializer,
     ClassroomOwnerSerializer,
     ClassroomSerializer,
@@ -22,7 +25,16 @@ from classroom.serializers import (
 from classroom.services import ClassroomError, assignment_progress, join
 from core.models import User
 from core.openapi_docs import crud_summaries
+from courses import teaching
+from courses.views import content_locale
 from problems.models import Problem
+
+
+def _not_owner(message: str) -> Response:
+    return Response(
+        {"error": {"code": "not_owner", "message": message, "details": {}}},
+        status=status.HTTP_403_FORBIDDEN,
+    )
 
 
 @crud_summaries(
@@ -32,6 +44,7 @@ from problems.models import Problem
         "join": "Kod bilan sinfga qo'shilish",
         "assignments": "Topshiriqlar",
         "progress": "O'quvchi progressi",
+        "course_report": "Sinfga berilgan kurs: o'quvchilar progressi",
     },
 )
 class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
@@ -109,37 +122,80 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
             )
         return Response(ClassroomSerializer(member.classroom).data, status=status.HTTP_201_CREATED)
 
-    @extend_schema(responses={200: AssignmentSerializer(many=True)})
+    @extend_schema(
+        request=AssignmentCreateSerializer,
+        responses={200: AssignmentSerializer(many=True), 201: AssignmentSerializer},
+    )
     @action(detail=True, methods=["get", "post"])
     def assignments(self, request: Request, slug: str | None = None) -> Response:
         classroom = self.get_object()
+        context = {"locale": content_locale(request)}
 
         if request.method == "GET":
-            rows = classroom.assignments.prefetch_related("problems")
-            return Response(AssignmentSerializer(rows, many=True).data)
+            rows = classroom.assignments.select_related("course").prefetch_related(
+                "problems", "course__translations"
+            )
+            return Response(AssignmentSerializer(rows, many=True, context=context).data)
 
         if classroom.owner_id != request.user.pk:
-            return Response(
-                {
-                    "error": {
-                        "code": "not_owner",
-                        "message": "Only the classroom owner can assign work",
-                        "details": {},
-                    }
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
+            return _not_owner("Only the classroom owner can assign work")
         serializer = AssignmentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        assignment = Assignment.objects.create(
-            classroom=classroom,
-            title=data["title"],
-            description=data.get("description", ""),
-            due_at=data.get("due_at"),
+        course = None
+        if data["course"]:
+            course = teaching.assignable(data["course"])
+            if course is None:
+                return Response(
+                    {
+                        "error": {
+                            "code": "classroom_course_unavailable",
+                            "message": "No published course has this slug.",
+                            "details": {},
+                        }
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        with transaction.atomic():
+            assignment = Assignment.objects.create(
+                classroom=classroom,
+                title=data["title"],
+                description=data.get("description", ""),
+                course=course,
+                due_at=data.get("due_at"),
+            )
+            assignment.problems.set(Problem.objects.filter(slug__in=data["problems"]))
+            if course is not None:
+                # A free course opens for every student now; a priced one
+                # is unlocked by each student (owner decision 2026-11-10).
+                students = classroom.members.filter(
+                    role=ClassroomMember.Role.STUDENT
+                ).select_related("user")
+                teaching.enroll_members(course, [m.user for m in students])
+        return Response(
+            AssignmentSerializer(assignment, context=context).data, status=status.HTTP_201_CREATED
         )
-        assignment.problems.set(Problem.objects.filter(slug__in=data["problems"]))
-        return Response(AssignmentSerializer(assignment).data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(responses={200: ClassCourseReportSerializer})
+    @action(detail=True, methods=["get"], url_path=r"assignments/(?P<pk>\d+)/course")
+    def course_report(
+        self, request: Request, slug: str | None = None, pk: str | None = None
+    ) -> Response:
+        """Each student's standing in the course given to the class."""
+        classroom = self.get_object()
+        if classroom.owner_id != request.user.pk:
+            return _not_owner("Only the classroom owner can see progress")
+        assignment = get_object_or_404(
+            classroom.assignments.select_related("course").exclude(course=None), pk=int(pk or 0)
+        )
+        assert assignment.course is not None
+        students = classroom.members.filter(role=ClassroomMember.Role.STUDENT).select_related(
+            "user"
+        )
+        data = teaching.report(
+            assignment.course, [m.user for m in students], content_locale(request)
+        )
+        return Response(ClassCourseReportSerializer(data).data)
 
     @extend_schema(responses={200: None})
     @action(detail=True, methods=["get"], url_path=r"assignments/(?P<pk>\d+)/progress")
@@ -148,15 +204,7 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
     ) -> Response:
         classroom = self.get_object()
         if classroom.owner_id != request.user.pk:
-            return Response(
-                {
-                    "error": {
-                        "code": "not_owner",
-                        "message": "Only the classroom owner can see progress",
-                        "details": {},
-                    }
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
-        assignment = classroom.assignments.get(pk=int(pk or 0))
+            return _not_owner("Only the classroom owner can see progress")
+        # A missing assignment is a 404, not an unhandled DoesNotExist (500).
+        assignment = get_object_or_404(classroom.assignments, pk=int(pk or 0))
         return Response({"results": assignment_progress(assignment)})

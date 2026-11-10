@@ -743,6 +743,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/classrooms/{slug}/assignments/{id}/course/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sinfga berilgan kurs: o'quvchilar progressi
+         * @description Each student's standing in the course given to the class.
+         */
+        get: operations["classrooms_assignments_course_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/classrooms/{slug}/assignments/{id}/progress/": {
         parameters: {
             query?: never;
@@ -6741,10 +6761,26 @@ export interface components {
             title: string;
             description?: string;
             readonly problems: string[];
+            readonly course: components["schemas"]["AssignmentCourse"] | null;
             /** Format: date-time */
             due_at?: string | null;
             /** Format: date-time */
             readonly created_at: string;
+        };
+        AssignmentCourse: {
+            slug: string;
+            title: string;
+            access: string;
+            price_qvant: number;
+        };
+        AssignmentCreate: {
+            title: string;
+            /** @default  */
+            description: string;
+            problems?: string[];
+            course?: string;
+            /** Format: date-time */
+            due_at?: string | null;
         };
         Attachment: {
             name: string;
@@ -6915,6 +6951,39 @@ export interface components {
             can_ask: boolean;
             questions_left: number;
             results: components["schemas"]["Clarification"][];
+        };
+        ClassCourseLesson: {
+            id: number;
+            title: string;
+            kind: string;
+            is_required: boolean;
+        };
+        ClassCourseModule: {
+            id: number;
+            title: string;
+            lessons: components["schemas"]["ClassCourseLesson"][];
+        };
+        ClassCourseReport: {
+            course: components["schemas"]["AssignmentCourse"];
+            has_final_quiz: boolean;
+            certificate_threshold: number;
+            modules: components["schemas"]["ClassCourseModule"][];
+            students: components["schemas"]["ClassCourseStudent"][];
+        };
+        ClassCourseStudent: {
+            username: string;
+            display_name: string;
+            enrolled: boolean;
+            done: number;
+            total: number;
+            percent: number;
+            /** Format: date-time */
+            completed_at: string | null;
+            final_score: number | null;
+            certificate: string | null;
+            /** Format: date-time */
+            last_activity: string | null;
+            lessons: number[];
         };
         Classroom: {
             slug: string;
@@ -12567,6 +12636,14 @@ export interface operations {
                     "application/json": components["schemas"]["Assignment"][];
                 };
             };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Assignment"];
+                };
+            };
         };
     };
     classrooms_assignments_create: {
@@ -12583,9 +12660,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Classroom"];
-                "application/x-www-form-urlencoded": components["schemas"]["Classroom"];
-                "multipart/form-data": components["schemas"]["Classroom"];
+                "application/json": components["schemas"]["AssignmentCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["AssignmentCreate"];
+                "multipart/form-data": components["schemas"]["AssignmentCreate"];
             };
         };
         responses: {
@@ -12595,6 +12672,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Assignment"][];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Assignment"];
+                };
+            };
+        };
+    };
+    classrooms_assignments_course_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClassCourseReport"];
                 };
             };
         };

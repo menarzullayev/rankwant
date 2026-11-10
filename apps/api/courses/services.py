@@ -318,3 +318,9 @@ def connect() -> None:
 
     post_save.connect(_on_solved, sender="ratings.UserSolvedProblem", dispatch_uid="courses-solved")
     post_save.connect(_on_quiz, sender="quizzes.QuizAttempt", dispatch_uid="courses-quiz")
+
+    from courses import teaching
+
+    post_save.connect(
+        teaching._on_member, sender="classroom.ClassroomMember", dispatch_uid="courses-class-member"
+    )

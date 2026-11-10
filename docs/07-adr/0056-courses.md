@@ -233,6 +233,14 @@ beriladi. Mukofotlar `ledger.credit_once` bilan — bir marta va shiftdan
 tashqarida. Qvant kursi: `enroll` `confirm_price` ni talab qiladi, hamyon
 qulfi ostida yechadi (`Reason.COURSE`), yozilish manbai `qvant`.
 
+**8-qism qanday qurildi** ([qaror yozuvi](../decisions/2026-11-10-courses-classroom.md)).
+`classroom.Assignment` ga ixtiyoriy `course` qo'shildi: topshiriq masalalar,
+kurs yoki ikkalasi bo'lishi mumkin. Kurs mantig'i `courses/teaching.py` da
+(`classroom` kurs modelini import qilmaydi): bepul kursga sinf o'quvchilari
+darhol, keyin qo'shilganlar `ClassroomMember` signali bilan yoziladi;
+`report()` o'qituvchiga har o'quvchi holatini kurs sahifasidagi foiz formulasi
+bilan beradi. Berilgan kurs tugamaguncha `pending_assignments` uni sanaydi.
+
 ## 4. Ochiq qolganlar
 
 - Robocontest tariflari va pullik xizmatlarining chuqur tahlili — egasi
