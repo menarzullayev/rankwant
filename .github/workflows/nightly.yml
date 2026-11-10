@@ -318,8 +318,12 @@ jobs:
       # bootstrap tags and the dictionary's fast path) while every gate in the
       # repo stayed green. It reads the stack's web container by its address
       # on the compose network.
+      #
+      # `!cancelled()`: it does not depend on the pixel gate, so a visual
+      # diff must not leave it unmeasured (the same reason as smoke and
+      # bake-off below).
       - name: CSP nonce coverage is live
-        if: ${{ vars.STAGING_URL == '' }}
+        if: ${{ !cancelled() && vars.STAGING_URL == '' }}
         timeout-minutes: 3
         run: bash tools/ci_csp_gate.sh
       # Screenshots land in the container's `test-results/`, which is bind

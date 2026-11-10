@@ -2607,6 +2607,8 @@ def nightly_live_gates_measure() -> str | None:
             return f"nightly.yml: `{name}` `continue-on-error` bilan — yiqilsa ham Nightly yashil"
         if re.search(r"localhost|127\.0\.0\.1", code):
             return f"nightly.yml: `{name}` host portiga qaratilgan — CI stack portsiz, qadam hech narsa o'lchamaydi"
+        if script.endswith("ci_csp_gate.sh") and not re.search(r"^        if: \$\{\{ !cancelled\(\) && ", code, re.M):
+            return f"nightly.yml: `{name}` `!cancelled()` siz — vizual farq uni o'lchovsiz qoldiradi"
         body = _code_lines(read(script))
         if re.search(r"^\s*exit 0\b", body, re.M) or "::warning::" in body:
             return f"{script}: stack topilmasa jim o'tadi (`exit 0` yoki `::warning::`) — darvoza o'lik"

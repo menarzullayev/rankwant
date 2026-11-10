@@ -493,9 +493,12 @@ def _visual_proof_on_compose() -> tuple[bool, str]:
 
     code, out = _compose_visual_run(project, image, "visual-control", env)
     if code != 0:
+        shots, other = visual_pixel_diffs(out)
+        found = ", ".join(f"{name} {pixels} px" for name, pixels in sorted(shots.items()))
         return False, (
-            f"visual: NAZORAT qizil (exit {code}) — o'zgarmagan obraz ham farq berdi, "
-            f"isbot o'lchanmadi: {out.strip()[-240:]}"
+            f"visual: NAZORAT qizil (exit {code}) — o'zgarmagan obraz ham farq berdi, isbot "
+            f"o'lchanmadi: {found or out.strip()[-240:]}"
+            + (f"; pikseldan boshqa sabab {other} ta" if other else "")
         )
 
     css = ROOT / "apps" / "web" / "src" / "app" / "theme.css"
@@ -3546,6 +3549,20 @@ def neg_decisions_live_gate_soft() -> tuple[bool, str]:
         "        timeout-minutes: 3\n        run: bash tools/ci_csp_gate.sh\n",
         "        timeout-minutes: 3\n        continue-on-error: true\n        run: bash tools/ci_csp_gate.sh\n",
         "`CSP nonce coverage is live` `continue-on-error` bilan",
+    )
+
+
+def neg_decisions_csp_gate_skipped_after_visual() -> tuple[bool, str]:
+    """The CSP step is gated on `success()` again: a pixel diff leaves it unmeasured.
+
+    Measured on the first run of this rule's branch (Nightly 42730658697): the
+    proof went red and the CSP step was `skipped`.
+    """
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        if: ${{ !cancelled() && vars.STAGING_URL == '' }}\n        timeout-minutes: 3\n",
+        "        if: ${{ vars.STAGING_URL == '' }}\n        timeout-minutes: 3\n",
+        "`CSP nonce coverage is live` `!cancelled()` siz",
     )
 
 
@@ -10921,6 +10938,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("jonli darvoza host portiga qaratilsa tutilsin", neg_decisions_live_gate_on_host_port),
             ("jonli darvoza continue-on-error bilan tutilsin", neg_decisions_live_gate_soft),
             ("mutatsiya isboti stack'dan chiqsa tutilsin", neg_decisions_visual_proof_off_stack),
+            ("CSP darvozasi vizualdan keyin o'tkazilsa tutilsin", neg_decisions_csp_gate_skipped_after_visual),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),
