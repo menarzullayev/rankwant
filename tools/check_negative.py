@@ -10080,6 +10080,14 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/ci.Dockerfile.dockerignore",
     # Attempt dates (2026-10-06).
     "apps/web/src/features/submissions/components/AttemptTable.tsx",
+    # FormDate without Intl (2026-11-10). The ratchet globs `apps/web/src`, so
+    # every listed client must be staged or it reads as «no longer uses Intl».
+    "apps/web/src/components/form/FormKit.tsx",
+    "apps/web/src/components/admin/DuelsAdmin.tsx",
+    "apps/web/src/components/admin/PostsAdmin.tsx",
+    "apps/web/src/components/admin/RoadmapCommentsAdmin.tsx",
+    "apps/web/src/components/admin/TournamentsAdmin.tsx",
+    "apps/web/src/features/account/components/CareerSection.tsx",
     # Side-menu badges (2026-10-06).
     "apps/api/core/nav_badges.py",
     "apps/api/core/apps.py",
