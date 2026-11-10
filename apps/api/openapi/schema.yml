@@ -1804,6 +1804,7 @@ paths:
 
         Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
         tarixi va sertifikatlar saqlanishi shart.
+      summary: Ro'yxatdan o'tganlar
       parameters:
       - name: ordering
         required: false
@@ -1839,6 +1840,107 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedOrganizerParticipantList'
+          description: ''
+  /api/v1/contests/mine/{slug}/problems/:
+    get:
+      operationId: contests_mine_problems_list
+      description: |-
+        The contest's problems; PUT replaces the whole list.
+
+        Only while the contest is a draft, and only the organizer's own
+        unpublished problems (`OrganizerContestProblemListSerializer`).
+      summary: Musobaqa masalalari (faqat o'z qoralamalari)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrganizerContestProblemList'
+          description: ''
+    put:
+      operationId: contests_mine_problems_update
+      description: |-
+        The contest's problems; PUT replaces the whole list.
+
+        Only while the contest is a draft, and only the organizer's own
+        unpublished problems (`OrganizerContestProblemListSerializer`).
+      summary: Musobaqa masalalari (faqat o'z qoralamalari)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizerContestProblemList'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizerContestProblemList'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizerContestProblemList'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrganizerContestProblemList'
           description: ''
   /api/v1/custom-test/:
     post:
@@ -15293,13 +15395,54 @@ components:
             type: string
             description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
               only.
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizerContestProblem'
+          readOnly: true
+        participant_count:
+          type: integer
+          readOnly: true
       required:
       - end_at
       - is_public
       - is_rated
+      - participant_count
+      - problems
       - slug
       - start_at
       - title
+    OrganizerContestProblem:
+      type: object
+      description: One problem of the organizer's contest.
+      properties:
+        problem:
+          type: string
+        index_letter:
+          type: string
+          maxLength: 3
+        points:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        title:
+          type: string
+          readOnly: true
+      required:
+      - index_letter
+      - problem
+      - title
+    OrganizerContestProblemList:
+      type: object
+      description: The whole problem list, replaced at once — like the staff surface.
+      properties:
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizerContestProblem'
+      required:
+      - problems
     OrganizerParticipant:
       type: object
       properties:
@@ -15670,6 +15813,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OrganizerContest'
+    PaginatedOrganizerContestProblemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizerContestProblem'
     PaginatedOrganizerParticipantList:
       type: object
       required:
@@ -17061,6 +17227,14 @@ components:
             type: string
             description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
               only.
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizerContestProblem'
+          readOnly: true
+        participant_count:
+          type: integer
+          readOnly: true
     PatchedStaffArena:
       type: object
       properties:
@@ -17247,6 +17421,13 @@ components:
             type: string
             description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
               only.
+        organizers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+          readOnly: true
     PatchedStaffHackathon:
       type: object
       properties:
@@ -19983,11 +20164,19 @@ components:
             type: string
             description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
               only.
+        organizers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+          readOnly: true
       required:
       - created_at
       - end_at
       - is_finished
       - is_running
+      - organizers
       - problems
       - ratings_applied_at
       - slug

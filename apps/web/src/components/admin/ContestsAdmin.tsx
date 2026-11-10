@@ -42,6 +42,8 @@ type ContestRow = {
   is_finished: boolean;
   testers: string[];
   jury: string[];
+  /** Usernames of who drafted it in `/studio/contests`. */
+  organizers: string[];
   [key: string]: unknown;
 };
 
@@ -133,6 +135,12 @@ const COLUMNS: ColumnDef<ContestRow>[] = [
     labelKey: "admin.label.misc.problems",
     align: "right",
     render: (c) => c.problems.length,
+  },
+  {
+    // Who drafted it in `/studio/contests` (2026-11-10).
+    key: "organizers",
+    labelKey: "admin.label.misc.organizers",
+    render: (c) => (c.organizers.length ? c.organizers.map((name) => `@${name}`).join(", ") : "—"),
   },
 ];
 

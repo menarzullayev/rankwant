@@ -13,3 +13,11 @@ export { ProblemEditor } from "./components/ProblemEditor";
 export { DEFAULT_TAB, editorTab, type EditorTab } from "./editor-tabs";
 
 export type { DraftTest, MineProblem } from "./api/problems";
+
+export { ContestList } from "./components/ContestList";
+
+export { ContestEditor } from "./components/ContestEditor";
+
+export { DEFAULT_CONTEST_TAB, contestTab, type ContestTab } from "./contest-tabs";
+
+export type { ContestParticipant, MineContest } from "./api/contests";

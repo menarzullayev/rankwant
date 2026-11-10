@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2625 strings.**
+**2671 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -830,6 +830,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Baslanıw keminde 5 minuttan keyin bolıwı kerek |  |
 | `error.wrong_question` | Bu savol hozir ochiq emas | Bul soraw házir ashıq emes |  |
 | `error.draft_limit` | Qoralamalar chegarasiga yetdingiz — avval birini yakunlang yoki o'chiring | Jobalar shegine jettińiz — aldın birewin juwmaqlań yamasa óshiriń |  |
+| `error.contest_draft_limit` | Qoralama musobaqalar chegarasiga yetdingiz — avval birini o'chiring | Joba jarıslar shegine jettińiz — aldın birewin óshiriń |  |
+| `error.contest_locked` | Nashr qilingan musobaqaning masalalarini xodim boshqaradi | Járiyalanǵan jarıstıń máselelerin xızmetkerler basqaradı |  |
 | `error.review_not_ready` | Qoralama ko'rikka tayyor emas | Joba tekseriwge tayar emes |  |
 | `error.already_public` | Masala allaqachon nashr qilingan | Másele áldeqashan járiyalanǵan |  |
 | `profile.aboutEmpty` | Foydalanuvchi hali o'zi haqida ma'lumot qo'shmagan. | Paydalanıwshı ele ózi haqqında maǵlıwmat qospaǵan. |  |
@@ -1782,6 +1784,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.filter.all` | Hammasi | Barlıǵı |  |
 | `admin.filter.reviewQueue` | Ko'rik navbati | Tekseriw gezegi |  |
 | `admin.label.misc.authors` | Mualliflar | Avtorlar |  |
+| `admin.label.misc.organizers` | Organizatorlar | Shólkemlestiriwshiler |  |
 | `admin.label.date.reviewRequested` | Ko'rik so'ralgan | Tekseriw soralǵan |  |
 | `admin.label.text.reward` | Mukofot | Sıylıq |  |
 | `admin.label.text.qvant` | Qvant | Qvant |  |
@@ -1957,6 +1960,49 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.review.public` | Masala nashr qilingan va arxivda turibdi. | Másele járiyalanǵan hám arxivte tur. |  |
 | `studio.delete` | Qoralamani o'chirish | Jobanı óshiriw |  |
 | `studio.deleteConfirm` | «{title}» qoralamasini o'chirasizmi? Testlari ham o'chadi. | «{title}» jobasın óshiresizbe? Testleri de óshedi. |  |
+| `studio.nav.contests` | Musobaqalarim | Meniń jarıslarım |  |
+| `studio.contests.intro` | Siz tashkil qilgan musobaqalar. Nashr va reyting — xodim qarori. | Siz shólkemlestirgen jarıslar. Járiyalaw hám reyting — xızmetkerler sheshimi. |  |
+| `studio.contests.new` | Yangi musobaqa | Jańa jarıs |  |
+| `studio.contests.empty` | Hali musobaqangiz yo'q | Sizde ázirshe jarıs joq |  |
+| `studio.contests.emptyHint` | Vaqtini belgilang, o'z qoralama masalalaringizni qo'shing — nashrni xodim hal qiladi. | Waqtın belgileń, óz joba máselelerińizdi qosıń — járiyalawdı xızmetker sheshedi. |  |
+| `studio.contests.full` | Qoralama musobaqalar chegarasi: {count} / {limit}. Yangisi uchun birini o'chiring yoki nashrga tayyorlang. | Joba jarıslar shegine jettińiz: {count} / {limit}. Jańası ushın birewin óshiriń yamasa járiyalawǵa tayarlań. |  |
+| `studio.col.contest` | Musobaqa | Jarıs |  |
+| `studio.col.start` | Boshlanish | Baslanıwı |  |
+| `studio.col.problems` | Masalalar | Máseleler |  |
+| `studio.col.participants` | Qatnashchilar | Qatnasıwshılar |  |
+| `studio.contest.tab.settings` | Sozlamalar | Sazlawlar |  |
+| `studio.contest.tab.problems` | Masalalar | Máseleler |  |
+| `studio.contest.tab.participants` | Qatnashchilar | Qatnasıwshılar |  |
+| `studio.contest.description` | Tavsif | Táriyip |  |
+| `studio.contest.end` | Tugash | Juwmaqlanıwı |  |
+| `studio.contest.zoneHint` | Vaqt Toshkent vaqtida (UTC+5) kiritiladi — saytdagi barcha sanalar kabi. | Waqıt saytdaǵı barlıq sánelerdey Tashkent waqtı menen (UTC+5) kirgiziledi. |  |
+| `studio.contest.scoring` | Hisoblash qoidasi | Esaplaw qaǵıydası |  |
+| `studio.contest.freeze` | Muzlatish (daqiqa) | Muzlatıw (minut) |  |
+| `studio.contest.freezeHint` | Oxirgi N daqiqada natijalar jadvali muzlaydi | Sońǵı N minutta nátiyjeler kestesi muzlatıladı |  |
+| `studio.contest.testers` | Testerlar | Testerler |  |
+| `studio.contest.testersHint` | Taxalluslar vergul bilan. Ular masalalarni oldindan ko'radi va reytingsiz qatnashadi; musobaqa boshlangach o'zgarmaydi. | Laqap atlar útir menen. Olar máselelerdi aldın ala kóredi hám reytingsiz qatnasadı; jarıs baslanǵannan keyin ózgermeydi. |  |
+| `studio.contest.staffDecides` | Nashr qilish va reytingli bo'lishini xodim hal qiladi — sizda bu tugmalar yo'q. | Járiyalaw hám reytingli bolıwın xızmetker sheshedi — sizde bul túymeler joq. |  |
+| `studio.contest.delete` | Musobaqani o'chirish | Jarıstı óshiriw |  |
+| `studio.contest.deleteConfirm` | «{title}» musobaqasini o'chirasizmi? | «{title}» jarısın óshiresizbe? |  |
+| `studio.contest.problemsIntro` | Faqat o'zingiz yozgan, hali nashr qilinmagan masalalar. Musobaqa tugagach ular arxivga o'tadi. | Tek ózińiz jazǵan, ele járiyalanbaǵan máseleler. Jarıs juwmaqlanǵanda olar arxivke ótedi. |  |
+| `studio.contest.problemsLocked` | Musobaqa nashr qilingan: uning masalalarini endi xodim boshqaradi. | Jarıs járiyalanǵan: onıń máselelerin endi xızmetkerler basqaradı. |  |
+| `studio.contest.letter` | Harf | Hárip |  |
+| `studio.contest.points` | Ball | Ballar |  |
+| `studio.contest.pointsOf` | {letter} masala bali | {letter} máselesiniń balı |  |
+| `studio.contest.moveUp` | {letter} masalani yuqoriga | {letter} máselesin joqarıǵa |  |
+| `studio.contest.moveDown` | {letter} masalani pastga | {letter} máselesin tómenge |  |
+| `studio.contest.remove` | Olib tashlash | Alıp taslaw |  |
+| `studio.contest.noProblems` | Hali masala qo'shilmagan | Ázirshe másele qosılmaǵan |  |
+| `studio.contest.addProblem` | Masala qo'shish | Másele qosıw |  |
+| `studio.contest.pickProblem` | Qoralamalaringizdan tanlang | Jobalarıńızdan tańlań |  |
+| `studio.contest.add` | Qo'shish | Qosıw |  |
+| `studio.contest.noDrafts` | Qo'shiladigan qoralama yo'q — avval «Masalalarim» bo'limida masala yozing. | Qosatuǵın joba joq — aldın «Meniń máselelerim» bóliminde másele jazıń. |  |
+| `studio.contest.participant` | Qatnashchi | Qatnasıwshı |  |
+| `studio.contest.registeredAt` | Ro'yxatdan o'tgan | Dizimnen ótken |  |
+| `studio.contest.noParticipants` | Hali hech kim ro'yxatdan o'tmagan | Ázirshe hesh kim dizimnen ótpegen |  |
+| `studio.error.endBeforeStart` | Tugash vaqti boshlanishdan keyin bo'lishi kerak | Juwmaqlanıwı baslanıwınan keyin bolıwı kerek |  |
+| `studio.error.testers` | Tester taxallusi topilmadi yoki musobaqa allaqachon boshlangan | Testerdiń laqap atı tabılmadı yamasa jarıs baslanıp ketken |  |
+| `studio.error.problems` | Masalalar ro'yxati qabul qilinmadi: faqat o'z nashr qilinmagan masalalaringiz, har biri bir marta | Máseleler dizimi qabıllanbadı: tek óz járiyalanbaǵan máseleleriñiz, hárqaysısı bir ret |  |
 | `admin.placeholder.questionId` | Savol ID | Soraw ID |  |
 | `admin.placeholder.problemSlug` | masala slug'i | másele slugı |  |
 | `admin.placeholder.title` | Sarlavha | Sarlawha |  |

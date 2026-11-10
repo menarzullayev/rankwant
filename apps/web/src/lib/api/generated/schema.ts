@@ -1131,6 +1131,7 @@ export interface paths {
             cookie?: never;
         };
         /**
+         * Ro'yxatdan o'tganlar
          * @description O'z kontestlari — draft yaratish, tahrirlash, o'chirish.
          *
          *     Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
@@ -1138,6 +1139,36 @@ export interface paths {
          */
         get: operations["contests_mine_participants_list"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/mine/{slug}/problems/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Musobaqa masalalari (faqat o'z qoralamalari)
+         * @description The contest's problems; PUT replaces the whole list.
+         *
+         *     Only while the contest is a draft, and only the organizer's own
+         *     unpublished problems (`OrganizerContestProblemListSerializer`).
+         */
+        get: operations["contests_mine_problems_list"];
+        /**
+         * Musobaqa masalalari (faqat o'z qoralamalari)
+         * @description The contest's problems; PUT replaces the whole list.
+         *
+         *     Only while the contest is a draft, and only the organizer's own
+         *     unpublished problems (`OrganizerContestProblemListSerializer`).
+         */
+        put: operations["contests_mine_problems_update"];
         post?: never;
         delete?: never;
         options?: never;
@@ -7049,6 +7080,20 @@ export interface components {
             readonly is_public: boolean;
             readonly is_rated: boolean;
             testers?: string[];
+            readonly problems: components["schemas"]["OrganizerContestProblem"][];
+            readonly participant_count: number;
+        };
+        /** @description One problem of the organizer's contest. */
+        OrganizerContestProblem: {
+            problem: string;
+            index_letter: string;
+            /** Format: int64 */
+            points?: number;
+            readonly title: string;
+        };
+        /** @description The whole problem list, replaced at once — like the staff surface. */
+        OrganizerContestProblemList: {
+            problems: components["schemas"]["OrganizerContestProblem"][];
         };
         OrganizerParticipant: {
             username: string;
@@ -7289,6 +7334,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["OrganizerContest"][];
+        };
+        PaginatedOrganizerContestProblemList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["OrganizerContestProblem"][];
         };
         PaginatedOrganizerParticipantList: {
             /** @example 123 */
@@ -8128,6 +8188,8 @@ export interface components {
             readonly is_public?: boolean;
             readonly is_rated?: boolean;
             testers?: string[];
+            readonly problems?: components["schemas"]["OrganizerContestProblem"][];
+            readonly participant_count?: number;
         };
         PatchedStaffArena: {
             slug?: string;
@@ -8204,6 +8266,7 @@ export interface components {
             readonly is_finished?: boolean;
             testers?: string[];
             jury?: string[];
+            readonly organizers?: string[];
         };
         PatchedStaffHackathon: {
             slug?: string;
@@ -9377,6 +9440,7 @@ export interface components {
             readonly is_finished: boolean;
             testers?: string[];
             jury?: string[];
+            readonly organizers: string[];
         };
         /** @description `PUT staff/contests/<slug>/problems/` ro'yxatining bitta elementi. */
         StaffContestProblem: {
@@ -11916,6 +11980,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedOrganizerParticipantList"];
+                };
+            };
+        };
+    };
+    contests_mine_problems_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedOrganizerContestProblemList"];
+                };
+            };
+        };
+    };
+    contests_mine_problems_update: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganizerContestProblemList"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrganizerContestProblemList"];
+                "multipart/form-data": components["schemas"]["OrganizerContestProblemList"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedOrganizerContestProblemList"];
                 };
             };
         };

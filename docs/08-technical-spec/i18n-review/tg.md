@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2625 strings.**
+**2671 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -830,6 +830,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Оғоз бояд ҳадди ақал пас аз 5 дақиқа бошад |  |
 | `error.wrong_question` | Bu savol hozir ochiq emas | Ин савол ҳоло кушода нест |  |
 | `error.draft_limit` | Qoralamalar chegarasiga yetdingiz — avval birini yakunlang yoki o'chiring | Ба ҳадди сиёҳнависҳо расидед — аввал якеро анҷом диҳед ё нест кунед |  |
+| `error.contest_draft_limit` | Qoralama musobaqalar chegarasiga yetdingiz — avval birini o'chiring | Ба ҳадди мусобиқаҳои сиёҳнавис расидед — аввал якеро нест кунед |  |
+| `error.contest_locked` | Nashr qilingan musobaqaning masalalarini xodim boshqaradi | Масъалаҳои мусобиқаи нашршударо кормандон идора мекунанд |  |
 | `error.review_not_ready` | Qoralama ko'rikka tayyor emas | Сиёҳнавис барои тафтиш омода нест |  |
 | `error.already_public` | Masala allaqachon nashr qilingan | Масъала аллакай нашр шудааст |  |
 | `profile.aboutEmpty` | Foydalanuvchi hali o'zi haqida ma'lumot qo'shmagan. | Корбар ҳанӯз дар бораи худ маълумот илова накардааст. |  |
@@ -1782,6 +1784,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.filter.all` | Hammasi | Ҳама |  |
 | `admin.filter.reviewQueue` | Ko'rik navbati | Навбати тафтиш |  |
 | `admin.label.misc.authors` | Mualliflar | Муаллифон |  |
+| `admin.label.misc.organizers` | Organizatorlar | Ташкилотчиён |  |
 | `admin.label.date.reviewRequested` | Ko'rik so'ralgan | Тафтиш дархост шуд |  |
 | `admin.label.text.reward` | Mukofot | Мукофот |  |
 | `admin.label.text.qvant` | Qvant | Qvant |  |
@@ -1957,6 +1960,49 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.review.public` | Masala nashr qilingan va arxivda turibdi. | Масъала нашр шудааст ва дар бойгонӣ аст. |  |
 | `studio.delete` | Qoralamani o'chirish | Нест кардани сиёҳнавис |  |
 | `studio.deleteConfirm` | «{title}» qoralamasini o'chirasizmi? Testlari ham o'chadi. | Сиёҳнависи «{title}» нест карда шавад? Тестҳояш ҳам нест мешаванд. |  |
+| `studio.nav.contests` | Musobaqalarim | Мусобиқаҳои ман |  |
+| `studio.contests.intro` | Siz tashkil qilgan musobaqalar. Nashr va reyting — xodim qarori. | Мусобиқаҳое, ки шумо ташкил медиҳед. Нашр ва рейтинг — қарори кормандон. |  |
+| `studio.contests.new` | Yangi musobaqa | Мусобиқаи нав |  |
+| `studio.contests.empty` | Hali musobaqangiz yo'q | Шумо ҳоло мусобиқа надоред |  |
+| `studio.contests.emptyHint` | Vaqtini belgilang, o'z qoralama masalalaringizni qo'shing — nashrni xodim hal qiladi. | Вақтро муайян кунед ва масъалаҳои сиёҳнависи худро илова кунед — дар бораи нашр корманд қарор медиҳад. |  |
+| `studio.contests.full` | Qoralama musobaqalar chegarasi: {count} / {limit}. Yangisi uchun birini o'chiring yoki nashrga tayyorlang. | Ба ҳадди мусобиқаҳои сиёҳнавис расидед: {count} / {limit}. Барои нав якеро нест кунед ё ба нашр омода созед. |  |
+| `studio.col.contest` | Musobaqa | Мусобиқа |  |
+| `studio.col.start` | Boshlanish | Оғоз |  |
+| `studio.col.problems` | Masalalar | Масъалаҳо |  |
+| `studio.col.participants` | Qatnashchilar | Иштирокчиён |  |
+| `studio.contest.tab.settings` | Sozlamalar | Танзимот |  |
+| `studio.contest.tab.problems` | Masalalar | Масъалаҳо |  |
+| `studio.contest.tab.participants` | Qatnashchilar | Иштирокчиён |  |
+| `studio.contest.description` | Tavsif | Тавсиф |  |
+| `studio.contest.end` | Tugash | Анҷом |  |
+| `studio.contest.zoneHint` | Vaqt Toshkent vaqtida (UTC+5) kiritiladi — saytdagi barcha sanalar kabi. | Вақт мисли ҳамаи санаҳои сайт бо вақти Тошканд (UTC+5) ворид мешавад. |  |
+| `studio.contest.scoring` | Hisoblash qoidasi | Тартиби ҳисоб |  |
+| `studio.contest.freeze` | Muzlatish (daqiqa) | Яхкунонӣ (дақиқа) |  |
+| `studio.contest.freezeHint` | Oxirgi N daqiqada natijalar jadvali muzlaydi | Дар N дақиқаи охир ҷадвали натиҷаҳо ях мекунад |  |
+| `studio.contest.testers` | Testerlar | Тестерҳо |  |
+| `studio.contest.testersHint` | Taxalluslar vergul bilan. Ular masalalarni oldindan ko'radi va reytingsiz qatnashadi; musobaqa boshlangach o'zgarmaydi. | Тахаллусҳо бо вергул. Онҳо масъалаҳоро пешакӣ мебинанд ва бе рейтинг иштирок мекунанд; пас аз оғози мусобиқа тағйир намеёбад. |  |
+| `studio.contest.staffDecides` | Nashr qilish va reytingli bo'lishini xodim hal qiladi — sizda bu tugmalar yo'q. | Нашр ва рейтингиро корманд ҳал мекунад — шумо ин тугмаҳоро надоред. |  |
+| `studio.contest.delete` | Musobaqani o'chirish | Нест кардани мусобиқа |  |
+| `studio.contest.deleteConfirm` | «{title}» musobaqasini o'chirasizmi? | Мусобиқаи «{title}» нест карда шавад? |  |
+| `studio.contest.problemsIntro` | Faqat o'zingiz yozgan, hali nashr qilinmagan masalalar. Musobaqa tugagach ular arxivga o'tadi. | Танҳо масъалаҳое, ки худатон навиштаед ва ҳанӯз нашр нашудаанд. Пас аз анҷоми мусобиқа ба бойгонӣ мегузаранд. |  |
+| `studio.contest.problemsLocked` | Musobaqa nashr qilingan: uning masalalarini endi xodim boshqaradi. | Мусобиқа нашр шудааст: масъалаҳои онро акнун кормандон идора мекунанд. |  |
+| `studio.contest.letter` | Harf | Ҳарф |  |
+| `studio.contest.points` | Ball | Хол |  |
+| `studio.contest.pointsOf` | {letter} masala bali | Холи масъалаи {letter} |  |
+| `studio.contest.moveUp` | {letter} masalani yuqoriga | Масъалаи {letter} боло |  |
+| `studio.contest.moveDown` | {letter} masalani pastga | Масъалаи {letter} поён |  |
+| `studio.contest.remove` | Olib tashlash | Хориҷ кардан |  |
+| `studio.contest.noProblems` | Hali masala qo'shilmagan | Ҳоло масъала илова нашудааст |  |
+| `studio.contest.addProblem` | Masala qo'shish | Илова кардани масъала |  |
+| `studio.contest.pickProblem` | Qoralamalaringizdan tanlang | Аз сиёҳнависҳоятон интихоб кунед |  |
+| `studio.contest.add` | Qo'shish | Илова кардан |  |
+| `studio.contest.noDrafts` | Qo'shiladigan qoralama yo'q — avval «Masalalarim» bo'limida masala yozing. | Сиёҳнависи илова нест — аввал дар бахши «Масъалаҳои ман» масъала нависед. |  |
+| `studio.contest.participant` | Qatnashchi | Иштирокчӣ |  |
+| `studio.contest.registeredAt` | Ro'yxatdan o'tgan | Сабт шуд |  |
+| `studio.contest.noParticipants` | Hali hech kim ro'yxatdan o'tmagan | Ҳоло касе сабт нашудааст |  |
+| `studio.error.endBeforeStart` | Tugash vaqti boshlanishdan keyin bo'lishi kerak | Анҷом бояд пас аз оғоз бошад |  |
+| `studio.error.testers` | Tester taxallusi topilmadi yoki musobaqa allaqachon boshlangan | Тахаллуси тестер ёфт нашуд ё мусобиқа аллакай оғоз шудааст |  |
+| `studio.error.problems` | Masalalar ro'yxati qabul qilinmadi: faqat o'z nashr qilinmagan masalalaringiz, har biri bir marta | Рӯйхати масъалаҳо қабул нашуд: танҳо масъалаҳои нашрнашудаи худатон, ҳар кадом як бор |  |
 | `admin.placeholder.questionId` | Savol ID | ID-и савол |  |
 | `admin.placeholder.problemSlug` | masala slug'i | слаги масъала |  |
 | `admin.placeholder.title` | Sarlavha | Сарлавҳа |  |
