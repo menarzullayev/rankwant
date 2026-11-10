@@ -682,6 +682,8 @@ export const uz = {
   "settings.name": "Ism",
   "settings.unsaved": "Saqlanmagan o'zgarishlar",
   "settings.unsavedCount": "Saqlanmagan o'zgarishlar: {count}",
+  "settings.saveFailed": "Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi.",
+  "settings.saveFailedGone": "Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting.",
   "settings.discard": "Bekor qilish",
   "settings.channelEmail": "Pochta",
   "settings.soon": "tez orada",

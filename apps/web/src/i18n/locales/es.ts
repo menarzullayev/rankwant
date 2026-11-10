@@ -669,6 +669,8 @@ export const es: Record<MessageKey, string> = {
   "settings.name": "Nombre",
   "settings.unsaved": "Cambios sin guardar",
   "settings.unsavedCount": "Cambios sin guardar: {count}",
+  "settings.saveFailed": "No se guardó. El motivo aparece en la sección; tus cambios siguen ahí.",
+  "settings.saveFailedGone": "Tu último cambio no se guardó. Vuelve a abrir la sección e introdúcelo de nuevo.",
   "settings.discard": "Descartar",
   "settings.channelEmail": "Correo",
   "settings.soon": "pronto",

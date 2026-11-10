@@ -669,6 +669,8 @@ export const tg: Record<MessageKey, string> = {
   "settings.name": "Ном",
   "settings.unsaved": "Тағйироти захиранашуда",
   "settings.unsavedCount": "Тағйироти захиранашуда: {count}",
+  "settings.saveFailed": "Нигоҳ дошта нашуд. Сабаб дар бахш нишон дода шудааст — ислоҳҳои шумо дар ҷояшон монданд.",
+  "settings.saveFailedGone": "Тағйироти охирин нигоҳ дошта нашуд. Бахшро аз нав кушода, онро боз ворид кунед.",
   "settings.discard": "Бекор кардан",
   "settings.channelEmail": "Почта",
   "settings.soon": "ба наздикӣ",

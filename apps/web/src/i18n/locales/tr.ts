@@ -669,6 +669,8 @@ export const tr: Record<MessageKey, string> = {
   "settings.name": "Ad",
   "settings.unsaved": "Kaydedilmemiş değişiklikler",
   "settings.unsavedCount": "Kaydedilmemiş değişiklikler: {count}",
+  "settings.saveFailed": "Kaydedilmedi. Nedeni bölümde gösteriliyor — düzenlemeleriniz yerinde duruyor.",
+  "settings.saveFailedGone": "Son değişiklik kaydedilmedi. Bölümü yeniden açıp tekrar girin.",
   "settings.discard": "Vazgeç",
   "settings.channelEmail": "E-posta",
   "settings.soon": "yakında",

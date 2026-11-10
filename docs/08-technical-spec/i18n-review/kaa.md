@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2446 strings.**
+**2448 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -636,6 +636,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.name` | Ism | At |  |
 | `settings.unsaved` | Saqlanmagan o'zgarishlar | Saqlanbaǵan ózgerisler |  |
 | `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Saqlanbaǵan ózgerisler: {count} |  |
+| `settings.saveFailed` | Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi. | Saqlanbadı. Sebebi bólimde kórsetilgen — dúzetiwińiz ornında qaldı. |  |
+| `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Sońǵı ózgeris saqlanbadı. Bólimdi qayta ashıp, onı jáne kiritiń. |  |
 | `settings.discard` | Bekor qilish | Biykar etiw |  |
 | `settings.channelEmail` | Pochta | Pochta |  |
 | `settings.soon` | tez orada | tez arada |  |

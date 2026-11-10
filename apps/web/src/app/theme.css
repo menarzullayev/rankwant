@@ -1629,6 +1629,13 @@ html {
   white-space: nowrap;
 }
 
+/* A sentence, not a label (the save bar's refusal): it wraps. A utility
+   class cannot do this — utilities sit in a layer and this rule does not,
+   so `nowrap` above won (measured: a 320 px page grew to 449 px). */
+.rw-status-wrap .rw-status {
+  white-space: normal;
+}
+
 /* ① Faqat rangli matn */
 .rw-status-text {
   font-weight: 600;

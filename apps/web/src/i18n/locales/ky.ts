@@ -669,6 +669,8 @@ export const ky: Record<MessageKey, string> = {
   "settings.name": "Аты",
   "settings.unsaved": "Сакталбаган өзгөртүүлөр",
   "settings.unsavedCount": "Сакталбаган өзгөртүүлөр: {count}",
+  "settings.saveFailed": "Сакталган жок. Себеби бөлүмдө көрсөтүлгөн — оңдоолоруңуз ордунда калды.",
+  "settings.saveFailedGone": "Акыркы өзгөртүү сакталган жок. Бөлүмдү кайра ачып, аны кайра киргизиңиз.",
   "settings.discard": "Жокко чыгаруу",
   "settings.channelEmail": "Почта",
   "settings.soon": "жакында",
