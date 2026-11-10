@@ -5185,6 +5185,36 @@ def neg_decisions_search_skips_translations() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_content_converts_every_language() -> tuple[bool, str]:
+    """English content loses its `sh` and `ch` too."""
+    return _decision_broken(
+        "apps/web/src/i18n/alphabet.ts",
+        "  if (lang !== ALPHABET_LOCALE || !text) return text;\n",
+        "  if (!text) return text;\n",
+        "o'zbekcha bo'lmagan kontent",
+    )
+
+
+def neg_decisions_markdown_ignores_alphabet() -> tuple[bool, str]:
+    """Markdown shows the stored spelling whatever the reader chose."""
+    return _decision_broken(
+        "apps/web/src/components/ui/Markdown.tsx",
+        "        {inReaderAlphabet(children, lang)}\n",
+        "        {children}\n",
+        "o'quvchi alifbosida ko'rsatilmaydi",
+    )
+
+
+def neg_decisions_statement_without_language() -> tuple[bool, str]:
+    """The statement is drawn without its language."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
+        "<Markdown lang={problem.locale}>{statementBody}</Markdown>",
+        "<Markdown>{statementBody}</Markdown>",
+        "tilisiz chiziladi",
+    )
+
+
 def neg_decisions_search_keeps_tutuq() -> tuple[bool, str]:
     """The new alphabet's tutuq belgisi is not dropped by the search fold."""
     return _decision_broken(
@@ -8885,6 +8915,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/tests/test_alphabet.py",
     "apps/web/tests/unit/alphabet.test.ts",
     "apps/web/src/i18n/messages.server.ts",
+    "apps/web/src/i18n/alphabet.ts",
+    "apps/web/src/components/ui/Markdown.tsx",
 )
 
 
@@ -12711,6 +12743,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("muallif nashr tarjimasini o'zgartirsa tutilsin", neg_decisions_author_translates_published),
             ("qidiruv tarjima nomini topmasa tutilsin", neg_decisions_search_skips_translations),
             ("qidiruv yangi tutuqni tashlamasa tutilsin", neg_decisions_search_keeps_tutuq),
+            ("inglizcha kontent ham o'girilsa tutilsin", neg_decisions_content_converts_every_language),
+            ("Markdown alifboni e'tiborsiz qoldirsa tutilsin", neg_decisions_markdown_ignores_alphabet),
+            ("shart tilisiz chizilsa tutilsin", neg_decisions_statement_without_language),
             ("alifbo so'rov kontekstisiz bo'lsa tutilsin", neg_decisions_alphabet_not_per_request),
             ("o'zbekcha standarti eski alifbo bo'lsa tutilsin", neg_decisions_uz_defaults_to_old),
             ("eski alifbo mehmon keshidan olsa tutilsin", neg_decisions_alphabet_cookie_cached),

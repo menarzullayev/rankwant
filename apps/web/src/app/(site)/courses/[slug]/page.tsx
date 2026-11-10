@@ -1,4 +1,5 @@
 import type { Metadata, Route } from "next";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -117,12 +118,12 @@ function Join({ course, locale, signedIn }: { course: CourseDetail; locale: Loca
   );
 }
 
-function Block({ title, text }: { title: string; text: string }) {
+function Block({ title, text, lang }: { title: string; text: string; lang: string }) {
   if (!text.trim()) return null;
   return (
     <section className="space-y-2">
       <h2 className="text-theme-base font-semibold rw-strong">{title}</h2>
-      <Markdown>{text}</Markdown>
+      <Markdown lang={lang}>{text}</Markdown>
     </section>
   );
 }
@@ -143,8 +144,12 @@ export default async function CoursePage({ params }: Props) {
               {t(locale, "nav.courses")}
             </Link>
           </p>
-          <h1 className="text-title-sm font-bold rw-strong">{course.title}</h1>
-          {course.summary && <p className="text-theme-base rw-dim">{course.summary}</p>}
+          <h1 className="text-title-sm font-bold rw-strong">
+            {inReaderAlphabet(course.title, course.locale)}
+          </h1>
+          {course.summary && (
+            <p className="text-theme-base rw-dim">{inReaderAlphabet(course.summary, course.locale)}</p>
+          )}
           <div className="flex flex-wrap items-center gap-2 text-theme-xs rw-faint">
             <CourseMeta course={course} locale={locale} />
             <span>{fill(t(locale, "course.modules"), { count: course.module_count })}</span>
@@ -152,10 +157,10 @@ export default async function CoursePage({ params }: Props) {
           <FallbackNote shown={course.locale} locale={locale} />
         </header>
 
-        <Block title={t(locale, "course.about")} text={course.description} />
-        <Block title={t(locale, "course.outcomes")} text={course.outcomes} />
-        <Block title={t(locale, "course.requirements")} text={course.requirements} />
-        <Block title={t(locale, "course.audience")} text={course.audience} />
+        <Block title={t(locale, "course.about")} text={course.description} lang={course.locale} />
+        <Block title={t(locale, "course.outcomes")} text={course.outcomes} lang={course.locale} />
+        <Block title={t(locale, "course.requirements")} text={course.requirements} lang={course.locale} />
+        <Block title={t(locale, "course.audience")} text={course.audience} lang={course.locale} />
 
         <section aria-labelledby="programme" className="space-y-3">
           <h2 id="programme" className="text-theme-lg font-semibold rw-strong">

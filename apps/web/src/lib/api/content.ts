@@ -4,6 +4,8 @@ export type Post = {
   slug: string;
   kind: string;
   title: string;
+  /** The text's language; Uzbek follows the reader's alphabet (ADR-0059). */
+  locale: string;
   summary: string;
   /** Cover image for the home page carousel; empty when the post has none. */
   cover_url: string;
@@ -17,6 +19,8 @@ export type Article = {
   slug: string;
   kind: "article" | "algorithm";
   title: string;
+  /** The text's language; Uzbek follows the reader's alphabet (ADR-0059). */
+  locale: string;
   summary: string;
   difficulty: number;
   topics: string[];

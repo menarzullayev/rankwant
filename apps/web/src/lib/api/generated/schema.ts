@@ -10088,6 +10088,11 @@ export interface components {
         ProblemDetail: {
             slug: string;
             title: string;
+            /**
+             * @description The language the title (and the detail's text) is shown in: the
+             *     reader's when a translation exists, else the author's (ADR-0058).
+             */
+            readonly locale: string;
             /** @description 800–3500, qadam 100 */
             difficulty: number;
             readonly level: string;
@@ -10181,7 +10186,6 @@ export interface components {
              */
             readonly editorial: string;
             statement_locale?: string;
-            readonly locale: string;
             readonly locales: string[];
             /** Format: int64 */
             time_limit_ms?: number;
@@ -10221,6 +10225,11 @@ export interface components {
         ProblemList: {
             slug: string;
             title: string;
+            /**
+             * @description The language the title (and the detail's text) is shown in: the
+             *     reader's when a translation exists, else the author's (ADR-0058).
+             */
+            readonly locale: string;
             /** @description 800–3500, qadam 100 */
             difficulty: number;
             readonly level: string;
@@ -10712,6 +10721,7 @@ export interface components {
         SimilarProblem: {
             slug: string;
             title: string;
+            locale: string;
             difficulty: number;
             level: string;
             level_label: string;

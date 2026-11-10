@@ -21523,6 +21523,12 @@ components:
         title:
           type: string
           maxLength: 200
+        locale:
+          type: string
+          description: |-
+            The language the title (and the detail's text) is shown in: the
+            reader's when a translation exists, else the author's (ADR-0058).
+          readOnly: true
         difficulty:
           type: integer
           maximum: 3500
@@ -21701,9 +21707,6 @@ components:
         statement_locale:
           type: string
           maxLength: 3
-        locale:
-          type: string
-          readOnly: true
         locales:
           type: array
           items:
@@ -21817,6 +21820,12 @@ components:
         title:
           type: string
           maxLength: 200
+        locale:
+          type: string
+          description: |-
+            The language the title (and the detail's text) is shown in: the
+            reader's when a translation exists, else the author's (ADR-0058).
+          readOnly: true
         difficulty:
           type: integer
           maximum: 3500
@@ -21919,6 +21928,7 @@ components:
       - is_solved
       - level
       - level_label
+      - locale
       - my_verdict
       - rating
       - slug
@@ -22942,6 +22952,8 @@ components:
           type: string
         title:
           type: string
+        locale:
+          type: string
         difficulty:
           type: integer
         level:
@@ -22955,6 +22967,7 @@ components:
       - difficulty
       - level
       - level_label
+      - locale
       - score
       - slug
       - title

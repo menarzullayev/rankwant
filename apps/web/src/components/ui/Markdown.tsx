@@ -4,6 +4,8 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 
+import { inReaderAlphabet } from "@/i18n/alphabet";
+
 /**
  * Masala matni, maqola va blog uchun.
  *
@@ -14,14 +16,22 @@ import "katex/dist/katex.min.css";
  * HTML ATAYLAB o'chirilgan: matnni masala tuzuvchilar yozadi, ya'ni
  * `rehype-raw` qo'shilsa u XSS yo'liga aylanadi.
  */
-export function Markdown({ children }: { children: string }) {
+export function Markdown({
+  children,
+  lang,
+}: {
+  children: string;
+  /** The text's own language. Uzbek is shown in the reader's alphabet
+   *  (ADR-0059); code, formulas and links stay as written. */
+  lang?: string | null;
+}) {
   return (
     <div className="rw-md leading-relaxed">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
       >
-        {children}
+        {inReaderAlphabet(children, lang)}
       </ReactMarkdown>
     </div>
   );

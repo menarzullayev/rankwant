@@ -6,7 +6,9 @@ import {
   alphabetCookieLine,
   alphabetFor,
   alphabetFromCookieHeader,
+  inReaderAlphabet,
   parseAlphabet,
+  setAlphabetResolver,
 } from "@/i18n/alphabet";
 import { registerMessages, resetRegistry, t } from "@/i18n/messages";
 
@@ -52,5 +54,27 @@ describe("variant dictionaries", () => {
     expect(t("uz", "nav.problems")).toBe("Shart");
     want = "missing";
     expect(t("uz", "nav.problems")).toBe("Şart");
+  });
+});
+
+describe("content in the reader's alphabet", () => {
+  afterEach(() => setAlphabetResolver(undefined));
+
+  it("converts Uzbek text only", async () => {
+    expect(inReaderAlphabet("Shart va o'qish", "uz")).toBe("Şart va öqiş");
+    // An English or Russian text keeps every letter.
+    expect(inReaderAlphabet("Should we check it?", "en")).toBe("Should we check it?");
+    expect(inReaderAlphabet("Shart", null)).toBe("Shart");
+  });
+
+  it("follows the request's choice on the server", () => {
+    setAlphabetResolver(() => "old");
+    expect(inReaderAlphabet("Şart va öqiş", "uz")).toBe("Shart va oʻqish");
+    setAlphabetResolver(() => "new");
+    expect(inReaderAlphabet("Shart", "uz")).toBe("Şart");
+  });
+
+  it("keeps code and formulas as written", () => {
+    expect(inReaderAlphabet("`chop()` va $s_h$ ni o'qing", "uz")).toBe("`chop()` va $s_h$ ni öqing");
   });
 });

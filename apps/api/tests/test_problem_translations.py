@@ -69,7 +69,13 @@ class TestReading:
 
     def test_the_archive_list_uses_the_readers_title(self, problem, russian) -> None:
         rows = _client().get("/api/v1/problems/?lang=ru").json()["results"]
-        assert next(r for r in rows if r["slug"] == problem.slug)["title"] == "Сумма двух чисел"
+        row = next(r for r in rows if r["slug"] == problem.slug)
+        # `locale` says which language the title is in (ADR-0059: the web
+        # converts only Uzbek titles to the reader's alphabet).
+        assert (row["title"], row["locale"]) == ("Сумма двух чисел", "ru")
+        rows = _client().get("/api/v1/problems/?lang=en").json()["results"]
+        row = next(r for r in rows if r["slug"] == problem.slug)
+        assert row["locale"] == problem.statement_locale
         rows = _client().get("/api/v1/problems/?lang=en").json()["results"]
         assert next(r for r in rows if r["slug"] == problem.slug)["title"] == problem.title
 
@@ -81,7 +87,7 @@ class TestReading:
         )
         SimilarProblem.objects.create(problem=other, similar=problem, score=0.9)
         similar = _detail(other, "ru")["similar"]
-        assert [row["title"] for row in similar] == ["Сумма двух чисел"]
+        assert [(row["title"], row["locale"]) for row in similar] == [("Сумма двух чисел", "ru")]
 
     def test_the_search_finds_a_translated_title(self, problem, russian) -> None:
         problem.refresh_from_db()

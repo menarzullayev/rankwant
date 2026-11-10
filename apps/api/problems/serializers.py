@@ -67,6 +67,8 @@ class ProblemLanguageSerializer(serializers.Serializer[dict[str, Any]]):
 class SimilarProblemSerializer(serializers.Serializer[dict[str, Any]]):
     slug = serializers.CharField()
     title = serializers.CharField()
+    #: The title's language (ADR-0058).
+    locale = serializers.CharField()
     difficulty = serializers.IntegerField()
     level = serializers.CharField()
     level_label = serializers.CharField()
@@ -142,6 +144,9 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
     has_hidden_tests = serializers.SerializerMethodField()
     topics = serializers.SlugRelatedField[Topic](many=True, read_only=True, slug_field="slug")
     author = serializers.SerializerMethodField()
+    #: The language of `title` (ADR-0058); Uzbek follows the reader's
+    #: alphabet on the web (ADR-0059).
+    locale = serializers.SerializerMethodField()
 
     def to_representation(self, instance: Problem) -> dict[str, Any]:
         data: dict[str, Any] = super().to_representation(instance)
@@ -197,6 +202,11 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
         """Shu masala bo'yicha oxirgi urinishim verdikti."""
         return (self.context.get("my_verdicts") or {}).get(problem.pk)
 
+    def get_locale(self, problem: Problem) -> str:
+        """The language the title (and the detail's text) is shown in: the
+        reader's when a translation exists, else the author's (ADR-0058)."""
+        return translations.shown(problem, self.context.get("locale") or problem.statement_locale)
+
     def get_success_rate(self, problem: Problem) -> int | None:
         """Yechilgan / urinilgan, foizda. Urinish bo'lmasa ma'nosiz."""
         if not problem.attempt_count:
@@ -218,6 +228,7 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
         fields = [
             "slug",
             "title",
+            "locale",
             "difficulty",
             "level",
             "level_label",
@@ -243,7 +254,6 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
 class ProblemDetailSerializer(ProblemListSerializer):
     #: The language the text is shown in, and every language it exists in
     #: (ADR-0058): the author's first.
-    locale = serializers.SerializerMethodField()
     locales = serializers.SerializerMethodField()
     samples = serializers.SerializerMethodField()
     answer_tests = serializers.SerializerMethodField()
@@ -344,6 +354,8 @@ class ProblemDetailSerializer(ProblemListSerializer):
             {
                 "slug": link.similar.slug,
                 "title": translations.title(link.similar, locale),
+                # The title's language: Uzbek follows the reader's alphabet.
+                "locale": translations.shown(link.similar, locale),
                 "difficulty": link.similar.difficulty,
                 "level": link.similar.level,
                 "level_label": link.similar.level_label,
@@ -454,9 +466,6 @@ class ProblemDetailSerializer(ProblemListSerializer):
         if not problem.editorial or not problem.is_public:
             return ""
         return problem.editorial if self._editorial_access(problem) in EDITORIAL_OPEN else ""
-
-    def get_locale(self, problem: Problem) -> str:
-        return translations.shown(problem, self.context.get("locale") or problem.statement_locale)
 
     def get_locales(self, problem: Problem) -> list[str]:
         return translations.available(problem)

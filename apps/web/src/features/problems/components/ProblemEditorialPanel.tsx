@@ -67,6 +67,7 @@ export function ProblemEditorialPanel({
           slug={slug}
           text={problem.editorial}
           state={problem.editorial_state}
+          lang={problem.locale}
         />
       )}
     </div>

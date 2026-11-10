@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { t, type Locale } from "@/i18n/messages";
 import type { SimilarProblem } from "@/lib/api";
 
@@ -29,9 +30,9 @@ export function SimilarProblems({
               href={`/problems/${item.slug}`}
               className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-2.5 text-theme-sm transition rw-hover-bg"
             >
-              <span className="font-medium rw-strong">{item.title}</span>
+              <span className="font-medium rw-strong">{inReaderAlphabet(item.title, item.locale)}</span>
               <span className={`level-${item.level} text-theme-xs font-medium`}>
-                {item.level_label}
+                {t(locale, `level.${item.level}`)}
               </span>
               <span className="ml-auto rw-faint tabular-nums">
                 {Math.round(item.score * 100)}% o&apos;xshash

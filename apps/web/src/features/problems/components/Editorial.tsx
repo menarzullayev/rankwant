@@ -23,10 +23,13 @@ export function Editorial({
   slug,
   text,
   state,
+  lang,
 }: {
   slug: string;
   text: string;
   state: EditorialState;
+  /** The editorial's language: Uzbek follows the reader's alphabet. */
+  lang?: string;
 }) {
   const { user, ready } = useSession();
   const locale = useLocale();
@@ -96,7 +99,7 @@ export function Editorial({
     >
       {open ? (
         <CodeCopy text={body} filename={t(locale, "editorial.title")}>
-          <Markdown>{body}</Markdown>
+          <Markdown lang={lang}>{body}</Markdown>
         </CodeCopy>
       ) : (
         <p className="text-theme-sm rw-faint">

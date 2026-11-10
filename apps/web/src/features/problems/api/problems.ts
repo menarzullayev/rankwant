@@ -31,6 +31,9 @@ export type Problem = {
   has_hidden_tests: boolean;
   slug: string;
   title: string;
+  /** The language `title` is in (ADR-0058); Uzbek is shown in the
+   *  reader's alphabet (ADR-0059). */
+  locale: string;
   difficulty: number;
   level: string;
   level_label: string;
@@ -63,6 +66,7 @@ export type ProblemLanguage = {
 export type SimilarProblem = {
   slug: string;
   title: string;
+  locale: string;
   difficulty: number;
   level: string;
   level_label: string;
@@ -111,9 +115,6 @@ export type ProblemDetail = Problem & {
   my_rating: number | null;
   is_favourite: boolean;
   statement_locale: string;
-  /** The language the text is shown in (ADR-0058): the reader's when a
-   *  translation exists, else the author's (`statement_locale`). */
-  locale: string;
   /** The author's language first, then every translation. */
   locales: string[];
   time_limit_ms: number;
