@@ -6,7 +6,7 @@ asgiref==3.12.1
     # via
     #   django
     #   django-cors-headers
-ast-serialize==0.11.2
+ast-serialize==0.13.1
     # via mypy
 attrs==26.1.0
     # via
@@ -122,7 +122,7 @@ mdurl==0.1.2
     # via markdown-it-py
 msgpack==1.2.2
     # via cachecontrol
-mypy==2.4.0
+mypy==2.4.1
     # via
     #   -r requirements-dev.txt
     #   django-stubs

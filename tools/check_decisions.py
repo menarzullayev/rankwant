@@ -2490,6 +2490,17 @@ def function_harness_is_editable_by_staff() -> str | None:
     return None
 
 
+def external_ratings_refresh_daily() -> str | None:
+    """2026-11-10 (HITL, audit Q-07.4): bog'langan tashqi reytinglar kunlik yangilanadi.
+
+    Faqat faol hisoblarning bog'langan profillari; 974 minglik import qo'lda
+    qoladi (2026-09-19 qarori o'zgarmadi).
+    """
+    if '"task": "profiles.refresh_stale_externals"' not in read("apps/api/config/settings.py"):
+        return "settings.py: bog'langan tashqi profillar jadvalga qo'yilmagan"
+    task = read("apps/api/profiles/tasks.py").split("def refresh_stale_externals", 1)[-1]
+    if "user__is_active=True" not in task or "kind__in=list(external.FETCHERS)" not in task:
+        return "profiles/tasks.py: kunlik yangilash nofaol yoki reytingsiz profillarni ham oladi"
 def client_dates_are_numeric() -> str | None:
     """2026-11-10 (audit Q-16, L-01): klient komponent sanani raqam bilan yozadi.
 
@@ -4167,6 +4178,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
+    ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("judge privileged emas", judge_is_not_privileged),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),

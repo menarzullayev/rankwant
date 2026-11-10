@@ -4038,6 +4038,13 @@ def neg_decisions_languages_panel_unmounted() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_external_refresh_unscheduled() -> tuple[bool, str]:
+    """The daily refresh of linked external ratings is unscheduled."""
+    return _decision_broken(
+        "apps/api/config/settings.py",
+        '"task": "profiles.refresh_stale_externals"',
+        '"task": "profiles.refresh_stale_externals_off"',
+        "bog'langan tashqi profillar jadvalga qo'yilmagan",
 def neg_decisions_client_date_in_locale() -> tuple[bool, str]:
     """A client component imports the locale date helper again."""
     return _decision_broken(
@@ -7054,6 +7061,8 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Daily external refresh (2026-11-10).
+    "apps/api/profiles/tasks.py",
     # Staff harness editor (2026-11-10).
     "apps/api/problems/staff_views.py",
     "apps/api/problems/staff_serializers.py",
@@ -10557,6 +10566,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),
             ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),
             ("tillar paneli chizilmasa tutilsin", neg_decisions_languages_panel_unmounted),
+            ("tashqi reyting jadvaldan tushsa tutilsin", neg_decisions_external_refresh_unscheduled),
             ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
