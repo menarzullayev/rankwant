@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2910 strings.**
+**2964 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2931,3 +2931,57 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.course.lessonDone` | bajarilgan | орындалды |  |
 | `classroom.course.lessonOpen` | bajarilmagan | орындалмаған |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Бұл курс табылмады немесе әлі жарияланбаған. |  |
+| `billing.plan.plus` | Plus | Plus |  |
+| `billing.plan.pro` | Pro | Pro |  |
+| `billing.plan.judge` | Judge | Judge |  |
+| `billing.provider.click` | Click | Click |  |
+| `billing.provider.payme` | Payme | Payme |  |
+| `billing.title` | Tariflar | Тарифтер |  |
+| `billing.intro` | Bir martalik to'lov: 1, 6 yoki 12 oyga oldindan. Avtomatik uzaytirish yo'q — muddat tugagach tarif o'zi bepulga qaytadi. | Бір реттік алдын ала төлем: 1, 6 немесе 12 айға. Автоматты ұзарту жоқ — мерзім біткен соң тариф өзі тегінге қайтады. |  |
+| `billing.current` | Joriy tarifingiz | Ағымдағы тарифіңіз |  |
+| `billing.currentUntil` | {plan} · {date} gacha | {plan} · {date} дейін |  |
+| `billing.upcoming` | Navbatda: {plan} · {start} – {end} | Кезекте: {plan} · {start} – {end} |  |
+| `billing.periodLabel` | To'lov davri | Төлем кезеңі |  |
+| `billing.period.month` | 1 oy | 1 ай |  |
+| `billing.period.halfYear` | 6 oy | 6 ай |  |
+| `billing.period.year` | 12 oy | 12 ай |  |
+| `billing.plan.free` | Bepul | Тегін |  |
+| `billing.som` | {price} so'm | {price} сом |  |
+| `billing.perMonth` | oyiga {price} so'm | айына {price} сом |  |
+| `billing.discount` | {percent}% chegirma | {percent}% жеңілдік |  |
+| `billing.free.f1` | Masalalar arxivi va barcha dasturlash tillari | Есептер мұрағаты және барлық бағдарламалау тілдері |  |
+| `billing.free.f2` | Musobaqalar, Arena va reytinglar | Жарыстар, Арена және рейтингтер |  |
+| `billing.free.f3` | Bepul va Qvant bilan ochiladigan kurslar | Тегін курстар және Qvant арқылы ашылатын курстар |  |
+| `billing.free.f4` | Auditoriya: sinflar va topshiriqlar | Аудитория: сыныптар мен тапсырмалар |  |
+| `billing.soon` | Tez orada | Жақында |  |
+| `billing.coursesIncluded` | Barcha pullik kurslar | Барлық ақылы курстар |  |
+| `billing.extend` | Muddatni uzaytirish | Мерзімді ұзарту |  |
+| `billing.choose` | Tanlash | Таңдау |  |
+| `billing.signIn` | Sotib olish uchun kiring | Сатып алу үшін кіріңіз |  |
+| `billing.noAutoRenew` | Bir martalik to'lov. Avtomatik uzaytirish yo'q, kartadan pul o'zi yechilmaydi. | Бір реттік төлем. Автоматты ұзарту жоқ, картадан ақша өзі алынбайды. |  |
+| `billing.minorConsent` | 18 yoshga to'lmagan bo'lsangiz, xarid uchun ota-onangiz yoki qonuniy vakilingiz roziligi kerak. | 18 жасқа толмаған болсаңыз, сатып алуға ата-анаңыздың не заңды өкіліңіздің келісімі керек. |  |
+| `billing.termsAccept` | To'lov qilib, siz shartlarni qabul qilasiz: | Төлеу арқылы сіз шарттарды қабылдайсыз: |  |
+| `billing.terms` | Foydalanish shartlari | Пайдалану шарттары |  |
+| `billing.checkout.title` | To'lovni tasdiqlang | Төлемді растаңыз |  |
+| `billing.checkout.item` | Xarid | Сатып алу |  |
+| `billing.checkout.amount` | To'lanadi | Төленеді |  |
+| `billing.checkout.plan` | {plan} tarifi · {period} | {plan} тарифі · {period} |  |
+| `billing.checkout.startsLater` | Bu davr {date} dan boshlanadi — hozirgi tarifingizdan keyin. | Бұл кезең {date} басталады — ағымдағы тарифіңізден кейін. |  |
+| `billing.checkout.noProvider` | Hozircha to'lov usuli ulanmagan. | Әзірге төлем тәсілі қосылмаған. |  |
+| `billing.checkout.provider` | To'lov usuli | Төлем тәсілі |  |
+| `billing.checkout.pay` | {price} so'm to'lash | {price} сом төлеу |  |
+| `billing.checkout.back` | Tariflarga qaytish | Тарифтерге оралу |  |
+| `billing.return.title` | To'lov holati | Төлем күйі |  |
+| `billing.return.pending` | To'lov tasdiqlanishi kutilmoqda… | Төлемнің расталуы күтілуде… |  |
+| `billing.return.paid` | To'lov qabul qilindi. | Төлем қабылданды. |  |
+| `billing.return.cancelled` | To'lov amalga oshmadi yoki bekor qilindi. | Төлем өтпеді немесе болдырылмады. |  |
+| `billing.return.refunded` | To'lov qaytarildi. | Төлем қайтарылды. |  |
+| `billing.return.slow` | Tasdiq hali kelmadi. Sahifani keyinroq yangilang: pul yechilgan bo'lsa, xarid o'zi faollashadi. | Растау әлі келмеді. Бетті кейінірек жаңартыңыз: ақша алынған болса, сатып алу өзі белсенді болады. |  |
+| `billing.return.toCourse` | Kursga o'tish | Курсқа өту |  |
+| `billing.return.toPlans` | Tariflar | Тарифтер |  |
+| `course.includedInPlan` | Tarifingizga kiritilgan | Тарифіңізге кіреді |  |
+| `course.buy` | Sotib olish · {price} so'm | Сатып алу · {price} сом |  |
+| `course.orPro` | yoki Pro tarifi bilan barcha pullik kurslar | немесе Pro тарифімен барлық ақылы курстар |  |
+| `error.billing_provider_unavailable` | Bu to'lov usuli hozir mavjud emas. | Бұл төлем тәсілі қазір қолжетімсіз. |  |
+| `error.billing_not_on_sale` | Bu tarif yoki davr hozir sotilmaydi. | Бұл тариф не кезең қазір сатылмайды. |  |
+| `error.billing_already_owned` | Bu kurs allaqachon sizniki. | Бұл курс сізде бар. |  |

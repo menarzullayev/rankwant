@@ -15,6 +15,7 @@ from typing import Any
 from django.db.models import QuerySet
 
 from core.models import User
+from courses.access import plan_covers_courses
 from courses.models import Course, Enrollment, Lesson, LessonProgress
 
 CURRICULUM_ORDER = (
@@ -69,6 +70,15 @@ def state(course: Course, user: Any) -> CourseState:
     completed: set[int] = set()
     if isinstance(user, User):
         enrollment = Enrollment.objects.filter(user=user, course=course).first()
+        # A paid course opened by a plan closes when the plan lapses; the
+        # progress stays and comes back with a new plan or a purchase.
+        if (
+            enrollment is not None
+            and enrollment.source == Enrollment.Source.PLAN
+            and course.access == Course.Access.PAID
+            and not plan_covers_courses(user)
+        ):
+            enrollment = None
         completed = set(
             LessonProgress.objects.filter(user=user, lesson_id__in=order).values_list(
                 "lesson_id", flat=True

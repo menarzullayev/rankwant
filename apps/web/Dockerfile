@@ -140,12 +140,14 @@ ENV NEXT_PUBLIC_CUSTOMIZER=$NEXT_PUBLIC_CUSTOMIZER
 # `next build`: compose's `--env-file` only fills `${...}` in the compose
 # file, it does not pass variables into a Docker build (measured 2026-11-10:
 # no flag was declared here or in any `build.args`). Empty = the flag's
-# default, which is off for all four.
+# default, which is off for all of them.
+ARG NEXT_PUBLIC_FLAG_BILLING=
 ARG NEXT_PUBLIC_FLAG_COURSES=
 ARG NEXT_PUBLIC_FLAG_GEO_EARLY_REGION=
 ARG NEXT_PUBLIC_FLAG_NEW_NAV=
 ARG NEXT_PUBLIC_FLAG_NEW_PALETTE=
 ARG NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE=
+ENV NEXT_PUBLIC_FLAG_BILLING=$NEXT_PUBLIC_FLAG_BILLING
 ENV NEXT_PUBLIC_FLAG_COURSES=$NEXT_PUBLIC_FLAG_COURSES
 # Origin(s) of the course video segments (CSP `connect-src`/`media-src`);
 # empty until R2 is set up (ADR-0056 § 3.5).

@@ -37,12 +37,20 @@ describe("accessFor", () => {
 describe("needsSignIn", () => {
   it("is true for user and staff sections only", () => {
     const closed = Object.keys(ACCESS).filter((section) => needsSignIn(`/${section}`));
-    expect(closed.sort()).toEqual(["admin", "notifications", "onboarding", "settings", "studio"]);
+    expect(closed.sort()).toEqual([
+      "admin",
+      "billing",
+      "checkout",
+      "notifications",
+      "onboarding",
+      "settings",
+      "studio",
+    ]);
   });
 
   // The statement of a problem is for everybody; only the solve panel is not.
   it("leaves the pages a guest reads open", () => {
-    for (const path of ["/", "/problems", "/problems/a-plus-b", "/attempts", "/users/ali", "/qvant"]) {
+    for (const path of ["/", "/problems", "/problems/a-plus-b", "/attempts", "/users/ali", "/qvant", "/plans"]) {
       expect(needsSignIn(path)).toBe(false);
     }
   });

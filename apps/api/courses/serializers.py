@@ -14,6 +14,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from courses import progress, videos
+from courses.access import plan_covers_courses
 from courses.i18n import pick
 from courses.models import Course, CourseCertificate, Enrollment, Lesson
 
@@ -222,6 +223,8 @@ class CourseDetailSerializer(CourseCardSerializer):
     enrollment = serializers.SerializerMethodField()
     progress = serializers.SerializerMethodField()
     has_final_quiz = serializers.SerializerMethodField()
+    #: The reader's paid plan opens this paid course (ADR-0057).
+    plan_covers = serializers.SerializerMethodField()
     final_quiz_slug: Any = serializers.SlugRelatedField(
         source="final_quiz", slug_field="slug", read_only=True
     )
@@ -238,6 +241,7 @@ class CourseDetailSerializer(CourseCardSerializer):
             "reward_qvant",
             "has_final_quiz",
             "final_quiz_slug",
+            "plan_covers",
             "authors",
             "modules",
             "enrollment",
@@ -262,6 +266,11 @@ class CourseDetailSerializer(CourseCardSerializer):
 
     def get_has_final_quiz(self, obj: Course) -> bool:
         return obj.final_quiz_id is not None
+
+    def get_plan_covers(self, obj: Course) -> bool:
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        return obj.access == Course.Access.PAID and plan_covers_courses(user)
 
     @extend_schema_field(ModuleOutlineSerializer(many=True))
     def get_modules(self, obj: Course) -> list[dict[str, Any]]:

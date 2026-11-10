@@ -91,6 +91,17 @@ x-turnstile: &turnstile
 x-throttle: &throttle
   THROTTLE_REGISTER: ${THROTTLE_REGISTER:-40/hour}
 
+# Payments (ADR-0057): empty = the provider is not offered. Only the API
+# needs them (provider callbacks and the payment link).
+x-billing: &billing
+  PAYME_MERCHANT_ID: ${PAYME_MERCHANT_ID:-}
+  PAYME_KEY: ${PAYME_KEY:-}
+  PAYME_CHECKOUT_URL: ${PAYME_CHECKOUT_URL:-https://checkout.paycom.uz}
+  CLICK_SERVICE_ID: ${CLICK_SERVICE_ID:-}
+  CLICK_MERCHANT_ID: ${CLICK_MERCHANT_ID:-}
+  CLICK_SECRET_KEY: ${CLICK_SECRET_KEY:-}
+  CLICK_MERCHANT_USER_ID: ${CLICK_MERCHANT_USER_ID:-}
+
 x-logging: &default-logging
   driver: json-file
   options:
@@ -149,7 +160,7 @@ services:
       # ⚠️ Bu ikki kalit `x-env-guard` orqali keladi — ya'ni env-faylsiz
       # `up` UMUMAN ishlamaydi (sababi fayl boshida). `djenv` bilan bu
       # yerda takror yozilmaydi: bitta manba qoladi.
-      <<: [*env-guard, *email, *oauth, *turnstile, *throttle]
+      <<: [*env-guard, *email, *oauth, *turnstile, *throttle, *billing]
       DJANGO_DEBUG: "0"
       # Tunnel same-origin + loopback preview (web :8300 → api :8301).
       CORS_ALLOWED_ORIGINS: ${PUBLIC_ORIGIN},http://127.0.0.1:8300,http://localhost:8300
@@ -209,6 +220,7 @@ services:
         # Empty = the theme customizer is on; 0 hides it (`src/lib/theme/flag.ts`).
         NEXT_PUBLIC_CUSTOMIZER: ${NEXT_PUBLIC_CUSTOMIZER:-}
         # Feature flags from `.env.public` (`src/lib/flags.ts`); empty = off.
+        NEXT_PUBLIC_FLAG_BILLING: ${NEXT_PUBLIC_FLAG_BILLING:-}
         NEXT_PUBLIC_FLAG_COURSES: ${NEXT_PUBLIC_FLAG_COURSES:-}
         # Course video segments' origin (R2 custom domain); empty = none yet.
         NEXT_PUBLIC_VIDEO_ORIGIN: ${NEXT_PUBLIC_VIDEO_ORIGIN:-}

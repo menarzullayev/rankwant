@@ -64,6 +64,12 @@ export const SAME_IN_EVERY_LOCALE = [
   // Video hosts in the course studio: brand names.
   "studio.course.provider.youtube",
   "studio.course.provider.vimeo",
+  // Plan and payment provider names (ADR-0057): brand names.
+  "billing.plan.plus",
+  "billing.plan.pro",
+  "billing.plan.judge",
+  "billing.provider.click",
+  "billing.provider.payme",
 ] as const;
 
 export const DO_NOT_TRANSLATE = [

@@ -23,6 +23,7 @@ from rest_framework.exceptions import APIException
 
 from core.models import User
 from courses import progress
+from courses.access import plan_covers_courses
 from courses.models import Course, CourseCertificate, Enrollment, Lesson, LessonProgress, Module
 from quizzes import services as quizzes
 from qvant import ledger
@@ -57,14 +58,26 @@ REF_MODULE = "course_module"
 
 def enroll(user: User, course: Course, *, confirm_price: int | None = None) -> Enrollment:
     existing = Enrollment.objects.filter(user=user, course=course).first()
-    if existing is not None:
+    if existing is not None and (
+        existing.source != Enrollment.Source.PLAN
+        or course.access != Course.Access.PAID
+        or plan_covers_courses(user)
+    ):
         return existing
     if course.access == Course.Access.QVANT:
         return _enroll_with_qvant(user, course, confirm_price)
     if course.access == Course.Access.PAID:
-        raise course_error(
-            "course_payment_required", "This course is paid.", status.HTTP_402_PAYMENT_REQUIRED
+        # Bought courses are enrolled by `grant_purchase`; here only a plan
+        # that opens paid courses lets the reader in (ADR-0057).
+        if not plan_covers_courses(user):
+            raise course_error(
+                "course_payment_required", "This course is paid.", status.HTTP_402_PAYMENT_REQUIRED
+            )
+        enrollment, _ = Enrollment.objects.get_or_create(
+            user=user, course=course, defaults={"source": Enrollment.Source.PLAN}
         )
+        refresh_completion(user, course)
+        return enrollment
     enrollment, _ = Enrollment.objects.get_or_create(
         user=user, course=course, defaults={"source": Enrollment.Source.FREE}
     )
@@ -106,6 +119,34 @@ def _enroll_with_qvant(user: User, course: Course, confirm_price: int | None) ->
     enrollment = Enrollment.objects.create(user=user, course=course, source=Enrollment.Source.QVANT)
     refresh_completion(user, course)
     return enrollment
+
+
+def grant_purchase(user: User, course: Course) -> Enrollment:
+    """A paid course was bought: it stays open for good (ADR-0057)."""
+    enrollment, created = Enrollment.objects.get_or_create(
+        user=user, course=course, defaults={"source": Enrollment.Source.PURCHASE}
+    )
+    if not created and enrollment.source != Enrollment.Source.PURCHASE:
+        enrollment.source = Enrollment.Source.PURCHASE
+        enrollment.save(update_fields=["source"])
+    refresh_completion(user, course)
+    return enrollment
+
+
+def revoke_purchase(user: User, course: Course) -> None:
+    """The purchase was refunded: the course closes at once (owner decision
+    2026-11-10). Lesson progress and a certificate already issued stay; a
+    plan that opens paid courses keeps the course open."""
+    enrollment = Enrollment.objects.filter(
+        user=user, course=course, source=Enrollment.Source.PURCHASE
+    ).first()
+    if enrollment is None:
+        return
+    if plan_covers_courses(user):
+        enrollment.source = Enrollment.Source.PLAN
+        enrollment.save(update_fields=["source"])
+    else:
+        enrollment.delete()
 
 
 def ledger_reason() -> str:

@@ -18,6 +18,7 @@ import {
   UnlockButton,
   type CourseDetail,
 } from "@/features/courses";
+import { groupDigits } from "@/features/billing";
 import { getLocale } from "@/i18n/server";
 import { fill, t, type Locale } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -90,7 +91,30 @@ function Join({ course, locale, signedIn }: { course: CourseDetail; locale: Loca
   if (!signedIn) return <SignInGate reason="course" />;
   if (course.access === "free") return <EnrollButton slug={course.slug} />;
   if (course.access === "qvant") return <UnlockButton slug={course.slug} price={course.price_qvant ?? 0} />;
-  return <p className="text-theme-sm rw-dim">{t(locale, "course.soonPaid")}</p>;
+  // A paid course (ADR-0057): open through a plan that covers it, or bought.
+  if (course.plan_covers) {
+    return (
+      <div className="space-y-2">
+        <p className="text-theme-sm font-medium rw-ok-ink">{t(locale, "course.includedInPlan")}</p>
+        <EnrollButton slug={course.slug} />
+      </div>
+    );
+  }
+  if (!isOnServer("billing", undefined) || !course.price_uzs) {
+    return <p className="text-theme-sm rw-dim">{t(locale, "course.soonPaid")}</p>;
+  }
+  return (
+    <div className="space-y-3">
+      <ButtonLink href={`/checkout?course=${encodeURIComponent(course.slug)}` as Route}>
+        {fill(t(locale, "course.buy"), { price: groupDigits(course.price_uzs) })}
+      </ButtonLink>
+      <p className="text-theme-sm">
+        <Link href={"/plans" as Route} className="inline-flex min-h-11 items-center rw-accent-ink hover:underline">
+          {t(locale, "course.orPro")}
+        </Link>
+      </p>
+    </div>
+  );
 }
 
 function Block({ title, text }: { title: string; text: string }) {
