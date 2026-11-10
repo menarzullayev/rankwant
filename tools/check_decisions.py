@@ -2882,6 +2882,28 @@ def build_cache_kept_within_budget() -> str | None:
     return None
 
 
+def ci_installs_are_fast() -> str | None:
+    """2026-11-10 (HITL): CI paketlarni uv va node_modules keshi bilan o'rnatadi.
+
+    O'lchandi (#501 main CI): `pip install -r requirements-dev.lock` to'rt API
+    job'ining har birida 16\u201325 s, pip keshini saqlash bir marta 116 s,
+    `npm ci` npm keshi bilan ham 41 s. Endi Python \u2014 `uv pip install
+    --system`, Node \u2014 o'rnatilgan daraxt lockfile va aniq Node versiyasi
+    bo'yicha keshlanadi; kesh topilmasa `npm ci` yuradi.
+    """
+    ci = read(".github/workflows/ci.yml")
+    if ci.count("run: uv pip install --system -r requirements-dev.lock\n") != 2:
+        return "ci.yml: API job'lari paketlarni uv bilan o'rnatmaydi"
+    if "cache: pip\n" in ci:
+        return "ci.yml: pip keshi qaytdi (saqlash 116 s olgan)"
+    key = "key: node-modules-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}\n"
+    if key not in ci:
+        return "ci.yml: node_modules keshi lockfile va Node versiyasiga bog'lanmagan"
+    if "&& steps.node-modules.outputs.cache-hit != 'true' }}\n        run: npm ci\n" not in ci:
+        return "ci.yml: node_modules keshi topilganda ham npm ci yuradi"
+    return None
+
+
 def behind_prs_update_one_at_a_time() -> str | None:
     """2026-11-10 (HITL): orqada qolgan PR'lar navbat bilan, bittadan yangilanadi.
 
@@ -4922,6 +4944,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
+    ("CI paketlarni tez o'rnatadi", ci_installs_are_fast),
     ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),
     ("darvoza bir xil daraxtda PR CI'ga ishonadi", gate_trusts_green_pr_on_same_tree),
     ("pg_dump faqat migratsiyada, build bilan parallel", dump_only_for_pending_migrations),
