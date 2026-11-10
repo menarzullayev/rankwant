@@ -4045,6 +4045,9 @@ def neg_decisions_external_refresh_unscheduled() -> tuple[bool, str]:
         '"task": "profiles.refresh_stale_externals"',
         '"task": "profiles.refresh_stale_externals_off"',
         "bog'langan tashqi profillar jadvalga qo'yilmagan",
+    )
+
+
 def neg_decisions_client_date_in_locale() -> tuple[bool, str]:
     """A client component imports the locale date helper again."""
     return _decision_broken(

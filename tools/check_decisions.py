@@ -1792,7 +1792,7 @@ def deploy_skips_non_image_bake() -> str | None:
     auto = read(AUTO_DEPLOY)
     if "deploy_scope.py" not in auto:
         return f"{AUTO_DEPLOY}: obraz doirasi hisoblanmaydi"
-    if 'log "obrazga tushmaydi — bake yo\'q' not in auto:
+    if 'log_once "noimage:$TARGET" "obrazga tushmaydi — bake yo\'q' not in auto:
         return f"{AUTO_DEPLOY}: bo'sh doirada bake o'tkazilmaydi"
 
     kick = read(KICK_AUTO_DEPLOY)
