@@ -364,6 +364,9 @@ services:
     build:
       context: ./services/judge-go
       args:
+        # `tools/deploy.sh` passes the kept toolchain image here; without it
+        # the `base` stage is built in the same run, as before.
+        JUDGE_BASE: ${JUDGE_BASE:-base}
         GIT_SHA: ${GIT_SHA:-${IMAGE_TAG:-unknown}}
         # `check_deploy.sh` shu yorliqni o'qiydi (web bilan bir xil naqsh).
         BUILT_AT: ${BUILT_AT:-unknown}
