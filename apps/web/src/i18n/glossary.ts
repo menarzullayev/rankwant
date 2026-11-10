@@ -61,6 +61,9 @@ export const SAME_IN_EVERY_LOCALE = [
   "admin.label.text.qvant",
   // A course price in Qvant (ADR-0056).
   "course.price.qvant",
+  // Video hosts in the course studio: brand names.
+  "studio.course.provider.youtube",
+  "studio.course.provider.vimeo",
 ] as const;
 
 export const DO_NOT_TRANSLATE = [

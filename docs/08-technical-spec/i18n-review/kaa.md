@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2765 strings.**
+**2857 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2786,3 +2786,95 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» endi kurslar katalogında. |  |
 | `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Kurs qaytarıldı — {course} |  |
 | `notif.msg.course_returned.body` | Xodim izohi: {reason} | Xızmetker eskertpesi: {reason} |  |
+| `admin.section.courses` | Kurslar | Kurs dizimi |  |
+| `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Avtorlar tekseriwge jibergen kurslar. Baha qoyıń, járiyalań yamasa sebebi menen qaytarıń. |  |
+| `admin.courses.queue` | Ko'rik navbati | Tekseriw gezegi |  |
+| `admin.courses.all` | Barcha kurslar | Barlıq kurslar |  |
+| `admin.courses.queueEmpty` | Ko'rik kutayotgan kurs yo'q. | Tekseriwdi kútip turǵan kurs joq. |  |
+| `admin.courses.authors` | Mualliflar: {names} | Avtorlar: {names} |  |
+| `admin.courses.openStudio` | Studio'da ochish | Studiyada ashıw |  |
+| `admin.courses.priceQvant` | Narx (Qvant) | Baha (Qvant) |  |
+| `admin.courses.priceUzs` | Narx (so'm) | Baha (sum) |  |
+| `admin.courses.reward` | Kurs uchun mukofot (Qvant) | Kurs ushın sıylıq (Qvant) |  |
+| `admin.courses.savePrice` | Narxni saqlash | Bahanı saqlaw |  |
+| `admin.courses.saved` | Saqlandi. | Saqlandı. |  |
+| `admin.courses.gaps` | Nashrdan oldin kerak: | Járiyalawdan aldın kerek: |  |
+| `admin.courses.publish` | Nashr qilish | Járiyalaw |  |
+| `admin.courses.publishedNote` | Kurs nashr qilindi, muallifga xabar ketdi. | Kurs járiyalandı, avtorǵa xabar jiberildi. |  |
+| `admin.courses.reason` | Qaytarish sababi | Qaytarıw sebebi |  |
+| `admin.courses.sendBack` | Muallifga qaytarish | Avtorǵa qaytarıw |  |
+| `admin.courses.sentBack` | Kurs qaytarildi, muallifga sabab yuborildi. | Kurs qaytarıldı, avtorǵa sebebi jiberildi. |  |
+| `studio.nav.courses` | Kurslar | Kurs dizimi |  |
+| `studio.courses.intro` | Kurs yozing: modullar, bo'limlar va darslar (matn, masala, test, video). Xodim ko'rib chiqib nashr qiladi va narxini belgilaydi. | Kurs jazıń: modullar, bólimler hám sabaqlar (tekst, másele, test, video). Xızmetker tekserip, járiyalaydı hám bahasın belgileydi. |  |
+| `studio.courses.empty` | Hali kurs yozmagansiz | Siz ele kurs jazbadıńız |  |
+| `studio.courses.emptyHint` | Quyida nom va tilni tanlang — qolganini kurs sahifasida yozasiz. | Tómende atı hám tildi tańlań — qalǵanın kurs betinde jazasız. |  |
+| `studio.courses.new` | Yangi kurs | Jańa kurs |  |
+| `studio.courses.create` | Kursni yaratish | Kurstı jaratıw |  |
+| `studio.courses.count` | {count} / {limit} nashr qilinmagan kurs | {count} / {limit} járiyalanbaǵan kurs |  |
+| `studio.courses.full` | Nashr qilinmagan kurslar chegarasi: {count} / {limit}. Yangisi uchun birortasi nashr qilinsin yoki o'chirilsin. | Járiyalanbaǵan kurslar shegi: {count} / {limit}. Jańası ushın birewin járiyalań yamasa óshiriń. |  |
+| `studio.courses.col.course` | Kurs | Kurs |  |
+| `studio.courses.col.lessons` | Darslar | Sabaqlar |  |
+| `studio.courses.col.published` | Nashr qilingan | Járiyalandı |  |
+| `studio.course.baseLocale` | Kursning asosiy tili | Kurstıń tiykarǵı tili |  |
+| `studio.course.baseLocaleHint` | Boshqa tilda matn bo'lmasa, o'quvchi shu tildagi matnni ko'radi. | Oqıwshınıń tilinde tekst bolmasa, usı tildegi tekstti kóredi. |  |
+| `studio.course.language` | Matn tili | Tekst tili |  |
+| `studio.course.baseMark` | (asosiy) | (tiykarǵı) |  |
+| `studio.course.text` | Kurs matni | Kurs teksti |  |
+| `studio.course.summary` | Qisqa tavsif | Qısqasha táriyp |  |
+| `studio.course.summaryHint` | Katalog kartasida chiqadi — bir-ikki jumla. | Katalog kartasında shıǵadı — bir-eki gáp. |  |
+| `studio.course.saveText` | Matnni saqlash | Tekstti saqlaw |  |
+| `studio.course.saved` | Saqlandi — darhol ko'rinadi. | Saqlandı — birden kórinedi. |  |
+| `studio.course.save` | Saqlash | Saqlaw |  |
+| `studio.course.settings` | Sozlamalar | Sazlawlar |  |
+| `studio.course.saveSettings` | Sozlamalarni saqlash | Sazlawlardı saqlaw |  |
+| `studio.course.locked` | Kurs nashr qilingan: tuzilma va sozlamalarni xodim o'zgartiradi. Matnni tahrirlashingiz mumkin. | Kurs járiyalanǵan: dúzilis hám sazlawlardı xızmetker ózgertedi. Tekstti ońlay alasız. |  |
+| `studio.course.staffEdits` | Kurs nashr qilingan; siz xodim sifatida tuzilmani o'zgartirasiz — bu yozilganlar progressiga ta'sir qiladi. | Kurs járiyalanǵan; siz dúzilisti xızmetker retinde ózgertesiz — bul jazılǵanlardıń progressine tásir etedi. |  |
+| `studio.course.finalQuiz` | Yakuniy test (manzili) | Juwmaqlawshı test (mánzili) |  |
+| `studio.course.finalQuizHint` | Testlar bo'limidagi testning slug'i. Sertifikat uchun kerak. | Testler bóliminegi testtiń slug-ı. Sertifikat ushın kerek. |  |
+| `studio.course.threshold` | Sertifikat chegarasi, % | Sertifikat shegi, % |  |
+| `studio.course.cover` | Muqova rasmi manzili | Muqaba súwretiniń mánzili |  |
+| `studio.course.coverHint` | Ixtiyoriy: https:// bilan boshlanadigan rasm. | Májbúriy emes: https:// mánzilindegi súwret. |  |
+| `studio.course.moduleTitle` | Modul nomi | Modul atı |  |
+| `studio.course.sectionTitle` | Bo'lim nomi | Bólim atı |  |
+| `studio.course.addModule` | Modul qo'shish | Modul qosıw |  |
+| `studio.course.addSection` | Bo'lim qo'shish | Bólim qosıw |  |
+| `studio.course.addLesson` | Dars qo'shish | Sabaq qosıw |  |
+| `studio.course.moveUp` | Yuqoriga | Joqarıǵa |  |
+| `studio.course.moveDown` | Pastga | Tómenge |  |
+| `studio.course.removeModule` | Modulni o'chirish | Moduldı óshiriw |  |
+| `studio.course.removeModuleConfirm` | Modul bo'limlari va darslari bilan o'chirilsinmi? | Modul bólimleri hám sabaqları menen birge óshirilsin be? |  |
+| `studio.course.removeSection` | Bo'limni o'chirish | Bólimdi óshiriw |  |
+| `studio.course.removeSectionConfirm` | Bo'lim darslari bilan o'chirilsinmi? | Bólim sabaqları menen birge óshirilsin be? |  |
+| `studio.course.removeLesson` | Darsni o'chirish | Sabaqtı óshiriw |  |
+| `studio.course.removeLessonConfirm` | Dars o'chirilsinmi? | Sabaq óshirilsin be? |  |
+| `studio.course.editLesson` | Darsni tahrirlash | Sabaqtı ońlaw |  |
+| `studio.course.untitled` | (nomsiz dars) | (atsız sabaq) |  |
+| `studio.course.lessonBody` | Dars matni | Sabaq teksti |  |
+| `studio.course.kind` | Dars turi | Sabaq túri |  |
+| `studio.course.required` | Majburiy dars | Májbúriy sabaq |  |
+| `studio.course.problem` | Masala (manzili) | Másele (mánzili) |  |
+| `studio.course.problemHint` | Arxivdagi masalaning slug'i, masalan a-plus-b. | Arxivtegi máseleniń slug-ı, mısalı a-plus-b. |  |
+| `studio.course.quiz` | Test (manzili) | Test (mánzili) |  |
+| `studio.course.quizHint` | Testlar bo'limidagi testning slug'i. | Testler bóliminegi testtiń slug-ı. |  |
+| `studio.course.passPercent` | O'tish chegarasi, % | Ótiw shegi, % |  |
+| `studio.course.videoProvider` | Video qayerda | Video qay jerde |  |
+| `studio.course.provider.youtube` | YouTube | YouTube |  |
+| `studio.course.provider.vimeo` | Vimeo | Vimeo |  |
+| `studio.course.provider.hls` | Bizning serverda (R2) | Biziń serverde (R2) |  |
+| `studio.course.videoRef` | Video identifikatori | Video identifikatorı |  |
+| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasidagi identifikator (masalan dQw4w9WgXcQ). | YouTube yamasa Vimeo siltemesindegi identifikator (mısalı dQw4w9WgXcQ). |  |
+| `studio.course.videoSeconds` | Davomiyligi, soniya | Uzaqlıǵı, sekund |  |
+| `studio.course.saveLesson` | Darsni saqlash | Sabaqtı saqlaw |  |
+| `studio.course.reviewIntro` | Xodim kursni o'qib chiqadi, narxini belgilaydi va nashr qiladi. Yuborishdan oldin quyidagilar bajarilishi kerak. | Xızmetker kurstı oqıp, bahasın belgilep, járiyalaydı. Jiberiwden aldın tómendegiler orınlanıwı kerek. |  |
+| `studio.course.gap.title` | Asosiy tilda kurs nomi | Tiykarǵı tilde kurs atı |  |
+| `studio.course.gap.summary` | Asosiy tilda qisqa tavsif | Tiykarǵı tilde qısqasha táriyp |  |
+| `studio.course.gap.lessons` | Kamida bitta dars | Keminde bir sabaq |  |
+| `studio.course.gap.lesson_title` | Har darsning asosiy tilda nomi | Hár sabaqtıń tiykarǵı tilde atı bar |  |
+| `studio.course.gap.lesson_text` | Matn darslarida matn yozilgan | Tekst sabaqlarında tekst jazılǵan |  |
+| `studio.course.gap.lesson_problem` | Masala darslarida arxivdagi masala ko'rsatilgan | Másele sabaqlarında arxivtegi másele kórsetilgen |  |
+| `studio.course.gap.lesson_quiz` | Test darslarida nashr qilingan test ko'rsatilgan | Test sabaqlarında járiyalanǵan test kórsetilgen |  |
+| `studio.course.gap.lesson_video` | Video darslarida video ko'rsatilgan | Video sabaqlarında video kórsetilgen |  |
+| `studio.course.published` | Kurs nashr qilingan. Matnni tahrirlash mumkin — o'zgarish darhol chiqadi. | Kurs járiyalanǵan. Tekstti ońlawǵa boladı — ózgeris birden shıǵadı. |  |
+| `studio.course.openPublic` | Ommaviy sahifani ochish | Ashıq betti ashıw |  |
+| `studio.course.delete` | Kursni o'chirish | Kurstı óshiriw |  |
+| `studio.course.deleteConfirm` | «{title}» kursi barcha darslari bilan o'chirilsinmi? | «{title}» kursı barlıq sabaqları menen óshirilsin be? |  |

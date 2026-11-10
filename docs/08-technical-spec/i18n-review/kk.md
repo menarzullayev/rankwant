@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2765 strings.**
+**2857 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2786,3 +2786,95 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» енді курстар каталогында. |  |
 | `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Курс қайтарылды — {course} |  |
 | `notif.msg.course_returned.body` | Xodim izohi: {reason} | Қызметкер ескертпесі: {reason} |  |
+| `admin.section.courses` | Kurslar | Курстар |  |
+| `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Авторлар тексеруге жіберген курстар. Баға қойыңыз, жариялаңыз немесе себебімен қайтарыңыз. |  |
+| `admin.courses.queue` | Ko'rik navbati | Тексеру кезегі |  |
+| `admin.courses.all` | Barcha kurslar | Барлық курстар |  |
+| `admin.courses.queueEmpty` | Ko'rik kutayotgan kurs yo'q. | Тексеруді күтіп тұрған курс жоқ. |  |
+| `admin.courses.authors` | Mualliflar: {names} | Авторлар: {names} |  |
+| `admin.courses.openStudio` | Studio'da ochish | Студияда ашу |  |
+| `admin.courses.priceQvant` | Narx (Qvant) | Баға (Qvant) |  |
+| `admin.courses.priceUzs` | Narx (so'm) | Баға (сум) |  |
+| `admin.courses.reward` | Kurs uchun mukofot (Qvant) | Курс үшін сыйақы (Qvant) |  |
+| `admin.courses.savePrice` | Narxni saqlash | Бағаны сақтау |  |
+| `admin.courses.saved` | Saqlandi. | Сақталды. |  |
+| `admin.courses.gaps` | Nashrdan oldin kerak: | Жарияламас бұрын қажет: |  |
+| `admin.courses.publish` | Nashr qilish | Жариялау |  |
+| `admin.courses.publishedNote` | Kurs nashr qilindi, muallifga xabar ketdi. | Курс жарияланды, авторға хабар жіберілді. |  |
+| `admin.courses.reason` | Qaytarish sababi | Қайтару себебі |  |
+| `admin.courses.sendBack` | Muallifga qaytarish | Авторға қайтару |  |
+| `admin.courses.sentBack` | Kurs qaytarildi, muallifga sabab yuborildi. | Курс қайтарылды, авторға себебі жіберілді. |  |
+| `studio.nav.courses` | Kurslar | Курстар |  |
+| `studio.courses.intro` | Kurs yozing: modullar, bo'limlar va darslar (matn, masala, test, video). Xodim ko'rib chiqib nashr qiladi va narxini belgilaydi. | Курс жазыңыз: модульдер, бөлімдер және сабақтар (мәтін, есеп, тест, бейне). Қызметкер тексеріп, жариялайды және бағасын белгілейді. |  |
+| `studio.courses.empty` | Hali kurs yozmagansiz | Сіз әлі курс жазбадыңыз |  |
+| `studio.courses.emptyHint` | Quyida nom va tilni tanlang — qolganini kurs sahifasida yozasiz. | Төменде атау мен тілді таңдаңыз — қалғанын курс бетінде жазасыз. |  |
+| `studio.courses.new` | Yangi kurs | Жаңа курс |  |
+| `studio.courses.create` | Kursni yaratish | Курсты жасау |  |
+| `studio.courses.count` | {count} / {limit} nashr qilinmagan kurs | {count} / {limit} жарияланбаған курс |  |
+| `studio.courses.full` | Nashr qilinmagan kurslar chegarasi: {count} / {limit}. Yangisi uchun birortasi nashr qilinsin yoki o'chirilsin. | Жарияланбаған курстар шегі: {count} / {limit}. Жаңасы үшін біреуін жариялаңыз не жойыңыз. |  |
+| `studio.courses.col.course` | Kurs | Курс |  |
+| `studio.courses.col.lessons` | Darslar | Сабақтар |  |
+| `studio.courses.col.published` | Nashr qilingan | Жарияланды |  |
+| `studio.course.baseLocale` | Kursning asosiy tili | Курстың негізгі тілі |  |
+| `studio.course.baseLocaleHint` | Boshqa tilda matn bo'lmasa, o'quvchi shu tildagi matnni ko'radi. | Оқырман тілінде мәтін болмаса, осы тілдегі мәтінді көреді. |  |
+| `studio.course.language` | Matn tili | Мәтін тілі |  |
+| `studio.course.baseMark` | (asosiy) | (негізгі) |  |
+| `studio.course.text` | Kurs matni | Курс мәтіні |  |
+| `studio.course.summary` | Qisqa tavsif | Қысқаша сипаттама |  |
+| `studio.course.summaryHint` | Katalog kartasida chiqadi — bir-ikki jumla. | Каталог картасында шығады — бір-екі сөйлем. |  |
+| `studio.course.saveText` | Matnni saqlash | Мәтінді сақтау |  |
+| `studio.course.saved` | Saqlandi — darhol ko'rinadi. | Сақталды — бірден көрінеді. |  |
+| `studio.course.save` | Saqlash | Сақтау |  |
+| `studio.course.settings` | Sozlamalar | Баптаулар |  |
+| `studio.course.saveSettings` | Sozlamalarni saqlash | Баптауларды сақтау |  |
+| `studio.course.locked` | Kurs nashr qilingan: tuzilma va sozlamalarni xodim o'zgartiradi. Matnni tahrirlashingiz mumkin. | Курс жарияланған: құрылым мен баптауларды қызметкер өзгертеді. Мәтінді өңдей аласыз. |  |
+| `studio.course.staffEdits` | Kurs nashr qilingan; siz xodim sifatida tuzilmani o'zgartirasiz — bu yozilganlar progressiga ta'sir qiladi. | Курс жарияланған; сіз құрылымды қызметкер ретінде өзгертесіз — бұл жазылғандардың прогресіне әсер етеді. |  |
+| `studio.course.finalQuiz` | Yakuniy test (manzili) | Қорытынды тест (мекенжайы) |  |
+| `studio.course.finalQuizHint` | Testlar bo'limidagi testning slug'i. Sertifikat uchun kerak. | Тесттер бөліміндегі тесттің slug-ы. Сертификат үшін қажет. |  |
+| `studio.course.threshold` | Sertifikat chegarasi, % | Сертификат шегі, % |  |
+| `studio.course.cover` | Muqova rasmi manzili | Мұқаба суретінің мекенжайы |  |
+| `studio.course.coverHint` | Ixtiyoriy: https:// bilan boshlanadigan rasm. | Міндетті емес: https:// мекенжайындағы сурет. |  |
+| `studio.course.moduleTitle` | Modul nomi | Модуль атауы |  |
+| `studio.course.sectionTitle` | Bo'lim nomi | Бөлім атауы |  |
+| `studio.course.addModule` | Modul qo'shish | Модуль қосу |  |
+| `studio.course.addSection` | Bo'lim qo'shish | Бөлім қосу |  |
+| `studio.course.addLesson` | Dars qo'shish | Сабақ қосу |  |
+| `studio.course.moveUp` | Yuqoriga | Жоғары |  |
+| `studio.course.moveDown` | Pastga | Төмен |  |
+| `studio.course.removeModule` | Modulni o'chirish | Модульді жою |  |
+| `studio.course.removeModuleConfirm` | Modul bo'limlari va darslari bilan o'chirilsinmi? | Модуль бөлімдері мен сабақтарымен бірге жойылсын ба? |  |
+| `studio.course.removeSection` | Bo'limni o'chirish | Бөлімді жою |  |
+| `studio.course.removeSectionConfirm` | Bo'lim darslari bilan o'chirilsinmi? | Бөлім сабақтарымен бірге жойылсын ба? |  |
+| `studio.course.removeLesson` | Darsni o'chirish | Сабақты жою |  |
+| `studio.course.removeLessonConfirm` | Dars o'chirilsinmi? | Сабақ жойылсын ба? |  |
+| `studio.course.editLesson` | Darsni tahrirlash | Сабақты өңдеу |  |
+| `studio.course.untitled` | (nomsiz dars) | (атаусыз сабақ) |  |
+| `studio.course.lessonBody` | Dars matni | Сабақ мәтіні |  |
+| `studio.course.kind` | Dars turi | Сабақ түрі |  |
+| `studio.course.required` | Majburiy dars | Міндетті сабақ |  |
+| `studio.course.problem` | Masala (manzili) | Есеп (мекенжайы) |  |
+| `studio.course.problemHint` | Arxivdagi masalaning slug'i, masalan a-plus-b. | Мұрағаттағы есептің slug-ы, мысалы a-plus-b. |  |
+| `studio.course.quiz` | Test (manzili) | Тест (мекенжайы) |  |
+| `studio.course.quizHint` | Testlar bo'limidagi testning slug'i. | Тесттер бөліміндегі тесттің slug-ы. |  |
+| `studio.course.passPercent` | O'tish chegarasi, % | Өту шегі, % |  |
+| `studio.course.videoProvider` | Video qayerda | Бейне қай жерде |  |
+| `studio.course.provider.youtube` | YouTube | YouTube |  |
+| `studio.course.provider.vimeo` | Vimeo | Vimeo |  |
+| `studio.course.provider.hls` | Bizning serverda (R2) | Біздің серверде (R2) |  |
+| `studio.course.videoRef` | Video identifikatori | Бейне ID |  |
+| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasidagi identifikator (masalan dQw4w9WgXcQ). | YouTube не Vimeo сілтемесіндегі идентификатор (мысалы dQw4w9WgXcQ). |  |
+| `studio.course.videoSeconds` | Davomiyligi, soniya | Ұзақтығы, секунд |  |
+| `studio.course.saveLesson` | Darsni saqlash | Сабақты сақтау |  |
+| `studio.course.reviewIntro` | Xodim kursni o'qib chiqadi, narxini belgilaydi va nashr qiladi. Yuborishdan oldin quyidagilar bajarilishi kerak. | Қызметкер курсты оқып, бағасын белгілеп, жариялайды. Жібермес бұрын төмендегілер орындалуы керек. |  |
+| `studio.course.gap.title` | Asosiy tilda kurs nomi | Негізгі тілде курс атауы |  |
+| `studio.course.gap.summary` | Asosiy tilda qisqa tavsif | Негізгі тілде қысқаша сипаттама |  |
+| `studio.course.gap.lessons` | Kamida bitta dars | Кемінде бір сабақ |  |
+| `studio.course.gap.lesson_title` | Har darsning asosiy tilda nomi | Әр сабақтың негізгі тілде атауы бар |  |
+| `studio.course.gap.lesson_text` | Matn darslarida matn yozilgan | Мәтін сабақтарында мәтін жазылған |  |
+| `studio.course.gap.lesson_problem` | Masala darslarida arxivdagi masala ko'rsatilgan | Есеп сабақтарында мұрағаттағы есеп көрсетілген |  |
+| `studio.course.gap.lesson_quiz` | Test darslarida nashr qilingan test ko'rsatilgan | Тест сабақтарында жарияланған тест көрсетілген |  |
+| `studio.course.gap.lesson_video` | Video darslarida video ko'rsatilgan | Бейне сабақтарында бейне көрсетілген |  |
+| `studio.course.published` | Kurs nashr qilingan. Matnni tahrirlash mumkin — o'zgarish darhol chiqadi. | Курс жарияланған. Мәтінді өңдеуге болады — өзгеріс бірден шығады. |  |
+| `studio.course.openPublic` | Ommaviy sahifani ochish | Жария бетті ашу |  |
+| `studio.course.delete` | Kursni o'chirish | Курсты жою |  |
+| `studio.course.deleteConfirm` | «{title}» kursi barcha darslari bilan o'chirilsinmi? | «{title}» курсы барлық сабақтарымен жойылсын ба? |  |

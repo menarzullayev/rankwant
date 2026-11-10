@@ -142,7 +142,7 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
     # ikkalasida ham aynan bir xil yoziladi.
     "kaa": {
         # Courses (ADR-0056): «Kurslar» and «Test» are written the same in kaa.
-        "nav.courses", "course.lesson.kind.quiz",
+        "nav.courses", "course.lesson.kind.quiz", "studio.courses.col.course",
         # Education levels: loanwords written the same in uz and kaa.
         "onboarding.level.bachelor",
         "onboarding.level.master",
@@ -267,7 +267,7 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
     # Turk tili: bu so'zlar turkchada ham AYNAN shunday yoziladi
     # ("kim" = кто, "kod" = код, "standart" = стандарт).
     # Courses (ADR-0056): «Kurslar» and «Test» are Turkish words too.
-    "tr": {"nav.courses", "course.lesson.kind.quiz", "settings.nav.profile", "title.foton", "title.elektron", "title.proton",
+    "tr": {"nav.courses", "course.lesson.kind.quiz", "studio.courses.col.course", "settings.nav.profile", "title.foton", "title.elektron", "title.proton",
            "title.atom", "title.kristal", "update.module.profile",
            "admin.label.text.code", "admin.label.text.qvant",
            "admin.label.text.slug", "admin.label.text.standard",

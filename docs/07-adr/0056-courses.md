@@ -162,6 +162,20 @@ bilan «qaytarish»; ikkala yo'nalishda bildirishnoma (`course_review_requested`
 `course_published`, `course_returned`). Pullik qilishda har video R2 (HLS)
 da bo'lishi talab qilinadi.
 
+**4b-qism qanday qurildi.** `/studio/courses` (ro'yxat, yangi kurs: nom va
+asosiy til) va `/studio/courses/<slug>` — bitta sahifada til tanlagich
+(`uz`/`ru`/`en`, asosiy til belgilangan), kurs matni, dastur daraxti (modul,
+bo'lim, dars; yuqoriga/pastga, o'chirish, dars turi bo'yicha maydonlar),
+sozlamalar va ko'rik ro'yxati. Har yozuvdan keyin kurs qayta o'qiladi —
+sahifa server bilmagan holatni ko'rsatmaydi. Xodim uchun `/admin/courses`:
+navbat (`?review=1`) va barcha kurslar, kirish turi va narx, nashr qilish,
+sabab bilan qaytarish. Bildirishnoma havolalari: ko'rik so'rovi → xodim
+navbati, nashr → kurs sahifasi, qaytarish → muallif muharriri. ⚠️ Bo'lim
+**ochilgunga qadar** (`courses` bayrog'i) studio'dagi kurslar faqat xodimga
+ko'rinadi — jamoa katalogni oldindan tayyorlaydi; bayroq yoqilganda har
+kirgan foydalanuvchi yoza oladi (egasi qarori: «har kim, limit 3»).
+`/admin/courses` bayroqqa bog'liq emas.
+
 ## 4. Ochiq qolganlar
 
 - Robocontest tariflari va pullik xizmatlarining chuqur tahlili — egasi

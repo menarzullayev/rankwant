@@ -252,5 +252,5 @@ class StaffCourseSerializer(StudioCourseSerializer):
         ]
 
 
-class ReturnSerializer(serializers.Serializer[dict[str, Any]]):
+class CourseReturnSerializer(serializers.Serializer[dict[str, Any]]):
     reason = serializers.CharField(max_length=1000)

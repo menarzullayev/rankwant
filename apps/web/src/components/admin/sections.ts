@@ -11,6 +11,7 @@ export const ADMIN_SECTIONS = [
   { href: "/admin/contests", labelKey: "admin.section.contests" },
   { href: "/admin/questions", labelKey: "admin.section.questions" },
   { href: "/admin/quizzes", labelKey: "admin.section.quizzes" },
+  { href: "/admin/courses", labelKey: "admin.section.courses" },
   { href: "/admin/arena", labelKey: "admin.section.arena" },
   { href: "/admin/tournaments", labelKey: "admin.section.tournaments" },
   { href: "/admin/hackathons", labelKey: "admin.section.hackathons" },

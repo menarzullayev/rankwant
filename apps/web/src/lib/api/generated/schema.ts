@@ -6922,6 +6922,9 @@ export interface components {
          * @enum {string}
          */
         CourseLevelEnum: "beginner" | "intermediate" | "advanced";
+        CourseReturn: {
+            reason: string;
+        };
         CourseText: {
             locale: components["schemas"]["ContentLocaleEnum"];
             title: string;
@@ -9859,9 +9862,6 @@ export interface components {
             start_at: string;
             /** @default false */
             reset: boolean;
-        };
-        Return: {
-            reason: string;
         };
         ReviewItem: {
             question_id: number;
@@ -16906,9 +16906,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Return"];
-                "application/x-www-form-urlencoded": components["schemas"]["Return"];
-                "multipart/form-data": components["schemas"]["Return"];
+                "application/json": components["schemas"]["CourseReturn"];
+                "application/x-www-form-urlencoded": components["schemas"]["CourseReturn"];
+                "multipart/form-data": components["schemas"]["CourseReturn"];
             };
         };
         responses: {

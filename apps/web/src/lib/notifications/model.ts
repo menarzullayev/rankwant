@@ -151,6 +151,14 @@ export function notificationHref(row: Notification): string | null {
     case "problem_review":
       // Staff-ops: the review queue, where the author's draft waits.
       return "/admin/problems?review=1";
+    case "course_review":
+      // Staff-content: the course review queue (ADR-0056, part 4).
+      return "/admin/courses?review=1";
+    case "course":
+      return `/courses/${id}`;
+    case "studio_course":
+      // A course sent back: the author's editor, where the reason applies.
+      return `/studio/courses/${id}`;
     default:
       return null;
   }

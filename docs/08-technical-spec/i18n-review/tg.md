@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2765 strings.**
+**2857 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2786,3 +2786,95 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» акнун дар феҳристи курсҳо. |  |
 | `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Курс баргардонида шуд — {course} |  |
 | `notif.msg.course_returned.body` | Xodim izohi: {reason} | Шарҳи корманд: {reason} |  |
+| `admin.section.courses` | Kurslar | Курсҳо |  |
+| `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Курсҳое, ки муаллифон ба санҷиш фиристодаанд. Нарх гузоред, нашр кунед ё бо сабаб баргардонед. |  |
+| `admin.courses.queue` | Ko'rik navbati | Навбати санҷиш |  |
+| `admin.courses.all` | Barcha kurslar | Ҳамаи курсҳо |  |
+| `admin.courses.queueEmpty` | Ko'rik kutayotgan kurs yo'q. | Курсе, ки санҷишро интизор аст, нест. |  |
+| `admin.courses.authors` | Mualliflar: {names} | Муаллифон: {names} |  |
+| `admin.courses.openStudio` | Studio'da ochish | Дар студия кушодан |  |
+| `admin.courses.priceQvant` | Narx (Qvant) | Нарх (Qvant) |  |
+| `admin.courses.priceUzs` | Narx (so'm) | Нарх (сӯм) |  |
+| `admin.courses.reward` | Kurs uchun mukofot (Qvant) | Мукофоти курс (Qvant) |  |
+| `admin.courses.savePrice` | Narxni saqlash | Нархро нигоҳ доштан |  |
+| `admin.courses.saved` | Saqlandi. | Нигоҳ дошта шуд. |  |
+| `admin.courses.gaps` | Nashrdan oldin kerak: | Пеш аз нашр лозим: |  |
+| `admin.courses.publish` | Nashr qilish | Нашр кардан |  |
+| `admin.courses.publishedNote` | Kurs nashr qilindi, muallifga xabar ketdi. | Курс нашр шуд, ба муаллиф хабар фиристода шуд. |  |
+| `admin.courses.reason` | Qaytarish sababi | Сабаби баргардонидан |  |
+| `admin.courses.sendBack` | Muallifga qaytarish | Ба муаллиф баргардонидан |  |
+| `admin.courses.sentBack` | Kurs qaytarildi, muallifga sabab yuborildi. | Курс баргардонида шуд, сабаб ба муаллиф фиристода шуд. |  |
+| `studio.nav.courses` | Kurslar | Курсҳо |  |
+| `studio.courses.intro` | Kurs yozing: modullar, bo'limlar va darslar (matn, masala, test, video). Xodim ko'rib chiqib nashr qiladi va narxini belgilaydi. | Курс нависед: модулҳо, бахшҳо ва дарсҳо (матн, масъала, тест, видео). Корманд месанҷад, нашр мекунад ва нархашро муайян мекунад. |  |
+| `studio.courses.empty` | Hali kurs yozmagansiz | Шумо ҳоло курс нанавиштаед |  |
+| `studio.courses.emptyHint` | Quyida nom va tilni tanlang — qolganini kurs sahifasida yozasiz. | Дар поён ном ва забонро интихоб кунед — боқимондаро дар саҳифаи курс менависед. |  |
+| `studio.courses.new` | Yangi kurs | Курси нав |  |
+| `studio.courses.create` | Kursni yaratish | Сохтани курс |  |
+| `studio.courses.count` | {count} / {limit} nashr qilinmagan kurs | {count} / {limit} курси нашрнашуда |  |
+| `studio.courses.full` | Nashr qilinmagan kurslar chegarasi: {count} / {limit}. Yangisi uchun birortasi nashr qilinsin yoki o'chirilsin. | Ҳадди курсҳои нашрнашуда: {count} / {limit}. Барои нав яктоашро нашр ё нест кунед. |  |
+| `studio.courses.col.course` | Kurs | Курс |  |
+| `studio.courses.col.lessons` | Darslar | Дарсҳо |  |
+| `studio.courses.col.published` | Nashr qilingan | Нашр шуд |  |
+| `studio.course.baseLocale` | Kursning asosiy tili | Забони асосии курс |  |
+| `studio.course.baseLocaleHint` | Boshqa tilda matn bo'lmasa, o'quvchi shu tildagi matnni ko'radi. | Агар матн бо забони хонанда набошад, ӯ матни ҳамин забонро мебинад. |  |
+| `studio.course.language` | Matn tili | Забони матн |  |
+| `studio.course.baseMark` | (asosiy) | (асосӣ) |  |
+| `studio.course.text` | Kurs matni | Матни курс |  |
+| `studio.course.summary` | Qisqa tavsif | Тавсифи кӯтоҳ |  |
+| `studio.course.summaryHint` | Katalog kartasida chiqadi — bir-ikki jumla. | Дар корти феҳрист намоён мешавад — як-ду ҷумла. |  |
+| `studio.course.saveText` | Matnni saqlash | Нигоҳ доштани матн |  |
+| `studio.course.saved` | Saqlandi — darhol ko'rinadi. | Нигоҳ дошта шуд — дарҳол намоён аст. |  |
+| `studio.course.save` | Saqlash | Нигоҳ доштан |  |
+| `studio.course.settings` | Sozlamalar | Танзимот |  |
+| `studio.course.saveSettings` | Sozlamalarni saqlash | Нигоҳ доштани танзимот |  |
+| `studio.course.locked` | Kurs nashr qilingan: tuzilma va sozlamalarni xodim o'zgartiradi. Matnni tahrirlashingiz mumkin. | Курс нашр шудааст: сохтор ва танзимотро корманд тағйир медиҳад. Матнро таҳрир карда метавонед. |  |
+| `studio.course.staffEdits` | Kurs nashr qilingan; siz xodim sifatida tuzilmani o'zgartirasiz — bu yozilganlar progressiga ta'sir qiladi. | Курс нашр шудааст; шумо ҳамчун корманд сохторро тағйир медиҳед — ин ба пешрафти сабтиномшудагон таъсир мерасонад. |  |
+| `studio.course.finalQuiz` | Yakuniy test (manzili) | Тести ниҳоӣ (суроға) |  |
+| `studio.course.finalQuizHint` | Testlar bo'limidagi testning slug'i. Sertifikat uchun kerak. | Slug-и тест аз бахши тестҳо. Барои сертификат лозим. |  |
+| `studio.course.threshold` | Sertifikat chegarasi, % | Ҳадди сертификат, % |  |
+| `studio.course.cover` | Muqova rasmi manzili | Суроғаи тасвири муқова |  |
+| `studio.course.coverHint` | Ixtiyoriy: https:// bilan boshlanadigan rasm. | Ихтиёрӣ: тасвир бо суроғаи https://. |  |
+| `studio.course.moduleTitle` | Modul nomi | Номи модул |  |
+| `studio.course.sectionTitle` | Bo'lim nomi | Номи бахш |  |
+| `studio.course.addModule` | Modul qo'shish | Илова кардани модул |  |
+| `studio.course.addSection` | Bo'lim qo'shish | Илова кардани бахш |  |
+| `studio.course.addLesson` | Dars qo'shish | Илова кардани дарс |  |
+| `studio.course.moveUp` | Yuqoriga | Ба боло |  |
+| `studio.course.moveDown` | Pastga | Ба поён |  |
+| `studio.course.removeModule` | Modulni o'chirish | Нест кардани модул |  |
+| `studio.course.removeModuleConfirm` | Modul bo'limlari va darslari bilan o'chirilsinmi? | Модул бо бахшҳо ва дарсҳояш нест карда шавад? |  |
+| `studio.course.removeSection` | Bo'limni o'chirish | Нест кардани бахш |  |
+| `studio.course.removeSectionConfirm` | Bo'lim darslari bilan o'chirilsinmi? | Бахш бо дарсҳояш нест карда шавад? |  |
+| `studio.course.removeLesson` | Darsni o'chirish | Нест кардани дарс |  |
+| `studio.course.removeLessonConfirm` | Dars o'chirilsinmi? | Дарс нест карда шавад? |  |
+| `studio.course.editLesson` | Darsni tahrirlash | Таҳрири дарс |  |
+| `studio.course.untitled` | (nomsiz dars) | (дарси беном) |  |
+| `studio.course.lessonBody` | Dars matni | Матни дарс |  |
+| `studio.course.kind` | Dars turi | Навъи дарс |  |
+| `studio.course.required` | Majburiy dars | Дарси ҳатмӣ |  |
+| `studio.course.problem` | Masala (manzili) | Масъала (суроға) |  |
+| `studio.course.problemHint` | Arxivdagi masalaning slug'i, masalan a-plus-b. | Slug-и масъала аз бойгонӣ, масалан a-plus-b. |  |
+| `studio.course.quiz` | Test (manzili) | Тест (суроға) |  |
+| `studio.course.quizHint` | Testlar bo'limidagi testning slug'i. | Slug-и тест аз бахши тестҳо. |  |
+| `studio.course.passPercent` | O'tish chegarasi, % | Ҳадди гузариш, % |  |
+| `studio.course.videoProvider` | Video qayerda | Видео дар куҷо |  |
+| `studio.course.provider.youtube` | YouTube | YouTube |  |
+| `studio.course.provider.vimeo` | Vimeo | Vimeo |  |
+| `studio.course.provider.hls` | Bizning serverda (R2) | Дар сервери мо (R2) |  |
+| `studio.course.videoRef` | Video identifikatori | ID-и видео |  |
+| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasidagi identifikator (masalan dQw4w9WgXcQ). | Идентификатор аз пайванди YouTube ё Vimeo (масалан dQw4w9WgXcQ). |  |
+| `studio.course.videoSeconds` | Davomiyligi, soniya | Давомнокӣ, сония |  |
+| `studio.course.saveLesson` | Darsni saqlash | Нигоҳ доштани дарс |  |
+| `studio.course.reviewIntro` | Xodim kursni o'qib chiqadi, narxini belgilaydi va nashr qiladi. Yuborishdan oldin quyidagilar bajarilishi kerak. | Корманд курсро мехонад, нархашро муайян ва нашр мекунад. Пеш аз фиристодан инҳо бояд иҷро шаванд. |  |
+| `studio.course.gap.title` | Asosiy tilda kurs nomi | Номи курс бо забони асосӣ |  |
+| `studio.course.gap.summary` | Asosiy tilda qisqa tavsif | Тавсифи кӯтоҳ бо забони асосӣ |  |
+| `studio.course.gap.lessons` | Kamida bitta dars | Ақаллан як дарс |  |
+| `studio.course.gap.lesson_title` | Har darsning asosiy tilda nomi | Ҳар дарс бо забони асосӣ ном дорад |  |
+| `studio.course.gap.lesson_text` | Matn darslarida matn yozilgan | Дарсҳои матнӣ матн доранд |  |
+| `studio.course.gap.lesson_problem` | Masala darslarida arxivdagi masala ko'rsatilgan | Дарсҳои масъала ба масъалаи бойгонӣ ишора мекунанд |  |
+| `studio.course.gap.lesson_quiz` | Test darslarida nashr qilingan test ko'rsatilgan | Дарсҳои тест ба тести нашршуда ишора мекунанд |  |
+| `studio.course.gap.lesson_video` | Video darslarida video ko'rsatilgan | Дарсҳои видеоӣ видео доранд |  |
+| `studio.course.published` | Kurs nashr qilingan. Matnni tahrirlash mumkin — o'zgarish darhol chiqadi. | Курс нашр шудааст. Матнро таҳрир кардан мумкин — тағйирот дарҳол намоён мешавад. |  |
+| `studio.course.openPublic` | Ommaviy sahifani ochish | Кушодани саҳифаи оммавӣ |  |
+| `studio.course.delete` | Kursni o'chirish | Нест кардани курс |  |
+| `studio.course.deleteConfirm` | «{title}» kursi barcha darslari bilan o'chirilsinmi? | Курси «{title}» бо ҳамаи дарсҳояш нест карда шавад? |  |
