@@ -315,6 +315,20 @@ if [ -s "$VERIFY" ] && [ "$DRY_RUN" -eq 0 ]; then
   printf '%s' "$pending" > "$VERIFY" 2>/dev/null || true
 fi
 
+# ── 3c. Orqada qolgan PR'lar — navbat bilan, bittadan ───────────────
+# Qaror 2026-11-10: `main` siljiganda agentlar o'z PR'ini darhol
+# `update-branch` qilardi, keyingi merge uni yana orqada qoldirardi va o'sha
+# CI yurishi bekor ketardi (30 PR'da 75 ta PR CI). `pr_update_queue.py`
+# auto-merge yoqilgan PR'lardan hech birining CI'si yurmayotganda faqat eng
+# eskisini yangilaydi. Faqat harakat logga yoziladi; GitHub o'qilmasa jim.
+if [ "$DRY_RUN" -eq 0 ] && [ -f tools/pr_update_queue.py ]; then
+  QUEUE_PY="$(bash tools/pick-python.sh 2>/dev/null)" || QUEUE_PY=""
+  if [ -n "$QUEUE_PY" ]; then
+    queue_out="$("$QUEUE_PY" tools/pr_update_queue.py 2>&1)"
+    [ -n "$queue_out" ] && log "$queue_out"
+  fi
+fi
+
 # ── 4. Worktree'ni origin/main ga keltirish ──────────────────────────
 # ⚠️ `reset --hard` ATAYLAB yo'q: u tasodifan commit qilingan ishni yo'q
 # qiladi. `--ff-only` ajralib ketgan holatda TO'XTAYDI va bu to'g'ri —
