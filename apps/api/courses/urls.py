@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from courses import author_views, video_views, views
+from courses import author_views, certificate_views, video_views, views
 
 router = DefaultRouter()
 router.register("courses", views.CourseViewSet, basename="course")
@@ -32,6 +32,16 @@ router.register("staff/courses", author_views.StaffCourseViewSet, basename="staf
 
 urlpatterns = [
     path("me/courses/", views.MyCoursesView.as_view(), name="my-courses"),
+    path(
+        "courses/certificates/<uuid:pk>/",
+        certificate_views.CourseCertificateView.as_view(),
+        name="course-certificate",
+    ),
+    path(
+        "courses/certificates/<uuid:pk>/pdf/",
+        certificate_views.CourseCertificatePdfView.as_view(),
+        name="course-certificate-pdf",
+    ),
     path(
         "courses/<slug:slug>/lessons/<int:lesson_id>/",
         views.LessonDetailView.as_view(),

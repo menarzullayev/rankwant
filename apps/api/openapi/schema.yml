@@ -2056,6 +2056,17 @@ paths:
         required: true
       tags:
       - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EnrollInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnrollInput'
       security:
       - bearerAuth: []
       - cookieAuth: []
@@ -2222,6 +2233,56 @@ paths:
             application/vnd.apple.mpegurl:
               schema:
                 type: string
+          description: ''
+  /api/v1/courses/certificates/{id}/:
+    get:
+      operationId: courses_certificates_retrieve
+      description: Anyone with the id (the QR) may check it — that is what it is for.
+      summary: Kurs sertifikatini tekshirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - courses
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseCertificate'
+          description: ''
+  /api/v1/courses/certificates/{id}/pdf/:
+    get:
+      operationId: courses_certificates_pdf_retrieve
+      summary: Kurs sertifikati PDF'i
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - courses
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
           description: ''
   /api/v1/custom-test/:
     post:
@@ -15114,6 +15175,41 @@ components:
       - slug
       - summary
       - title
+    CourseCertificate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        course_title:
+          type: string
+          readOnly: true
+        course_slug:
+          type: string
+          readOnly: true
+        final_score:
+          type: integer
+          readOnly: true
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - course_slug
+      - course_title
+      - final_score
+      - id
+      - issued_at
+      - name
+      - username
     CourseDetail:
       type: object
       properties:
@@ -15198,6 +15294,9 @@ components:
         has_final_quiz:
           type: boolean
           readOnly: true
+        final_quiz_slug:
+          type: string
+          readOnly: true
         authors:
           type: array
           items:
@@ -15226,6 +15325,7 @@ components:
       - description
       - enrolled
       - enrollment
+      - final_quiz_slug
       - has_final_quiz
       - lesson_count
       - level
@@ -15675,6 +15775,12 @@ components:
           type: string
         username:
           type: string
+    EnrollInput:
+      type: object
+      properties:
+        confirm_price:
+          type: integer
+          nullable: true
     Enrollment:
       type: object
       properties:
@@ -15691,7 +15797,12 @@ components:
           format: date-time
           readOnly: true
           nullable: true
+        certificate:
+          type: string
+          nullable: true
+          readOnly: true
       required:
+      - certificate
       - completed_at
       - created_at
       - source
@@ -24985,6 +25096,7 @@ components:
       - duel
       - achievement
       - hack
+      - course
       type: string
       description: |-
         * `quest` - Quest
@@ -24998,6 +25110,7 @@ components:
         * `duel` - Duel
         * `achievement` - Yutuq
         * `hack` - Hack
+        * `course` - Kurs
     TypeEnum:
       enum:
       - daily

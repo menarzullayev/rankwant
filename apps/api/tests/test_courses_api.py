@@ -170,16 +170,17 @@ class TestEnrol:
         )
 
     @pytest.mark.parametrize(
-        ("access", "price", "code"),
+        ("access", "price", "status", "code"),
         [
-            (Course.Access.QVANT, {"price_qvant": 50}, "course_qvant_required"),
-            (Course.Access.PAID, {"price_uzs": 99_000}, "course_payment_required"),
+            # A Qvant course asks the reader to confirm the price first.
+            (Course.Access.QVANT, {"price_qvant": 50}, 409, "course_price_changed"),
+            (Course.Access.PAID, {"price_uzs": 99_000}, 402, "course_payment_required"),
         ],
     )
-    def test_priced_course_is_not_free_to_join(self, user, access, price, code):
+    def test_priced_course_is_not_free_to_join(self, user, access, price, status, code):
         course = _course(access=access, **price)
         resp = _client(user).post(reverse("course-enroll", args=[course.slug]))
-        assert resp.status_code == 402
+        assert resp.status_code == status
         assert resp.json()["error"]["code"] == code
         assert not Enrollment.objects.exists()
 

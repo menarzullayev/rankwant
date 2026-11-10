@@ -2972,6 +2972,24 @@ def monitor_watches_disk_and_commit() -> str | None:
     return None
 
 
+def course_rewards_and_certificate() -> str | None:
+    """2026-11-10 (HITL, ADR-0056 6-qism): sertifikat, mukofot, Qvant bilan ochish.
+
+    Sertifikat — majburiy darslar va (bo'lsa) yakuniy test >= chegara;
+    modul/kurs mukofoti bir martalik va kunlik shiftdan tashqarida; Qvant
+    bilan ochishda o'quvchi ko'rgan narx tasdiqlanadi, to'lov qaytarilmaydi.
+    """
+    services_py = read("apps/api/courses/services.py")
+    if "    if confirm_price != course.price_qvant:\n" not in services_py:
+        return "courses/services.py: Qvant narxi tasdiqsiz yechiladi"
+    if "        if score is None or score < course.certificate_threshold:\n" not in services_py:
+        return "courses/services.py: sertifikat yakuniy test chegarasini tekshirmaydi"
+    ledger_py = read("apps/api/qvant/ledger.py")
+    if "def credit_once(" not in ledger_py or "respect_cap=False)" not in ledger_py:
+        return "qvant/ledger.py: kurs mukofoti bir martalik emas"
+    return None
+
+
 def course_video_is_encrypted_and_own() -> str | None:
     """2026-11-10 (HITL, ADR-0056 5-qism): pullik video — shifrlangan HLS.
 
@@ -5091,6 +5109,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kurslar: to'rt daraja, pullik video R2, bayroq ortida", courses_structure_and_access),
     ("kurs studio'si: limit 3, tuzilma va narx xodimda", course_studio_rules),
     ("kurs videosi: shifrlangan HLS, kalit eshik ortida, o'z kursi", course_video_is_encrypted_and_own),
+    ("kurs sertifikati, bir martalik mukofot, tasdiqlangan Qvant narxi", course_rewards_and_certificate),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),

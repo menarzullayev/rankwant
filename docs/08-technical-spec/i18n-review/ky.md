@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2880 strings.**
+**2889 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2739,7 +2739,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `course.enroll` | Kursga yozilish | Курска жазылуу |  |
 | `course.start` | Boshlash | Баштоо |  |
 | `course.continue` | Davom etish | Улантуу |  |
-| `course.soonQvant` | Qvant bilan ochish tez orada qo'shiladi. | Qvant менен ачуу жакында кошулат. |  |
 | `course.soonPaid` | Sotib olish tez orada qo'shiladi. | Сатып алуу жакында кошулат. |  |
 | `course.about` | Kurs haqida | Курс жөнүндө |  |
 | `course.outcomes` | Nimani o'rganasiz | Эмнени үйрөнөсүз |  |
@@ -2901,3 +2900,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.video.status.failed` | Xato | Ката |  |
 | `error.course_video_unavailable` | Video saqlash joyi hali sozlanmagan. | Видео сактагыч азырынча жөндөлө элек. |  |
 | `error.course_video_refused` | Bu videoni yuklab bo'lmaydi: turi, hajmi yoki bir vaqtdagi yuklashlar soni. | Бул видеону жүктөө мүмкүн эмес: түрү, көлөмү же бир убактагы жүктөөлөрдүн саны. |  |
+| `course.unlock` | {price} Qvant bilan ochish | {price} Qvant менен ачуу |  |
+| `course.unlockConfirm` | Kursni {price} Qvant evaziga ochasizmi? To'langan Qvant qaytarilmaydi. | Курсту {price} Qvant-ка ачасызбы? Төлөнгөн Qvant кайтарылбайт. |  |
+| `course.certificateView` | Sertifikatni ko'rish | Сертификатты көрүү |  |
+| `course.certificatePending` | Sertifikat uchun yakuniy testdan kamida {percent}% to'plang. | Сертификат үчүн жыйынтыктоочу тесттен кеминде {percent}% топтоңуз. |  |
+| `cert.courseDone` | KURS TUGATILDI | КУРС БҮТТҮ |  |
+| `cert.courseOf` | «{course}» kursi | «{course}» курсу |  |
+| `cert.finalScore` | Yakuniy test: {percent}% | Жыйынтыктоочу тест: {percent}% |  |
+| `cert.pdf` | PDF yuklab olish | PDF жүктөп алуу |  |
+| `error.course_qvant_insufficient` | Bu kurs uchun Qvant yetarli emas. | Бул курс үчүн Qvant жетишсиз. |  |
+| `error.course_price_changed` | Kurs narxi o'zgardi. Sahifani yangilab, yangi narxni tasdiqlang. | Курстун баасы өзгөрдү. Баракты жаңыртып, жаңы бааны ырастаңыз. |  |

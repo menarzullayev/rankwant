@@ -2852,7 +2852,6 @@ export const uz = {
   "course.enroll": "Kursga yozilish",
   "course.start": "Boshlash",
   "course.continue": "Davom etish",
-  "course.soonQvant": "Qvant bilan ochish tez orada qo'shiladi.",
   "course.soonPaid": "Sotib olish tez orada qo'shiladi.",
   "course.about": "Kurs haqida",
   "course.outcomes": "Nimani o'rganasiz",
@@ -3014,6 +3013,16 @@ export const uz = {
   "studio.video.status.failed": "Xato",
   "error.course_video_unavailable": "Video saqlash joyi hali sozlanmagan.",
   "error.course_video_refused": "Bu videoni yuklab bo'lmaydi: turi, hajmi yoki bir vaqtdagi yuklashlar soni.",
+  "course.unlock": "{price} Qvant bilan ochish",
+  "course.unlockConfirm": "Kursni {price} Qvant evaziga ochasizmi? To'langan Qvant qaytarilmaydi.",
+  "course.certificateView": "Sertifikatni ko'rish",
+  "course.certificatePending": "Sertifikat uchun yakuniy testdan kamida {percent}% to'plang.",
+  "cert.courseDone": "KURS TUGATILDI",
+  "cert.courseOf": "«{course}» kursi",
+  "cert.finalScore": "Yakuniy test: {percent}%",
+  "cert.pdf": "PDF yuklab olish",
+  "error.course_qvant_insufficient": "Bu kurs uchun Qvant yetarli emas.",
+  "error.course_price_changed": "Kurs narxi o'zgardi. Sahifani yangilab, yangi narxni tasdiqlang.",
 } as const;
 
 export type MessageKey = keyof typeof uz;

@@ -11,13 +11,15 @@ export {
   lessonState,
   nextLesson,
   type CourseAccess,
+  type CourseCertificate,
   type CourseCard,
   type CourseDetail,
   type CourseLevel,
   type LessonDetail,
   type MyCourse,
 } from "./api/courses";
-export { CompleteButton, EnrollButton } from "./components/CourseActions";
+export { CompleteButton, EnrollButton, UnlockButton } from "./components/CourseActions";
+export { CourseCertificateView } from "./components/CourseCertificateView";
 export { CourseMeta } from "./components/CourseMeta";
 export { FallbackNote } from "./components/FallbackNote";
 export { LessonVideo } from "./components/LessonVideo";

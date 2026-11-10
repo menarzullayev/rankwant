@@ -36,6 +36,7 @@ from courses.models import (
 from courses.serializers import (
     CourseCardSerializer,
     CourseDetailSerializer,
+    EnrollInputSerializer,
     EnrollmentSerializer,
     LessonDetailSerializer,
     MyCourseSerializer,
@@ -161,12 +162,16 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet[Course]):
         }
         return Response(CourseDetailSerializer(course, context=context).data)
 
-    @extend_schema(request=None, responses={201: EnrollmentSerializer})
+    @extend_schema(request=EnrollInputSerializer, responses={201: EnrollmentSerializer})
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def enroll(self, request: Request, slug: str | None = None) -> Response:
         course = get_object_or_404(published(), slug=slug)
         assert isinstance(request.user, User)
-        enrollment = services.enroll(request.user, course)
+        data = EnrollInputSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        enrollment = services.enroll(
+            request.user, course, confirm_price=data.validated_data.get("confirm_price")
+        )
         return Response(EnrollmentSerializer(enrollment).data, status=status.HTTP_201_CREATED)
 
 

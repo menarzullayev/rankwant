@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2880 strings.**
+**2889 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2739,7 +2739,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `course.enroll` | Kursga yozilish | Kursqa jazılıw |  |
 | `course.start` | Boshlash | Baslaw |  |
 | `course.continue` | Davom etish | Dawam ettiriw |  |
-| `course.soonQvant` | Qvant bilan ochish tez orada qo'shiladi. | Qvant penen ashıw jaqın arada qosıladı. |  |
 | `course.soonPaid` | Sotib olish tez orada qo'shiladi. | Satıp alıw jaqın arada qosıladı. |  |
 | `course.about` | Kurs haqida | Kurs haqqında |  |
 | `course.outcomes` | Nimani o'rganasiz | Neni úyrenesiz |  |
@@ -2901,3 +2900,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.video.status.failed` | Xato | Qáte |  |
 | `error.course_video_unavailable` | Video saqlash joyi hali sozlanmagan. | Video saqlaw ornı ele sazlanbaǵan. |  |
 | `error.course_video_refused` | Bu videoni yuklab bo'lmaydi: turi, hajmi yoki bir vaqtdagi yuklashlar soni. | Bul videonı júklew múmkin emes: túri, kólemi yamasa bir waqıttaǵı júklewler sanı. |  |
+| `course.unlock` | {price} Qvant bilan ochish | {price} Qvant penen ashıw |  |
+| `course.unlockConfirm` | Kursni {price} Qvant evaziga ochasizmi? To'langan Qvant qaytarilmaydi. | Kurstı {price} Qvant-qa ashasız ba? Tólengen Qvant qaytarılmaydı. |  |
+| `course.certificateView` | Sertifikatni ko'rish | Sertifikattı kóriw |  |
+| `course.certificatePending` | Sertifikat uchun yakuniy testdan kamida {percent}% to'plang. | Sertifikat ushın juwmaqlawshı testten keminde {percent}% jıynań. |  |
+| `cert.courseDone` | KURS TUGATILDI | KURS TAMAMLANDI |  |
+| `cert.courseOf` | «{course}» kursi | «{course}» kursı |  |
+| `cert.finalScore` | Yakuniy test: {percent}% | Juwmaqlawshı test: {percent}% |  |
+| `cert.pdf` | PDF yuklab olish | PDF júklep alıw |  |
+| `error.course_qvant_insufficient` | Bu kurs uchun Qvant yetarli emas. | Bul kurs ushın Qvant jetkiliksiz. |  |
+| `error.course_price_changed` | Kurs narxi o'zgardi. Sahifani yangilab, yangi narxni tasdiqlang. | Kurs bahası ózgerdi. Betti jańalap, jańa bahanı tastıyıqlań. |  |

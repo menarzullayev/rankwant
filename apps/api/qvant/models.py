@@ -43,6 +43,9 @@ class QvantTransaction(models.Model):
         #: Amaliyot siyosatidagi muvaffaqiyatli hack (ADR-0020).
         #: Kunlik shift ledgerda — farm qilib bo'lmaydi.
         HACK = "hack", "Hack"
+        #: Kurs: modul yoki kurs tugatilganda mukofot, Qvant bilan ochilgan kurs
+        #: narxi (ADR-0056). Har biri bir marta — `ledger.credit_once`.
+        COURSE = "course", "Kurs"
 
     user = models.ForeignKey(
         "core.User", on_delete=models.CASCADE, related_name="qvant_transactions"

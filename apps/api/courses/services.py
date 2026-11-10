@@ -23,7 +23,9 @@ from rest_framework.exceptions import APIException
 
 from core.models import User
 from courses import progress
-from courses.models import Course, Enrollment, Lesson, LessonProgress
+from courses.models import Course, CourseCertificate, Enrollment, Lesson, LessonProgress, Module
+from quizzes import services as quizzes
+from qvant import ledger
 
 log = logging.getLogger(__name__)
 
@@ -46,13 +48,19 @@ def course_error(
     return err
 
 
-def enroll(user: User, course: Course) -> Enrollment:
+#: Ledger references: one per user and course (or module), so a reward or a
+#: price is never taken twice.
+REF_UNLOCK = "course_unlock"
+REF_COURSE = "course"
+REF_MODULE = "course_module"
+
+
+def enroll(user: User, course: Course, *, confirm_price: int | None = None) -> Enrollment:
+    existing = Enrollment.objects.filter(user=user, course=course).first()
+    if existing is not None:
+        return existing
     if course.access == Course.Access.QVANT:
-        raise course_error(
-            "course_qvant_required",
-            "This course opens with Qvant.",
-            status.HTTP_402_PAYMENT_REQUIRED,
-        )
+        return _enroll_with_qvant(user, course, confirm_price)
     if course.access == Course.Access.PAID:
         raise course_error(
             "course_payment_required", "This course is paid.", status.HTTP_402_PAYMENT_REQUIRED
@@ -60,7 +68,49 @@ def enroll(user: User, course: Course) -> Enrollment:
     enrollment, _ = Enrollment.objects.get_or_create(
         user=user, course=course, defaults={"source": Enrollment.Source.FREE}
     )
+    refresh_completion(user, course)
     return enrollment
+
+
+@transaction.atomic
+def _enroll_with_qvant(user: User, course: Course, confirm_price: int | None) -> Enrollment:
+    """Pay the course's Qvant price once and enrol (no refund — owner decision).
+
+    The reader confirms the price they saw: a price staff changed in the
+    meantime is not taken silently.
+    """
+    if confirm_price != course.price_qvant:
+        raise course_error(
+            "course_price_changed",
+            "Confirm the course's current Qvant price.",
+            status.HTTP_409_CONFLICT,
+        )
+    ledger.lock_wallet(user)
+    existing = Enrollment.objects.filter(user=user, course=course).first()
+    if existing is not None:
+        return existing
+    try:
+        ledger.debit(
+            user,
+            course.price_qvant,
+            ledger_reason(),
+            ref_type=REF_UNLOCK,
+            ref_id=course.slug,
+        )
+    except ledger.InsufficientBalance as error:
+        raise course_error(
+            "course_qvant_insufficient",
+            "Not enough Qvant for this course.",
+            status.HTTP_402_PAYMENT_REQUIRED,
+        ) from error
+    enrollment = Enrollment.objects.create(user=user, course=course, source=Enrollment.Source.QVANT)
+    refresh_completion(user, course)
+    return enrollment
+
+
+def ledger_reason() -> str:
+    # `qvant.models` is another app's model module: take the value by name.
+    return "course"
 
 
 def check_open(user: Any, lesson: Lesson, state: progress.CourseState) -> None:
@@ -90,17 +140,103 @@ def complete(user: User, lesson: Lesson) -> progress.CourseState:
             status.HTTP_400_BAD_REQUEST,
         )
     LessonProgress.objects.get_or_create(user=user, lesson=lesson)
+    reward_module(user, lesson.section.module)
     return refresh_completion(user, course)
 
 
+def _already_met(user: User, lesson: Lesson) -> bool:
+    """A problem solved, or a quiz passed, before the lesson was open."""
+    if lesson.kind == Lesson.Kind.PROBLEM and lesson.problem is not None:
+        return bool(lesson.problem.solvers.filter(user=user).exists())
+    if lesson.kind == Lesson.Kind.QUIZ and lesson.quiz is not None:
+        best = quizzes.best_percent(user, lesson.quiz)
+        return best is not None and best >= lesson.quiz_pass_percent
+    return False
+
+
+def catch_up(user: User, course: Course) -> None:
+    """Complete open problem and quiz lessons whose condition is already met.
+
+    Their own events fire once: a problem solved in the archive before
+    enrolling, or a quiz passed while its lesson was still locked, would
+    otherwise leave the lesson undone for good. Completing one may open the
+    next in a sequential course, hence the loop.
+    """
+    while True:
+        state = progress.state(course, user)
+        if state.enrollment is None:
+            return
+        pending = Lesson.objects.filter(
+            id__in=state.unlocked - state.completed,
+            kind__in=(Lesson.Kind.PROBLEM, Lesson.Kind.QUIZ),
+        ).select_related("problem", "quiz", "section__module")
+        met = [lesson for lesson in pending if _already_met(user, lesson)]
+        if not met:
+            return
+        for lesson in met:
+            LessonProgress.objects.get_or_create(user=user, lesson=lesson)
+            reward_module(user, lesson.section.module)
+
+
 def refresh_completion(user: User, course: Course) -> progress.CourseState:
-    """Mark the enrolment complete once every required lesson is done."""
+    """Mark the enrolment complete once every required lesson is done; pay
+    the course reward and issue the certificate when they are due."""
+    catch_up(user, course)
     state = progress.state(course, user)
     enrollment = state.enrollment
-    if enrollment is not None and state.is_complete and enrollment.completed_at is None:
-        enrollment.completed_at = timezone.now()
-        enrollment.save(update_fields=["completed_at"])
+    if enrollment is not None and state.is_complete:
+        if enrollment.completed_at is None:
+            enrollment.completed_at = timezone.now()
+            enrollment.save(update_fields=["completed_at"])
+            ledger.credit_once(
+                user, course.reward_qvant, ledger_reason(), ref_type=REF_COURSE, ref_id=course.slug
+            )
+        issue_certificate(user, course)
     return state
+
+
+def reward_module(user: User, module: Module) -> None:
+    """The module's Qvant reward, once, when its last required lesson is done."""
+    if not module.reward_qvant:
+        return
+    required = set(
+        Lesson.objects.filter(section__module=module, is_required=True).values_list("id", flat=True)
+    )
+    if not required:
+        return
+    done = set(
+        LessonProgress.objects.filter(user=user, lesson_id__in=required).values_list(
+            "lesson_id", flat=True
+        )
+    )
+    if required <= done:
+        ledger.credit_once(
+            user, module.reward_qvant, ledger_reason(), ref_type=REF_MODULE, ref_id=str(module.pk)
+        )
+
+
+def issue_certificate(user: User, course: Course) -> CourseCertificate | None:
+    """Owner decision 2026-11-10: every required lesson, and the final quiz
+    at or above the course threshold when the course has one."""
+    existing = CourseCertificate.objects.filter(user=user, course=course).first()
+    if existing is not None:
+        return existing
+    score = None
+    if course.final_quiz is not None:
+        score = quizzes.best_percent(user, course.final_quiz)
+        if score is None or score < course.certificate_threshold:
+            return None
+    title_row = next((t for t in course.translations.all() if t.locale == course.base_locale), None)
+    certificate, _ = CourseCertificate.objects.get_or_create(
+        user=user,
+        course=course,
+        defaults={
+            "name": (user.display_name or user.username)[:150],
+            "course_title": (title_row.title if title_row else course.slug)[:200],
+            "final_score": score,
+        },
+    )
+    return certificate
 
 
 def _record(user: User, lessons: list[Lesson]) -> None:
@@ -111,6 +247,7 @@ def _record(user: User, lessons: list[Lesson]) -> None:
         if state.enrollment is None or lesson.id not in state.unlocked:
             continue
         LessonProgress.objects.get_or_create(user=user, lesson=lesson)
+        reward_module(user, lesson.section.module)
         courses[course.id] = course
     for course in courses.values():
         refresh_completion(user, course)
@@ -138,6 +275,12 @@ def on_quiz_attempt(user: User, quiz_id: int, score: int, total: int) -> None:
     ]
     if lessons:
         _record(user, lessons)
+    # A final quiz passed after the lessons were done issues the certificate.
+    finished = Course.objects.filter(
+        final_quiz_id=quiz_id, enrollments__user=user, enrollments__completed_at__isnull=False
+    )
+    for course in finished:
+        issue_certificate(user, course)
 
 
 # Signals are connected by sender name: `courses` never imports other apps'

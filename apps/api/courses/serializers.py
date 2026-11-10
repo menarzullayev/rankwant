@@ -15,7 +15,7 @@ from rest_framework import serializers
 
 from courses import progress, videos
 from courses.i18n import pick
-from courses.models import Course, Enrollment, Lesson
+from courses.models import Course, CourseCertificate, Enrollment, Lesson
 
 
 def _text(obj: Any, locale: str, base: str) -> Any:
@@ -50,9 +50,39 @@ class ProgressSerializer(serializers.Serializer[progress.CourseState]):
 
 
 class EnrollmentSerializer(serializers.ModelSerializer[Enrollment]):
+    #: The reader's certificate for this course, once issued.
+    certificate = serializers.SerializerMethodField()
+
     class Meta:
         model = Enrollment
-        fields = ["source", "created_at", "completed_at"]
+        fields = ["source", "created_at", "completed_at", "certificate"]
+        read_only_fields = fields
+
+    def get_certificate(self, obj: Enrollment) -> str | None:
+        row = CourseCertificate.objects.filter(user_id=obj.user_id, course_id=obj.course_id).first()
+        return str(row.pk) if row else None
+
+
+class EnrollInputSerializer(serializers.Serializer[dict[str, Any]]):
+    #: For a Qvant course: the price the reader saw and agreed to.
+    confirm_price = serializers.IntegerField(required=False, allow_null=True)
+
+
+class CourseCertificateSerializer(serializers.ModelSerializer[CourseCertificate]):
+    username = serializers.CharField(source="user.username", read_only=True)
+    course_slug = serializers.CharField(source="course.slug", read_only=True)
+
+    class Meta:
+        model = CourseCertificate
+        fields = [
+            "id",
+            "name",
+            "username",
+            "course_title",
+            "course_slug",
+            "final_score",
+            "issued_at",
+        ]
         read_only_fields = fields
 
 
@@ -192,6 +222,9 @@ class CourseDetailSerializer(CourseCardSerializer):
     enrollment = serializers.SerializerMethodField()
     progress = serializers.SerializerMethodField()
     has_final_quiz = serializers.SerializerMethodField()
+    final_quiz_slug: Any = serializers.SlugRelatedField(
+        source="final_quiz", slug_field="slug", read_only=True
+    )
 
     class Meta(CourseCardSerializer.Meta):
         fields = [
@@ -204,6 +237,7 @@ class CourseDetailSerializer(CourseCardSerializer):
             "certificate_threshold",
             "reward_qvant",
             "has_final_quiz",
+            "final_quiz_slug",
             "authors",
             "modules",
             "enrollment",

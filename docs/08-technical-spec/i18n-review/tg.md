@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2880 strings.**
+**2889 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2739,7 +2739,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `course.enroll` | Kursga yozilish | Ба курс сабти ном |  |
 | `course.start` | Boshlash | Оғоз |  |
 | `course.continue` | Davom etish | Идома додан |  |
-| `course.soonQvant` | Qvant bilan ochish tez orada qo'shiladi. | Кушодан бо Qvant ба наздикӣ илова мешавад. |  |
 | `course.soonPaid` | Sotib olish tez orada qo'shiladi. | Харидан ба наздикӣ илова мешавад. |  |
 | `course.about` | Kurs haqida | Дар бораи курс |  |
 | `course.outcomes` | Nimani o'rganasiz | Чиро меомӯзед |  |
@@ -2901,3 +2900,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.video.status.failed` | Xato | Хато |  |
 | `error.course_video_unavailable` | Video saqlash joyi hali sozlanmagan. | Анбори видео ҳоло танзим нашудааст. |  |
 | `error.course_video_refused` | Bu videoni yuklab bo'lmaydi: turi, hajmi yoki bir vaqtdagi yuklashlar soni. | Ин видеоро бор кардан мумкин нест: навъ, ҳаҷм ё шумораи боркуниҳои ҳамзамон. |  |
+| `course.unlock` | {price} Qvant bilan ochish | Бо {price} Qvant кушодан |  |
+| `course.unlockConfirm` | Kursni {price} Qvant evaziga ochasizmi? To'langan Qvant qaytarilmaydi. | Курсро бо {price} Qvant мекушоед? Qvant-и пардохтшуда баргардонида намешавад. |  |
+| `course.certificateView` | Sertifikatni ko'rish | Дидани сертификат |  |
+| `course.certificatePending` | Sertifikat uchun yakuniy testdan kamida {percent}% to'plang. | Барои сертификат аз тести ниҳоӣ на камтар аз {percent}% гиред. |  |
+| `cert.courseDone` | KURS TUGATILDI | КУРС АНҶОМ ЁФТ |  |
+| `cert.courseOf` | «{course}» kursi | Курси «{course}» |  |
+| `cert.finalScore` | Yakuniy test: {percent}% | Тести ниҳоӣ: {percent}% |  |
+| `cert.pdf` | PDF yuklab olish | Боргирии PDF |  |
+| `error.course_qvant_insufficient` | Bu kurs uchun Qvant yetarli emas. | Барои ин курс Qvant кифоя нест. |  |
+| `error.course_price_changed` | Kurs narxi o'zgardi. Sahifani yangilab, yangi narxni tasdiqlang. | Нархи курс тағйир ёфт. Саҳифаро нав карда, нархи навро тасдиқ кунед. |  |

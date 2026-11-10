@@ -1318,6 +1318,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/courses/certificates/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kurs sertifikatini tekshirish
+         * @description Anyone with the id (the QR) may check it — that is what it is for.
+         */
+        get: operations["courses_certificates_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/courses/certificates/{id}/pdf/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kurs sertifikati PDF'i */
+        get: operations["courses_certificates_pdf_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/custom-test/": {
         parameters: {
             query?: never;
@@ -7016,6 +7053,17 @@ export interface components {
             readonly enrolled: boolean;
             readonly percent: number | null;
         };
+        CourseCertificate: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly name: string;
+            readonly username: string;
+            readonly course_title: string;
+            readonly course_slug: string;
+            readonly final_score: number | null;
+            /** Format: date-time */
+            readonly issued_at: string;
+        };
         CourseDetail: {
             readonly slug: string;
             readonly title: string;
@@ -7045,6 +7093,7 @@ export interface components {
             /** @description Paid once when the course is completed. */
             readonly reward_qvant: number;
             readonly has_final_quiz: boolean;
+            readonly final_quiz_slug: string;
             readonly authors: components["schemas"]["Author"][];
             readonly modules: components["schemas"]["ModuleOutline"][];
             readonly enrollment: components["schemas"]["Enrollment"] | null;
@@ -7235,12 +7284,16 @@ export interface components {
             code?: string;
             username?: string;
         };
+        EnrollInput: {
+            confirm_price?: number | null;
+        };
         Enrollment: {
             readonly source: components["schemas"]["EnrollmentSourceEnum"];
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
             readonly completed_at: string | null;
+            readonly certificate: string | null;
         };
         /**
          * @description * `free` - Free
@@ -11418,9 +11471,10 @@ export interface components {
          *     * `duel` - Duel
          *     * `achievement` - Yutuq
          *     * `hack` - Hack
+         *     * `course` - Kurs
          * @enum {string}
          */
-        TransactionReasonEnum: "quest" | "streak" | "contest" | "purchase" | "refund" | "admin" | "quiz" | "arena" | "duel" | "achievement" | "hack";
+        TransactionReasonEnum: "quest" | "streak" | "contest" | "purchase" | "refund" | "admin" | "quiz" | "arena" | "duel" | "achievement" | "hack" | "course";
         /**
          * @description * `daily` - Kunlik
          *     * `weekly` - Haftalik
@@ -13248,7 +13302,13 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["EnrollInput"];
+                "application/x-www-form-urlencoded": components["schemas"]["EnrollInput"];
+                "multipart/form-data": components["schemas"]["EnrollInput"];
+            };
+        };
         responses: {
             201: {
                 headers: {
@@ -13370,6 +13430,48 @@ export interface operations {
                 };
                 content: {
                     "application/vnd.apple.mpegurl": string;
+                };
+            };
+        };
+    };
+    courses_certificates_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseCertificate"];
+                };
+            };
+        };
+    };
+    courses_certificates_pdf_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
                 };
             };
         };

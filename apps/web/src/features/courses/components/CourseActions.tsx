@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { errorText, t } from "@/i18n/messages";
+import { errorText, fill, t } from "@/i18n/messages";
 import { ApiError } from "@/lib/api/client";
 
 import { completeLesson, enrollCourse } from "../api/courses";
@@ -38,6 +39,36 @@ export function EnrollButton({ slug }: { slug: string }) {
     <div className="space-y-2">
       <Button onClick={go} busy={busy}>
         {t(locale, "course.enroll")}
+      </Button>
+      {error && (
+        <p role="alert" className="text-theme-sm rw-bad-ink">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** A Qvant course: the reader confirms the price (no refund — owner
+ *  decision 2026-11-10), the API takes exactly that price or refuses. */
+export function UnlockButton({ slug, price }: { slug: string; price: number }) {
+  const locale = useLocale();
+  const confirm = useConfirm();
+  const { busy, error, go } = useAction(() => enrollCourse(slug, price));
+  return (
+    <div className="space-y-2">
+      <Button
+        onClick={() =>
+          void (async () => {
+            const ok = await confirm(fill(t(locale, "course.unlockConfirm"), { price }), {
+              confirmLabel: fill(t(locale, "course.unlock"), { price }),
+            });
+            if (ok) await go();
+          })()
+        }
+        busy={busy}
+      >
+        {fill(t(locale, "course.unlock"), { price })}
       </Button>
       {error && (
         <p role="alert" className="text-theme-sm rw-bad-ink">

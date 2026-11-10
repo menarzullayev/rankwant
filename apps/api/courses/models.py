@@ -18,6 +18,8 @@ models (`tools/check_architecture.py`).
 
 from __future__ import annotations
 
+import uuid
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -332,3 +334,32 @@ class VideoAsset(CreatedModel):
 
     def __str__(self) -> str:
         return f"{self.course.slug}:{self.key}"
+
+
+class CourseCertificate(models.Model):
+    """A finished course, like a contest certificate (ADR-0019, ADR-0056).
+
+    Owner decision 2026-11-10: every required lesson, and the final quiz at
+    or above the course threshold when the course has one. The id is the
+    public verification key (QR); the name and the course title are frozen
+    at issue, so a later rename does not change the document.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="course_certificates"
+    )
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="certificates")
+    name = models.CharField(max_length=150)
+    course_title = models.CharField(max_length=200)
+    #: Best final-quiz score in percent; null for a course without one.
+    final_score = models.PositiveSmallIntegerField(null=True, blank=True)
+    issued_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "course"], name="course_certificate_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.course.slug}:{self.user_id}"
