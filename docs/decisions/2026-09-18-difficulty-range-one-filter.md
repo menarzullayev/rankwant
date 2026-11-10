@@ -1,0 +1,3 @@
+| Sana | Qaror | Kodda qayerda |
+|---|---|---|
+| 2026-09-18 | Filtr rozetkasi **diapazonni bitta filtr** deb sanaydi: `difficulty__gte` + `difficulty__lte` (va eski `level=`) — bu bitta tanlov, uch xil yozuv. O'lchandi (CI smoke, 2026-09-18): bitta «Qiyin» chip'i ikkala chegarani yozadi, `activeCount` esa `PANEL_KEYS` kalitlarini sanardi → rozetkada **`Filtrlar2`**; test `"1"` kutgani uchun `main` `#90` dan beri qizil edi va shu sabab deploy darvozasi ham yopiq qolgan edi | `apps/web/src/components/ProblemFilters.tsx` → `DIFFICULTY_KEYS`; `tools/check_decisions.py` → `difficulty_range_counts_as_one_filter` |
