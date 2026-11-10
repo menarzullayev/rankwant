@@ -222,7 +222,7 @@ package.json  package-lock.json
 apps/api/requirements*.txt  requirements*.lock
 docker-compose*.yml  Dockerfile*  .github/workflows/*
 .env  .env.*          # never commit
-schema migrations     CLAUDE.md HITL table
+schema migrations     CLAUDE.md decisions index
 tools/check_decisions.py  tools/check_negative.py
 apps/web/src/lib/site.ts  apps/web/src/app/robots.ts
 ```

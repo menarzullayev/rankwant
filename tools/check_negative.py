@@ -5998,6 +5998,89 @@ def neg_decisions_table_removed() -> tuple[bool, str]:
     )
 
 
+# ── Decisions index ↔ `docs/decisions/` (2026-11-10, audit Q-10) ──────────
+#
+# The table left CLAUDE.md for one file per decision plus a one-line index.
+# Each case below leaves a decision in one place only, or the two places
+# disagreeing; `decisions_index_matches_files` must name what is wrong.
+
+_INDEX_LINE = (
+    "- [2026-09-17](docs/decisions/2026-09-17-local-only-backups.md)"
+    " · Zaxira 30 kunda bir marta, faqat lokal; offsite yo'q · `backup_local_only`\n"
+)
+_INDEX_RULE = "qarorlar indeksi fayllarga mos"
+
+
+def _decisions_index_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break the index or a decision file in `rel`; the rule must say `expect`."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"decisions/indeks: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("decisions")
+    if code != 1:
+        return False, f"decisions/indeks: buzilgan holat exit {code} berdi (1 kerak)"
+    if _INDEX_RULE not in out or expect not in out:
+        return False, f"decisions/indeks: yiqildi, lekin boshqa sabab — {out.strip()[-170:]}"
+    return True, f"decisions/indeks: «{expect}» tutildi (exit 1)"
+
+
+def neg_decisions_index_line_dropped() -> tuple[bool, str]:
+    """The file stays, its index line goes: the decision is in one place only."""
+    return _decisions_index_broken("CLAUDE.md", _INDEX_LINE, "", "fayli bor, indeksda yo'q")
+
+
+def neg_decisions_file_dropped() -> tuple[bool, str]:
+    """The index line stays, its file goes. A file cannot be mutated away, so
+    the sandbox drops it from the copy."""
+    code, out = _decisions_sandbox({}, drop=("docs/decisions/2026-09-17-local-only-backups.md",))
+    if code != 1 or _INDEX_RULE not in out or "indeksda bor, fayli yo'q" not in out:
+        return False, f"decisions/indeks: o'chgan fayl exit {code} — {out.strip()[-170:]}"
+    return True, "decisions/indeks: «indeksda bor, fayli yo'q» tutildi (exit 1)"
+
+
+def neg_decisions_row_back_in_claude() -> tuple[bool, str]:
+    """A table row is written into CLAUDE.md again — what a branch cut before
+    the move merges in."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        "\n## Tekshiruvlar\n",
+        "\n| 2026-11-10 | **Yangi qaror** | `tools/x.py` |\n\n## Tekshiruvlar\n",
+        "jadval qatori bor",
+    )
+
+
+def neg_decisions_index_unknown_rule() -> tuple[bool, str]:
+    """The index names a guard that check_decisions.py does not have."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        _INDEX_LINE,
+        _INDEX_LINE.replace("`backup_local_only`", "`backup_is_local_only`"),
+        "bunday qoida yo'q",
+    )
+
+
+def neg_decisions_index_date_mismatch() -> tuple[bool, str]:
+    """The index date disagrees with the file it links to."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        _INDEX_LINE,
+        _INDEX_LINE.replace("- [2026-09-17]", "- [2026-09-18]"),
+        "fayl nomiga mos emas",
+    )
+
+
+def neg_decisions_file_holds_two_rows() -> tuple[bool, str]:
+    """A second decision is appended to an existing file instead of a new one."""
+    rel = "docs/decisions/2026-09-17-local-only-backups.md"
+    text = (ROOT / rel).read_bytes().decode("utf-8")
+    last = text.rstrip("\n").split("\n")[-1] + "\n"
+    return _decisions_index_broken(
+        rel, last, last + "| 2026-11-10 | **Yangi qaror** | `tools/x.py` |\n", "2 ta qaror qatori"
+    )
+
+
 def neg_decisions_locale_label_unbounded() -> tuple[bool, str]:
     """Endonim tor ekranda chegarasiz qolsa tutilsin.
 
@@ -7657,6 +7740,12 @@ def _decisions_sandbox(
         for rel in _DECISIONS_SANDBOX_FILES:
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             (root / rel).write_bytes((ROOT / rel).read_bytes())
+        # `decisions_index_matches_files` globs the whole folder, so no
+        # `read("...")` names its files and the list above cannot stage them.
+        decisions = root / "docs/decisions"
+        decisions.mkdir(parents=True, exist_ok=True)
+        for path in (ROOT / "docs/decisions").glob("*.md"):
+            (decisions / path.name).write_bytes(path.read_bytes())
         for rel in drop:
             (root / rel).unlink()
         workflows = root / ".github/workflows"
@@ -11155,6 +11244,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
             ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
+            ("qaror fayli indekssiz qolsa tutilsin", neg_decisions_index_line_dropped),
+            ("indeks qatori faylsiz qolsa tutilsin", neg_decisions_file_dropped),
+            ("CLAUDE.md ga jadval qatori qaytsa tutilsin", neg_decisions_row_back_in_claude),
+            ("indeks yo'q qoidani atasa tutilsin", neg_decisions_index_unknown_rule),
+            ("indeks sanasi faylga mos kelmasa tutilsin", neg_decisions_index_date_mismatch),
+            ("qaror faylida ikki qator bo'lsa tutilsin", neg_decisions_file_holds_two_rows),
             ("endonim tor ekranda chegarasiz qolsa tutilsin", neg_decisions_locale_label_unbounded),
             ("tor ekranda til kodi qaytsa tutilsin", neg_decisions_locale_code_restored),
             (

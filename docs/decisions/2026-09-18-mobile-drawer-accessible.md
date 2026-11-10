@@ -1,0 +1,3 @@
+| Sana | Qaror | Kodda qayerda |
+|---|---|---|
+| 2026-09-18 | Mobil navigatsiya paneli **e'lon qilinadi, fokuslanadi va yopiladi**: trigger holatni aytadi (`aria-expanded` + `aria-controls`), panel ochiq holatda nomli dialog (`role="dialog"`, `aria-modal`, `aria-label`), fokus ichkariga kiradi va ochgan tugmaga qaytadi, `Esc` yopadi, orqa fon scroll qilmaydi. O'lchandi (jonli brauzer, 390×844×2): ilgari `aria-expanded` **ochiq holatda ham `null`**, panelda rol/nom yo'q, fokus `body` da qolardi, `body` overflow `visible`, haqiqiy `Esc` panelni yopmasdi | `apps/web/src/layout/AppHeader.tsx`; `apps/web/src/layout/AppSidebar.tsx`; `apps/web/src/context/SidebarContext.tsx`; `apps/web/src/layout/AppShell.tsx`; `tools/check_decisions.py` → `mobile_drawer_is_accessible` |

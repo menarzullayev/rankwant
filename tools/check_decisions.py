@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Owner decisions must stay true in the code, not only in CLAUDE.md.
+"""Owner decisions must stay true in the code, not only in the docs.
 
-Every rule mirrors a row of CLAUDE.md § "Saidakbar aka qarorlari". On
+Every rule mirrors a decision in `docs/decisions/` (one file per decision,
+indexed in CLAUDE.md § "Saidakbar aka qarorlari"). On
 2026-09-17 the owner chose local-only backups, and within hours another agent
 that had not seen the decision merged unencrypted offsite uploads (#31); dumps
 with user data left the machine. A table nobody checks does not stop that.
 This script runs on every PR, so reverting a decision needs a deliberate edit
-of both the code and the table.
+of both the code and the decision file.
 
 Exit codes: 0 every decision holds, 1 a decision is violated, 2 a file could
 not be read (never treated as "fine").
@@ -849,6 +850,83 @@ def language_rule_written() -> str | None:
 def decisions_table_present() -> str | None:
     if "## Saidakbar aka qarorlari" not in read("CLAUDE.md"):
         return "CLAUDE.md: `## Saidakbar aka qarorlari` jadvali yo'q"
+    return None
+
+
+#: Owner decisions live one per file here; CLAUDE.md keeps a one-line index.
+DECISIONS_DIR = "docs/decisions"
+_DECISIONS_HEADING = "## Saidakbar aka qarorlari"
+_DECISION_INDEX_LINE = re.compile(
+    r"^- \[(\d{4}-\d{2}-\d{2})\]\(docs/decisions/([^)/]+\.md)\) · (.+) · `([^`]+)`$"
+)
+_DECISION_ROW = re.compile(r"^\| \d{4}-\d{2}-\d{2}")
+#: A `where` field shaped like a rule function, not a path.
+_RULE_NAME = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)+")
+
+
+def decisions_index_matches_files() -> str | None:
+    """Every decision is a file in `docs/decisions/` AND a line in the index.
+
+    Measured 2026-11-10 (audit Q-10): `CLAUDE.md` was 276 969 bytes, of which
+    the decisions table was 158 rows, and every agent session loads the file
+    in full; the same day eleven PRs appended rows and four of them hit merge
+    conflicts on that one table. The rows now live one per file, and
+    CLAUDE.md keeps one line each. Two copies drift, so this rule fails on a
+    decision that exists in one place only, on an index line whose date or
+    rule name is wrong, on a file that does not hold exactly one row, and on a
+    table row written back into CLAUDE.md — what a branch cut before the move
+    would merge in.
+    """
+    claude = read("CLAUDE.md")
+    stray = [line for line in claude.splitlines() if _DECISION_ROW.match(line)]
+    if stray:
+        return (
+            f"CLAUDE.md da jadval qatori bor — qaror `{DECISIONS_DIR}/` ga yoziladi: "
+            f"{stray[0][:70]!r}"
+        )
+    if _DECISIONS_HEADING not in claude:
+        return f"CLAUDE.md: `{_DECISIONS_HEADING}` yo'q"
+    section = claude.split(_DECISIONS_HEADING, 1)[1].split("\n## ", 1)[0]
+    rules = {fn.__name__ for _, fn in RULES}
+    indexed: set[str] = set()
+    last = ""
+    for line in section.splitlines():
+        if not line.startswith("- ["):
+            continue
+        m = _DECISION_INDEX_LINE.match(line)
+        if not m:
+            return f"indeks qatori formatda emas: {line[:80]!r}"
+        date, name, _summary, where = m.groups()
+        if name in indexed:
+            return f"indeksda ikki marta: {name}"
+        if not name.startswith(f"{date}-"):
+            return f"indeks sanasi fayl nomiga mos emas: {date} → {name}"
+        if date < last:
+            return f"indeks sana tartibida emas: {date} ({name}) {last} dan keyin"
+        last = date
+        if _RULE_NAME.fullmatch(where) and where not in rules:
+            return f"{name}: `{where}` — check_decisions.py da bunday qoida yo'q"
+        indexed.add(name)
+    folder = ROOT / DECISIONS_DIR
+    files = (
+        {p.name for p in folder.glob("*.md") if p.name != "README.md"}
+        if folder.is_dir()
+        else set()
+    )
+    # An empty side would make every comparison below vacuously true.
+    if not files or not indexed:
+        return f"qarorlar topilmadi: {len(files)} fayl, {len(indexed)} indeks qatori"
+    for name in sorted(indexed - files):
+        return f"indeksda bor, fayli yo'q: {DECISIONS_DIR}/{name}"
+    for name in sorted(files - indexed):
+        return f"fayli bor, indeksda yo'q: {DECISIONS_DIR}/{name}"
+    for name in sorted(files):
+        text = (folder / name).read_bytes().decode("utf-8")
+        rows = [line for line in text.splitlines() if _DECISION_ROW.match(line)]
+        if len(rows) != 1:
+            return f"{DECISIONS_DIR}/{name}: {len(rows)} ta qaror qatori (bitta kerak)"
+        if not rows[0].startswith(f"| {name[:10]}"):
+            return f"{DECISIONS_DIR}/{name}: qatordagi sana fayl nomiga mos emas"
     return None
 
 
@@ -4253,6 +4331,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("arxiv ro'yxat mehmon CDN keshi", problems_list_guest_cdn),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
+    ("qarorlar indeksi fayllarga mos", decisions_index_matches_files),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
@@ -4340,7 +4419,10 @@ def main() -> int:
         print(f"✗ Qarorlarni o'qib bo'lmadi — {exc}")
         return 2
     if problems:
-        print(f"✗ {len(problems)} ta qaror buzilgan (CLAUDE.md § Saidakbar aka qarorlari):")
+        print(
+            f"✗ {len(problems)} ta qaror buzilgan "
+            f"({DECISIONS_DIR}/, indeks — CLAUDE.md § Saidakbar aka qarorlari):"
+        )
         for problem in problems:
             print(f"  - {problem}")
         print("  Qarorni o'zgartirish faqat Saidakbar akaning aniq tasdig'i bilan.")
