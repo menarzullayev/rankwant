@@ -23,6 +23,11 @@ router.register(
     author_views.MineLessonViewSet,
     basename="studio-course-lesson",
 )
+router.register(
+    r"studio/courses/(?P<course_slug>[-\w]+)/videos",
+    author_views.MineVideoViewSet,
+    basename="studio-course-video",
+)
 router.register("staff/courses", author_views.StaffCourseViewSet, basename="staff-course")
 
 urlpatterns = [

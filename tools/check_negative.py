@@ -5103,6 +5103,16 @@ def neg_decisions_course_video_foreign_asset() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_video_on_judge_queue() -> tuple[bool, str]:
+    """Video encoding runs on the default queue, behind judge results."""
+    return _decision_broken(
+        "apps/api/config/settings.py",
+        'CELERY_TASK_ROUTES = {"courses.encode_video": {"queue": "video"}}',
+        "CELERY_TASK_ROUTES = {}",
+        "judge navbatida",
+    )
+
+
 def neg_decisions_course_flag_on() -> tuple[bool, str]:
     """The Courses section is switched on by default before the owner opens it."""
     return _decision_broken(
@@ -12372,6 +12382,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kurs studio'si qo'riqchisiz ochilsa tutilsin", neg_decisions_course_studio_ungated),
             ("kurs videosi shifrsiz yozilsa tutilsin", neg_decisions_course_video_unencrypted),
             ("boshqa kurs videosi o'ynasa tutilsin", neg_decisions_course_video_foreign_asset),
+            ("video kodlash judge navbatiga tushsa tutilsin", neg_decisions_video_on_judge_queue),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

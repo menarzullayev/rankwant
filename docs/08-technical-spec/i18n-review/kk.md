@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2856 strings.**
+**2880 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2878,3 +2878,26 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.delete` | Kursni o'chirish | Курсты жою |  |
 | `studio.course.deleteConfirm` | «{title}» kursi barcha darslari bilan o'chirilsinmi? | «{title}» курсы барлық сабақтарымен жойылсын ба? |  |
 | `course.lesson.videoFailed` | Videoni ochib bo'lmadi. Sahifani yangilab ko'ring. | Бейнені ашу мүмкін болмады. Бетті жаңартып көріңіз. |  |
+| `studio.video.title` | Videolar | Бейнелер |  |
+| `studio.video.intro` | Video fayl yuklang (biz kodlaymiz) yoki tayyor HLS papkasini zip qilib yuklang. Videolar shifrlanadi va faqat kursga yozilganlarga o'ynaydi. | Бейне файл жүктеңіз (біз кодтаймыз) немесе дайын HLS қалтасын zip етіп жүктеңіз. Бейнелер шифрланады және тек жазылғандарға ойнатылады. |  |
+| `studio.video.file` | Fayl | Файл |  |
+| `studio.video.fileHint` | .mp4, .mov, .mkv, .webm yoki tayyor HLS .zip — 8 GB gacha. Fayl to'g'ridan-to'g'ri saqlash joyiga yuboriladi. | .mp4, .mov, .mkv, .webm немесе дайын HLS .zip — 8 ГБ-қа дейін. Файл тікелей сақтау орнына жіберіледі. |  |
+| `studio.video.heights` | Sifatlar | Сапалар |  |
+| `studio.video.heightsHint` | Manbadan yuqori sifat qilinmaydi: 720p video uchun 1080p belgilansa ham 720p gacha kodlanadi. | Бастапқыдан жоғары сапа жасалмайды: 720p бейне үшін 1080p белгіленсе де 720p-да қалады. |  |
+| `studio.video.upload` | Yuklash | Жүктеу |  |
+| `studio.video.uploading` | Yuklanmoqda | Жүктелуде |  |
+| `studio.video.progress` | {percent}% yuklandi | {percent}% жүктелді |  |
+| `studio.video.uploadFailed` | Yuklash uzildi. Internetni tekshirib, qayta urinib ko'ring. | Жүктеу үзілді. Байланысты тексеріп, қайталаңыз. |  |
+| `studio.video.used` | darsda | сабақта |  |
+| `studio.video.delete` | O'chirish | Жою |  |
+| `studio.video.deleteConfirm` | Video va uning barcha fayllari o'chirilsinmi? Buni qaytarib bo'lmaydi. | Бейне мен оның барлық файлдары жойылсын ба? Бұны қайтару мүмкін емес. |  |
+| `studio.video.pick` | Kurs videosi | Курс бейнесі |  |
+| `studio.video.pickHint` | «Videolar» bo'limida tayyor bo'lgan videolardan biri. | «Бейнелер» бөліміндегі дайын бейнелердің бірі. |  |
+| `studio.video.pickNone` | Hali tayyor video yo'q — avval «Videolar» bo'limida yuklang. | Әзірге дайын бейне жоқ — алдымен «Бейнелер» бөлімінде жүктеңіз. |  |
+| `studio.video.status.uploading` | Yuklanmoqda | Жүктелуде |  |
+| `studio.video.status.queued` | Navbatda | Кезекте |  |
+| `studio.video.status.processing` | Kodlanmoqda | Кодталуда |  |
+| `studio.video.status.ready` | Tayyor | Дайын |  |
+| `studio.video.status.failed` | Xato | Қате |  |
+| `error.course_video_unavailable` | Video saqlash joyi hali sozlanmagan. | Бейне сақтау орны әлі бапталмаған. |  |
+| `error.course_video_refused` | Bu videoni yuklab bo'lmaydi: turi, hajmi yoki bir vaqtdagi yuklashlar soni. | Бұл бейнені жүктеу мүмкін емес: түрі, көлемі немесе бір уақыттағы жүктеулер саны. |  |

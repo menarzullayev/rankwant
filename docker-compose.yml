@@ -286,6 +286,31 @@ services:
       redis: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }
 
+  # Course video encoding (ADR-0056 § 3.5): its own queue so a long encode
+  # never delays judge results (owner decision 2026-11-10). Behind the
+  # `video` profile until R2 is configured; one video at a time, 2 CPUs,
+  # low priority.
+  video-worker:
+    logging: *default-logging
+    profiles: ['video']
+    build:
+      <<: *api-build
+      target: video
+    command: ['nice', '-n', '10', 'celery', '-A', 'config', 'worker', '-Q', 'video', '--concurrency', '1', '-l', 'info']
+    cpus: 2
+    environment:
+      DATABASE_URL: postgres://rankwant:${POSTGRES_PASSWORD:-dev}@postgres:5432/rankwant
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-not-for-production}
+      REDIS_URL: redis://redis:6379/0
+      COURSE_VIDEO_BUCKET: ${COURSE_VIDEO_BUCKET:-}
+      COURSE_VIDEO_S3_ENDPOINT: ${COURSE_VIDEO_S3_ENDPOINT:-}
+      COURSE_VIDEO_S3_KEY: ${COURSE_VIDEO_S3_KEY:-}
+      COURSE_VIDEO_S3_SECRET: ${COURSE_VIDEO_S3_SECRET:-}
+      COURSE_VIDEO_S3_REGION: ${COURSE_VIDEO_S3_REGION:-auto}
+    depends_on:
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+
   beat:
     logging: *default-logging
     build: *api-build

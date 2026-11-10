@@ -101,3 +101,47 @@ export function reorder<T extends { id: number }>(rows: readonly T[], index: num
   next.splice(target, 0, moved);
   return next.map((row, i) => ({ id: row.id, order: i + 1 }));
 }
+
+// --- Course videos (ADR-0056 part 5c) --------------------------------------
+
+export type StudioVideo = Schemas["StudioVideo"];
+
+/** Rungs an uploader may pick; the encoder keeps those at or below the
+ *  source (`courses.hls.LADDER`). */
+export const VIDEO_HEIGHTS = [360, 480, 720, 1080, 1440, 2160] as const;
+
+export const VIDEO_ACCEPT = ".mp4,.mov,.mkv,.webm,.zip,video/mp4,video/quicktime,video/webm,application/zip";
+
+const videosBase = (slug: string) => `/studio/courses/${encodeURIComponent(slug)}/videos`;
+
+export const studioVideos = {
+  list: (slug: string) => getJson<StudioVideo[]>(`${videosBase(slug)}/`),
+  remove: (slug: string, id: number) => deleteJson<void>(`${videosBase(slug)}/${id}/`),
+};
+
+/** Upload a file straight to the bucket in parts (the site caps a request at
+ *  100 MB), then let the API queue the encoding. `onProgress` gets 0…1. */
+export async function uploadVideo(
+  slug: string,
+  file: File,
+  heights: number[],
+  onProgress: (share: number) => void,
+): Promise<StudioVideo> {
+  const started = await postJson<Schemas["VideoUploadStarted"]>(`${videosBase(slug)}/`, {
+    filename: file.name,
+    size: file.size,
+    heights,
+  });
+  const parts: { number: number; etag: string }[] = [];
+  let sent = 0;
+  for (const [index, url] of started.parts.entries()) {
+    const chunk = file.slice(index * started.part_size, (index + 1) * started.part_size);
+    const response = await fetch(url, { method: "PUT", body: chunk });
+    const etag = response.headers.get("ETag");
+    if (!response.ok || !etag) throw new Error(`upload part ${index + 1}: ${response.status}`);
+    parts.push({ number: index + 1, etag });
+    sent += chunk.size;
+    onProgress(sent / file.size);
+  }
+  return postJson<StudioVideo>(`${videosBase(slug)}/${started.video.id}/complete/`, { parts });
+}

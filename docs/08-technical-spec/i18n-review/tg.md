@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2856 strings.**
+**2880 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2878,3 +2878,26 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.delete` | Kursni o'chirish | Нест кардани курс |  |
 | `studio.course.deleteConfirm` | «{title}» kursi barcha darslari bilan o'chirilsinmi? | Курси «{title}» бо ҳамаи дарсҳояш нест карда шавад? |  |
 | `course.lesson.videoFailed` | Videoni ochib bo'lmadi. Sahifani yangilab ko'ring. | Видеоро кушодан нашуд. Саҳифаро нав карда бинед. |  |
+| `studio.video.title` | Videolar | Видеоҳо |  |
+| `studio.video.intro` | Video fayl yuklang (biz kodlaymiz) yoki tayyor HLS papkasini zip qilib yuklang. Videolar shifrlanadi va faqat kursga yozilganlarga o'ynaydi. | Файли видео бор кунед (мо рамзгузорӣ мекунем) ё ҷузвдони тайёри HLS-ро ҳамчун zip бор кунед. Видеоҳо рамзгузорӣ шуда, танҳо барои сабтиномшудагон пахш мешаванд. |  |
+| `studio.video.file` | Fayl | Файл |  |
+| `studio.video.fileHint` | .mp4, .mov, .mkv, .webm yoki tayyor HLS .zip — 8 GB gacha. Fayl to'g'ridan-to'g'ri saqlash joyiga yuboriladi. | .mp4, .mov, .mkv, .webm ё HLS-и тайёр дар .zip — то 8 ГБ. Файл мустақиман ба анбор меравад. |  |
+| `studio.video.heights` | Sifatlar | Сифатҳо |  |
+| `studio.video.heightsHint` | Manbadan yuqori sifat qilinmaydi: 720p video uchun 1080p belgilansa ham 720p gacha kodlanadi. | Аз манбаъ болотар сохта намешавад: барои видеои 720p ҳатто 1080p қайд шавад ҳам, 720p мемонад. |  |
+| `studio.video.upload` | Yuklash | Бор кардан |  |
+| `studio.video.uploading` | Yuklanmoqda | Бор шуда истодааст |  |
+| `studio.video.progress` | {percent}% yuklandi | {percent}% бор шуд |  |
+| `studio.video.uploadFailed` | Yuklash uzildi. Internetni tekshirib, qayta urinib ko'ring. | Бор кардан қатъ шуд. Пайвастро санҷида, дубора кӯшиш кунед. |  |
+| `studio.video.used` | darsda | дар дарс |  |
+| `studio.video.delete` | O'chirish | Нест кардан |  |
+| `studio.video.deleteConfirm` | Video va uning barcha fayllari o'chirilsinmi? Buni qaytarib bo'lmaydi. | Видео ва ҳамаи файлҳояш нест карда шавад? Инро бозгардондан мумкин нест. |  |
+| `studio.video.pick` | Kurs videosi | Видеои курс |  |
+| `studio.video.pickHint` | «Videolar» bo'limida tayyor bo'lgan videolardan biri. | Яке аз видеоҳои тайёр дар бахши «Видеоҳо». |  |
+| `studio.video.pickNone` | Hali tayyor video yo'q — avval «Videolar» bo'limida yuklang. | Ҳоло видеои тайёр нест — аввал дар бахши «Видеоҳо» бор кунед. |  |
+| `studio.video.status.uploading` | Yuklanmoqda | Бор шуда истодааст |  |
+| `studio.video.status.queued` | Navbatda | Дар навбат |  |
+| `studio.video.status.processing` | Kodlanmoqda | Рамзгузорӣ мешавад |  |
+| `studio.video.status.ready` | Tayyor | Тайёр |  |
+| `studio.video.status.failed` | Xato | Хато |  |
+| `error.course_video_unavailable` | Video saqlash joyi hali sozlanmagan. | Анбори видео ҳоло танзим нашудааст. |  |
+| `error.course_video_refused` | Bu videoni yuklab bo'lmaydi: turi, hajmi yoki bir vaqtdagi yuklashlar soni. | Ин видеоро бор кардан мумкин нест: навъ, ҳаҷм ё шумораи боркуниҳои ҳамзамон. |  |

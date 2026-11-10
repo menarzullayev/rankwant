@@ -2980,7 +2980,8 @@ def course_video_is_encrypted_and_own() -> str | None:
     kursining videosini o'ynatadi (boshqa kursning kaliti chiqmasin).
     """
     hls_py = read("apps/api/courses/hls.py")
-    if '"-hls_key_info_file",' not in hls_py:
+    # Both ways in: an encoded file and an imported ready HLS.
+    if hls_py.count('"-hls_key_info_file",') < 2:
         return "courses/hls.py: HLS segmentlari shifrlanmayapti"
     views_py = read("apps/api/courses/video_views.py")
     if '"private, no-store"' not in views_py or "services.check_open(request.user, lesson, state)" not in views_py:
@@ -2988,6 +2989,13 @@ def course_video_is_encrypted_and_own() -> str | None:
     videos_py = read("apps/api/courses/videos.py")
     if "        course_id=lesson.section.module.course_id,\n" not in videos_py:
         return "courses/videos.py: dars boshqa kursning videosini o'ynata oladi"
+    # 5c: kodlash judge natijalarini kutdirmasin — alohida navbat va servis.
+    settings_py = read("apps/api/config/settings.py")
+    if 'CELERY_TASK_ROUTES = {"courses.encode_video": {"queue": "video"}}' not in settings_py:
+        return "config/settings.py: video kodlash judge navbatida yuradi"
+    compose = read("docker-compose.yml")
+    if "  video-worker:\n" not in compose or "'-Q', 'video', '--concurrency', '1'" not in compose:
+        return "docker-compose.yml: alohida video-worker (bitta vazifa) yo'q"
     return None
 
 

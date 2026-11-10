@@ -32,6 +32,7 @@ import {
   type StudioSection,
 } from "../api/courses";
 import { CourseStatusBadge, courseTitle } from "./CourseList";
+import { CourseVideos, CourseVideosProvider, minutes, useCourseVideos } from "./CourseVideos";
 
 const KINDS = ["text", "problem", "quiz", "video"] as const;
 const PROVIDERS = ["youtube", "vimeo", "hls"] as const;
@@ -351,6 +352,8 @@ function LessonEditor({
   const [seconds, setSeconds] = useState(String(lesson.video_seconds ?? 0));
   const open = course.structure_open;
   const shown = textOf(lesson.texts, lang)?.title || textOf(lesson.texts, course.base_locale ?? "uz")?.title;
+  const { videos } = useCourseVideos();
+  const ready = videos.filter((video) => video.status === "ready");
 
   const move = (by: -1 | 1) =>
     run(async () => {
@@ -457,7 +460,25 @@ function LessonEditor({
                       value={provider}
                       onChange={(value) => setProvider(value as typeof provider)}
                     />
-                    <Field name={`ref-${lesson.id}`} label={t(locale, "studio.course.videoRef")} hint={t(locale, "studio.course.videoRefHint")} value={ref} onChange={(e) => setRef(e.target.value)} />
+                    {provider === "hls" ? (
+                      <SelectField
+                        name={`asset-${lesson.id}`}
+                        label={t(locale, "studio.video.pick")}
+                        hint={t(locale, ready.length ? "studio.video.pickHint" : "studio.video.pickNone")}
+                        options={ready.map((video) => ({
+                          value: video.key,
+                          label: [video.key, video.heights.map((h) => `${h}p`).join("/"), minutes(video.seconds)].join(" · "),
+                        }))}
+                        value={ref}
+                        onChange={(value) => {
+                          setRef(value);
+                          const picked = ready.find((video) => video.key === value);
+                          if (picked) setSeconds(String(picked.seconds));
+                        }}
+                      />
+                    ) : (
+                      <Field name={`ref-${lesson.id}`} label={t(locale, "studio.course.videoRef")} hint={t(locale, "studio.course.videoRefHint")} value={ref} onChange={(e) => setRef(e.target.value)} />
+                    )}
                     <Field name={`seconds-${lesson.id}`} type="number" min={0} label={t(locale, "studio.course.videoSeconds")} value={seconds} onChange={(e) => setSeconds(e.target.value)} />
                   </>
                 )}
@@ -728,6 +749,7 @@ export function CourseEditor({ initial }: { initial: StudioCourse }) {
   const open = course.structure_open;
 
   return (
+    <CourseVideosProvider slug={course.slug}>
     <div className="space-y-10">
       <header className="space-y-2">
         <p className="text-theme-sm">
@@ -793,6 +815,10 @@ export function CourseEditor({ initial }: { initial: StudioCourse }) {
         )}
       </Block>
 
+      <Block id="course-videos" title={t(locale, "studio.video.title")}>
+        <CourseVideos slug={course.slug} />
+      </Block>
+
       <Block id="course-settings" title={t(locale, "studio.course.settings")}>
         <Settings key={String(course.structure_open)} course={course} onSaved={setCourse} />
       </Block>
@@ -801,5 +827,6 @@ export function CourseEditor({ initial }: { initial: StudioCourse }) {
         <ReviewPanel course={course} onSaved={setCourse} />
       </Block>
     </div>
+    </CourseVideosProvider>
   );
 }

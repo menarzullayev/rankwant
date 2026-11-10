@@ -27,7 +27,7 @@ from core.models import User
 from core.openapi_docs import crud_summaries
 from core.permissions import StaffContent
 from core.staff import SessionOnly
-from courses import review
+from courses import hls, review, videos
 from courses.author_serializers import (
     CourseReturnSerializer,
     StaffCourseSerializer,
@@ -37,6 +37,10 @@ from courses.author_serializers import (
     StudioModuleSerializer,
     StudioSectionSerializer,
     StudioTextSerializer,
+    StudioVideoSerializer,
+    VideoUploadCompleteSerializer,
+    VideoUploadStartedSerializer,
+    VideoUploadStartSerializer,
 )
 from courses.models import (
     Course,
@@ -47,6 +51,7 @@ from courses.models import (
     ModuleTranslation,
     Section,
     SectionTranslation,
+    VideoAsset,
 )
 
 
@@ -418,3 +423,104 @@ class StaffCourseViewSet(
             course.slug,
         )
         return Response(self.get_serializer(self.get_queryset().get(pk=course.pk)).data)
+
+
+class VideoUnavailableError(APIException):
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    default_code = "course_video_unavailable"
+    default_detail = "Course video storage is not configured yet"
+
+
+class VideoUploadRefused(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = "course_video_refused"
+    default_detail = "The video upload was refused"
+
+
+@crud_summaries(
+    one="kurs videosi",
+    many="kurs videolari",
+    only=("list", "destroy"),
+    extra={"create": "Video yuklashni boshlash", "complete": "Video yuklashni yakunlash"},
+)
+class MineVideoViewSet(
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet[VideoAsset],
+):
+    """A course's own videos (ADR-0056 § 3.5, part 5c).
+
+    The browser uploads the original straight to the bucket in parts (the
+    site caps a request at 100 MB); `complete` queues the encoding on the
+    video worker. Anyone who may open the course in the studio may upload;
+    attaching a video to a lesson follows the structure rules.
+    """
+
+    serializer_class = StudioVideoSerializer
+    permission_classes = [IsAuthenticated, SessionOnly]
+    http_method_names = ["get", "post", "delete"]
+    pagination_class = None
+
+    def course(self) -> Course:
+        if not hasattr(self, "_course"):
+            courses = review.editable_courses(_user(self.request))
+            self._course = get_object_or_404(courses, slug=self.kwargs["course_slug"])
+        return self._course
+
+    def get_queryset(self) -> QuerySet[VideoAsset]:  # type: ignore[override]
+        if getattr(self, "swagger_fake_view", False):
+            return VideoAsset.objects.none()
+        return VideoAsset.objects.filter(course=self.course()).order_by("-pk")
+
+    def get_serializer_context(self) -> dict[str, Any]:
+        context = dict(super().get_serializer_context())
+        if not getattr(self, "swagger_fake_view", False):
+            context["used_keys"] = set(
+                Lesson.objects.filter(
+                    section__module__course=self.course(),
+                    video_provider=Lesson.VideoProvider.HLS,
+                ).values_list("video_ref", flat=True)
+            )
+        return context
+
+    @extend_schema(
+        request=VideoUploadStartSerializer, responses={201: VideoUploadStartedSerializer}
+    )
+    def create(self, request: Request, course_slug: str | None = None) -> Response:
+        if not hls.configured():
+            raise VideoUnavailableError()
+        data = VideoUploadStartSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        values = data.validated_data
+        try:
+            asset, urls, part = videos.start_upload(
+                self.course(),
+                _user(request),
+                filename=values["filename"],
+                size=values["size"],
+                heights=values["heights"],
+            )
+        except videos.UploadRefused as error:
+            raise VideoUploadRefused(detail=str(error)) from error
+        body = {"video": self.get_serializer(asset).data, "part_size": part, "parts": urls}
+        return Response(body, status=status.HTTP_201_CREATED)
+
+    @extend_schema(request=VideoUploadCompleteSerializer, responses={200: StudioVideoSerializer})
+    @action(detail=True, methods=["post"])
+    def complete(
+        self, request: Request, course_slug: str | None = None, pk: str | None = None
+    ) -> Response:
+        asset = self.get_object()
+        data = VideoUploadCompleteSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        try:
+            videos.complete_upload(asset, data.validated_data["parts"])
+        except videos.UploadRefused as error:
+            raise VideoUploadRefused(detail=str(error)) from error
+        return Response(self.get_serializer(asset).data)
+
+    def perform_destroy(self, instance: VideoAsset) -> None:
+        try:
+            videos.discard(instance)
+        except videos.UploadRefused as error:
+            raise VideoUploadRefused(detail=str(error)) from error
