@@ -231,6 +231,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-graphite-palette.md) · `newPalette`: clay qorong'isi uchun «Grafit», standart o'chiq · `graphite_palette_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-dump-only-for-migrations.md) · Deploy oldidagi `pg_dump` faqat qo'llanmagan migratsiya bo'lsa, build bilan parallel; ro'yxat ko'rmaganini `migrate --check` ushlaydi · `dump_only_for_pending_migrations`
 - [2026-11-10](docs/decisions/2026-11-10-gate-trusts-pr-ci.md) · Darvoza `main` CI tugamasdan merge qilingan PR'ning yashil CI'siga ishonadi — faqat daraxt bir xil va oxirgi main CI yashil bo'lsa · `gate_trusts_green_pr_on_same_tree`
+- [2026-11-10](docs/decisions/2026-11-10-build-cache-budget.md) · Build cache 10 GB gacha saqlanadi (2026-10-06 ni almashtiradi); judge base obrazi qayta ishlatiladi; disk qo'riqchisi 5 GB · `build_cache_kept_within_budget`
 - [2026-11-10](docs/decisions/2026-11-10-revive-failed-containers.md) · Docker ko'tara olmagan konteynerni watcher ko'taradi (qo'lda to'xtatilgani emas); Docker o'chiqda deploy to'sig'i yo'q · `failed_containers_are_revived`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-public-env-reaches-build.md) · Web o'qiydigan har `NEXT_PUBLIC_*` build'ga uzatiladi; bo'sh `SITE_URL` = API origin'i · `flags_reach_the_web_build`
