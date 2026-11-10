@@ -44,6 +44,8 @@ export type ArticleDetail = Article & {
 export type Roadmap = {
   slug: string;
   title: string;
+  /** The text's language; Uzbek follows the reader's alphabet (ADR-0059). */
+  locale: string;
   description: string;
   step_count: number;
   /** Traektoriyaning nechta masalasi yechilgan (mehmonda 0). */

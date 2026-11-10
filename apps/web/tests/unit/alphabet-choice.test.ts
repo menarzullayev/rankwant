@@ -78,3 +78,17 @@ describe("content in the reader's alphabet", () => {
     expect(inReaderAlphabet("`chop()` va $s_h$ ni o'qing", "uz")).toBe("`chop()` va $s_h$ ni öqing");
   });
 });
+
+describe("content names in the reader's alphabet", () => {
+  afterEach(() => setAlphabetResolver(undefined));
+
+  it("converts the Uzbek name only", async () => {
+    const { topicName, localNameInfo } = await import("@/i18n/messages");
+    const topic = { slug: "graf", name_uz: "Graflar bo'ylab o'tish", name_ru: "Обход графа", name_en: "Graph traversal" };
+    expect(topicName(topic, "uz")).toBe("Graflar böylab ötiş");
+    expect(topicName(topic, "ru")).toBe("Обход графа");
+    expect(topicName(topic, "en")).toBe("Graph traversal");
+    setAlphabetResolver(() => "old");
+    expect(localNameInfo(topic, "uz").text).toBe("Graflar bo'ylab o'tish");
+  });
+});

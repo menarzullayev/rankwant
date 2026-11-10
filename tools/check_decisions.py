@@ -3691,6 +3691,11 @@ def uzbek_content_follows_the_reader() -> str | None:
         "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx"
     ):
         return "ProblemDescription.tsx: masala sharti tilisiz chiziladi — alifbo o'zgarmaydi"
+    if (
+        '  return info.locale === "uz" ? { ...info, text: inReaderAlphabet(info.text, "uz") } : info;\n'
+        not in read("apps/web/src/i18n/messages.ts")
+    ):
+        return "i18n/messages.ts: mavzu va ko'nikma nomlari o'quvchi alifbosida emas"
     return None
 
 

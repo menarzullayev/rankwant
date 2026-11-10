@@ -1,4 +1,5 @@
 import type { Metadata, Route } from "next";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -71,7 +72,9 @@ export default async function UpdatePage({ params }: Props) {
             </span>
           )}
         </div>
-        <h1 className="text-title-sm font-bold rw-strong">{row.title}</h1>
+        <h1 className="text-title-sm font-bold rw-strong">
+          {inReaderAlphabet(row.title, row.is_translated ? locale : "uz")}
+        </h1>
         <p className="text-theme-sm rw-faint">
           {t(locale, "update.releasedOn")}: {date(row.released_at, locale)}
         </p>
@@ -100,7 +103,7 @@ export default async function UpdatePage({ params }: Props) {
 
       {row.body && (
         <Card>
-          <Markdown>{row.body}</Markdown>
+          <Markdown lang={row.is_translated ? locale : "uz"}>{row.body}</Markdown>
         </Card>
       )}
 

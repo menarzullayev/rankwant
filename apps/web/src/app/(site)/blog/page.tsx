@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { date, t } from "@/i18n/messages";
 import { EmptyState } from "@/components/ui/EmptyState";
 
@@ -25,8 +26,8 @@ export default async function BlogPage() {
           <li key={post.slug}>
             <ListCard
               href={`/blog/${post.slug}`}
-              title={post.title}
-              summary={post.summary}
+              title={inReaderAlphabet(post.title, post.locale)}
+              summary={inReaderAlphabet(post.summary, post.locale)}
               meta={
                 <>
                   <span>

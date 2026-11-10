@@ -53,7 +53,7 @@ export default async function TournamentPage({ params }: Props) {
       </header>
       {tn.description && (
         <Card>
-          <Markdown>{tn.description}</Markdown>
+          <Markdown lang="uz">{tn.description}</Markdown>
         </Card>
       )}
 

@@ -1,9 +1,10 @@
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import type { Metadata } from "next";
 import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -42,9 +43,13 @@ export default async function LearnPage() {
             {roadmaps.map((r) => (
               <li key={r.slug}>
                 <ListCard
-                  title={r.title}
-                  summary={r.description}
-                  meta={<Badge color="brand">{r.step_count} qadam</Badge>}
+                  title={inReaderAlphabet(r.title, r.locale)}
+                  summary={inReaderAlphabet(r.description, r.locale)}
+                  meta={
+                    <Badge color="brand">
+                      {fill(t(locale, "learn.stepCount"), { count: r.step_count })}
+                    </Badge>
+                  }
                 />
               </li>
             ))}
@@ -61,8 +66,8 @@ export default async function LearnPage() {
             <li key={a.slug}>
               <ListCard
                 href={`/learn/${a.slug}`}
-                title={a.title}
-                summary={a.summary}
+                title={inReaderAlphabet(a.title, a.locale)}
+                summary={inReaderAlphabet(a.summary, a.locale)}
                 meta={
                   <>
                     <Badge>

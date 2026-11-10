@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2975 strings.**
+**2978 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2100,6 +2100,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.text.yes` | ha | awa |  |
 | `admin.text.badgePublic` | ommaviy | ommawiy |  |
 | `archive.continue` | Davom ettirish | Dawam etiw |  |
+| `archive.solvedTotal` | / {total} masala | / {total} másele |  |
+| `archive.lastAttempt` | Oxirgi urinish: {verdict} | Sońǵı urınıw: {verdict} |  |
+| `learn.stepCount` | {count} qadam | {count} qádem |  |
 | `archive.upcoming` | Yaqin musobaqa | Jaǵın kontest |  |
 | `archive.roadmaps` | O'quv rejalari | Oqıw traektoriyaları |  |
 | `archive.community` | Hamjamiyat | Jámiyet |  |

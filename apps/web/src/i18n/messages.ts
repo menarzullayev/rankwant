@@ -37,10 +37,16 @@ import {
   DEFAULT_LOCALE,
   LOCALES,
   LOCALE_NAMES,
+  localNameInfo as sharedLocalNameInfo,
   registerMessages as registerInShared,
+  topicNameInfo as sharedTopicNameInfo,
   type Dictionary,
   type Locale,
+  type NameInfo,
+  type Named,
 } from "@rankwant/shared/i18n";
+
+import { inReaderAlphabet } from "./alphabet";
 
 import type { MessageKey } from "./locales/uz";
 
@@ -78,15 +84,34 @@ export {
   hasMessages,
   intlLocale,
   isLocale,
-  localName,
-  localNameInfo,
   type NameInfo,
   type Named,
   registrySize,
   resetRegistry,
   t,
   time,
-  topicName,
-  topicNameInfo,
   translate,
 } from "@rankwant/shared/i18n";
+
+/** A content name in the reader's alphabet (ADR-0059): the Uzbek column
+ *  (`name_uz`) is converted, other languages are left as they are. Every
+ *  topic and skill name on the site goes through these four. */
+function inAlphabet(info: NameInfo): NameInfo {
+  return info.locale === "uz" ? { ...info, text: inReaderAlphabet(info.text, "uz") } : info;
+}
+
+export function localNameInfo(row: Named, locale: Locale): NameInfo {
+  return inAlphabet(sharedLocalNameInfo(row, locale));
+}
+
+export function localName(row: Named, locale: Locale): string {
+  return localNameInfo(row, locale).text;
+}
+
+export function topicNameInfo(topic: Named & { slug: string }, locale: Locale): NameInfo {
+  return inAlphabet(sharedTopicNameInfo(topic, locale));
+}
+
+export function topicName(topic: Named & { slug: string }, locale: Locale): string {
+  return topicNameInfo(topic, locale).text;
+}

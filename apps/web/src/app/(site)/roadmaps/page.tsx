@@ -1,9 +1,10 @@
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import type { Metadata } from "next";
 
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -28,9 +29,13 @@ export default async function RoadmapsPage() {
           <li key={r.slug} id={r.slug} className="scroll-mt-24">
             <ListCard
               href="/learn"
-              title={r.title}
-              summary={r.description}
-              meta={<Badge color="brand">{r.step_count} qadam</Badge>}
+              title={inReaderAlphabet(r.title, r.locale)}
+              summary={inReaderAlphabet(r.description, r.locale)}
+              meta={
+                <Badge color="brand">
+                  {fill(t(locale, "learn.stepCount"), { count: r.step_count })}
+                </Badge>
+              }
             />
           </li>
         ))}
