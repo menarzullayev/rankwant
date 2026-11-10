@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2424 strings.**
+**2499 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -826,6 +826,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.too_many` | Juda ko'p — avval borlarini yakunlang | Júdá kóp — aldın barlarin tamamlań |  |
 | `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Baslanıw keminde 5 minuttan keyin bolıwı kerek |  |
 | `error.wrong_question` | Bu savol hozir ochiq emas | Bul soraw házir ashıq emes |  |
+| `error.draft_limit` | Qoralamalar chegarasiga yetdingiz — avval birini yakunlang yoki o'chiring | Jobalar shegine jettińiz — aldın birewin juwmaqlań yamasa óshiriń |  |
+| `error.review_not_ready` | Qoralama ko'rikka tayyor emas | Joba tekseriwge tayar emes |  |
+| `error.already_public` | Masala allaqachon nashr qilingan | Másele áldeqashan járiyalanǵan |  |
 | `profile.aboutEmpty` | Foydalanuvchi hali o'zi haqida ma'lumot qo'shmagan. | Paydalanıwshı ele ózi haqqında maǵlıwmat qospaǵan. |  |
 | `profile.achContest` | Qatnashilgan musobaqalar: {n} | Qatnasqan jarıslar: {n} |  |
 | `profile.achDone` | {done} / {total} yutuq qo'lga kiritilgan | {done} / {total} jetiskenlik alınǵan |  |
@@ -1756,6 +1759,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.text.interactive` | Interactive | Interaktiv |  |
 | `admin.label.text.source` | Manba | Derek |  |
 | `admin.label.misc.tests` | Testlar | Testler |  |
+| `admin.filter.all` | Hammasi | Barlıǵı |  |
+| `admin.filter.reviewQueue` | Ko'rik navbati | Tekseriw gezegi |  |
+| `admin.label.misc.authors` | Mualliflar | Avtorlar |  |
+| `admin.label.date.reviewRequested` | Ko'rik so'ralgan | Tekseriw soralǵan |  |
 | `admin.label.text.reward` | Mukofot | Sıylıq |  |
 | `admin.label.text.qvant` | Qvant | Qvant |  |
 | `admin.label.text.problem` | Masala | Másele |  |
@@ -1864,6 +1871,72 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.tournaments` | Chempionatlar | Chempionatlar |  |
 | `admin.title.broadcast` | Umumiy e'lon | Ulıwma xabarlama |  |
 | `admin.title.page` | Admin | Administrator |  |
+| `studio.title` | Mualliflik | Avtorlıq |  |
+| `studio.nav.problems` | Masalalarim | Meniń máselelerim |  |
+| `studio.problems.intro` | Qoralamani siz yozasiz: shart, testlar va yechim tahlili. Nashr — xodim ko'rigidan keyin. | Jobanı siz jazasız: shárt, testler hám sheshim talqısı. Járiyalaw — xızmetker tekseriwinen keyin. |  |
+| `studio.problems.new` | Yangi masala | Jańa másele |  |
+| `studio.problems.empty` | Hali masalangiz yo'q | Sizde ázirshe másele joq |  |
+| `studio.problems.emptyHint` | Shartni yozing, testlarni qo'shing va ko'rikka yuboring. | Shárttı jazıń, testlerdi qosıń hám tekseriwge jiberiń. |  |
+| `studio.problems.count` | {count} / {limit} qoralama | Jobalar: {count} / {limit} |  |
+| `studio.problems.full` | Qoralamalar chegarasi: {count} / {limit}. Yangisini boshlash uchun birini yakunlang yoki o'chiring. | Jobalar shegine jettińiz: {count} / {limit}. Jańasın baslaw ushın birewin juwmaqlań yamasa óshiriń. |  |
+| `studio.col.problem` | Masala | Másele |  |
+| `studio.col.difficulty` | Qiyinlik | Qıyınlıq |  |
+| `studio.col.tests` | Testlar | Testler |  |
+| `studio.col.status` | Holat | Halat |  |
+| `studio.col.updated` | Yangilangan | Jańalandı |  |
+| `studio.tests.summary` | {samples} namuna · {hidden} yashirin | mısal: {samples} · jasırın: {hidden} |  |
+| `studio.status.draft` | Qoralama | Joba |  |
+| `studio.status.review` | Ko'rikda | Tekseriwde |  |
+| `studio.status.public` | Nashr qilingan | Járiyalanǵan |  |
+| `studio.tab.statement` | Shart | Shárt |  |
+| `studio.tab.tests` | Testlar | Testler |  |
+| `studio.tab.testsCount` | Testlar ({count}) | Testler ({count}) |  |
+| `studio.tab.editorial` | Yechim tahlili | Sheshim talqısı |  |
+| `studio.tab.review` | Ko'rik | Tekseriw |  |
+| `studio.field.title` | Nomi | Atı |  |
+| `studio.field.slug` | Manzil (slug) | Mánzil (slug) |  |
+| `studio.field.slugHint` | Kichik lotin harflari, raqamlar va chiziqcha. Yaratilgandan keyin o'zgarmaydi. | Kishi latın háripleri, sanlar hám sızıqsha. Jaratılǵannan keyin ózgermeydi. |  |
+| `studio.field.markdownHint` | Markdown va LaTeX: formula $...$ ichida yoziladi. | Markdown hám LaTeX: formulalar $...$ ishinde jazıladı. |  |
+| `studio.preview` | Ko'rinish | Aldın ala kóriw |  |
+| `studio.previewHint` | Qoralama ommaviy sahifada ochilmaydi — u qanday ko'rinishini shu yerda ko'rasiz. | Joba ashıq betde ashılmaydı — onıń kórinisin usı jerde kóresiz. |  |
+| `studio.limits` | Vaqt: {time} s · Xotira: {memory} MB | Waqıt: {time} s · Yad: {memory} MB |  |
+| `studio.save` | Saqlash | Saqlaw |  |
+| `studio.create` | Yaratish | Jaratıw |  |
+| `studio.cancel` | Bekor qilish | Biykar etiw |  |
+| `studio.saved` | Saqlandi | Saqlandı |  |
+| `studio.unsaved` | Saqlanmagan o'zgarishlar bor | Saqlanbaǵan ózgerisler bar |  |
+| `studio.error.slug` | Bu manzil band yoki noto'g'ri yozilgan | Bul mánzil bánt yamasa qáte jazılǵan |  |
+| `studio.editorial.intro` | Yechim tahlili masala sahifasida spoyler sifatida yopiq turadi. | Sheshim talqısı másele betinde spoyler sıpatında jabıq turadı. |  |
+| `studio.tests.order` | Raqami | Nomeri |  |
+| `studio.tests.kind` | Turi | Túri |  |
+| `studio.tests.actions` | Amallar | Ámeller |  |
+| `studio.tests.empty` | Hali test yo'q | Ázirshe test joq |  |
+| `studio.tests.sample` | Namuna | Mısal |  |
+| `studio.tests.hidden` | Yashirin | Jasırın |  |
+| `studio.tests.expected` | To'g'ri javob | Durıs juwap |  |
+| `studio.tests.isSample` | Namuna test | Mısal test |  |
+| `studio.tests.isSampleHint` | Shart ostida hammaga ko'rinadi. Qolganlari yashirin. | Shárttıń astında hámmege kórinedi. Qalǵanları jasırın. |  |
+| `studio.tests.note` | Test matni saqlangandan keyin bu yerda ko'rsatilmaydi: almashtirish uchun uni qaytadan yozing. | Saqlanǵan testtiń teksti bul jerde qayta kórsetilmeydi: almastırıw ushın onı qaytadan jazıń. |  |
+| `studio.tests.adding` | {order}-test qo'shiladi | {order}-test qosıladı |  |
+| `studio.tests.replacing` | {order}-test almashtiriladi | {order}-test almastırıladı |  |
+| `studio.tests.save` | Testni saqlash | Testti saqlaw |  |
+| `studio.tests.replace` | Almashtirish | Almastırıw |  |
+| `studio.tests.delete` | O'chirish | Óshiriw |  |
+| `studio.tests.deleteConfirm` | {order}-testni o'chirasizmi? | {order}-testti óshiresizbe? |  |
+| `studio.tests.locked` | Masala nashr qilingan: uning testlari endi xodim nazoratida. | Másele járiyalanǵan: onıń testlerin endi xızmetkerler basqaradı. |  |
+| `studio.review.intro` | Xodim masalani tekshiradi, limitlarni sozlaydi va nashr qiladi. Yuborishdan oldin uch shart bajarilishi kerak. | Xızmetker máseleni tekserip, sheklewlerin sazlaydı hám járiyalaydı. Jiberiwden aldın úsh shárt orınlanıwı kerek. |  |
+| `studio.review.check.statement` | Shart yozilgan | Shárt jazılǵan |  |
+| `studio.review.check.sample` | Kamida bitta namuna test | Keminde bir mısal test |  |
+| `studio.review.check.hidden` | Kamida bitta yashirin test | Keminde bir jasırın test |  |
+| `studio.review.hiddenWhy` | Faqat namuna testli masala nashr qilinmaydi: namuna javobini chop etgan dastur ham o'tib ketardi. | Tek mısal testi bar másele járiyalanbaydı: mısal juwabın basıp shıǵaratuǵın baǵdarlama da ótip keter edi. |  |
+| `studio.review.done` | (bajarilgan) | (orınlandı) |  |
+| `studio.review.missing` | (bajarilmagan) | (orınlanbaǵan) |  |
+| `studio.review.submit` | Ko'rikka yuborish | Tekseriwge jiberiw |  |
+| `studio.review.sent` | Ko'rikka yuborilgan: {at} | Tekseriwge jiberildi: {at} |  |
+| `studio.review.sentHint` | Tahrirlashda davom etishingiz mumkin — xodim oxirgi holatni ko'radi. | Ońlawdı dawam ete alasız — xızmetker sońǵı nusqasın kóredi. |  |
+| `studio.review.public` | Masala nashr qilingan va arxivda turibdi. | Másele járiyalanǵan hám arxivte tur. |  |
+| `studio.delete` | Qoralamani o'chirish | Jobanı óshiriw |  |
+| `studio.deleteConfirm` | «{title}» qoralamasini o'chirasizmi? Testlari ham o'chadi. | «{title}» jobasın óshiresizbe? Testleri de óshedi. |  |
 | `admin.placeholder.questionId` | Savol ID | Soraw ID |  |
 | `admin.placeholder.problemSlug` | masala slug'i | másele slugı |  |
 | `admin.placeholder.title` | Sarlavha | Sarlawha |  |
@@ -2377,6 +2450,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.problem_rerated.body` | Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi. | Siz sheshken másele qayta bahalandı. Skills: {before} → {after}. Bul sizdiń háreketińiz emes — másele qıyınlıǵı statistika tiykarında jańalandı. |  |
 | `notif.msg.contest_result.title` | {contest}: {rank}-o'rin, reyting {delta} | {contest}: {rank}-orın, reyting {delta} |  |
 | `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Contests reytingi: {before} → {after}. |  |
+| `notif.msg.problem_review_requested.title` | Ko'rik so'raldi — {problem} | Tekseriw soraldı — {problem} |  |
+| `notif.msg.problem_review_requested.body` | @{user} «{problem}» qoralamasini ko'rikka yubordi. | @{user} «{problem}» jobasın tekseriwge jiberdi. |  |
 | `search.type.shop` | Do'kon | Dúkan |  |
 | `search.top` | Eng mos natija | Eń sáykes nátiyje |  |
 | `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Júdá kóp soraw. Azǵanadan soń qayta urınıp kóriń. |  |

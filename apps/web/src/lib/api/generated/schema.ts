@@ -2597,6 +2597,29 @@ export interface paths {
         patch: operations["problems_mine_partial_update"];
         trace?: never;
     };
+    "/api/v1/problems/mine/{slug}/review/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Qoralamani xodim ko'rigiga yuborish
+         * @description Ask staff-ops to review the draft.
+         *
+         *     Asking twice is harmless: the first time is kept and staff are told
+         *     once — a second click must not ring every reviewer again.
+         */
+        post: operations["problems_mine_review_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/problems/progress/": {
         parameters: {
             query?: never;
@@ -6607,6 +6630,12 @@ export interface components {
          *
          *     `is_public` faqat O'QISH — nashr staff-ops qarori (masala sifati,
          *     testlar to'plami va reyting tozaligi nashrdan oldin ko'rib chiqiladi).
+         *
+         *     The statement's separate sections (`input_format`, `output_format`,
+         *     `note`) are writable too: the problem page draws them as their own
+         *     blocks, so an author who could only write `statement` had nowhere to put
+         *     them. Limits stay read-only — calibrating them is part of the staff
+         *     review (ADR-0052), the author only sees what will apply.
          */
         MineProblem: {
             slug: string;
@@ -6614,10 +6643,26 @@ export interface components {
             /** @description Markdown + LaTeX */
             statement: string;
             /** @description Markdown + LaTeX */
+            input_format?: string;
+            /** @description Markdown + LaTeX */
+            output_format?: string;
+            /** @description Markdown + LaTeX */
+            note?: string;
+            /** @description Markdown + LaTeX */
             editorial?: string;
             /** @description 800–3500, qadam 100 */
             difficulty: number;
+            readonly time_limit_ms: number;
+            readonly memory_limit_kb: number;
             readonly is_public: boolean;
+            /** Format: date-time */
+            readonly review_requested_at: string | null;
+            readonly sample_count: number;
+            readonly hidden_count: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
         };
         /**
          * @description * `problems` - Masalalar
@@ -7730,6 +7775,12 @@ export interface components {
          *
          *     `is_public` faqat O'QISH — nashr staff-ops qarori (masala sifati,
          *     testlar to'plami va reyting tozaligi nashrdan oldin ko'rib chiqiladi).
+         *
+         *     The statement's separate sections (`input_format`, `output_format`,
+         *     `note`) are writable too: the problem page draws them as their own
+         *     blocks, so an author who could only write `statement` had nowhere to put
+         *     them. Limits stay read-only — calibrating them is part of the staff
+         *     review (ADR-0052), the author only sees what will apply.
          */
         PatchedMineProblem: {
             slug?: string;
@@ -7737,10 +7788,26 @@ export interface components {
             /** @description Markdown + LaTeX */
             statement?: string;
             /** @description Markdown + LaTeX */
+            input_format?: string;
+            /** @description Markdown + LaTeX */
+            output_format?: string;
+            /** @description Markdown + LaTeX */
+            note?: string;
+            /** @description Markdown + LaTeX */
             editorial?: string;
             /** @description 800–3500, qadam 100 */
             difficulty?: number;
+            readonly time_limit_ms?: number;
+            readonly memory_limit_kb?: number;
             readonly is_public?: boolean;
+            /** Format: date-time */
+            readonly review_requested_at?: string | null;
+            readonly sample_count?: number;
+            readonly hidden_count?: number;
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly updated_at?: string;
         };
         /**
          * @description Organizator ko'radigan maydonlar.
@@ -7930,6 +7997,9 @@ export interface components {
             readonly solved_count?: number;
             readonly attempt_count?: number;
             readonly test_count?: number;
+            readonly authors?: string[];
+            /** Format: date-time */
+            readonly review_requested_at?: string | null;
             /** Format: date-time */
             readonly created_at?: string;
             /** Format: date-time */
@@ -9147,6 +9217,9 @@ export interface components {
             readonly solved_count: number;
             readonly attempt_count: number;
             readonly test_count: number;
+            readonly authors: string[];
+            /** Format: date-time */
+            readonly review_requested_at: string | null;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
@@ -13696,6 +13769,27 @@ export interface operations {
             };
         };
     };
+    problems_mine_review_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MineProblem"];
+                };
+            };
+        };
+    };
     problems_progress_retrieve: {
         parameters: {
             query?: never;
@@ -16051,6 +16145,8 @@ export interface operations {
                 page?: number;
                 /** @description Number of results to return per page. */
                 page_size?: number;
+                /** @description `1` — only drafts whose author asked for a review */
+                review?: boolean;
                 /** @description A search term. */
                 search?: string;
             };

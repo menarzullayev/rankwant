@@ -4496,6 +4496,33 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/problems/mine/{slug}/review/:
+    post:
+      operationId: problems_mine_review_create
+      description: |-
+        Ask staff-ops to review the draft.
+
+        Asking twice is harmless: the first time is kept and staff are told
+        once — a second click must not ring every reviewer again.
+      summary: Qoralamani xodim ko'rigiga yuborish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineProblem'
+          description: ''
   /api/v1/problems/progress/:
     get:
       operationId: problems_progress_retrieve
@@ -7492,6 +7519,11 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: review
+        schema:
+          type: boolean
+        description: '`1` — only drafts whose author asked for a review'
       - name: search
         required: false
         in: query
@@ -14384,6 +14416,12 @@ components:
 
         `is_public` faqat O'QISH — nashr staff-ops qarori (masala sifati,
         testlar to'plami va reyting tozaligi nashrdan oldin ko'rib chiqiladi).
+
+        The statement's separate sections (`input_format`, `output_format`,
+        `note`) are writable too: the problem page draws them as their own
+        blocks, so an author who could only write `statement` had nowhere to put
+        them. Limits stay read-only — calibrating them is part of the staff
+        review (ADR-0052), the author only sees what will apply.
       properties:
         slug:
           type: string
@@ -14395,6 +14433,15 @@ components:
         statement:
           type: string
           description: Markdown + LaTeX
+        input_format:
+          type: string
+          description: Markdown + LaTeX
+        output_format:
+          type: string
+          description: Markdown + LaTeX
+        note:
+          type: string
+          description: Markdown + LaTeX
         editorial:
           type: string
           description: Markdown + LaTeX
@@ -14403,15 +14450,47 @@ components:
           maximum: 3500
           minimum: 800
           description: 800–3500, qadam 100
+        time_limit_ms:
+          type: integer
+          readOnly: true
+        memory_limit_kb:
+          type: integer
+          readOnly: true
         is_public:
           type: boolean
           readOnly: true
+        review_requested_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        sample_count:
+          type: integer
+          readOnly: true
+        hidden_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
+      - created_at
       - difficulty
+      - hidden_count
       - is_public
+      - memory_limit_kb
+      - review_requested_at
+      - sample_count
       - slug
       - statement
+      - time_limit_ms
       - title
+      - updated_at
     ModuleEnum:
       enum:
       - problems
@@ -16264,6 +16343,12 @@ components:
 
         `is_public` faqat O'QISH — nashr staff-ops qarori (masala sifati,
         testlar to'plami va reyting tozaligi nashrdan oldin ko'rib chiqiladi).
+
+        The statement's separate sections (`input_format`, `output_format`,
+        `note`) are writable too: the problem page draws them as their own
+        blocks, so an author who could only write `statement` had nowhere to put
+        them. Limits stay read-only — calibrating them is part of the staff
+        review (ADR-0052), the author only sees what will apply.
       properties:
         slug:
           type: string
@@ -16275,6 +16360,15 @@ components:
         statement:
           type: string
           description: Markdown + LaTeX
+        input_format:
+          type: string
+          description: Markdown + LaTeX
+        output_format:
+          type: string
+          description: Markdown + LaTeX
+        note:
+          type: string
+          description: Markdown + LaTeX
         editorial:
           type: string
           description: Markdown + LaTeX
@@ -16283,8 +16377,33 @@ components:
           maximum: 3500
           minimum: 800
           description: 800–3500, qadam 100
+        time_limit_ms:
+          type: integer
+          readOnly: true
+        memory_limit_kb:
+          type: integer
+          readOnly: true
         is_public:
           type: boolean
+          readOnly: true
+        review_requested_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        sample_count:
+          type: integer
+          readOnly: true
+        hidden_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
           readOnly: true
     PatchedOrganizerContest:
       type: object
@@ -16696,6 +16815,18 @@ components:
         test_count:
           type: integer
           readOnly: true
+        authors:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+          readOnly: true
+        review_requested_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
         created_at:
           type: string
           format: date-time
@@ -19572,6 +19703,18 @@ components:
         test_count:
           type: integer
           readOnly: true
+        authors:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+          readOnly: true
+        review_requested_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
         created_at:
           type: string
           format: date-time
@@ -19582,10 +19725,12 @@ components:
           readOnly: true
       required:
       - attempt_count
+      - authors
       - code
       - created_at
       - difficulty
       - id
+      - review_requested_at
       - slug
       - solved_count
       - statement

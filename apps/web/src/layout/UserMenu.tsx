@@ -125,6 +125,21 @@ export default function UserMenu() {
               {t(locale, "settings.nav.profile")}
             </IntentLink>
           </li>
+          {/* The author's drafts (`/studio`, 2026-11-10). Here and not in
+              the side menu: that one is 21 items in 5 groups by decision,
+              and writing problems is something one account does, not a
+              section of the site. */}
+          <li role="none">
+            <IntentLink
+              href={"/studio/problems" as Route}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className={item}
+            >
+              <Icon name="action.edit" className="size-4 shrink-0" />
+              {t(locale, "studio.title")}
+            </IntentLink>
+          </li>
           <li role="none">
             <IntentLink
               href={"/settings/profil" as Route}

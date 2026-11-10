@@ -84,6 +84,7 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   streak: { body: true },
   problem_rerated: { body: true },
   contest_result: { body: true },
+  problem_review_requested: { body: true },
 };
 
 /** The words of a notification in the language it is being read in.
@@ -134,6 +135,9 @@ export function notificationHref(row: Notification): string | null {
       return "/qvant";
     case "mail_quota":
       return "/admin/email-quota";
+    case "problem_review":
+      // Staff-ops: the review queue, where the author's draft waits.
+      return "/admin/problems?review=1";
     default:
       return null;
   }

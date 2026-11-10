@@ -58,6 +58,8 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   notifications: "user",
   onboarding: "user",
   settings: "user",
+  // The author's own drafts (2026-11-10): any signed-in user, nobody else.
+  studio: "user",
 
   admin: "staff",
 };
