@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2544 strings.**
+**2550 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -273,6 +273,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernamePlaceholder` | sardor_dev | erlan_dev |  |
 | `auth.usernameOptional` | Taxallus (ixtiyoriy) | Ник (милдеттүү эмес) |  |
 | `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Кийинчерээк тандасаңыз болот |  |
+| `auth.regionOptional` | Viloyat (ixtiyoriy) | Облус (милдеттүү эмес) |  |
+| `auth.regionHint` | Keyinroq sozlamalarda o'zgartirishingiz mumkin | Кийинчерээк жөндөөлөрдөн өзгөртө аласыз |  |
 | `auth.firstNamePlaceholder` | Masalan: Sardor | Мисалы: Эрлан |  |
 | `auth.lastNamePlaceholder` | Masalan: Rahimov | Мисалы: Асанов |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Эң аз 8 белги. Жалаң сандан турбасын. |  |
@@ -1732,6 +1734,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.name.shown` | Ko'rsatiladigan ism | Көрсөтүлүүчү ат |  |
 | `admin.label.ab.control` | Nazorat (2-qadamda) | Көзөмөл (2-кадамда) |  |
 | `admin.label.ab.variant` | Variant (ro'yxatda) | Вариант (тизмеде) |  |
+| `admin.label.ab.started` | Formani boshladi | Форманы баштады |  |
+| `admin.label.ab.done` | Ro'yxatdan o'tdi | Катталды |  |
+| `admin.label.ab.completion` | Tugatish ulushi | Бүтүрүү үлүшү |  |
+| `admin.label.ab.regionFilled` | Viloyati bor (hozir) | Облусу бар (азыр) |  |
 | `admin.label.misc.participant` | Ishtirokchi | Катышуучу |  |
 | `admin.label.misc.challenger` | Chaqiruvchi | Чакыруучу |  |
 | `admin.label.misc.projects` | Loyihalar | Долбоорлор |  |

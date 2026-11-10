@@ -3,18 +3,20 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
-import { Checkbox } from "@/components/ui/SelectField";
+import { Checkbox, SelectField } from "@/components/ui/SelectField";
 import { Status } from "@/components/ui/Status";
 import { GithubMark, GoogleMark, TelegramMark } from "@/features/account";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
+import { experimentGroupForPage } from "@/lib/flags";
+import { REGION_CODES, regionName } from "@rankwant/shared/regions";
 import {
   fieldErrors,
   loginSchema,
@@ -38,6 +40,20 @@ const PROVIDER_LABEL = {
 } as const;
 
 type Provider = keyof typeof PROVIDER_LABEL;
+
+/** A/B (8-qaror, `geoEarlyRegion`): is the region asked on step 1?
+ *
+ *  Decided in the browser, never on the server. `/login` is cached at the
+ *  edge for guests and the cache does not vary on `rw_exp` (Cloudflare rule
+ *  `rankwant_guest_html_cache`), so a server-drawn field would be served to
+ *  whichever group happened to fill the cache first. The server snapshot is
+ *  always "no", the client one reads the flag; React swaps them after
+ *  hydration without a mismatch. */
+const noSubscription = () => () => {};
+// Fixed for the page load: `rw_exp` may arrive mid-visit, and the field must
+// not pop in while the person types (analytics reads the same value).
+const regionAskedHere = () => experimentGroupForPage("geoEarlyRegion") === "b";
+const regionNotAskedOnServer = () => false;
 
 /** Inputs that can carry their own error. */
 type FieldName =
@@ -122,6 +138,11 @@ export function AuthForm({
   const [email, setEmail] = useState("");
   // Optional handle on step 1, controlled so its free/taken note can follow it.
   const [handle, setHandle] = useState("");
+  // Group `b` of the region A/B: an Uzbek region, optional, on step 1.
+  const askRegion =
+    useSyncExternalStore(noSubscription, regionAskedHere, regionNotAskedOnServer) &&
+    mode === "register";
+  const [region, setRegion] = useState("");
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
   // The password the server turned down: the strength bar never rates it above "very weak".
@@ -234,6 +255,8 @@ export function AuthForm({
           first_name: payload.first_name.trim(),
           last_name: payload.last_name.trim(),
           ...(typed ? { username: typed } : {}),
+          // A/B group `b` only; an Uzbek region is a catalogue code (8-qaror).
+          ...(askRegion && region ? { country: "UZ", region } : {}),
           password: payload.password,
           // The page language: the confirmation e-mail goes out in it.
           locale,
@@ -413,6 +436,19 @@ export function AuthForm({
               hint={t(locale, "auth.usernameOptionalHint")}
               status={handleStatus}
             />
+            {askRegion && (
+              <SelectField
+                label={t(locale, "auth.regionOptional")}
+                hint={t(locale, "auth.regionHint")}
+                name="region"
+                value={region}
+                onChange={setRegion}
+                options={[
+                  { value: "", label: t(locale, "settings.notChosen") },
+                  ...REGION_CODES.map((code) => ({ value: code, label: regionName(code, locale) })),
+                ]}
+              />
+            )}
           </>
         ) : (
           <Field
