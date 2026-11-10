@@ -5073,6 +5073,16 @@ def neg_decisions_published_structure_open() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_course_studio_ungated() -> tuple[bool, str]:
+    """Anyone opens the course studio while the section is still closed."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/studio/courses/[slug]/page.tsx",
+        '  if (!isOnServer("courses", undefined) && !me.is_staff) notFound();\n',
+        "",
+        "bayroq yoki xodim qo'riqchisisiz",
+    )
+
+
 def neg_decisions_course_flag_on() -> tuple[bool, str]:
     """The Courses section is switched on by default before the owner opens it."""
     return _decision_broken(
@@ -8198,6 +8208,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/courses/services.py",
     "apps/api/courses/review.py",
     "apps/api/courses/author_serializers.py",
+    "apps/web/src/app/(site)/studio/courses/page.tsx",
+    "apps/web/src/app/(site)/studio/courses/[slug]/page.tsx",
     "apps/web/src/app/(site)/courses/page.tsx",
     "apps/web/src/app/(site)/courses/[slug]/page.tsx",
     "apps/web/src/app/(site)/courses/[slug]/lessons/[id]/page.tsx",
@@ -12334,6 +12346,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kurs sahifasi bayroqsiz ochilsa tutilsin", neg_decisions_course_page_ungated),
             ("muallif kurs narxini qo'ysa tutilsin", neg_decisions_author_sets_course_price),
             ("nashr qilingan kurs tuzilmasi ochilsa tutilsin", neg_decisions_published_structure_open),
+            ("kurs studio'si qo'riqchisiz ochilsa tutilsin", neg_decisions_course_studio_ungated),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

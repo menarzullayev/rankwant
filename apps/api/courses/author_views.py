@@ -29,7 +29,7 @@ from core.permissions import StaffContent
 from core.staff import SessionOnly
 from courses import review
 from courses.author_serializers import (
-    ReturnSerializer,
+    CourseReturnSerializer,
     StaffCourseSerializer,
     StudioCourseCreateSerializer,
     StudioCourseSerializer,
@@ -399,14 +399,14 @@ class StaffCourseViewSet(
             )
         return Response(self.get_serializer(self.get_queryset().get(pk=course.pk)).data)
 
-    @extend_schema(request=ReturnSerializer, responses={200: StaffCourseSerializer})
+    @extend_schema(request=CourseReturnSerializer, responses={200: StaffCourseSerializer})
     @action(detail=True, methods=["post"], url_path="send-back")
     def send_back(self, request: Request, slug: str | None = None) -> Response:
         """Return a draft to its authors with the reason."""
         course = self.get_object()
         if course.is_published:
             raise CourseAlreadyPublished()
-        data = ReturnSerializer(data=request.data)
+        data = CourseReturnSerializer(data=request.data)
         data.is_valid(raise_exception=True)
         course.review_requested_at = None
         course.save(update_fields=["review_requested_at", "updated_at"])

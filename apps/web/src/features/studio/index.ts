@@ -21,3 +21,11 @@ export { ContestEditor } from "./components/ContestEditor";
 export { DEFAULT_CONTEST_TAB, contestTab, type ContestTab } from "./contest-tabs";
 
 export type { ContestParticipant, MineContest } from "./api/contests";
+
+export { CourseList } from "./components/CourseList";
+
+export { CourseEditor } from "./components/CourseEditor";
+
+export { CourseReview } from "./components/CourseReview";
+
+export type { StaffCourse, StudioCourse } from "./api/courses";

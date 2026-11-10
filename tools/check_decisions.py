@@ -2995,6 +2995,14 @@ def course_studio_rules() -> str | None:
     )
     if locked not in serializers_py:
         return "courses/author_serializers.py: muallif kirish turi yoki narxni o'zgartira oladi"
+    # 4b (web): bo'lim ochilgunga qadar studio'da kurslarni faqat xodim yozadi.
+    gate = '  if (!isOnServer("courses", undefined) && !me.is_staff) notFound();\n'
+    for page in (
+        "apps/web/src/app/(site)/studio/courses/page.tsx",
+        "apps/web/src/app/(site)/studio/courses/[slug]/page.tsx",
+    ):
+        if gate not in read(page):
+            return f"{page}: studio kurslari bayroq yoki xodim qo'riqchisisiz"
     return None
 
 

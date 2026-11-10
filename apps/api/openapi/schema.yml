@@ -6807,13 +6807,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/CourseReturn'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/CourseReturn'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/CourseReturn'
         required: true
       security:
       - bearerAuth: []
@@ -15006,6 +15006,14 @@ components:
         * `beginner` - Beginner
         * `intermediate` - Intermediate
         * `advanced` - Advanced
+    CourseReturn:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+      - reason
     CourseText:
       type: object
       properties:
@@ -21100,14 +21108,6 @@ components:
           default: false
       required:
       - start_at
-    Return:
-      type: object
-      properties:
-        reason:
-          type: string
-          maxLength: 1000
-      required:
-      - reason
     ReviewItem:
       type: object
       properties:
