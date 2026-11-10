@@ -2,6 +2,7 @@
 
 import { createContext, use, useContext, useEffect } from "react";
 
+import { DEFAULT_ALPHABET, type Alphabet } from "./alphabet";
 import { DEFAULT_LOCALE, evictOtherLocales, hasMessages, type Locale } from "./messages";
 
 const LocaleContext = createContext<Locale>(DEFAULT_LOCALE);
@@ -10,6 +11,9 @@ const LocaleContext = createContext<Locale>(DEFAULT_LOCALE);
  *  `locale` doim ANIQ til bo'ladi (`Accept-Language` dan yechilgan),
  *  ya'ni qaysi holatdaligini faqat shu bayroq bildiradi. */
 const AutoContext = createContext<boolean>(true);
+/** The reader's alphabet choice (ADR-0059). It applies to Uzbek only:
+ *  `alphabetFor(locale, choice)` is what a page shows. */
+const AlphabetContext = createContext<Alphabet>(DEFAULT_ALPHABET);
 
 /** Injects one dictionary file. The promise settles even when the file fails:
  *  the page then shows keys, which beats an error screen. */
@@ -124,6 +128,7 @@ export function LocaleProvider({
   locale,
   dictionaryUrl,
   auto = true,
+  alphabet = DEFAULT_ALPHABET,
   children,
 }: {
   locale: Locale;
@@ -131,13 +136,17 @@ export function LocaleProvider({
   dictionaryUrl: string;
   /** Til `Accept-Language` dan aniqlanganmi (ya'ni odam tanlamaganmi). */
   auto?: boolean;
+  /** The `rw_alphabet` choice, whatever the current language. */
+  alphabet?: Alphabet;
   children: React.ReactNode;
 }) {
   use(dictionaryReady(locale, dictionaryUrl));
   useEffect(() => keepOnly(locale), [locale]);
   return (
     <AutoContext.Provider value={auto}>
-      <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>
+      <AlphabetContext.Provider value={alphabet}>
+        <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>
+      </AlphabetContext.Provider>
     </AutoContext.Provider>
   );
 }
@@ -148,4 +157,8 @@ export function useLocale(): Locale {
 
 export function useLocaleAuto(): boolean {
   return useContext(AutoContext);
+}
+
+export function useAlphabet(): Alphabet {
+  return useContext(AlphabetContext);
 }

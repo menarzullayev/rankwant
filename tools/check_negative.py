@@ -5195,6 +5195,36 @@ def neg_decisions_search_keeps_tutuq() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_alphabet_not_per_request() -> tuple[bool, str]:
+    """Requests stop running inside their alphabet's context."""
+    return _decision_broken(
+        "apps/web/src/instrumentation.ts",
+        "      return runWithAlphabet(alphabetFromCookieHeader(req.headers.cookie), () =>\n",
+        '      return runWithAlphabet("new", () =>\n',
+        "alifbo kontekstida yurmaydi",
+    )
+
+
+def neg_decisions_uz_defaults_to_old() -> tuple[bool, str]:
+    """The Uzbek dictionary goes back to the old alphabet by default."""
+    return _decision_broken(
+        "apps/web/src/i18n/messages.server.ts",
+        "  uz: UZ_NEW,\n",
+        "  uz: UZ_OLD,\n",
+        "standarti yangi alifbo emas",
+    )
+
+
+def neg_decisions_alphabet_cookie_cached() -> tuple[bool, str]:
+    """An old-alphabet reader can be served the cached guest page."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        "    cookieHas(input.cookieHeader, ALPHABET_COOKIE) ||\n",
+        "",
+        "mehmon keshidan",
+    )
+
+
 def neg_decisions_search_one_alphabet() -> tuple[bool, str]:
     """`normalize_search` stops folding the new letters."""
     return _decision_broken(
@@ -8854,6 +8884,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/lib/search/model.ts",
     "apps/api/tests/test_alphabet.py",
     "apps/web/tests/unit/alphabet.test.ts",
+    "apps/web/src/i18n/messages.server.ts",
 )
 
 
@@ -12680,6 +12711,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("muallif nashr tarjimasini o'zgartirsa tutilsin", neg_decisions_author_translates_published),
             ("qidiruv tarjima nomini topmasa tutilsin", neg_decisions_search_skips_translations),
             ("qidiruv yangi tutuqni tashlamasa tutilsin", neg_decisions_search_keeps_tutuq),
+            ("alifbo so'rov kontekstisiz bo'lsa tutilsin", neg_decisions_alphabet_not_per_request),
+            ("o'zbekcha standarti eski alifbo bo'lsa tutilsin", neg_decisions_uz_defaults_to_old),
+            ("eski alifbo mehmon keshidan olsa tutilsin", neg_decisions_alphabet_cookie_cached),
             ("qidiruv yangi harflarni katlamasa tutilsin", neg_decisions_search_one_alphabet),
             ("brauzer yangi harflarni katlamasa tutilsin", neg_decisions_browser_fold_one_alphabet),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),

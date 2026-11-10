@@ -5,6 +5,7 @@ import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { getLocaleState } from "@/i18n/server";
+import { ALPHABET_COOKIE, alphabetFor, parseAlphabet } from "@/i18n/alphabet";
 import { dictionaryUrl } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
 import { api, type AppearancePrefs } from "@/lib/api";
@@ -263,7 +264,10 @@ export default async function RootLayout({
   // every HTML response: 72 kB of 142 kB, and a third of the render CPU. An
   // inline script would be worse, because React copies inline scripts into
   // the RSC payload as well. Only the address travels now.
-  const dictionary = dictionaryUrl(locale);
+  // ADR-0059: Uzbek in the alphabet the reader chose; the server renders
+  // the same one (`instrumentation.ts`), so hydration sees the same text.
+  const alphabetChoice = parseAlphabet(cookieStore.get(ALPHABET_COOKIE)?.value);
+  const dictionary = dictionaryUrl(locale, alphabetFor(locale, alphabetChoice));
   return (
     <html
       lang={locale}
@@ -294,7 +298,7 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <LocaleProvider locale={locale} dictionaryUrl={dictionary} auto={auto}>
+        <LocaleProvider locale={locale} dictionaryUrl={dictionary} auto={auto} alphabet={alphabetChoice}>
           <AppShell
             initialUser={me}
             siteAppearance={siteAppearance}

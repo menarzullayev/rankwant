@@ -1478,6 +1478,8 @@ export const es: Record<MessageKey, string> = {
   "geo.noResults": "Sin resultados",
   "dropdown.search": "Buscar",
   "locale.switchLabel": "Elige idioma",
+  "locale.alphabetNew": "Alfabeto nuevo",
+  "locale.alphabetOld": "Alfabeto antiguo",
   "locale.auto": "Automático",
   "locale.autoDetected": "Automático ({language})",
   "locale.group.core": "Principales",

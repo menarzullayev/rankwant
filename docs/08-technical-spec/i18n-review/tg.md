@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2973 strings.**
+**2975 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1440,6 +1440,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `geo.noResults` | Topilmadi | Ёфт нашуд |  |
 | `dropdown.search` | Qidirish | Ҷустуҷӯ |  |
 | `locale.switchLabel` | Tilni tanlang | Забонро интихоб кунед |  |
+| `locale.alphabetNew` | Yangi alifbo | Алифбои нав |  |
+| `locale.alphabetOld` | Eski alifbo | Алифбои кӯҳна |  |
 | `locale.auto` | Avtomatik | Худкор |  |
 | `locale.autoDetected` | Avtomatik ({language}) | Худкор ({language}) |  |
 | `locale.group.core` | Asosiy | Асосӣ |  |

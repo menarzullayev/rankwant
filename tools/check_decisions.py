@@ -3647,6 +3647,32 @@ def about_page_is_one_searchable_page() -> str | None:
     return None
 
 
+def uz_alphabet_follows_the_request() -> str | None:
+    """2026-11-11 (HITL, ADR-0059): interfeys standart holatda yangi alifboda,
+    eski alifbo — tanlov.
+
+    Server bir vaqtda ikkala alifbodagi so'rovlarni chizadi, shuning uchun
+    alifbo so'rov kontekstidan o'qiladi (`instrumentation.ts`); lug'atning
+    standarti — yangi alifbo; eski alifbo cookie'si mehmon CDN keshini chetlab
+    o'tadi, aks holda keshdagi yangi sahifa eski alifbo o'quvchisiga ketardi.
+    """
+    if (
+        "      return runWithAlphabet(alphabetFromCookieHeader(req.headers.cookie), () =>\n"
+        not in read("apps/web/src/instrumentation.ts")
+    ):
+        return "instrumentation.ts: so'rov alifbo kontekstida yurmaydi — server alifboni bilmaydi"
+    messages = read("apps/web/src/i18n/messages.server.ts")
+    if "  uz: UZ_NEW,\n" not in messages:
+        return "messages.server.ts: o'zbekcha lug'atning standarti yangi alifbo emas"
+    if 'registerVariant(ALPHABET_LOCALE, "old", UZ_OLD);\n' not in messages:
+        return "messages.server.ts: eski alifbo tanlov sifatida ro'yxatdan o'tmagan"
+    if "    cookieHas(input.cookieHeader, ALPHABET_COOKIE) ||\n" not in read(
+        "apps/web/src/lib/home-cache.ts"
+    ):
+        return "home-cache.ts: eski alifbo o'quvchisi mehmon keshidan sahifa olishi mumkin"
+    return None
+
+
 def alphabets_fold_as_one() -> str | None:
     """2026-11-11 (HITL, ADR-0059): yangi alifbo — qidiruvda ikkalasi bir.
 
@@ -5210,6 +5236,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),
+    ("o'zbekcha interfeys yangi alifboda, eskisi so'rov bo'yicha tanlov", uz_alphabet_follows_the_request),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),

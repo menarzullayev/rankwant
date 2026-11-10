@@ -1479,6 +1479,8 @@ export const tg: Record<MessageKey, string> = {
   "geo.noResults": "Ёфт нашуд",
   "dropdown.search": "Ҷустуҷӯ",
   "locale.switchLabel": "Забонро интихоб кунед",
+  "locale.alphabetNew": "Алифбои нав",
+  "locale.alphabetOld": "Алифбои кӯҳна",
   "locale.auto": "Худкор",
   "locale.autoDetected": "Худкор ({language})",
   "locale.group.core": "Асосӣ",

@@ -16,7 +16,32 @@
 export async function register(): Promise<void> {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
-  const { ServerResponse } = await import("node:http");
+  const { Server, ServerResponse } = await import("node:http");
+
+  // ADR-0059: every request runs inside its alphabet's context, so `t()`
+  // can pick the old-alphabet Uzbek dictionary for this request alone. The
+  // `request` event is where Node hands a request to Next; everything Next
+  // and React do for it continues from inside this call.
+  const { alphabetFromCookieHeader } = await import("@/i18n/alphabet");
+  const { runWithAlphabet } = await import("@/i18n/alphabet-store.server");
+  const origEmit = Server.prototype.emit as (
+    this: InstanceType<typeof Server>,
+    event: string | symbol,
+    ...args: unknown[]
+  ) => boolean;
+  Server.prototype.emit = function (
+    this: InstanceType<typeof Server>,
+    event: string | symbol,
+    ...args: unknown[]
+  ): boolean {
+    if (event === "request") {
+      const req = args[0] as import("node:http").IncomingMessage;
+      return runWithAlphabet(alphabetFromCookieHeader(req.headers.cookie), () =>
+        origEmit.call(this, event, ...args),
+      );
+    }
+    return origEmit.call(this, event, ...args);
+  } as typeof Server.prototype.emit;
   const {
     HOME_CACHE_GUEST,
     HOME_CACHE_MARK_GUEST,

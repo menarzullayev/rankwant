@@ -1475,6 +1475,8 @@ export const zh: Record<MessageKey, string> = {
   "geo.noResults": "未找到",
   "dropdown.search": "搜索",
   "locale.switchLabel": "选择语言",
+  "locale.alphabetNew": "新字母表",
+  "locale.alphabetOld": "旧字母表",
   "locale.auto": "自动",
   "locale.autoDetected": "自动（{language}）",
   "locale.group.core": "主要",

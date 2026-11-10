@@ -1490,6 +1490,8 @@ export const uz = {
   "geo.noResults": "Topilmadi",
   "dropdown.search": "Qidirish",
   "locale.switchLabel": "Tilni tanlang",
+  "locale.alphabetNew": "Yangi alifbo",
+  "locale.alphabetOld": "Eski alifbo",
   "locale.auto": "Avtomatik",
   "locale.autoDetected": "Avtomatik ({language})",
   "locale.group.core": "Asosiy",

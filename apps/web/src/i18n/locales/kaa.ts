@@ -1478,6 +1478,8 @@ export const kaa: Record<MessageKey, string> = {
   "geo.noResults": "Tabılmadı",
   "dropdown.search": "Izlew",
   "locale.switchLabel": "Tildi saylań",
+  "locale.alphabetNew": "Jańa álipbe",
+  "locale.alphabetOld": "Eski álipbe",
   "locale.auto": "Avtomatikalıq",
   "locale.autoDetected": "Avtomatikalıq ({language})",
   "locale.group.core": "Tiykarǵı",

@@ -74,6 +74,15 @@ describe("homeCacheDecision", () => {
     expect(d.cacheControl).toBe(HOME_CACHE_PRIVATE);
   });
 
+  it("does not cache a reader of the old alphabet (ADR-0059)", () => {
+    const d = homeCacheDecision({
+      ...guestHome,
+      cookieHeader: "rw_alphabet=old",
+    });
+    expect(d.cacheable).toBe(false);
+    expect(d.cacheControl).toBe(HOME_CACHE_PRIVATE);
+  });
+
   it("does not cache markup-personalized HTML", () => {
     const d = homeCacheDecision({
       ...guestHome,

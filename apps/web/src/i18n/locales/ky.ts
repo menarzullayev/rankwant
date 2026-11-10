@@ -1478,6 +1478,8 @@ export const ky: Record<MessageKey, string> = {
   "geo.noResults": "Табылган жок",
   "dropdown.search": "Издөө",
   "locale.switchLabel": "Тилди тандаңыз",
+  "locale.alphabetNew": "Жаңы алфавит",
+  "locale.alphabetOld": "Эски алфавит",
   "locale.auto": "Автоматтык",
   "locale.autoDetected": "Автоматтык ({language})",
   "locale.group.core": "Негизги",
