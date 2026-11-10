@@ -530,6 +530,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "core.prune_dead_sessions",
         "schedule": 86400.0,
     },
+    # Audit Q-07.4: linked external ratings no longer wait for a click.
+    "refresh-stale-externals": {
+        "task": "profiles.refresh_stale_externals",
+        "schedule": 86400.0,
+    },
     "finalize-due-arena": {
         "task": "arena.finalize_due",
         "schedule": 60.0,
