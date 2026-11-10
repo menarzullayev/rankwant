@@ -11,10 +11,22 @@ import {
   EXP_COOKIE,
   FLAGS,
   FLAG_OVERRIDES,
+  experimentGroup,
   isOn,
   isOnServer,
+  experimentGroupForPage,
+  parseGroup,
   parseVariant,
+  resetPageGroups,
 } from "@/lib/flags";
+
+/** The geo experiment's own switch. Read at call time, so a test can turn
+ *  it on and off around a single assertion. */
+const GEO_SWITCH = "NEXT_PUBLIC_FLAG_GEO_EARLY_REGION";
+function experimentOn(on = true) {
+  if (on) process.env[GEO_SWITCH] = "1";
+  else Reflect.deleteProperty(process.env, GEO_SWITCH);
+}
 
 /** Cookie do'koni — `document.cookie` ning minimal o'rnini bosuvchi. */
 const jar = new Map<string, string>();
@@ -49,6 +61,8 @@ beforeEach(() => {
 afterEach(() => {
   jar.clear();
   Reflect.deleteProperty(globalThis, "document");
+  experimentOn(false);
+  resetPageGroups();
 });
 
 describe("parseVariant — sof funksiya", () => {
@@ -74,6 +88,14 @@ describe("parseVariant — sof funksiya", () => {
   it("nom qismiy mosligi guruhni almashtirmasin", () => {
     // `geology` — boshqa eksperiment; `geo` ni yonmasligi kerak.
     expect(parseVariant("geology:b", "geo")).toBe("a");
+  });
+
+  it("parseGroup guruhsiz holatni `null` deydi, `a` emas", () => {
+    // Analitika `null` ni hech bir guruhga yozmaydi; `a` deb yozsa
+    // nazorat guruhi sun'iy shishardi.
+    expect(parseGroup(undefined, "geo")).toBeNull();
+    expect(parseGroup("geo:c", "geo")).toBeNull();
+    expect(parseGroup("geo:b", "geo")).toBe("b");
   });
 });
 
@@ -103,11 +125,37 @@ describe("isOn — qavatlar tartibi", () => {
   });
 
   it("eksperiment guruhi override'dan KEYIN keladi", () => {
-    // `geoEarlyRegion` override'da yo'q, ya'ni guruh hal qiladi.
+    // `geoEarlyRegion` override'da yo'q, ya'ni (kalit yoniq bo'lsa) guruh hal qiladi.
+    experimentOn();
     document.cookie = `${EXP_COOKIE}=geo:b`;
     expect(isOn("geoEarlyRegion")).toBe(true);
     document.cookie = `${EXP_COOKIE}=geo:a`;
     expect(isOn("geoEarlyRegion")).toBe(false);
+  });
+
+  it("kalit o'chiq bo'lsa `b` guruh ham yoqmaydi (standart — o'chiq)", () => {
+    // Ilgari kalit yo'q edi: `b` guruhga tushgan har kimda bayroq
+    // ulangan zahoti yoniq bo'lardi.
+    document.cookie = `${EXP_COOKIE}=geo:b`;
+    expect(isOn("geoEarlyRegion")).toBe(false);
+    expect(experimentGroup("geoEarlyRegion")).toBeNull();
+  });
+
+  it("sahifa guruhi qotadi: tashrif o'rtasida kelgan cookie uni o'zgartirmaydi", () => {
+    experimentOn();
+    expect(experimentGroupForPage("geoEarlyRegion")).toBeNull();
+    document.cookie = `${EXP_COOKIE}=geo:b`; // proxy sets it on a later request
+    expect(experimentGroupForPage("geoEarlyRegion")).toBeNull();
+    resetPageGroups(); // next page load
+    expect(experimentGroupForPage("geoEarlyRegion")).toBe("b");
+  });
+
+  it("experimentGroup — faqat ishlayotgan sinovda va faqat haqiqiy guruh", () => {
+    experimentOn();
+    expect(experimentGroup("geoEarlyRegion")).toBeNull(); // cookie yo'q
+    document.cookie = `${EXP_COOKIE}=geo:a`;
+    expect(experimentGroup("geoEarlyRegion")).toBe("a");
+    expect(experimentGroup("newNav")).toBeNull(); // sinovga bog'lanmagan
   });
 
   it("override eksperimentdan USTUN", () => {
@@ -123,11 +171,14 @@ describe("isOnServer — Cookie sarlavhasidan", () => {
   });
 
   it("eksperiment guruhini sarlavhadan o'qiydi", () => {
+    expect(isOnServer("geoEarlyRegion", "a=1; rw_exp=geo:b; z=2")).toBe(false);
+    experimentOn();
     expect(isOnServer("geoEarlyRegion", "a=1; rw_exp=geo:b; z=2")).toBe(true);
     expect(isOnServer("geoEarlyRegion", "rw_exp=geo:a")).toBe(false);
   });
 
   it("sarlavhadagi boshqa cookie'ga aralashmaydi", () => {
+    experimentOn();
     expect(isOnServer("geoEarlyRegion", "not_rw_exp=geo:b")).toBe(false);
   });
 });
@@ -137,8 +188,11 @@ describe("isOnServer va isOn — bir xil javob (hidratsiya xatosi to'sig'i)", ()
     // ⚠️ Bu ENG MUHIM test: SSR `isOnServer` ni, keyin brauzer `isOn` ni
     // chaqiradi. Ikkisi xilma-xil javob bersa React hidratsiya xatosi
     // beradi. Shuning uchun cookie'ni IKKALA manbaga bir xil beramiz.
-    for (const variant of ["geo:a", "geo:b", ""]) {
+    for (const [variant, on] of [
+      ["geo:a", true], ["geo:b", true], ["", true], ["geo:b", false],
+    ] as const) {
       jar.clear();
+      experimentOn(on);
       if (variant) {
         jar.set(EXP_COOKIE, variant);
         document.cookie = `${EXP_COOKIE}=${variant}`;

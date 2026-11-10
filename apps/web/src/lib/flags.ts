@@ -50,8 +50,10 @@ const isDev = process.env.NODE_ENV !== "production";
 export const FLAGS = {
   /** Viloyatni ro'yxatdan o'tishning o'zida so'rash (8-qaror A/B).
    *
-   *  Bu bayroq cookie'dan emas, eksperiment guruhidan keladi —
-   *  quyida `EXPERIMENT_FLAGS` ga qarang. */
+   *  Ikki kalit: `NEXT_PUBLIC_FLAG_GEO_EARLY_REGION` sinovni YOQADI,
+   *  `rw_exp` cookie'sidagi guruh esa kimga tushishini aytadi (`b` =
+   *  viloyat ro'yxatda so'raladi). Kalit o'chiq bo'lsa hech kimda yoniq
+   *  emas — guruh `b` bo'lsa ham. Quyida `EXPERIMENT_FLAGS` ga qarang. */
   geoEarlyRegion: false,
   /** Yangi navigatsiya qobig'i — ishlab chiqilmoqda. */
   newNav: false,
@@ -63,8 +65,13 @@ export const FLAGS = {
 
 export type FlagName = keyof typeof FLAGS;
 
-/** Bayroq → eksperiment nomi. Bu yerdagilar `FLAGS` standart qiymatidan
- *  EMAS, balki `rw_exp` cookie'sidagi guruhdan o'qiladi (`b` = yoniq). */
+/** Bayroq → eksperiment nomi. Bu yerdagilar uchun `NEXT_PUBLIC_FLAG_*`
+ *  — sinovning o'zini yoqish kaliti, `rw_exp` cookie'sidagi guruh esa
+ *  kim uchun yoniqligi (`b` = yoniq).
+ *
+ *  ⚠️ Ilgari kalit yo'q edi: guruh `b` bo'lgan har kim uchun bayroq
+ *  yoniq edi, ya'ni ulangan zahoti mehmonlarning yarmida o'zi ishga
+ *  tushardi — «standart holatda o'chiq» degan qoida buzilardi. */
 const EXPERIMENT_FLAGS: Partial<Record<FlagName, string>> = {
   geoEarlyRegion: "geo",
 };
@@ -112,24 +119,70 @@ function cookieValue(name: string): string | undefined {
   return raw ? decodeURIComponent(raw) : undefined;
 }
 
-/** Guruhni cookie matnidan ajratadi — `geo:b,other:a` → `b`.
+/** Guruhni cookie matnidan ajratadi — `geo:b,other:a` → `b`; guruh yo'q
+ *  yoki buzuq bo'lsa `null`.
  *
- *  Bu `experiments.ts` dan ko'chirilgan sof funksiya: uni testlar
- *  allaqachon qoplaydi, mantiq esa o'zgarmagan. */
-export function parseVariant(raw: string | undefined, name: string): "a" | "b" {
-  if (!raw) return "a";
+ *  `null` ning o'z ma'nosi bor: analitika guruhsiz hodisani hech bir
+ *  guruhga yozmasligi kerak (uni «nazorat» deb sanash nazorat guruhini
+ *  sun'iy shishirardi — `core/staff_views.py` → `_by_variant`). */
+export function parseGroup(raw: string | undefined, name: string): "a" | "b" | null {
+  if (!raw) return null;
   for (const part of raw.split(",")) {
     const [key, value] = part.split(":");
     if (key === name && (value === "a" || value === "b")) return value;
   }
-  return "a";
+  return null;
+}
+
+/** Guruhni cookie matnidan ajratadi — guruh yo'q bo'lsa `a`.
+ *
+ *  Bu `experiments.ts` dan ko'chirilgan sof funksiya: noma'lum holatda
+ *  eksperiment qo'llanmaydi, ya'ni standart xatti-harakat saqlanadi. */
+export function parseVariant(raw: string | undefined, name: string): "a" | "b" {
+  return parseGroup(raw, name) ?? "a";
+}
+
+/** Sinov ishlayaptimi — uning `NEXT_PUBLIC_FLAG_*` kaliti yoniqmi. */
+function experimentRunning(name: FlagName): boolean {
+  return fromEnv(name) === true;
+}
+
+/** Ishlayotgan sinovda shu tashrifchining guruhi; sinov o'chiq yoki
+ *  cookie'da guruh yo'q bo'lsa `null`.
+ *
+ *  Analitika hodisaga guruhni FAQAT shu qiymat bo'lsa yozadi: sinov
+ *  o'chiq paytida ikkala guruh bir xil formani ko'radi, ya'ni o'sha
+ *  hodisalar A/B natijasini faqat aralashtirib yuborardi. */
+export function experimentGroup(name: FlagName): "a" | "b" | null {
+  const experiment = EXPERIMENT_FLAGS[name];
+  if (!experiment || !experimentRunning(name)) return null;
+  return parseGroup(cookieValue(EXP_COOKIE), experiment);
+}
+
+/** Guruh — sahifa yuklanishi davomida BIR XIL (birinchi o'qishda qotadi).
+ *
+ *  `rw_exp` keshlangan `/login` da qo'yilmaydi: uni tashrif davomidagi
+ *  keyingi so'rov beradi. Har safar cookie'dan o'qilsa, forma maydonsiz
+ *  chizilgan bo'lsa ham keyingi render'da maydon paydo bo'lardi va
+ *  `form_started` bir guruhda, `register_done` boshqasida yozilardi.
+ *  Forma va analitika shu funksiyani o'qiydi — ikkalasi bitta qiymatni. */
+const pageGroups = new Map<FlagName, "a" | "b" | null>();
+export function experimentGroupForPage(name: FlagName): "a" | "b" | null {
+  if (!pageGroups.has(name)) pageGroups.set(name, experimentGroup(name));
+  return pageGroups.get(name) ?? null;
+}
+
+/** Faqat testlar uchun: qotirilgan guruhlarni tozalaydi. */
+export function resetPageGroups(): void {
+  pageGroups.clear();
 }
 
 /** Bayroq yoniqmi — shartsiz, server va mijozda bir xil.
  *
  *  Tartib:
  *  1. Dev override cookie (`rw_flags`) — faqat ishlab chiqishda.
- *  2. Eksperiment guruhi (`rw_exp`) — agar bayroq eksperimentga bog'langan.
+ *  2. Eksperiment — agar bayroq eksperimentga bog'langan: kalit
+ *     (`NEXT_PUBLIC_FLAG_*`) yoniq VA `rw_exp` dagi guruh `b`.
  *  3. Muhit o'zgaruvchisi — `NEXT_PUBLIC_FLAG_*`.
  *  4. `FLAGS` standarti.
  */
@@ -144,10 +197,7 @@ export function isOn(name: FlagName): boolean {
     }
   }
 
-  const experiment = EXPERIMENT_FLAGS[name];
-  if (experiment) {
-    return parseVariant(cookieValue(EXP_COOKIE), experiment) === "b";
-  }
+  if (EXPERIMENT_FLAGS[name]) return experimentGroup(name) === "b";
 
   const env = fromEnv(name);
   if (env !== undefined) return env;
@@ -173,10 +223,11 @@ export function isOn(name: FlagName): boolean {
 export function isOnServer(name: FlagName, cookieHeader: string | undefined): boolean {
   const experiment = EXPERIMENT_FLAGS[name];
   if (experiment) {
+    if (!experimentRunning(name)) return false;
     const match = cookieHeader?.match(
       new RegExp(`(?:^|;\\s*)${EXP_COOKIE}=([^;]+)`),
     )?.[1];
-    return parseVariant(match ? decodeURIComponent(match) : undefined, experiment) === "b";
+    return parseGroup(match ? decodeURIComponent(match) : undefined, experiment) === "b";
   }
   return fromEnv(name) ?? FLAGS[name];
 }

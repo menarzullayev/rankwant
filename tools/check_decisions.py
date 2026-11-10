@@ -2934,6 +2934,43 @@ def _compose_service(src: str, name: str) -> str:
     return match.group(1) if match else ""
 
 
+def region_ab_is_switched_and_measured() -> str | None:
+    """2026-11-10 (HITL, audit Q-13): `geoEarlyRegion` — viloyat A/B (8-qaror) ulandi.
+
+    Sinov o'z kaliti (`NEXT_PUBLIC_FLAG_GEO_EARLY_REGION`) bilan yoqiladi;
+    kalitsiz `b` guruh ham yoqmaydi. Maydon faqat brauzerda chiziladi:
+    `/login` chekkada `rw_exp` ga qaramay keshlanadi. Natija o'qiladi:
+    guruhsiz hodisa hech bir guruhga yozilmaydi, mehmon hodisasi tab id
+    bilan alohida sessiya bo'ladi, ro'yxatdagi viloyat katalogdan.
+    """
+    flags = read("apps/web/src/lib/flags.ts")
+    if "if (!experiment || !experimentRunning(name)) return null;" not in flags:
+        return "lib/flags.ts: sinov o'z kalitisiz ham yoqiladi"
+    if "    if (!experimentRunning(name)) return false;\n" not in flags:
+        return "lib/flags.ts: server tomoni sinov kalitini tekshirmaydi"
+    form = read("apps/web/src/features/account/components/AuthForm.tsx")
+    if "const regionNotAskedOnServer = () => false;" not in form:
+        return "AuthForm.tsx: viloyat maydoni serverda chiziladi (chekka keshi guruhni aralashtiradi)"
+    if 'const regionAskedHere = () => experimentGroupForPage("geoEarlyRegion") === "b";' not in form:
+        return "AuthForm.tsx: viloyat maydoni guruhni sahifaga qotirmaydi"
+    if "useSyncExternalStore(noSubscription, regionAskedHere, regionNotAskedOnServer)" not in form:
+        return "AuthForm.tsx: viloyat maydoni `geoEarlyRegion` ga bog'lanmagan"
+    analytics = read("apps/web/src/lib/analytics.ts")
+    if 'const group = experimentGroupForPage("geoEarlyRegion");' not in analytics:
+        return "lib/analytics.ts: hodisa guruhi forma chizilgan guruhdan farq qilishi mumkin"
+    if "...(group ? { exp: group } : {})" not in analytics:
+        return "lib/analytics.ts: guruhsiz hodisa guruhga yoziladi"
+    if "fid: funnel()" not in analytics:
+        return "lib/analytics.ts: mehmon hodisasi tab id'siz ketadi"
+    views = read("apps/api/core/views.py")
+    if "session_key=key_of(props)," not in views:
+        return "core/views.py: mehmon hodisalari bitta bo'sh sessiyaga tushadi"
+    register = read("apps/api/core/serializers.py").split("class RegisterSerializer", 1)[-1]
+    if 'and attrs["region"] not in UZ_REGIONS' not in register.split("def create", 1)[0]:
+        return "core/serializers.py: ro'yxatdan o'tishda viloyat katalogdan tekshirilmaydi"
+    return None
+
+
 def judge_is_not_privileged() -> str | None:
     """2026-11-10 (HITL, audit Q-03 → ADR-0046): the judge container is not privileged.
 
@@ -4552,6 +4589,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
     ("judge privileged emas", judge_is_not_privileged),
+    ("viloyat A/B kalit bilan yoqiladi va o'lchanadi", region_ab_is_switched_and_measured),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),

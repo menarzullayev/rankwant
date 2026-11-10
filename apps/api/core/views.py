@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 import secrets
 from datetime import datetime, time, timedelta
 from typing import Any
@@ -716,6 +717,10 @@ class LoginView(APIView):
         return Response(MeSerializer(user).data)
 
 
+#: The browser's per-tab funnel id (`lib/analytics.ts`): 32 lowercase hex.
+FUNNEL_ID = re.compile(r"[0-9a-f]{32}")
+
+
 @extend_schema(summary="Analitika hodisasini qabul qilish")
 class AnalyticsEventView(APIView):
     """Funnel hodisalarini qabul qiladi (qaror 17).
@@ -742,22 +747,37 @@ class AnalyticsEventView(APIView):
         session_key = request.session.session_key or ""
         locale = request.COOKIES.get("rw_locale", "")
 
+        def key_of(props: dict[str, Any]) -> str:
+            # A visitor who has not signed in has no session: every event of
+            # theirs used to land with an EMPTY key, and the funnel counted
+            # all of them as ONE session (measured 2026-11-10: 34 of 38
+            # `auth.form_started` rows blank). The browser sends a random
+            # per-tab id (`lib/analytics.ts`); it is filed as `f:<id>` only
+            # when there is no real session, and never kept in `props`.
+            funnel = props.pop("fid", None)
+            if session_key:
+                return session_key
+            if isinstance(funnel, str) and FUNNEL_ID.fullmatch(funnel):
+                return f"f:{funnel}"
+            return ""
+
         # `bulk_create` — bitta INSERT, ya'ni 25 ta hodisa ham bir
         # so'rovda yoziladi. Funnel yozuvi foydalanuvchini kutdirmasligi
         # kerak, shuning uchun javob `204` va tana yo'q.
-        AnalyticsEvent.objects.bulk_create(
-            [
+        rows = []
+        for event in serializer.validated_data["events"]:
+            props = dict(event.get("props") or {})
+            rows.append(
                 AnalyticsEvent(
                     name=event["name"],
                     user=user,
-                    session_key=session_key,
+                    session_key=key_of(props),
                     path=event.get("path", ""),
                     locale=locale,
-                    props=event.get("props") or {},
+                    props=props,
                 )
-                for event in serializer.validated_data["events"]
-            ]
-        )
+            )
+        AnalyticsEvent.objects.bulk_create(rows)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

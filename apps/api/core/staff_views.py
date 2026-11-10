@@ -285,8 +285,48 @@ class StaffAnalyticsView(APIView):
         hodisa hisobga OLINMAYDI — uni «nazorat» deb yozish natijani
         buzardi.
         """
+        done = self._sessions_by_group(events.filter(name="auth.register_done"))
+        # Only the sign-up form: `auth.form_started` is sent by the sign-in
+        # form too, and a returning visitor is not part of this experiment.
+        started = self._sessions_by_group(
+            events.filter(name="auth.form_started", props__mode="register")
+        )
+        total = done["a"] + done["b"]
+        return {
+            "control": done["a"],
+            "variant": done["b"],
+            "total": total,
+            # Guruhlar teng bo'lmasa (cookie tozalangan, eski sessiya)
+            # bu ko'rinadi — natijani o'qishdan oldin tekshirilsin.
+            "control_share": round(done["a"] * 100 / total, 1) if total else 0.0,
+            # The comparison itself (2026-11-10). Raw "done" counts compare
+            # only while both groups get the same traffic; the rate does not
+            # depend on that. `region_filled` is the experiment's point: the
+            # share of the group's new accounts that hold a region NOW —
+            # group `a` fills it in onboarding, `b` on the form.
+            "groups": {
+                group: {
+                    "started": started[group],
+                    "done": done[group],
+                    "completion": (
+                        round(done[group] * 100 / started[group], 1) if started[group] else 0.0
+                    ),
+                    "region_filled": self._region_filled(events, group),
+                }
+                for group in ("a", "b")
+            },
+        }
+
+    @staticmethod
+    def _sessions_by_group(events: QuerySet[AnalyticsEvent]) -> dict[str, int]:
+        """Distinct sessions per A/B group; untagged events count nowhere.
+
+        A blank session key is left out: before the funnel id
+        (`lib/analytics.ts`) every visitor without a session shared it, so
+        it stands for an unknown number of people, not for one.
+        """
         rows = (
-            events.filter(name="auth.register_done")
+            events.exclude(session_key="")
             .values("props__exp")
             .annotate(sessions=Count("session_key", distinct=True))
         )
@@ -295,15 +335,21 @@ class StaffAnalyticsView(APIView):
             key = row["props__exp"]
             if key in counts:
                 counts[key] = row["sessions"]
-        total = counts["a"] + counts["b"]
-        return {
-            "control": counts["a"],
-            "variant": counts["b"],
-            "total": total,
-            # Guruhlar teng bo'lmasa (cookie tozalangan, eski sessiya)
-            # bu ko'rinadi — natijani o'qishdan oldin tekshirilsin.
-            "control_share": round(counts["a"] * 100 / total, 1) if total else 0.0,
-        }
+        return counts
+
+    @staticmethod
+    def _region_filled(events: QuerySet[AnalyticsEvent], group: str) -> float:
+        """Share (%) of the group's new accounts whose region is set now."""
+        users = (
+            events.filter(name="auth.register_done", props__exp=group, user__isnull=False)
+            .values("user")
+            .distinct()
+        )
+        total = users.count()
+        if not total:
+            return 0.0
+        filled = users.exclude(user__region="").count()
+        return round(filled * 100 / total, 1)
 
     def _errors(self, events: QuerySet[AnalyticsEvent]) -> list[dict[str, Any]]:
         """Xato sabablari — qaysi maydon eng ko'p to'xtatayotgani.
