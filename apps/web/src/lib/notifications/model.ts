@@ -85,6 +85,9 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   problem_rerated: { body: true },
   contest_result: { body: true },
   problem_review_requested: { body: true },
+  course_review_requested: { body: true },
+  course_published: { body: true },
+  course_returned: { body: true },
   // Made a tester of a contest (ADR-0055, part 2).
   contest_tester: { body: true },
   // Questions and announcements during a contest (ADR-0055, part 3).
