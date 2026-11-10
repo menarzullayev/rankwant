@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2671 strings.**
+**2692 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -371,6 +371,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.shop` | Do'kon | Мағоза |  |
 | `nav.about` | Qanday ishlaydi | Чӣ тавр кор мекунад |  |
 | `nav.team` | Jamoa | Даста |  |
+| `nav.hint.problems` | Arxiv, filtr va tavsiyalar | Бойгонӣ, филтр ва тавсияҳо |  |
+| `nav.hint.attempts` | Barcha yuborilgan yechimlar | Ҳамаи ҳалҳои фиристодашуда |  |
+| `nav.hint.quizzes` | Qisqa nazariy testlar | Тестҳои кӯтоҳи назариявӣ |  |
+| `nav.hint.articles` | Mavzular bo'yicha darslar | Дарсҳо аз рӯи мавзӯъ |  |
+| `nav.hint.roadmap` | Bosqichma-bosqich o'quv yo'li | Роҳи омӯзиши марҳила ба марҳила |  |
+| `nav.hint.algorithms` | Kod bilan tushuntirishlar | Шарҳ бо код |  |
+| `nav.hint.classroom` | Sinflar va topshiriqlar | Синфҳо ва супоришҳо |  |
+| `nav.hint.contests` | Raundlar va jadval | Даврҳо ва ҷадвал |  |
+| `nav.hint.arena` | Tezkor bellashuv | Мусобиқаи тез |  |
+| `nav.hint.duels` | Birga-bir chaqiruv | Даъвати як ба як |  |
+| `nav.hint.tournaments` | Mavsumiy turnir | Мусобиқаи мавсимӣ |  |
+| `nav.hint.hackathons` | Jamoaviy loyiha | Лоиҳаи дастаҷамъӣ |  |
+| `nav.hint.calendar` | Yaqin tadbirlar | Чорабиниҳои наздик |  |
+| `nav.hint.leaderboard` | To'rt reyting bo'yicha o'rinlar | Ҷойҳо аз рӯи чор рейтинг |  |
+| `nav.hint.blog` | Platforma e'lonlari | Эълонҳои платформа |  |
+| `nav.hint.updates` | Har reliz nima berdi | Ҳар релиз чӣ овард |  |
+| `nav.hint.platformRoadmap` | Rejalar va ovoz berish | Нақшаҳо ва овоздиҳӣ |  |
+| `nav.hint.formulas` | Reyting qanday hisoblanadi | Рейтинг чӣ гуна ҳисоб мешавад |  |
+| `nav.hint.shop` | Qvant evaziga bezaklar | Ороишҳо ба ивази Qvant |  |
+| `nav.hint.about` | Hakam va hukmlar | Довар ва ҳукмҳо |  |
+| `nav.hint.team` | Kim qurmoqda | Кӣ месозад |  |
 | `header.search` | Qidirish… | Ҷустуҷӯ… |  |
 | `header.streak` | kun | рӯз |  |
 | `header.noUnread` | Yangi bildirishnoma yo'q | Огоҳиномаи нав нест |  |

@@ -1328,6 +1328,39 @@
   }
 }
 
+/* The `newNav` rail (2026-11-10): five group buttons, 72 px wide, icon over
+   a short label (64 px cut 3 of 5 Uzbek group names). 52 px tall — above the 44 px target. The open group and
+   the group holding the current page share the active look. */
+.rw-rail-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.4375rem 0.125rem;
+  border-radius: var(--rw-radius-sm);
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  color: var(--rw-text-2);
+  cursor: pointer;
+}
+.rw-rail-btn:hover {
+  background: var(--rw-hover);
+}
+.rw-rail-btn[aria-expanded="true"],
+.rw-rail-btn[data-current] {
+  background: var(--rw-accent-soft);
+  color: var(--rw-accent-ink);
+}
+.rw-rail-btn .rw-nav-badge[data-rail] {
+  top: 0.375rem;
+  right: 0.875rem;
+}
+
 /* Side-menu badges (2026-10-06). Four kinds, told apart by weight, not
    only by colour: work waiting is filled, unread is soft with a ring,
    new is an outline, live is green with a dot. 18 px tall - it fits the

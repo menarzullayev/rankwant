@@ -49,3 +49,26 @@ export function toBadgeMap(
 export function badgeText(count: number): string {
   return count > 99 ? "99+" : String(count);
 }
+
+/** Strongest first: work waiting outranks something live, live outranks
+ *  unread, unread outranks new. */
+const RANK: Record<NavBadgeKind, number> = { todo: 0, live: 1, unread: 2, new: 3 };
+
+/** One badge for a whole menu group (the `newNav` rail, 2026-11-10).
+ *
+ *  The rail shows five group buttons, not 21 entries, so a group carries
+ *  the strongest badge among its entries; its count is the sum of the
+ *  entries of that same kind. `null` when no entry has one. */
+export function groupBadge(
+  hrefs: readonly string[],
+  map: NavBadgeMap,
+): NavBadgeView | null {
+  let best: NavBadgeView | null = null;
+  for (const href of hrefs) {
+    const badge = map[href];
+    if (!badge) continue;
+    if (!best || RANK[badge.kind] < RANK[best.kind]) best = { ...badge };
+    else if (badge.kind === best.kind) best = { kind: best.kind, count: best.count + badge.count };
+  }
+  return best;
+}

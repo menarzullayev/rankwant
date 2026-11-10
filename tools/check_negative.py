@@ -4445,6 +4445,46 @@ def neg_decisions_session_rows_kept() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_rail_unflagged() -> tuple[bool, str]:
+    """The rail is drawn without the flag."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        'const RAIL = isOnServer("newNav", undefined);',
+        "const RAIL = true;",
+        "rail `newNav` bayrog'iga bog'lanmagan",
+    )
+
+
+def neg_decisions_rail_drops_the_drawer() -> tuple[bool, str]:
+    """With the rail on, the phone loses its drawer."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        "{sidenav && <AppSidebar drawerOnly={rail} />}",
+        "{sidenav && !rail && <AppSidebar />}",
+        "rail rejimida telefon drawer'i yo'qoladi",
+    )
+
+
+def neg_decisions_rail_inset_missing() -> tuple[bool, str]:
+    """Fixed boxes stop clearing the rail."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        "...(rail ? { [SHELL_INSET]: RAIL_WIDTH } : {}),",
+        "",
+        "`--rw-shell-inset` rail kengligini olmaydi",
+    )
+
+
+def neg_decisions_rail_prefetches_on_sight() -> tuple[bool, str]:
+    """The panel links go back to plain `Link` (prefetch on sight)."""
+    return _decision_broken(
+        "apps/web/src/layout/AppRail.tsx",
+        "                  <IntentLink\n",
+        "                  <Link\n",
+        "havola niyatda prefetch qilmaydi",
+    )
+
+
 def neg_decisions_glossary_check_unwired() -> tuple[bool, str]:
     """check_i18n stops running the glossary check."""
     return _decision_broken(
@@ -8138,6 +8178,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/app/title-icons.css",
     "apps/web/src/components/ui/Identity/TitleIcon.tsx",
     "apps/web/src/features/profile/components/ProfileCard.tsx",
+    # The newNav rail (2026-11-10, audit Q-13).
+    "apps/web/src/layout/AppRail.tsx",
     "apps/web/src/app/(site)/users/[username]/page.tsx",
     # Feature flags wired (2026-11-10, audit Q-13): the registry default and
     # the optimistic save path.
@@ -11574,6 +11616,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("Grafit yorug' rejimga o'tsa tutilsin", neg_decisions_graphite_leaks_into_light),
             ("Grafit urg'uni almashtirsa tutilsin", neg_decisions_graphite_changes_accent),
             ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
+            ("rail bayroqsiz chizilsa tutilsin", neg_decisions_rail_unflagged),
+            ("rail telefonda drawer'ni olib qo'ysa tutilsin", neg_decisions_rail_drops_the_drawer),
+            ("rail inset'siz qolsa tutilsin", neg_decisions_rail_inset_missing),
+            ("rail havolasi ko'rinishda prefetch qilsa tutilsin", neg_decisions_rail_prefetches_on_sight),
             ("glossariy tekshiruvi uzilsa tutilsin", neg_decisions_glossary_check_unwired),
             ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),
             ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),

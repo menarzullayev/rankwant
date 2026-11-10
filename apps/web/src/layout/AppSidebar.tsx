@@ -21,7 +21,12 @@ const BADGE_SAYS = {
   live: "nav.badge.live",
 } as const;
 
-export default function AppSidebar() {
+export default function AppSidebar({
+  drawerOnly = false,
+}: {
+  /** `newNav`: the rail takes the wide screen; this stays the phone drawer. */
+  drawerOnly?: boolean;
+} = {}) {
   const {
     isExpanded,
     isMobileOpen,
@@ -82,7 +87,7 @@ export default function AppSidebar() {
       className={`fixed top-0 left-0 z-50 flex h-screen flex-col border-r rw-divider rw-chrome
  transition-all duration-300
  ${wide ? "w-[260px] px-4" : "w-[86px] px-2"}
- ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+ ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} ${drawerOnly ? "lg:hidden" : "lg:translate-x-0"}`}
     >
       {/* Brend endi header'da (qaror 22) — panel tepasida faqat
           yopish/yig'ish tugmalari qoladi, nav bir qatorga ko'tariladi. */}

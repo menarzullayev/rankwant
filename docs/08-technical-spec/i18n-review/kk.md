@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2671 strings.**
+**2692 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -371,6 +371,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.shop` | Do'kon | Дүкен |  |
 | `nav.about` | Qanday ishlaydi | Қалай жұмыс істейді |  |
 | `nav.team` | Jamoa | Команда |  |
+| `nav.hint.problems` | Arxiv, filtr va tavsiyalar | Мұрағат, сүзгі және ұсыныстар |  |
+| `nav.hint.attempts` | Barcha yuborilgan yechimlar | Барлық жіберілген шешімдер |  |
+| `nav.hint.quizzes` | Qisqa nazariy testlar | Қысқа теориялық тесттер |  |
+| `nav.hint.articles` | Mavzular bo'yicha darslar | Тақырыптар бойынша сабақтар |  |
+| `nav.hint.roadmap` | Bosqichma-bosqich o'quv yo'li | Кезең-кезеңімен оқу жолы |  |
+| `nav.hint.algorithms` | Kod bilan tushuntirishlar | Кодпен түсіндірмелер |  |
+| `nav.hint.classroom` | Sinflar va topshiriqlar | Сыныптар және тапсырмалар |  |
+| `nav.hint.contests` | Raundlar va jadval | Раундтар және кесте |  |
+| `nav.hint.arena` | Tezkor bellashuv | Жылдам жарыс |  |
+| `nav.hint.duels` | Birga-bir chaqiruv | Бірге-бір шақыру |  |
+| `nav.hint.tournaments` | Mavsumiy turnir | Маусымдық турнир |  |
+| `nav.hint.hackathons` | Jamoaviy loyiha | Командалық жоба |  |
+| `nav.hint.calendar` | Yaqin tadbirlar | Жақын іс-шаралар |  |
+| `nav.hint.leaderboard` | To'rt reyting bo'yicha o'rinlar | Төрт рейтинг бойынша орындар |  |
+| `nav.hint.blog` | Platforma e'lonlari | Платформа хабарландырулары |  |
+| `nav.hint.updates` | Har reliz nima berdi | Әр шығарылым не берді |  |
+| `nav.hint.platformRoadmap` | Rejalar va ovoz berish | Жоспарлар және дауыс беру |  |
+| `nav.hint.formulas` | Reyting qanday hisoblanadi | Рейтинг қалай есептеледі |  |
+| `nav.hint.shop` | Qvant evaziga bezaklar | Qvant үшін безендірулер |  |
+| `nav.hint.about` | Hakam va hukmlar | Төреші және үкімдер |  |
+| `nav.hint.team` | Kim qurmoqda | Кім жасап жатыр |  |
 | `header.search` | Qidirish… | Іздеу… |  |
 | `header.streak` | kun | күн |  |
 | `header.noUnread` | Yangi bildirishnoma yo'q | Жаңа хабарлама жоқ |  |

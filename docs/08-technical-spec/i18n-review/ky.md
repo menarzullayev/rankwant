@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2671 strings.**
+**2692 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -371,6 +371,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.shop` | Do'kon | Дүкөн |  |
 | `nav.about` | Qanday ishlaydi | Кантип иштейт |  |
 | `nav.team` | Jamoa | Команда |  |
+| `nav.hint.problems` | Arxiv, filtr va tavsiyalar | Архив, чыпка жана сунуштар |  |
+| `nav.hint.attempts` | Barcha yuborilgan yechimlar | Бардык жөнөтүлгөн чечимдер |  |
+| `nav.hint.quizzes` | Qisqa nazariy testlar | Кыска теориялык тесттер |  |
+| `nav.hint.articles` | Mavzular bo'yicha darslar | Темалар боюнча сабактар |  |
+| `nav.hint.roadmap` | Bosqichma-bosqich o'quv yo'li | Кадам-кадам окуу жолу |  |
+| `nav.hint.algorithms` | Kod bilan tushuntirishlar | Код менен түшүндүрмөлөр |  |
+| `nav.hint.classroom` | Sinflar va topshiriqlar | Класстар жана тапшырмалар |  |
+| `nav.hint.contests` | Raundlar va jadval | Раунддар жана таблица |  |
+| `nav.hint.arena` | Tezkor bellashuv | Тез беттешүү |  |
+| `nav.hint.duels` | Birga-bir chaqiruv | Бирге-бир чакырык |  |
+| `nav.hint.tournaments` | Mavsumiy turnir | Мезгилдик турнир |  |
+| `nav.hint.hackathons` | Jamoaviy loyiha | Командалык долбоор |  |
+| `nav.hint.calendar` | Yaqin tadbirlar | Жакынкы иш-чаралар |  |
+| `nav.hint.leaderboard` | To'rt reyting bo'yicha o'rinlar | Төрт рейтинг боюнча орундар |  |
+| `nav.hint.blog` | Platforma e'lonlari | Платформанын жарыялары |  |
+| `nav.hint.updates` | Har reliz nima berdi | Ар бир релиз эмне берди |  |
+| `nav.hint.platformRoadmap` | Rejalar va ovoz berish | Пландар жана добуш берүү |  |
+| `nav.hint.formulas` | Reyting qanday hisoblanadi | Рейтинг кантип эсептелет |  |
+| `nav.hint.shop` | Qvant evaziga bezaklar | Qvant үчүн жасалгалар |  |
+| `nav.hint.about` | Hakam va hukmlar | Калыс жана өкүмдөр |  |
+| `nav.hint.team` | Kim qurmoqda | Ким куруп жатат |  |
 | `header.search` | Qidirish… | Издөө… |  |
 | `header.streak` | kun | күн |  |
 | `header.noUnread` | Yangi bildirishnoma yo'q | Жаңы билдирүү жок |  |

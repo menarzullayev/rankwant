@@ -3339,6 +3339,38 @@ def side_menu_keeps_its_sections() -> str | None:
     return None
 
 
+def rail_shell_is_flagged() -> str | None:
+    """2026-11-10 (HITL, audit Q-13): `newNav` — «A · Rail + panel», telefonda drawer.
+
+    Kompyuterda (`lg` dan) 260 px yon menyu o'rniga 72 px rail (5 guruh) va
+    bosilganda guruh paneli; telefonda drawer o'zgarmaydi. 21 band / 5 guruh
+    bitta manbadan (`nav.ts`), havolalar faqat niyatda prefetch qiladi,
+    `--rw-shell-inset` rail kengligini oladi (muharrir varag'i uning ostiga
+    kirmaydi). Bayroq standart o'chiq.
+    """
+    flags = read("apps/web/src/lib/flags.ts").split("export const FLAGS", 1)[-1].split("} as const", 1)[0]
+    if not re.search(r"^\s+newNav: false,$", flags, re.M):
+        return "lib/flags.ts: `newNav` standart holatda yoniq yoki ro'yxatda yo'q"
+    shell = read("apps/web/src/layout/AppShell.tsx")
+    if 'const RAIL = isOnServer("newNav", undefined);' not in shell:
+        return "AppShell.tsx: rail `newNav` bayrog'iga bog'lanmagan"
+    if "{sidenav && <AppSidebar drawerOnly={rail} />}" not in shell:
+        return "AppShell.tsx: rail rejimida telefon drawer'i yo'qoladi"
+    if "...(rail ? { [SHELL_INSET]: RAIL_WIDTH } : {})," not in shell:
+        return "AppShell.tsx: `--rw-shell-inset` rail kengligini olmaydi"
+    side = read("apps/web/src/layout/AppSidebar.tsx")
+    if '${drawerOnly ? "lg:hidden" : "lg:translate-x-0"}' not in side:
+        return "AppSidebar.tsx: rail rejimida yon menyu kompyuterda ham chiqadi"
+    rail = read("apps/web/src/layout/AppRail.tsx")
+    if 'import { NAV_GROUPS } from "./nav";' not in rail:
+        return "AppRail.tsx: guruhlar `nav.ts` dan emas — 21 band / 5 guruh ikki manbaga bo'linadi"
+    if "<Link" in rail or "<IntentLink" not in rail:
+        return "AppRail.tsx: havola niyatda prefetch qilmaydi (`IntentLink` emas)"
+    if 'event.key !== "Escape"' not in rail or "aria-expanded={open === g.key}" not in rail:
+        return "AppRail.tsx: panel holatini aytmaydi yoki Esc bilan yopilmaydi"
+    return None
+
+
 def side_menu_badges_are_one_request() -> str | None:
     """2026-10-06: yon menyu belgilari - bitta so'rov, to'rt tur.
 
@@ -4675,6 +4707,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("scroll bitta lug'atda", scroll_is_one_vocabulary),
     ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
+    ("rail qobig'i bayroq bilan, telefonda drawer", rail_shell_is_flagged),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
     ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
     ("musobaqa masalasi arxivdan tashqarida", contest_problems_stay_out_of_the_archive),
