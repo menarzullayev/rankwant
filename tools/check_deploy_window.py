@@ -3,9 +3,9 @@
 
 NEGA KERAK: `docs/10-operations` 1-qoidasi «live contest paytida deploy
 YO'Q» deydi, sabab — deploy paytida verdict yoki standings o'zgarishi
-davom etayotgan musobaqa natijasini buzadi. CI bu oynani BILMAYDI:
-`deploy.yml` da hamon `::warning::` bilan «qo'lda tekshirilsin» deb
-yozilgan TODO turadi.
+davom etayotgan musobaqa natijasini buzadi. CI bu oynani BILMAYDI.
+Ilgari `deploy.yml` da «qo'lda tekshirilsin» degan `::warning::` turardi;
+endi u ham, `tools/deploy.sh` ham shu faylni chaqiradi.
 
 Ya'ni tekshiruv ilgari **odamning yodida** edi. 2026-09-16 da u
 bajariladigan ko'rinishga keltirildi (`tools/deploy.sh` shu faylni

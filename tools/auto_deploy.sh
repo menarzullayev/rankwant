@@ -99,6 +99,15 @@ for arg in "$@"; do
 done
 
 log()  { printf '[%s] %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1"; }
+# A state that repeats every minute is written once: the key is kept next
+# to the state file and the line is skipped while it stays the same. The
+# "no image change" line alone was ~1 440 lines a day (audit Q-16, L-05).
+log_once() {
+  local quiet="${STATE}.quiet"
+  if [ "$(cat "$quiet" 2>/dev/null)" = "$1" ]; then return 0; fi
+  printf '%s\n' "$1" > "$quiet" 2>/dev/null || true
+  log "$2"
+}
 
 # Log aylantirish: fayl `LOG_MAX` dan (standart 5 MiB) oshsa, nusxasi
 # `<log>.1` ga olinadi va fayl bo'shatiladi. Bitta zaxira — o'lchangan
@@ -259,7 +268,7 @@ fi
 # Stack yiqilgan bo'lsa bo'sh doira ham to'liq bake (all_up shart).
 SCOPE="$(image_scope "$TARGET")"
 if all_up && [ -z "$SCOPE" ]; then
-  log "obrazga tushmaydi — bake yo'q (target ${TARGET:0:7})"
+  log_once "noimage:$TARGET" "obrazga tushmaydi — bake yo'q (target ${TARGET:0:7})"
   exit 0
 fi
 if [ -z "$SCOPE" ]; then

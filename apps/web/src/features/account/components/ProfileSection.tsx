@@ -1,5 +1,6 @@
 "use client";
 
+import { numericDate } from "@rankwant/shared/format";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -11,7 +12,7 @@ import { Field, type FieldStatus } from "@/components/ui/Field";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { date, fill, t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import {
   deleteJson,
   getJson,
@@ -283,7 +284,7 @@ function UsernameCard() {
         <Hint>
           {freeAt
             ? fill(t(locale, "settings.usernameNextFree"), {
-                date: date(freeAt, locale),
+                date: numericDate(freeAt),
                 price,
               })
             : t(locale, "settings.usernameFree")}
