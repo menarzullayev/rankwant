@@ -48,7 +48,7 @@ class Course(TimeStampedModel):
     access = models.CharField(max_length=8, choices=Access.choices, default=Access.FREE)
     # Prices are set or changed only through staff review (ADR-0056 § 3.6).
     price_qvant = models.PositiveIntegerField(default=0)
-    price_uzs = models.PositiveIntegerField(default=0, help_text="One-time price in so'm.")
+    price_uzs = models.PositiveIntegerField(default=0, help_text="One-time price in UZS.")
     sequential = models.BooleanField(
         default=False, help_text="A lesson opens only after the previous required one is done."
     )
@@ -86,7 +86,7 @@ class Course(TimeStampedModel):
         if self.access == self.Access.QVANT and self.price_qvant <= 0:
             raise ValidationError({"price_qvant": "A Qvant course needs a Qvant price."})
         if self.access == self.Access.PAID and self.price_uzs <= 0:
-            raise ValidationError({"price_uzs": "A paid course needs a price in so'm."})
+            raise ValidationError({"price_uzs": "A paid course needs a price in UZS."})
 
 
 class CourseTranslation(models.Model):

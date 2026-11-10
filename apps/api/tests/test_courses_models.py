@@ -51,7 +51,7 @@ class TestAccessRules:
             Course(slug="q", access=Course.Access.QVANT).clean()
         assert "price_qvant" in err.value.message_dict
 
-    def test_paid_course_needs_a_price_in_som(self):
+    def test_paid_course_needs_a_price_in_uzs(self):
         with pytest.raises(ValidationError) as err:
             Course(slug="p", access=Course.Access.PAID).clean()
         assert "price_uzs" in err.value.message_dict

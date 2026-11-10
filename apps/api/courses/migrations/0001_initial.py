@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('level', models.CharField(choices=[('beginner', 'Beginner'), ('intermediate', 'Intermediate'), ('advanced', 'Advanced')], default='beginner', max_length=12)),
                 ('access', models.CharField(choices=[('free', 'Free'), ('qvant', 'Qvant'), ('paid', 'Paid')], default='free', max_length=8)),
                 ('price_qvant', models.PositiveIntegerField(default=0)),
-                ('price_uzs', models.PositiveIntegerField(default=0, help_text="One-time price in so'm.")),
+                ('price_uzs', models.PositiveIntegerField(default=0, help_text="One-time price in UZS.")),
                 ('sequential', models.BooleanField(default=False, help_text='A lesson opens only after the previous required one is done.')),
                 ('certificate_threshold', models.PositiveSmallIntegerField(default=70, help_text='Final quiz score, in percent, needed for the certificate.', validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(100)])),
                 ('reward_qvant', models.PositiveIntegerField(default=0, help_text='Paid once when the course is completed.')),
