@@ -405,12 +405,12 @@ def _source_files() -> list[Path]:
     (salbiy test tutdi). Shu sababli kengaytmalar ALOHIDA aylanadi.
     """
     files = [p for suffix in SOURCE_SUFFIXES for p in SOURCE_DIR.rglob(f"*{suffix}")]
-    files = [p for p in files if "i18n" not in p.parts]
+    files = [p for p in files if "i18n" not in p.relative_to(ROOT).parts]
     # Generatsiya qilingan kod (OpenAPI tiplari) qo'lda yozilmagan va
     # tarjima qilinmaydi. `openapi-typescript` chiqargan matn tavsiflari
     # tasodifan `t(...)` shakliga tushib qolsa, tekshiruv yolg'on
     # ishlardi — shuning uchun katalog bo'yicha chiqarib tashlanadi.
-    files = [p for p in files if "generated" not in p.parts]
+    files = [p for p in files if "generated" not in p.relative_to(ROOT).parts]
     if not files:
         # Ko'r bo'lib qolmasin: fayl topilmasa bu XATO.
         raise SystemExit(f"i18n: manba fayllar topilmadi ({SOURCE_DIR})")

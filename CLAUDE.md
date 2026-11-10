@@ -229,6 +229,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-studio-problems.md) · Muallif qoralamasi `/studio/problems` da: 20 ta chegara, ko'rik so'rovi, xodim navbati · `studio_problems_panel`
 - [2026-11-10](docs/decisions/2026-11-10-studio-contests.md) · Organizator musobaqasi `/studio/contests` da: 5 ta chegara, faqat o'z qoralama masalalari · `studio_contests_panel`
 - [2026-11-10](docs/decisions/2026-11-10-graphite-palette.md) · `newPalette`: clay qorong'isi uchun «Grafit», standart o'chiq · `graphite_palette_is_flagged`
+- [2026-11-10](docs/decisions/2026-11-10-dump-only-for-migrations.md) · Deploy oldidagi `pg_dump` faqat qo'llanmagan migratsiya bo'lsa, build bilan parallel; ro'yxat ko'rmaganini `migrate --check` ushlaydi · `dump_only_for_pending_migrations`
 - [2026-11-10](docs/decisions/2026-11-10-gate-trusts-pr-ci.md) · Darvoza `main` CI tugamasdan merge qilingan PR'ning yashil CI'siga ishonadi — faqat daraxt bir xil va oxirgi main CI yashil bo'lsa · `gate_trusts_green_pr_on_same_tree`
 - [2026-11-10](docs/decisions/2026-11-10-revive-failed-containers.md) · Docker ko'tara olmagan konteynerni watcher ko'taradi (qo'lda to'xtatilgani emas); Docker o'chiqda deploy to'sig'i yo'q · `failed_containers_are_revived`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`

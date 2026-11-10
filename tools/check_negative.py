@@ -878,6 +878,84 @@ def neg_docs_research_exemption_is_scoped() -> tuple[bool, str]:
     return True, "docs/istisno: faqat docs/research ozod, tirik hujjat tutildi"
 
 
+_DOCS_TABLE = "| a | b |\n| --- | --- |\n| 1 | 2 |\n"
+_DOCS_BROKEN = "| a | b |\n| --- | --- |\n| 1 | 2 | 3 | 4 |\n"
+
+
+def _docs_sandbox(root: Path, *, guide: str | None) -> tuple[int, str]:
+    """`check_docs.py` on a minimal tree at `root`.
+
+    `ROOT` is derived from the script's own location, so a copy reads the copy.
+    `guide=None` leaves `docs/07-adr/` empty: the tree has no markdown at all.
+    Files are written as bytes so Windows does not turn `\\n` into CRLF.
+    """
+    for rel in ("tools/check_docs.py", "tools/_console.py"):
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)
+        (root / rel).write_bytes((ROOT / rel).read_bytes())
+    (root / "docs/07-adr").mkdir(parents=True, exist_ok=True)
+    if guide is not None:
+        (root / "docs/07-adr/0001-sample.md").write_bytes(b"# 0001 sample\n")
+        (root / "docs/guide.md").write_bytes(f"# Guide\n\n{guide}".encode())
+    return run([PY, str(root / "tools/check_docs.py")])
+
+
+def neg_docs_root_under_claude_folder() -> tuple[bool, str]:
+    """A tree that itself lives under a `.claude/` folder must still be read.
+
+    Every agent worktree is `<repo>/.claude/worktrees/<name>/`. The skip rules
+    tested the ABSOLUTE path for `.claude`, so in a worktree the check read 0
+    files and printed ✓ (measured 2026-11-10): a broken table in a decision
+    record passed locally and failed only in CI on PR #503.
+
+    Three runs on one tree at `<tmp>/.claude/worktrees/x`:
+      1. clean tree — exit 0, and the count of files read is not 0;
+      2. a worktree nested under the tree's OWN `.claude/` holds a broken
+         table — still exit 0: the fix must not open up nested worktrees;
+      3. a broken table in the tree itself — exit 1, naming that file.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / ".claude" / "worktrees" / "x"
+        code, out = _docs_sandbox(root, guide=_DOCS_TABLE)
+        read = re.search(r"Tekshirildi: (\d+) ta markdown", out)
+        if code != 0 or not read or read.group(1) == "0":
+            return (
+                False,
+                f"docs/.claude: toza daraxt o'qilmadi (exit {code}) — {out.strip()[-160:]}",
+            )
+        nested = root / ".claude/worktrees/y/docs/bad.md"
+        nested.parent.mkdir(parents=True)
+        nested.write_bytes(_DOCS_BROKEN.encode())
+        code, out = _docs_sandbox(root, guide=_DOCS_TABLE)
+        if code != 0:
+            return (
+                False,
+                f"docs/.claude: ichki worktree skanerlandi (exit {code}) — {out.strip()[-160:]}",
+            )
+        code, out = _docs_sandbox(root, guide=_DOCS_BROKEN)
+    if code == 0:
+        return (
+            False,
+            "docs/.claude: `.claude/` ostidagi daraxtda buzuq jadval O'TKAZILDI (exit 0) — tekshiruv ko'r",
+        )
+    if not re.search(r"docs[\\/]guide\.md:\d+: jadval ustunlari mos emas", out):
+        return (
+            False,
+            f"docs/.claude: exit {code}, lekin sabab buzuq jadval emas — {out.strip()[-160:]}",
+        )
+    return True, "docs/.claude: daraxt o'qildi, ichki worktree chetda, buzuq jadval tutildi (exit 1)"
+
+
+def neg_docs_reads_nothing_is_red() -> tuple[bool, str]:
+    """A run that read 0 markdown files must fail, not print ✓."""
+    with tempfile.TemporaryDirectory() as tmp:
+        code, out = _docs_sandbox(Path(tmp), guide=None)
+    if code == 0:
+        return False, "docs/bo'sh: 0 ta fayl o'qib ✓ dedi (exit 0) — yolg'on yashil"
+    if "markdown fayl topilmadi" not in out:
+        return False, f"docs/bo'sh: exit {code}, lekin sabab boshqa — {out.strip()[-160:]}"
+    return True, "docs/bo'sh: hech narsa o'qimagan tekshiruv qizil (exit 1)"
+
+
 def neg_email_missing_locale() -> tuple[bool, str]:
     """Bitta satrdan bitta til olib tashlansa — tutilsinmi?
 
@@ -4675,6 +4753,36 @@ def neg_decisions_optimistic_throw_counts_as_saved() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_dump_skips_migrate_check() -> tuple[bool, str]:
+    """A migration the file list cannot see would run without a dump."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        'elif ! "${COMPOSE[@]}" run --rm api python manage.py migrate --check >/dev/null 2>&1; then\n',
+        "elif false; then\n",
+        "migrate --check",
+    )
+
+
+def neg_decisions_migrate_does_not_wait_dump() -> tuple[bool, str]:
+    """Migrate no longer waits for the parallel dump."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '  wait "$DUMP_PID"\n',
+        "  :\n",
+        "migratsiya parallel dump tugashini kutmaydi",
+    )
+
+
+def neg_decisions_unreadable_db_means_no_migration() -> tuple[bool, str]:
+    """An unreadable database is read as "nothing to migrate" (must be the opposite)."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '    2>/dev/null | tr -d \'\\r\')" || return 0\n',
+        '    2>/dev/null | tr -d \'\\r\')" || return 1\n',
+        "o'qilmagan baza",
+    )
+
+
 def neg_decisions_gate_skips_tree_compare() -> tuple[bool, str]:
     """The shortcut stops comparing trees (would deploy a tree no CI saw)."""
     return _decision_broken(
@@ -6833,8 +6941,8 @@ def neg_decisions_deploy_backup_after_migrate() -> tuple[bool, str]:
     """
     return _decision_broken(
         "tools/deploy.sh",
-        'step "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
-        '"${COMPOSE[@]}" run --rm migrate || true\nstep "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        'step "3/8 Migratsiyadan oldin zaxira (pg_dump) — build bilan parallel"',
+        '"${COMPOSE[@]}" run --rm migrate || true\nstep "3/8 Migratsiyadan oldin zaxira (pg_dump) — build bilan parallel"',
         "avtomatik deploy xavfsiz",
     )
 
@@ -11301,6 +11409,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("mavjud bo'lmagan ADR havolasi", neg_docs_missing_adr),
             ("tadqiqotda havola baribir tekshirilsin", neg_docs_research_link_still_checked),
             ("istisno faqat docs/research ga", neg_docs_research_exemption_is_scoped),
+            ("daraxt .claude/ ostida bo'lsa ham o'qilsin", neg_docs_root_under_claude_folder),
+            ("hech narsa o'qimasa qizil", neg_docs_reads_nothing_is_red),
         ],
     ),
     (
@@ -11747,6 +11857,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yo'ldagi so'rov sahifani ushlamasa tutilsin", neg_decisions_optimistic_unload_unguarded),
             ("yiqilgan so'rov saqlangan sanalsa tutilsin", neg_decisions_optimistic_throw_counts_as_saved),
             ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
+            ("migrate --check olinsa tutilsin", neg_decisions_dump_skips_migrate_check),
+            ("migratsiya dump'ni kutmasa tutilsin", neg_decisions_migrate_does_not_wait_dump),
+            ("o'qilmagan baza migratsiyasiz deb olinsa tutilsin", neg_decisions_unreadable_db_means_no_migration),
             ("darvoza daraxtni solishtirmasa tutilsin", neg_decisions_gate_skips_tree_compare),
             ("watcher main CI hukmini kuzatmasa tutilsin", neg_decisions_watcher_drops_main_ci_verdict),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
