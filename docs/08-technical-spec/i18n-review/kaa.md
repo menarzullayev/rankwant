@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2692 strings.**
+**2759 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2713,3 +2713,70 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Siz «{contest}» jarısına testlewshi bolıp qosıldıńız |  |
 | `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Máseleler sizge baslanıwdan aldın ashıq. Qatnassańız — reytingsiz. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} másele — jarıs baslanǵanda ashıladı. |  |
+| `nav.courses` | Kurslar | Kurslar |  |
+| `course.subtitle` | Bosqichma-bosqich o'rganish: matn, masala, test va video darslar. | Basqısha-basqısh úyreniń: tekst, másele, test hám video sabaqlar. |  |
+| `course.mine` | Mening kurslarim | Meniń kurslarım |  |
+| `course.all` | Barcha kurslar | Barlıq kurslar |  |
+| `course.empty` | Hozircha kurs yo'q. | Házirshe kurs joq. |  |
+| `course.filter.level` | Daraja | Dáreje |  |
+| `course.filter.access` | Kirish | Kiriw |  |
+| `course.filter.anyLevel` | Har qanday daraja | Qálegen dáreje |  |
+| `course.filter.anyAccess` | Har qanday kirish | Qálegen kiriw |  |
+| `course.level.beginner` | Boshlang'ich | Baslanǵısh |  |
+| `course.level.intermediate` | O'rta | Orta |  |
+| `course.level.advanced` | Yuqori | Joqarı |  |
+| `course.access.free` | Bepul | Biypul |  |
+| `course.access.qvant` | Qvant bilan | Qvant penen |  |
+| `course.access.paid` | Pullik | Tólemli |  |
+| `course.price.qvant` | {amount} Qvant | {amount} Qvant |  |
+| `course.price.uzs` | {amount} so'm | {amount} sum |  |
+| `course.lessons` | {count} ta dars | {count} sabaq |  |
+| `course.modules` | {count} ta modul | {count} modul |  |
+| `course.minutes` | {count} daq | {count} minut |  |
+| `course.progress` | {percent}% bajarildi | {percent}% orınlandı |  |
+| `course.progressDetail` | {done} / {total} majburiy dars | {done} / {total} májbúriy sabaq |  |
+| `course.completed` | Kurs tugatildi | Kurs tamamlandı |  |
+| `course.enroll` | Kursga yozilish | Kursqa jazılıw |  |
+| `course.start` | Boshlash | Baslaw |  |
+| `course.continue` | Davom etish | Dawam ettiriw |  |
+| `course.soonQvant` | Qvant bilan ochish tez orada qo'shiladi. | Qvant penen ashıw jaqın arada qosıladı. |  |
+| `course.soonPaid` | Sotib olish tez orada qo'shiladi. | Satıp alıw jaqın arada qosıladı. |  |
+| `course.about` | Kurs haqida | Kurs haqqında |  |
+| `course.outcomes` | Nimani o'rganasiz | Neni úyrenesiz |  |
+| `course.requirements` | Talablar | Talaplar |  |
+| `course.audience` | Kim uchun | Kimler ushın |  |
+| `course.programme` | Dastur | Baǵdarlama |  |
+| `course.sequential` | Darslar ketma-ket ochiladi: avval oldingi majburiy darsni tugating. | Sabaqlar izbe-iz ashıladı: aldın aldıńǵı májbúriy sabaqtı tamamlań. |  |
+| `course.certificate` | Sertifikat: barcha majburiy darslar va yakuniy testdan kamida {percent}%. | Sertifikat: barlıq májbúriy sabaqlar hám juwmaqlawshı testten keminde {percent}%. |  |
+| `course.authors` | Mualliflar | Avtorlar |  |
+| `course.fallback` | Bu matn hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Bul tekst ele {locale} tilinde joq — {shown} tilinde kórsetilmekte. |  |
+| `course.enrollToKeep` | Bu namuna dars. Progressingiz saqlanishi uchun kursga yoziling. | Bul úlgi sabaq. Progressińiz saqlanıwı ushın kursqa jazılıń. |  |
+| `course.lesson.kind.text` | Matn | Tekst |  |
+| `course.lesson.kind.problem` | Masala | Másele |  |
+| `course.lesson.kind.quiz` | Test | Test |  |
+| `course.lesson.kind.video` | Video dars | Video sabaq |  |
+| `course.lesson.state.done` | Bajarildi | Orınlandı |  |
+| `course.lesson.state.open` | Ochiq | Ashıq |  |
+| `course.lesson.state.locked` | Yopiq | Jabıq |  |
+| `course.lesson.optional` | Ixtiyoriy | Májbúriy emes |  |
+| `course.lesson.preview` | Namuna dars | Úlgi sabaq |  |
+| `course.lesson.complete` | Tugatdim | Tamamladım |  |
+| `course.lesson.previous` | Oldingi dars | Aldıńǵı sabaq |  |
+| `course.lesson.next` | Keyingi dars | Keyingi sabaq |  |
+| `course.lesson.around` | Darslar orasida | Sabaqlar arasında |  |
+| `course.lesson.problemHint` | Masalani yeching — qabul qilingan yechim bilan dars o'zi tugaydi. | Máseleni sheshiń — qabıl etilgen sheshim menen sabaq ózi tamamlanadı. |  |
+| `course.lesson.problemHidden` | Bu masala hali arxivda emas. | Bul másele ele arxivte emes. |  |
+| `course.lesson.openProblem` | Masalani ochish | Máseleni ashıw |  |
+| `course.lesson.quizHint` | Testdan kamida {percent}% to'plang — dars o'zi tugaydi. | Testten keminde {percent}% jıynań — sabaq ózi tamamlanadı. |  |
+| `course.lesson.openQuiz` | Testni boshlash | Testti baslaw |  |
+| `course.lesson.videoExternal` | Videoni ochish | Videonı ashıw |  |
+| `course.lesson.videoPending` | Video tayyorlanmoqda. | Video tayarlanbaqta. |  |
+| `course.lesson.backToCourse` | Kurs sahifasi | Kurs beti |  |
+| `gate.course.title` | Darslarni o'qish uchun tizimga kiring | Sabaqlardı oqıw ushın sistemaǵa kiriń |  |
+| `error.course_forbidden` | Bu dars sizga hali ochiq emas. | Bul sabaq sizge ele ashıq emes. |  |
+| `error.course_sign_in` | Darslarni ochish uchun tizimga kiring. | Sabaqlardı ashıw ushın sistemaǵa kiriń. |  |
+| `error.course_not_enrolled` | Bu darsni o'qish uchun avval kursga yoziling. | Bul sabaqtı oqıw ushın aldın kursqa jazılıń. |  |
+| `error.course_locked` | Avval oldingi majburiy darslarni tugating. | Aldın aldıńǵı májbúriy sabaqlardı tamamlań. |  |
+| `error.course_not_self_completed` | Masala va test darslari yechilganda o'zi tugaydi. | Másele hám test sabaqları sheshilgende ózi tamamlanadı. |  |
+| `error.course_qvant_required` | Bu kurs Qvant bilan ochiladi. | Bul kurs Qvant penen ashıladı. |  |
+| `error.course_payment_required` | Bu kurs pullik. | Bul kurs tólemli. |  |

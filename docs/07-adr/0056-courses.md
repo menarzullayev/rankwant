@@ -128,7 +128,21 @@ tugatilmaydi, yozilmagan o'quvchining yechimi progressga yozilmaydi.
 HLS videoning R2 kaliti javobda **hech qachon** berilmaydi (imzolangan
 havola 5-qismda). Arxivda bo'lmagan masala darsda havolasiz qoladi.
 Qvant va pullik kursga bepul yozilish 402 bilan rad etiladi
-(`qvant_required`, `payment_required`) — ularning yo'li 6- va 7-qismda.
+(`course_qvant_required`, `course_payment_required`) — ularning yo'li 6- va 7-qismda.
+Tarjima ko'pincha qisman bo'ladi (sarlavha bor, tavsif yo'q), shuning uchun
+matn **maydon bo'yicha** asosiy tilga qaytadi — bo'sh blok chiqmaydi.
+
+**3-qism qanday qurildi.** Uch sahifa: `/courses` (katalog, daraja va kirish
+filtrlari, kirgan odamga «Mening kurslarim»), `/courses/<slug>` (tavsif,
+dastur, yozilish yoki «davom etish», progress) va
+`/courses/<slug>/lessons/<id>` (dars, masala/test havolasi, video havolasi,
+«Tugatdim», oldingi/keyingi dars, yon tomonda dastur). Uchalasi ham bayroq
+o'chiq bo'lsa **404** beradi (`check_decisions` qo'riqlaydi). Bo'lim
+`access.ts` da `public`: mehmon katalog va dasturni ko'radi, dars o'rnida
+«kirish» kartasi (`SignInGate`, sabab `course`). Video hozircha tashqi
+havola — o'rnatilgan pleyer va CSP 5-qismda. ⚠️ **Yon menyuga band
+qo'shilmadi**: «21 band / 5 guruh» egasining qarori (2026-09-19), kurslar
+bandi bayroq ochilganda alohida so'raladi. Sitemap'ga ham hali kirmaydi.
 
 ## 4. Ochiq qolganlar
 

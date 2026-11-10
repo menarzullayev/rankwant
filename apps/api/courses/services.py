@@ -49,11 +49,13 @@ def course_error(
 def enroll(user: User, course: Course) -> Enrollment:
     if course.access == Course.Access.QVANT:
         raise course_error(
-            "qvant_required", "This course opens with Qvant.", status.HTTP_402_PAYMENT_REQUIRED
+            "course_qvant_required",
+            "This course opens with Qvant.",
+            status.HTTP_402_PAYMENT_REQUIRED,
         )
     if course.access == Course.Access.PAID:
         raise course_error(
-            "payment_required", "This course is paid.", status.HTTP_402_PAYMENT_REQUIRED
+            "course_payment_required", "This course is paid.", status.HTTP_402_PAYMENT_REQUIRED
         )
     enrollment, _ = Enrollment.objects.get_or_create(
         user=user, course=course, defaults={"source": Enrollment.Source.FREE}
@@ -64,13 +66,15 @@ def enroll(user: User, course: Course) -> Enrollment:
 def check_open(user: Any, lesson: Lesson, state: progress.CourseState) -> None:
     """Raise unless `user` may read `lesson` now."""
     if not getattr(user, "is_authenticated", False):
-        raise course_error("sign_in", "Sign in to open lessons.", status.HTTP_401_UNAUTHORIZED)
+        raise course_error(
+            "course_sign_in", "Sign in to open lessons.", status.HTTP_401_UNAUTHORIZED
+        )
     if state.enrollment is None:
         if lesson.is_preview:
             return
-        raise course_error("enroll", "Enrol in the course to open this lesson.")
+        raise course_error("course_not_enrolled", "Enrol in the course to open this lesson.")
     if lesson.id not in state.unlocked:
-        raise course_error("locked", "Finish the previous lessons first.")
+        raise course_error("course_locked", "Finish the previous lessons first.")
 
 
 def complete(user: User, lesson: Lesson) -> progress.CourseState:
@@ -78,10 +82,10 @@ def complete(user: User, lesson: Lesson) -> progress.CourseState:
     state = progress.state(course, user)
     check_open(user, lesson, state)
     if state.enrollment is None:
-        raise course_error("enroll", "Enrol in the course to keep your progress.")
+        raise course_error("course_not_enrolled", "Enrol in the course to keep your progress.")
     if lesson.kind not in SELF_COMPLETED:
         raise course_error(
-            "not_self_completed",
+            "course_not_self_completed",
             "Problem and quiz lessons complete when you solve or pass them.",
             status.HTTP_400_BAD_REQUEST,
         )

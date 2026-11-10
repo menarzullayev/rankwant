@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2692 strings.**
+**2759 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2713,3 +2713,70 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Сіз «{contest}» жарысына тестер ретінде қосылдыңыз |  |
 | `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Есептер сізге басталғанға дейін ашық. Қатыссаңыз — рейтингсіз. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} есеп — жарыс басталғанда ашылады. |  |
+| `nav.courses` | Kurslar | Курстар |  |
+| `course.subtitle` | Bosqichma-bosqich o'rganish: matn, masala, test va video darslar. | Біртіндеп үйреніңіз: мәтін, есеп, тест және бейне сабақтар. |  |
+| `course.mine` | Mening kurslarim | Менің курстарым |  |
+| `course.all` | Barcha kurslar | Барлық курстар |  |
+| `course.empty` | Hozircha kurs yo'q. | Әзірге курс жоқ. |  |
+| `course.filter.level` | Daraja | Деңгей |  |
+| `course.filter.access` | Kirish | Қолжетімділік |  |
+| `course.filter.anyLevel` | Har qanday daraja | Кез келген деңгей |  |
+| `course.filter.anyAccess` | Har qanday kirish | Кез келген қолжетімділік |  |
+| `course.level.beginner` | Boshlang'ich | Бастапқы |  |
+| `course.level.intermediate` | O'rta | Орта |  |
+| `course.level.advanced` | Yuqori | Жоғары |  |
+| `course.access.free` | Bepul | Тегін |  |
+| `course.access.qvant` | Qvant bilan | Qvant арқылы |  |
+| `course.access.paid` | Pullik | Ақылы |  |
+| `course.price.qvant` | {amount} Qvant | {amount} Qvant |  |
+| `course.price.uzs` | {amount} so'm | {amount} сум |  |
+| `course.lessons` | {count} ta dars | {count} сабақ |  |
+| `course.modules` | {count} ta modul | {count} модуль |  |
+| `course.minutes` | {count} daq | {count} мин |  |
+| `course.progress` | {percent}% bajarildi | {percent}% орындалды |  |
+| `course.progressDetail` | {done} / {total} majburiy dars | {done} / {total} міндетті сабақ |  |
+| `course.completed` | Kurs tugatildi | Курс аяқталды |  |
+| `course.enroll` | Kursga yozilish | Курсқа жазылу |  |
+| `course.start` | Boshlash | Бастау |  |
+| `course.continue` | Davom etish | Жалғастыру |  |
+| `course.soonQvant` | Qvant bilan ochish tez orada qo'shiladi. | Qvant арқылы ашу жақында қосылады. |  |
+| `course.soonPaid` | Sotib olish tez orada qo'shiladi. | Сатып алу жақында қосылады. |  |
+| `course.about` | Kurs haqida | Курс туралы |  |
+| `course.outcomes` | Nimani o'rganasiz | Не үйренесіз |  |
+| `course.requirements` | Talablar | Талаптар |  |
+| `course.audience` | Kim uchun | Кімге арналған |  |
+| `course.programme` | Dastur | Бағдарлама |  |
+| `course.sequential` | Darslar ketma-ket ochiladi: avval oldingi majburiy darsni tugating. | Сабақтар ретімен ашылады: алдымен алдыңғы міндетті сабақты аяқтаңыз. |  |
+| `course.certificate` | Sertifikat: barcha majburiy darslar va yakuniy testdan kamida {percent}%. | Сертификат: барлық міндетті сабақтар және қорытынды тестте кемінде {percent}%. |  |
+| `course.authors` | Mualliflar | Авторлар |  |
+| `course.fallback` | Bu matn hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Бұл мәтін әлі {locale} тілінде жоқ — {shown} тілінде көрсетілуде. |  |
+| `course.enrollToKeep` | Bu namuna dars. Progressingiz saqlanishi uchun kursga yoziling. | Бұл үлгі сабақ. Прогресіңіз сақталуы үшін курсқа жазылыңыз. |  |
+| `course.lesson.kind.text` | Matn | Мәтін |  |
+| `course.lesson.kind.problem` | Masala | Есеп |  |
+| `course.lesson.kind.quiz` | Test | Тест |  |
+| `course.lesson.kind.video` | Video dars | Бейне |  |
+| `course.lesson.state.done` | Bajarildi | Орындалды |  |
+| `course.lesson.state.open` | Ochiq | Ашық |  |
+| `course.lesson.state.locked` | Yopiq | Жабық |  |
+| `course.lesson.optional` | Ixtiyoriy | Міндетті емес |  |
+| `course.lesson.preview` | Namuna dars | Үлгі сабақ |  |
+| `course.lesson.complete` | Tugatdim | Аяқтадым |  |
+| `course.lesson.previous` | Oldingi dars | Алдыңғы сабақ |  |
+| `course.lesson.next` | Keyingi dars | Келесі сабақ |  |
+| `course.lesson.around` | Darslar orasida | Сабақтар арасында |  |
+| `course.lesson.problemHint` | Masalani yeching — qabul qilingan yechim bilan dars o'zi tugaydi. | Есепті шығарыңыз — қабылданған шешіммен сабақ өзі аяқталады. |  |
+| `course.lesson.problemHidden` | Bu masala hali arxivda emas. | Бұл есеп әлі мұрағатта емес. |  |
+| `course.lesson.openProblem` | Masalani ochish | Есепті ашу |  |
+| `course.lesson.quizHint` | Testdan kamida {percent}% to'plang — dars o'zi tugaydi. | Тесттен кемінде {percent}% жинаңыз — сабақ өзі аяқталады. |  |
+| `course.lesson.openQuiz` | Testni boshlash | Тестті бастау |  |
+| `course.lesson.videoExternal` | Videoni ochish | Бейнені ашу |  |
+| `course.lesson.videoPending` | Video tayyorlanmoqda. | Бейне дайындалуда. |  |
+| `course.lesson.backToCourse` | Kurs sahifasi | Курс беті |  |
+| `gate.course.title` | Darslarni o'qish uchun tizimga kiring | Сабақтарды оқу үшін жүйеге кіріңіз |  |
+| `error.course_forbidden` | Bu dars sizga hali ochiq emas. | Бұл сабақ сізге әлі ашық емес. |  |
+| `error.course_sign_in` | Darslarni ochish uchun tizimga kiring. | Сабақтарды ашу үшін жүйеге кіріңіз. |  |
+| `error.course_not_enrolled` | Bu darsni o'qish uchun avval kursga yoziling. | Бұл сабақты оқу үшін алдымен курсқа жазылыңыз. |  |
+| `error.course_locked` | Avval oldingi majburiy darslarni tugating. | Алдымен алдыңғы міндетті сабақтарды аяқтаңыз. |  |
+| `error.course_not_self_completed` | Masala va test darslari yechilganda o'zi tugaydi. | Есеп және тест сабақтары шешілгенде өзі аяқталады. |  |
+| `error.course_qvant_required` | Bu kurs Qvant bilan ochiladi. | Бұл курс Qvant арқылы ашылады. |  |
+| `error.course_payment_required` | Bu kurs pullik. | Бұл курс ақылы. |  |

@@ -3000,6 +3000,16 @@ def courses_structure_and_access() -> str | None:
     for sender in ('sender="ratings.UserSolvedProblem"', 'sender="quizzes.QuizAttempt"'):
         if sender not in services_py:
             return f"courses/services.py: progress signali ulanmagan \u2014 {sender}"
+    # 3-qism (web): har kurs sahifasi bayroq o'chiq bo'lsa 404 beradi —
+    # aks holda bo'lim egasi ochmasdan turib havola orqali ko'rinib qoladi.
+    gate = '  if (!isOnServer("courses", undefined)) notFound();\n'
+    for page in (
+        "apps/web/src/app/(site)/courses/page.tsx",
+        "apps/web/src/app/(site)/courses/[slug]/page.tsx",
+        "apps/web/src/app/(site)/courses/[slug]/lessons/[id]/page.tsx",
+    ):
+        if gate not in read(page):
+            return f"{page}: sahifa `courses` bayrog'i ortida emas"
     return None
 
 

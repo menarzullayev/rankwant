@@ -22,6 +22,23 @@ def _text(obj: Any, locale: str, base: str) -> Any:
     return pick(list(obj.translations.all()), locale, base)
 
 
+def _value(obj: Any, locale: str, base: str, field: str) -> str:
+    """One text field in the reader's language.
+
+    A translation is often partial (the title is done, the description is
+    not), so an empty field falls back to the base language and then to any
+    translation that has it, instead of leaving the block blank.
+    """
+    rows = list(obj.translations.all())
+    first = pick(rows, locale, base)
+    order = ([first] if first else []) + [r for r in rows if r.locale == base] + rows
+    for row in order:
+        value = getattr(row, field)
+        if value:
+            return str(value)
+    return ""
+
+
 class ProgressSerializer(serializers.Serializer[progress.CourseState]):
     done = serializers.IntegerField(source="required_done")
     total = serializers.SerializerMethodField()
@@ -78,8 +95,7 @@ class CourseCardSerializer(serializers.ModelSerializer[Course]):
         return row.title if row else obj.slug
 
     def get_summary(self, obj: Course) -> str:
-        row = self._row(obj)
-        return row.summary if row else ""
+        return _value(obj, self.context["locale"], obj.base_locale, "summary")
 
     def get_locale(self, obj: Course) -> str:
         row = self._row(obj)
@@ -196,8 +212,7 @@ class CourseDetailSerializer(CourseCardSerializer):
         read_only_fields = fields
 
     def _field(self, obj: Course, name: str) -> str:
-        row = self._row(obj)
-        return getattr(row, name) if row else ""
+        return _value(obj, self.context["locale"], obj.base_locale, name)
 
     def get_description(self, obj: Course) -> str:
         return self._field(obj, "description")
@@ -295,8 +310,7 @@ class LessonDetailSerializer(serializers.ModelSerializer[Lesson]):
         return row.title if row else ""
 
     def get_body(self, obj: Lesson) -> str:
-        row = self._row(obj)
-        return row.body if row else ""
+        return _value(obj, self.context["locale"], self.context["base"], "body")
 
     def get_locale(self, obj: Lesson) -> str:
         row = self._row(obj)

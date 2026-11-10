@@ -59,6 +59,8 @@ export const SAME_IN_EVERY_LOCALE = [
   "nav.qvant",
   "update.module.qvant",
   "admin.label.text.qvant",
+  // A course price in Qvant (ADR-0056).
+  "course.price.qvant",
 ] as const;
 
 export const DO_NOT_TRANSLATE = [
