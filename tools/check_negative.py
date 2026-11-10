@@ -4088,6 +4088,66 @@ _JUDGE_PRIV_RULE = "judge privileged emas"
 _JUDGE_CAP_DROP = "    cap_drop: [ALL]\n"
 
 
+def neg_decisions_region_ab_without_switch() -> tuple[bool, str]:
+    """The experiment runs for group `b` without its own switch."""
+    return _decision_broken(
+        "apps/web/src/lib/flags.ts",
+        "if (!experiment || !experimentRunning(name)) return null;",
+        "if (!experiment) return null;",
+        "sinov o'z kalitisiz ham yoqiladi",
+    )
+
+
+def neg_decisions_region_ab_server_ignores_switch() -> tuple[bool, str]:
+    """The server-side reader turns group `b` on without the switch."""
+    return _decision_broken(
+        "apps/web/src/lib/flags.ts",
+        "    if (!experimentRunning(name)) return false;\n",
+        "",
+        "server tomoni sinov kalitini tekshirmaydi",
+    )
+
+
+def neg_decisions_region_field_drawn_on_server() -> tuple[bool, str]:
+    """The region field is decided on the server, so the edge cache mixes groups."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/AuthForm.tsx",
+        "const regionNotAskedOnServer = () => false;",
+        'const regionNotAskedOnServer = () => isOn("geoEarlyRegion");',
+        "viloyat maydoni serverda chiziladi",
+    )
+
+
+def neg_decisions_untagged_event_counted_as_control() -> tuple[bool, str]:
+    """An event without a group is written as the control group again."""
+    return _decision_broken(
+        "apps/web/src/lib/analytics.ts",
+        "...(group ? { exp: group } : {})",
+        'exp: group ?? "a"',
+        "guruhsiz hodisa guruhga yoziladi",
+    )
+
+
+def neg_decisions_guest_events_share_one_session() -> tuple[bool, str]:
+    """Guest events are filed under the blank session key again."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        "session_key=key_of(props),",
+        "session_key=session_key,",
+        "mehmon hodisalari bitta bo'sh sessiyaga tushadi",
+    )
+
+
+def neg_decisions_sign_up_region_unchecked() -> tuple[bool, str]:
+    """The sign-up form accepts any region text again."""
+    return _decision_broken(
+        "apps/api/core/serializers.py",
+        'and attrs["region"] not in UZ_REGIONS',
+        'and attrs["region"] in ()',
+        "viloyat katalogdan tekshirilmaydi",
+    )
+
+
 def neg_decisions_judge_privileged_again() -> tuple[bool, str]:
     return _decision_broken(
         "docker-compose.yml", _JUDGE_CAP_DROP, "    privileged: true\n" + _JUDGE_CAP_DROP, _JUDGE_PRIV_RULE
@@ -7161,6 +7221,13 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/contests/services.py",
     "apps/api/judging/tasks.py",
     "apps/api/judging/provider.py",
+    # Region A/B wired (2026-11-10, audit Q-13): the switch, the field, the
+    # event tagging and the server side that files and reads the events.
+    "apps/web/src/lib/flags.ts",
+    "apps/web/src/lib/analytics.ts",
+    "apps/web/src/features/account/components/AuthForm.tsx",
+    "apps/api/core/views.py",
+    "apps/api/core/serializers.py",
     "services/judge-go/protocol.go",
     # ADR-0046 (2026-11-10): the non-privileged judge rule reads these.
     "services/judge-go/seccomp.json",
@@ -10573,6 +10640,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
+            ("viloyat sinovi kalitsiz yonsa tutilsin", neg_decisions_region_ab_without_switch),
+            ("server sinov kalitini o'qimasa tutilsin", neg_decisions_region_ab_server_ignores_switch),
+            ("viloyat maydoni serverda chizilsa tutilsin", neg_decisions_region_field_drawn_on_server),
+            ("guruhsiz hodisa nazoratga yozilsa tutilsin", neg_decisions_untagged_event_counted_as_control),
+            ("mehmon hodisalari bitta sessiyaga tushsa tutilsin", neg_decisions_guest_events_share_one_session),
+            ("ro'yxatdagi viloyat tekshirilmasa tutilsin", neg_decisions_sign_up_region_unchecked),
             ("judge yana privileged bo'lsa tutilsin", neg_decisions_judge_privileged_again),
             ("judge yana cgroup: host bo'lsa tutilsin", neg_decisions_judge_host_cgroup_again),
             ("overlay judge'ni privileged qilsa tutilsin", neg_decisions_judge_privileged_in_overlay),

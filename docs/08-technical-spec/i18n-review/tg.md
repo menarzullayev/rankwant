@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2440 strings.**
+**2446 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -273,6 +273,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernamePlaceholder` | sardor_dev | rustam_dev |  |
 | `auth.usernameOptional` | Taxallus (ixtiyoriy) | Лақаб (ихтиёрӣ) |  |
 | `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Баъдтар низ интихоб кардан мумкин аст |  |
+| `auth.regionOptional` | Viloyat (ixtiyoriy) | Вилоят (ихтиёрӣ) |  |
+| `auth.regionHint` | Keyinroq sozlamalarda o'zgartirishingiz mumkin | Баъдтар онро дар танзимот иваз карда метавонед |  |
 | `auth.firstNamePlaceholder` | Masalan: Sardor | Масалан: Рустам |  |
 | `auth.lastNamePlaceholder` | Masalan: Rahimov | Масалан: Каримов |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Ҳадди ақал 8 аломат. Танҳо рақам набошад. |  |
@@ -1718,6 +1720,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.name.shown` | Ko'rsatiladigan ism | Номи намоишшаванда |  |
 | `admin.label.ab.control` | Nazorat (2-qadamda) | Назорат (дар қадами 2) |  |
 | `admin.label.ab.variant` | Variant (ro'yxatda) | Вариант (дар рӯйхат) |  |
+| `admin.label.ab.started` | Formani boshladi | Формаро оғоз кард |  |
+| `admin.label.ab.done` | Ro'yxatdan o'tdi | Ба қайд гирифт |  |
+| `admin.label.ab.completion` | Tugatish ulushi | Ҳиссаи анҷомдиҳӣ |  |
+| `admin.label.ab.regionFilled` | Viloyati bor (hozir) | Вилоят дорад (ҳозир) |  |
 | `admin.label.misc.participant` | Ishtirokchi | Иштирокчӣ |  |
 | `admin.label.misc.challenger` | Chaqiruvchi | Даъваткунанда |  |
 | `admin.label.misc.projects` | Loyihalar | Лоиҳаҳо |  |

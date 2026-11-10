@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2440 strings.**
+**2446 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -273,6 +273,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernamePlaceholder` | sardor_dev | aybek_dev |  |
 | `auth.usernameOptional` | Taxallus (ixtiyoriy) | Laqap (ixtiyariy) |  |
 | `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Keyinirek te saylawıńız múmkin |  |
+| `auth.regionOptional` | Viloyat (ixtiyoriy) | Wálayat (ixtiyariy) |  |
+| `auth.regionHint` | Keyinroq sozlamalarda o'zgartirishingiz mumkin | Keyinirek sazlawlarda ózgertiwińiz múmkin |  |
 | `auth.firstNamePlaceholder` | Masalan: Sardor | Mısalı: Sardor |  |
 | `auth.lastNamePlaceholder` | Masalan: Rahimov | Mısalı: Rahimov |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Keminde 8 belgi. Tek sannan ibarat bolmasın. |  |
@@ -1718,6 +1720,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.name.shown` | Ko'rsatiladigan ism | Kórsetiletuǵın atı |  |
 | `admin.label.ab.control` | Nazorat (2-qadamda) | Baqlaw (2-qádemde) |  |
 | `admin.label.ab.variant` | Variant (ro'yxatda) | Variant (dizimde) |  |
+| `admin.label.ab.started` | Formani boshladi | Formanı basladı |  |
+| `admin.label.ab.done` | Ro'yxatdan o'tdi | Dizimnen ótti |  |
+| `admin.label.ab.completion` | Tugatish ulushi | Juwmaqlaw úlesi |  |
+| `admin.label.ab.regionFilled` | Viloyati bor (hozir) | Wálayatı bar (házir) |  |
 | `admin.label.misc.participant` | Ishtirokchi | Qatnasıwshı |  |
 | `admin.label.misc.challenger` | Chaqiruvchi | Shaqırıwshı |  |
 | `admin.label.misc.projects` | Loyihalar | Joybarlar |  |

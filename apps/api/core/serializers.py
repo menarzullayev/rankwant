@@ -760,6 +760,16 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         except DjangoValidationError as exc:
             raise serializers.ValidationError({"password": list(exc.messages)}) from None
 
+        # A/B `b` (8-qaror) asks the region on this form: in Uzbekistan it is a
+        # catalogue code, as `MeSerializer.validate` already demands. Without
+        # this the sign-up path accepted any text the settings page refuses.
+        if (
+            attrs.get("country") == "UZ"
+            and attrs.get("region")
+            and attrs["region"] not in UZ_REGIONS
+        ):
+            raise serializers.ValidationError({"region": "The region must be chosen from the list"})
+
         # Turnstile ENG OXIRIDA: token bir martalik, ya'ni uni parol
         # qoidasi yoki band pochta uchun behuda sarflash odamni qayta
         # yechishga majbur qilardi (9-qaror).

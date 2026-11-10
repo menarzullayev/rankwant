@@ -11,7 +11,7 @@
  */
 
 import { API_BASE } from "./api";
-import { GEO_EXPERIMENT, variant } from "./experiments";
+import { experimentGroup } from "./flags";
 
 const ENDPOINT = `${API_BASE}/analytics/events/`;
 const MAX_BATCH = 25;
@@ -21,6 +21,42 @@ type Tracked = { name: string; path: string; props?: Record<string, unknown> };
 
 let queue: Tracked[] = [];
 let timer: ReturnType<typeof setTimeout> | null = null;
+
+/** This tab's funnel id — 32 random hex digits, kept for the tab's life.
+ *
+ *  A visitor who has not signed in has no server session, so every one of
+ *  their events reached the table with an EMPTY `session_key` and all of
+ *  them counted as one "session". Measured in production 2026-11-10: 34 of
+ *  38 `auth.form_started` rows were blank — the funnel's first step read 1
+ *  whatever the traffic. The server files an event under `f:<id>` when it
+ *  has no session of its own; the id names a tab, not a person, and is not
+ *  stored in `props`. */
+const FUNNEL_KEY = "rw:funnel";
+let funnelId: string | null = null;
+
+function newFunnelId(): string {
+  // `getRandomValues`, not `randomUUID`: the latter needs a secure context.
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function funnel(): string {
+  if (funnelId) return funnelId;
+  let kept: string | null = null;
+  try {
+    kept = sessionStorage.getItem(FUNNEL_KEY);
+  } catch {
+    // Storage blocked: one id per page load is still far better than none.
+  }
+  funnelId = kept && /^[0-9a-f]{32}$/.test(kept) ? kept : newFunnelId();
+  try {
+    sessionStorage.setItem(FUNNEL_KEY, funnelId);
+  } catch {
+    // As above.
+  }
+  return funnelId;
+}
 
 function csrfToken(): string {
   const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
@@ -59,16 +95,20 @@ function schedule() {
  *  ketma-ket hodisalar (forma boshlandi → xato → yuborildi) bitta
  *  so'rovda ketadi.
  *
- *  Har bir hodisaga eksperiment guruhi QO'SHILADI: usiz A/B natijasini
- *  hodisalardan ajratib bo'lmasdi — guruh faqat cookie'da qolib,
- *  «qaysi variant yaxshiroq ishladi» degan savolga javob bermasdi.
+ *  Eksperiment guruhi hodisaga FAQAT sinov ishlayotganda qo'shiladi
+ *  (`NEXT_PUBLIC_FLAG_GEO_EARLY_REGION` yoniq va cookie'da guruh bor):
+ *  usiz A/B natijasini hodisalardan ajratib bo'lmasdi. Ilgari guruh har
+ *  doim yozilardi, cookie yo'q bo'lsa esa `a` deb — sinov o'chiq paytda
+ *  ikkala guruh bir xil formani ko'rgan hodisalar ham, guruhsiz
+ *  tashrifchilar ham natijaga aralashardi.
  */
 export function track(name: string, props?: Record<string, unknown>) {
   if (typeof window === "undefined") return;
+  const group = experimentGroup("geoEarlyRegion");
   queue.push({
     name,
     path: window.location.pathname,
-    props: { ...props, exp: variant(GEO_EXPERIMENT) },
+    props: { ...props, fid: funnel(), ...(group ? { exp: group } : {}) },
   });
   schedule();
 }
