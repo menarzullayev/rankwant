@@ -4,7 +4,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { FormDate } from "@/components/form/FormKit";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
-import { registerMessages, type Locale } from "@/i18n/messages";
+import { LOCALES, registerMessages, type Locale } from "@/i18n/messages";
 import { ru } from "@/i18n/locales/ru";
 import { uz } from "@/i18n/locales/uz";
 
@@ -68,6 +68,16 @@ describe("FormDate writes no text through Intl", () => {
       },
     });
     expect(await render("uz", "2026-11-10")).toBe(node);
+  });
+
+  it("has seven distinct weekday names in every locale", async () => {
+    for (const locale of LOCALES) {
+      const mod = (await import(`@/i18n/locales/${locale}.ts`)) as Record<string, Record<string, string>>;
+      const dict = mod[locale]!;
+      const names = dict["form.cal.weekdays"]!.split(",");
+      expect(names, locale).toHaveLength(7);
+      expect(new Set(names).size, locale).toBe(7);
+    }
   });
 
   it("opens on today's month in the site zone, not the machine's", async () => {
