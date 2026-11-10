@@ -4753,6 +4753,36 @@ def neg_decisions_optimistic_throw_counts_as_saved() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_ci_back_to_pip() -> tuple[bool, str]:
+    """An API job goes back to `pip install`."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "      - run: uv pip install --system -r requirements-dev.lock\n",
+        "      - run: pip install -r requirements-dev.lock\n",
+        "uv bilan o'rnatmaydi",
+    )
+
+
+def neg_decisions_node_modules_key_loose() -> tuple[bool, str]:
+    """The node_modules cache key forgets the lockfile (a stale tree would be reused)."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}\n",
+        "-${{ steps.setup-node.outputs.node-version }}\n",
+        "lockfile va Node versiyasiga bog'lanmagan",
+    )
+
+
+def neg_decisions_npm_ci_ignores_cache() -> tuple[bool, str]:
+    """`npm ci` runs even when node_modules was restored."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        " && steps.node-modules.outputs.cache-hit != 'true' }}\n        run: npm ci\n",
+        " }}\n        run: npm ci\n",
+        "keshi topilganda ham npm ci yuradi",
+    )
+
+
 def neg_decisions_revive_touches_manual_stops() -> tuple[bool, str]:
     """The revive script stops filtering on `.State.Error` (would start bake-off's stopped worker)."""
     return _decision_broken(
@@ -11741,6 +11771,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yo'ldagi so'rov sahifani ushlamasa tutilsin", neg_decisions_optimistic_unload_unguarded),
             ("yiqilgan so'rov saqlangan sanalsa tutilsin", neg_decisions_optimistic_throw_counts_as_saved),
             ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
+            ("CI pip'ga qaytsa tutilsin", neg_decisions_ci_back_to_pip),
+            ("node_modules kaliti lockfile'siz bo'lsa tutilsin", neg_decisions_node_modules_key_loose),
+            ("kesh topilganda npm ci yursa tutilsin", neg_decisions_npm_ci_ignores_cache),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),
             ("Docker o'chiqda deploy'ga urinilsa tutilsin", neg_decisions_watcher_deploys_without_docker),
