@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { toNewAlphabet } from "@rankwant/shared/alphabet";
 import { registerVariant, setVariantResolver } from "@rankwant/shared/i18n";
 
-import { ALPHABET_LOCALE, type Alphabet } from "./alphabet";
+import { ALPHABET_LOCALE, setAlphabetResolver, type Alphabet } from "./alphabet";
 import { requestAlphabet } from "./alphabet-store.server";
 import { registerMessages, type Locale, type MessageKey } from "./messages";
 import { en } from "./locales/en";
@@ -66,6 +66,8 @@ registerVariant(ALPHABET_LOCALE, "old", UZ_OLD);
 setVariantResolver((locale) =>
   locale === ALPHABET_LOCALE && requestAlphabet() === "old" ? "old" : null,
 );
+// Content text follows the same choice (`inReaderAlphabet`).
+setAlphabetResolver(requestAlphabet);
 
 const isOld = (locale: Locale, alphabet: Alphabet) =>
   locale === ALPHABET_LOCALE && alphabet === "old";

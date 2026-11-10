@@ -1,6 +1,6 @@
 # ADR 0059 — Yangi o'zbek alifbosi: o'giruvchi va qidiruv
 
-**STATUS:** accepted (1-bosqich: o'giruvchi va qidiruv; 2-bosqich: interfeys va tanlov; kontent, pochta va Telegram — keyingi bosqichlar)
+**STATUS:** accepted (1-bosqich: o'giruvchi va qidiruv; 2-bosqich: interfeys va tanlov; 3-bosqich: kontent; pochta va Telegram — keyingi bosqich)
 **Sana:** 2026-11-11
 **Tasdiqlagan:** Saidakbar (owner) — 2026-11-11 ([qaror yozuvi](../decisions/2026-11-11-new-alphabet.md): 4 savol)
 **Ta'sir doirasi:** `packages/shared` (`alphabet.ts`), `apps/api/core` (`alphabet.py`, `search.py`), web qidiruvi; migratsiyalar `core.0036`, `problems.0038`
@@ -55,14 +55,28 @@ ishlayveradi, qidiruvda ikkalasi bir.
 5. **E2E** eski alifboga qadalgan (mavjud matnlar va vizual baseline'lar eski alifboda); standart
    yangi alifbo `alphabet.spec.ts` da tekshiriladi.
 
-## 4. Keyingi bosqichlar
+## 4. 3-bosqich: kontent o'quvchi alifbosida
 
-- Kontent (masala shartlari, kurslar, maqolalar, yangiliklar) va API qaytaradigan matnlar
-  (daraja nomlari, xatolar) o'quvchi tanlagan alifboda.
-- Pochta, Telegram, sertifikatlar.
+1. **Kontent saqlanganidek qoladi** — o'girish ko'rsatishda: `inReaderAlphabet(matn, til)`.
+   Faqat matnning O'Z tili o'zbekcha bo'lsa o'giriladi (`til` — kontentniki, interfeysniki emas):
+   inglizcha shartdagi `should`, `check` buzilmasin. O'quvchi alifbosi — tanlov cookie'si, interfeys
+   tilidan qat'i nazar (ruscha interfeysdagi o'quvchi o'zbekcha shartni ham tanlagan alifbosida ko'radi).
+2. **Server va brauzer bir xil o'qiydi**: serverda so'rov konteksti (2-bosqichdagi `AsyncLocalStorage`),
+   brauzerda `document.cookie` — ikkalasi bitta cookie, ya'ni gidratsiya bir xil matnni ko'radi.
+3. **Qamrov**: `Markdown` komponenti `lang` oladi (kod, formula va havola o'girilmaydi). Masala sahifasi
+   (sarlavha, shart, kirish/chiqish, izoh, tahlil, sahifa nomi), arxiv ro'yxati va o'xshash masalalar
+   (API endi har qator uchun `locale` beradi), maqola, blog posti, kurs va dars sahifalari.
+4. **Daraja nomlari** API'ning o'zbekcha `level_label` matni o'rniga lug'atdan (`level.*`) — tarjima ham,
+   alifbo ham shu bilan hal bo'ladi.
+
+## 5. Keyingi bosqichlar
+
+- Qolgan kontent: ro'yxat sahifalari (maqolalar, blog, kurslar katalogi), musobaqa va arena matnlari,
+  mavzu nomlari, xakaton va turnir tavsiflari (ularda til maydoni yo'q).
+- Pochta, Telegram, sertifikatlar (`apps/api/core/alphabet.py` bilan).
 - Tanlov hozircha qurilmada (cookie); hisob sozlamasiga yozish — keyin.
 
-## 5. Oqibatlar
+## 6. Oqibatlar
 
 - Turkcha matndagi `ş`, `ç`, `ö`, `ğ` ham katlanadi (`çeviri` ↔ `cheviri`) — ikkala tomon bir xil
   katlangani uchun moslik buzilmaydi.

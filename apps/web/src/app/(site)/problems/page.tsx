@@ -14,6 +14,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { getLocale } from "@/i18n/server";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { fill, t, topicNameInfo } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { ArchiveSidebar } from "@/components/layout/ArchiveSidebar";
@@ -283,7 +284,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                         href={`/problems/${p.slug}`}
                         className="font-medium rw-strong rw-link-hover"
                       >
-                        {p.title}
+                        {inReaderAlphabet(p.title, p.locale)}
                       </Link>
                       {p.has_editorial && (
                         <span
@@ -326,7 +327,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                         so a phone reads the row without scrolling sideways. */}
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 @xl:hidden">
                       <DifficultyBadge value={p.difficulty} />
-                      <span className={`level-${p.level} text-theme-xs`}>{p.level_label}</span>
+                      <span className={`level-${p.level} text-theme-xs`}>{t(locale, `level.${p.level}`)}</span>
                       <span className="text-theme-xs rw-faint tabular-nums">
                         {t(locale, "problems.solved")} {p.solved_count}
                       </span>
@@ -336,7 +337,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                     <div className="flex items-center gap-2">
                       <DifficultyBadge value={p.difficulty} />
                       <span className={`level-${p.level} text-theme-xs`}>
-                        {p.level_label}
+                        {t(locale, `level.${p.level}`)}
                       </span>
                     </div>
                   </TD>

@@ -19,6 +19,7 @@ import { getSessionUser, getWithSession } from "@/lib/api.server";
 import { SITE_URL, jsonLd } from "@/lib/site";
 import { getLocale } from "@/i18n/server";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { fill, t } from "@/i18n/messages";
 import { resolveProblemTab } from "@/lib/problem-tabs";
 
@@ -56,11 +57,13 @@ export async function generateMetadata({
     const problem = await getWithSession<ProblemDetail>(
       `/problems/${slug}/?lang=${locale}`,
     );
+    // The tab title and share card in the reader's alphabet (ADR-0059).
+    const name = inReaderAlphabet(problem.title, problem.locale);
     const title = problem.code
-      ? `#${String(problem.code).padStart(4, "0")} · ${problem.title}`
-      : problem.title;
+      ? `#${String(problem.code).padStart(4, "0")} · ${name}`
+      : name;
     const description = fill(t(locale, "problem.difficultyDescription"), {
-      title: problem.title,
+      title: name,
       difficulty: problem.difficulty,
     });
     // Havolalar asosan Telegramda ulashiladi: OG'siz ular yalang'och
@@ -158,10 +161,10 @@ export default async function ProblemPage({ params, searchParams }: Props) {
             __html: jsonLd({
               "@context": "https://schema.org",
               "@type": "LearningResource",
-              name: problem.title,
+              name: inReaderAlphabet(problem.title, problem.locale),
               description: jsonLdDescription,
               url: `${SITE_URL}/problems/${slug}`,
-              educationalLevel: problem.level_label,
+              educationalLevel: t(locale, `level.${problem.level}`),
               learningResourceType: "Problem",
               inLanguage: locale,
               isAccessibleForFree: true,

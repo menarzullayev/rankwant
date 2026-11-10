@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { getLocale } from "@/i18n/server";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { t } from "@/i18n/messages";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -18,7 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = await getLocale();
   try {
     const article = await api.article(slug);
-    return { title: article.title, description: article.summary };
+    return {
+      title: inReaderAlphabet(article.title, article.locale),
+      description: inReaderAlphabet(article.summary, article.locale),
+    };
   } catch {
     return { title: t(locale, "learn.notFound") };
   }
@@ -39,7 +43,9 @@ export default async function ArticlePage({ params }: Props) {
   return (
     <article className="mx-auto max-w-4xl space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold rw-strong">{article.title}</h1>
+        <h1 className="text-title-sm font-bold rw-strong">
+          {inReaderAlphabet(article.title, article.locale)}
+        </h1>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Badge>
             {article.reading_minutes} {t(locale, "learn.minutes")}
@@ -54,7 +60,7 @@ export default async function ArticlePage({ params }: Props) {
       </header>
 
       <Card>
-        <Markdown>{article.body}</Markdown>
+        <Markdown lang={article.locale}>{article.body}</Markdown>
       </Card>
 
       {article.problems.length > 0 && (

@@ -16,6 +16,7 @@ import {
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { CopyButton } from "@/components/kit/CopyControl";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { fill, LOCALE_NAMES, t, type Locale } from "@/i18n/messages";
 import type { ProblemDetail } from "@/lib/api";
 import { stripDuplicateStatementHeading } from "@/lib/statement-body";
@@ -60,7 +61,9 @@ export function ProblemDescription({
               #{String(problem.code).padStart(4, "0")}
             </span>
           )}
-          <h1 className="text-title-sm font-bold rw-strong">{problem.title}</h1>
+          <h1 className="text-title-sm font-bold rw-strong">
+            {inReaderAlphabet(problem.title, problem.locale)}
+          </h1>
           <span className="grow" />
           <span className="rw-radius-full rw-warn-soft px-2.5 py-1 text-theme-xs font-semibold rw-warn-ink tabular-nums">
             {problem.time_limit_ms} ms · {Math.round(problem.memory_limit_kb / 1024)}{" "}
@@ -81,7 +84,7 @@ export function ProblemDescription({
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <DifficultyBadge value={problem.difficulty} />
           <span className={`level-${problem.level} text-theme-sm font-medium`}>
-            {problem.level_label}
+            {t(locale, `level.${problem.level}`)}
           </span>
           {problem.topics.map((topic) => (
             <Badge key={topic} color="neutral">
@@ -157,14 +160,14 @@ export function ProblemDescription({
                 className="w-full rw-radius-sm"
               />
             )}
-            <Markdown>{statementBody}</Markdown>
+            <Markdown lang={problem.locale}>{statementBody}</Markdown>
 
             {problem.input_format && (
               <section id="problem-input-format">
                 <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
                   {t(locale, "problem.inputFormat")}
                 </h2>
-                <Markdown>{problem.input_format}</Markdown>
+                <Markdown lang={problem.locale}>{problem.input_format}</Markdown>
               </section>
             )}
 
@@ -173,7 +176,7 @@ export function ProblemDescription({
                 <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
                   {t(locale, "problem.outputFormat")}
                 </h2>
-                <Markdown>{problem.output_format}</Markdown>
+                <Markdown lang={problem.locale}>{problem.output_format}</Markdown>
               </section>
             )}
           </div>
@@ -191,6 +194,7 @@ export function ProblemDescription({
             slug={slug}
             text={problem.editorial}
             state={problem.editorial_state}
+            lang={problem.locale}
           />
         </div>
       )}
@@ -204,7 +208,7 @@ export function ProblemDescription({
       {problem.note && (
         <div id="problem-notes">
           <Card title={t(locale, "problem.comments")}>
-            <Markdown>{problem.note}</Markdown>
+            <Markdown lang={problem.locale}>{problem.note}</Markdown>
           </Card>
         </div>
       )}

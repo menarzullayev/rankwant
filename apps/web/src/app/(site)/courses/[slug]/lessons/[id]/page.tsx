@@ -1,4 +1,5 @@
 import type { Metadata, Route } from "next";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -174,10 +175,12 @@ export default async function LessonPage({ params }: Props) {
             {!data.is_required && <Badge>{t(locale, "course.lesson.optional")}</Badge>}
             {data.completed && <Badge color="success">{t(locale, "course.lesson.state.done")}</Badge>}
           </div>
-          <h1 className="text-title-sm font-bold rw-strong">{data.title}</h1>
+          <h1 className="text-title-sm font-bold rw-strong">
+            {inReaderAlphabet(data.title, data.locale)}
+          </h1>
           <FallbackNote shown={data.locale} locale={locale} />
         </header>
-        {data.body.trim() && <Markdown>{data.body}</Markdown>}
+        {data.body.trim() && <Markdown lang={data.locale}>{data.body}</Markdown>}
         <Task data={data} locale={locale} />
         {enrolled && !data.completed && SELF_COMPLETED.has(data.kind) && (
           <CompleteButton slug={slug} lessonId={data.id} />

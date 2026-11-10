@@ -10,6 +10,8 @@
  *  never served to an old-alphabet reader.
  */
 
+import { toNewAlphabet, toOldAlphabet } from "@rankwant/shared/alphabet";
+
 import type { Locale } from "./messages";
 
 export const ALPHABET_COOKIE = "rw_alphabet";
@@ -46,4 +48,33 @@ export function alphabetFromCookieHeader(header: string | null | undefined): Alp
 export function alphabetCookieLine(alphabet: Alphabet): string {
   if (alphabet === DEFAULT_ALPHABET) return `${ALPHABET_COOKIE}=; path=/; max-age=0; samesite=lax`;
   return `${ALPHABET_COOKIE}=${alphabet}; path=/; max-age=31536000; samesite=lax`;
+}
+
+/** Where the server keeps the request's alphabet (`messages.server.ts`
+ *  installs it; `AsyncLocalStorage` cannot be imported here, this module
+ *  also runs in the browser). On `globalThis`, like the dictionary
+ *  registry: server code is evaluated more than once. */
+type AlphabetResolver = () => Alphabet | undefined;
+const realm = globalThis as typeof globalThis & { __rwAlphabetResolver?: AlphabetResolver };
+
+export function setAlphabetResolver(resolver: AlphabetResolver | undefined): void {
+  realm.__rwAlphabetResolver = resolver;
+}
+
+/** The reader's alphabet choice — the request's on the server, the cookie in
+ *  the browser. Both read the same cookie, so server HTML and hydration
+ *  agree. */
+export function readerAlphabet(): Alphabet {
+  const fromRequest = realm.__rwAlphabetResolver?.();
+  if (fromRequest) return fromRequest;
+  if (typeof document !== "undefined") return alphabetFromCookieHeader(document.cookie);
+  return DEFAULT_ALPHABET;
+}
+
+/** Content text in the reader's alphabet (ADR-0059). Only text written in
+ *  Uzbek is touched — `lang` is the content's own language, never the
+ *  interface's: an English statement must not lose its `sh`. */
+export function inReaderAlphabet(text: string, lang: string | null | undefined): string {
+  if (lang !== ALPHABET_LOCALE || !text) return text;
+  return readerAlphabet() === OLD_ALPHABET ? toOldAlphabet(text) : toNewAlphabet(text);
 }

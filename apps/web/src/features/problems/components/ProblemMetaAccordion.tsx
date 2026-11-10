@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { t, type Locale } from "@/i18n/messages";
 import type { SimilarProblem } from "@/lib/api";
 
@@ -58,10 +59,10 @@ export function ProblemMetaAccordion({
                   className="flex flex-wrap items-center gap-2 px-3 py-2 text-theme-sm rw-link-hover"
                 >
                   <span className={`level-${item.level} text-theme-xs font-medium`}>
-                    {item.level_label}
+                    {t(locale, `level.${item.level}`)}
                   </span>
                   <span className="min-w-0 flex-1 truncate font-medium rw-strong">
-                    {item.title}
+                    {inReaderAlphabet(item.title, item.locale)}
                   </span>
                 </Link>
               </li>

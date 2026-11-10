@@ -3647,6 +3647,29 @@ def about_page_is_one_searchable_page() -> str | None:
     return None
 
 
+def uzbek_content_follows_the_reader() -> str | None:
+    """2026-11-11 (HITL, ADR-0059, 3-bosqich): o'zbekcha kontent o'quvchi
+    tanlagan alifboda.
+
+    Faqat matnning O'Z tili o'zbekcha bo'lsa o'giriladi — inglizcha shartda
+    `sh` va `ch` bor, ular buzilmasin; Markdown kod va formulani tegmaydi;
+    masala sahifasi shartning tilini uzatadi.
+    """
+    if "  if (lang !== ALPHABET_LOCALE || !text) return text;\n" not in read(
+        "apps/web/src/i18n/alphabet.ts"
+    ):
+        return "i18n/alphabet.ts: o'zbekcha bo'lmagan kontent ham o'giriladi"
+    if "        {inReaderAlphabet(children, lang)}\n" not in read(
+        "apps/web/src/components/ui/Markdown.tsx"
+    ):
+        return "components/ui/Markdown.tsx: kontent o'quvchi alifbosida ko'rsatilmaydi"
+    if "<Markdown lang={problem.locale}>{statementBody}</Markdown>" not in read(
+        "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx"
+    ):
+        return "ProblemDescription.tsx: masala sharti tilisiz chiziladi — alifbo o'zgarmaydi"
+    return None
+
+
 def uz_alphabet_follows_the_request() -> str | None:
     """2026-11-11 (HITL, ADR-0059): interfeys standart holatda yangi alifboda,
     eski alifbo — tanlov.
@@ -5237,6 +5260,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),
     ("o'zbekcha interfeys yangi alifboda, eskisi so'rov bo'yicha tanlov", uz_alphabet_follows_the_request),
+    ("o'zbekcha kontent o'quvchi alifbosida, faqat o'zbekcha matn", uzbek_content_follows_the_reader),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
