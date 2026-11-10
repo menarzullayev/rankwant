@@ -878,6 +878,84 @@ def neg_docs_research_exemption_is_scoped() -> tuple[bool, str]:
     return True, "docs/istisno: faqat docs/research ozod, tirik hujjat tutildi"
 
 
+_DOCS_TABLE = "| a | b |\n| --- | --- |\n| 1 | 2 |\n"
+_DOCS_BROKEN = "| a | b |\n| --- | --- |\n| 1 | 2 | 3 | 4 |\n"
+
+
+def _docs_sandbox(root: Path, *, guide: str | None) -> tuple[int, str]:
+    """`check_docs.py` on a minimal tree at `root`.
+
+    `ROOT` is derived from the script's own location, so a copy reads the copy.
+    `guide=None` leaves `docs/07-adr/` empty: the tree has no markdown at all.
+    Files are written as bytes so Windows does not turn `\\n` into CRLF.
+    """
+    for rel in ("tools/check_docs.py", "tools/_console.py"):
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)
+        (root / rel).write_bytes((ROOT / rel).read_bytes())
+    (root / "docs/07-adr").mkdir(parents=True, exist_ok=True)
+    if guide is not None:
+        (root / "docs/07-adr/0001-sample.md").write_bytes(b"# 0001 sample\n")
+        (root / "docs/guide.md").write_bytes(f"# Guide\n\n{guide}".encode())
+    return run([PY, str(root / "tools/check_docs.py")])
+
+
+def neg_docs_root_under_claude_folder() -> tuple[bool, str]:
+    """A tree that itself lives under a `.claude/` folder must still be read.
+
+    Every agent worktree is `<repo>/.claude/worktrees/<name>/`. The skip rules
+    tested the ABSOLUTE path for `.claude`, so in a worktree the check read 0
+    files and printed ✓ (measured 2026-11-10): a broken table in a decision
+    record passed locally and failed only in CI on PR #503.
+
+    Three runs on one tree at `<tmp>/.claude/worktrees/x`:
+      1. clean tree — exit 0, and the count of files read is not 0;
+      2. a worktree nested under the tree's OWN `.claude/` holds a broken
+         table — still exit 0: the fix must not open up nested worktrees;
+      3. a broken table in the tree itself — exit 1, naming that file.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / ".claude" / "worktrees" / "x"
+        code, out = _docs_sandbox(root, guide=_DOCS_TABLE)
+        read = re.search(r"Tekshirildi: (\d+) ta markdown", out)
+        if code != 0 or not read or read.group(1) == "0":
+            return (
+                False,
+                f"docs/.claude: toza daraxt o'qilmadi (exit {code}) — {out.strip()[-160:]}",
+            )
+        nested = root / ".claude/worktrees/y/docs/bad.md"
+        nested.parent.mkdir(parents=True)
+        nested.write_bytes(_DOCS_BROKEN.encode())
+        code, out = _docs_sandbox(root, guide=_DOCS_TABLE)
+        if code != 0:
+            return (
+                False,
+                f"docs/.claude: ichki worktree skanerlandi (exit {code}) — {out.strip()[-160:]}",
+            )
+        code, out = _docs_sandbox(root, guide=_DOCS_BROKEN)
+    if code == 0:
+        return (
+            False,
+            "docs/.claude: `.claude/` ostidagi daraxtda buzuq jadval O'TKAZILDI (exit 0) — tekshiruv ko'r",
+        )
+    if not re.search(r"docs[\\/]guide\.md:\d+: jadval ustunlari mos emas", out):
+        return (
+            False,
+            f"docs/.claude: exit {code}, lekin sabab buzuq jadval emas — {out.strip()[-160:]}",
+        )
+    return True, "docs/.claude: daraxt o'qildi, ichki worktree chetda, buzuq jadval tutildi (exit 1)"
+
+
+def neg_docs_reads_nothing_is_red() -> tuple[bool, str]:
+    """A run that read 0 markdown files must fail, not print ✓."""
+    with tempfile.TemporaryDirectory() as tmp:
+        code, out = _docs_sandbox(Path(tmp), guide=None)
+    if code == 0:
+        return False, "docs/bo'sh: 0 ta fayl o'qib ✓ dedi (exit 0) — yolg'on yashil"
+    if "markdown fayl topilmadi" not in out:
+        return False, f"docs/bo'sh: exit {code}, lekin sabab boshqa — {out.strip()[-160:]}"
+    return True, "docs/bo'sh: hech narsa o'qimagan tekshiruv qizil (exit 1)"
+
+
 def neg_email_missing_locale() -> tuple[bool, str]:
     """Bitta satrdan bitta til olib tashlansa — tutilsinmi?
 
@@ -11215,6 +11293,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("mavjud bo'lmagan ADR havolasi", neg_docs_missing_adr),
             ("tadqiqotda havola baribir tekshirilsin", neg_docs_research_link_still_checked),
             ("istisno faqat docs/research ga", neg_docs_research_exemption_is_scoped),
+            ("daraxt .claude/ ostida bo'lsa ham o'qilsin", neg_docs_root_under_claude_folder),
+            ("hech narsa o'qimasa qizil", neg_docs_reads_nothing_is_red),
         ],
     ),
     (

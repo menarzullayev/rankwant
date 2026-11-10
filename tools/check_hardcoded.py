@@ -636,8 +636,8 @@ def client_files() -> list[pathlib.Path]:
     out: list[pathlib.Path] = []
     for suffix in (".tsx", ".ts"):
         for path in sorted(WEB.rglob(f"*{suffix}")):
-            rel = str(path).replace("\\", "/")
-            if any(part in SKIP_PARTS for part in path.parts):
+            rel = path.relative_to(ROOT).as_posix()
+            if any(part in SKIP_PARTS for part in path.relative_to(ROOT).parts):
                 continue
             if "/i18n/" in rel:
                 continue
@@ -667,8 +667,8 @@ def target_files() -> list[pathlib.Path]:
     out: list[pathlib.Path] = []
     for suffix in (".tsx", ".ts"):
         for path in sorted(WEB.rglob(f"*{suffix}")):
-            rel = str(path).replace("\\", "/")
-            if any(part in SKIP_PARTS for part in path.parts):
+            rel = path.relative_to(ROOT).as_posix()
+            if any(part in SKIP_PARTS for part in path.relative_to(ROOT).parts):
                 continue
             if "/i18n/" in rel:
                 continue

@@ -202,7 +202,7 @@ def main() -> int:
         return 2
 
     files = sorted(
-        p for p in SCOPE.rglob("*.py") if not any(part in SKIP_PARTS for part in p.parts)
+        p for p in SCOPE.rglob("*.py") if not any(part in SKIP_PARTS for part in p.relative_to(ROOT).parts)
     )
     # `from <app> import models` ni tutish uchun app nomlari kerak.
     apps = _boundary_apps.apps()

@@ -37,6 +37,20 @@ def is_record(path: Path) -> bool:
     return path.relative_to(ROOT).parts[:2] == RECORDS
 
 
+def rel_parts(path: Path) -> tuple[str, ...]:
+    """Path parts below `ROOT` — never the folders `ROOT` itself lives in.
+
+    Every skip rule here tests these parts, not `path.parts`. Agent worktrees
+    live at `<repo>/.claude/worktrees/<name>/`, so the ABSOLUTE path of every
+    file in a worktree contains `.claude`: measured 2026-11-10, the check read
+    0 markdown files there and still printed ✓, while a normal checkout read
+    424. A broken table passed locally and failed only in CI (PR #503).
+    Relative parts still skip worktrees nested under this tree's own
+    `.claude/`, but not the tree itself.
+    """
+    return path.relative_to(ROOT).parts
+
+
 def markdown_files() -> list[Path]:
     return sorted(
         p for p in ROOT.rglob("*.md")
@@ -60,19 +74,19 @@ def markdown_files() -> list[Path]:
                 ".claude",
                 "graphify-out",
             }
-            for part in p.parts
+            for part in rel_parts(p)
         )
         # `i18n-review/` — ikki tilli jadval: bir qatorda o'zbekcha (lotin)
         # manba va qozoqcha/qirg'izcha (kirill) qiymat turadi. Aralashuv
         # bu yerda XATO EMAS, balki varaqning ma'nosi. Yozuv aralashuvi
         # tekshiruvi nasr uchun yozilgan, jadval uchun emas.
-        and "i18n-review" not in p.parts
+        and "i18n-review" not in rel_parts(p)
         # `.workbuddy-ai/` — agentning ichki xotirasi (kunlik yozuv, playbook).
         # U hujjat ham, manba ham emas: ichida buzuq MISOLLAR, eski raqamlar va
         # xato sitatalari turadi (masalan `ADR-9999`). Skanerlansa qoida
         # o'sha namunalarni haqiqiy havola deb o'qib, tekshiruvni doim qizil
         # qiladi — bir marta aynan shunday bo'ldi.
-        and p.relative_to(ROOT).parts[0] != ".workbuddy-ai"
+        and rel_parts(p)[0] != ".workbuddy-ai"
     )
 
 
@@ -184,11 +198,11 @@ def _source_files() -> list[Path]:
         for path in ROOT.rglob(f"*{suffix}"):
             if any(
                 part in {".git", "node_modules", ".next", ".venv", ".tmp", "__pycache__", ".claude"}
-                for part in path.parts
+                for part in rel_parts(path)
             ):
                 continue
             # Testlar ham, agent xotirasi ham manba emas — sababi docstring'da.
-            if path.relative_to(ROOT).parts[0] in {"tools", ".workbuddy-ai", ".claude"}:
+            if rel_parts(path)[0] in {"tools", ".workbuddy-ai", ".claude"}:
                 continue
             out.append(path)
     return sorted(out)
@@ -197,6 +211,10 @@ def _source_files() -> list[Path]:
 def main() -> int:
     problems: list[str] = []
     files = markdown_files()
+    if not files:
+        # A check that read nothing has proven nothing: before `rel_parts`,
+        # every agent worktree read 0 files here and still printed ✓.
+        problems.append("markdown fayl topilmadi — tekshiruv hech narsani o'qimadi")
     for path in files:
         text = path.read_text(encoding="utf-8")
         problems += check_links(path, text)
