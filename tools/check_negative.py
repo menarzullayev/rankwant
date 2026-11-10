@@ -4753,6 +4753,36 @@ def neg_decisions_optimistic_throw_counts_as_saved() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_dump_skips_migrate_check() -> tuple[bool, str]:
+    """A migration the file list cannot see would run without a dump."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        'elif ! "${COMPOSE[@]}" run --rm api python manage.py migrate --check >/dev/null 2>&1; then\n',
+        "elif false; then\n",
+        "migrate --check",
+    )
+
+
+def neg_decisions_migrate_does_not_wait_dump() -> tuple[bool, str]:
+    """Migrate no longer waits for the parallel dump."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '  wait "$DUMP_PID"\n',
+        "  :\n",
+        "migratsiya parallel dump tugashini kutmaydi",
+    )
+
+
+def neg_decisions_unreadable_db_means_no_migration() -> tuple[bool, str]:
+    """An unreadable database is read as "nothing to migrate" (must be the opposite)."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '    2>/dev/null | tr -d \'\\r\')" || return 0\n',
+        '    2>/dev/null | tr -d \'\\r\')" || return 1\n',
+        "o'qilmagan baza",
+    )
+
+
 def neg_decisions_revive_touches_manual_stops() -> tuple[bool, str]:
     """The revive script stops filtering on `.State.Error` (would start bake-off's stopped worker)."""
     return _decision_broken(
@@ -6891,8 +6921,8 @@ def neg_decisions_deploy_backup_after_migrate() -> tuple[bool, str]:
     """
     return _decision_broken(
         "tools/deploy.sh",
-        'step "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
-        '"${COMPOSE[@]}" run --rm migrate || true\nstep "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        'step "3/8 Migratsiyadan oldin zaxira (pg_dump) — build bilan parallel"',
+        '"${COMPOSE[@]}" run --rm migrate || true\nstep "3/8 Migratsiyadan oldin zaxira (pg_dump) — build bilan parallel"',
         "avtomatik deploy xavfsiz",
     )
 
@@ -11741,6 +11771,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yo'ldagi so'rov sahifani ushlamasa tutilsin", neg_decisions_optimistic_unload_unguarded),
             ("yiqilgan so'rov saqlangan sanalsa tutilsin", neg_decisions_optimistic_throw_counts_as_saved),
             ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
+            ("migrate --check olinsa tutilsin", neg_decisions_dump_skips_migrate_check),
+            ("migratsiya dump'ni kutmasa tutilsin", neg_decisions_migrate_does_not_wait_dump),
+            ("o'qilmagan baza migratsiyasiz deb olinsa tutilsin", neg_decisions_unreadable_db_means_no_migration),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),
             ("Docker o'chiqda deploy'ga urinilsa tutilsin", neg_decisions_watcher_deploys_without_docker),
