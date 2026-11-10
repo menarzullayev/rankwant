@@ -46,6 +46,16 @@ export default function AppRail() {
   // the rail first (measured: Enter on "Musobaqa", Tab → "Kampus").
   const focusPanel = useRef(false);
 
+  // Any route change closes the panel, not only a click on its own links:
+  // Back/Forward, a link in the page or the search palette would leave it
+  // covering the new page. Derived during render, React's pattern for
+  // resetting state on a prop change.
+  const [seenPath, setSeenPath] = useState(pathname);
+  if (seenPath !== pathname) {
+    setSeenPath(pathname);
+    setOpen(null);
+  }
+
   const group = NAV_GROUPS.find((g) => g.key === open) ?? null;
 
   // Esc closes and returns focus to the group's button; a click outside
@@ -66,11 +76,19 @@ export default function AppRail() {
       if (railRef.current?.contains(target) || panelRef.current?.contains(target)) return;
       setOpen(null);
     };
+    // Below `lg` the rail is hidden: an open panel must not come back when
+    // the window widens again.
+    const wide = window.matchMedia("(min-width: 1024px)");
+    const onNarrow = () => {
+      if (!wide.matches) setOpen(null);
+    };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
+    wide.addEventListener("change", onNarrow);
     return () => {
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("pointerdown", onPointer);
+      wide.removeEventListener("change", onNarrow);
     };
   }, [open]);
 
