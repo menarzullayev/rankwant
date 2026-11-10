@@ -32,6 +32,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "You were added as a tester of “{contest}”",
             "body": "The problems are open to you before the start. If you take part, you are unrated.",
         },
+        "course_published": {
+            "title": "Your course is published — {course}",
+            "body": "“{course}” is now in the course catalogue.",
+        },
+        "course_returned": {
+            "title": "Course sent back — {course}",
+            "body": "Staff note: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Course review requested — {course}",
+            "body": "@{user} sent the course “{course}” for review.",
+        },
         "duel_accepted": {
             "title": "{user} accepted your challenge",
             "body": "“{duel}” starts at {start_at}.",
@@ -111,6 +123,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_tester": {
             "title": "Te añadieron como probador de «{contest}»",
             "body": "Los problemas están abiertos para ti antes del inicio. Si participas, será sin rating.",
+        },
+        "course_published": {
+            "title": "Tu curso está publicado — {course}",
+            "body": "«{course}» ya está en el catálogo de cursos.",
+        },
+        "course_returned": {
+            "title": "Curso devuelto — {course}",
+            "body": "Nota del equipo: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Revisión de curso solicitada — {course}",
+            "body": "@{user} envió el curso «{course}» a revisión.",
         },
         "duel_accepted": {
             "title": "{user} aceptó tu reto",
@@ -192,6 +216,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Siz «{contest}» jarısına testlewshi bolıp qosıldıńız",
             "body": "Máseleler sizge baslanıwdan aldın ashıq. Qatnassańız — reytingsiz.",
         },
+        "course_published": {
+            "title": "Kursıńız járiyalandı — {course}",
+            "body": "«{course}» endi kurslar katalogında.",
+        },
+        "course_returned": {
+            "title": "Kurs qaytarıldı — {course}",
+            "body": "Xızmetker eskertpesi: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Kurstı tekseriw soraldı — {course}",
+            "body": "@{user} «{course}» kursın tekseriwge jiberdi.",
+        },
         "duel_accepted": {
             "title": "{user} shaqırıǵıńızdı qabıl etti",
             "body": "«{duel}» {start_at} da baslanadı.",
@@ -271,6 +307,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_tester": {
             "title": "Сіз «{contest}» жарысына тестер ретінде қосылдыңыз",
             "body": "Есептер сізге басталғанға дейін ашық. Қатыссаңыз — рейтингсіз.",
+        },
+        "course_published": {
+            "title": "Курсыңыз жарияланды — {course}",
+            "body": "«{course}» енді курстар каталогында.",
+        },
+        "course_returned": {
+            "title": "Курс қайтарылды — {course}",
+            "body": "Қызметкер ескертпесі: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Курсты тексеру сұралды — {course}",
+            "body": "@{user} «{course}» курсын тексеруге жіберді.",
         },
         "duel_accepted": {
             "title": "{user} шақыруыңызды қабылдады",
@@ -352,6 +400,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Сиз «{contest}» мелдешине тестер катары кошулдуңуз",
             "body": "Маселелер сизге башталганга чейин ачык. Катышсаңыз — рейтингсиз.",
         },
+        "course_published": {
+            "title": "Курсуңуз жарыяланды — {course}",
+            "body": "«{course}» эми курстар каталогунда.",
+        },
+        "course_returned": {
+            "title": "Курс кайтарылды — {course}",
+            "body": "Кызматкердин эскертмеси: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Курсту текшерүү суралды — {course}",
+            "body": "@{user} «{course}» курсун текшерүүгө жөнөттү.",
+        },
         "duel_accepted": {
             "title": "{user} чакырыгыңызды кабыл алды",
             "body": "«{duel}» {start_at} башталат.",
@@ -431,6 +491,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_tester": {
             "title": "Вас добавили тестером соревнования «{contest}»",
             "body": "Задачи открыты для вас до начала. Если будете участвовать — вне конкурса.",
+        },
+        "course_published": {
+            "title": "Ваш курс опубликован — {course}",
+            "body": "«{course}» теперь в каталоге курсов.",
+        },
+        "course_returned": {
+            "title": "Курс возвращён — {course}",
+            "body": "Комментарий сотрудника: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Запрошена проверка курса — {course}",
+            "body": "@{user} отправил курс «{course}» на проверку.",
         },
         "duel_accepted": {
             "title": "{user} принял ваш вызов",
@@ -512,6 +584,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Шумо ба мусобиқаи «{contest}» ҳамчун санҷишгар илова шудед",
             "body": "Масъалаҳо то оғоз барои шумо кушодаанд. Агар иштирок кунед — бе рейтинг.",
         },
+        "course_published": {
+            "title": "Курси шумо нашр шуд — {course}",
+            "body": "«{course}» акнун дар феҳристи курсҳо.",
+        },
+        "course_returned": {
+            "title": "Курс баргардонида шуд — {course}",
+            "body": "Шарҳи корманд: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Санҷиши курс дархост шуд — {course}",
+            "body": "@{user} курси «{course}»-ро ба санҷиш фиристод.",
+        },
         "duel_accepted": {
             "title": "{user} даъвати шуморо қабул кард",
             "body": "«{duel}» {start_at} оғоз мешавад.",
@@ -591,6 +675,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_tester": {
             "title": "“{contest}” yarışmasına test eden olarak eklendiniz",
             "body": "Problemler başlangıçtan önce size açık. Katılırsanız puansız katılırsınız.",
+        },
+        "course_published": {
+            "title": "Kursunuz yayımlandı — {course}",
+            "body": "«{course}» artık kurs kataloğunda.",
+        },
+        "course_returned": {
+            "title": "Kurs geri gönderildi — {course}",
+            "body": "Yetkili notu: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Kurs incelemesi istendi — {course}",
+            "body": "@{user} «{course}» kursunu incelemeye gönderdi.",
         },
         "duel_accepted": {
             "title": "{user} meydan okumanızı kabul etti",
@@ -672,6 +768,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz",
             "body": "Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz.",
         },
+        "course_published": {
+            "title": "Kursingiz nashr qilindi — {course}",
+            "body": "«{course}» endi kurslar katalogida.",
+        },
+        "course_returned": {
+            "title": "Kurs qaytarildi — {course}",
+            "body": "Xodim izohi: {reason}",
+        },
+        "course_review_requested": {
+            "title": "Kurs ko'rigi so'raldi — {course}",
+            "body": "@{user} «{course}» kursini ko'rikka yubordi.",
+        },
         "duel_accepted": {
             "title": "{user} chaqirig'ingizni qabul qildi",
             "body": "«{duel}» {start_at} da boshlanadi.",
@@ -751,6 +859,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_tester": {
             "title": "你已被添加为“{contest}”的测试员",
             "body": "题目在开赛前已对你开放。如果参赛，将不计分。",
+        },
+        "course_published": {
+            "title": "你的课程已发布 — {course}",
+            "body": "“{course}”现已进入课程目录。",
+        },
+        "course_returned": {
+            "title": "课程已退回 — {course}",
+            "body": "工作人员备注：{reason}",
+        },
+        "course_review_requested": {
+            "title": "课程审核申请 — {course}",
+            "body": "@{user} 已将课程“{course}”提交审核。",
         },
         "duel_accepted": {
             "title": "{user} 接受了你的挑战",

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2759 strings.**
+**2765 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2780,3 +2780,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.course_not_self_completed` | Masala va test darslari yechilganda o'zi tugaydi. | Маселе жана тест сабактары чыгарылганда өзү бүтөт. |  |
 | `error.course_qvant_required` | Bu kurs Qvant bilan ochiladi. | Бул курс Qvant менен ачылат. |  |
 | `error.course_payment_required` | Bu kurs pullik. | Бул курс акылуу. |  |
+| `notif.msg.course_review_requested.title` | Kurs ko'rigi so'raldi — {course} | Курсту текшерүү суралды — {course} |  |
+| `notif.msg.course_review_requested.body` | @{user} «{course}» kursini ko'rikka yubordi. | @{user} «{course}» курсун текшерүүгө жөнөттү. |  |
+| `notif.msg.course_published.title` | Kursingiz nashr qilindi — {course} | Курсуңуз жарыяланды — {course} |  |
+| `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» эми курстар каталогунда. |  |
+| `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Курс кайтарылды — {course} |  |
+| `notif.msg.course_returned.body` | Xodim izohi: {reason} | Кызматкердин эскертмеси: {reason} |  |

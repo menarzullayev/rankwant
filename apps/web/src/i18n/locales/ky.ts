@@ -2842,4 +2842,10 @@ export const ky: Record<MessageKey, string> = {
   "error.course_not_self_completed": "Маселе жана тест сабактары чыгарылганда өзү бүтөт.",
   "error.course_qvant_required": "Бул курс Qvant менен ачылат.",
   "error.course_payment_required": "Бул курс акылуу.",
+  "notif.msg.course_review_requested.title": "Курсту текшерүү суралды — {course}",
+  "notif.msg.course_review_requested.body": "@{user} «{course}» курсун текшерүүгө жөнөттү.",
+  "notif.msg.course_published.title": "Курсуңуз жарыяланды — {course}",
+  "notif.msg.course_published.body": "«{course}» эми курстар каталогунда.",
+  "notif.msg.course_returned.title": "Курс кайтарылды — {course}",
+  "notif.msg.course_returned.body": "Кызматкердин эскертмеси: {reason}",
 };

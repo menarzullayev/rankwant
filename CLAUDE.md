@@ -236,6 +236,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-pr-update-queue.md) · Orqada qolgan auto-merge PR'larni watcher navbat bilan, bittadan yangilaydi; agentlar o'zi `update-branch` qilmaydi · `behind_prs_update_one_at_a_time`
 - [2026-11-10](docs/decisions/2026-11-10-pr-negative-scope.md) · PR CI qaror salbiy testlarini faqat o'zgargan fayllar uchun yuritadi; main va Nightly — to'liq · `pr_runs_decision_cases_for_changed_files`
 - [2026-11-10](docs/decisions/2026-11-10-host-memory-and-disk.md) · C: va xotira bosimi: pagefile D: ga (24 GB), faol bo'lmagan sessiyalar arxivda, og'ir MCP'lar mux, monitor C: < 15 GB va commit >= 90% ni yozadi · `monitor_watches_disk_and_commit`
+- [2026-11-10](docs/decisions/2026-11-10-courses-studio.md) · Kurs studio'si: har kim yozadi (3 qoralama), matn darhol, tuzilma va narx xodimda · `course_studio_rules`
 - [2026-11-10](docs/decisions/2026-11-10-courses.md) · Kurslar: Kurs → Modul → Bo'lim → Dars, ko'p tilli darslar, to'rt kirish turi, pullik video R2 + HLS, `courses` bayrog'i ortida (ADR-0056) · `courses_structure_and_access`
 - [2026-11-10](docs/decisions/2026-11-10-revive-failed-containers.md) · Docker ko'tara olmagan konteynerni watcher ko'taradi (qo'lda to'xtatilgani emas); Docker o'chiqda deploy to'sig'i yo'q · `failed_containers_are_revived`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`

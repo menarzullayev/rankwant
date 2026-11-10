@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2759 strings.**
+**2765 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2780,3 +2780,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.course_not_self_completed` | Masala va test darslari yechilganda o'zi tugaydi. | Дарсҳои масъала ва тест ҳангоми ҳал шудан худашон анҷом меёбанд. |  |
 | `error.course_qvant_required` | Bu kurs Qvant bilan ochiladi. | Ин курс бо Qvant кушода мешавад. |  |
 | `error.course_payment_required` | Bu kurs pullik. | Ин курс пулакӣ аст. |  |
+| `notif.msg.course_review_requested.title` | Kurs ko'rigi so'raldi — {course} | Санҷиши курс дархост шуд — {course} |  |
+| `notif.msg.course_review_requested.body` | @{user} «{course}» kursini ko'rikka yubordi. | @{user} курси «{course}»-ро ба санҷиш фиристод. |  |
+| `notif.msg.course_published.title` | Kursingiz nashr qilindi — {course} | Курси шумо нашр шуд — {course} |  |
+| `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» акнун дар феҳристи курсҳо. |  |
+| `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Курс баргардонида шуд — {course} |  |
+| `notif.msg.course_returned.body` | Xodim izohi: {reason} | Шарҳи корманд: {reason} |  |

@@ -5053,6 +5053,26 @@ def neg_decisions_course_page_ungated() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_author_sets_course_price() -> tuple[bool, str]:
+    """An author may set the course's access and price."""
+    return _decision_broken(
+        "apps/api/courses/author_serializers.py",
+        '        read_only_fields = [\n            "slug",\n            "access",\n',
+        '        read_only_fields = [\n            "slug",\n',
+        "kirish turi yoki narxni",
+    )
+
+
+def neg_decisions_published_structure_open() -> tuple[bool, str]:
+    """An author may again restructure a published course."""
+    return _decision_broken(
+        "apps/api/courses/review.py",
+        "    return not course.is_published or is_course_staff(user)\n",
+        "    return True\n",
+        "tuzilmasi xodimga yopilmagan",
+    )
+
+
 def neg_decisions_course_flag_on() -> tuple[bool, str]:
     """The Courses section is switched on by default before the owner opens it."""
     return _decision_broken(
@@ -8176,6 +8196,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/courses/models.py",
     "apps/api/courses/serializers.py",
     "apps/api/courses/services.py",
+    "apps/api/courses/review.py",
+    "apps/api/courses/author_serializers.py",
     "apps/web/src/app/(site)/courses/page.tsx",
     "apps/web/src/app/(site)/courses/[slug]/page.tsx",
     "apps/web/src/app/(site)/courses/[slug]/lessons/[id]/page.tsx",
@@ -12310,6 +12332,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("HLS video kaliti javobda chiqsa tutilsin", neg_decisions_hls_key_exposed),
             ("kurs progressi signalsiz qolsa tutilsin", neg_decisions_course_progress_unhooked),
             ("kurs sahifasi bayroqsiz ochilsa tutilsin", neg_decisions_course_page_ungated),
+            ("muallif kurs narxini qo'ysa tutilsin", neg_decisions_author_sets_course_price),
+            ("nashr qilingan kurs tuzilmasi ochilsa tutilsin", neg_decisions_published_structure_open),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

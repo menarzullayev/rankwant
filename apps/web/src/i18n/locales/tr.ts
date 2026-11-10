@@ -2842,4 +2842,10 @@ export const tr: Record<MessageKey, string> = {
   "error.course_not_self_completed": "Problem ve test dersleri çözüldüğünde kendiliğinden tamamlanır.",
   "error.course_qvant_required": "Bu kurs Qvant ile açılır.",
   "error.course_payment_required": "Bu kurs ücretli.",
+  "notif.msg.course_review_requested.title": "Kurs incelemesi istendi — {course}",
+  "notif.msg.course_review_requested.body": "@{user} «{course}» kursunu incelemeye gönderdi.",
+  "notif.msg.course_published.title": "Kursunuz yayımlandı — {course}",
+  "notif.msg.course_published.body": "«{course}» artık kurs kataloğunda.",
+  "notif.msg.course_returned.title": "Kurs geri gönderildi — {course}",
+  "notif.msg.course_returned.body": "Yetkili notu: {reason}",
 };

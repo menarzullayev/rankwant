@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2759 strings.**
+**2765 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2780,3 +2780,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.course_not_self_completed` | Masala va test darslari yechilganda o'zi tugaydi. | Másele hám test sabaqları sheshilgende ózi tamamlanadı. |  |
 | `error.course_qvant_required` | Bu kurs Qvant bilan ochiladi. | Bul kurs Qvant penen ashıladı. |  |
 | `error.course_payment_required` | Bu kurs pullik. | Bul kurs tólemli. |  |
+| `notif.msg.course_review_requested.title` | Kurs ko'rigi so'raldi — {course} | Kurstı tekseriw soraldı — {course} |  |
+| `notif.msg.course_review_requested.body` | @{user} «{course}» kursini ko'rikka yubordi. | @{user} «{course}» kursın tekseriwge jiberdi. |  |
+| `notif.msg.course_published.title` | Kursingiz nashr qilindi — {course} | Kursıńız járiyalandı — {course} |  |
+| `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» endi kurslar katalogında. |  |
+| `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Kurs qaytarıldı — {course} |  |
+| `notif.msg.course_returned.body` | Xodim izohi: {reason} | Xızmetker eskertpesi: {reason} |  |

@@ -2972,6 +2972,32 @@ def monitor_watches_disk_and_commit() -> str | None:
     return None
 
 
+def course_studio_rules() -> str | None:
+    """2026-11-10 (HITL, ADR-0056 4-qism): kurs studio'si — uchta egasi qarori.
+
+    Har kim yozadi, nashr qilinmagan kurs 3 ta (xodim limitsiz); matn har
+    doim darhol tahrirlanadi, tuzilma esa nashrdan keyin faqat xodimniki;
+    kirish turi va narx faqat xodimniki (muallif ulushi ochiq savol).
+    """
+    review_py = read("apps/api/courses/review.py")
+    if "MAX_DRAFTS = 3\n" not in review_py:
+        return "courses/review.py: muallif qoralama limiti 3 emas"
+    if "    return not course.is_published or is_course_staff(user)\n" not in review_py:
+        return "courses/review.py: nashr qilingan kurs tuzilmasi xodimga yopilmagan"
+    serializers_py = read("apps/api/courses/author_serializers.py")
+    locked = (
+        "        read_only_fields = [\n"
+        '            "slug",\n'
+        '            "access",\n'
+        '            "price_qvant",\n'
+        '            "price_uzs",\n'
+        '            "reward_qvant",\n'
+    )
+    if locked not in serializers_py:
+        return "courses/author_serializers.py: muallif kirish turi yoki narxni o'zgartira oladi"
+    return None
+
+
 def courses_structure_and_access() -> str | None:
     """2026-11-10 (HITL, ADR-0056): Kurs \u2192 Modul \u2192 Bo'lim \u2192 Dars, to'rt dars turi.
 
@@ -5028,6 +5054,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
     ("kurslar: to'rt daraja, pullik video R2, bayroq ortida", courses_structure_and_access),
+    ("kurs studio'si: limit 3, tuzilma va narx xodimda", course_studio_rules),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
