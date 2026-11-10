@@ -4465,6 +4465,46 @@ def neg_decisions_external_refresh_unscheduled() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_studio_open_to_guests() -> tuple[bool, str]:
+    """`/studio` drops to the public level — a guest would reach the editor."""
+    return _decision_broken(
+        "apps/web/src/lib/access.ts",
+        '  studio: "user",\n',
+        '  studio: "public",\n',
+        "`/studio` kirgan foydalanuvchi darajasida emas",
+    )
+
+
+def neg_decisions_studio_limit_drifts() -> tuple[bool, str]:
+    """The page's draft limit stops matching the server's `MAX_DRAFTS`."""
+    return _decision_broken(
+        "apps/web/src/features/studio/api/problems.ts",
+        "export const STUDIO_DRAFT_LIMIT = 20;",
+        "export const STUDIO_DRAFT_LIMIT = 25;",
+        "qoralama chegarasi server",
+    )
+
+
+def neg_decisions_studio_review_rings_twice() -> tuple[bool, str]:
+    """A second review click would notify every reviewer again."""
+    return _decision_broken(
+        "apps/api/problems/author_views.py",
+        "        if problem.review_requested_at is None:\n",
+        "        if True:\n",
+        "ko'rik so'rovi har bosishda",
+    )
+
+
+def neg_decisions_studio_author_cannot_delete_tests() -> tuple[bool, str]:
+    """The draft's author loses the delete-test action again (DELETE 403)."""
+    return _decision_broken(
+        "apps/api/problems/staff_views.py",
+        'AUTHOR_ACTIONS = ("tests", "delete_test")',
+        'AUTHOR_ACTIONS = ("tests",)',
+        "muallif o'z qoralamasining testini o'chira olmaydi",
+    )
+
+
 def neg_decisions_client_date_in_locale() -> tuple[bool, str]:
     """A client component imports the locale date helper again."""
     return _decision_broken(
@@ -7575,6 +7615,9 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/problems/author_views.py",
+    "apps/web/src/features/studio/api/problems.ts",
+    "apps/web/src/lib/access.ts",
     "packages/shared/src/grades.ts",
     "apps/web/src/app/(auth)/onboarding/page.tsx",
     "apps/web/src/features/account/components/EmailVerify.tsx",
@@ -11438,6 +11481,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bayroq Dockerfile'dan tushsa tutilsin", neg_decisions_flag_not_declared_in_dockerfile),
             ("bayroq compose build'iga uzatilmasa tutilsin", neg_decisions_flag_not_passed_by_compose),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
+            ("studio mehmonga ochilsa tutilsin", neg_decisions_studio_open_to_guests),
+            ("studio chegarasi ajralsa tutilsin", neg_decisions_studio_limit_drifts),
+            ("ko'rik so'rovi ikki marta yuborilsa tutilsin", neg_decisions_studio_review_rings_twice),
+            ("muallif testni o'chira olmasa tutilsin", neg_decisions_studio_author_cannot_delete_tests),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("viloyat sinovi kalitsiz yonsa tutilsin", neg_decisions_region_ab_without_switch),
             ("server sinov kalitini o'qimasa tutilsin", neg_decisions_region_ab_server_ignores_switch),

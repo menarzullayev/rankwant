@@ -12,7 +12,7 @@ from typing import Any
 
 from django.core.cache import cache
 from django.db.models import Count
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
@@ -79,6 +79,28 @@ class StaffProblemReportViewSet(StaffViewSet):
     ordering = ["status", "-created_at", "-pk"]
 
 
+#: Test actions a draft's author may use besides staff-ops (ADR-0025). Adding
+#: a test without being able to remove a wrong one left the author stuck
+#: (measured 2026-11-10: POST 201, DELETE 403).
+AUTHOR_ACTIONS = ("tests", "delete_test")
+
+
+def _require_ops_or_draft_author(request: Request, problem: Problem) -> None:
+    """staff-ops — to'liq huquq; muallif esa faqat O'Z draft masalasini.
+
+    Nashr qilingan masalada testlar baribir xodim nazoratida, chunki judge
+    to'plamining butunligi shunga tayanadi. `permission_classes` (StaffOps)
+    bu amallarda emas — `get_permissions()` da: amal darajasidagi istisno.
+    """
+    if has_staff_group(request.user, STAFF_GROUP_OPS):
+        return
+    is_author = (
+        request.user.is_authenticated and problem.authors.filter(pk=request.user.pk).exists()
+    )
+    if not (is_author and not problem.is_public):
+        raise PermissionDenied("Problem tests belong to staff-ops or the draft author")
+
+
 @crud_summaries(
     one="masala",
     many="masalalar",
@@ -99,9 +121,10 @@ class StaffProblemViewSet(StaffViewSet):
         # `tests` amali muallifga ham ochiq (obyekt tekshiruvi `tests` ichida,
         # ADR-0025): muallif is_staff bo'lmasligi mumkin, shuning uchun bu
         # amalga guruh o'rniga IsAdminUser + SessionOnly — qolgan CRUD ops.
-        if self.action == "tests":
+        if self.action in AUTHOR_ACTIONS:
             # Muallif is_staff bo'lmasligi mumkin — kirish uchun oddiy
-            # autentifikatsiya; obyekt va guruh tekshiruvi `tests` ichida.
+            # autentifikatsiya; obyekt va guruh tekshiruvi amal ichida
+            # (`_require_ops_or_draft_author`).
             return [IsAuthenticated(), SessionOnly()]
         return super().get_permissions()
 
@@ -109,12 +132,35 @@ class StaffProblemViewSet(StaffViewSet):
     lookup_field = "slug"
     queryset = (
         Problem.objects.select_related("interactor_language")
-        .prefetch_related("topics")
+        .prefetch_related("topics", "authors")
         .annotate(test_count=Count("tests", distinct=True))
     )
     search_fields = ["slug", "title", "source"]
     ordering_fields = ["slug", "difficulty", "solved_count", "created_at", "pk"]
     ordering = ["-pk"]
+
+    def get_queryset(self) -> Any:
+        """`?review=1` — the review queue: drafts whose author asked for it.
+
+        A published problem leaves the queue by itself; nothing has to
+        clear the flag (`Problem.review_requested_at`).
+        """
+        queryset = super().get_queryset()
+        if self.action == "list" and self.request.query_params.get("review") == "1":
+            queryset = queryset.filter(review_requested_at__isnull=False, is_public=False)
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "review",
+                bool,
+                description="`1` — only drafts whose author asked for a review",
+            )
+        ]
+    )
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().list(request, *args, **kwargs)
 
     def perform_update(self, serializer: Any) -> None:
         """Qiyinlik o'zgarsa yechganlarning Skills reytingi eskiradi.
@@ -142,18 +188,7 @@ class StaffProblemViewSet(StaffViewSet):
     @action(detail=True, methods=["get", "post"], url_path="tests")
     def tests(self, request: Request, slug: str | None = None) -> Response:
         problem = self.get_object()
-        # staff-ops — to'liq huquq; muallif esa faqat O'Z draft masalasini
-        # boshqaradi (ADR-0025): nashr qilingan masalada testlar baribir
-        # xodim nazoratida, chunki judge to'plamining butunligi shunga
-        # tayanadi. `permission_classes` (StaffOps) bu yerda emas —
-        # get_permissions() da: amal darajasidagi istisno.
-        if not has_staff_group(request.user, STAFF_GROUP_OPS):
-            is_author = (
-                request.user.is_authenticated
-                and problem.authors.filter(pk=request.user.pk).exists()
-            )
-            if not (is_author and not problem.is_public):
-                raise PermissionDenied("Problem tests belong to staff-ops or the draft author")
+        _require_ops_or_draft_author(request, problem)
         if request.method == "GET":
             return Response(StaffTestCaseSerializer(problem.tests.all(), many=True).data)
 
@@ -347,6 +382,7 @@ class StaffProblemViewSet(StaffViewSet):
         self, request: Request, slug: str | None = None, order: str | None = None
     ) -> Response:
         problem = self.get_object()
+        _require_ops_or_draft_author(request, problem)
         deleted, _ = TestCase.objects.filter(problem=problem, order=int(order or 0)).delete()
         if not deleted:
             return Response(status=status.HTTP_404_NOT_FOUND)

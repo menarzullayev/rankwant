@@ -2673,6 +2673,39 @@ def function_harness_is_editable_by_staff() -> str | None:
     return None
 
 
+def studio_problems_panel() -> str | None:
+    """2026-11-10 (HITL, audit Q-07.2): muallif qoralamasi `/studio/problems` da.
+
+    `problems/mine/` API'si bor edi, sahifasi yo'q edi. Egasi tanlovi: har
+    kirgan foydalanuvchi, 20 ta qoralama chegarasi, shart + testlar + ko'rik
+    so'rovi; xodim panelida «Ko'rik navbati». Qoida chegarani ikki tomonda
+    tenglab, muallifning test o'chirishi va bitta bildirishnomani qo'riqlaydi.
+    """
+    access = read("apps/web/src/lib/access.ts")
+    if not re.search(r'^\s+studio: "user",$', access, re.M):
+        return "access.ts: `/studio` kirgan foydalanuvchi darajasida emas"
+    server = re.search(r"^MAX_DRAFTS = (\d+)$", read("apps/api/problems/author_views.py"), re.M)
+    client = re.search(
+        r"^export const STUDIO_DRAFT_LIMIT = (\d+);$",
+        read("apps/web/src/features/studio/api/problems.ts"),
+        re.M,
+    )
+    if not server or not client or server.group(1) != client.group(1):
+        return "qoralama chegarasi server (`MAX_DRAFTS`) va sahifada har xil"
+    views = read("apps/api/problems/author_views.py")
+    if "if problem.review_requested_at is None:" not in views.split("def review(", 1)[-1]:
+        return "author_views.py: ko'rik so'rovi har bosishda xodimga qayta yuboriladi"
+    staff = read("apps/api/problems/staff_views.py")
+    if 'AUTHOR_ACTIONS = ("tests", "delete_test")' not in staff:
+        return "staff_views.py: muallif o'z qoralamasining testini o'chira olmaydi"
+    delete = staff.split("def delete_test(", 1)[-1].split("\n    def ", 1)[0]
+    if "_require_ops_or_draft_author(request, problem)" not in delete:
+        return "staff_views.py: testni o'chirish muallifligini tekshirmaydi"
+    if 'href={"/studio/problems" as Route}' not in read("apps/web/src/layout/UserMenu.tsx"):
+        return "UserMenu.tsx: hisob menyusida «Mualliflik» yo'q"
+    return None
+
+
 def external_ratings_refresh_daily() -> str | None:
     """2026-11-10 (HITL, audit Q-07.4): bog'langan tashqi reytinglar kunlik yangilanadi.
 
@@ -4587,6 +4620,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bayroqlar web build'iga yetadi", flags_reach_the_web_build),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
+    ("muallif qoralamasi studio sahifasida", studio_problems_panel),
     ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
     ("judge privileged emas", judge_is_not_privileged),
     ("viloyat A/B kalit bilan yoqiladi va o'lchanadi", region_ab_is_switched_and_measured),

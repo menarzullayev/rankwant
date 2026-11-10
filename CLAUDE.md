@@ -226,6 +226,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-notification-email.md) · Email bildirishnomalari: opt-in, faqat shaxsiy, 5 daqiqa, zaxira 200, bir bosishda obuna · `notification_email_is_opt_in_and_bounded`
 - [2026-11-10](docs/decisions/2026-11-10-region-ab.md) · Viloyat A/B o'z kaliti bilan, standart o'chiq; mehmon voronkasi tab id bilan · `region_ab_is_switched_and_measured`
 - [2026-11-10](docs/decisions/2026-11-10-flags-reach-build.md) · `NEXT_PUBLIC_FLAG_*` web obrazi build'iga uzatiladi; bo'sh = o'chiq · `flags_reach_the_web_build`
+- [2026-11-10](docs/decisions/2026-11-10-studio-problems.md) · Muallif qoralamasi `/studio/problems` da: 20 ta chegara, ko'rik so'rovi, xodim navbati · `studio_problems_panel`
 
 ## Tekshiruvlar
 

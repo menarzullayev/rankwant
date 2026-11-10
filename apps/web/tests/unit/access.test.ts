@@ -37,7 +37,7 @@ describe("accessFor", () => {
 describe("needsSignIn", () => {
   it("is true for user and staff sections only", () => {
     const closed = Object.keys(ACCESS).filter((section) => needsSignIn(`/${section}`));
-    expect(closed.sort()).toEqual(["admin", "notifications", "onboarding", "settings"]);
+    expect(closed.sort()).toEqual(["admin", "notifications", "onboarding", "settings", "studio"]);
   });
 
   // The statement of a problem is for everybody; only the solve panel is not.

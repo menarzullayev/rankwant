@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2550 strings.**
+**2625 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -829,6 +829,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.too_many` | Juda ko'p — avval borlarini yakunlang | Тым көп — алдымен барларын аяқтаңыз |  |
 | `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Басталу кемінде 5 минуттан кейін болуы керек |  |
 | `error.wrong_question` | Bu savol hozir ochiq emas | Бұл сұрақ қазір ашық емес |  |
+| `error.draft_limit` | Qoralamalar chegarasiga yetdingiz — avval birini yakunlang yoki o'chiring | Жоба шегіне жеттіңіз — алдымен біреуін аяқтаңыз немесе жойыңыз |  |
+| `error.review_not_ready` | Qoralama ko'rikka tayyor emas | Жоба тексеруге дайын емес |  |
+| `error.already_public` | Masala allaqachon nashr qilingan | Есеп әлдеқашан жарияланған |  |
 | `profile.aboutEmpty` | Foydalanuvchi hali o'zi haqida ma'lumot qo'shmagan. | Пайдаланушы өзі туралы әлі ақпарат қоспаған. |  |
 | `profile.achContest` | Qatnashilgan musobaqalar: {n} | Қатысқан жарыстар: {n} |  |
 | `profile.achDone` | {done} / {total} yutuq qo'lga kiritilgan | {done} / {total} жетістік алынды |  |
@@ -1776,6 +1779,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.text.interactive` | Interactive | Интерактивті |  |
 | `admin.label.text.source` | Manba | Дереккөз |  |
 | `admin.label.misc.tests` | Testlar | Тесттер |  |
+| `admin.filter.all` | Hammasi | Барлығы |  |
+| `admin.filter.reviewQueue` | Ko'rik navbati | Тексеру кезегі |  |
+| `admin.label.misc.authors` | Mualliflar | Авторлар |  |
+| `admin.label.date.reviewRequested` | Ko'rik so'ralgan | Тексеру сұралды |  |
 | `admin.label.text.reward` | Mukofot | Сыйлық |  |
 | `admin.label.text.qvant` | Qvant | Qvant |  |
 | `admin.label.text.problem` | Masala | Есеп |  |
@@ -1884,6 +1891,72 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.tournaments` | Chempionatlar | Чемпионаттар |  |
 | `admin.title.broadcast` | Umumiy e'lon | Жалпы хабарлама |  |
 | `admin.title.page` | Admin | Әкімші |  |
+| `studio.title` | Mualliflik | Авторлық |  |
+| `studio.nav.problems` | Masalalarim | Менің есептерім |  |
+| `studio.problems.intro` | Qoralamani siz yozasiz: shart, testlar va yechim tahlili. Nashr — xodim ko'rigidan keyin. | Жобаны сіз жазасыз: шарт, тесттер және шешім талдауы. Жариялау — қызметкер тексергеннен кейін. |  |
+| `studio.problems.new` | Yangi masala | Жаңа есеп |  |
+| `studio.problems.empty` | Hali masalangiz yo'q | Сізде әзірге есеп жоқ |  |
+| `studio.problems.emptyHint` | Shartni yozing, testlarni qo'shing va ko'rikka yuboring. | Шартты жазыңыз, тесттерді қосыңыз және тексеруге жіберіңіз. |  |
+| `studio.problems.count` | {count} / {limit} qoralama | Жобалар: {count} / {limit} |  |
+| `studio.problems.full` | Qoralamalar chegarasi: {count} / {limit}. Yangisini boshlash uchun birini yakunlang yoki o'chiring. | Жоба шегіне жеттіңіз: {count} / {limit}. Жаңасын бастау үшін біреуін аяқтаңыз немесе жойыңыз. |  |
+| `studio.col.problem` | Masala | Есеп |  |
+| `studio.col.difficulty` | Qiyinlik | Қиындық |  |
+| `studio.col.tests` | Testlar | Тесттер |  |
+| `studio.col.status` | Holat | Күйі |  |
+| `studio.col.updated` | Yangilangan | Жаңартылды |  |
+| `studio.tests.summary` | {samples} namuna · {hidden} yashirin | мысал: {samples} · жасырын: {hidden} |  |
+| `studio.status.draft` | Qoralama | Жоба |  |
+| `studio.status.review` | Ko'rikda | Тексеруде |  |
+| `studio.status.public` | Nashr qilingan | Жарияланған |  |
+| `studio.tab.statement` | Shart | Шарт |  |
+| `studio.tab.tests` | Testlar | Тесттер |  |
+| `studio.tab.testsCount` | Testlar ({count}) | Тесттер ({count}) |  |
+| `studio.tab.editorial` | Yechim tahlili | Шешім талдауы |  |
+| `studio.tab.review` | Ko'rik | Тексеру |  |
+| `studio.field.title` | Nomi | Атауы |  |
+| `studio.field.slug` | Manzil (slug) | Мекенжай (slug) |  |
+| `studio.field.slugHint` | Kichik lotin harflari, raqamlar va chiziqcha. Yaratilgandan keyin o'zgarmaydi. | Кіші латын әріптері, сандар және сызықша. Жасалғаннан кейін өзгермейді. |  |
+| `studio.field.markdownHint` | Markdown va LaTeX: formula $...$ ichida yoziladi. | Markdown және LaTeX: формулалар $...$ ішінде жазылады. |  |
+| `studio.preview` | Ko'rinish | Алдын ала қарау |  |
+| `studio.previewHint` | Qoralama ommaviy sahifada ochilmaydi — u qanday ko'rinishini shu yerda ko'rasiz. | Жоба ашық бетте ашылмайды — оның көрінісін осы жерден көресіз. |  |
+| `studio.limits` | Vaqt: {time} s · Xotira: {memory} MB | Уақыт: {time} с · Жад: {memory} МБ |  |
+| `studio.save` | Saqlash | Сақтау |  |
+| `studio.create` | Yaratish | Жасау |  |
+| `studio.cancel` | Bekor qilish | Болдырмау |  |
+| `studio.saved` | Saqlandi | Сақталды |  |
+| `studio.unsaved` | Saqlanmagan o'zgarishlar bor | Сақталмаған өзгерістер бар |  |
+| `studio.error.slug` | Bu manzil band yoki noto'g'ri yozilgan | Бұл мекенжай бос емес немесе қате жазылған |  |
+| `studio.editorial.intro` | Yechim tahlili masala sahifasida spoyler sifatida yopiq turadi. | Шешім талдауы есеп бетінде спойлер ретінде жабық тұрады. |  |
+| `studio.tests.order` | Raqami | Нөмірі |  |
+| `studio.tests.kind` | Turi | Түрі |  |
+| `studio.tests.actions` | Amallar | Әрекеттер |  |
+| `studio.tests.empty` | Hali test yo'q | Әзірге тест жоқ |  |
+| `studio.tests.sample` | Namuna | Мысал |  |
+| `studio.tests.hidden` | Yashirin | Жасырын |  |
+| `studio.tests.expected` | To'g'ri javob | Дұрыс жауап |  |
+| `studio.tests.isSample` | Namuna test | Мысал тест |  |
+| `studio.tests.isSampleHint` | Shart ostida hammaga ko'rinadi. Qolganlari yashirin. | Шарттың астында бәріне көрінеді. Қалғандары жасырын. |  |
+| `studio.tests.note` | Test matni saqlangandan keyin bu yerda ko'rsatilmaydi: almashtirish uchun uni qaytadan yozing. | Сақталған тесттің мәтіні мұнда қайта көрсетілмейді: ауыстыру үшін оны қайта жазыңыз. |  |
+| `studio.tests.adding` | {order}-test qo'shiladi | {order}-тест қосылады |  |
+| `studio.tests.replacing` | {order}-test almashtiriladi | {order}-тест ауыстырылады |  |
+| `studio.tests.save` | Testni saqlash | Тестті сақтау |  |
+| `studio.tests.replace` | Almashtirish | Ауыстыру |  |
+| `studio.tests.delete` | O'chirish | Жою |  |
+| `studio.tests.deleteConfirm` | {order}-testni o'chirasizmi? | {order}-тестті жоясыз ба? |  |
+| `studio.tests.locked` | Masala nashr qilingan: uning testlari endi xodim nazoratida. | Есеп жарияланған: оның тесттерін енді қызметкерлер басқарады. |  |
+| `studio.review.intro` | Xodim masalani tekshiradi, limitlarni sozlaydi va nashr qiladi. Yuborishdan oldin uch shart bajarilishi kerak. | Қызметкер есепті тексеріп, шектеулерін баптап, жариялайды. Жібермес бұрын үш шарт орындалуы керек. |  |
+| `studio.review.check.statement` | Shart yozilgan | Шарт жазылған |  |
+| `studio.review.check.sample` | Kamida bitta namuna test | Кемінде бір мысал тест |  |
+| `studio.review.check.hidden` | Kamida bitta yashirin test | Кемінде бір жасырын тест |  |
+| `studio.review.hiddenWhy` | Faqat namuna testli masala nashr qilinmaydi: namuna javobini chop etgan dastur ham o'tib ketardi. | Тек мысал тесті бар есеп жарияланбайды: мысал жауабын басатын бағдарлама да өтіп кетер еді. |  |
+| `studio.review.done` | (bajarilgan) | (орындалды) |  |
+| `studio.review.missing` | (bajarilmagan) | (орындалмаған) |  |
+| `studio.review.submit` | Ko'rikka yuborish | Тексеруге жіберу |  |
+| `studio.review.sent` | Ko'rikka yuborilgan: {at} | Тексеруге жіберілді: {at} |  |
+| `studio.review.sentHint` | Tahrirlashda davom etishingiz mumkin — xodim oxirgi holatni ko'radi. | Өңдеуді жалғастыра аласыз — қызметкер соңғы нұсқаны көреді. |  |
+| `studio.review.public` | Masala nashr qilingan va arxivda turibdi. | Есеп жарияланған және мұрағатта тұр. |  |
+| `studio.delete` | Qoralamani o'chirish | Жобаны жою |  |
+| `studio.deleteConfirm` | «{title}» qoralamasini o'chirasizmi? Testlari ham o'chadi. | «{title}» жобасын жоясыз ба? Тесттері де жойылады. |  |
 | `admin.placeholder.questionId` | Savol ID | Сұрақ ID |  |
 | `admin.placeholder.problemSlug` | masala slug'i | есеп слагі |  |
 | `admin.placeholder.title` | Sarlavha | Тақырып |  |
@@ -2413,6 +2486,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.problem_rerated.body` | Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi. | Сіз шешкен есеп қайта бағаланды. Skills: {before} → {after}. Бұл сіздің әрекетіңіз емес — есеп қиындығы статистика бойынша жаңартылды. |  |
 | `notif.msg.contest_result.title` | {contest}: {rank}-o'rin, reyting {delta} | {contest}: {rank}-орын, рейтинг {delta} |  |
 | `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Contests рейтингі: {before} → {after} |  |
+| `notif.msg.problem_review_requested.title` | Ko'rik so'raldi — {problem} | Тексеру сұралды — {problem} |  |
+| `notif.msg.problem_review_requested.body` | @{user} «{problem}» qoralamasini ko'rikka yubordi. | @{user} «{problem}» жобасын тексеруге жіберді. |  |
 | `search.type.shop` | Do'kon | Дүкен |  |
 | `search.top` | Eng mos natija | Ең сәйкес нәтиже |  |
 | `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Сұраулар тым көп. Сәлден соң қайталап көріңіз. |  |

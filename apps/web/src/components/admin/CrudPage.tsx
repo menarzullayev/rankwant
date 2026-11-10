@@ -107,6 +107,10 @@ export type CrudPageProps<T extends Row> = {
   /** Yozuv faqat tashqaridan tug'iladi (masalan foydalanuvchi xabari) —
    *  xodim uni tahrirlaydi, lekin yaratmaydi. */
   canCreate?: boolean;
+  /** Extra list filters, e.g. `{ review: "1" }` for the review queue. A
+   *  caller that changes them remounts the page (`key`), so paging starts
+   *  over. */
+  params?: Record<string, string>;
 };
 
 function toLocalInput(iso: unknown): string {
@@ -131,6 +135,7 @@ export function CrudPage<T extends Row>({
   readOnly = false,
   canDelete = true,
   canCreate = true,
+  params: extraParams,
 }: CrudPageProps<T>) {
   const locale = useLocale();
   const confirm = useConfirm();
@@ -144,9 +149,12 @@ export function CrudPage<T extends Row>({
   const [busy, setBusy] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  // The object is rebuilt on every render of the caller; its text is the
+  // stable dependency.
+  const filters = JSON.stringify(extraParams ?? {});
   const load = useCallback(async () => {
     try {
-      const params: Record<string, string | number> = { page };
+      const params: Record<string, string | number> = { ...JSON.parse(filters), page };
       if (q) params.search = q;
       if (ordering) params.ordering = ordering;
       const data = await staff.list<T>(path, params);
@@ -160,7 +168,7 @@ export function CrudPage<T extends Row>({
           : String(e),
       );
     }
-  }, [path, page, q, ordering, locale]);
+  }, [path, page, q, ordering, locale, filters]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
