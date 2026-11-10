@@ -7402,6 +7402,10 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Nightly live gates (2026-11-10): the rule reads both scripts to prove a
+    # missing stack fails the step instead of skipping it.
+    "tools/ci_visual_gate.sh",
+    "tools/ci_csp_gate.sh",
     # Daily external refresh (2026-11-10).
     "apps/api/profiles/tasks.py",
     # Staff harness editor (2026-11-10).
