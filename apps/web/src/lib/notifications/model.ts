@@ -84,6 +84,7 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   streak: { body: true },
   problem_rerated: { body: true },
   contest_result: { body: true },
+  problem_review_requested: { body: true },
   // Made a tester of a contest (ADR-0055, part 2).
   contest_tester: { body: true },
   // Questions and announcements during a contest (ADR-0055, part 3).
@@ -144,6 +145,9 @@ export function notificationHref(row: Notification): string | null {
       return "/qvant";
     case "mail_quota":
       return "/admin/email-quota";
+    case "problem_review":
+      // Staff-ops: the review queue, where the author's draft waits.
+      return "/admin/problems?review=1";
     default:
       return null;
   }

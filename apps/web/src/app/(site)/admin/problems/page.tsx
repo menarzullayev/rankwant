@@ -11,6 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: `${t(locale, "admin.title")} · ${t(locale, "admin.section.problems")}` };
 }
 
-export default function AdminProblemsPage() {
-  return <ProblemsAdmin />;
+type Props = { searchParams: Promise<{ review?: string }> };
+
+/** `?review=1` opens the review queue — the link a review-request
+ *  notification carries (`/studio`, 2026-11-10). */
+export default async function AdminProblemsPage({ searchParams }: Props) {
+  const { review } = await searchParams;
+  return <ProblemsAdmin review={review === "1"} />;
 }
