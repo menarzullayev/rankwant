@@ -2,6 +2,17 @@
 
 import type { Problem } from "@/features/problems";
 
+/** One ledger row (`/qvant/transactions/`). `amount` is signed. */
+export type QvantTransaction = {
+  id: number;
+  amount: number;
+  reason: string;
+  ref_type: string;
+  ref_id: string;
+  balance_after: number;
+  created_at: string;
+};
+
 export type Wallet = {
   balance: number;
   earned_today: number;
