@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2550 strings.**
+**2571 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -371,6 +371,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.shop` | Do'kon | Dúkan |  |
 | `nav.about` | Qanday ishlaydi | Qalay isleydi |  |
 | `nav.team` | Jamoa | Komanda |  |
+| `nav.hint.problems` | Arxiv, filtr va tavsiyalar | Arxiv, filtr hám usınıslar |  |
+| `nav.hint.attempts` | Barcha yuborilgan yechimlar | Barlıq jiberilgen sheshimler |  |
+| `nav.hint.quizzes` | Qisqa nazariy testlar | Qısqa teoriyalıq testler |  |
+| `nav.hint.articles` | Mavzular bo'yicha darslar | Temalar boyınsha sabaqlar |  |
+| `nav.hint.roadmap` | Bosqichma-bosqich o'quv yo'li | Basqısh-basqısh oqıw jolı |  |
+| `nav.hint.algorithms` | Kod bilan tushuntirishlar | Kod penen túsindiriwler |  |
+| `nav.hint.classroom` | Sinflar va topshiriqlar | Klasslar hám tapsırmalar |  |
+| `nav.hint.contests` | Raundlar va jadval | Raundlar hám keste |  |
+| `nav.hint.arena` | Tezkor bellashuv | Tezkor bellesiw |  |
+| `nav.hint.duels` | Birga-bir chaqiruv | Birge-bir shaqırıw |  |
+| `nav.hint.tournaments` | Mavsumiy turnir | Máwsimlik turnir |  |
+| `nav.hint.hackathons` | Jamoaviy loyiha | Komandalıq joyba |  |
+| `nav.hint.calendar` | Yaqin tadbirlar | Jaqın ilajlar |  |
+| `nav.hint.leaderboard` | To'rt reyting bo'yicha o'rinlar | Tórt reyting boyınsha orınlar |  |
+| `nav.hint.blog` | Platforma e'lonlari | Platforma xabarlandırıwları |  |
+| `nav.hint.updates` | Har reliz nima berdi | Hár reliz ne berdi |  |
+| `nav.hint.platformRoadmap` | Rejalar va ovoz berish | Rejeler hám dawıs beriw |  |
+| `nav.hint.formulas` | Reyting qanday hisoblanadi | Reyting qalay esaplanadı |  |
+| `nav.hint.shop` | Qvant evaziga bezaklar | Qvant esabına bezewler |  |
+| `nav.hint.about` | Hakam va hukmlar | Tóreshi hám húkimler |  |
+| `nav.hint.team` | Kim qurmoqda | Kim qurıp atır |  |
 | `header.search` | Qidirish… | Izlew… |  |
 | `header.streak` | kun | kún |  |
 | `header.noUnread` | Yangi bildirishnoma yo'q | Jańa xabarlama joq |  |

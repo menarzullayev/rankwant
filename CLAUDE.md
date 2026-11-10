@@ -225,6 +225,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-contest-fair-play.md) · Halol o'yin: muharrir signallari, hakam hisoboti, chetlatish (ADR-0055, 4-qism) · `contest_fair_play_is_judged`
 - [2026-11-10](docs/decisions/2026-11-10-notification-email.md) · Email bildirishnomalari: opt-in, faqat shaxsiy, 5 daqiqa, zaxira 200, bir bosishda obuna · `notification_email_is_opt_in_and_bounded`
 - [2026-11-10](docs/decisions/2026-11-10-region-ab.md) · Viloyat A/B o'z kaliti bilan, standart o'chiq; mehmon voronkasi tab id bilan · `region_ab_is_switched_and_measured`
+- [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`
 
 ## Tekshiruvlar
 

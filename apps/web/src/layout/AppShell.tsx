@@ -29,6 +29,8 @@ import {
 } from "./banners";
 import { Customizer } from "@/components/customizer/Customizer";
 import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
+import { isOnServer } from "@/lib/flags";
+import AppRail from "./AppRail";
 import AppSidebar from "./AppSidebar";
 import AppTopNav from "./AppTopNav";
 import { SkipLink } from "./SkipLink";
@@ -69,6 +71,13 @@ const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/verify
 
 const SHELL_INSET = "--rw-shell-inset" as string;
 
+/** `newNav` (2026-11-10): the rail + group panel shell from `lg` up. A
+ *  build-time flag, baked into server and client alike, so both draw the
+ *  same shell; no cookie can change it. */
+const RAIL = isOnServer("newNav", undefined);
+/** The rail's width (`AppRail`: `w-[72px]`). */
+const RAIL_WIDTH = "72px";
+
 /** Sahifalar SERVER komponenti bo'lib qoladi — bu yerga `children` sifatida
  * uzatiladi, ya'ni SSR (ADR-0003 dagi SEO sababi) buzilmaydi. */
 function Shell({ children }: { children: React.ReactNode }) {
@@ -85,6 +94,8 @@ function Shell({ children }: { children: React.ReactNode }) {
   const full = FULL.includes(pathname);
   const wide = isExpanded || isHovered;
   const sidenav = navMode === "sidenav" && !bare;
+  // The rail replaces the side menu on wide screens only; the drawer stays.
+  const rail = sidenav && RAIL;
 
   // Chiziq overlay (eskiz 09) — nativ yo'l CSS da yashirin.
   useEffect(() => startChiziq(), []);
@@ -106,7 +117,8 @@ function Shell({ children }: { children: React.ReactNode }) {
       {/* WCAG 2.4.1 — klaviatura foydalanuvchisi har sahifada yigirmata
           yon menyu havolasini bosib o'tmasin. Faqat fokusda ko'rinadi. */}
       <SkipLink />
-      {sidenav && <AppSidebar />}
+      {sidenav && <AppSidebar drawerOnly={rail} />}
+      {rail && <AppRail />}
       {sidenav && isMobileOpen && (
         // Parda — fon bosilganda yopiladi. `role="presentation"`:
         // ekran o'quvchi uni element sifatida e'lon qilmaydi (u faqat
@@ -130,11 +142,17 @@ function Shell({ children }: { children: React.ReactNode }) {
           editor sheet, its Send button at x=36 beneath a menu link). It
           applies from `lg`, where the menu stops being a drawer. */}
       <div
-        style={{ [SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px" }}
+        style={{
+          [SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px",
+          // With the rail the menu column is the rail: fixed boxes clear it.
+          ...(rail ? { [SHELL_INSET]: RAIL_WIDTH } : {}),
+        }}
         className={`${full ? "" : "flex min-h-screen flex-col"} ${
-          sidenav
-            ? `transition-all duration-300 ${wide ? "lg:ml-[260px]" : "lg:ml-[86px]"}`
-            : ""
+          rail
+            ? "lg:ml-[72px]"
+            : sidenav
+              ? `transition-all duration-300 ${wide ? "lg:ml-[260px]" : "lg:ml-[86px]"}`
+              : ""
         }`}
       >
         {full ? null : navMode === "topnav" && !bare ? (
