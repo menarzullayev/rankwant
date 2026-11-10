@@ -2739,6 +2739,36 @@ def studio_contests_panel() -> str | None:
     return None
 
 
+def failed_containers_are_revived() -> str | None:
+    """2026-11-10 (HITL): Docker ko'tara olmagan konteyner o'zi tiklanadi.
+
+    Docker Desktop to'xtab qaytgach judge `cgroup.procs: device or resource
+    busy` bilan `Exited (128)` da qoldi, `unless-stopped` qayta urinmadi va
+    sayt 200 bergani uchun buni hech narsa aytmadi. Watcher endi har daqiqada
+    `tools/revive_containers.sh` ni chaqiradi: u faqat `.State.Error` yozilgan
+    (Docker o'zi ishga tushira olmagan) konteynerni ko'taradi — qo'lda
+    to'xtatilgani (bake-off'dagi worker/beat) tegilmaydi. Docker javob bermasa
+    watcher deploy'ga urinmaydi va 30 daqiqalik to'siq qo'ymaydi.
+    """
+    rel = "tools/revive_containers.sh"
+    if not (ROOT / rel).exists():
+        return f"{rel} yo'q — Docker ko'tara olmagan konteynerni hech narsa tiklamaydi"
+    revive = read(rel)
+    if '  [ -n "$err" ] || continue\n' not in revive:
+        return f"{rel}: qo'lda to'xtatilgan konteyner ham ko'tariladi (`.State.Error` filtri yo'q)"
+    if '  docker start "$name" >/dev/null 2>&1\n' not in revive:
+        return f"{rel}: konteyner ishga tushirilmaydi"
+    watcher = read("tools/auto_deploy.sh")
+    call = '  revive_out="$(bash tools/revive_containers.sh "${revive_args[@]}" 2>&1)"\n'
+    if call not in watcher:
+        return "tools/auto_deploy.sh: Docker ko'tara olmagan konteyner tiklanmaydi"
+    nodocker = '  log_once "nodocker" "Docker engine javob bermayapti — deploy qilinmadi, to\'siq YO\'Q"\n  exit 0\n'
+    attempt = 'record_attempt "$TARGET"\n'
+    if nodocker not in watcher or watcher.index(nodocker) > watcher.index(attempt):
+        return "tools/auto_deploy.sh: Docker javob bermasa deploy'ga urinadi va to'siq qo'yadi"
+    return None
+
+
 def external_ratings_refresh_daily() -> str | None:
     """2026-11-10 (HITL, audit Q-07.4): bog'langan tashqi reytinglar kunlik yangilanadi.
 
@@ -4689,6 +4719,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
+    ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
     ("versiya nuqtalari ulangan", versioning_points_are_wired),
     ("urg'u rang keshi rejimga bog'liq", accent_cache_follows_the_mode),
     ("unvon zinapoyasi o'qiladi", title_ladder_is_readable),
