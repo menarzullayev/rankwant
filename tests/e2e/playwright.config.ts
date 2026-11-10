@@ -61,6 +61,25 @@ export default defineConfig({
     // ⚠️ Vizual testlar ham shunga TAYANADI: baseline o'zbekcha matn bilan
     // olingan, ya'ni bu qiymat o'zgarsa `visual` proyekti qizaradi.
     locale: "uz-UZ",
+    // ADR-0059: Uzbek is shown in the new alphabet by default. These specs
+    // and the visual baselines read the old spelling ("Ro'yxatdan o'tish"),
+    // so the context carries the reader's own old-alphabet cookie;
+    // `specs/alphabet.spec.ts` checks the default without it.
+    storageState: {
+      cookies: [
+        {
+          name: "rw_alphabet",
+          value: "old",
+          domain: new URL(process.env.E2E_BASE_URL ?? "http://localhost:3000").hostname,
+          path: "/",
+          expires: -1,
+          httpOnly: false,
+          secure: false,
+          sameSite: "Lax",
+        },
+      ],
+      origins: [],
+    },
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },

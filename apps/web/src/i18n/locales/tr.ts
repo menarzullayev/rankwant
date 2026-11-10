@@ -1478,6 +1478,8 @@ export const tr: Record<MessageKey, string> = {
   "geo.noResults": "Sonuç yok",
   "dropdown.search": "Ara",
   "locale.switchLabel": "Dil seçin",
+  "locale.alphabetNew": "Yeni alfabe",
+  "locale.alphabetOld": "Eski alfabe",
   "locale.auto": "Otomatik",
   "locale.autoDetected": "Otomatik ({language})",
   "locale.group.core": "Temel",

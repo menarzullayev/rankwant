@@ -1479,6 +1479,8 @@ export const en: Record<MessageKey, string> = {
   "geo.noResults": "No results",
   "dropdown.search": "Search",
   "locale.switchLabel": "Choose language",
+  "locale.alphabetNew": "New alphabet",
+  "locale.alphabetOld": "Old alphabet",
   "locale.auto": "Automatic",
   "locale.autoDetected": "Automatic ({language})",
   "locale.group.core": "Core",

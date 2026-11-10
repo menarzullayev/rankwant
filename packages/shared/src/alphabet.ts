@@ -47,6 +47,7 @@ export const FOREIGN_WORDS: ReadonlySet<string> = new Set([
   "english",
   "finish",
   "flash",
+  "flush",
   "fresh",
   "hash",
   "publish",
@@ -58,6 +59,10 @@ export const FOREIGN_WORDS: ReadonlySet<string> = new Set([
   "shortcut",
   "ssh",
 ]);
+
+/** Stems of foreign words that take Uzbek suffixes (`Changelogda`). Long
+ *  enough not to start an Uzbek word. Lower case. */
+export const FOREIGN_STEMS: readonly string[] = ["challenge", "changelog", "dashboard", "shimmer"];
 
 const LETTER = "A-Za-z\\u00C0-\\u024F";
 const APOS = "'’ʻ‘`´ʼ";
@@ -94,6 +99,7 @@ export function isForeignWord(word: string): boolean {
   const bare = word.replace(new RegExp(`[${APOS}]`, "g"), "");
   const lower = bare.toLowerCase();
   if (FOREIGN_WORDS.has(lower)) return true;
+  if (FOREIGN_STEMS.some((stem) => lower.startsWith(stem))) return true;
   // A lower-to-upper step inside a word: GitHub, TypeScript, ChatGPT.
   if (/\p{Ll}\p{Lu}/u.test(bare)) return true;
   // A short all-caps word is an acronym: SSH, SHA, CPU.

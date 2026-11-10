@@ -1,3 +1,4 @@
+import { ALPHABET_COOKIE } from "@/i18n/alphabet";
 import { LOCALE_COOKIE } from "@/i18n/locale-params";
 
 /**
@@ -172,6 +173,8 @@ export function homeCacheDecision(input: HomeCacheInput): HomeCacheDecision {
   const personalized =
     cookieHas(input.cookieHeader, SESSION_COOKIE) ||
     cookieHas(input.cookieHeader, LOCALE_COOKIE) ||
+    // ADR-0059: the old alphabet is a different page for the same URL.
+    cookieHas(input.cookieHeader, ALPHABET_COOKIE) ||
     cookieHas(input.cookieHeader, HOME_MARKUP_COOKIE);
 
   if (personalized) {

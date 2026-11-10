@@ -76,8 +76,41 @@ export type Dictionary = Record<string, string>;
  *  which no type checker can see. `tools/check_i18n.py` pins it.
  */
 type Registry = Map<Locale, Dictionary>;
-const realm = globalThis as typeof globalThis & { __rwMessages?: Registry };
+/** Picks a variant of a locale's dictionary for the current request
+ *  (ADR-0059: Uzbek in the old alphabet). `null` — the registered one. */
+type VariantResolver = (locale: Locale) => string | null;
+const realm = globalThis as typeof globalThis & {
+  __rwMessages?: Registry;
+  __rwVariants?: Map<string, Dictionary>;
+  __rwVariantResolver?: VariantResolver;
+};
 const registry: Registry = (realm.__rwMessages ??= new Map());
+/** Variant dictionaries, `"<locale>:<variant>"` → text. Server only: the
+ *  browser registers the variant it shows under the locale itself. On
+ *  `globalThis` for the same reason as `registry`. */
+const variants: Map<string, Dictionary> = (realm.__rwVariants ??= new Map());
+
+/** Registers a variant of `locale` (ADR-0059). The SERVER renders requests
+ *  in both alphabets at once, so `t()` asks `setVariantResolver`'s function
+ *  which one the current request wants. */
+export function registerVariant(locale: Locale, variant: string, dict: Dictionary): void {
+  variants.set(`${locale}:${variant}`, dict);
+}
+
+/** Installs the per-request variant lookup (`messages.server.ts`). */
+export function setVariantResolver(resolver: VariantResolver | undefined): void {
+  realm.__rwVariantResolver = resolver;
+}
+
+/** The dictionary `t()` reads for `locale` in the current request. */
+function activeDictionary(locale: Locale): Dictionary | undefined {
+  const variant = realm.__rwVariantResolver?.(locale);
+  if (variant) {
+    const dict = variants.get(`${locale}:${variant}`);
+    if (dict) return dict;
+  }
+  return registry.get(locale);
+}
 
 /** Properties already reported missing, so the console is not flooded.
  *
@@ -138,6 +171,7 @@ export function registrySize(): number {
  */
 export function resetRegistry(): void {
   registry.clear();
+  variants.clear();
   reported.clear();
 }
 
@@ -160,7 +194,7 @@ const DEV = process.env.NODE_ENV !== "production";
 
 /** One property in one locale. Never reads another locale's dictionary. */
 function lookupProperty(locale: Locale, property: string): string {
-  const hit = registry.get(locale)?.[property];
+  const hit = activeDictionary(locale)?.[property];
   if (hit !== undefined && hit !== "") {
     reported.delete(`${locale}:${property}`);
     return hit;

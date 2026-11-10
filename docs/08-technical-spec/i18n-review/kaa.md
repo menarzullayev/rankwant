@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2973 strings.**
+**2975 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1440,6 +1440,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `geo.noResults` | Topilmadi | Tabılmadı |  |
 | `dropdown.search` | Qidirish | Izlew |  |
 | `locale.switchLabel` | Tilni tanlang | Tildi saylań |  |
+| `locale.alphabetNew` | Yangi alifbo | Jańa álipbe |  |
+| `locale.alphabetOld` | Eski alifbo | Eski álipbe |  |
 | `locale.auto` | Avtomatik | Avtomatikalıq |  |
 | `locale.autoDetected` | Avtomatik ({language}) | Avtomatikalıq ({language}) |  |
 | `locale.group.core` | Asosiy | Tiykarǵı |  |

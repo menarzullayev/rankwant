@@ -1479,6 +1479,8 @@ export const kk: Record<MessageKey, string> = {
   "geo.noResults": "Табылмады",
   "dropdown.search": "Іздеу",
   "locale.switchLabel": "Тілді таңдаңыз",
+  "locale.alphabetNew": "Жаңа әліпби",
+  "locale.alphabetOld": "Ескі әліпби",
   "locale.auto": "Автоматты",
   "locale.autoDetected": "Автоматты ({language})",
   "locale.group.core": "Негізгі",

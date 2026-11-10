@@ -33,6 +33,7 @@
     {"old": "```\nprint('o'k', 'ch')\n```\nshu kod", "new": "```\nprint('o'k', 'ch')\n```\nşu kod", "back": "```\nprint('o'k', 'ch')\n```\nshu kod"},
     {"old": "Masala yechildi.Shu sababli", "new": "Masala yeçildi.Şu sababli", "back": "Masala yechildi.Shu sababli"},
     {"old": "Qo'oq shahri", "new": "Qöoq şahri", "back": "Qoʻoq shahri"},
+    {"old": "Changelogda Challenges va Shimmer, rang Pushti", "new": "Changelogda Challenges va Shimmer, rang Puşti", "back": "Changelogda Challenges va Shimmer, rang Pushti"},
     {"old": "Решение задачи", "new": "Решение задачи"},
     {"old": "u 'salom' dedi", "new": "u 'salom' dedi"},
     {"new": "Türkçe öğren", "back": "Türkçe oʻgʻren", "oneway": "new"}

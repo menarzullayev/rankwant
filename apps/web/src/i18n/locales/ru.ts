@@ -1478,6 +1478,8 @@ export const ru: Record<MessageKey, string> = {
   "geo.noResults": "Ничего не найдено",
   "dropdown.search": "Поиск",
   "locale.switchLabel": "Выберите язык",
+  "locale.alphabetNew": "Новый алфавит",
+  "locale.alphabetOld": "Старый алфавит",
   "locale.auto": "Автоматически",
   "locale.autoDetected": "Автоматически ({language})",
   "locale.group.core": "Основные",

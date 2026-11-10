@@ -1,6 +1,6 @@
 # ADR 0059 — Yangi o'zbek alifbosi: o'giruvchi va qidiruv
 
-**STATUS:** accepted (1-bosqich: o'giruvchi va qidiruv; interfeys, kontent, pochta va Telegram — keyingi bosqichlar)
+**STATUS:** accepted (1-bosqich: o'giruvchi va qidiruv; 2-bosqich: interfeys va tanlov; kontent, pochta va Telegram — keyingi bosqichlar)
 **Sana:** 2026-11-11
 **Tasdiqlagan:** Saidakbar (owner) — 2026-11-11 ([qaror yozuvi](../decisions/2026-11-11-new-alphabet.md): 4 savol)
 **Ta'sir doirasi:** `packages/shared` (`alphabet.ts`), `apps/api/core` (`alphabet.py`, `search.py`), web qidiruvi; migratsiyalar `core.0036`, `problems.0038`
@@ -36,16 +36,33 @@ ishlayveradi, qidiruvda ikkalasi bir.
    `translated_titles` qayta katlanadi.
 5. **Matn yozilganidek saqlanadi** — o'girish ko'rsatishda bo'ladi (keyingi bosqichlar).
 
-## 3. Keyingi bosqichlar
+## 3. 2-bosqich: interfeys lug'ati va alifbo tanlovi
 
-- Interfeys lug'ati yangi alifboda va eski alifbo tanlovi. Lug'at reyestri tilga bog'langan
-  (`t(locale, key)`, `/i18n/<til>.js`), serverda bir vaqtda ikkala alifbodagi so'rovlar bo'ladi —
-  tanlov so'rov kontekstidan o'qilishi kerak; mehmon CDN keshi (`/`, `/problems`, login) tanlov
-  cookie'sini ham chetlab o'tishi shart.
-- Kontent (masala shartlari, kurslar, maqolalar, yangiliklar) o'quvchi tanlagan alifboda.
+1. **Lug'at manbasi o'zgarmaydi** — `uz.ts` eski alifboda yoziladi; server uni modul yuklanganda
+   bir marta o'giradi: `uz` = yangi alifbo (standart), eski matn — `uz` ning `old` varianti.
+2. **Tanlov — `rw_alphabet=old` cookie'si**, faqat o'zbekchaga ta'sir qiladi. Til tanlagichda ikki
+   qator: «Özbekça — yangi alifbo» va «O'zbekcha — eski alifbo». Alifbo almashganda lug'at fayli ham
+   almashadi (`/i18n/uz.js` va `/i18n/uz-old.js`), shuning uchun sahifa to'liq qayta yuklanadi.
+3. **Server alifboni so'rovdan biladi.** Lug'at reyestri jarayonda bitta, `t()` sinxron, server esa
+   ikkala alifbodagi so'rovlarni bir vaqtda chizadi. `instrumentation.ts` har so'rovni
+   `AsyncLocalStorage` kontekstida yurgizadi (cookie'dan), `t()` esa o'zbekcha uchun shu kontekstdagi
+   variantni o'qiydi — server komponentlari ham, mijoz komponentlarining SSR'i ham. O'lchandi:
+   `next start` da bir URL ikki cookie bilan ikki alifboda chizildi; 36 ta parallel aralash so'rovda
+   aralashish 0.
+4. **Kesh**: eski alifbo cookie'si bilan sahifa mehmon keshiga tushmaydi (`home-cache.ts`); eski
+   alifbo tanlanganda `rw_locale=uz` ham yoziladi — Cloudflare qoidasi `rw_locale` bor so'rovni
+   allaqachon chetlab o'tadi, ya'ni chekka qoidasini o'zgartirish shart emas.
+5. **E2E** eski alifboga qadalgan (mavjud matnlar va vizual baseline'lar eski alifboda); standart
+   yangi alifbo `alphabet.spec.ts` da tekshiriladi.
+
+## 4. Keyingi bosqichlar
+
+- Kontent (masala shartlari, kurslar, maqolalar, yangiliklar) va API qaytaradigan matnlar
+  (daraja nomlari, xatolar) o'quvchi tanlagan alifboda.
 - Pochta, Telegram, sertifikatlar.
+- Tanlov hozircha qurilmada (cookie); hisob sozlamasiga yozish — keyin.
 
-## 4. Oqibatlar
+## 5. Oqibatlar
 
 - Turkcha matndagi `ş`, `ç`, `ö`, `ğ` ham katlanadi (`çeviri` ↔ `cheviri`) — ikkala tomon bir xil
   katlangani uchun moslik buzilmaydi.

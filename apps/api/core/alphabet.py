@@ -39,6 +39,7 @@ FOREIGN_WORDS = frozenset(
         "english",
         "finish",
         "flash",
+        "flush",
         "fresh",
         "hash",
         "publish",
@@ -51,6 +52,10 @@ FOREIGN_WORDS = frozenset(
         "ssh",
     }
 )
+
+#: Stems of foreign words that take Uzbek suffixes (``Changelogda``). Long
+#: enough not to start an Uzbek word. Lower case.
+FOREIGN_STEMS = ("challenge", "changelog", "dashboard", "shimmer")
 
 _LETTER = "A-Za-zÀ-ɏ"
 _APOS = "'’ʻ‘`´ʼ"
@@ -89,7 +94,7 @@ def is_foreign_word(word: str) -> bool:
     """Whether a word is left as it is written (see the module docstring)."""
     bare = _APOS_RE.sub("", word)
     lower = bare.lower()
-    if lower in FOREIGN_WORDS:
+    if lower in FOREIGN_WORDS or lower.startswith(FOREIGN_STEMS):
         return True
     # A lower-to-upper step inside a word: GitHub, TypeScript, ChatGPT.
     if any(a.islower() and b.isupper() for a, b in pairwise(bare)):
