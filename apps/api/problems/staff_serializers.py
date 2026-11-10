@@ -6,7 +6,7 @@ from typing import Any, ClassVar
 
 from rest_framework import serializers
 
-from problems import evaluation, readiness, release, taskkinds, testgroups
+from problems import evaluation, readiness, release, taskkinds, testgroups, translations
 from problems.models import (
     DIFFICULTY_STEP,
     Language,
@@ -117,6 +117,18 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         # Ro'yxatda annotatsiya bor; yaratish/tahrirlashdan keyingi javobda yo'q.
         count: int | None = getattr(obj, "test_count", None)
         return count if count is not None else obj.tests.count()
+
+    def validate_statement_locale(self, value: str) -> str:
+        """A site language, and not one the problem already has a translation in
+        (ADR-0058): that row would turn invisible yet still feed the search."""
+        if value not in translations.LOCALES:
+            raise serializers.ValidationError("Not a site language.")
+        problem = self.instance
+        if problem is not None and problem.translations.filter(locale=value).exists():
+            raise serializers.ValidationError(
+                "A translation in this language exists; delete it first."
+            )
+        return value
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         """Testsiz — va yashirin testsiz — masala ommaga chiqmasin.

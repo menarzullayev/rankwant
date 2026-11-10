@@ -4,7 +4,7 @@ from collections import Counter
 from typing import Any
 
 from django.db import transaction
-from django.db.models import Avg, Count, F, Max, Min, Q
+from django.db.models import Avg, Count, F, Max, Min, Q, prefetch_related_objects
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -126,9 +126,7 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         return (
             Problem.objects.filter(scope)
             .select_related("author")
-            .prefetch_related(
-                "topics", translations.prefetch(translations.reader_locale(self.request))
-            )
+            .prefetch_related("topics", *self._translation_prefetch())
             .annotate(
                 rating_avg=Avg("ratings__score"),
                 rating_count=Count("ratings", distinct=True),
@@ -140,6 +138,12 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
             )
             .order_by("difficulty", "slug")
         )
+
+    def _translation_prefetch(self) -> list[Any]:
+        """The reader's translation, only for the actions that draw the text."""
+        if self.action not in ("list", "retrieve"):
+            return []
+        return [translations.prefetch(translations.reader_locale(self.request))]
 
     def get_serializer_context(self):  # type: ignore[no-untyped-def]
         context: dict[str, Any] = dict(super().get_serializer_context())
@@ -332,11 +336,17 @@ class RecommendationView(APIView):
     def get(self, request: Request) -> Response:
         assert isinstance(request.user, User)
         limit = min(int(request.query_params.get("limit", 10)), 50)
-        problems = recommend(request.user, limit=limit)
+        problems = list(recommend(request.user, limit=limit))
+        locale = translations.reader_locale(request)
+        prefetch_related_objects(problems, translations.prefetch(locale))
         return Response(
             {
                 "target_difficulty": target_difficulty(request.user),
-                "results": ProblemListSerializer(problems, many=True).data,
+                "results": ProblemListSerializer(
+                    problems,
+                    many=True,
+                    context={"locale": locale},
+                ).data,
             }
         )
 

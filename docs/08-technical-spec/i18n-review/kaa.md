@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2972 strings.**
+**2973 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1862,7 +1862,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.languageCodes` | uz / ru / en | uz / ru / en |  |
 | `admin.help.zeroAuto` | 0 = avtomatik | 0 = avtomat |  |
 | `admin.help.upTo300Chars` | 300 belgigacha | 300 belgige shekem |  |
-| `admin.help.twoLetterDefaultUz` | 2 harf, standart: uz | 2 hárip, standart: uz |  |
+| `admin.help.localeDefaultUz` | Sayt tili kodi (uz, ru, kaa…), standart: uz | Sayt tili kodı (uz, ru, kaa…), standart: uz |  |
 | `admin.help.ownerRepo` | owner/repo | iyesi/repozitoriy |  |
 | `admin.text.eventFormStarted` | Forma boshlandi | Forma baslandı |  |
 | `admin.text.eventRegisterDone` | Ro'yxatdan o'tdi | Dizimnen ótti |  |
@@ -1938,6 +1938,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.editorial` | Yechim tahlili | Sheshim talqısı |  |
 | `studio.tab.review` | Ko'rik | Tekseriw |  |
 | `studio.tab.translations` | Tarjimalar | Awdarmalar |  |
+| `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Bul másele ele {locale} tilinde joq — {shown} tilinde kórsetilmekte. |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Máseleniń teksti basqa tillerde. Awdarılmaǵan maydan oqıwshıǵa túp nusqadan kórsetiledi. |  |
 | `translation.base` | Asl til: {locale} | Túp til: {locale} |  |
 | `translation.none` | Tarjima yo'q | Awdarma joq |  |

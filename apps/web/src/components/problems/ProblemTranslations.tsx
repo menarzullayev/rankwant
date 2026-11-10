@@ -50,11 +50,14 @@ function TextArea({
   value,
   onChange,
   rows,
+  lang,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   rows: number;
+  /** The translation's language — on the field, not on the UI labels. */
+  lang: string;
 }) {
   return (
     <label className="block">
@@ -63,6 +66,7 @@ function TextArea({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         rows={rows}
+        lang={lang}
         spellCheck={false}
         className={`${FM_INP} font-mono`}
       />
@@ -207,7 +211,6 @@ export function ProblemTranslations({
                   <form
                     id={formId}
                     onSubmit={save}
-                    lang={code}
                     className="mt-3 max-w-2xl space-y-3 rw-radius-sm border rw-line p-3"
                   >
                     <label className="block">
@@ -216,6 +219,7 @@ export function ProblemTranslations({
                         value={draft.title}
                         onChange={(event) => set("title", event.target.value)}
                         required
+                        lang={code}
                         maxLength={200}
                         className={FM_INP}
                       />
@@ -224,30 +228,35 @@ export function ProblemTranslations({
                       label={t(locale, "studio.tab.statement")}
                       value={draft.statement}
                       onChange={(value) => set("statement", value)}
+                      lang={code}
                       rows={10}
                     />
                     <TextArea
                       label={t(locale, "problem.inputFormat")}
                       value={draft.input_format}
                       onChange={(value) => set("input_format", value)}
+                      lang={code}
                       rows={3}
                     />
                     <TextArea
                       label={t(locale, "problem.outputFormat")}
                       value={draft.output_format}
                       onChange={(value) => set("output_format", value)}
+                      lang={code}
                       rows={3}
                     />
                     <TextArea
                       label={t(locale, "problem.comments")}
                       value={draft.note}
                       onChange={(value) => set("note", value)}
+                      lang={code}
                       rows={3}
                     />
                     <TextArea
                       label={t(locale, "studio.tab.editorial")}
                       value={draft.editorial}
                       onChange={(value) => set("editorial", value)}
+                      lang={code}
                       rows={6}
                     />
                     <p className="text-theme-xs rw-faint">{t(locale, "studio.field.markdownHint")}</p>

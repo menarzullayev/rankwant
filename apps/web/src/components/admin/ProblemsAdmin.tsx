@@ -95,7 +95,7 @@ const PROBLEM_FIELDS: FieldDef[] = [
   {
     name: "statement_locale",
     labelKey: "admin.label.name.language",
-    helpKey: "admin.help.twoLetterDefaultUz",
+    helpKey: "admin.help.localeDefaultUz",
   },
   {
     name: "statement",

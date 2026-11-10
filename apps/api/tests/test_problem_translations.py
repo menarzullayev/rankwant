@@ -73,6 +73,16 @@ class TestReading:
         rows = _client().get("/api/v1/problems/?lang=en").json()["results"]
         assert next(r for r in rows if r["slug"] == problem.slug)["title"] == problem.title
 
+    def test_similar_problems_use_the_readers_title(self, problem, russian) -> None:
+        from problems.models import SimilarProblem
+
+        other = Problem.objects.create(
+            slug="tarjima-other", title="Boshqa", statement="x", difficulty=800, is_public=True
+        )
+        SimilarProblem.objects.create(problem=other, similar=problem, score=0.9)
+        similar = _detail(other, "ru")["similar"]
+        assert [row["title"] for row in similar] == ["Сумма двух чисел"]
+
     def test_the_search_finds_a_translated_title(self, problem, russian) -> None:
         problem.refresh_from_db()
         assert "сумма двух чисел" in problem.translated_titles
@@ -124,6 +134,15 @@ class TestStaffWriting:
             staff_client.put(self._url(problem, "xx"), {"title": "x"}, format="json").status_code
             == 404
         )
+
+    def test_the_authors_language_is_a_site_language_without_a_translation(
+        self, staff_client, problem, russian
+    ) -> None:
+        url = f"/api/v1/staff/problems/{problem.slug}/"
+        for code in ("xx", "ru"):
+            res = staff_client.patch(url, {"statement_locale": code}, format="json")
+            assert res.status_code == 400, code
+        assert staff_client.patch(url, {"statement_locale": "en"}, format="json").status_code == 200
 
     def test_a_title_is_required(self, staff_client, problem) -> None:
         assert (

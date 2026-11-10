@@ -38,10 +38,11 @@ def reader_locale(request: Request | None) -> str:
     return settings.LANGUAGE_CODE
 
 
-def prefetch(locale: str) -> Prefetch[Any]:
-    """Only the reader's translation, for a list of problems."""
+def prefetch(locale: str, through: str = "translations") -> Prefetch[Any]:
+    """Only the reader's translation, for a list of problems (or a relation
+    that ends in their translations)."""
     return Prefetch(
-        "translations",
+        through,
         queryset=ProblemTranslation.objects.filter(locale=locale),
         to_attr=READER_ROWS,
     )
@@ -76,6 +77,12 @@ def apply(data: dict[str, Any], problem: Problem, locale: str, rows: Any = None)
             data[field] = value
     shown_locale: str = row.locale
     return shown_locale
+
+
+def title(problem: Problem, locale: str) -> str:
+    """The problem's title in the reader's language, else the author's."""
+    row = _row(problem, locale, None)
+    return str(row.title) if row is not None and row.title else problem.title
 
 
 def shown(problem: Problem, locale: str) -> str:

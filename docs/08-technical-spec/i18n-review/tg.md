@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2972 strings.**
+**2973 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1862,7 +1862,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.languageCodes` | uz / ru / en | uz / ru / en |  |
 | `admin.help.zeroAuto` | 0 = avtomatik | 0 = худкор |  |
 | `admin.help.upTo300Chars` | 300 belgigacha | То 300 аломат |  |
-| `admin.help.twoLetterDefaultUz` | 2 harf, standart: uz | 2 ҳарф, пешфарз: uz |  |
+| `admin.help.localeDefaultUz` | Sayt tili kodi (uz, ru, kaa…), standart: uz | Рамзи забони сайт (uz, ru, kaa…), пешфарз: uz |  |
 | `admin.help.ownerRepo` | owner/repo | соҳиб/репозиторий |  |
 | `admin.text.eventFormStarted` | Forma boshlandi | Форма оғоз шуд |  |
 | `admin.text.eventRegisterDone` | Ro'yxatdan o'tdi | Сабтином шуд |  |
@@ -1938,6 +1938,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.editorial` | Yechim tahlili | Таҳлили ҳал |  |
 | `studio.tab.review` | Ko'rik | Тафтиш |  |
 | `studio.tab.translations` | Tarjimalar | Тарҷумаҳо |  |
+| `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Ин масъала ҳоло бо забони {locale} нест — бо забони {shown} нишон дода мешавад. |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Матни масъала бо забонҳои дигар. Майдони тарҷуманашуда ба хонанда аз матни аслӣ нишон дода мешавад. |  |
 | `translation.base` | Asl til: {locale} | Забони аслӣ: {locale} |  |
 | `translation.none` | Tarjima yo'q | Тарҷума нест |  |

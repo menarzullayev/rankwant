@@ -72,7 +72,7 @@ export function ProblemDescription({
         {problem.locale !== locale && (
           // ADR-0058: no translation in the reader's language yet.
           <p className="mt-2 text-theme-xs rw-faint">
-            {fill(t(locale, "course.fallback"), {
+            {fill(t(locale, "problem.notTranslated"), {
               locale: LOCALE_NAMES[locale] ?? locale,
               shown: LOCALE_NAMES[problem.locale as Locale] ?? problem.locale,
             })}

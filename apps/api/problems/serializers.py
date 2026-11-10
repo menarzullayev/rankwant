@@ -334,11 +334,16 @@ class ProblemDetailSerializer(ProblemListSerializer):
         Faqat OMMAVIY masalalar: import qilingan graf qoralamalarga ham
         ishora qiladi va ular hali ochilmagan.
         """
-        links = problem.similar_to.select_related("similar").filter(similar__is_public=True)[:6]
+        locale = self.context.get("locale") or problem.statement_locale
+        links = (
+            problem.similar_to.select_related("similar")
+            .prefetch_related(translations.prefetch(locale, through="similar__translations"))
+            .filter(similar__is_public=True)[:6]
+        )
         return [
             {
                 "slug": link.similar.slug,
-                "title": link.similar.title,
+                "title": translations.title(link.similar, locale),
                 "difficulty": link.similar.difficulty,
                 "level": link.similar.level,
                 "level_label": link.similar.level_label,
