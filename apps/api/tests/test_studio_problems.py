@@ -234,3 +234,15 @@ class TestStaffQueue:
 
         everything = _client(ops).get(reverse("staff-problem-list")).json()["count"]
         assert everything == 3
+
+
+@pytest.mark.django_db
+def test_published_problem_is_not_edited_by_its_author(user) -> None:
+    problem = _draft(user)
+    Problem.objects.filter(pk=problem.pk).update(is_public=True)
+    res = _client(user).patch(
+        reverse("mine-problem-detail", args=[problem.slug]), {"statement": "boshqa"}
+    )
+    assert res.status_code == 403
+    problem.refresh_from_db()
+    assert problem.statement == "a+b"

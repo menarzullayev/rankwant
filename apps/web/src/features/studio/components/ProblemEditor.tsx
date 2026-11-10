@@ -503,11 +503,25 @@ export function ProblemEditor({
           </div>
           <Card>
             <div id={`${base}-panel`} role="tabpanel" aria-labelledby={`${base}-${tab}`}>
-              {tab === "statement" && <StatementForm problem={problem} onSaved={setProblem} />}
+              {problem.is_public && tab !== "review" && tab !== "tests" ? (
+                // Published: staff-ops edit it now (the API answers 403).
+                <div className="space-y-4">
+                  <p className="text-theme-sm rw-dim">{t(locale, "studio.review.public")}</p>
+                  {tab === "statement" ? (
+                    <DraftPreview problem={problem} />
+                  ) : (
+                    <Markdown>{problem.editorial}</Markdown>
+                  )}
+                </div>
+              ) : (
+                tab === "statement" && <StatementForm problem={problem} onSaved={setProblem} />
+              )}
               {tab === "tests" && (
                 <DraftTests slug={problem.slug} locked={problem.is_public} tests={tests} onChange={withCounts} />
               )}
-              {tab === "editorial" && <EditorialForm problem={problem} onSaved={setProblem} />}
+              {tab === "editorial" && !problem.is_public && (
+                <EditorialForm problem={problem} onSaved={setProblem} />
+              )}
               {tab === "review" && <ReviewPanel problem={problem} onSaved={setProblem} />}
             </div>
           </Card>

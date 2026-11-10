@@ -119,6 +119,7 @@ export function slugify(title: string): string {
     .toLowerCase()
     .replace(/['ʻʼ‘’`]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 100);
+    .slice(0, 100)
+    // Trimmed after the cut: a cut can end on a separator.
+    .replace(/^-+|-+$/g, "");
 }

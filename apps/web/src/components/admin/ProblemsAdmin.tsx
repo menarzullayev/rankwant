@@ -695,7 +695,14 @@ export function ProblemsAdmin({ review: initialReview = false }: { review?: bool
             type="button"
             variant={review === filter.review ? "primary" : "outline"}
             aria-pressed={review === filter.review}
-            onClick={() => setReview(filter.review)}
+            onClick={() => {
+              setReview(filter.review);
+              // Keep the view in the address, so a reload shows the same list.
+              const url = new URL(window.location.href);
+              if (filter.review) url.searchParams.set("review", "1");
+              else url.searchParams.delete("review");
+              window.history.replaceState(null, "", url);
+            }}
           >
             {t(locale, filter.key)}
           </Button>

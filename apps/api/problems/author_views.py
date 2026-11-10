@@ -131,6 +131,16 @@ class MineProblemViewSet(
         problem = serializer.save(is_public=False)
         problem.authors.add(user)
 
+    def perform_update(self, serializer: Any) -> None:
+        # A published problem is staff-ops' (ADR-0025): a legacy one without a
+        # frozen revision shows its working copy, so an author's edit would go
+        # live with no review.
+        if serializer.instance.is_public:
+            self.permission_denied(
+                self.request, message="A published problem is edited by staff-ops"
+            )
+        serializer.save()
+
     def perform_destroy(self, instance: Problem) -> None:
         if instance.is_public:
             self.permission_denied(
