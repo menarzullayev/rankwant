@@ -163,8 +163,13 @@ def _word_to_old(word: str) -> str:
 
 
 def _convert(text: str, word: Callable[[str], str], skip: Callable[[str], bool]) -> str:
+    def keep(match: re.Match[str]) -> bool:
+        # A word right before `(` is a call — `chr(65)`, `push(x)` — not Uzbek.
+        after = match.string[match.end() : match.end() + 1]
+        return after == "(" or skip(match.group(0))
+
     def plain(part: str) -> str:
-        return _WORD.sub(lambda m: m.group(0) if skip(m.group(0)) else word(m.group(0)), part)
+        return _WORD.sub(lambda m: m.group(0) if keep(m) else word(m.group(0)), part)
 
     out: list[str] = []
     cursor = 0

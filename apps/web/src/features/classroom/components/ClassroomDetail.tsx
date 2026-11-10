@@ -19,6 +19,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import {
@@ -103,7 +104,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                     href={`/courses/${encodeURIComponent(a.course.slug)}` as Route}
                     className="font-medium rw-accent-ink hover:underline"
                   >
-                    {a.course.title}
+                    {inReaderAlphabet(a.course.title, a.course.locale)}
                   </Link>
                   <Badge>{t(locale, ACCESS_KEYS[a.course.access] ?? "course.access.free")}</Badge>
                   {a.course.access !== "free" && (

@@ -145,16 +145,31 @@ class CourseCardSerializer(serializers.ModelSerializer[Course]):
 
 class LessonRowSerializer(serializers.ModelSerializer[Lesson]):
     title = serializers.SerializerMethodField()
+    #: The title's language (ADR-0059: Uzbek follows the reader's alphabet).
+    locale = serializers.SerializerMethodField()
     state = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
-        fields = ["id", "title", "kind", "is_required", "is_preview", "video_seconds", "state"]
+        fields = [
+            "id",
+            "title",
+            "locale",
+            "kind",
+            "is_required",
+            "is_preview",
+            "video_seconds",
+            "state",
+        ]
         read_only_fields = fields
 
     def get_title(self, obj: Lesson) -> str:
         row = _text(obj, self.context["locale"], self.context["base"])
         return row.title if row else ""
+
+    def get_locale(self, obj: Lesson) -> str:
+        row = _text(obj, self.context["locale"], self.context["base"])
+        return str(row.locale if row else self.context["base"])
 
     def get_state(self, obj: Lesson) -> str:
         """`done`, `open` or `locked` for this reader."""
@@ -179,6 +194,7 @@ def curriculum(course: Course, context: dict[str, Any]) -> list[dict[str, Any]]:
                 {
                     "id": section.id,
                     "title": srow.title if srow else "",
+                    "locale": srow.locale if srow else base,
                     "lessons": LessonRowSerializer(
                         section.lessons.all(), many=True, context=ctx
                     ).data,
@@ -188,6 +204,7 @@ def curriculum(course: Course, context: dict[str, Any]) -> list[dict[str, Any]]:
             {
                 "id": module.id,
                 "title": row.title if row else "",
+                "locale": row.locale if row else base,
                 "reward_qvant": module.reward_qvant,
                 "sections": sections,
             }
@@ -198,12 +215,14 @@ def curriculum(course: Course, context: dict[str, Any]) -> list[dict[str, Any]]:
 class SectionOutlineSerializer(serializers.Serializer[dict[str, Any]]):
     id = serializers.IntegerField()
     title = serializers.CharField()
+    locale = serializers.CharField()
     lessons = LessonRowSerializer(many=True)
 
 
 class ModuleOutlineSerializer(serializers.Serializer[dict[str, Any]]):
     id = serializers.IntegerField()
     title = serializers.CharField()
+    locale = serializers.CharField()
     reward_qvant = serializers.IntegerField()
     sections = SectionOutlineSerializer(many=True)
 
@@ -311,6 +330,7 @@ class LessonVideoSerializer(serializers.Serializer[dict[str, Any]]):
 class NeighbourSerializer(serializers.Serializer[dict[str, Any]]):
     id = serializers.IntegerField()
     title = serializers.CharField()
+    locale = serializers.CharField()
     state = serializers.CharField()
 
 
@@ -404,7 +424,12 @@ class LessonDetailSerializer(serializers.ModelSerializer[Lesson]):
             return None
         lesson = self.context["lessons"][lesson_id]
         row = LessonRowSerializer(lesson, context=self.context).data
-        return {"id": row["id"], "title": row["title"], "state": row["state"]}
+        return {
+            "id": row["id"],
+            "title": row["title"],
+            "locale": row["locale"],
+            "state": row["state"],
+        }
 
     @extend_schema_field(NeighbourSerializer(allow_null=True))
     def get_previous(self, obj: Lesson) -> dict[str, Any] | None:

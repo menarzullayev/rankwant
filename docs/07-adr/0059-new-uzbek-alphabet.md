@@ -95,8 +95,11 @@ ishlayveradi, qidiruvda ikkalasi bir.
    (2026-11-11): jonli turnir va xakaton tavsiflari o'zbekcha. **Nomlar** (musobaqa, turnir, xakaton,
    arena) yozilganidek qoladi — sertifikatdagi kabi.
 
-Qolganlar: kurs dasturi va dars navigatsiyasidagi qator nomlari (`LessonRow` da til yo'q), sinfdagi kurs
-nomi (`AssignmentCourse` da til yo'q), arena va test savollari.
+5. **Kurs dasturi, dars navigatsiyasi, sinfdagi kurs**: API endi har qator (modul, bo'lim, dars, qo'shni dars,
+   sinfga berilgan kurs) uchun matn tilini (`locale`) beradi.
+6. **Test va arena savollari**: modelda til maydoni yo'q (`docs/05` qulflangan — maydon qo'shilmadi), ya'ni
+   platforma matni sifatida o'zbekcha deb olinadi. Javob variantlari ko'pincha kod bo'lgani uchun o'giruvchi
+   endi ortidan `(` keladigan so'zni funksiya chaqiruvi deb o'girmaydi (`chr(65)`, `push(x)`).
 
 ## 7. Oqibatlar
 

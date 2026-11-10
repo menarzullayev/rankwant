@@ -84,6 +84,7 @@ class TestAssign:
         assert resp.json()["course"] == {
             "slug": "kurs",
             "title": "Algoritmlar",
+            "locale": "uz",
             "access": "free",
             "price_qvant": 0,
         }

@@ -83,6 +83,8 @@ def brief(course: Course, locale: str) -> dict[str, Any]:
     return {
         "slug": course.slug,
         "title": row.title if row else course.slug,
+        # The title's language (ADR-0059: Uzbek follows the reader's alphabet).
+        "locale": row.locale if row else course.base_locale,
         "access": course.access,
         "price_qvant": course.price_qvant,
     }

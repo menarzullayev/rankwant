@@ -126,6 +126,8 @@ export type Assignment = {
 export type AssignmentCourse = {
   slug: string;
   title: string;
+  /** The title's language (ADR-0059). */
+  locale: string;
   access: string;
   price_qvant: number;
 };

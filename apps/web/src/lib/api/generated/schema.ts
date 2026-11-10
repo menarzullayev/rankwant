@@ -6979,6 +6979,7 @@ export interface components {
         AssignmentCourse: {
             slug: string;
             title: string;
+            locale: string;
             access: string;
             price_qvant: number;
         };
@@ -7888,6 +7889,7 @@ export interface components {
         LessonRow: {
             readonly id: number;
             readonly title: string;
+            readonly locale: string;
             readonly kind: components["schemas"]["LessonKindEnum"];
             readonly is_required: boolean;
             /** @description Open to visitors who have not enrolled (never a paid video). */
@@ -8091,6 +8093,7 @@ export interface components {
         ModuleOutline: {
             id: number;
             title: string;
+            locale: string;
             reward_qvant: number;
             sections: components["schemas"]["SectionOutline"][];
         };
@@ -8127,6 +8130,7 @@ export interface components {
         Neighbour: {
             id: number;
             title: string;
+            locale: string;
             state: string;
         };
         Notification: {
@@ -10682,6 +10686,7 @@ export interface components {
         SectionOutline: {
             id: number;
             title: string;
+            locale: string;
             lessons: components["schemas"]["LessonRow"][];
         };
         SectionText: {

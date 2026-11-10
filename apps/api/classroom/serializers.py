@@ -50,6 +50,8 @@ class JoinSerializer(serializers.Serializer[dict[str, Any]]):
 class AssignmentCourseSerializer(serializers.Serializer[dict[str, Any]]):
     slug = serializers.CharField()
     title = serializers.CharField()
+    #: The title's language (ADR-0059).
+    locale = serializers.CharField()
     #: free / qvant / paid — only a free course enrols the class.
     access = serializers.CharField()
     price_qvant = serializers.IntegerField()

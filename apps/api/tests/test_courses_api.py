@@ -214,7 +214,7 @@ class TestLesson:
         Enrollment.objects.create(user=user, course=course)
         body = _client(user).get(_lesson_url(course, a)).json()
         assert (body["title"], body["body"], body["previous"]) == ("Dars 1", "Matn 1", None)
-        assert body["next"] == {"id": b.pk, "title": "Dars 2", "state": "locked"}
+        assert body["next"] == {"id": b.pk, "title": "Dars 2", "locale": "uz", "state": "locked"}
 
     def test_lesson_of_another_course_is_404(self, user):
         course = _course("one")
