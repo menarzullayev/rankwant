@@ -40,7 +40,9 @@ class StaffContestViewSet(StaffViewSet):
     # StaffOps — ADR-0025 guruh bo'linishi.
     permission_classes = [StaffOps]
 
-    queryset = Contest.objects.prefetch_related("problems__problem").select_related("mirror_of")
+    queryset = Contest.objects.prefetch_related("problems__problem", "organizers").select_related(
+        "mirror_of"
+    )
     serializer_class = StaffContestSerializer
     lookup_field = "slug"
     search_fields: ClassVar[list[str]] = ["slug", "title"]

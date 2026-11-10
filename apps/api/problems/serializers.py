@@ -462,7 +462,16 @@ class MineProblemSerializer(serializers.ModelSerializer[Problem]):
 
     `is_public` faqat O'QISH — nashr staff-ops qarori (masala sifati,
     testlar to'plami va reyting tozaligi nashrdan oldin ko'rib chiqiladi).
+
+    The statement's separate sections (`input_format`, `output_format`,
+    `note`) are writable too: the problem page draws them as their own
+    blocks, so an author who could only write `statement` had nowhere to put
+    them. Limits stay read-only — calibrating them is part of the staff
+    review (ADR-0052), the author only sees what will apply.
     """
+
+    sample_count = serializers.SerializerMethodField()
+    hidden_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Problem
@@ -470,8 +479,38 @@ class MineProblemSerializer(serializers.ModelSerializer[Problem]):
             "slug",
             "title",
             "statement",
+            "input_format",
+            "output_format",
+            "note",
             "editorial",
             "difficulty",
+            "time_limit_ms",
+            "memory_limit_kb",
             "is_public",
+            "review_requested_at",
+            "sample_count",
+            "hidden_count",
+            "created_at",
+            "updated_at",
         ]
-        read_only_fields = ["is_public"]
+        read_only_fields = [
+            "time_limit_ms",
+            "memory_limit_kb",
+            "is_public",
+            "review_requested_at",
+            "created_at",
+            "updated_at",
+        ]
+
+    def _count(self, problem: Problem, sample: bool) -> int:
+        # The list annotates both counts; a single create/update does not.
+        cached: int | None = getattr(problem, "sample_count" if sample else "hidden_count", None)
+        if cached is not None:
+            return cached
+        return problem.tests.filter(is_sample=sample).count()
+
+    def get_sample_count(self, problem: Problem) -> int:
+        return self._count(problem, True)
+
+    def get_hidden_count(self, problem: Problem) -> int:
+        return self._count(problem, False)

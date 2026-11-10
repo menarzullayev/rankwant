@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { numericStamp } from "@rankwant/shared/format";
+
 import { FormCheck } from "@/components/form/FormKit";
 import { FM_INP } from "@/components/form/chrome";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
@@ -45,6 +47,10 @@ type StaffProblem = {
   solved_count: number;
   attempt_count: number;
   test_count: number;
+  /** Usernames — who wrote the draft in `/studio`. */
+  authors: string[];
+  /** When the author asked for a review; `null` — not asked. */
+  review_requested_at: string | null;
   [key: string]: unknown;
 };
 
@@ -670,15 +676,45 @@ function ProblemLanguagesPanel({ problem }: { problem: StaffProblem }) {
   );
 }
 
-export function ProblemsAdmin() {
+/** Review queue switch: every problem, or only the drafts whose author
+ *  asked for a review (`/studio`, 2026-11-10). */
+const QUEUE_FILTERS = [
+  { review: false, key: "admin.filter.all" },
+  { review: true, key: "admin.filter.reviewQueue" },
+] as const;
+
+export function ProblemsAdmin({ review: initialReview = false }: { review?: boolean }) {
   const locale = useLocale();
+  const [review, setReview] = useState(initialReview);
   return (
     <div className="space-y-6">
+      <div role="group" aria-label={t(locale, "admin.filter.reviewQueue")} className="flex flex-wrap gap-2">
+        {QUEUE_FILTERS.map((filter) => (
+          <Button
+            key={filter.key}
+            type="button"
+            variant={review === filter.review ? "primary" : "outline"}
+            aria-pressed={review === filter.review}
+            onClick={() => {
+              setReview(filter.review);
+              // Keep the view in the address, so a reload shows the same list.
+              const url = new URL(window.location.href);
+              if (filter.review) url.searchParams.set("review", "1");
+              else url.searchParams.delete("review");
+              window.history.replaceState(null, "", url);
+            }}
+          >
+            {t(locale, filter.key)}
+          </Button>
+        ))}
+      </div>
       <CrudPage<StaffProblem>
+        key={review ? "review" : "all"}
         title={t(locale, "admin.section.problems")}
         path="/staff/problems/"
         idField="slug"
         ordering="-pk"
+        params={review ? { review: "1" } : undefined}
         columns={[
           {
             key: "code",
@@ -695,6 +731,16 @@ export function ProblemsAdmin() {
             render: (p) => (p.topics.length ? p.topics.join(", ") : "—"),
           },
           { key: "test_count", labelKey: "admin.label.misc.tests", align: "right" },
+          {
+            key: "authors",
+            labelKey: "admin.label.misc.authors",
+            render: (p) => (p.authors.length ? p.authors.map((name) => `@${name}`).join(", ") : "—"),
+          },
+          {
+            key: "review_requested_at",
+            labelKey: "admin.label.date.reviewRequested",
+            render: (p) => (p.review_requested_at ? numericStamp(p.review_requested_at) : "—"),
+          },
           {
             key: "is_public",
             labelKey: "admin.label.text.status",

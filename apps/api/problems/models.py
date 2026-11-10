@@ -239,6 +239,11 @@ class Problem(TimeStampedModel):
     #: yuboradi va natija «nima bo'lganda ham» noto'g'ri bo'ladi.
     #: `null` — tekshirilmagan.
     checker_verified_at = models.DateTimeField(null=True, blank=True)
+    #: When the draft's author asked staff-ops to review it (`/studio`,
+    #: 2026-11-10). `null` — never asked. It is a flag for the staff queue,
+    #: not a lock: the author may keep editing, and staff see the latest
+    #: text. Publishing (`is_public`) takes the problem out of the queue.
+    review_requested_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     class IoMode(models.TextChoices):
         STDIO = "stdio", "Stdin/stdout"

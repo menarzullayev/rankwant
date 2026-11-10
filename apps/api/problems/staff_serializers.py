@@ -63,6 +63,9 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         slug_field="code", queryset=Language.objects.all(), allow_null=True, required=False
     )
     test_count = serializers.SerializerMethodField()
+    #: Who wrote the draft (`/studio`). Read-only: authorship is given when a
+    #: user creates the draft, not edited here.
+    authors = serializers.SlugRelatedField[Any](slug_field="username", many=True, read_only=True)
 
     class Meta:
         model = Problem
@@ -96,10 +99,19 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "solved_count",
             "attempt_count",
             "test_count",
+            "authors",
+            "review_requested_at",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["code", "solved_count", "attempt_count", "created_at", "updated_at"]
+        read_only_fields = [
+            "code",
+            "solved_count",
+            "attempt_count",
+            "review_requested_at",
+            "created_at",
+            "updated_at",
+        ]
 
     def get_test_count(self, obj: Problem) -> int:
         # Ro'yxatda annotatsiya bor; yaratish/tahrirlashdan keyingi javobda yo'q.

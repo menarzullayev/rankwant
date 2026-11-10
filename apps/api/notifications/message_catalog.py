@@ -78,6 +78,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Your Skills rating changed by {delta}",
             "body": "A problem you solved was re-rated. Skills: {before} → {after}. This was not your action — the difficulty was updated from statistics.",
         },
+        "problem_review_requested": {
+            "title": "Review requested — {problem}",
+            "body": "@{user} sent the draft “{problem}” for review.",
+        },
         "streak": {
             "title": "{days}-day streak!",
             "body": "Qvant was added for the streak milestone.",
@@ -153,6 +157,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "problem_rerated": {
             "title": "Tu rating de Skills cambió en {delta}",
             "body": "Un problema que resolviste fue reevaluado. Skills: {before} → {after}. No fue una acción tuya: la dificultad se actualizó según las estadísticas.",
+        },
+        "problem_review_requested": {
+            "title": "Revisión solicitada: {problem}",
+            "body": "@{user} envió el borrador «{problem}» a revisión.",
         },
         "streak": {
             "title": "¡Racha de {days} días!",
@@ -230,6 +238,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Skills reytingińiz {delta} ge ózgerdi",
             "body": "Siz sheshken másele qayta bahalandı. Skills: {before} → {after}. Bul sizdiń háreketińiz emes — másele qıyınlıǵı statistika tiykarında jańalandı.",
         },
+        "problem_review_requested": {
+            "title": "Tekseriw soraldı — {problem}",
+            "body": "@{user} «{problem}» jobasın tekseriwge jiberdi.",
+        },
         "streak": {
             "title": "{days} kúnlik streak!",
             "body": "Streak jetiskenligi ushın Qvant qosıldı.",
@@ -305,6 +317,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "problem_rerated": {
             "title": "Skills рейтингіңіз {delta} өзгерді",
             "body": "Сіз шешкен есеп қайта бағаланды. Skills: {before} → {after}. Бұл сіздің әрекетіңіз емес — есеп қиындығы статистика бойынша жаңартылды.",
+        },
+        "problem_review_requested": {
+            "title": "Тексеру сұралды — {problem}",
+            "body": "@{user} «{problem}» жобасын тексеруге жіберді.",
         },
         "streak": {
             "title": "{days} күндік серия!",
@@ -382,6 +398,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Skills рейтингиңиз {delta} өзгөрдү",
             "body": "Сиз чечкен маселе кайра бааланды. Skills: {before} → {after}. Бул сиздин аракетиңиз эмес — маселенин татаалдыгы статистика боюнча жаңыланды.",
         },
+        "problem_review_requested": {
+            "title": "Текшерүү суралды — {problem}",
+            "body": "@{user} «{problem}» долбоорун текшерүүгө жөнөттү.",
+        },
         "streak": {
             "title": "{days} күндүк серия!",
             "body": "Серия жетишкендиги үчүн Qvant кошулду.",
@@ -457,6 +477,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "problem_rerated": {
             "title": "Ваш рейтинг Skills изменился на {delta}",
             "body": "Решённая вами задача переоценена. Skills: {before} → {after}. Это не ваше действие — сложность задачи обновлена по статистике.",
+        },
+        "problem_review_requested": {
+            "title": "Запрос на проверку — {problem}",
+            "body": "@{user} отправил(а) черновик «{problem}» на проверку.",
         },
         "streak": {
             "title": "Серия {days} дней!",
@@ -534,6 +558,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Рейтинги Skills-и шумо {delta} тағйир ёфт",
             "body": "Масъалае, ки шумо ҳал кардед, аз нав баҳогузорӣ шуд. Skills: {before} → {after}. Ин амали шумо нест — душвории масъала аз рӯи омор нав шуд.",
         },
+        "problem_review_requested": {
+            "title": "Дархости тафтиш — {problem}",
+            "body": "@{user} сиёҳнависи «{problem}»-ро ба тафтиш фиристод.",
+        },
         "streak": {
             "title": "Силсилаи {days}-рӯза!",
             "body": "Барои дастоварди силсила Qvant илова шуд.",
@@ -609,6 +637,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "problem_rerated": {
             "title": "Skills puanınız {delta} değişti",
             "body": "Çözdüğünüz bir soru yeniden değerlendirildi. Skills: {before} → {after}. Bu sizin işleminiz değil — sorunun zorluğu istatistiklere göre güncellendi.",
+        },
+        "problem_review_requested": {
+            "title": "İnceleme istendi — {problem}",
+            "body": "@{user}, “{problem}” taslağını incelemeye gönderdi.",
         },
         "streak": {
             "title": "{days} günlük seri!",
@@ -686,6 +718,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Skills reytingingiz {delta} ga o'zgardi",
             "body": "Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi.",
         },
+        "problem_review_requested": {
+            "title": "Ko'rik so'raldi — {problem}",
+            "body": "@{user} «{problem}» qoralamasini ko'rikka yubordi.",
+        },
         "streak": {
             "title": "{days} kunlik streak!",
             "body": "Streak yutug'i uchun Qvant qo'shildi.",
@@ -761,6 +797,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "problem_rerated": {
             "title": "你的 Skills 评分变化 {delta}",
             "body": "你解出的一道题被重新评级。Skills:{before} → {after}。这不是你的操作 — 题目难度根据统计数据更新。",
+        },
+        "problem_review_requested": {
+            "title": "审核申请——{problem}",
+            "body": "@{user} 提交了草稿“{problem}”以供审核。",
         },
         "streak": {
             "title": "连续 {days} 天!",
