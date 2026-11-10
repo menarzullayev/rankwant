@@ -313,6 +313,13 @@ class AttemptViewSet(
             contest=data.get("contest_obj"),
             verdict=Verdict.PENDING,
         )
+        if attempt.contest_id:
+            # How the solution was written, for the jury (ADR-0055, part 4).
+            from contests.insiders import is_testing
+            from contests.integrity import record
+
+            if not is_testing(attempt):
+                record(attempt, data.get("editor"))
         # Attempt AVVAL saqlanadi, keyin navbatga — navbat yiqilsa ham
         # submission yo'qolmaydi (10-operations § recovery).
         enqueue(attempt)

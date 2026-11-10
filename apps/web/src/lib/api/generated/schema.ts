@@ -903,6 +903,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/contests/{slug}/disqualify/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Diskvalifikatsiya */
+        post: operations["contests_disqualify_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/{slug}/integrity/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Halol o'yin hisoboti
+         * @description The editor signals that stand out — for the jury, after the end.
+         */
+        get: operations["contests_integrity_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contests/{slug}/register/": {
         parameters: {
             query?: never;
@@ -6041,6 +6078,7 @@ export interface components {
             language: string;
             source_code: string;
             contest?: string | null;
+            editor?: components["schemas"]["EditorSignal"];
         };
         AttemptDetail: {
             readonly id: number;
@@ -6273,6 +6311,8 @@ export interface components {
             registered: boolean;
             testing: boolean;
             problems: components["schemas"]["ContestProblem"][];
+            disqualified_reason: string | null;
+            judge: boolean;
         };
         /** @description Who prepared the contest — told on its page, always (ADR-0055, part 2). */
         Crew: {
@@ -6321,6 +6361,16 @@ export interface components {
             new_users: number;
             active_users: number;
             attempts: number;
+        };
+        Disqualified: {
+            username: string;
+            reason: string;
+            /** Format: date-time */
+            at: string;
+        };
+        Disqualify: {
+            username: string;
+            reason: string;
         };
         Duel: {
             slug: string;
@@ -6386,6 +6436,14 @@ export interface components {
          * @enum {string}
          */
         DuelStatusEnum: "open" | "accepted" | "finished" | "cancelled";
+        /** @description What the editor tells about a contest solution (ADR-0055, part 4). */
+        EditorSignal: {
+            pasted_chars?: number;
+            largest_paste?: number;
+            paste_count?: number;
+            blur_count?: number;
+            active_ms?: number;
+        };
         /** @description Yil + oy. `current=True` yoki tugash yili yo'q — hozirgacha. */
         Education: {
             organization: string;
@@ -6625,6 +6683,26 @@ export interface components {
          * @enum {string}
          */
         InsiderRoleEnum: "author" | "tester" | "jury" | "organizer";
+        IntegrityReport: {
+            results: components["schemas"]["IntegrityRow"][];
+            disqualified: components["schemas"]["Disqualified"][];
+        };
+        /** @description One attempt whose editor signals stand out (ADR-0055, part 4). */
+        IntegrityRow: {
+            attempt: number;
+            username: string;
+            problem: string;
+            verdict: string;
+            /** Format: date-time */
+            created_at: string;
+            flags: string[];
+            source_chars: number;
+            pasted_chars: number;
+            largest_paste: number;
+            paste_count: number;
+            blur_count: number;
+            active_ms: number;
+        };
         Inventory: {
             readonly id: number;
             readonly item: components["schemas"]["ShopItem"];
@@ -9765,6 +9843,7 @@ export interface components {
             /** Format: date-time */
             last_ac_at?: string | null;
             insider_role?: components["schemas"]["InsiderRoleEnum"] | components["schemas"]["BlankEnum"];
+            is_disqualified?: boolean;
         };
         Submission: {
             readonly id: number;
@@ -11371,6 +11450,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Clarification"];
+                };
+            };
+        };
+    };
+    contests_disqualify_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Disqualify"];
+                "application/x-www-form-urlencoded": components["schemas"]["Disqualify"];
+                "multipart/form-data": components["schemas"]["Disqualify"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Registration"];
+                };
+            };
+        };
+    };
+    contests_integrity_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrityReport"];
                 };
             };
         };

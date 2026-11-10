@@ -270,6 +270,8 @@ export function submitAttempt(body: {
   language: string;
   source_code: string;
   contest?: string;
+  /** Editor signals of a contest attempt (ADR-0055, part 4). */
+  editor?: import("../useEditorSignals").EditorSignals;
 }): Promise<Attempt> {
   return postJson<Attempt>("/attempts/", body);
 }

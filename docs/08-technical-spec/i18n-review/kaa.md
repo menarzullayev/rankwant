@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2508 strings.**
+**2533 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2485,6 +2485,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.testers` | Sinovchilar | Testlewshiler |  |
 | `contest.crew.jury` | Hakamlar | Tóreshiler |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Olar máselelerdi aldın ala biledi, sonıń ushın reytingsiz qatnasadı. |  |
+| `standings.dq` | DQ | DQ |  |
+| `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Jarısta jasalma intellekt járdemshilerinen (ChatGPT, Copilot hám t.b.) paydalanıwǵa tıyım salınadı. Redaktorǵa kod qoyıw hám betten shıǵıw dizimge alınadı — tóreshi kóredi. |  |
+| `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Jarıs: JI járdemshilerine tıyım salınǵan. Kod qoyıw hám betten shıǵıw dizimge alınadı. |  |
+| `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Siz bul jarıstan shetletildińiz |  |
+| `contest.fair.title` | Halol o'yin | Ádil oyın |  |
+| `contest.fair.intro` | Muharrir signallari ajralib turgan urinishlar. Bu ayblov emas — kodni ko'rib, o'zingiz qaror qiling. | Redaktor signalları ajıralıp turǵan jiberiwler. Bul ayıplaw emes — kodtı kórip, ózińiz sheshiń. |  |
+| `contest.fair.clean` | Ajralib turgan urinish yo'q. | Ajıralıp turǵan jiberiw joq. |  |
+| `contest.fair.flag.pasted` | Katta joylash | Úlken qoyıw |  |
+| `contest.fair.flag.fast` | Juda tez yozilgan | Júdá tez jazılǵan |  |
+| `contest.fair.flag.away` | Ko'p marta chiqib ketgan | Betten kóp shıqqan |  |
+| `contest.fair.attempt` | Urinish #{id} | Jiberiw #{id} |  |
+| `contest.fair.signals` | Kod: {source} belgi · joylangan: {pasted} (eng kattasi {largest}) · sahifadan chiqish: {blurs} · ochiq turgan: {minutes} daq | Kod: {source} belgi · qoyılǵan: {pasted} (eń úlkeni {largest}) · betten shıǵıw: {blurs} · ashıq turdı: {minutes} min |  |
+| `contest.fair.dq` | Chetlatish | Shetletiw |  |
+| `contest.fair.dqWhat` | {user}: musobaqadagi urinishlari bekor qilinadi, jadvalda «DQ», sertifikat olib tashlanadi, reyting qayta hisoblanadi. | {user}: jarıstaǵı jiberiwleri biykar etiledi, kestede «DQ», sertifikat alınadı, reyting qayta esaplanadı. |  |
+| `contest.fair.reason` | Sabab (ishtirokchiga yuboriladi) | Sebep (qatnasıwshıǵa jiberiledi) |  |
+| `contest.fair.dqConfirm` | Tasdiqlash va chetlatish | Tastıyıqlaw hám shetletiw |  |
+| `contest.fair.cancel` | Bekor qilish | Biykar etiw |  |
+| `contest.fair.disqualified` | Chetlatilganlar | Shetletilgenler |  |
+| `error.reason_required` | Sababni yozing | Sebebin jazıń |  |
+| `error.already_disqualified` | Bu ishtirokchi allaqachon chetlatilgan | Bul qatnasıwshı áldeqashan shetletilgen |  |
+| `error.contest_not_started` | Musobaqa hali boshlanmagan | Jarıs ele baslanbaǵan |  |
+| `error.contest_running` | Hisobot musobaqa tugagach ochiladi | Esabat jarıs tamamlanǵanda ashıladı |  |
+| `error.user_not_found` | Bunday foydalanuvchi yo'q | Bunday paydalanıwshı joq |  |
+| `notif.msg.contest_disqualified.title` | «{contest}»: siz musobaqadan chetlatildingiz | «{contest}»: siz shetletildińiz |  |
+| `notif.msg.contest_disqualified.body` | Sabab: {reason} | Sebep: {reason} |  |
 | `contest.qa.title` | Savol-javob | Soraw-juwap |  |
 | `contest.qa.general` | Umumiy | Ulıwma |  |
 | `contest.qa.problem` | Masala | Másele |  |

@@ -114,11 +114,23 @@ def _virtual_window_open(registration: ContestRegistration) -> bool:
     return timezone.now() < virtual_deadline(registration)
 
 
+class EditorSignalSerializer(serializers.Serializer[dict[str, Any]]):
+    """What the editor tells about a contest solution (ADR-0055, part 4)."""
+
+    pasted_chars = serializers.IntegerField(min_value=0, required=False)
+    largest_paste = serializers.IntegerField(min_value=0, required=False)
+    paste_count = serializers.IntegerField(min_value=0, required=False)
+    blur_count = serializers.IntegerField(min_value=0, required=False)
+    active_ms = serializers.IntegerField(min_value=0, required=False)
+
+
 class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
     problem = serializers.SlugField()
     language = serializers.SlugField()
     source_code = serializers.CharField()
     contest = serializers.SlugField(required=False, allow_null=True)
+    #: Kept for a contest attempt only; ignored elsewhere.
+    editor = EditorSignalSerializer(required=False)
 
     def validate_source_code(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:

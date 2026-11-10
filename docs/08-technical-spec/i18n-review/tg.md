@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2508 strings.**
+**2533 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2485,6 +2485,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.testers` | Sinovchilar | Санҷишгарон |  |
 | `contest.crew.jury` | Hakamlar | Ҳакамон |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Онҳо масъалаҳоро пешакӣ медонанд, бинобар ин бе рейтинг иштирок мекунанд. |  |
+| `standings.dq` | DQ | DQ |  |
+| `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Дар мусобиқа истифодаи ёрдамчиёни зеҳни сунъӣ (ChatGPT, Copilot ва ғ.) манъ аст. Гузоштани код дар муҳаррир ва баромадан аз саҳифа сабт мешавад — ҳакам мебинад. |  |
+| `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Мусобиқа: ёрдамчиёни ЗС манъ аст. Гузоштани код ва баромадан аз саҳифа сабт мешавад. |  |
+| `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Шумо аз ин мусобиқа хориҷ карда шудед |  |
+| `contest.fair.title` | Halol o'yin | Бозии ҳалол |  |
+| `contest.fair.intro` | Muharrir signallari ajralib turgan urinishlar. Bu ayblov emas — kodni ko'rib, o'zingiz qaror qiling. | Ирсолҳое, ки сигналҳои муҳаррирашон фарқ мекунанд. Ин айбдоркунӣ нест — кодро бинед ва худатон қарор диҳед. |  |
+| `contest.fair.clean` | Ajralib turgan urinish yo'q. | Ягон чизи фарқкунанда нест. |  |
+| `contest.fair.flag.pasted` | Katta joylash | Гузоштани калон |  |
+| `contest.fair.flag.fast` | Juda tez yozilgan | Хеле зуд навишта шуда |  |
+| `contest.fair.flag.away` | Ko'p marta chiqib ketgan | Аз саҳифа зиёд баромада |  |
+| `contest.fair.attempt` | Urinish #{id} | Ирсол #{id} |  |
+| `contest.fair.signals` | Kod: {source} belgi · joylangan: {pasted} (eng kattasi {largest}) · sahifadan chiqish: {blurs} · ochiq turgan: {minutes} daq | Код: {source} аломат · гузошташуда: {pasted} (калонтаринаш {largest}) · баромадан аз саҳифа: {blurs} · кушода буд: {minutes} дақ |  |
+| `contest.fair.dq` | Chetlatish | Хориҷ кардан |  |
+| `contest.fair.dqWhat` | {user}: musobaqadagi urinishlari bekor qilinadi, jadvalda «DQ», sertifikat olib tashlanadi, reyting qayta hisoblanadi. | {user}: ирсолҳои мусобиқаашон бекор мешаванд, дар ҷадвал «DQ», шаҳодатнома гирифта мешавад, рейтинг аз нав ҳисоб мешавад. |  |
+| `contest.fair.reason` | Sabab (ishtirokchiga yuboriladi) | Сабаб (ба иштирокчӣ фиристода мешавад) |  |
+| `contest.fair.dqConfirm` | Tasdiqlash va chetlatish | Тасдиқ ва хориҷ кардан |  |
+| `contest.fair.cancel` | Bekor qilish | Бекор кардан |  |
+| `contest.fair.disqualified` | Chetlatilganlar | Хориҷшудагон |  |
+| `error.reason_required` | Sababni yozing | Сабабро нависед |  |
+| `error.already_disqualified` | Bu ishtirokchi allaqachon chetlatilgan | Ин иштирокчӣ аллакай хориҷ шудааст |  |
+| `error.contest_not_started` | Musobaqa hali boshlanmagan | Мусобиқа ҳанӯз оғоз нашудааст |  |
+| `error.contest_running` | Hisobot musobaqa tugagach ochiladi | Ҳисобот пас аз анҷоми мусобиқа кушода мешавад |  |
+| `error.user_not_found` | Bunday foydalanuvchi yo'q | Чунин корбар нест |  |
+| `notif.msg.contest_disqualified.title` | «{contest}»: siz musobaqadan chetlatildingiz | «{contest}»: шумо хориҷ карда шудед |  |
+| `notif.msg.contest_disqualified.body` | Sabab: {reason} | Сабаб: {reason} |  |
 | `contest.qa.title` | Savol-javob | Савол-ҷавоб |  |
 | `contest.qa.general` | Umumiy | Умумӣ |  |
 | `contest.qa.problem` | Masala | Масъала |  |

@@ -90,6 +90,8 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   contest_question: { body: true },
   contest_answer: { body: true },
   contest_announcement: { body: true },
+  // Disqualified by the jury (ADR-0055, part 4).
+  contest_disqualified: { body: true },
 };
 
 /** The words of a notification in the language it is being read in.

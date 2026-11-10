@@ -10,6 +10,7 @@ import {
   ContestClarifications,
   ContestCrew,
   ContestEntry,
+  ContestIntegrity,
   StandingsTable,
 } from "@/features/contests";
 import { Badge } from "@/components/ui/Badge";
@@ -135,6 +136,20 @@ export default async function ContestPage({ params }: Props) {
         </div>
       )}
 
+      {/* Fair play (ADR-0055, part 4): the rule is told before anyone
+          writes a line, and so is what the editor records. */}
+      {!contest.is_finished && (
+        <p className="rw-radius-sm rw-warn-soft px-3 py-2 text-theme-sm rw-warn-ink" data-fair-rule="">
+          {t(locale, "contest.fair.rule")}
+        </p>
+      )}
+      {viewer?.disqualified_reason && (
+        <div className="rw-radius border rw-line rw-bad-soft p-4 text-theme-sm rw-bad-ink" role="status">
+          <strong className="block">{t(locale, "contest.fair.youAreOut")}</strong>
+          {viewer.disqualified_reason}
+        </div>
+      )}
+
       <ContestEntry
         slug={slug}
         viewer={viewer}
@@ -194,6 +209,8 @@ export default async function ContestPage({ params }: Props) {
           hacks={contest.hack_room || contest.hack_open_until !== null}
         />
       </Card>
+
+      {viewer?.judge && contest.is_finished && <ContestIntegrity slug={slug} />}
 
       <ContestCrew crew={contest.crew} locale={locale} />
     </div>

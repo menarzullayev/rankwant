@@ -141,6 +141,13 @@ class ContestRegistration(models.Model):
     )
     registered_at = models.DateTimeField(auto_now_add=True)
     virtual_start_at = models.DateTimeField(null=True, blank=True)
+    #: Disqualified by the jury (ADR-0055, part 4): the attempts are
+    #: SKIPPED, the row shows «DQ» with no place.
+    disqualified_at = models.DateTimeField(null=True, blank=True)
+    disqualified_reason = models.TextField(blank=True)
+    disqualified_by = models.ForeignKey(
+        "core.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
 
     class Meta:
         constraints: ClassVar = [
@@ -158,7 +165,7 @@ class StandingQuerySet(models.QuerySet["Standing"]):
         An insider's row (ADR-0055, part 2) is shown in the table with a
         star and no place; everything that ranks people reads this.
         """
-        return self.filter(insider_role="")
+        return self.filter(insider_role="", is_disqualified=False)
 
 
 class Standing(UpdatedModel):
@@ -183,6 +190,8 @@ class Standing(UpdatedModel):
     #: Set when the participant knew the problems beforehand: the row is
     #: unofficial (ADR-0055, part 2).
     insider_role = models.CharField(max_length=12, choices=InsiderRole.choices, blank=True)
+    #: Disqualified by the jury (ADR-0055, part 4): «DQ», no place, unrated.
+    is_disqualified = models.BooleanField(default=False)
     solved_count = models.PositiveIntegerField(default=0)
     penalty = models.PositiveIntegerField(default=0)
     total_score = models.PositiveIntegerField(default=0)
@@ -208,7 +217,7 @@ class Standing(UpdatedModel):
 
     @property
     def is_official(self) -> bool:
-        return not self.insider_role
+        return not self.insider_role and not self.is_disqualified
 
     def __str__(self) -> str:
         return f"{self.contest.slug} #{self.rank} {self.user_id}"
@@ -302,3 +311,32 @@ class Clarification(CreatedModel):
     @property
     def is_answered(self) -> bool:
         return self.answered_at is not None
+
+
+class AttemptSignal(CreatedModel):
+    """How a contest solution was written in the editor (ADR-0055, part 4).
+
+    Sent by the page with the attempt: how much was pasted, how often the
+    page was left, how long it was open. The jury reads it after the
+    contest; nothing here decides anything by itself.
+    """
+
+    attempt = models.OneToOneField(
+        "judging.Attempt", on_delete=models.CASCADE, related_name="editor_signal"
+    )
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="signals")
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="+")
+    source_chars = models.PositiveIntegerField(default=0)
+    pasted_chars = models.PositiveIntegerField(default=0)
+    largest_paste = models.PositiveIntegerField(default=0)
+    paste_count = models.PositiveIntegerField(default=0)
+    #: Times the page lost focus (another tab or window).
+    blur_count = models.PositiveIntegerField(default=0)
+    #: Time the problem page was open before this attempt, in ms.
+    active_ms = models.PositiveBigIntegerField(default=0)
+
+    class Meta:
+        indexes: ClassVar = [models.Index(fields=["contest", "user"], name="signal_contest_user")]
+
+    def __str__(self) -> str:
+        return f"{self.contest_id}/{self.attempt_id}"

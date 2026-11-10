@@ -15,6 +15,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "“{contest}”: your question was answered",
             "body": "Question: {question}",
         },
+        "contest_disqualified": {
+            "title": "“{contest}”: you were disqualified",
+            "body": "Reason: {reason}",
+        },
         "contest_question": {
             "title": "“{contest}”: a new question",
             "body": "Question: {text}",
@@ -86,6 +90,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_answer": {
             "title": "«{contest}»: respondieron tu pregunta",
             "body": "Pregunta: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: fuiste descalificado",
+            "body": "Motivo: {reason}",
         },
         "contest_question": {
             "title": "«{contest}»: nueva pregunta",
@@ -159,6 +167,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: sorawıńızǵa juwap berildi",
             "body": "Soraw: {question}",
         },
+        "contest_disqualified": {
+            "title": "«{contest}»: siz shetletildińiz",
+            "body": "Sebep: {reason}",
+        },
         "contest_question": {
             "title": "«{contest}»: jańa soraw",
             "body": "Soraw: {text}",
@@ -230,6 +242,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_answer": {
             "title": "«{contest}»: сұрағыңызға жауап берілді",
             "body": "Сұрақ: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: сіз шеттетілдіңіз",
+            "body": "Себеп: {reason}",
         },
         "contest_question": {
             "title": "«{contest}»: жаңа сұрақ",
@@ -303,6 +319,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: сурооңузга жооп берилди",
             "body": "Суроо: {question}",
         },
+        "contest_disqualified": {
+            "title": "«{contest}»: сиз четтетилдиңиз",
+            "body": "Себеп: {reason}",
+        },
         "contest_question": {
             "title": "«{contest}»: жаңы суроо",
             "body": "Суроо: {text}",
@@ -374,6 +394,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_answer": {
             "title": "«{contest}»: на ваш вопрос ответили",
             "body": "Вопрос: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: вы дисквалифицированы",
+            "body": "Причина: {reason}",
         },
         "contest_question": {
             "title": "«{contest}»: новый вопрос",
@@ -447,6 +471,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: ба саволатон ҷавоб доданд",
             "body": "Савол: {question}",
         },
+        "contest_disqualified": {
+            "title": "«{contest}»: шумо хориҷ карда шудед",
+            "body": "Сабаб: {reason}",
+        },
         "contest_question": {
             "title": "«{contest}»: саволи нав",
             "body": "Савол: {text}",
@@ -518,6 +546,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_answer": {
             "title": "“{contest}”: sorunuz cevaplandı",
             "body": "Soru: {question}",
+        },
+        "contest_disqualified": {
+            "title": "“{contest}”: diskalifiye edildiniz",
+            "body": "Gerekçe: {reason}",
         },
         "contest_question": {
             "title": "“{contest}”: yeni soru",
@@ -591,6 +623,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: savolingizga javob berildi",
             "body": "Savol: {question}",
         },
+        "contest_disqualified": {
+            "title": "«{contest}»: siz musobaqadan chetlatildingiz",
+            "body": "Sabab: {reason}",
+        },
         "contest_question": {
             "title": "«{contest}»: yangi savol",
             "body": "Savol: {text}",
@@ -662,6 +698,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_answer": {
             "title": "“{contest}”：你的问题已得到回答",
             "body": "问题：{question}",
+        },
+        "contest_disqualified": {
+            "title": "“{contest}”：你已被取消资格",
+            "body": "原因：{reason}",
         },
         "contest_question": {
             "title": "“{contest}”：新问题",

@@ -157,7 +157,14 @@ class TestTesterBeforeTheStart:
         assert public["problems"] == []
         client.force_login(stranger)
         theirs = client.get(reverse("contest-viewer", args=[contest.slug])).json()
-        assert theirs == {"role": "", "registered": False, "testing": False, "problems": []}
+        assert theirs == {
+            "role": "",
+            "registered": False,
+            "testing": False,
+            "problems": [],
+            "disqualified_reason": None,
+            "judge": False,
+        }
 
     def test_the_tester_sends_without_registering(self, client: APIClient, setup, language) -> None:
         contest, problem, tester, _ = setup

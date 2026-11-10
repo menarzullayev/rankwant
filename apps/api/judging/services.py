@@ -508,3 +508,27 @@ def _schedule_standings_rebuild(contest_id: int) -> None:
     from contests.tasks import rebuild_standings_task
 
     rebuild_standings_task.apply_async((contest_id,), countdown=STANDINGS_DEBOUNCE_S)
+
+
+def skip_attempts(rows: Any) -> tuple[int, int]:
+    """Mark attempts SKIPPED — they count nowhere (plagiarism, a broken rule).
+
+    A revoked `AC` also takes back the solved record, Skills and Qvant
+    (`on_accept_revoked`); without it a disqualified solution would stay in
+    the rating. Returns (attempts skipped, accepted ones revoked).
+    """
+    from ratings.services import on_accept_revoked
+
+    total = revoked = 0
+    for attempt in rows.exclude(verdict=Verdict.SKIPPED).select_related("user", "problem"):
+        was_accepted = attempt.verdict == Verdict.AC
+        with transaction.atomic():
+            Attempt.objects.filter(pk=attempt.pk).update(
+                verdict=Verdict.SKIPPED, judged_at=timezone.now()
+            )
+            total += 1
+            if was_accepted:
+                attempt.verdict = Verdict.SKIPPED
+                on_accept_revoked(attempt)
+                revoked += 1
+    return total, revoked

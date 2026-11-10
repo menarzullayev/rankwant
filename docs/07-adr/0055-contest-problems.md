@@ -1,6 +1,6 @@
 # ADR 0055 — Musobaqa masalalari: oldin yopiq, paytida manzil bo'yicha ochiq, keyin arxivda
 
-**STATUS:** accepted (qamrov va tartib); 2-qism — § 6; 3-qism — § 7; 4-qismning tafsiloti o'z PR'ida aniqlanadi
+**STATUS:** accepted (qamrov va tartib); 2-qism — § 6; 3-qism — § 7; 4-qism — § 8
 **Sana:** 2026-10-08
 **Tasdiqlagan:** Saidakbar (owner) — 2026-10-08, 16 savol
 **Ta'sir doirasi:** `problems/visibility.py`, `problems/views.py`, `problems/serializers.py`, `judging/`, `contests/services.py`, `contests/serializers.py`, masala va musobaqa sahifalari
@@ -219,4 +219,43 @@ Model — `contests.Clarification`: savol, javob va e'lon bitta jadvalda (e'lon
 - Sahifadagi blok musobaqa davomida 30 s da qayta o'qiladi (SSE emas).
 - Savolni tahrirlash yoki o'chirish yo'q; javobni o'zgartirish — qayta
   javob berish bilan.
+
+## 8. 4-qism: halol o'yin — muharrir signallari va chetlatish (2026-11-10)
+
+**Tasdiqlagan:** Saidakbar (owner) — 2026-11-10, ikki bosqichli savol, prototip
+(`prototypes/contest-plagiarism.html`).
+
+### 8.1. Qarorning o'zgarishi
+
+14-qaror «ko'chirmachilik hisoboti» edi. Egasi uni qayta ko'rdi: **hozir
+ishtirokchidan ko'chirishdan ko'ra AI bilan yechish xavfliroq**. Ikkinchi
+savolda to'rt signal taklif qilindi (ishtirokchilar o'xshashligi, muharrir
+xatti-harakati, reytingga nomutanosib natija, AI etalonlariga o'xshashlik) —
+egasi faqat **muharrir xatti-harakati** ni tanladi. O'zaro o'xshashlik
+hisoboti shu sababli qurilmadi.
+
+| Qaror | Tafsilot |
+|---|---|
+| Signal | musobaqa urinishi bilan muharrir yuboradi: joylangan belgilar, eng katta joylash, joylashlar soni, sahifadan chiqish soni, sahifa ochiq turgan vaqt (`AttemptSignal`) |
+| Qoida | AI yordamchilar taqiqlanadi; musobaqa sahifasida va muharrir ustida aytiladi, signallar yozilishi ham; maxfiylik matniga qo'shildi |
+| Hisobot | musobaqa tugagach avtomatik ochiladi (`GET contests/<slug>/integrity/`), faqat hakam va staff-ops; belgilar: «katta joylash» (≥ 200 belgi yoki kodning ≥ 60 %), «juda tez» (> 400 belgi/daq), «ko'p chiqqan» (≥ 10) |
+| Hukm | hech narsa o'zi qaror qilmaydi — hakam kodni ko'rib chetlatadi |
+| Chetlatish | hakam yoki staff-ops, **sabab majburiy**: musobaqadagi barcha urinish `SKIPPED` (yechilgan, Skills, Qvant qaytariladi), jadvalda «DQ» o'rinsiz, sertifikat o'chiriladi, sabab bilan bildirishnoma |
+| Reyting | yakunlangan bo'lsa **butun musobaqa qayta** (`rerate_contest`): shu musobaqaning barcha o'zgarishi qaytariladi, jadval qayta quriladi, qayta qo'llanadi; boshqalarning sertifikat o'rni yangilanadi (id saqlanadi) |
+
+### 8.2. Hal qilinmagan
+
+- Signal brauzerdan keladi — aldash mumkin (masalan, so'rovni qo'lda
+  yuborish). Bu hukm emas, hakamga ishora.
+- Qayta hisoblash taxminiy: keyin boshqa reytingli musobaqa bo'lgan bo'lsa,
+  uning o'zgarishlari eski bazadan hisoblangan bo'lib qoladi.
+- Chetlatishni bekor qilish yo'q (qo'lda, Django admin).
+- Qvant'ning musobaqa mukofoti (+30) qaytarilmaydi.
+- Signallar uchun saqlash muddati belgilanmagan.
+- Qayta hisoblash hamma ishtirokchiga natija bildirishnomasini yana yuboradi
+  va faollik lentasiga ikkinchi reyting yozuvi tushadi.
+- «Ochiq turgan vaqt» sahifa qayta yuklanganda noldan boshlanadi — «juda
+  tez» belgisi shunda yolg'on bo'lishi mumkin.
+- Ishtirokchilar o'zaro o'xshashligi va AI etalonlari bilan solishtirish —
+  egasi tanlamadi; kerak bo'lsa alohida qaror.
 
