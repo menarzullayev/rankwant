@@ -1006,7 +1006,7 @@ new dependency cannot make this document quietly false.
 |---|---|---|---|
 | `amqp` | 5.3.1 | dev | BSD |
 | `asgiref` | 3.12.1 | dev | BSD-3-Clause |
-| `ast-serialize` | 0.11.2 | dev | MIT |
+| `ast-serialize` | 0.13.1 | dev | MIT |
 | `attrs` | 26.1.0 | dev | MIT |
 | `billiard` | 4.2.4 | dev | BSD |
 | `boolean-py` | 5.0 | dev | BSD-2-Clause |
@@ -1052,7 +1052,7 @@ new dependency cannot make this document quietly false.
 | `markdown-it-py` | 4.2.0 | dev | MIT License |
 | `mdurl` | 0.1.2 | dev | MIT License |
 | `msgpack` | 1.2.2 | dev | Apache-2.0 |
-| `mypy` | 2.4.0 | dev | MIT |
+| `mypy` | 2.4.1 | dev | MIT |
 | `mypy-extensions` | 1.1.0 | dev | MIT |
 | `packageurl-python` | 0.17.6 | dev | MIT |
 | `packaging` | 26.3 | dev | Apache-2.0 OR BSD-2-Clause |
