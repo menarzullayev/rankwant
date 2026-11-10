@@ -145,10 +145,17 @@ jobs:
         if: steps.check.outputs.ready == 'true'
         with:
           python-version: '3.12'
-          cache: pip
-          cache-dependency-path: apps/api/requirements-dev.lock
+      # uv, not pip (owner decision 2026-11-10, deploy-time audit): measured on
+      # #501's main CI, `pip install -r requirements-dev.lock` took 16-25 s in
+      # each of the four API jobs, and saving the pip cache once took 116 s
+      # (judge job). uv installs the same lockfile into the same interpreter.
+      - uses: astral-sh/setup-uv@v10.3.3
+        if: steps.check.outputs.ready == 'true'
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/api/requirements-dev.lock
       - if: steps.check.outputs.ready == 'true'
-        run: pip install -r requirements-dev.lock
+        run: uv pip install --system -r requirements-dev.lock
         working-directory: apps/api
       - name: Ruff
         if: steps.check.outputs.ready == 'true'
@@ -291,9 +298,11 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-          cache: pip
-          cache-dependency-path: apps/api/requirements-dev.lock
-      - run: pip install -r requirements-dev.lock
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/api/requirements-dev.lock
+      - run: uv pip install --system -r requirements-dev.lock
         working-directory: apps/api
       - name: Every test file is in exactly one shard
         run: python3 tools/pytest_shard.py --check 3
@@ -346,6 +355,7 @@ jobs:
             echo "need=false" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/setup-node@v7
+        id: setup-node
         if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
         with:
           node-version: '22'
@@ -359,7 +369,20 @@ jobs:
       # `npm ci` ONLY when web or Node tools changed. Python-only
       # `tools/` used to pay 14–20 s × PR+main for `typescript` that
       # those PRs never load. NODE_CASES then skip via NEGATIVE_SKIP_NODE.
-      - if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
+      # The installed tree itself is cached, keyed on the lockfile and the
+      # exact Node version (owner decision 2026-11-10): `npm ci` took 41 s on
+      # #501's main CI even with the npm download cache. On a hit the restore
+      # replaces it; any lockfile or Node change misses and installs fresh.
+      - uses: actions/cache@v6
+        id: node-modules
+        if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: node-modules-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
+      - if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' && steps.node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
       - uses: actions/cache@v6
         if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
@@ -555,12 +578,14 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-          cache: pip
-          cache-dependency-path: services/judge-py/pyproject.toml
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: services/judge-py/pyproject.toml
       - name: Python judge — lint, types, test
         run: |
           cd services/judge-py
-          pip install -e '.[dev]'
+          uv pip install --system -e '.[dev]'
           ruff check .
           ruff format --check .
           mypy .

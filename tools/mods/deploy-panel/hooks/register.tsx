@@ -21,12 +21,13 @@ const EMPTY: Snapshot = {
   web: null,
   checkedAt: 0,
   behindSince: 0,
+  mainCi: null,
   error: null,
 }
 // Change the tag when Snapshot's fields change: it declines what an earlier
 // version stored, which outlives a reload.
 const snapshot = atom({ plugin: 'deploy-panel', key: 'snapshot' } as const, EMPTY, {
-  shape: 'snapshot-2',
+  shape: 'snapshot-3',
 })
 
 const short = (sha: string | null) => (sha ? sha.slice(0, 7) : 'noma’lum')
@@ -65,6 +66,27 @@ async function refresh($: any, cwd?: string): Promise<Snapshot> {
     errors.push(`git: ${String(err)}`)
   }
 
+  // The gate can deploy on the merged PR's green CI before main CI finishes
+  // (same tree; decision 2026-11-10). main CI keeps running and its verdict
+  // still matters: a red one stops the next deploys.
+  let mainCi: string | null = null
+  try {
+    const run = await $.process.run(
+      ['gh', 'run', 'list', '--branch', 'main', '--workflow', 'CI', '--event', 'push',
+        '--limit', '1', '--json', 'headSha,status,conclusion'],
+      { cwd, timeoutMs: 15000 },
+    )
+    const last = run.exitCode === 0 ? JSON.parse(run.stdout)?.[0] : null
+    if (last && typeof last.status === 'string' && typeof last.headSha === 'string') {
+      const state = last.status === 'completed' ? last.conclusion : last.status
+      mainCi = `${last.headSha.slice(0, 7)} ${state}`
+    } else {
+      errors.push(`gh: kod ${run.exitCode}`)
+    }
+  } catch (err) {
+    errors.push(`gh: ${String(err)}`)
+  }
+
   return update($, snapshot, (prev: Snapshot) => {
     const unread = main === null || (live === null && web === null)
     const isBehind = !unread && main !== live && main !== web
@@ -83,6 +105,7 @@ async function refresh($: any, cwd?: string): Promise<Snapshot> {
       web,
       checkedAt: now,
       behindSince,
+      mainCi,
       error: errors.length ? errors.join('; ') : null,
     }
   })
@@ -135,6 +158,7 @@ export const register: Register = on => {
     const { Box, Button, Text } = $.ui.resolve(e)
     const s = await read($, snapshot)
     const v = verdict(s, await $.clock.now())
+    const mainCiRed = /\s(failure|cancelled|timed_out|startup_failure)$/.test(s.mainCi ?? '')
     const color =
       v.tone === 'ok' ? 'green' : v.tone === 'warn' ? 'yellow' : v.tone === 'bad' ? 'red' : undefined
 
@@ -143,6 +167,8 @@ export const register: Register = on => {
         <Text>origin/main  {short(s.main)}</Text>
         <Text>jonli api    {short(s.live)}</Text>
         <Text>jonli web    {short(s.web)}</Text>
+        <Text color={mainCiRed ? 'red' : undefined}>main CI      {s.mainCi ?? 'noma’lum'}</Text>
+        {mainCiRed && <Text color="red">main CI qizil — keyingi deploy'lar u yashil bo'lguncha kutadi</Text>}
         <Text color={color} dimColor={v.tone === 'dim'}>
           {v.label}
         </Text>

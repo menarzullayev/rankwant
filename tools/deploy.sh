@@ -407,6 +407,24 @@ if [ "$NO_CACHE" -eq 1 ]; then
   printf '%s⚠ --no-cache: obraz qatlamlari keshdan o'"'"'qilmaydi (sovuq qurilish)%s\n' "$Y" "$N"
 fi
 time_begin build
+# Judge toolchains live in their own image, `rankwant-judge-base:<hash of the
+# Dockerfile>` (owner decision 2026-11-10). The `base` stage depends on the
+# Dockerfile only, so it is built once per Dockerfile and the judge build is
+# just the thin layer on top (Go binary, labels). Before, a cold judge build
+# took 22 minutes (measured 2026-11-10 07:12, 1221 s). `--no-cache` rebuilds it.
+if [ "$SKIP_BAKE" -eq 0 ] && printf '%s\n' "${BUILD_SERVICES[@]}" | grep -qx judge; then
+  jb_hash="$(sha256sum services/judge-go/Dockerfile < /dev/null | cut -c1-12)"
+  [ -n "$jb_hash" ] || die "judge Dockerfile xeshi o'qilmadi"
+  JUDGE_BASE="rankwant-judge-base:$jb_hash"
+  if [ "$NO_CACHE" -eq 0 ] && docker image inspect "$JUDGE_BASE" >/dev/null 2>&1; then
+    ok "judge base saqlangan: $JUDGE_BASE (toolchain qayta qurilmaydi)"
+  else
+    step "2/8 Judge base qurilmoqda ($JUDGE_BASE — Dockerfile yangi yoki --no-cache)"
+    docker build "${BUILD_OPTS[@]}" --target base -t "$JUDGE_BASE" services/judge-go \
+      || die "judge base yiqildi"
+  fi
+  export JUDGE_BASE
+fi
 if [ "$SKIP_BAKE" -eq 1 ]; then
   step "2/8 Obrazlar — o'tkazib yuborildi (docs/tools, obrazga tushmaydi)"
   ok "bake yo'q"

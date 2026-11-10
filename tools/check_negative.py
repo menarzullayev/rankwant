@@ -4826,6 +4826,96 @@ def neg_decisions_unreadable_db_means_no_migration() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_gate_skips_tree_compare() -> tuple[bool, str]:
+    """The shortcut stops comparing trees (would deploy a tree no CI saw)."""
+    return _decision_broken(
+        "tools/check_deploy_gate.py",
+        '    if not ev.get("head_tree") or ev.get("head_tree") != ev.get("main_tree"):\n',
+        '    if not ev.get("head_tree"):\n',
+        "daraxt solishtirilmaydi",
+    )
+
+
+def neg_decisions_watcher_drops_main_ci_verdict() -> tuple[bool, str]:
+    """A shortcut deploy is no longer followed up by main CI's own verdict."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '      printf \'%s\\n\' "$TARGET" >> "$VERIFY" 2>/dev/null || true\n',
+        "      :\n",
+        "main CI natijasi kuzatilmaydi",
+    )
+
+
+def neg_decisions_cache_budget_raised() -> tuple[bool, str]:
+    """The build cache budget is quietly raised (the 2026-10-06 disk incident class)."""
+    return _decision_broken(
+        "tools/prune_docker_disk.sh",
+        'CACHE_MAX_GB="${RANKWANT_BUILD_CACHE_MAX_GB:-10}"\n',
+        'CACHE_MAX_GB="${RANKWANT_BUILD_CACHE_MAX_GB:-100}"\n',
+        "kesh byudjeti 10 GB emas",
+    )
+
+
+def neg_decisions_disk_guard_removed() -> tuple[bool, str]:
+    """The low-disk clear is dropped: a full C: no longer clears the cache."""
+    return _decision_broken(
+        "tools/prune_docker_disk.sh",
+        'if [ -n "$free_bytes" ] && [ "$free_bytes" -lt "$((DISK_MIN_FREE_GB * 1000000000))" ]; then\n',
+        "if false; then\n",
+        "disk qo'riqchisi yo'q",
+    )
+
+
+def neg_decisions_unknown_cache_kept() -> tuple[bool, str]:
+    """An unreadable cache size is treated as small (unknown must clear)."""
+    return _decision_broken(
+        "tools/prune_docker_disk.sh",
+        '  reason="kesh hajmi o\'qilmadi"\n',
+        "  :\n",
+        "o'qilmagan kesh hajmi tozalanmaydi",
+    )
+
+
+def neg_decisions_judge_base_not_reused() -> tuple[bool, str]:
+    """deploy.sh rebuilds the judge toolchains every time again."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '  if [ "$NO_CACHE" -eq 0 ] && docker image inspect "$JUDGE_BASE" >/dev/null 2>&1; then\n',
+        "  if false; then\n",
+        "judge base obrazi qayta ishlatilmaydi",
+    )
+
+
+def neg_decisions_ci_back_to_pip() -> tuple[bool, str]:
+    """An API job goes back to `pip install`."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "      - run: uv pip install --system -r requirements-dev.lock\n",
+        "      - run: pip install -r requirements-dev.lock\n",
+        "uv bilan o'rnatmaydi",
+    )
+
+
+def neg_decisions_node_modules_key_loose() -> tuple[bool, str]:
+    """The node_modules cache key forgets the lockfile (a stale tree would be reused)."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}\n",
+        "-${{ steps.setup-node.outputs.node-version }}\n",
+        "lockfile va Node versiyasiga bog'lanmagan",
+    )
+
+
+def neg_decisions_npm_ci_ignores_cache() -> tuple[bool, str]:
+    """`npm ci` runs even when node_modules was restored."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        " && steps.node-modules.outputs.cache-hit != 'true' }}\n        run: npm ci\n",
+        " }}\n        run: npm ci\n",
+        "keshi topilganda ham npm ci yuradi",
+    )
+
+
 def neg_decisions_revive_touches_manual_stops() -> tuple[bool, str]:
     """The revive script stops filtering on `.State.Error` (would start bake-off's stopped worker)."""
     return _decision_broken(
@@ -7033,8 +7123,8 @@ def neg_decisions_build_cache_kept_after_deploy() -> tuple[bool, str]:
     """The post-deploy prune goes back to the form that frees nothing."""
     return _decision_broken(
         "tools/prune_docker_disk.sh",
-        "\ndocker builder prune -af >/dev/null || true\n",
-        "\ndocker builder prune -f >/dev/null || true\n",
+        "\n  docker builder prune -af >/dev/null || true\n",
+        "\n  docker builder prune -f >/dev/null || true\n",
         "docker disk chegaralangan",
     )
 
@@ -7937,6 +8027,8 @@ _TRIAL_WORKFLOW = (
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
     "tools/check_negative.py",
+    "tools/pr_update_queue.py",
+    "tools/mods/deploy-panel/hooks/register.tsx",
     "tools/revive_containers.sh",
     "apps/api/contests/organizer_views.py",
     "apps/web/src/features/studio/api/contests.ts",
@@ -9488,7 +9580,13 @@ _GATE_GREEN = [
 
 
 def _gate_expect(
-    label: str, main: str, runs: object, code: int, needle: str, dirty: object = None
+    label: str,
+    main: str,
+    runs: object,
+    code: int,
+    needle: str,
+    dirty: object = None,
+    pr: object = None,
 ) -> tuple[bool, str]:
     """Run the gate on fixtures (no git, no GitHub) and require exit `code`.
 
@@ -9503,6 +9601,11 @@ def _gate_expect(
         compose.write_text(
             dirty if isinstance(dirty, str) else json.dumps(dirty or []), encoding="utf-8"
         )
+        extra: list[str] = []
+        if pr is not None:
+            evidence = Path(tmp) / "pr.json"
+            evidence.write_text(json.dumps(pr), encoding="utf-8")
+            extra = ["--pr", str(evidence)]
         got, out = run_check(
             "deploy_gate",
             "--head",
@@ -9513,6 +9616,7 @@ def _gate_expect(
             str(path),
             "--compose-status",
             str(compose),
+            *extra,
         )
     if got != code:
         return False, f"deploy_gate/{label}: exit {got} ({code} kerak) — {out.strip()[-160:]}"
@@ -9631,6 +9735,59 @@ def neg_deploy_gate_latest_run_wins() -> tuple[bool, str]:
         _GATE_GREEN[1],
     ]
     return _gate_expect("oxirgi run hal qiladi", _GATE_SHA, runs, 1, "`CI` natijasi `failure`")
+
+
+# The PR-CI shortcut (owner decision 2026-11-10): main CI still running, the
+# merged PR's tree identical and its CI green, the last finished main run green.
+_GATE_RUNNING = [dict(_GATE_GREEN[0], status="in_progress", conclusion="")]
+_GATE_PR = {
+    "number": 7,
+    "head": "c" * 40,
+    "head_tree": "d" * 40,
+    "main_tree": "d" * 40,
+    "pr_runs": [dict(_GATE_GREEN[0], createdAt="2026-09-16T23:00:00Z")],
+    "main_history": [
+        {"headSha": "e" * 40, "status": "completed", "conclusion": "success", "createdAt": "2026-09-16T22:00:00Z"}
+    ],
+}
+
+
+def neg_deploy_gate_pr_shortcut_passes() -> tuple[bool, str]:
+    # Positive control: without it every refusal below could be a gate that never opens.
+    return _gate_expect(
+        "PR CI qisqa yo'li ochiladi", _GATE_SHA, _GATE_RUNNING, 0, "PR_CI_SHORTCUT", pr=_GATE_PR
+    )
+
+
+def neg_deploy_gate_pr_tree_differs() -> tuple[bool, str]:
+    pr = dict(_GATE_PR, head_tree="f" * 40)
+    return _gate_expect(
+        "daraxt farq qilsa yopiq", _GATE_SHA, _GATE_RUNNING, 1, "daraxtidan farq qiladi", pr=pr
+    )
+
+
+def neg_deploy_gate_pr_ci_red() -> tuple[bool, str]:
+    pr = dict(_GATE_PR, pr_runs=[dict(_GATE_GREEN[0], conclusion="failure")])
+    return _gate_expect(
+        "PR CI qizil bo'lsa yopiq", _GATE_SHA, _GATE_RUNNING, 1, "PR #7 CI `failure`", pr=pr
+    )
+
+
+def neg_deploy_gate_last_main_red() -> tuple[bool, str]:
+    # A red main run turns the shortcut off until main is green again.
+    history = [dict(_GATE_PR["main_history"][0], conclusion="failure")]
+    pr = dict(_GATE_PR, main_history=history)
+    return _gate_expect(
+        "oxirgi main CI qizil bo'lsa yopiq", _GATE_SHA, _GATE_RUNNING, 1, "oxirgi tugagan main CI", pr=pr
+    )
+
+
+def neg_deploy_gate_finished_main_red_wins() -> tuple[bool, str]:
+    # A finished main run is the final word: green PR evidence cannot override it.
+    runs = [dict(_GATE_GREEN[0], conclusion="failure")]
+    return _gate_expect(
+        "tugagan qizil main CI hal qiladi", _GATE_SHA, runs, 1, "`CI` natijasi `failure`", pr=_GATE_PR
+    )
 
 
 def neg_deploy_gate_unreadable() -> tuple[bool, str]:
@@ -11323,6 +11480,83 @@ def neg_node_cases_labels_exist() -> tuple[bool, str]:
     return True, f"NODE_CASES: {len(declared)} yorliq, hammasi registrda bor"
 
 
+def _queue_pr(number: int, state: str, created: str, auto: bool = True, running: bool = False) -> dict:
+    return {
+        "number": number,
+        "isDraft": False,
+        "isCrossRepository": False,
+        "autoMergeRequest": {"mergeMethod": "SQUASH"} if auto else None,
+        "mergeStateStatus": state,
+        "createdAt": created,
+        "statusCheckRollup": [{"status": "IN_PROGRESS" if running else "COMPLETED", "conclusion": None if running else "SUCCESS"}],
+    }
+
+
+def _queue_expect(label: str, prs: list[dict], needle: str | None) -> tuple[bool, str]:
+    """Run the queue on a fixture; `needle` None means it must stay silent."""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "prs.json"
+        path.write_text(json.dumps(prs), encoding="utf-8")
+        proc = subprocess.run(
+            [PY, "tools/pr_update_queue.py", "--prs", str(path)],
+            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
+    out = (proc.stdout or "").strip()
+    if proc.returncode != 0:
+        return False, f"pr_queue/{label}: exit {proc.returncode} — {out[-120:]}"
+    if needle is None:
+        return (out == "", f"pr_queue/{label}: " + ("jim" if out == "" else f"jim emas — {out[:100]}"))
+    return (needle in out, f"pr_queue/{label}: " + (out if needle in out else f"{needle!r} yo'q — {out[:100]}"))
+
+
+def neg_pr_queue_picks_oldest_behind() -> tuple[bool, str]:
+    # Positive control: a queue that never updates would pass every case below.
+    prs = [_queue_pr(9, "BEHIND", "2026-11-10T09:00:00Z"), _queue_pr(7, "BEHIND", "2026-11-10T08:00:00Z")]
+    return _queue_expect("eng eski BEHIND tanlanadi", prs, "PR #7 main bilan yangilanardi")
+
+
+def neg_pr_queue_waits_for_running_ci() -> tuple[bool, str]:
+    prs = [_queue_pr(7, "BEHIND", "2026-11-10T08:00:00Z"), _queue_pr(8, "BLOCKED", "2026-11-10T08:30:00Z", running=True)]
+    return _queue_expect("CI yurayotganda kutadi", prs, None)
+
+
+def neg_pr_queue_waits_for_clean() -> tuple[bool, str]:
+    # A CLEAN auto-merge PR merges in seconds and would leave the updated one BEHIND again.
+    prs = [_queue_pr(7, "BEHIND", "2026-11-10T08:00:00Z"), _queue_pr(8, "CLEAN", "2026-11-10T08:30:00Z")]
+    return _queue_expect("CLEAN merge bo'lguncha kutadi", prs, None)
+
+
+def neg_pr_queue_ignores_manual_prs() -> tuple[bool, str]:
+    # Without auto-merge the PR belongs to its agent or owner: the queue never touches it.
+    prs = [_queue_pr(7, "BEHIND", "2026-11-10T08:00:00Z", auto=False)]
+    return _queue_expect("auto-merge'siz PR'ga tegmaydi", prs, None)
+
+
+def neg_pr_queue_ignores_dirty() -> tuple[bool, str]:
+    prs = [_queue_pr(7, "DIRTY", "2026-11-10T08:00:00Z")]
+    return _queue_expect("DIRTY PR'ga tegmaydi", prs, None)
+
+
+def neg_decisions_watcher_skips_queue() -> tuple[bool, str]:
+    """The watcher stops running the PR update queue."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '    queue_out="$("$QUEUE_PY" tools/pr_update_queue.py 2>&1)"\n',
+        '    queue_out=""\n',
+        "PR navbati yuritilmaydi",
+    )
+
+
+def neg_decisions_queue_ignores_running_ci() -> tuple[bool, str]:
+    """The queue updates a PR while another one's CI is still running."""
+    return _decision_broken(
+        "tools/pr_update_queue.py",
+        '    if busy:\n        return None,',
+        '    if False:\n        return None,',
+        "CI yurayotganda ham yangilaydi",
+    )
+
+
 def _scoped(listed: list[str], case) -> tuple[bool, str]:
     """Run one decisions case as PR CI would, with `listed` as the changed files."""
     global _changed_cache
@@ -11902,6 +12136,15 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("migrate --check olinsa tutilsin", neg_decisions_dump_skips_migrate_check),
             ("migratsiya dump'ni kutmasa tutilsin", neg_decisions_migrate_does_not_wait_dump),
             ("o'qilmagan baza migratsiyasiz deb olinsa tutilsin", neg_decisions_unreadable_db_means_no_migration),
+            ("darvoza daraxtni solishtirmasa tutilsin", neg_decisions_gate_skips_tree_compare),
+            ("watcher main CI hukmini kuzatmasa tutilsin", neg_decisions_watcher_drops_main_ci_verdict),
+            ("kesh byudjeti oshirilsa tutilsin", neg_decisions_cache_budget_raised),
+            ("disk qo'riqchisi olinsa tutilsin", neg_decisions_disk_guard_removed),
+            ("o'qilmagan kesh saqlansa tutilsin", neg_decisions_unknown_cache_kept),
+            ("judge base qayta qurilsa tutilsin", neg_decisions_judge_base_not_reused),
+            ("CI pip'ga qaytsa tutilsin", neg_decisions_ci_back_to_pip),
+            ("node_modules kaliti lockfile'siz bo'lsa tutilsin", neg_decisions_node_modules_key_loose),
+            ("kesh topilganda npm ci yursa tutilsin", neg_decisions_npm_ci_ignores_cache),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),
             ("Docker o'chiqda deploy'ga urinilsa tutilsin", neg_decisions_watcher_deploys_without_docker),
@@ -12600,6 +12843,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("CI tugamagan — to'xtaydi", neg_deploy_gate_ci_running),
             ("Security run'i yo'q — o'tadi", neg_deploy_gate_security_missing),
             ("oxirgi qizil run yashilni bosadi", neg_deploy_gate_latest_run_wins),
+            ("PR CI qisqa yo'li ochiladi", neg_deploy_gate_pr_shortcut_passes),
+            ("daraxt farq qilsa qisqa yo'l yopiq", neg_deploy_gate_pr_tree_differs),
+            ("PR CI qizil bo'lsa qisqa yo'l yopiq", neg_deploy_gate_pr_ci_red),
+            ("oxirgi main CI qizil bo'lsa qisqa yo'l yopiq", neg_deploy_gate_last_main_red),
+            ("tugagan qizil main CI PR'dan ustun", neg_deploy_gate_finished_main_red_wins),
             ("commit qilinmagan compose — to'xtaydi", neg_deploy_gate_dirty_compose_blocks),
             ("o'qib bo'lmagan ro'yxat — exit 2", neg_deploy_gate_unreadable),
             ("o'qib bo'lmagan compose holati — exit 2", neg_deploy_gate_unreadable_compose_status),
@@ -12730,6 +12978,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("North Star noto'g'ri origin bilan yiqiladi", neg_check_metrics_wrong_origin),
             ("g'ayritabiiy chegara bilan yiqiladi", neg_check_metrics_impossible_threshold),
             ("toza holat o'tadi (nazorat)", neg_check_metrics_passes),
+        ],
+    ),
+    (
+        "pr_queue",
+        [
+            ("eng eski BEHIND tanlanadi (nazorat)", neg_pr_queue_picks_oldest_behind),
+            ("CI yurayotganda kutadi", neg_pr_queue_waits_for_running_ci),
+            ("CLEAN merge bo'lguncha kutadi", neg_pr_queue_waits_for_clean),
+            ("auto-merge'siz PR'ga tegmaydi", neg_pr_queue_ignores_manual_prs),
+            ("DIRTY PR'ga tegmaydi", neg_pr_queue_ignores_dirty),
+            ("watcher navbatni yuritmasa tutilsin", neg_decisions_watcher_skips_queue),
+            ("navbat CI'ni kutmasa tutilsin", neg_decisions_queue_ignores_running_ci),
         ],
     ),
     (

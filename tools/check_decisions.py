@@ -2824,6 +2824,111 @@ def dump_only_for_pending_migrations() -> str | None:
     return None
 
 
+def gate_trusts_green_pr_on_same_tree() -> str | None:
+    """2026-11-10 (HITL): main CI tugamasdan PR CI yetadi — faqat bir xil daraxtda.
+
+    O'lchandi: 30 PR'da merge \u2192 deploy boshlanishi median 4:28, shundan main
+    CI 3:02 — u PR CI yashil o'tkazgan aynan o'sha daraxtni qayta tekshirardi
+    (5 PR'da daraxt bayt-bayt bir xil, ruleset `strict`). Endi darvoza merge
+    qilingan PR head daraxti main bilan bir xil, PR CI yashil va oxirgi tugagan
+    main CI yashil bo'lsa ochiladi. main CI baribir yuradi: tugab qizil chiqsa
+    darvoza yopiq, watcher natijani logga yozadi, panel ko'rsatadi.
+    """
+    gate = read("tools/check_deploy_gate.py")
+    for needle, why in (
+        ('    if not ev.get("head_tree") or ev.get("head_tree") != ev.get("main_tree"):\n',
+         "daraxt solishtirilmaydi"),
+        ('        if last.get("conclusion") != "success":\n', "qizil main CI qisqa yo'lni yopmaydi"),
+        ('    if last_pr.get("status") != "completed" or last_pr.get("conclusion") != "success":\n',
+         "PR CI natijasi tekshirilmaydi"),
+        ('            # A finished main run is the final word, green or red.\n            if run.get("conclusion") != "success":\n',
+         "tugagan qizil main CI hal qiluvchi emas"),
+    ):
+        if needle not in gate:
+            return f"check_deploy_gate.py: PR CI qisqa yo'li — {why}"
+    watcher = read("tools/auto_deploy.sh")
+    if '      printf \'%s\\n\' "$TARGET" >> "$VERIFY" 2>/dev/null || true\n' not in watcher:
+        return "tools/auto_deploy.sh: PR CI bilan chiqqan deploy'ning main CI natijasi kuzatilmaydi"
+    panel = read("tools/mods/deploy-panel/hooks/register.tsx")
+    if "'--workflow', 'CI', '--event', 'push'" not in panel:
+        return "deploy paneli main CI holatini ko'rsatmaydi"
+    return None
+
+
+def build_cache_kept_within_budget() -> str | None:
+    """2026-11-10 (HITL): build cache 10 GB gacha saqlanadi, judge base qayta ishlatiladi.
+
+    O'lchandi (34 deploy): build deploy'ning 79% i (median 136 s, `npm ci`
+    46 s), judge o'zgargan deploy 1221 s — chunki 2026-10-06 dan keshni har
+    deploy `-af` bilan butunlay tozalardi. Endi kesh 10 GB dan oshsa, hajmi
+    o'qilmasa yoki Docker diskida 5 GB dan kam joy qolsa tozalanadi; judge
+    toolchain qatlami Dockerfile xeshi bilan teglangan obrazda saqlanadi.
+    """
+    prune = read("tools/prune_docker_disk.sh")
+    for needle, why in (
+        ('CACHE_MAX_GB="${RANKWANT_BUILD_CACHE_MAX_GB:-10}"\n', "kesh byudjeti 10 GB emas"),
+        ('DISK_MIN_FREE_GB="${RANKWANT_DISK_MIN_FREE_GB:-5}"\n', "disk qo'riqchisi chegarasi 5 GB emas"),
+        ('if [ -n "$free_bytes" ] && [ "$free_bytes" -lt "$((DISK_MIN_FREE_GB * 1000000000))" ]; then\n',
+         "disk qo'riqchisi yo'q"),
+        ('  reason="kesh hajmi o\'qilmadi"\n', "o'qilmagan kesh hajmi tozalanmaydi"),
+    ):
+        if needle not in prune:
+            return f"tools/prune_docker_disk.sh: {why}"
+    deploy = read("tools/deploy.sh")
+    if '  if [ "$NO_CACHE" -eq 0 ] && docker image inspect "$JUDGE_BASE" >/dev/null 2>&1; then\n' not in deploy:
+        return "tools/deploy.sh: judge base obrazi qayta ishlatilmaydi"
+    if "        JUDGE_BASE: ${JUDGE_BASE:-base}\n" not in read("docker-compose.yml"):
+        return "docker-compose.yml: judge build'iga JUDGE_BASE uzatilmaydi"
+    return None
+
+
+def ci_installs_are_fast() -> str | None:
+    """2026-11-10 (HITL): CI paketlarni uv va node_modules keshi bilan o'rnatadi.
+
+    O'lchandi (#501 main CI): `pip install -r requirements-dev.lock` to'rt API
+    job'ining har birida 16\u201325 s, pip keshini saqlash bir marta 116 s,
+    `npm ci` npm keshi bilan ham 41 s. Endi Python \u2014 `uv pip install
+    --system`, Node \u2014 o'rnatilgan daraxt lockfile va aniq Node versiyasi
+    bo'yicha keshlanadi; kesh topilmasa `npm ci` yuradi.
+    """
+    ci = read(".github/workflows/ci.yml")
+    if ci.count("run: uv pip install --system -r requirements-dev.lock\n") != 2:
+        return "ci.yml: API job'lari paketlarni uv bilan o'rnatmaydi"
+    if "cache: pip\n" in ci:
+        return "ci.yml: pip keshi qaytdi (saqlash 116 s olgan)"
+    key = "key: node-modules-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}\n"
+    if key not in ci:
+        return "ci.yml: node_modules keshi lockfile va Node versiyasiga bog'lanmagan"
+    if "&& steps.node-modules.outputs.cache-hit != 'true' }}\n        run: npm ci\n" not in ci:
+        return "ci.yml: node_modules keshi topilganda ham npm ci yuradi"
+    return None
+
+
+def behind_prs_update_one_at_a_time() -> str | None:
+    """2026-11-10 (HITL): orqada qolgan PR'lar navbat bilan, bittadan yangilanadi.
+
+    O'lchandi: 30 PR'da 75 ta PR CI yurishi (median 2:51) \u2014 har merge
+    qolgan PR'larni BEHIND qilardi, agentlar darhol yangilardi va keyingi merge
+    o'sha CI'ni bekor qilardi. Endi watcher har tick'da `pr_update_queue.py`
+    ni yuritadi: auto-merge PR'laridan birortasining CI'si yurmayotgan va
+    CLEAN bo'lmaganda eng eski BEHIND PR yangilanadi. Agentlar o'zi yangilamaydi.
+    """
+    rel = "tools/pr_update_queue.py"
+    if not (ROOT / rel).exists():
+        return f"{rel} yo'q \u2014 orqada qolgan PR'lar navbatsiz yangilanadi"
+    queue = read(rel)
+    if "    if busy:\n        return None," not in queue:
+        return f"{rel}: CI yurayotganda ham yangilaydi"
+    if "--rebase" in queue or "--force" in queue:
+        return f"{rel}: rebase/force \u2014 faqat `main` ni merge qilish mumkin"
+    watcher = read("tools/auto_deploy.sh")
+    if '    queue_out="$("$QUEUE_PY" tools/pr_update_queue.py 2>&1)"\n' not in watcher:
+        return "tools/auto_deploy.sh: PR navbati yuritilmaydi"
+    if "**Orqada qolgan PR'ni o'zingiz yangilamang** (2026-11-10)" not in read("CLAUDE.md"):
+        return "CLAUDE.md: agentlarga BEHIND PR'ni yangilamaslik aytilmagan"
+    return None
+
+
 def pr_runs_decision_cases_for_changed_files() -> str | None:
     """2026-11-10 (HITL): PR CI qaror testlarini faqat o'zgargan fayllar uchun yuritadi.
 
@@ -4051,7 +4156,7 @@ def docker_disk_stays_bounded() -> str | None:
     prune = read("tools/prune_docker_disk.sh")
     if "docker image prune -f" not in prune:
         return "tools/prune_docker_disk.sh: `docker image prune -f` yo'q"
-    if "\ndocker builder prune -af >/dev/null || true\n" not in prune:
+    if "\n  docker builder prune -af >/dev/null || true\n" not in prune:
         return "tools/prune_docker_disk.sh: build cache to'liq tozalanmaydi — `-f` ning o'zi 0 bayt bo'shatadi"
     if "docker volume prune" in prune:
         return "tools/prune_docker_disk.sh: volume prune — postgres/minio o'chadi"
@@ -4864,6 +4969,10 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
+    ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
+    ("CI paketlarni tez o'rnatadi", ci_installs_are_fast),
+    ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),
+    ("darvoza bir xil daraxtda PR CI'ga ishonadi", gate_trusts_green_pr_on_same_tree),
     ("pg_dump faqat migratsiyada, build bilan parallel", dump_only_for_pending_migrations),
     ("versiya nuqtalari ulangan", versioning_points_are_wired),
     ("urg'u rang keshi rejimga bog'liq", accent_cache_follows_the_mode),

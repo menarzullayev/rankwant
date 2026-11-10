@@ -294,6 +294,41 @@ fi
 TARGET="$(git rev-parse origin/main 2>/dev/null)" || die "origin/main o'qilmadi"
 [ -n "$TARGET" ] || die "origin/main bo'sh"
 
+# ── 3b. PR CI bilan chiqqan deploy'ning main CI hukmi ────────────────
+# Darvoza main CI tugamasdan PR CI'ga ishonib deploy qilgan bo'lsa (bir xil
+# daraxt, qaror 2026-11-10), commit shu faylda turadi. main CI tugagach
+# natija BIR MARTA yoziladi: yashil — tasdiq, qizil — ogohlantirish (keyingi
+# deploy'lar baribir to'xtaydi: darvoza qizil main'da qisqa yo'lni yopadi).
+VERIFY="${STATE}.verify"
+if [ -s "$VERIFY" ] && [ "$DRY_RUN" -eq 0 ]; then
+  pending=""
+  while IFS= read -r vsha; do
+    [ -n "$vsha" ] || continue
+    vrun="$(gh run list --commit "$vsha" --workflow CI --event push \
+      --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"' 2>/dev/null)"
+    case "$vrun" in
+      "completed success") log "main CI tasdiqladi: ${vsha:0:7} yashil (deploy PR CI bilan chiqqan edi)" ;;
+      completed\ *) log "⚠ main CI QIZIL: ${vsha:0:7} (${vrun#completed }) — bu kod jonli; keyingi deploy'lar main CI yashil bo'lguncha kutadi" ;;
+      *) pending="${pending}${vsha}"$'\n' ;;
+    esac
+  done < "$VERIFY"
+  printf '%s' "$pending" > "$VERIFY" 2>/dev/null || true
+fi
+
+# ── 3c. Orqada qolgan PR'lar — navbat bilan, bittadan ───────────────
+# Qaror 2026-11-10: `main` siljiganda agentlar o'z PR'ini darhol
+# `update-branch` qilardi, keyingi merge uni yana orqada qoldirardi va o'sha
+# CI yurishi bekor ketardi (30 PR'da 75 ta PR CI). `pr_update_queue.py`
+# auto-merge yoqilgan PR'lardan hech birining CI'si yurmayotganda faqat eng
+# eskisini yangilaydi. Faqat harakat logga yoziladi; GitHub o'qilmasa jim.
+if [ "$DRY_RUN" -eq 0 ] && [ -f tools/pr_update_queue.py ]; then
+  QUEUE_PY="$(bash tools/pick-python.sh 2>/dev/null)" || QUEUE_PY=""
+  if [ -n "$QUEUE_PY" ]; then
+    queue_out="$("$QUEUE_PY" tools/pr_update_queue.py 2>&1)"
+    [ -n "$queue_out" ] && log "$queue_out"
+  fi
+fi
+
 # ── 4. Worktree'ni origin/main ga keltirish ──────────────────────────
 # ⚠️ `reset --hard` ATAYLAB yo'q: u tasodifan commit qilingan ishni yo'q
 # qiladi. `--ff-only` ajralib ketgan holatda TO'XTAYDI va bu to'g'ri —
@@ -418,6 +453,12 @@ deploy_rc=$?
 if [ "$deploy_rc" -eq 0 ]; then
   log "deploy tugadi: ${TARGET:0:12}"
   rm -f "$STATE"
+  case "$gate_out" in
+    *PR_CI_SHORTCUT*)
+      printf '%s\n' "$TARGET" >> "$VERIFY" 2>/dev/null || true
+      log "  darvoza PR CI bilan ochilgan — main CI natijasi kelganda logga yoziladi"
+      ;;
+  esac
   exit 0
 fi
 # 75 — `deploy.sh` o'z darvozasida to'xtadi, ya'ni HECH NARSA o'zgarmagan
