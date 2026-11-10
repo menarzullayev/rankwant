@@ -45,6 +45,11 @@ ROOT_SECRET_VALUE = "devdevdev"
 #: Since ADR-0044 the root password reaches compose through this variable,
 #: so a judge env that names it carries the root secret just the same.
 ROOT_SECRET_VARIABLE = "MINIO_ROOT_PASSWORD"
+#: ADR-0046: the launcher's three capabilities, used once for the id map.
+#: Anything beyond them gives the judge back what `privileged` gave.
+JUDGE_CAPS = {"SETUID", "SETGID", "SETFCAP"}
+#: ADR-0046: the security options the judge cannot run safely without.
+JUDGE_SECURITY_OPT = ("no-new-privileges:true", "seccomp=./services/judge-go/seccomp.json")
 
 
 def main() -> int:
@@ -88,8 +93,29 @@ def main() -> int:
                 f"{name} env'da root MinIO paroli bor (A-2, ADR-0028) — "
                 "judge faqat `judge-ro` userini ko'radi"
             )
-        if not services[name].get("privileged"):
-            problems.append(f"{name} privileged emas — nsjail ishlamaydi")
+        # ADR-0046 (2026-11-10): the judge is NOT privileged. Until then this
+        # check demanded the opposite ("privileged emas — nsjail ishlamaydi").
+        service = services[name]
+        if service.get("privileged"):
+            problems.append(f"{name} privileged — ADR-0046: judge konteyneri privileged emas")
+        if service.get("cgroup") == "host":
+            problems.append(f"{name} `cgroup: host` — ADR-0046: delegatsiyalangan cgroup ishlatiladi")
+        if service.get("cap_drop") != ["ALL"]:
+            problems.append(f"{name} `cap_drop: [ALL]` siz")
+        extra = set(service.get("cap_add") or []) - JUDGE_CAPS
+        if extra:
+            problems.append(f"{name} ortiqcha capability: {sorted(extra)}")
+        opts = service.get("security_opt") or []
+        for opt in JUDGE_SECURITY_OPT:
+            if opt not in opts:
+                problems.append(f"{name} security_opt'da `{opt}` yo'q")
+        if any(o.replace(":", "=") == "seccomp=unconfined" for o in opts):
+            problems.append(f"{name} seccomp'siz")
+        usernsed = (
+            env.get("JUDGE_USERNS") == "1" if isinstance(env, dict) else "JUDGE_USERNS=1" in env
+        )
+        if not usernsed:
+            problems.append(f"{name} launcher'siz (`JUDGE_USERNS=1` yo'q) — worker root qoladi")
 
         depends = services[name].get("depends_on") or {}
         names = set(depends) if isinstance(depends, dict) else set(depends)

@@ -257,6 +257,22 @@ va qatorlarni chiqaradi; ular odatdagi solishtiruvdan o'tadi.
 ⚠️ YOPIQ YIQILISH: judge tanimaydigan `task.kind` ni `IE` bilan rad etadi —
 dastur sifatida yuritmaydi.
 
+## Sandbox chegarasi — ADR-0046 (2026-11-10)
+
+Judge konteyneri `privileged` emas. Shartnomaga ta'siri:
+
+- Dastur sandbox ichida uid 65534, **tashqarida uid 10001** (ilgari host uid 0).
+  Image'dagi toolchain fayllarining hammasi o'qiladigan (o'lchandi: `/usr`,
+  `/opt` da faqat root o'qiydigan fayl **0** ta).
+- Dasturga nsjail'ning o'z seccomp siyosati qo'llanadi: `mount`, `umount2`,
+  `pivot_root`, `sethostname`, `unshare`, `setns` va `CLONE_NEW*` bayroqli
+  `clone` — `EPERM`, `clone3` — `ENOSYS` (glibc `clone` ga qaytadi). Oddiy
+  `fork` va oqimlar o'zgarmaydi. Case: `33-nested-userns`.
+- Jarayon chegarasi — faqat run cgroup'ining `pids.max` (`Processes + 4`).
+  `RLIMIT_NPROC` qo'yilmaydi: uid 0 da u hech qachon ishlamagan, uid 10001 da
+  esa fork bomb'ni `TLE` o'rniga `MLE` qilardi (sabab va o'lchov —
+  `services/judge-go/sandbox.go`, `nsjailArgs` izohi).
+
 ## Vaqt o'lchash — muhim farq
 
 - `time_ms` — **CPU vaqti** (user + sys), wall clock emas.

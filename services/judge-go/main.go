@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -23,6 +24,27 @@ const (
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	// ADR-0046: the container is not privileged. The launcher (PID 1, the
+	// only stage that starts as root) builds the worker's namespaces and
+	// drops to the judge user; everything below runs as that user.
+	var shutdown io.ReadCloser
+	if usernsEnabled() {
+		if os.Getenv(stageEnv) != stageWorker {
+			os.Exit(runLauncher(log))
+		}
+		pipe, err := enterWorker()
+		if err != nil {
+			log.Error("cgroup delegatsiyasi qurilmadi — worker ishga tushmaydi (ADR-0046)", "err", err)
+			os.Exit(1)
+		}
+		shutdown = pipe
+		if err := PreflightIdentity(); err != nil {
+			log.Error("identity preflight muvaffaqiyatsiz — worker ishga tushmaydi (ADR-0046)", "err", err)
+			os.Exit(1)
+		}
+		log.Info("identity preflight o'tdi — worker root emas va capability'siz", "uid", os.Getuid())
+	}
 
 	if os.Getenv("DATABASE_URL") != "" {
 		// 06-architecture xavfsizlik chegarasi: judge host'da DB credential bo'lmaydi.
@@ -59,6 +81,13 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	if shutdown != nil {
+		// The launcher closes its end on SIGTERM (or by dying): drain and stop.
+		go func() {
+			_, _ = io.Copy(io.Discard, shutdown)
+			stop()
+		}()
+	}
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
 		log.Error("Redis ga ulanib bo'lmadi", "err", err)
@@ -69,11 +98,16 @@ func main() {
 	// bu 2026-09-06 da mashinani ikki marta yiqitgan.
 	if err := PreflightCgroup(); err != nil {
 		log.Error("cgroup preflight muvaffaqiyatsiz — worker ishga tushmaydi", "err", err)
-		log.Error("konteyner --privileged --cgroupns=host bilan ishlashi va " +
-			"/sys/fs/cgroup yozilishi mumkin bo'lishi kerak")
+		log.Error("cgroup daraxti yozilmaydi: konteyner JUDGE_USERNS=1 bilan " +
+			"(delegatsiyalangan cgroup, ADR-0046) ishlashi kerak")
 		os.Exit(1)
 	}
 	log.Info("cgroup preflight o'tdi — pids va memory limitlari ishlaydi")
+	if err := PreflightSandbox(ctx); err != nil {
+		log.Error("sandbox preflight muvaffaqiyatsiz — worker ishga tushmaydi", "err", err)
+		os.Exit(1)
+	}
+	log.Info("sandbox preflight o'tdi — nsjail dastur yurgizadi", "rootless", usernsEnabled())
 
 	tests, err := newStore()
 	if err != nil {
