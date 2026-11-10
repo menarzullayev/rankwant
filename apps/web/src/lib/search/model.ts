@@ -7,6 +7,8 @@
  *  server found in text the server did not fold for us.
  */
 
+import { ALPHABET_FOLD } from "@rankwant/shared/alphabet";
+
 /** Result types the API serves, in chip order. */
 export const SERVER_TYPES = [
   "problem",
@@ -78,7 +80,7 @@ export function isSearchType(value: string): value is SearchType {
 }
 
 /** The same characters `core.search.APOSTROPHES` strips. */
-const APOSTROPHES = new Set(["'", "’", "ʻ", "‘", "`", "´"]);
+const APOSTROPHES = new Set(["'", "’", "ʻ", "‘", "`", "´", "ʼ"]);
 
 /** Folded text plus, for every folded character, where it came from. */
 function foldWithMap(text: string): { folded: string; map: number[] } {
@@ -87,8 +89,9 @@ function foldWithMap(text: string): { folded: string; map: number[] } {
   for (let index = 0; index < text.length; index += 1) {
     const char = text[index];
     if (APOSTROPHES.has(char)) continue;
-    // One source character can lower-case into several (`İ`).
-    for (const lower of char.toLowerCase()) {
+    // The new alphabet folds onto the old spelling (ADR-0059); one source
+    // character can also lower-case into several (`İ`).
+    for (const lower of (ALPHABET_FOLD[char] ?? char).toLowerCase()) {
       folded += lower;
       map.push(index);
     }
@@ -96,7 +99,8 @@ function foldWithMap(text: string): { folded: string; map: number[] } {
   return { folded, map };
 }
 
-/** Mirror of `normalize_search`: no apostrophes, lower case, single spaces. */
+/** Mirror of `normalize_search`: no apostrophes, one alphabet, lower case,
+ *  single spaces. */
 export function foldText(text: string): string {
   return foldWithMap(text).folded.split(/\s+/).filter(Boolean).join(" ");
 }

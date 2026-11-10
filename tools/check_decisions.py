@@ -3647,6 +3647,34 @@ def about_page_is_one_searchable_page() -> str | None:
     return None
 
 
+def alphabets_fold_as_one() -> str | None:
+    """2026-11-11 (HITL, ADR-0059): yangi alifbo — qidiruvda ikkalasi bir.
+
+    `ʼ` (yangi tutuq belgisi) apostroflar qatorida; `ö ğ ş ç` Python, SQL
+    va brauzer katlamasida bir jadvaldan; ikki o'giruvchi bitta holatlar
+    faylidan tekshiriladi.
+    """
+    search_py = read("apps/api/core/search.py")
+    if 'APOSTROPHES = "\'’ʻ‘`´ʼ"\n' not in search_py:
+        return "core/search.py: yangi alifbo tutuq belgisi (ʼ) qidiruvda tashlanmaydi"
+    if (
+        '    return " ".join(_APOSTROPHE_RE.sub("", text).translate(_ALPHABET_TABLE).lower().split())\n'
+        not in search_py
+    ):
+        return "core/search.py: normalize_search yangi alifbo harflarini katlamaydi"
+    if "        for char, value in ALPHABET_FOLD.items():\n" not in search_py:
+        return "core/search.py: SQL katlamasi yangi alifbo harflarini katlamaydi"
+    if (
+        "    for (const lower of (ALPHABET_FOLD[char] ?? char).toLowerCase()) {\n"
+        not in read("apps/web/src/lib/search/model.ts")
+    ):
+        return "lib/search/model.ts: brauzer katlamasi yangi alifbo harflarini katlamaydi"
+    for test in ("apps/api/tests/test_alphabet.py", "apps/web/tests/unit/alphabet.test.ts"):
+        if "packages/shared/src/alphabet-cases.json" not in read(test):
+            return f"{test}: o'giruvchi umumiy holatlar faylidan tekshirilmaydi"
+    return None
+
+
 def site_search_is_one_engine() -> str | None:
     """2026-10-05: sayt qidiruvi — bitta dvigatel, bitta panel.
 
@@ -5181,6 +5209,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sinfga kurs: faqat bepul ochiladi, hisobot egasiga, kutilayotgan ish", course_given_to_a_class),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
+    ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),

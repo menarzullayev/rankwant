@@ -12,7 +12,8 @@
     "./country-names": "./src/country-names.ts",
     "./regions": "./src/regions.ts",
     "./grades": "./src/grades.ts",
-    "./format": "./src/format.ts"
+    "./format": "./src/format.ts",
+    "./alphabet": "./src/alphabet.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

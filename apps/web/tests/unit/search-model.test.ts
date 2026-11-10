@@ -31,7 +31,7 @@ const hit = (over: Partial<SearchHit>): SearchHit => ({
 
 describe("search folding", () => {
   it("drops every apostrophe form, case and extra spaces", () => {
-    for (const mark of ["'", "’", "ʻ", "‘", "`", "´"]) {
+    for (const mark of ["'", "’", "ʻ", "‘", "`", "´", "ʼ"]) {
       expect(foldText(`Bo${mark}lish`)).toBe("bolish");
     }
     expect(foldText("  Ikki   SO'Z ")).toBe("ikki soz");
@@ -40,7 +40,7 @@ describe("search folding", () => {
   it("strips the same characters the server does", () => {
     const server = src("../../../api/core/search.py");
     const line = server.split("\n").find((row) => row.startsWith("APOSTROPHES = "));
-    expect(line).toBe(`APOSTROPHES = "'’ʻ‘\`´"`);
+    expect(line).toBe(`APOSTROPHES = "'’ʻ‘\`´ʼ"`);
   });
 
   it("serves the same result types the server registers", () => {
