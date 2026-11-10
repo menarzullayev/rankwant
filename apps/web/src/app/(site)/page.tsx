@@ -1,3 +1,4 @@
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import type { Route } from "next";
 
 import { Badge } from "@/components/ui/Badge";
@@ -400,7 +401,7 @@ export default async function Home() {
                       className="block px-5 py-4 transition rw-hover-bg"
                     >
                       <span className="block font-medium rw-strong">
-                        {post.title}
+                        {inReaderAlphabet(post.title, post.locale)}
                       </span>
                       <span className="mt-0.5 block text-theme-xs rw-faint">
                         {date(post.published_at, locale)}

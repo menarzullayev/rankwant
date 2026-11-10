@@ -1,4 +1,5 @@
 import type { Metadata, Route } from "next";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -69,7 +70,7 @@ export default async function RoadmapItemPage({ params }: Props) {
             </span>
           )}
         </div>
-        <h1 className="text-title-sm font-bold rw-strong">{item.title}</h1>
+        <h1 className="text-title-sm font-bold rw-strong">{inReaderAlphabet(item.title, "uz")}</h1>
         <p className="text-theme-sm rw-faint">
           {item.author ? (
             <>
@@ -112,7 +113,7 @@ export default async function RoadmapItemPage({ params }: Props) {
 
       {item.body && (
         <Card>
-          <Markdown>{item.body}</Markdown>
+          <Markdown lang="uz">{item.body}</Markdown>
         </Card>
       )}
 

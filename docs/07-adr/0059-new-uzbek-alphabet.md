@@ -1,6 +1,6 @@
 # ADR 0059 — Yangi o'zbek alifbosi: o'giruvchi va qidiruv
 
-**STATUS:** accepted (1-bosqich: o'giruvchi va qidiruv; 2-bosqich: interfeys va tanlov; 3-bosqich: kontent; 4-bosqich: xat, Telegram, sertifikatlar)
+**STATUS:** accepted (1-bosqich: o'giruvchi va qidiruv; 2-bosqich: interfeys va tanlov; 3-bosqich: kontent; 4-bosqich: xat, Telegram, sertifikatlar; 5-bosqich: ro'yxatlar, nomlar, tilsiz matn)
 **Sana:** 2026-11-11
 **Tasdiqlagan:** Saidakbar (owner) — 2026-11-11 ([qaror yozuvi](../decisions/2026-11-11-new-alphabet.md): 4 savol)
 **Ta'sir doirasi:** `packages/shared` (`alphabet.ts`), `apps/api/core` (`alphabet.py`, `search.py`), web qidiruvi; migratsiyalar `core.0036`, `problems.0038`
@@ -82,10 +82,21 @@ ishlayveradi, qidiruvda ikkalasi bir.
 4. **Sertifikatlar** (kurs va musobaqa): o'zbekcha yorliqlar egasining alifbosida; ism va musobaqa nomi
    yozilganidek; kurs nomi kurs tili o'zbekcha bo'lsa o'giriladi.
 
-## 6. Keyingi bosqichlar
+## 6. 5-bosqich: ro'yxatlar, nomlar va tilsiz matn
 
-- Qolgan kontent: ro'yxat sahifalari (maqolalar, blog, kurslar katalogi), musobaqa va arena matnlari,
-  mavzu nomlari, xakaton va turnir tavsiflari (ularda til maydoni yo'q).
+1. **Ro'yxatlar**: blog, maqolalar, yo'nalishlar, kurslar katalogi, bosh sahifadagi postlar, arxiv yon
+   paneli (yo'nalish va masala nomlari) — har qator o'z tili bilan.
+2. **Mavzu va ko'nikma nomlari**: `@/i18n/messages` dagi nom yordamchilari (`topicName`, `localName` va
+   `*Info`) o'zbekcha ustundagi nomni o'quvchi alifbosiga o'tkazadi — barcha chaqiruv joylari bir yo'la.
+3. **Lug'atsiz yozilgan o'zbekcha matn** lug'atga ko'chdi: arxivdagi «/ N masala», «Oxirgi urinish», yo'nalish
+   kartasidagi «N qadam» — ular endi tarjima ham qilinadi.
+4. **Til maydoni yo'q matn** (turnir va xakaton tavsifi, platforma yo'l xaritasi, o'zgarishlar jurnali
+   asl matni) — platformaning o'zi o'zbek tilida yozadi, shuning uchun o'zbekcha deb olinadi. O'lchandi
+   (2026-11-11): jonli turnir va xakaton tavsiflari o'zbekcha. **Nomlar** (musobaqa, turnir, xakaton,
+   arena) yozilganidek qoladi — sertifikatdagi kabi.
+
+Qolganlar: kurs dasturi va dars navigatsiyasidagi qator nomlari (`LessonRow` da til yo'q), sinfdagi kurs
+nomi (`AssignmentCourse` da til yo'q), arena va test savollari.
 
 ## 7. Oqibatlar
 

@@ -5245,6 +5245,16 @@ def neg_decisions_statement_without_language() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_names_ignore_alphabet() -> tuple[bool, str]:
+    """Topic and skill names stay in the stored spelling."""
+    return _decision_broken(
+        "apps/web/src/i18n/messages.ts",
+        '  return info.locale === "uz" ? { ...info, text: inReaderAlphabet(info.text, "uz") } : info;\n',
+        "  return info;\n",
+        "nomlari o'quvchi alifbosida emas",
+    )
+
+
 def neg_decisions_search_keeps_tutuq() -> tuple[bool, str]:
     """The new alphabet's tutuq belgisi is not dropped by the search fold."""
     return _decision_broken(
@@ -12782,6 +12792,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sertifikat alifbosiz bo'lsa tutilsin", neg_decisions_certificate_ignores_alphabet),
             ("Markdown alifboni e'tiborsiz qoldirsa tutilsin", neg_decisions_markdown_ignores_alphabet),
             ("shart tilisiz chizilsa tutilsin", neg_decisions_statement_without_language),
+            ("mavzu nomlari alifbosiz bo'lsa tutilsin", neg_decisions_names_ignore_alphabet),
             ("alifbo so'rov kontekstisiz bo'lsa tutilsin", neg_decisions_alphabet_not_per_request),
             ("o'zbekcha standarti eski alifbo bo'lsa tutilsin", neg_decisions_uz_defaults_to_old),
             ("eski alifbo mehmon keshidan olsa tutilsin", neg_decisions_alphabet_cookie_cached),

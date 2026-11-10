@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { ContentName } from "@/components/ui/UzFallbackBadge";
 import { Verdict } from "@/components/ui/Verdict";
-import { dateTime, t, type Locale } from "@/i18n/messages";
+import { inReaderAlphabet } from "@/i18n/alphabet";
+import { dateTime, fill, t, type Locale } from "@/i18n/messages";
 import { Badge } from "@/components/ui/Badge";
 import type {
   ArchiveProgress,
@@ -29,7 +30,7 @@ function Progress({ data, locale }: { data: ArchiveProgress; locale: Locale }) {
         <span className="text-title-sm font-bold rw-strong tabular-nums">
           {data.solved}
         </span>{" "}
-        / {data.total} masala
+        {fill(t(locale, "archive.solvedTotal"), { total: data.total })}
         {data.solved > 0 && ` · ${percent}%`}
       </p>
 
@@ -40,7 +41,7 @@ function Progress({ data, locale }: { data: ArchiveProgress; locale: Locale }) {
             <div key={level.code}>
               <div className="flex items-baseline justify-between gap-2 text-theme-xs">
                 <span className={`level-${level.code} font-medium`}>
-                  {level.label}
+                  {t(locale, `level.${level.code}`)}
                 </span>
                 <span className="rw-faint tabular-nums">
                   {level.solved} / {level.total}
@@ -52,7 +53,7 @@ function Progress({ data, locale }: { data: ArchiveProgress; locale: Locale }) {
                 aria-valuenow={level.solved}
                 aria-valuemin={0}
                 aria-valuemax={level.total}
-                aria-label={level.label}
+                aria-label={t(locale, `level.${level.code}`)}
               >
                 <div
                   className={`level-${level.code} h-full rounded-full`}
@@ -82,10 +83,10 @@ function Continue({ problem, locale }: { problem: Problem; locale: Locale }) {
             #{String(problem.code).padStart(4, "0")}
           </span>
         )}
-        {problem.title}
+        {inReaderAlphabet(problem.title, problem.locale)}
       </Link>
       <p className="text-theme-xs rw-faint">
-        Oxirgi urinish: {problem.my_verdict}
+        {fill(t(locale, "archive.lastAttempt"), { verdict: problem.my_verdict ?? "" })}
       </p>
     </Card>
   );
@@ -137,7 +138,7 @@ function Roadmaps({ items, locale }: { items: Roadmap[]; locale: Locale }) {
           <Link key={roadmap.slug} href="/roadmaps" className="block">
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-theme-sm font-medium rw-strong">
-                {roadmap.title}
+                {inReaderAlphabet(roadmap.title, roadmap.locale)}
               </span>
               <span className="shrink-0 text-theme-xs rw-faint tabular-nums">
                 {roadmap.solved_steps} / {roadmap.step_count}
@@ -149,7 +150,7 @@ function Roadmaps({ items, locale }: { items: Roadmap[]; locale: Locale }) {
               aria-valuenow={roadmap.solved_steps}
               aria-valuemin={0}
               aria-valuemax={roadmap.step_count}
-              aria-label={roadmap.title}
+              aria-label={inReaderAlphabet(roadmap.title, roadmap.locale)}
             >
               <div
                 className="h-full rounded-full rw-accent-bg"
@@ -227,7 +228,7 @@ function Digest({
                   href={`/problems/${problem.slug}`}
                   className="flex min-h-6 min-w-0 flex-1 items-center truncate rw-dim-2 rw-link-hover"
                 >
-                  {problem.title}
+                  {inReaderAlphabet(problem.title, problem.locale)}
                 </Link>
                 <span className="shrink-0 rw-faint tabular-nums">
                   +{problem.likes_count}
@@ -257,7 +258,7 @@ function Digest({
                   // turishi kerak.
                   className="flex min-h-6 min-w-0 flex-1 items-center truncate rw-dim-2 rw-link-hover"
                 >
-                  {problem.title}
+                  {inReaderAlphabet(problem.title, problem.locale)}
                 </Link>
                 <span className="shrink-0 rw-faint tabular-nums">
                   {problem.view_count}
@@ -356,7 +357,7 @@ function Recommended({ data, locale }: { data: Recommendation; locale: Locale })
           <span className={`level-${problem.level} mr-2 text-theme-xs`}>
             {problem.difficulty}
           </span>
-          {problem.title}
+          {inReaderAlphabet(problem.title, problem.locale)}
         </Link>
       ))}
     </Card>

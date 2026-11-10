@@ -51,7 +51,7 @@ export default async function HackathonPage({ params }: Props) {
       </header>
       {h.description && (
         <Card>
-          <Markdown>{h.description}</Markdown>
+          <Markdown lang="uz">{h.description}</Markdown>
         </Card>
       )}
       <HackathonEntries hackathon={h} />

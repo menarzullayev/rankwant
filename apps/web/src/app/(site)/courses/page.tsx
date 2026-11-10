@@ -1,3 +1,4 @@
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
@@ -86,7 +87,7 @@ export default async function CoursesPage({ searchParams }: Props) {
               <li key={row.course.slug}>
                 <ListCard
                   href={`/courses/${row.course.slug}` as Route}
-                  title={row.course.title}
+                  title={inReaderAlphabet(row.course.title, row.course.locale)}
                   summary={
                     row.progress.completed
                       ? t(locale, "course.completed")
@@ -133,8 +134,8 @@ export default async function CoursesPage({ searchParams }: Props) {
               <li key={course.slug}>
                 <ListCard
                   href={`/courses/${course.slug}` as Route}
-                  title={course.title}
-                  summary={course.summary}
+                  title={inReaderAlphabet(course.title, course.locale)}
+                  summary={inReaderAlphabet(course.summary, course.locale)}
                   meta={<CourseMeta course={course} locale={locale} />}
                 />
               </li>
