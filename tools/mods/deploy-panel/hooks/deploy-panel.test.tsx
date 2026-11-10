@@ -17,7 +17,14 @@ const PANE = {
   },
 } as const
 
-async function start($: any, on: any, live: string, clock: { now: number }, web: string = live) {
+async function start(
+  $: any,
+  on: any,
+  live: string,
+  clock: { now: number },
+  web: string = live,
+  mainCi = 'success',
+) {
   on('command.register', () => ({ value: { command: 'deploy-panel' } }))
   on('ui.open', () => ({ value: { isPlaced: true } }))
   on('session.start', (_: unknown, e: { cwd: string }) => ({ cwd: e.cwd }))
@@ -30,8 +37,15 @@ async function start($: any, on: any, live: string, clock: { now: number }, web:
       text: JSON.stringify({ sha: e.url.includes('/api/') ? live : web }),
     },
   }))
-  on('process.run', () => ({
-    value: { exitCode: 0, stdout: `${MAIN}\trefs/heads/main\n`, stderr: '' },
+  on('process.run', (_: unknown, e: { argv: string[] }) => ({
+    value:
+      e.argv?.[0] === 'gh'
+        ? {
+            exitCode: 0,
+            stdout: JSON.stringify([{ headSha: MAIN, status: 'completed', conclusion: mainCi }]),
+            stderr: '',
+          }
+        : { exitCode: 0, stdout: `${MAIN}\trefs/heads/main\n`, stderr: '' },
   }))
   await $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })
   // session.start does not wait for the first refresh.
@@ -74,5 +88,23 @@ test('an untouched API behind main is fine while the web app is current', async 
   expect(await ui.find({ type: 'Text', text: /jonli api\s+bbbbbbb/ })).toBeTruthy()
   expect(await ui.find({ type: 'Text', text: /jonli web\s+aaaaaaa/ })).toBeTruthy()
   expect(await ui.find({ type: 'Text', text: /main bilan bir xil/ })).toBeTruthy()
+  await ui.unmount()
+})
+
+test('a red main CI run is shown even when the site matches main', async ($, on) => {
+  await start($, on, MAIN, { now: 1_000_000 }, MAIN, 'failure')
+  const ui = await $.ui.mount({ ...PANE, surface: 'desktop' })
+
+  expect(await ui.find({ type: 'Text', text: /main CI\s+aaaaaaa failure/ })).toBeTruthy()
+  expect(await ui.find({ type: 'Text', text: /main CI qizil/ })).toBeTruthy()
+  await ui.unmount()
+})
+
+test('a green main CI run raises no warning', async ($, on) => {
+  await start($, on, MAIN, { now: 1_000_000 })
+  const ui = await $.ui.mount({ ...PANE, surface: 'desktop' })
+
+  expect(await ui.find({ type: 'Text', text: /main CI\s+aaaaaaa success/ })).toBeTruthy()
+  expect(await ui.find({ type: 'Text', text: /main CI qizil/ })).toBeFalsy()
   await ui.unmount()
 })
