@@ -48,6 +48,9 @@ const isDev = process.env.NODE_ENV !== "production";
 /** Barcha bayroqlar — **yagona ro'yxat**. Yangi bayroq shu yerga
  *  qo'shiladi, boshqa hech qayerda ro'yxat yo'q. */
 export const FLAGS = {
+  /** To'lov: tariflar, to'lov sahifasi va kurs sotib olish (ADR-0057) —
+   *  merchant kalitlari va oferta tayyor bo'lguncha o'chiq. */
+  billing: false,
   /** Kurslar bo'limi (ADR-0056) — bosqichma-bosqich quriladi; egasi
    *  «ochamiz» deguncha o'chiq. */
   courses: false,
@@ -96,6 +99,9 @@ export const FLAG_OVERRIDES = "rw_flags";
 function fromEnv(name: FlagName): boolean | undefined {
   let raw: string | undefined;
   switch (name) {
+    case "billing":
+      raw = process.env.NEXT_PUBLIC_FLAG_BILLING;
+      break;
     case "courses":
       raw = process.env.NEXT_PUBLIC_FLAG_COURSES;
       break;

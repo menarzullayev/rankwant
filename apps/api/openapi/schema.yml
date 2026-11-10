@@ -839,6 +839,121 @@ paths:
               schema:
                 $ref: '#/components/schemas/UsernameCheck'
           description: ''
+  /api/v1/billing/orders/:
+    get:
+      operationId: billing_orders_list
+      description: The reader's own orders; paying happens on the provider's page.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - billing
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+          description: ''
+    post:
+      operationId: billing_orders_create
+      description: The reader's own orders; paying happens on the provider's page.
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/billing/orders/{id}/:
+    get:
+      operationId: billing_orders_retrieve
+      description: The reader's own orders; paying happens on the provider's page.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - billing
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/billing/orders/{id}/cancel/:
+    post:
+      operationId: billing_orders_cancel_create
+      description: The reader's own orders; paying happens on the provider's page.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - billing
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/billing/plans/:
+    get:
+      operationId: billing_plans_retrieve
+      description: Plans on sale with their prices, and the reader's own plan.
+      tags:
+      - billing
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingOverview'
+          description: ''
   /api/v1/calendar/:
     get:
       operationId: calendar_retrieve
@@ -14725,9 +14840,46 @@ components:
       type: object
       properties:
         provider:
-          $ref: '#/components/schemas/ProviderEnum'
+          $ref: '#/components/schemas/AvatarImportProviderEnum'
       required:
       - provider
+    AvatarImportProviderEnum:
+      enum:
+      - google
+      - github
+      - telegram
+      type: string
+      description: |-
+        * `google` - google
+        * `github` - github
+        * `telegram` - telegram
+    BillingOverview:
+      type: object
+      properties:
+        plans:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanOffer'
+        providers:
+          type: array
+          items:
+            type: string
+        plan:
+          type: string
+        plan_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        periods:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+      required:
+      - periods
+      - plan
+      - plan_expires_at
+      - plans
+      - providers
     BlankEnum:
       enum:
       - ''
@@ -15486,6 +15638,9 @@ components:
         final_quiz_slug:
           type: string
           readOnly: true
+        plan_covers:
+          type: boolean
+          readOnly: true
         authors:
           type: array
           items:
@@ -15524,6 +15679,7 @@ components:
       - modules
       - outcomes
       - percent
+      - plan_covers
       - price_qvant
       - price_uzs
       - progress
@@ -17217,6 +17373,16 @@ components:
       required:
       - locale
       - title
+    MonthsEnum:
+      enum:
+      - 1
+      - 6
+      - 12
+      type: integer
+      description: |-
+        * `1` - 1
+        * `6` - 6
+        * `12` - 12
     MyCourse:
       type: object
       properties:
@@ -17369,6 +17535,119 @@ components:
           type: integer
       required:
       - updated
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/OrderKindEnum'
+          readOnly: true
+        plan:
+          allOf:
+          - $ref: '#/components/schemas/PlanCodeEnum'
+          readOnly: true
+        months:
+          type: integer
+          readOnly: true
+          nullable: true
+        course:
+          allOf:
+          - $ref: '#/components/schemas/OrderCourse'
+          nullable: true
+          readOnly: true
+        amount_uzs:
+          type: integer
+          readOnly: true
+        provider:
+          allOf:
+          - $ref: '#/components/schemas/PaymentProviderEnum'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/OrderStatusEnum'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        period:
+          allOf:
+          - $ref: '#/components/schemas/Period'
+          nullable: true
+          readOnly: true
+        pay_url:
+          type: string
+          nullable: true
+          description: The provider's page, while the order still waits for payment.
+          readOnly: true
+      required:
+      - amount_uzs
+      - course
+      - created_at
+      - id
+      - kind
+      - months
+      - paid_at
+      - pay_url
+      - period
+      - plan
+      - provider
+      - status
+    OrderCourse:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+      required:
+      - slug
+      - title
+    OrderCreate:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/OrderKindEnum'
+        plan:
+          $ref: '#/components/schemas/PlanCodeEnum'
+        months:
+          $ref: '#/components/schemas/MonthsEnum'
+        course:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+        provider:
+          $ref: '#/components/schemas/PaymentProviderEnum'
+      required:
+      - kind
+      - provider
+    OrderKindEnum:
+      enum:
+      - plan
+      - course
+      type: string
+      description: |-
+        * `plan` - Plan
+        * `course` - Course
+    OrderStatusEnum:
+      enum:
+      - pending
+      - paid
+      - cancelled
+      - refunded
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `paid` - Paid
+        * `cancelled` - Cancelled
+        * `refunded` - Refunded
     OrganizerContest:
       type: object
       description: |-
@@ -20707,6 +20986,89 @@ components:
           items:
             $ref: '#/components/schemas/StudioLesson'
           readOnly: true
+    PaymentProviderEnum:
+      enum:
+      - click
+      - payme
+      type: string
+      description: |-
+        * `click` - Click
+        * `payme` - Payme
+    Period:
+      type: object
+      properties:
+        plan:
+          allOf:
+          - $ref: '#/components/schemas/PlanCodeEnum'
+          readOnly: true
+        starts_at:
+          type: string
+          format: date-time
+          readOnly: true
+        ends_at:
+          type: string
+          format: date-time
+          readOnly: true
+        running:
+          type: boolean
+          readOnly: true
+      required:
+      - ends_at
+      - plan
+      - running
+      - starts_at
+    PlanCodeEnum:
+      enum:
+      - plus
+      - pro
+      - judge
+      type: string
+      description: |-
+        * `plus` - Plus
+        * `pro` - Pro
+        * `judge` - Judge
+    PlanOffer:
+      type: object
+      properties:
+        code:
+          allOf:
+          - $ref: '#/components/schemas/PlanCodeEnum'
+          readOnly: true
+        is_on_sale:
+          type: boolean
+          readOnly: true
+        features:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanPrice'
+          readOnly: true
+      required:
+      - code
+      - features
+      - is_on_sale
+      - prices
+    PlanPrice:
+      type: object
+      properties:
+        months:
+          allOf:
+          - $ref: '#/components/schemas/MonthsEnum'
+          readOnly: true
+        amount_uzs:
+          type: integer
+          readOnly: true
+        list_amount_uzs:
+          type: integer
+          readOnly: true
+      required:
+      - amount_uzs
+      - list_amount_uzs
+      - months
     PolicyEnum:
       enum:
       - contest_room
@@ -21280,16 +21642,6 @@ components:
       - done
       - percent
       - total
-    ProviderEnum:
-      enum:
-      - google
-      - github
-      - telegram
-      type: string
-      description: |-
-        * `google` - google
-        * `github` - github
-        * `telegram` - telegram
     Purchase:
       type: object
       properties:

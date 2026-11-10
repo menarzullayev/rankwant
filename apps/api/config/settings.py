@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "profiles",
     "team",
     "courses",
+    "billing",
 ]
 
 MIDDLEWARE = [
@@ -364,6 +365,11 @@ SPECTACULAR_SETTINGS = {
         # drf-spectacular xesh qo'shib (`Kind598Enum`), generatsiya qilingan
         # TS tipi har safar o'zgarib ketardi.
         "SchoolKindEnum": "core.models.School.Kind",
+        # Billing (ADR-0057): `kind`, `provider` and the plan code collide
+        # with other models' choice sets.
+        "OrderKindEnum": "billing.models.Order.Kind",
+        "PaymentProviderEnum": "billing.models.Order.Provider",
+        "PlanCodeEnum": "billing.models.PlanCode",
         "PostKindEnum": "blog.models.Post.Kind",
         "ArticleKindEnum": "content.models.Article.Kind",
         "SystemUpdateKindEnum": "updates.models.SystemUpdate.Kind",
@@ -445,6 +451,17 @@ S3_BUCKET = os.environ.get("S3_BUCKET", "rankwant")
 S3_KEY = os.environ.get("S3_KEY", "")
 S3_SECRET = os.environ.get("S3_SECRET", "")
 S3_REGION = os.environ.get("S3_REGION", "us-east-1")
+
+# Payments (ADR-0057). A provider is offered only when its merchant settings
+# are present. Test mode is the provider's own: Payme's sandbox key and
+# checkout host (`https://test.paycom.uz`), Click's test service.
+PAYME_MERCHANT_ID = os.environ.get("PAYME_MERCHANT_ID", "")
+PAYME_KEY = os.environ.get("PAYME_KEY", "")
+PAYME_CHECKOUT_URL = os.environ.get("PAYME_CHECKOUT_URL", "https://checkout.paycom.uz")
+CLICK_SERVICE_ID = os.environ.get("CLICK_SERVICE_ID", "")
+CLICK_MERCHANT_ID = os.environ.get("CLICK_MERCHANT_ID", "")
+CLICK_SECRET_KEY = os.environ.get("CLICK_SECRET_KEY", "")
+CLICK_MERCHANT_USER_ID = os.environ.get("CLICK_MERCHANT_USER_ID", "")
 
 # Course video (ADR-0056 § 3.5): encrypted HLS in its own bucket — R2 in
 # production, MinIO locally. Empty bucket = paid video is unavailable.
@@ -589,6 +606,16 @@ CELERY_BEAT_SCHEDULE = {
     # arzon (`EmailDelivery` da `created_at` indeksi bor).
     "warn-email-quota": {
         "task": "core.warn_email_quota",
+        "schedule": 3600.0,
+    },
+    # ADR-0057: a plan that ended or a queued period that began reaches
+    # `User.plan` (courses also check the expiry time on every read).
+    "billing-sync-plans": {
+        "task": "billing.sync_plans",
+        "schedule": 600.0,
+    },
+    "billing-expire-orders": {
+        "task": "billing.expire_orders",
         "schedule": 3600.0,
     },
 }

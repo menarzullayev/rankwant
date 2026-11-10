@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2910 strings.**
+**2964 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2931,3 +2931,57 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.course.lessonDone` | bajarilgan | orınlanǵan |  |
 | `classroom.course.lessonOpen` | bajarilmagan | orınlanbaǵan |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Bul kurs tabılmadı yamasa ele járiyalanbaǵan. |  |
+| `billing.plan.plus` | Plus | Plus |  |
+| `billing.plan.pro` | Pro | Pro |  |
+| `billing.plan.judge` | Judge | Judge |  |
+| `billing.provider.click` | Click | Click |  |
+| `billing.provider.payme` | Payme | Payme |  |
+| `billing.title` | Tariflar | Tarifler |  |
+| `billing.intro` | Bir martalik to'lov: 1, 6 yoki 12 oyga oldindan. Avtomatik uzaytirish yo'q — muddat tugagach tarif o'zi bepulga qaytadi. | Bir mártelik aldınnan tólem: 1, 6 yamasa 12 ayǵa. Avtomat uzaytıw joq — múddet tamamlanǵanda tarif ózi biypulǵa qaytadı. |  |
+| `billing.current` | Joriy tarifingiz | Házirgi tarifińiz |  |
+| `billing.currentUntil` | {plan} · {date} gacha | {plan} · {date} shekem |  |
+| `billing.upcoming` | Navbatda: {plan} · {start} – {end} | Gezekte: {plan} · {start} – {end} |  |
+| `billing.periodLabel` | To'lov davri | Tólem dáwiri |  |
+| `billing.period.month` | 1 oy | 1 ay |  |
+| `billing.period.halfYear` | 6 oy | 6 ay |  |
+| `billing.period.year` | 12 oy | 12 ay |  |
+| `billing.plan.free` | Bepul | Biypul |  |
+| `billing.som` | {price} so'm | {price} sum |  |
+| `billing.perMonth` | oyiga {price} so'm | ayına {price} sum |  |
+| `billing.discount` | {percent}% chegirma | {percent}% shegirme |  |
+| `billing.free.f1` | Masalalar arxivi va barcha dasturlash tillari | Máseleler arxivi hám barlıq programmalastırıw tilleri |  |
+| `billing.free.f2` | Musobaqalar, Arena va reytinglar | Jarıslar, Arena hám reytingler |  |
+| `billing.free.f3` | Bepul va Qvant bilan ochiladigan kurslar | Biypul kurslar hám Qvant penen ashılatuǵın kurslar |  |
+| `billing.free.f4` | Auditoriya: sinflar va topshiriqlar | Auditoriya: klaslar hám tapsırmalar |  |
+| `billing.soon` | Tez orada | Tez arada |  |
+| `billing.coursesIncluded` | Barcha pullik kurslar | Barlıq pullı kurslar |  |
+| `billing.extend` | Muddatni uzaytirish | Múddetti uzaytıw |  |
+| `billing.choose` | Tanlash | Tańlaw |  |
+| `billing.signIn` | Sotib olish uchun kiring | Satıp alıw ushın kiriń |  |
+| `billing.noAutoRenew` | Bir martalik to'lov. Avtomatik uzaytirish yo'q, kartadan pul o'zi yechilmaydi. | Bir mártelik tólem. Avtomat uzaytıw joq, kartadan pul ózi alınbaydı. |  |
+| `billing.minorConsent` | 18 yoshga to'lmagan bo'lsangiz, xarid uchun ota-onangiz yoki qonuniy vakilingiz roziligi kerak. | 18 jasqa tolmaǵan bolsańız, satıp alıw ushın ata-anańızdıń yamasa nızamlı wákilińizdiń razılıǵı kerek. |  |
+| `billing.termsAccept` | To'lov qilib, siz shartlarni qabul qilasiz: | Tólem qılıp, siz shártlerdi qabıl etesiz: |  |
+| `billing.terms` | Foydalanish shartlari | Paydalanıw shártleri |  |
+| `billing.checkout.title` | To'lovni tasdiqlang | Tólemdi tastıyıqlań |  |
+| `billing.checkout.item` | Xarid | Satıp alıw |  |
+| `billing.checkout.amount` | To'lanadi | Tólenedi |  |
+| `billing.checkout.plan` | {plan} tarifi · {period} | {plan} tarifı · {period} |  |
+| `billing.checkout.startsLater` | Bu davr {date} dan boshlanadi — hozirgi tarifingizdan keyin. | Bul dáwir {date} baslanadı — házirgi tarifińizden keyin. |  |
+| `billing.checkout.noProvider` | Hozircha to'lov usuli ulanmagan. | Házirshe tólem usılı qosılmaǵan. |  |
+| `billing.checkout.provider` | To'lov usuli | Tólem usılı |  |
+| `billing.checkout.pay` | {price} so'm to'lash | {price} sum tólew |  |
+| `billing.checkout.back` | Tariflarga qaytish | Tariflerge qaytıw |  |
+| `billing.return.title` | To'lov holati | Tólem jaǵdayı |  |
+| `billing.return.pending` | To'lov tasdiqlanishi kutilmoqda… | Tólemniń tastıyıqlanıwı kútilmekte… |  |
+| `billing.return.paid` | To'lov qabul qilindi. | Tólem qabıl etildi. |  |
+| `billing.return.cancelled` | To'lov amalga oshmadi yoki bekor qilindi. | Tólem ámelge aspadı yamasa biykar etildi. |  |
+| `billing.return.refunded` | To'lov qaytarildi. | Tólem qaytarıldı. |  |
+| `billing.return.slow` | Tasdiq hali kelmadi. Sahifani keyinroq yangilang: pul yechilgan bo'lsa, xarid o'zi faollashadi. | Tastıyıq ele kelmedi. Betti keyinirek jańalań: pul alınǵan bolsa, satıp alıw ózi iske túsedi. |  |
+| `billing.return.toCourse` | Kursga o'tish | Kursqa ótiw |  |
+| `billing.return.toPlans` | Tariflar | Tarifler |  |
+| `course.includedInPlan` | Tarifingizga kiritilgan | Tarifińizge kiredi |  |
+| `course.buy` | Sotib olish · {price} so'm | Satıp alıw · {price} sum |  |
+| `course.orPro` | yoki Pro tarifi bilan barcha pullik kurslar | yamasa Pro tarifi menen barlıq pullı kurslar |  |
+| `error.billing_provider_unavailable` | Bu to'lov usuli hozir mavjud emas. | Bul tólem usılı házir qoljetimsiz. |  |
+| `error.billing_not_on_sale` | Bu tarif yoki davr hozir sotilmaydi. | Bul tarif yamasa dáwir házir satılmaydı. |  |
+| `error.billing_already_owned` | Bu kurs allaqachon sizniki. | Bul kurs sizde bar. |  |

@@ -243,9 +243,9 @@ bilan beradi. Berilgan kurs tugamaguncha `pending_assignments` uni sanaydi.
 
 ## 4. Ochiq qolganlar
 
-- Robocontest tariflari va pullik xizmatlarining chuqur tahlili — egasi
-  o'rnatilgan brauzerda kirib beradi (Judge tarifi bor); tarif tarkibi
-  shundan keyin aniqlashtiriladi.
+- ~~Robocontest tariflari tahlili~~ — bajarildi 2026-11-10:
+  [tahlil](../research/2026-11-10-robocontest-tariffs/README.md), to'lov
+  qarorlari [ADR-0057](0057-billing.md) da.
 - Muallif ulushi (pullik kurs daromadidan) — alohida qaror.
 - Kontent rejasi (qaysi kurslar, qaysi tartibda) — alohida qarorlar.
 - Sinov kontentini tozalash — alohida, aniq ro'yxat bilan tasdiq.

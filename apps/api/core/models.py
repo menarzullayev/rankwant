@@ -266,6 +266,7 @@ class User(AbstractUser):
         FREE = "free", "Free"
         PLUS = "plus", "Plus"
         PRO = "pro", "Pro"
+        JUDGE = "judge", "Judge"
 
     #: Subscription plan. Set only by the future payment flow, never by the user.
     plan = models.CharField(max_length=16, choices=Plan.choices, default=Plan.FREE)

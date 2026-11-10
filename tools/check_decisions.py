@@ -2972,6 +2972,27 @@ def monitor_watches_disk_and_commit() -> str | None:
     return None
 
 
+def billing_is_checked_and_reversible() -> str | None:
+    """2026-11-10 (HITL, ADR-0057): to'lov — tekshirilgan va qaytariladigan.
+
+    Payme kalit bilan, Click imzo bilan tekshiriladi; summa buyurtmanikiga
+    teng bo'lishi shart; qaytarishda huquq darhol bekor bo'ladi; pullik
+    kurslarni faqat Pro va Judge ochadi.
+    """
+    payme_py = read("apps/api/billing/payme.py")
+    if '    return hmac.compare_digest(password.encode(), key.encode())\n' not in payme_py:
+        return "billing/payme.py: Payme so'rovi kalitsiz qabul qilinadi"
+    if '    if not isinstance(amount, int) or amount != order.amount_uzs * 100:\n' not in payme_py:
+        return "billing/payme.py: summa buyurtma bilan solishtirilmaydi"
+    if '            # A refund: what the order bought closes at once.\n            services.revoke(tx.order)\n' not in payme_py:
+        return "billing/payme.py: qaytarishda huquq bekor bo'lmaydi"
+    if '    if not hmac.compare_digest(sign(data, with_prepare=complete), data["sign_string"]):\n' not in read("apps/api/billing/click.py"):
+        return "billing/click.py: Click imzosi tekshirilmaydi"
+    if 'PLANS_WITH_COURSES = frozenset({"pro", "judge"})\n' not in read("apps/api/courses/access.py"):
+        return "courses/access.py: pullik kurslarni Pro va Judge dan boshqasi ham ochadi"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -5134,6 +5155,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kurs videosi: shifrlangan HLS, kalit eshik ortida, o'z kursi", course_video_is_encrypted_and_own),
     ("kurs sertifikati, bir martalik mukofot, tasdiqlangan Qvant narxi", course_rewards_and_certificate),
     ("sinfga kurs: faqat bepul ochiladi, hisobot egasiga, kutilayotgan ish", course_given_to_a_class),
+    ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),

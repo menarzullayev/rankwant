@@ -29,6 +29,8 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   blog: "public",
   calendar: "public",
   certificates: "public",
+  // Plans on sale are open to read; paying asks for a session (ADR-0057).
+  plans: "public",
   classroom: "public",
   contests: "public",
   // Catalogue and programme are open; lessons ask for a session and an
@@ -60,6 +62,9 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   register: "guest",
   "reset-password": "guest",
 
+  // The return page after the provider's payment page, and the checkout.
+  billing: "user",
+  checkout: "user",
   notifications: "user",
   onboarding: "user",
   settings: "user",

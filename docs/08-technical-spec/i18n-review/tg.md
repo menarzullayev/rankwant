@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2910 strings.**
+**2964 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2931,3 +2931,57 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.course.lessonDone` | bajarilgan | иҷрошуда |  |
 | `classroom.course.lessonOpen` | bajarilmagan | иҷронашуда |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Ин курс ёфт нашуд ё ҳоло нашр нашудааст. |  |
+| `billing.plan.plus` | Plus | Plus |  |
+| `billing.plan.pro` | Pro | Pro |  |
+| `billing.plan.judge` | Judge | Judge |  |
+| `billing.provider.click` | Click | Click |  |
+| `billing.provider.payme` | Payme | Payme |  |
+| `billing.title` | Tariflar | Тарифҳо |  |
+| `billing.intro` | Bir martalik to'lov: 1, 6 yoki 12 oyga oldindan. Avtomatik uzaytirish yo'q — muddat tugagach tarif o'zi bepulga qaytadi. | Пардохти якдафъаина пешакӣ барои 1, 6 ё 12 моҳ. Тамдиди худкор нест — пас аз анҷоми мӯҳлат тариф худ ба ройгон бармегардад. |  |
+| `billing.current` | Joriy tarifingiz | Тарифи ҷории шумо |  |
+| `billing.currentUntil` | {plan} · {date} gacha | {plan} · то {date} |  |
+| `billing.upcoming` | Navbatda: {plan} · {start} – {end} | Навбатӣ: {plan} · {start} – {end} |  |
+| `billing.periodLabel` | To'lov davri | Давраи пардохт |  |
+| `billing.period.month` | 1 oy | 1 моҳ |  |
+| `billing.period.halfYear` | 6 oy | 6 моҳ |  |
+| `billing.period.year` | 12 oy | 12 моҳ |  |
+| `billing.plan.free` | Bepul | Ройгон |  |
+| `billing.som` | {price} so'm | {price} сӯм |  |
+| `billing.perMonth` | oyiga {price} so'm | моҳона {price} сӯм |  |
+| `billing.discount` | {percent}% chegirma | {percent}% тахфиф |  |
+| `billing.free.f1` | Masalalar arxivi va barcha dasturlash tillari | Бойгонии масъалаҳо ва ҳамаи забонҳои барномасозӣ |  |
+| `billing.free.f2` | Musobaqalar, Arena va reytinglar | Мусобиқаҳо, Арена ва рейтингҳо |  |
+| `billing.free.f3` | Bepul va Qvant bilan ochiladigan kurslar | Курсҳои ройгон ва курсҳое ки бо Qvant кушода мешаванд |  |
+| `billing.free.f4` | Auditoriya: sinflar va topshiriqlar | Аудитория: синфҳо ва супоришҳо |  |
+| `billing.soon` | Tez orada | Ба зудӣ |  |
+| `billing.coursesIncluded` | Barcha pullik kurslar | Ҳамаи курсҳои пулакӣ |  |
+| `billing.extend` | Muddatni uzaytirish | Тамдиди мӯҳлат |  |
+| `billing.choose` | Tanlash | Интихоб |  |
+| `billing.signIn` | Sotib olish uchun kiring | Барои харидан ворид шавед |  |
+| `billing.noAutoRenew` | Bir martalik to'lov. Avtomatik uzaytirish yo'q, kartadan pul o'zi yechilmaydi. | Пардохти якдафъаина. Тамдиди худкор нест, аз корт пул худ ба худ гирифта намешавад. |  |
+| `billing.minorConsent` | 18 yoshga to'lmagan bo'lsangiz, xarid uchun ota-onangiz yoki qonuniy vakilingiz roziligi kerak. | Агар шумо ба 18 сола нашуда бошед, барои харид розигии падару модар ё намояндаи қонунӣ лозим аст. |  |
+| `billing.termsAccept` | To'lov qilib, siz shartlarni qabul qilasiz: | Бо пардохт шумо шартҳоро қабул мекунед: |  |
+| `billing.terms` | Foydalanish shartlari | Шартҳои истифода |  |
+| `billing.checkout.title` | To'lovni tasdiqlang | Пардохтро тасдиқ кунед |  |
+| `billing.checkout.item` | Xarid | Харид |  |
+| `billing.checkout.amount` | To'lanadi | Пардохт мешавад |  |
+| `billing.checkout.plan` | {plan} tarifi · {period} | Тарифи {plan} · {period} |  |
+| `billing.checkout.startsLater` | Bu davr {date} dan boshlanadi — hozirgi tarifingizdan keyin. | Ин давра аз {date} оғоз мешавад — пас аз тарифи ҷории шумо. |  |
+| `billing.checkout.noProvider` | Hozircha to'lov usuli ulanmagan. | Ҳоло ягон усули пардохт пайваст нашудааст. |  |
+| `billing.checkout.provider` | To'lov usuli | Усули пардохт |  |
+| `billing.checkout.pay` | {price} so'm to'lash | Пардохти {price} сӯм |  |
+| `billing.checkout.back` | Tariflarga qaytish | Бозгашт ба тарифҳо |  |
+| `billing.return.title` | To'lov holati | Ҳолати пардохт |  |
+| `billing.return.pending` | To'lov tasdiqlanishi kutilmoqda… | Тасдиқи пардохт интизор аст… |  |
+| `billing.return.paid` | To'lov qabul qilindi. | Пардохт қабул шуд. |  |
+| `billing.return.cancelled` | To'lov amalga oshmadi yoki bekor qilindi. | Пардохт анҷом наёфт ё бекор шуд. |  |
+| `billing.return.refunded` | To'lov qaytarildi. | Пардохт баргардонида шуд. |  |
+| `billing.return.slow` | Tasdiq hali kelmadi. Sahifani keyinroq yangilang: pul yechilgan bo'lsa, xarid o'zi faollashadi. | Тасдиқ ҳоло наомадааст. Саҳифаро баъдтар нав кунед: агар пул гирифта шуда бошад, харид худ фаъол мешавад. |  |
+| `billing.return.toCourse` | Kursga o'tish | Ба курс гузаштан |  |
+| `billing.return.toPlans` | Tariflar | Тарифҳо |  |
+| `course.includedInPlan` | Tarifingizga kiritilgan | Ба тарифи шумо дохил аст |  |
+| `course.buy` | Sotib olish · {price} so'm | Харидан · {price} сӯм |  |
+| `course.orPro` | yoki Pro tarifi bilan barcha pullik kurslar | ё ҳамаи курсҳои пулакӣ бо тарифи Pro |  |
+| `error.billing_provider_unavailable` | Bu to'lov usuli hozir mavjud emas. | Ин усули пардохт ҳоло дастрас нест. |  |
+| `error.billing_not_on_sale` | Bu tarif yoki davr hozir sotilmaydi. | Ин тариф ё давра ҳоло фурӯхта намешавад. |  |
+| `error.billing_already_owned` | Bu kurs allaqachon sizniki. | Ин курс аллакай аз они шумост. |  |

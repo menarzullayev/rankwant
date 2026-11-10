@@ -5113,6 +5113,46 @@ def neg_decisions_video_on_judge_queue() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_payme_without_key() -> tuple[bool, str]:
+    """Payme calls are accepted without checking the key."""
+    return _decision_broken(
+        "apps/api/billing/payme.py",
+        '    return hmac.compare_digest(password.encode(), key.encode())\n',
+        "    return True\n",
+        "kalitsiz qabul qilinadi",
+    )
+
+
+def neg_decisions_payme_any_amount() -> tuple[bool, str]:
+    """Any amount pays for any order."""
+    return _decision_broken(
+        "apps/api/billing/payme.py",
+        '    if not isinstance(amount, int) or amount != order.amount_uzs * 100:\n',
+        "    if False:\n",
+        "solishtirilmaydi",
+    )
+
+
+def neg_decisions_refund_keeps_access() -> tuple[bool, str]:
+    """A refunded payment keeps what it bought."""
+    return _decision_broken(
+        "apps/api/billing/payme.py",
+        '            # A refund: what the order bought closes at once.\n            services.revoke(tx.order)\n',
+        "            pass\n",
+        "huquq bekor bo'lmaydi",
+    )
+
+
+def neg_decisions_plus_opens_courses() -> tuple[bool, str]:
+    """Plus opens paid courses too."""
+    return _decision_broken(
+        "apps/api/courses/access.py",
+        'PLANS_WITH_COURSES = frozenset({"pro", "judge"})\n',
+        'PLANS_WITH_COURSES = frozenset({"plus", "pro", "judge"})\n',
+        "boshqasi ham ochadi",
+    )
+
+
 def neg_decisions_class_opens_priced_course() -> tuple[bool, str]:
     """A class enrols its students in a Qvant or paid course for free."""
     return _decision_broken(
@@ -8289,6 +8329,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/courses/review.py",
     "apps/api/courses/teaching.py",
     "apps/api/classroom/views.py",
+    "apps/api/courses/access.py",
+    "apps/api/billing/payme.py",
+    "apps/api/billing/click.py",
     "apps/api/classroom/services.py",
     "apps/api/qvant/ledger.py",
     "apps/api/courses/author_serializers.py",
@@ -12442,6 +12485,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sinf pullik kursni tekin ochsa tutilsin", neg_decisions_class_opens_priced_course),
             ("kurs hisoboti egasiz ochilsa tutilsin", neg_decisions_class_report_not_owner_only),
             ("berilgan kurs kutilmasa tutilsin", neg_decisions_class_course_not_pending),
+            ("Payme kalitsiz qabul qilsa tutilsin", neg_decisions_payme_without_key),
+            ("Payme summasi tekshirilmasa tutilsin", neg_decisions_payme_any_amount),
+            ("qaytarishda huquq qolsa tutilsin", neg_decisions_refund_keeps_access),
+            ("Plus kursni ochsa tutilsin", neg_decisions_plus_opens_courses),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

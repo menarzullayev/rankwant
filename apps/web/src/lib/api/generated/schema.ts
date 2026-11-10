@@ -608,6 +608,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/billing/orders/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The reader's own orders; paying happens on the provider's page. */
+        get: operations["billing_orders_list"];
+        put?: never;
+        /** @description The reader's own orders; paying happens on the provider's page. */
+        post: operations["billing_orders_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/orders/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The reader's own orders; paying happens on the provider's page. */
+        get: operations["billing_orders_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/orders/{id}/cancel/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description The reader's own orders; paying happens on the provider's page. */
+        post: operations["billing_orders_cancel_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/plans/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Plans on sale with their prices, and the reader's own plan. */
+        get: operations["billing_plans_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/calendar/": {
         parameters: {
             query?: never;
@@ -6872,7 +6941,22 @@ export interface components {
             display_name: string;
         };
         AvatarImport: {
-            provider: components["schemas"]["ProviderEnum"];
+            provider: components["schemas"]["AvatarImportProviderEnum"];
+        };
+        /**
+         * @description * `google` - google
+         *     * `github` - github
+         *     * `telegram` - telegram
+         * @enum {string}
+         */
+        AvatarImportProviderEnum: "google" | "github" | "telegram";
+        BillingOverview: {
+            plans: components["schemas"]["PlanOffer"][];
+            providers: string[];
+            plan: string;
+            /** Format: date-time */
+            plan_expires_at: string | null;
+            periods: components["schemas"]["Period"][];
         };
         /** @enum {unknown} */
         BlankEnum: "";
@@ -7163,6 +7247,7 @@ export interface components {
             readonly reward_qvant: number;
             readonly has_final_quiz: boolean;
             readonly final_quiz_slug: string;
+            readonly plan_covers: boolean;
             readonly authors: components["schemas"]["Author"][];
             readonly modules: components["schemas"]["ModuleOutline"][];
             readonly enrollment: components["schemas"]["Enrollment"] | null;
@@ -7871,6 +7956,13 @@ export interface components {
             locale: components["schemas"]["ContentLocaleEnum"];
             title: string;
         };
+        /**
+         * @description * `1` - 1
+         *     * `6` - 6
+         *     * `12` - 12
+         * @enum {integer}
+         */
+        MonthsEnum: 1 | 6 | 12;
         MyCourse: {
             course: components["schemas"]["CourseCard"];
             enrollment: components["schemas"]["Enrollment"];
@@ -7934,6 +8026,48 @@ export interface components {
         NotificationUpdated: {
             updated: number;
         };
+        Order: {
+            readonly id: number;
+            readonly kind: components["schemas"]["OrderKindEnum"];
+            readonly plan: components["schemas"]["PlanCodeEnum"];
+            readonly months: number | null;
+            readonly course: components["schemas"]["OrderCourse"] | null;
+            readonly amount_uzs: number;
+            readonly provider: components["schemas"]["PaymentProviderEnum"];
+            readonly status: components["schemas"]["OrderStatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly paid_at: string | null;
+            readonly period: components["schemas"]["Period"] | null;
+            /** @description The provider's page, while the order still waits for payment. */
+            readonly pay_url: string | null;
+        };
+        OrderCourse: {
+            slug: string;
+            title: string;
+        };
+        OrderCreate: {
+            kind: components["schemas"]["OrderKindEnum"];
+            plan?: components["schemas"]["PlanCodeEnum"];
+            months?: components["schemas"]["MonthsEnum"];
+            course?: string;
+            provider: components["schemas"]["PaymentProviderEnum"];
+        };
+        /**
+         * @description * `plan` - Plan
+         *     * `course` - Course
+         * @enum {string}
+         */
+        OrderKindEnum: "plan" | "course";
+        /**
+         * @description * `pending` - Pending
+         *     * `paid` - Paid
+         *     * `cancelled` - Cancelled
+         *     * `refunded` - Refunded
+         * @enum {string}
+         */
+        OrderStatusEnum: "pending" | "paid" | "cancelled" | "refunded";
         /**
          * @description Organizator ko'radigan maydonlar.
          *
@@ -9715,6 +9849,38 @@ export interface components {
             readonly lessons?: components["schemas"]["StudioLesson"][];
         };
         /**
+         * @description * `click` - Click
+         *     * `payme` - Payme
+         * @enum {string}
+         */
+        PaymentProviderEnum: "click" | "payme";
+        Period: {
+            readonly plan: components["schemas"]["PlanCodeEnum"];
+            /** Format: date-time */
+            readonly starts_at: string;
+            /** Format: date-time */
+            readonly ends_at: string;
+            readonly running: boolean;
+        };
+        /**
+         * @description * `plus` - Plus
+         *     * `pro` - Pro
+         *     * `judge` - Judge
+         * @enum {string}
+         */
+        PlanCodeEnum: "plus" | "pro" | "judge";
+        PlanOffer: {
+            readonly code: components["schemas"]["PlanCodeEnum"];
+            readonly is_on_sale: boolean;
+            readonly features: string[];
+            readonly prices: components["schemas"]["PlanPrice"][];
+        };
+        PlanPrice: {
+            readonly months: components["schemas"]["MonthsEnum"];
+            readonly amount_uzs: number;
+            readonly list_amount_uzs: number;
+        };
+        /**
          * @description * `contest_room` - Musobaqa xonasi
          *     * `open_phase` - Ochiq faza
          *     * `practice` - Amaliyot
@@ -9963,13 +10129,6 @@ export interface components {
             percent: number;
             completed: boolean;
         };
-        /**
-         * @description * `google` - google
-         *     * `github` - github
-         *     * `telegram` - telegram
-         * @enum {string}
-         */
-        ProviderEnum: "google" | "github" | "telegram";
         Purchase: {
             item: string;
         };
@@ -12435,6 +12594,116 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UsernameCheck"];
+                };
+            };
+        };
+    };
+    billing_orders_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"][];
+                };
+            };
+        };
+    };
+    billing_orders_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderCreate"];
+                "multipart/form-data": components["schemas"]["OrderCreate"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    billing_orders_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this order. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    billing_orders_cancel_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this order. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    billing_plans_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillingOverview"];
                 };
             };
         };
