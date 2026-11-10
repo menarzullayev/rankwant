@@ -670,6 +670,8 @@ export const en: Record<MessageKey, string> = {
   "settings.name": "Name",
   "settings.unsaved": "Unsaved changes",
   "settings.unsavedCount": "Unsaved changes: {count}",
+  "settings.saveFailed": "Not saved. The reason is shown in the section — your edits are still there.",
+  "settings.saveFailedGone": "Your last change was not saved. Open the section again and re-enter it.",
   "settings.discard": "Discard",
   "settings.channelEmail": "Email",
   "settings.soon": "soon",

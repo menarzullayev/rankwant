@@ -667,6 +667,8 @@ export const kaa: Record<MessageKey, string> = {
   "settings.name": "At",
   "settings.unsaved": "Saqlanbaǵan ózgerisler",
   "settings.unsavedCount": "Saqlanbaǵan ózgerisler: {count}",
+  "settings.saveFailed": "Saqlanbadı. Sebebi bólimde kórsetilgen — dúzetiwińiz ornında qaldı.",
+  "settings.saveFailedGone": "Sońǵı ózgeris saqlanbadı. Bólimdi qayta ashıp, onı jáne kiritiń.",
   "settings.discard": "Biykar etiw",
   "settings.channelEmail": "Pochta",
   "settings.soon": "tez arada",

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2440 strings.**
+**2442 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -634,6 +634,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.name` | Ism | Ном |  |
 | `settings.unsaved` | Saqlanmagan o'zgarishlar | Тағйироти захиранашуда |  |
 | `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Тағйироти захиранашуда: {count} |  |
+| `settings.saveFailed` | Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi. | Нигоҳ дошта нашуд. Сабаб дар бахш нишон дода шудааст — ислоҳҳои шумо дар ҷояшон монданд. |  |
+| `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Тағйироти охирин нигоҳ дошта нашуд. Бахшро аз нав кушода, онро боз ворид кунед. |  |
 | `settings.discard` | Bekor qilish | Бекор кардан |  |
 | `settings.channelEmail` | Pochta | Почта |  |
 | `settings.soon` | tez orada | ба наздикӣ |  |

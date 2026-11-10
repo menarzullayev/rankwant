@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2440 strings.**
+**2442 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -634,6 +634,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.name` | Ism | Аты |  |
 | `settings.unsaved` | Saqlanmagan o'zgarishlar | Сакталбаган өзгөртүүлөр |  |
 | `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Сакталбаган өзгөртүүлөр: {count} |  |
+| `settings.saveFailed` | Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi. | Сакталган жок. Себеби бөлүмдө көрсөтүлгөн — оңдоолоруңуз ордунда калды. |  |
+| `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Акыркы өзгөртүү сакталган жок. Бөлүмдү кайра ачып, аны кайра киргизиңиз. |  |
 | `settings.discard` | Bekor qilish | Жокко чыгаруу |  |
 | `settings.channelEmail` | Pochta | Почта |  |
 | `settings.soon` | tez orada | жакында |  |
