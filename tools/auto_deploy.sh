@@ -102,10 +102,21 @@ log()  { printf '[%s] %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1"; }
 # A state that repeats every minute is written once: the key is kept next
 # to the state file and the line is skipped while it stays the same. The
 # "no image change" line alone was ~1 440 lines a day (audit Q-16, L-05).
+# Each kind of state (the key up to its first ':') keeps its own file, so two
+# repeating states in one tick do not overwrite each other's key and both get
+# logged every minute again.
 log_once() {
-  local quiet="${STATE}.quiet"
+  local quiet="${STATE}.quiet.${1%%:*}"
   if [ "$(cat "$quiet" 2>/dev/null)" = "$1" ]; then return 0; fi
   printf '%s\n' "$1" > "$quiet" 2>/dev/null || true
+  log "$2"
+}
+# The state of that kind is over: forget its key, so the next time it happens
+# is logged again, and say so once.
+log_once_end() {
+  local quiet="${STATE}.quiet.${1%%:*}"
+  [ -f "$quiet" ] || return 0
+  rm -f "$quiet"
   log "$2"
 }
 
@@ -231,6 +242,41 @@ if ! mkdir "$LOCK" 2>/dev/null; then
 fi
 trap 'rm -rf "$LOCK"' EXIT
 printf 'auto-deploy pid %s, %s\n' "$$" "$(date -u '+%Y-%m-%d %H:%M UTC')" > "$LOCK/owner"
+
+# ── 1b. Docker tirikmi; Docker o'zi ko'tara olmagan konteyner ─────────
+# ⚠️ Docker javob bermasa — deploy EMAS, to'siq ham YO'Q. O'lchandi
+# (2026-11-10 08:00 UTC): Docker Desktop to'xtagan edi, `all_up` va
+# `live_sha` o'qilmay «deploy qilinadi» degan qarorga olib keldi, `deploy.sh`
+# «Docker engine javob bermayapti» bilan yiqildi va jonli sayt allaqachon
+# `main` da bo'lsa ham 30 daqiqalik to'siq qo'yildi. Bu nosozlik emas —
+# Docker qaytgach keyingi daqiqa hammasini qayta o'lchaydi.
+if ! docker info >/dev/null 2>&1; then
+  log_once "nodocker" "Docker engine javob bermayapti — deploy qilinmadi, to'siq YO'Q"
+  exit 0
+fi
+log_once_end "nodocker" "Docker engine yana javob beryapti"
+# Docker qayta ko'tarilganda judge `cgroup.procs: device or resource busy`
+# bilan `Exited (128)` da qoldi va `unless-stopped` qayta urinmadi (o'sha
+# kun). Faqat Docker O'ZI ishga tushira olmagan konteyner ko'tariladi —
+# qo'lda to'xtatilgani (bake-off'dagi worker/beat) tegilmaydi. Muzlatish va
+# fetch'dan OLDIN: bu deploy emas, kod o'zgarmaydi, tarmoq kerak emas.
+if [ -f tools/revive_containers.sh ]; then
+  revive_args=("$PROJECT")
+  [ "$DRY_RUN" -eq 1 ] && revive_args+=(--dry-run)
+  revive_out="$(bash tools/revive_containers.sh "${revive_args[@]}" 2>&1)"
+  revive_rc=$?
+  if [ "$revive_rc" -eq 0 ] && [ "$DRY_RUN" -eq 0 ]; then
+    log_once_end "revive" "Docker ko'tara olmagan konteyner endi yo'q"
+  fi
+  if [ -n "$revive_out" ]; then
+    if [ "$revive_rc" -eq 0 ]; then
+      printf '%s\n' "$revive_out" | while IFS= read -r line; do log "$line"; done
+    else
+      # Ko'tarilmagan konteyner har daqiqada qayta sinaladi — log bir marta.
+      log_once "revive:$revive_out" "$(printf '%s' "$revive_out" | tr '\n' ' ')"
+    fi
+  fi
+fi
 
 # ── 2. Muzlatish kaliti ──────────────────────────────────────────────
 if [ -n "${DEPLOY_FREEZE:-}" ] && [ "${DEPLOY_FREEZE}" != "0" ]; then
