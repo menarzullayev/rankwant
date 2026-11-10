@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, NamedTuple
 
 from django.db import transaction
 from django.db.models import Count, Q
@@ -17,18 +17,25 @@ from notifications.models import Notification
 log = logging.getLogger(__name__)
 
 
-#: Kanal standarti: sayt ichida — ha, Telegram — foydalanuvchi o'zi yoqadi.
-#: Telegram'ga so'ramasdan xabar yuborish botni spamga aylantirardi.
-DEFAULT_CHANNELS = {"site": True, "telegram": False}
+#: Kanal standarti: sayt ichida — ha, Telegram va email — foydalanuvchi o'zi
+#: yoqadi. Telegram'ga so'ramasdan xabar yuborish botni spamga aylantirardi;
+#: email ham opt-in (egasi qarori, 2026-11-10 — `notifications.email`).
+DEFAULT_CHANNELS = {"site": True, "telegram": False, "email": False}
+
+#: The channels a preference may name — the settings validator reads this.
+CHANNEL_NAMES = tuple(DEFAULT_CHANNELS)
 
 
-def channels(user: User, kind: str) -> tuple[bool, bool]:
-    """`(sayt, telegram)` — foydalanuvchining shu tur uchun tanlovi."""
+class Channels(NamedTuple):
+    site: bool
+    telegram: bool
+    email: bool
+
+
+def channels(user: User, kind: str) -> Channels:
+    """Foydalanuvchining shu tur uchun tanlovi."""
     prefs = (user.notify_prefs or {}).get(kind) or {}
-    return (
-        bool(prefs.get("site", DEFAULT_CHANNELS["site"])),
-        bool(prefs.get("telegram", DEFAULT_CHANNELS["telegram"])),
-    )
+    return Channels(*(bool(prefs.get(name, DEFAULT_CHANNELS[name])) for name in CHANNEL_NAMES))
 
 
 def _telegram_text(title: str, body: str) -> str:
@@ -130,7 +137,7 @@ def notify(
     (reyting, verdict) saqlanishi shart. Sayt kanali o'chirilgan bo'lsa
     `None` qaytadi — chaqiruvchi buni allaqachon ko'taradi.
     """
-    site, telegram = channels(user, kind)
+    site, telegram, email = channels(user, kind)
     try:
         draft = compose(
             user, kind, title, body=body, code=code, params=params, ref_type=ref_type, ref_id=ref_id
@@ -148,6 +155,15 @@ def notify(
             log.exception("bildirishnoma yaratilmadi: %s / %s", user.pk, kind)
     if telegram:
         _push_telegram(user, draft.title, draft.body)
+    if email:
+        try:
+            from notifications import email as email_channel
+
+            email_channel.schedule(
+                user, kind, draft.title, draft.body, row.pk if row is not None else None
+            )
+        except Exception:
+            log.exception("email bildirishnomasi rejalashtirilmadi: %s / %s", user.pk, kind)
     return row
 
 
@@ -165,7 +181,9 @@ def notify_many(
     """Ko'p foydalanuvchiga bir xil xabar — bitta so'rovda.
 
     Faqat sayt kanali: ommaviy xabarni Telegram'ga birdaniga minglab
-    yuborish bot chegarasiga urilardi.
+    yuborish bot chegarasiga urilardi. Email ham ataylab yo'q — bitta
+    e'lon ~974k qator, zanjir esa kuniga 700 xat yuboradi
+    (`notifications.email`).
     """
     rows = [
         compose(

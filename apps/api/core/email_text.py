@@ -399,6 +399,78 @@ CHANGED: dict[str, dict[str, str]] = {
 }
 
 
+#: A notification copied to email (`notifications.email`). Its heading and
+#: body are the notification's own words; these are the frame around them.
+#: `footer` replaces the shared one — "you did not request it, ignore it"
+#: would be wrong here: the reader switched these emails on. `{kind}` is
+#: the setting's name from `message_catalog.KIND_NAMES`.
+NOTIFY: dict[str, dict[str, str]] = {
+    "cta": {
+        "uz": "Saytda ochish",
+        "ru": "Открыть на сайте",
+        "en": "Open on the site",
+        "kaa": "Saytta ashıw",
+        "kk": "Сайтта ашу",
+        "ky": "Сайтта ачуу",
+        "tg": "Дар сайт кушодан",
+        "tr": "Sitede aç",
+        "zh": "在网站上打开",
+        "es": "Abrir en el sitio",
+    },
+    "footer": {
+        "uz": "Bu xat «{kind}» uchun email bildirishnomalarini yoqqaningiz sababli yuborildi.",
+        "ru": "Это письмо пришло, потому что вы включили уведомления по почте для «{kind}».",
+        "en": "You received this because you turned on email notifications for “{kind}”.",
+        "kaa": "Bul xat «{kind}» ushın email bildiriwlerin qosqanıńız sebepli jiberildi.",
+        "kk": "Бұл хат «{kind}» үшін пошта хабарландыруларын қосқаныңыз үшін жіберілді.",
+        "ky": "Бул кат «{kind}» үчүн почта билдирмелерин күйгүзгөнүңүз үчүн жөнөтүлдү.",
+        "tg": (
+            "Ин паём барои он фиристода шуд, ки шумо огоҳиномаҳои почтаро "
+            "барои «{kind}» фаъол кардед."
+        ),
+        "tr": "Bu e-postayı «{kind}» için e-posta bildirimlerini açtığınız için aldınız.",
+        "zh": "您收到此邮件，是因为您为「{kind}」开启了邮件通知。",
+        "es": "Recibes este correo porque activaste las notificaciones por correo para «{kind}».",
+    },
+    "unsubscribe_kind": {
+        "uz": "Bu turdagi xatlarni o'chirish",
+        "ru": "Отключить письма этого типа",
+        "en": "Turn off emails of this kind",
+        "kaa": "Bul túrdegi xatlardı óshiriw",
+        "kk": "Осы түрдегі хаттарды өшіру",
+        "ky": "Бул түрдөгү каттарды өчүрүү",
+        "tg": "Хомӯш кардани паёмҳои ин навъ",
+        "tr": "Bu türdeki e-postaları kapat",
+        "zh": "关闭此类邮件",
+        "es": "Desactivar los correos de este tipo",
+    },
+    "unsubscribe_all": {
+        "uz": "Barcha email bildirishnomalarni o'chirish",
+        "ru": "Отключить все уведомления по почте",
+        "en": "Turn off all email notifications",
+        "kaa": "Barlıq email bildiriwlerdi óshiriw",
+        "kk": "Барлық пошта хабарландыруларын өшіру",
+        "ky": "Бардык почта билдирмелерин өчүрүү",
+        "tg": "Хомӯш кардани ҳамаи огоҳиномаҳои почта",
+        "tr": "Tüm e-posta bildirimlerini kapat",
+        "zh": "关闭所有邮件通知",
+        "es": "Desactivar todas las notificaciones por correo",
+    },
+    "settings_link": {
+        "uz": "Bildirishnoma sozlamalari",
+        "ru": "Настройки уведомлений",
+        "en": "Notification settings",
+        "kaa": "Bildiriw sazlawları",
+        "kk": "Хабарландыру баптаулары",
+        "ky": "Билдирме жөндөөлөрү",
+        "tg": "Танзимоти огоҳиномаҳо",
+        "tr": "Bildirim ayarları",
+        "zh": "通知设置",
+        "es": "Ajustes de notificaciones",
+    },
+}
+
+
 def strings(table: dict[str, dict[str, str]], locale: str) -> dict[str, str]:
     """Flatten one locale. Missing text is the English property name.
 

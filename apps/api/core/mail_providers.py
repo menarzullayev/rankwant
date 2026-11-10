@@ -16,7 +16,7 @@ import json
 import logging
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from django.conf import settings
 
@@ -31,6 +31,9 @@ class Message:
     subject: str
     text: str
     html: str = ""
+    #: Extra headers — `List-Unsubscribe` and `List-Unsubscribe-Post` on a
+    #: notification email (RFC 8058). Account mail sends none.
+    headers: dict[str, str] = field(default_factory=dict)
 
 
 class SendError(Exception):
@@ -113,6 +116,7 @@ class Brevo:
                 "subject": msg.subject,
                 "textContent": msg.text,
                 **({"htmlContent": msg.html} if msg.html else {}),
+                **({"headers": msg.headers} if msg.headers else {}),
             },
             {"api-key": settings.BREVO_API_KEY},
         )
@@ -140,6 +144,7 @@ class Mailjet:
                         "Subject": msg.subject,
                         "TextPart": msg.text,
                         **({"HTMLPart": msg.html} if msg.html else {}),
+                        **({"Headers": msg.headers} if msg.headers else {}),
                     }
                 ]
             },
@@ -175,6 +180,7 @@ class Resend:
                 "subject": msg.subject,
                 "text": msg.text,
                 **({"html": msg.html} if msg.html else {}),
+                **({"headers": msg.headers} if msg.headers else {}),
             },
             {"Authorization": f"Bearer {settings.RESEND_API_KEY}"},
         )
@@ -190,6 +196,10 @@ class MailerSend:
         return bool(settings.MAILERSEND_API_KEY)
 
     def send(self, msg: Message) -> None:
+        # `msg.headers` is NOT forwarded: MailerSend accepts custom headers
+        # and its own `list_unsubscribe` only on paid plans, and adds an
+        # RFC 8058 header of its own pointing at its suppression list. The
+        # footer links in the body still reach our unsubscribe page.
         email, name = _sender(self.name)
         _post(
             "https://api.mailersend.com/v1/email",

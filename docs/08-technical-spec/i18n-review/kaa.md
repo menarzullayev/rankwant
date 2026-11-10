@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2608 strings.**
+**2625 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -273,6 +273,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernamePlaceholder` | sardor_dev | aybek_dev |  |
 | `auth.usernameOptional` | Taxallus (ixtiyoriy) | Laqap (ixtiyariy) |  |
 | `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Keyinirek te saylawıńız múmkin |  |
+| `auth.regionOptional` | Viloyat (ixtiyoriy) | Wálayat (ixtiyariy) |  |
+| `auth.regionHint` | Keyinroq sozlamalarda o'zgartirishingiz mumkin | Keyinirek sazlawlarda ózgertiwińiz múmkin |  |
 | `auth.firstNamePlaceholder` | Masalan: Sardor | Mısalı: Sardor |  |
 | `auth.lastNamePlaceholder` | Masalan: Rahimov | Mısalı: Rahimov |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Keminde 8 belgi. Tek sannan ibarat bolmasın. |  |
@@ -638,7 +640,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Sońǵı ózgeris saqlanbadı. Bólimdi qayta ashıp, onı jáne kiritiń. |  |
 | `settings.discard` | Bekor qilish | Biykar etiw |  |
 | `settings.channelEmail` | Pochta | Pochta |  |
-| `settings.soon` | tez orada | tez arada |  |
 | `settings.privacy.title` | Kim nimani ko'radi | Kim neni kóredi |  |
 | `settings.privacy.hint` | Yoqilgan maydon ommaviy profilda ko'rinadi. Pochta standart holatda yashirin. | Qosılǵan maydan ǵalabalıq profilde kórinedi. Pochta ádette jasırın. |  |
 | `settings.privacy.preview` | Profilim boshqalarga qanday ko'rinadi | Profilim basqalarǵa qalay kórinedi |  |
@@ -880,9 +881,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.bio` | O'zim haqimda | Óz haqqımda |  |
 | `settings.bioHint` | Profil sahifasida ismingiz tagida ko'rinadi. | Profil betinde atıńız astında kórinedi. |  |
 | `settings.birthDate` | Tug'ilgan sana | Tuwılǵan sáne |  |
-| `settings.channelEmailSoon` | Pochta orqali yuborish keyinroq qo'shiladi. | Pochta arqalı jiberiw keyinirek qosıladı. |  |
 | `settings.channelSite` | Saytda | Saytta |  |
 | `settings.channelTelegram` | Telegram | Telegram |  |
+| `settings.notifyEmailHint` | Email faqat tasdiqlangan manzilga va faqat sizga tegishli xabar uchun yuboriladi — umumiy e'lonlar emailga kelmaydi. Xat 5 daqiqadan keyin ketadi; shu orada saytda o'qisangiz, yuborilmaydi. | Email tek tastıyıqlanǵan mánzilge hám tek sizge tiyisli xabar ushın jiberiledi — ulıwma daǵazalar emailge kelmeydi. Xat 5 minuttan keyin ketedi; usı aralıqta saytta oqısańız, jiberilmeydi. |  |
+| `settings.emailNeedsVerify` | Email orqali olish uchun pochta manzilingizni tasdiqlang: | Email arqalı alıw ushın pochta mánzilińizdi tastıyıqlań: |  |
+| `settings.emailVerifyLink` | Pochtani tasdiqlash | Pochtanı tastıyıqlaw |  |
+| `unsubscribe.title` | Email bildirishnomalari | Email bildiriwleri |  |
+| `unsubscribe.askKind` | «{kind}» turidagi email xatlarni o'chirasizmi? | «{kind}» túrindegi email xatlardı óshiresizbe? |  |
+| `unsubscribe.askAll` | Barcha email bildirishnomalarni o'chirasizmi? | Barlıq email bildiriwlerdi óshiresizbe? |  |
+| `unsubscribe.confirm` | Emailni o'chirish | Emaildi óshiriw |  |
+| `unsubscribe.doneKind` | «{kind}» turidagi email xatlar o'chirildi. | «{kind}» túrindegi email xatlar óshirildi. |  |
+| `unsubscribe.doneAll` | Barcha email bildirishnomalar o'chirildi. | Barlıq email bildiriwler óshirildi. |  |
+| `unsubscribe.invalid` | Havola yaroqsiz — u buzilgan yoki eskirgan. Sozlamani o'zingiz o'zgartiring. | Siltew jaramsız — ol buzılǵan yamasa eskirgen. Sazlawdı ózińiz ózgertiń. |  |
+| `unsubscribe.note` | Saytdagi bildirishnomalar o'zgarmaydi. Emailni qayta yoqish — bildirishnoma sozlamalarida. | Sayttaǵı bildiriwler ózgermeydi. Emaildi qayta qosıw — bildiriw sazlawlarında. |  |
+| `unsubscribe.settings` | Bildirishnoma sozlamalari | Bildiriw sazlawları |  |
+| `unsubscribe.failed` | O'chirib bo'lmadi. Birozdan keyin qayta urinib ko'ring. | Óshiriw múmkin bolmadı. Birazdan keyin qayta urınıp kóriń. |  |
 | `settings.company` | Kompaniya | Kompaniya |  |
 | `settings.cosmetics` | Profil bezaklari | Profil bezewleri |  |
 | `settings.cosmeticsEmpty` | Hali bezak yo'q — ularni Qvant do'konidan olish mumkin. | Ele bezew joq — olardı Qvant dúkanınan alıw múmkin. |  |
@@ -1724,6 +1737,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.name.shown` | Ko'rsatiladigan ism | Kórsetiletuǵın atı |  |
 | `admin.label.ab.control` | Nazorat (2-qadamda) | Baqlaw (2-qádemde) |  |
 | `admin.label.ab.variant` | Variant (ro'yxatda) | Variant (dizimde) |  |
+| `admin.label.ab.started` | Formani boshladi | Formanı basladı |  |
+| `admin.label.ab.done` | Ro'yxatdan o'tdi | Dizimnen ótti |  |
+| `admin.label.ab.completion` | Tugatish ulushi | Juwmaqlaw úlesi |  |
+| `admin.label.ab.regionFilled` | Viloyati bor (hozir) | Wálayatı bar (házir) |  |
 | `admin.label.misc.participant` | Ishtirokchi | Qatnasıwshı |  |
 | `admin.label.misc.challenger` | Chaqiruvchi | Shaqırıwshı |  |
 | `admin.label.misc.projects` | Loyihalar | Joybarlar |  |

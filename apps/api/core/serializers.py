@@ -507,6 +507,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
 
     def validate_notify_prefs(self, value: Any) -> dict[str, dict[str, bool]]:
         from notifications.models import Notification
+        from notifications.services import CHANNEL_NAMES
 
         if not isinstance(value, dict):
             raise serializers.ValidationError("An object was expected")
@@ -515,7 +516,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
         for kind, channels in value.items():
             if kind not in kinds or not isinstance(channels, dict):
                 raise serializers.ValidationError(f"Unknown type: {kind}")
-            if set(channels) - {"site", "telegram"} or not all(
+            if set(channels) - set(CHANNEL_NAMES) or not all(
                 isinstance(v, bool) for v in channels.values()
             ):
                 raise serializers.ValidationError(f"Invalid channel: {kind}")
@@ -759,6 +760,16 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             )
         except DjangoValidationError as exc:
             raise serializers.ValidationError({"password": list(exc.messages)}) from None
+
+        # A/B `b` (8-qaror) asks the region on this form: in Uzbekistan it is a
+        # catalogue code, as `MeSerializer.validate` already demands. Without
+        # this the sign-up path accepted any text the settings page refuses.
+        if (
+            attrs.get("country") == "UZ"
+            and attrs.get("region")
+            and attrs["region"] not in UZ_REGIONS
+        ):
+            raise serializers.ValidationError({"region": "The region must be chosen from the list"})
 
         # Turnstile ENG OXIRIDA: token bir martalik, ya'ni uni parol
         # qoidasi yoki band pochta uchun behuda sarflash odamni qayta

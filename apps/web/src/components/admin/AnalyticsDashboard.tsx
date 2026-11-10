@@ -10,6 +10,15 @@ import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
 type FunnelRow = { name: string; sessions: number; share: number };
+type AbGroup = { started: number; done: number; completion: number; region_filled: number };
+
+/** The A/B comparison rows: the rate, not the raw count, is what compares. */
+const AB_ROWS: { key: keyof AbGroup; label: MessageKey; percent: boolean }[] = [
+  { key: "started", label: "admin.label.ab.started", percent: false },
+  { key: "done", label: "admin.label.ab.done", percent: false },
+  { key: "completion", label: "admin.label.ab.completion", percent: true },
+  { key: "region_filled", label: "admin.label.ab.regionFilled", percent: true },
+];
 type CountRow = { sessions: number };
 
 type Data = {
@@ -17,7 +26,14 @@ type Data = {
   total_events: number;
   funnel: FunnelRow[];
   step2: { saved: number; skipped: number; skipped_share: number };
-  variant: { control: number; variant: number; total: number; control_share: number };
+  variant: {
+    control: number;
+    variant: number;
+    total: number;
+    control_share: number;
+    /** Per group (2026-11-10). Optional: an API older than this page lacks it. */
+    groups?: Record<"a" | "b", AbGroup>;
+  };
   errors: { reason: string; sessions: number }[];
   locales: ({ locale: string } & CountRow)[];
   countries: ({ country: string } & CountRow)[];
@@ -175,6 +191,36 @@ export function AnalyticsDashboard() {
                   bo&apos;lmasa natija ishonchsiz — guruh cookie&apos;si
                   tozalangan bo&apos;lishi mumkin.
                 </p>
+                {data.variant.groups && (
+                  <table className="w-full text-theme-sm">
+                    <thead>
+                      <tr className="text-left rw-faint">
+                        <th scope="col" className="py-1 font-medium" />
+                        <th scope="col" className="py-1 text-right font-medium">
+                          {t(locale, "admin.label.ab.control")}
+                        </th>
+                        <th scope="col" className="py-1 text-right font-medium">
+                          {t(locale, "admin.label.ab.variant")}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="rw-divide divide-y">
+                      {AB_ROWS.map((row) => (
+                        <tr key={row.key}>
+                          <th scope="row" className="py-1.5 text-left font-normal rw-dim">
+                            {t(locale, row.label)}
+                          </th>
+                          {(["a", "b"] as const).map((group) => (
+                            <td key={group} className="py-1.5 text-right font-medium tabular-nums rw-strong">
+                              {data.variant.groups![group][row.key]}
+                              {row.percent ? "%" : ""}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             )}
           </Card>

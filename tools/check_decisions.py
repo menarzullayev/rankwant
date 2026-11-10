@@ -2527,6 +2527,83 @@ def privacy_text_matches_the_data() -> str | None:
     return None
 
 
+def _python_function(text: str, name: str) -> str:
+    """The source of one top-level or method `def` — up to the next line that
+    starts at the same or a smaller indent. Empty when it is not there."""
+    match = re.search(rf"^(?P<indent>[ ]*)def {name}\(", text, re.M)
+    if not match:
+        return ""
+    indent = len(match.group("indent"))
+    lines = text[match.start() :].split("\n")
+    body = [lines[0]]
+    for line in lines[1:]:
+        dedented = len(line) - len(line.lstrip(" ")) <= indent
+        if line.strip() and dedented and not line.lstrip().startswith(")"):
+            break
+        body.append(line)
+    return "\n".join(body)
+
+
+def notification_email_is_opt_in_and_bounded() -> str | None:
+    """2026-11-10 (HITL, audit Q-07/3): email bildirishnomasi — opt-in va chegaralangan.
+
+    Egasi qarorlari: standart holatda hamma tur o'chiq; faqat shaxsiy xabar
+    (`notify`), ommaviy e'lon (`notify_many`) hech qachon emailga ketmaydi;
+    faqat tasdiqlangan manzilga; 5 daqiqa kutib, saytda o'qilgan bo'lsa
+    yuborilmaydi (so'rov ichida emas, commit'dan keyin navbatga); kuniga
+    200 xat hisob xatlari uchun zaxirada, bitta odamga kuniga ko'pi 10;
+    imzolangan bitta bosishli obuna (RFC 8058), GET hech narsani o'zgartirmaydi.
+    """
+    services = read("apps/api/notifications/services.py")
+    if '"email": False' not in services.split("DEFAULT_CHANNELS = ", 1)[-1].split("\n", 1)[0]:
+        return "notifications/services.py: email standart holatda o'chiq emas — so'ramasdan xat ketadi"
+    bulk = _python_function(services, "notify_many")
+    if not bulk:
+        return "notifications/services.py: `notify_many` topilmadi"
+    if "email" in bulk.split('"""', 2)[-1]:
+        return "notifications/services.py: `notify_many` email yuboradi — e'lon kvotani yeydi"
+    if "email_channel.schedule(" not in _python_function(services, "notify"):
+        return "notifications/services.py: `notify` email kanalini rejalashtirmaydi"
+
+    mail = read("apps/api/notifications/email.py")
+    for line in (
+        "EMAIL_DELAY_SECONDS = 300",
+        "RESERVE_FOR_ACCOUNT_MAIL = 200",
+        "PER_USER_DAILY_CAP = 10",
+    ):
+        if f"\n{line}\n" not in mail:
+            return f"notifications/email.py: `{line}` o'zgargan — qaror boshqa son aytadi"
+    if "and user.email_verified_at is not None" not in _python_function(mail, "reachable"):
+        return "notifications/email.py: tasdiqlanmagan manzilga ham xat ketadi"
+    schedule = _python_function(mail, "schedule")
+    if "countdown=EMAIL_DELAY_SECONDS" not in schedule or "transaction.on_commit(push)" not in schedule:
+        return "notifications/email.py: xat 5 daqiqa kutmaydi yoki commit'dan oldin navbatga tushadi"
+    deliver = _python_function(mail, "deliver")
+    if 'return "skipped:read"' not in deliver:
+        return "notifications/email.py: saytda o'qilgan xabar ham emailga ketadi"
+    if "budget_refusal(user)" not in deliver:
+        return "notifications/email.py: kvota zaxirasi va kunlik chegara tekshirilmaydi"
+    budget = _python_function(mail, "budget_refusal")
+    if "left <= RESERVE_FOR_ACCOUNT_MAIL" not in budget or ">= PER_USER_DAILY_CAP" not in budget:
+        return "notifications/email.py: hisob xatlari zaxirasi yoki kunlik chegara yo'q"
+    if '"List-Unsubscribe-Post": "List-Unsubscribe=One-Click"' not in mail:
+        return "notifications/email.py: bitta bosishli obuna sarlavhasi (RFC 8058) yo'q"
+
+    views = read("apps/api/notifications/views.py")
+    view = views.split("class EmailUnsubscribeView", 1)[-1]
+    if "unsubscribe(" in _python_function(view, "get"):
+        return "notifications/views.py: GET obunani bekor qiladi — pochta skaneri havolani ochib qo'yadi"
+    if "email_channel.unsubscribe(" not in _python_function(view, "post"):
+        return "notifications/views.py: POST obunani bekor qilmaydi"
+
+    section = read("apps/web/src/features/account/components/NotificationsSection.tsx")
+    if 'const CHANNELS = ["site", "telegram", "email"] as const;' not in section:
+        return "NotificationsSection.tsx: Email ustuni sozlamalarda yo'q"
+    if "settings.soon" in section:
+        return "NotificationsSection.tsx: Email ustuni yana «tez orada»"
+    return None
+
+
 def names_are_not_translated() -> str | None:
     """2026-11-10 (HITL, audit Q-15): tarjima qilinmaydigan nomlar glossariyda.
 
@@ -2860,6 +2937,43 @@ def _compose_service(src: str, name: str) -> str:
     """One top-level service block of a compose file ('' when it has none)."""
     match = re.search(rf"^  {re.escape(name)}:\n(.*?)(?=^  \S|^\S|\Z)", src, re.M | re.S)
     return match.group(1) if match else ""
+
+
+def region_ab_is_switched_and_measured() -> str | None:
+    """2026-11-10 (HITL, audit Q-13): `geoEarlyRegion` — viloyat A/B (8-qaror) ulandi.
+
+    Sinov o'z kaliti (`NEXT_PUBLIC_FLAG_GEO_EARLY_REGION`) bilan yoqiladi;
+    kalitsiz `b` guruh ham yoqmaydi. Maydon faqat brauzerda chiziladi:
+    `/login` chekkada `rw_exp` ga qaramay keshlanadi. Natija o'qiladi:
+    guruhsiz hodisa hech bir guruhga yozilmaydi, mehmon hodisasi tab id
+    bilan alohida sessiya bo'ladi, ro'yxatdagi viloyat katalogdan.
+    """
+    flags = read("apps/web/src/lib/flags.ts")
+    if "if (!experiment || !experimentRunning(name)) return null;" not in flags:
+        return "lib/flags.ts: sinov o'z kalitisiz ham yoqiladi"
+    if "    if (!experimentRunning(name)) return false;\n" not in flags:
+        return "lib/flags.ts: server tomoni sinov kalitini tekshirmaydi"
+    form = read("apps/web/src/features/account/components/AuthForm.tsx")
+    if "const regionNotAskedOnServer = () => false;" not in form:
+        return "AuthForm.tsx: viloyat maydoni serverda chiziladi (chekka keshi guruhni aralashtiradi)"
+    if 'const regionAskedHere = () => experimentGroupForPage("geoEarlyRegion") === "b";' not in form:
+        return "AuthForm.tsx: viloyat maydoni guruhni sahifaga qotirmaydi"
+    if "useSyncExternalStore(noSubscription, regionAskedHere, regionNotAskedOnServer)" not in form:
+        return "AuthForm.tsx: viloyat maydoni `geoEarlyRegion` ga bog'lanmagan"
+    analytics = read("apps/web/src/lib/analytics.ts")
+    if 'const group = experimentGroupForPage("geoEarlyRegion");' not in analytics:
+        return "lib/analytics.ts: hodisa guruhi forma chizilgan guruhdan farq qilishi mumkin"
+    if "...(group ? { exp: group } : {})" not in analytics:
+        return "lib/analytics.ts: guruhsiz hodisa guruhga yoziladi"
+    if "fid: funnel()" not in analytics:
+        return "lib/analytics.ts: mehmon hodisasi tab id'siz ketadi"
+    views = read("apps/api/core/views.py")
+    if "session_key=key_of(props)," not in views:
+        return "core/views.py: mehmon hodisalari bitta bo'sh sessiyaga tushadi"
+    register = read("apps/api/core/serializers.py").split("class RegisterSerializer", 1)[-1]
+    if 'and attrs["region"] not in UZ_REGIONS' not in register.split("def create", 1)[0]:
+        return "core/serializers.py: ro'yxatdan o'tishda viloyat katalogdan tekshirilmaydi"
+    return None
 
 
 def judge_is_not_privileged() -> str | None:
@@ -4474,11 +4588,13 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
+    ("email bildirishnomasi opt-in va chegaralangan", notification_email_is_opt_in_and_bounded),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("muallif qoralamasi studio sahifasida", studio_problems_panel),
     ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
     ("judge privileged emas", judge_is_not_privileged),
+    ("viloyat A/B kalit bilan yoqiladi va o'lchanadi", region_ab_is_switched_and_measured),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2608 strings.**
+**2625 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -273,6 +273,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernamePlaceholder` | sardor_dev | erlan_dev |  |
 | `auth.usernameOptional` | Taxallus (ixtiyoriy) | Ник (милдеттүү эмес) |  |
 | `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Кийинчерээк тандасаңыз болот |  |
+| `auth.regionOptional` | Viloyat (ixtiyoriy) | Облус (милдеттүү эмес) |  |
+| `auth.regionHint` | Keyinroq sozlamalarda o'zgartirishingiz mumkin | Кийинчерээк жөндөөлөрдөн өзгөртө аласыз |  |
 | `auth.firstNamePlaceholder` | Masalan: Sardor | Мисалы: Эрлан |  |
 | `auth.lastNamePlaceholder` | Masalan: Rahimov | Мисалы: Асанов |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Эң аз 8 белги. Жалаң сандан турбасын. |  |
@@ -638,7 +640,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Акыркы өзгөртүү сакталган жок. Бөлүмдү кайра ачып, аны кайра киргизиңиз. |  |
 | `settings.discard` | Bekor qilish | Жокко чыгаруу |  |
 | `settings.channelEmail` | Pochta | Почта |  |
-| `settings.soon` | tez orada | жакында |  |
 | `settings.privacy.title` | Kim nimani ko'radi | Ким эмнени көрөт |  |
 | `settings.privacy.hint` | Yoqilgan maydon ommaviy profilda ko'rinadi. Pochta standart holatda yashirin. | Күйгүзүлгөн талаа ачык профилде көрүнөт. Почта демейки боюнча жашыруун. |  |
 | `settings.privacy.preview` | Profilim boshqalarga qanday ko'rinadi | Профилим башкаларга кандай көрүнөт |  |
@@ -880,9 +881,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.bio` | O'zim haqimda | Өзүм жөнүндө |  |
 | `settings.bioHint` | Profil sahifasida ismingiz tagida ko'rinadi. | Профиль барагында атыңыздын астында көрүнөт. |  |
 | `settings.birthDate` | Tug'ilgan sana | Туулган күнү |  |
-| `settings.channelEmailSoon` | Pochta orqali yuborish keyinroq qo'shiladi. | Почта аркылуу жөнөтүү кийинчерээк кошулат. |  |
 | `settings.channelSite` | Saytda | Сайтта |  |
 | `settings.channelTelegram` | Telegram | Telegram |  |
+| `settings.notifyEmailHint` | Email faqat tasdiqlangan manzilga va faqat sizga tegishli xabar uchun yuboriladi — umumiy e'lonlar emailga kelmaydi. Xat 5 daqiqadan keyin ketadi; shu orada saytda o'qisangiz, yuborilmaydi. | Кат ырасталган дарекке жана сизге тиешелүү билдирме үчүн гана жөнөтүлөт — жалпы жарыялар почтага келбейт. Кат 5 мүнөттөн кийин кетет; ошол убакытта сайтта окусаңыз, жөнөтүлбөйт. |  |
+| `settings.emailNeedsVerify` | Email orqali olish uchun pochta manzilingizni tasdiqlang: | Почта аркылуу алуу үчүн дарегиңизди ырастаңыз: |  |
+| `settings.emailVerifyLink` | Pochtani tasdiqlash | Почтаны ырастоо |  |
+| `unsubscribe.title` | Email bildirishnomalari | Почта билдирмелери |  |
+| `unsubscribe.askKind` | «{kind}» turidagi email xatlarni o'chirasizmi? | «{kind}» түрүндөгү каттарды өчүрөсүзбү? |  |
+| `unsubscribe.askAll` | Barcha email bildirishnomalarni o'chirasizmi? | Бардык почта билдирмелерин өчүрөсүзбү? |  |
+| `unsubscribe.confirm` | Emailni o'chirish | Каттарды өчүрүү |  |
+| `unsubscribe.doneKind` | «{kind}» turidagi email xatlar o'chirildi. | «{kind}» түрүндөгү каттар өчүрүлдү. |  |
+| `unsubscribe.doneAll` | Barcha email bildirishnomalar o'chirildi. | Бардык почта билдирмелери өчүрүлдү. |  |
+| `unsubscribe.invalid` | Havola yaroqsiz — u buzilgan yoki eskirgan. Sozlamani o'zingiz o'zgartiring. | Шилтеме жараксыз — ал бузулган же эскирген. Жөндөөнү өзүңүз өзгөртүңүз. |  |
+| `unsubscribe.note` | Saytdagi bildirishnomalar o'zgarmaydi. Emailni qayta yoqish — bildirishnoma sozlamalarida. | Сайттагы билдирмелер өзгөрбөйт. Каттарды кайра күйгүзүү — билдирме жөндөөлөрүндө. |  |
+| `unsubscribe.settings` | Bildirishnoma sozlamalari | Билдирме жөндөөлөрү |  |
+| `unsubscribe.failed` | O'chirib bo'lmadi. Birozdan keyin qayta urinib ko'ring. | Өчүрүү мүмкүн болбоду. Бир аздан кийин кайра аракет кылыңыз. |  |
 | `settings.company` | Kompaniya | Компания |  |
 | `settings.cosmetics` | Profil bezaklari | Профиль кооздуктары |  |
 | `settings.cosmeticsEmpty` | Hali bezak yo'q — ularni Qvant do'konidan olish mumkin. | Азырынча кооздук жок — аларды Qvant дүкөнүнөн алса болот. |  |
@@ -1724,6 +1737,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.name.shown` | Ko'rsatiladigan ism | Көрсөтүлүүчү ат |  |
 | `admin.label.ab.control` | Nazorat (2-qadamda) | Көзөмөл (2-кадамда) |  |
 | `admin.label.ab.variant` | Variant (ro'yxatda) | Вариант (тизмеде) |  |
+| `admin.label.ab.started` | Formani boshladi | Форманы баштады |  |
+| `admin.label.ab.done` | Ro'yxatdan o'tdi | Катталды |  |
+| `admin.label.ab.completion` | Tugatish ulushi | Бүтүрүү үлүшү |  |
+| `admin.label.ab.regionFilled` | Viloyati bor (hozir) | Облусу бар (азыр) |  |
 | `admin.label.misc.participant` | Ishtirokchi | Катышуучу |  |
 | `admin.label.misc.challenger` | Chaqiruvchi | Чакыруучу |  |
 | `admin.label.misc.projects` | Loyihalar | Долбоорлор |  |

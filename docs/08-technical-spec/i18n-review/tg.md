@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2608 strings.**
+**2625 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -273,6 +273,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.usernamePlaceholder` | sardor_dev | rustam_dev |  |
 | `auth.usernameOptional` | Taxallus (ixtiyoriy) | Лақаб (ихтиёрӣ) |  |
 | `auth.usernameOptionalHint` | Keyinroq ham tanlashingiz mumkin | Баъдтар низ интихоб кардан мумкин аст |  |
+| `auth.regionOptional` | Viloyat (ixtiyoriy) | Вилоят (ихтиёрӣ) |  |
+| `auth.regionHint` | Keyinroq sozlamalarda o'zgartirishingiz mumkin | Баъдтар онро дар танзимот иваз карда метавонед |  |
 | `auth.firstNamePlaceholder` | Masalan: Sardor | Масалан: Рустам |  |
 | `auth.lastNamePlaceholder` | Masalan: Rahimov | Масалан: Каримов |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Ҳадди ақал 8 аломат. Танҳо рақам набошад. |  |
@@ -638,7 +640,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Тағйироти охирин нигоҳ дошта нашуд. Бахшро аз нав кушода, онро боз ворид кунед. |  |
 | `settings.discard` | Bekor qilish | Бекор кардан |  |
 | `settings.channelEmail` | Pochta | Почта |  |
-| `settings.soon` | tez orada | ба наздикӣ |  |
 | `settings.privacy.title` | Kim nimani ko'radi | Кӣ чиро мебинад |  |
 | `settings.privacy.hint` | Yoqilgan maydon ommaviy profilda ko'rinadi. Pochta standart holatda yashirin. | Майдони фаъол дар профили оммавӣ намоён аст. Почта ба таври пешфарз пинҳон аст. |  |
 | `settings.privacy.preview` | Profilim boshqalarga qanday ko'rinadi | Профили ман ба дигарон чӣ гуна намоён аст |  |
@@ -880,9 +881,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.bio` | O'zim haqimda | Дар бораи худ |  |
 | `settings.bioHint` | Profil sahifasida ismingiz tagida ko'rinadi. | Дар саҳифаи профил зери номи шумо намоён мешавад. |  |
 | `settings.birthDate` | Tug'ilgan sana | Санаи таваллуд |  |
-| `settings.channelEmailSoon` | Pochta orqali yuborish keyinroq qo'shiladi. | Фиристодан тавассути почта баъдтар илова мешавад. |  |
 | `settings.channelSite` | Saytda | Дар сайт |  |
 | `settings.channelTelegram` | Telegram | Telegram |  |
+| `settings.notifyEmailHint` | Email faqat tasdiqlangan manzilga va faqat sizga tegishli xabar uchun yuboriladi — umumiy e'lonlar emailga kelmaydi. Xat 5 daqiqadan keyin ketadi; shu orada saytda o'qisangiz, yuborilmaydi. | Паём танҳо ба суроғаи тасдиқшуда ва танҳо дар бораи он чи ба шумо дахл дорад фиристода мешавад — эълонҳои умумӣ ба почта намеоянд. Паём пас аз 5 дақиқа меравад; агар дар ин муддат онро дар сайт хонед, фиристода намешавад. |  |
+| `settings.emailNeedsVerify` | Email orqali olish uchun pochta manzilingizni tasdiqlang: | Барои гирифтани паём бо почта суроғаи худро тасдиқ кунед: |  |
+| `settings.emailVerifyLink` | Pochtani tasdiqlash | Тасдиқи почта |  |
+| `unsubscribe.title` | Email bildirishnomalari | Огоҳиномаҳои почта |  |
+| `unsubscribe.askKind` | «{kind}» turidagi email xatlarni o'chirasizmi? | Паёмҳои навъи «{kind}»-ро хомӯш мекунед? |  |
+| `unsubscribe.askAll` | Barcha email bildirishnomalarni o'chirasizmi? | Ҳамаи огоҳиномаҳои почтаро хомӯш мекунед? |  |
+| `unsubscribe.confirm` | Emailni o'chirish | Хомӯш кардани почта |  |
+| `unsubscribe.doneKind` | «{kind}» turidagi email xatlar o'chirildi. | Паёмҳои навъи «{kind}» хомӯш карда шуданд. |  |
+| `unsubscribe.doneAll` | Barcha email bildirishnomalar o'chirildi. | Ҳамаи огоҳиномаҳои почта хомӯш карда шуданд. |  |
+| `unsubscribe.invalid` | Havola yaroqsiz — u buzilgan yoki eskirgan. Sozlamani o'zingiz o'zgartiring. | Пайванд нодуруст аст — он вайрон ё кӯҳна шудааст. Танзимотро худатон тағйир диҳед. |  |
+| `unsubscribe.note` | Saytdagi bildirishnomalar o'zgarmaydi. Emailni qayta yoqish — bildirishnoma sozlamalarida. | Огоҳиномаҳо дар сайт тағйир намеёбанд. Почтаро дубора фаъол кардан — дар танзимоти огоҳиномаҳо. |  |
+| `unsubscribe.settings` | Bildirishnoma sozlamalari | Танзимоти огоҳиномаҳо |  |
+| `unsubscribe.failed` | O'chirib bo'lmadi. Birozdan keyin qayta urinib ko'ring. | Хомӯш кардан муяссар нашуд. Каме баъд боз кӯшиш кунед. |  |
 | `settings.company` | Kompaniya | Ширкат |  |
 | `settings.cosmetics` | Profil bezaklari | Ороишҳои профил |  |
 | `settings.cosmeticsEmpty` | Hali bezak yo'q — ularni Qvant do'konidan olish mumkin. | Ҳоло ороиш нест — онҳоро аз мағозаи Qvant гирифтан мумкин. |  |
@@ -1724,6 +1737,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.name.shown` | Ko'rsatiladigan ism | Номи намоишшаванда |  |
 | `admin.label.ab.control` | Nazorat (2-qadamda) | Назорат (дар қадами 2) |  |
 | `admin.label.ab.variant` | Variant (ro'yxatda) | Вариант (дар рӯйхат) |  |
+| `admin.label.ab.started` | Formani boshladi | Формаро оғоз кард |  |
+| `admin.label.ab.done` | Ro'yxatdan o'tdi | Ба қайд гирифт |  |
+| `admin.label.ab.completion` | Tugatish ulushi | Ҳиссаи анҷомдиҳӣ |  |
+| `admin.label.ab.regionFilled` | Viloyati bor (hozir) | Вилоят дорад (ҳозир) |  |
 | `admin.label.misc.participant` | Ishtirokchi | Иштирокчӣ |  |
 | `admin.label.misc.challenger` | Chaqiruvchi | Даъваткунанда |  |
 | `admin.label.misc.projects` | Loyihalar | Лоиҳаҳо |  |

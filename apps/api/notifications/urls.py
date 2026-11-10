@@ -6,4 +6,12 @@ from notifications import views
 router = DefaultRouter()
 router.register("notifications", views.NotificationViewSet, basename="notification")
 
-urlpatterns = [path("", include(router.urls))]
+urlpatterns = [
+    # Before the router: its detail route would read "unsubscribe" as a pk.
+    path(
+        "notifications/unsubscribe/",
+        views.EmailUnsubscribeView.as_view(),
+        name="notification-email-unsubscribe",
+    ),
+    path("", include(router.urls)),
+]

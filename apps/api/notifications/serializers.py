@@ -43,3 +43,12 @@ class NotificationSummarySerializer(serializers.Serializer[dict[str, Any]]):
 
 class NotificationUpdatedSerializer(serializers.Serializer[dict[str, Any]]):
     updated = serializers.IntegerField()
+
+
+class EmailUnsubscribeSerializer(serializers.Serializer[dict[str, Any]]):
+    token = serializers.CharField(required=False, help_text="Or `?token=` in the URL (RFC 8058)")
+
+
+class EmailUnsubscribeResultSerializer(serializers.Serializer[dict[str, Any]]):
+    kind = serializers.CharField(help_text="A notification kind, or `*` for every kind")
+    done = serializers.BooleanField(help_text="True once email is off for that kind")

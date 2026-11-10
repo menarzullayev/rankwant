@@ -13,6 +13,7 @@ export { AuthForm } from "./components/AuthForm";
 
 export { CareerSection } from "./components/CareerSection";
 
+export { EmailUnsubscribe } from "./components/EmailUnsubscribe";
 export { EmailVerify } from "./components/EmailVerify";
 
 
