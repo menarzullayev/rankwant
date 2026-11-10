@@ -1,4 +1,4 @@
-{{ t.heading }}
+{% autoescape off %}{{ t.heading }}
 
 {{ t.body }}
 
@@ -15,3 +15,8 @@
 --
 {{ t.footer }}
 {{ site_url }}
+{% if unsubscribe_kind_url %}
+{{ t.unsubscribe_kind }}: {{ unsubscribe_kind_url }}
+{{ t.unsubscribe_all }}: {{ unsubscribe_all_url }}
+{{ t.settings_link }}: {{ settings_url }}
+{% endif %}{% endautoescape %}

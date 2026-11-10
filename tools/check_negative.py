@@ -3402,8 +3402,8 @@ def neg_decisions_verify_page_loses_the_shell() -> tuple[bool, str]:
     """`/verify-email` goes back to the site chrome."""
     return _decision_broken(
         "apps/web/src/layout/AppShell.tsx",
-        'const FULL = ["/login", "/register", "/reset-password", "/verify-email", "/onboarding"];',
-        'const FULL = ["/login", "/register", "/reset-password", "/onboarding"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/verify-email", "/onboarding"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/onboarding"];',
         "FULL ro'yxatida emas",
     )
 
@@ -3731,7 +3731,7 @@ def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
         "apps/web/src/layout/AppShell.tsx",
-        'const FULL = ["/login", "/register", "/reset-password", "/verify-email", "/onboarding"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/verify-email", "/onboarding"];',
         'const FULL = ["/register", "/reset-password"];',
         "FULL ro'yxatida emas",
     )
@@ -4325,6 +4325,85 @@ def neg_decisions_privacy_forgets_imported_profiles() -> tuple[bool, str]:
         "«Codeforces» ni aytmaydi",
     )
 
+
+def neg_decisions_email_on_by_default() -> tuple[bool, str]:
+    """Email starts switched on: mail goes out nobody asked for."""
+    return _decision_broken(
+        "apps/api/notifications/services.py",
+        'DEFAULT_CHANNELS = {"site": True, "telegram": False, "email": False}',
+        'DEFAULT_CHANNELS = {"site": True, "telegram": False, "email": True}',
+        "email standart holatda o'chiq emas",
+    )
+
+
+def neg_decisions_bulk_announcement_mailed() -> tuple[bool, str]:
+    """A post sent to every user is copied to email too."""
+    return _decision_broken(
+        "apps/api/notifications/services.py",
+        "    rows = [\n        compose(",
+        "    email = True\n    rows = [\n        compose(",
+        "`notify_many` email yuboradi",
+    )
+
+
+def neg_decisions_email_sent_at_once() -> tuple[bool, str]:
+    """The mail is queued without the five-minute wait."""
+    return _decision_broken(
+        "apps/api/notifications/email.py",
+        "countdown=EMAIL_DELAY_SECONDS",
+        "countdown=0",
+        "5 daqiqa kutmaydi",
+    )
+
+
+def neg_decisions_email_to_unverified_address() -> tuple[bool, str]:
+    """An unconfirmed address — maybe a typo, maybe someone else's — gets mail."""
+    return _decision_broken(
+        "apps/api/notifications/email.py",
+        "        and user.email_verified_at is not None\n",
+        "",
+        "tasdiqlanmagan manzilga",
+    )
+
+
+def neg_decisions_read_notification_mailed() -> tuple[bool, str]:
+    """A notification already read on the site is mailed anyway."""
+    return _decision_broken(
+        "apps/api/notifications/email.py",
+        '            return "skipped:read"',
+        "            pass",
+        "saytda o'qilgan",
+    )
+
+
+def neg_decisions_email_spends_the_reserve() -> tuple[bool, str]:
+    """Notification mail eats the quota password reset needs."""
+    return _decision_broken(
+        "apps/api/notifications/email.py",
+        "if left is not None and left <= RESERVE_FOR_ACCOUNT_MAIL:",
+        "if left is not None and left < 0:",
+        "zaxirasi yoki kunlik chegara yo'q",
+    )
+
+
+def neg_decisions_unsubscribe_on_get() -> tuple[bool, str]:
+    """Opening the link switches email off — a mail scanner would do it."""
+    return _decision_broken(
+        "apps/api/notifications/views.py",
+        '        return Response({"kind": target[1], "done": False})',
+        '        email_channel.unsubscribe(*target)\n        return Response({"kind": target[1], "done": False})',
+        "GET obunani bekor qiladi",
+    )
+
+
+def neg_decisions_email_column_gone() -> tuple[bool, str]:
+    """The settings table loses its Email column."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/NotificationsSection.tsx",
+        'const CHANNELS = ["site", "telegram", "email"] as const;',
+        'const CHANNELS = ["site", "telegram"] as const;',
+        "Email ustuni sozlamalarda yo'q",
+    )
 
 def neg_decisions_session_rows_kept() -> tuple[bool, str]:
     """The daily task that drops expired session rows is unscheduled."""
@@ -7710,6 +7789,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
     # Privacy text (2026-11-10): the policy and the session-retention task.
     "apps/web/src/content/legal.ts",
+    # Notification email (2026-11-10): the channel, the unsubscribe view and
+    # the settings column (`notifications/services.py` is staged above).
+    "apps/api/notifications/email.py",
+    "apps/api/notifications/views.py",
+    "apps/web/src/features/account/components/NotificationsSection.tsx",
     # Judge latency gate (2026-09-21): the rule reads the harness to prove the
     # budget comparison still exists — a gate whose comparison is gone still
     # exits 0, i.e. green but measuring nothing. The compose service and the
@@ -11234,6 +11318,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("marafon namunasiz masalani tanlasa tutilsin", neg_decisions_marathon_draws_samples_only),
             ("qayta hisoblash signali yuklanmasa tutilsin", neg_decisions_recount_signal_not_loaded),
             ("maxfiylik matni importni unutsa tutilsin", neg_decisions_privacy_forgets_imported_profiles),
+            ("email standartda yoqilsa tutilsin", neg_decisions_email_on_by_default),
+            ("e'lon emailga ketsa tutilsin", neg_decisions_bulk_announcement_mailed),
+            ("xat darhol ketsa tutilsin", neg_decisions_email_sent_at_once),
+            ("tasdiqlanmagan manzilga xat ketsa tutilsin", neg_decisions_email_to_unverified_address),
+            ("o'qilgan xabar emailga ketsa tutilsin", neg_decisions_read_notification_mailed),
+            ("hisob xatlari zaxirasi yo'qolsa tutilsin", neg_decisions_email_spends_the_reserve),
+            ("GET obunani bekor qilsa tutilsin", neg_decisions_unsubscribe_on_get),
+            ("Email ustuni yo'qolsa tutilsin", neg_decisions_email_column_gone),
             ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
             ("glossariy tekshiruvi uzilsa tutilsin", neg_decisions_glossary_check_unwired),
             ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),

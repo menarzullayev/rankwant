@@ -445,7 +445,9 @@ class TestProfilMaydonlari:
 
         assert self.yoz(user, {"notify_prefs": togri}).status_code == 200
         assert self.yoz(user, {"notify_prefs": {"nomalum": {"site": True}}}).status_code == 400
-        assert self.yoz(user, {"notify_prefs": {"duel": {"email": True}}}).status_code == 400
+        # Email is a channel since 2026-11-10 (notifications.email); SMS is not.
+        assert self.yoz(user, {"notify_prefs": {"duel": {"email": True}}}).status_code == 200
+        assert self.yoz(user, {"notify_prefs": {"duel": {"sms": True}}}).status_code == 400
 
     def test_korinish_sozlamasi_tekshiriladi(self, user: User) -> None:
         """Sxema v2 — guruhlangan (D33).

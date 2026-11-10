@@ -2527,6 +2527,83 @@ def privacy_text_matches_the_data() -> str | None:
     return None
 
 
+def _python_function(text: str, name: str) -> str:
+    """The source of one top-level or method `def` — up to the next line that
+    starts at the same or a smaller indent. Empty when it is not there."""
+    match = re.search(rf"^(?P<indent>[ ]*)def {name}\(", text, re.M)
+    if not match:
+        return ""
+    indent = len(match.group("indent"))
+    lines = text[match.start() :].split("\n")
+    body = [lines[0]]
+    for line in lines[1:]:
+        dedented = len(line) - len(line.lstrip(" ")) <= indent
+        if line.strip() and dedented and not line.lstrip().startswith(")"):
+            break
+        body.append(line)
+    return "\n".join(body)
+
+
+def notification_email_is_opt_in_and_bounded() -> str | None:
+    """2026-11-10 (HITL, audit Q-07/3): email bildirishnomasi — opt-in va chegaralangan.
+
+    Egasi qarorlari: standart holatda hamma tur o'chiq; faqat shaxsiy xabar
+    (`notify`), ommaviy e'lon (`notify_many`) hech qachon emailga ketmaydi;
+    faqat tasdiqlangan manzilga; 5 daqiqa kutib, saytda o'qilgan bo'lsa
+    yuborilmaydi (so'rov ichida emas, commit'dan keyin navbatga); kuniga
+    200 xat hisob xatlari uchun zaxirada, bitta odamga kuniga ko'pi 10;
+    imzolangan bitta bosishli obuna (RFC 8058), GET hech narsani o'zgartirmaydi.
+    """
+    services = read("apps/api/notifications/services.py")
+    if '"email": False' not in services.split("DEFAULT_CHANNELS = ", 1)[-1].split("\n", 1)[0]:
+        return "notifications/services.py: email standart holatda o'chiq emas — so'ramasdan xat ketadi"
+    bulk = _python_function(services, "notify_many")
+    if not bulk:
+        return "notifications/services.py: `notify_many` topilmadi"
+    if "email" in bulk.split('"""', 2)[-1]:
+        return "notifications/services.py: `notify_many` email yuboradi — e'lon kvotani yeydi"
+    if "email_channel.schedule(" not in _python_function(services, "notify"):
+        return "notifications/services.py: `notify` email kanalini rejalashtirmaydi"
+
+    mail = read("apps/api/notifications/email.py")
+    for line in (
+        "EMAIL_DELAY_SECONDS = 300",
+        "RESERVE_FOR_ACCOUNT_MAIL = 200",
+        "PER_USER_DAILY_CAP = 10",
+    ):
+        if f"\n{line}\n" not in mail:
+            return f"notifications/email.py: `{line}` o'zgargan — qaror boshqa son aytadi"
+    if "and user.email_verified_at is not None" not in _python_function(mail, "reachable"):
+        return "notifications/email.py: tasdiqlanmagan manzilga ham xat ketadi"
+    schedule = _python_function(mail, "schedule")
+    if "countdown=EMAIL_DELAY_SECONDS" not in schedule or "transaction.on_commit(push)" not in schedule:
+        return "notifications/email.py: xat 5 daqiqa kutmaydi yoki commit'dan oldin navbatga tushadi"
+    deliver = _python_function(mail, "deliver")
+    if 'return "skipped:read"' not in deliver:
+        return "notifications/email.py: saytda o'qilgan xabar ham emailga ketadi"
+    if "budget_refusal(user)" not in deliver:
+        return "notifications/email.py: kvota zaxirasi va kunlik chegara tekshirilmaydi"
+    budget = _python_function(mail, "budget_refusal")
+    if "left <= RESERVE_FOR_ACCOUNT_MAIL" not in budget or ">= PER_USER_DAILY_CAP" not in budget:
+        return "notifications/email.py: hisob xatlari zaxirasi yoki kunlik chegara yo'q"
+    if '"List-Unsubscribe-Post": "List-Unsubscribe=One-Click"' not in mail:
+        return "notifications/email.py: bitta bosishli obuna sarlavhasi (RFC 8058) yo'q"
+
+    views = read("apps/api/notifications/views.py")
+    view = views.split("class EmailUnsubscribeView", 1)[-1]
+    if "unsubscribe(" in _python_function(view, "get"):
+        return "notifications/views.py: GET obunani bekor qiladi — pochta skaneri havolani ochib qo'yadi"
+    if "email_channel.unsubscribe(" not in _python_function(view, "post"):
+        return "notifications/views.py: POST obunani bekor qilmaydi"
+
+    section = read("apps/web/src/features/account/components/NotificationsSection.tsx")
+    if 'const CHANNELS = ["site", "telegram", "email"] as const;' not in section:
+        return "NotificationsSection.tsx: Email ustuni sozlamalarda yo'q"
+    if "settings.soon" in section:
+        return "NotificationsSection.tsx: Email ustuni yana «tez orada»"
+    return None
+
+
 def names_are_not_translated() -> str | None:
     """2026-11-10 (HITL, audit Q-15): tarjima qilinmaydigan nomlar glossariyda.
 
@@ -4441,6 +4518,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
+    ("email bildirishnomasi opt-in va chegaralangan", notification_email_is_opt_in_and_bounded),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),

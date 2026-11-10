@@ -56,6 +56,7 @@ def send_email(
     purpose: str = EmailDelivery.Purpose.OTHER,
     chain: list[str] | None = None,
     allow_placeholder: bool = False,
+    headers: dict[str, str] | None = None,
 ) -> EmailDelivery:
     """Zanjir bo'ylab yuboradi va urinishlarni yozib qoladi.
 
@@ -104,7 +105,7 @@ def send_email(
         log.info("email o'tkazib yuborildi (zaxira domen): %s (%s)", to, purpose)
         return delivery
 
-    message = Message(to=to, subject=subject, text=text, html=html)
+    message = Message(to=to, subject=subject, text=text, html=html, headers=dict(headers or {}))
     attempts: list[dict[str, str]] = []
     for name in chain if chain is not None else settings.EMAIL_CHAIN:
         provider = PROVIDERS.get(name)

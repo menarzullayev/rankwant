@@ -50,6 +50,8 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   users: "public",
   // The link in the verification e-mail must open without a session.
   "verify-email": "public",
+  // So must the unsubscribe link in a notification e-mail (2026-11-10).
+  unsubscribe: "public",
 
   login: "guest",
   register: "guest",

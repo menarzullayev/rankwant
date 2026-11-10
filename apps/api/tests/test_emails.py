@@ -86,6 +86,15 @@ class TestParolniTiklash:
         assert "482913" in zanjir.last.text
         assert zanjir.last.text.strip()
 
+    def test_matnli_nusxa_html_escape_qilinmaydi(self, zanjir: Yozib) -> None:
+        """The plain-text part is not HTML: `so'ramagan` must not arrive as
+        `so&#x27;ramagan` (measured 2026-11-10 — `base.txt` was autoescaped)."""
+        emails.send_password_reset(odam(), token="TOK", code="482913")
+
+        assert zanjir.last is not None
+        assert "&#x27;" not in zanjir.last.text
+        assert "so'ramagan" in zanjir.last.text
+
     def test_tab_va_token_birgalikda(self, zanjir: Yozib) -> None:
         """`_context` ikkala parametrni bitta so'rov satriga yig'adi.
 

@@ -153,7 +153,7 @@ export type ShirtSizeEu =
 export type Gender = "male" | "female" | "non_binary" | "prefer_not";
 
 /** Tur bo'yicha kanal tanlovi — `{"duel": {"site": true, "telegram": false}}`. */
-export type NotifyPrefs = Record<string, { site?: boolean; telegram?: boolean }>;
+export type NotifyPrefs = Record<string, { site?: boolean; telegram?: boolean; email?: boolean }>;
 
 /** `/me/` — faqat egasiga qaytadigan to'liq yozuv. */
 export type Me = {

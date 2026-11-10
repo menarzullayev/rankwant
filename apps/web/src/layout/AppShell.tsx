@@ -52,6 +52,8 @@ const BARE = [
   "/register",
   "/reset-password",
   "/verify-email",
+  // Email bildirishnomasidan obunani bekor qilish — pochtadan ochiladi.
+  "/unsubscribe",
   // Ro'yxatdan o'tishning 2-qadami — oqimning davomi, ya'ni yon panel
   // ham, banner ham kerak emas: odam hali saytga kirmagan.
   "/onboarding",
@@ -63,7 +65,7 @@ const BARE = [
  *  links itself. The redirecting addresses are listed for the same reason
  *  as in `BARE`: `usePathname()` still reports the old path while the
  *  redirect is in flight. */
-const FULL = ["/login", "/register", "/reset-password", "/verify-email", "/onboarding"];
+const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/verify-email", "/onboarding"];
 
 const SHELL_INSET = "--rw-shell-inset" as string;
 

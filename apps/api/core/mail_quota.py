@@ -168,6 +168,32 @@ def total_remaining(when: datetime | None = None) -> int:
     return sum(row.remaining for row in usage(when))
 
 
+def chain_remaining(when: datetime | None = None) -> int | None:
+    """What the chain can still send today — counting only the providers in
+    `EMAIL_CHAIN` that are configured, unlike `total_remaining()`.
+
+    `None` means unmetered: a configured provider without a daily quota
+    (the `console` backend in development) never runs out. Notification
+    email reads this to keep a reserve for account mail
+    (`notifications.email.RESERVE_FOR_ACCOUNT_MAIL`).
+    """
+    from django.conf import settings
+
+    from core.mail_providers import PROVIDERS
+
+    by_name = {row.name: row for row in usage(when)}
+    left = 0
+    for name in settings.EMAIL_CHAIN:
+        provider = PROVIDERS.get(name)
+        if provider is None or not provider.configured:
+            continue
+        row = by_name.get(name)
+        if row is None or not row.configured:
+            return None
+        left += row.remaining
+    return left
+
+
 def total_remaining_with_queue(when: datetime | None = None) -> int:
     """Navbatni ham hisobga olgan imkoniyat.
 
