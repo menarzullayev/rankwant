@@ -2680,6 +2680,31 @@ def client_dates_are_numeric() -> str | None:
     return None
 
 
+def graphite_palette_is_flagged() -> str | None:
+    """2026-11-10 (HITL, audit Q-13): `newPalette` — clay qorong'isi uchun «Grafit».
+
+    Prototipda uch variant → A «Grafit». Faqat `clay` + qorong'i rejim va
+    faqat bayroq yoniq bo'lsa; atribut build'da singan bayroqdan (server va
+    mijoz bir xil), urg'u o'zgarmaydi, blok kontrast darvozasi o'lchaydigan
+    shaklda (o'z `--rw-ground`/`--rw-faint` i bilan) turadi.
+    """
+    flags = read("apps/web/src/lib/flags.ts").split("export const FLAGS", 1)[-1].split("} as const", 1)[0]
+    if not re.search(r"^\s+newPalette: false,$", flags, re.M):
+        return "lib/flags.ts: `newPalette` standart holatda yoniq yoki ro'yxatda yo'q"
+    layout = read("apps/web/src/app/layout.tsx")
+    if 'data-palette={isOnServer("newPalette", undefined) ? "graphite" : undefined}' not in layout:
+        return "layout.tsx: Grafit palitrasi `newPalette` bayrog'iga bog'lanmagan"
+    css = read("apps/web/src/app/theme.css")
+    block = re.search(r'^\[data-style="clay"\]\.dark\[data-palette="graphite"\] \{([^}]*)\}', css, re.M)
+    if not block:
+        return "theme.css: Grafit bloki faqat clay + qorong'i rejimga tegishli emas"
+    body = block.group(1)
+    for token in ("--rw-ground:", "--rw-faint:", "--rw-accent: #7c3aed;", "--rw-accent-fg: #ffffff;"):
+        if token not in body:
+            return f"theme.css: Grafit blokida `{token.rstrip(':;')}` yo'q (urg'u o'zgarmaydi, kontrast o'lchanadi)"
+    return None
+
+
 def optimistic_save_reports_refusals() -> str | None:
     """2026-11-10 (HITL, audit Q-13): `optimisticSave` sozlamalar saqlashini boshqaradi.
 
@@ -4522,6 +4547,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
+    ("Grafit palitrasi bayroq bilan, faqat clay qorong'isida", graphite_palette_is_flagged),
     ("judge privileged emas", judge_is_not_privileged),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
