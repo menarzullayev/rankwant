@@ -374,6 +374,11 @@ SPECTACULAR_SETTINGS = {
         "RoadmapItemStatusEnum": "roadmap.models.RoadmapItem.Status",
         # `reason` — bitta model, lekin xesh bilan kelgan edi.
         "ProblemReportReasonEnum": "problems.models.ProblemReport.Reason",
+        # Courses (ADR-0056): `level` and `kind` already exist elsewhere.
+        "CourseLevelEnum": "courses.models.Course.Level",
+        "LessonKindEnum": "courses.models.Lesson.Kind",
+        # The client log keeps the name it had before courses brought a second `level`.
+        "LevelEnum": ["debug", "info", "warn", "error"],
     },
     "TITLE": "RankWant API",
     "DESCRIPTION": "Sport dasturlash va olimpiada platformasi — ochiq REST API",

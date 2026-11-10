@@ -2989,6 +2989,17 @@ def courses_structure_and_access() -> str | None:
         return "courses/models.py: sertifikat chegarasi standart 70% emas"
     if "  courses: false,\n" not in read("apps/web/src/lib/flags.ts"):
         return "flags.ts: `courses` bayrog'i standart holatda o'chiq emas"
+    # 2-qism (ochiq API): R2 kaliti o'ynatiladigan manzil emas va uni olgan
+    # odam videoni imzosiz yuklab oladi; progress masala/test hodisasidan
+    # yoziladi, ya'ni signal satr nomi bilan ulanadi (app'lararo model importi
+    # taqiqlangan).
+    serializers_py = read("apps/api/courses/serializers.py")
+    if "        ref = None if hls else obj.video_ref\n" not in serializers_py:
+        return "courses/serializers.py: HLS videoning R2 kaliti javobda chiqishi mumkin"
+    services_py = read("apps/api/courses/services.py")
+    for sender in ('sender="ratings.UserSolvedProblem"', 'sender="quizzes.QuizAttempt"'):
+        if sender not in services_py:
+            return f"courses/services.py: progress signali ulanmagan \u2014 {sender}"
     return None
 
 

@@ -1942,6 +1942,197 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedOrganizerContestProblemList'
           description: ''
+  /api/v1/courses/:
+    get:
+      operationId: courses_list
+      summary: kurslar ro'yxati
+      parameters:
+      - in: query
+        name: access
+        schema:
+          type: string
+          enum:
+          - free
+          - paid
+          - qvant
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - en
+          - ru
+          - uz
+        description: Content language; falls back to the course's base language.
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - advanced
+          - beginner
+          - intermediate
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - courses
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCourseCardList'
+          description: ''
+  /api/v1/courses/{slug}/:
+    get:
+      operationId: courses_retrieve
+      summary: Bitta kurs
+      parameters:
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - en
+          - ru
+          - uz
+        description: Content language; falls back to the course's base language.
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDetail'
+          description: ''
+  /api/v1/courses/{slug}/enroll/:
+    post:
+      operationId: courses_enroll_create
+      summary: Kursga yozilish
+      parameters:
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - en
+          - ru
+          - uz
+        description: Content language; falls back to the course's base language.
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enrollment'
+          description: ''
+  /api/v1/courses/{slug}/lessons/{lesson_id}/:
+    get:
+      operationId: courses_lessons_retrieve
+      description: One lesson, in the reader's language. Guests get 401 (ADR-0054).
+      summary: Dars
+      parameters:
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - en
+          - ru
+          - uz
+        description: Content language; falls back to the course's base language.
+      - in: path
+        name: lesson_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonDetail'
+          description: ''
+  /api/v1/courses/{slug}/lessons/{lesson_id}/complete/:
+    post:
+      operationId: courses_lessons_complete_create
+      description: Mark a text or video lesson done; problem and quiz lessons finish
+        on their own.
+      summary: Darsni tugatish
+      parameters:
+      - in: path
+        name: lesson_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Progress'
+          description: ''
   /api/v1/custom-test/:
     post:
       operationId: custom_test_create
@@ -2851,6 +3042,51 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/me/courses/:
+    get:
+      operationId: me_courses_list
+      description: Courses the reader is enrolled in, most recent first.
+      summary: Mening kurslarim
+      parameters:
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - en
+          - ru
+          - uz
+        description: Content language; falls back to the course's base language.
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - me
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMyCourseList'
+          description: ''
   /api/v1/me/educations/:
     get:
       operationId: me_educations_list
@@ -12689,6 +12925,16 @@ paths:
           description: '`{sha}`; `unknown` if unset'
 components:
   schemas:
+    AccessEnum:
+      enum:
+      - free
+      - qvant
+      - paid
+      type: string
+      description: |-
+        * `free` - Free
+        * `qvant` - Qvant
+        * `paid` - Paid
     ActivityEvent:
       type: object
       properties:
@@ -13379,6 +13625,16 @@ components:
       required:
       - index
       - verdict
+    Author:
+      type: object
+      properties:
+        username:
+          type: string
+        display_name:
+          type: string
+      required:
+      - display_name
+      - username
     AvatarImport:
       type: object
       properties:
@@ -13840,6 +14096,220 @@ components:
       - registered
       - role
       - testing
+    CourseCard:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+        summary:
+          type: string
+          readOnly: true
+        locale:
+          type: string
+          readOnly: true
+        locales:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/CourseLevelEnum'
+          readOnly: true
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AccessEnum'
+          readOnly: true
+        price_qvant:
+          type: integer
+          readOnly: true
+        price_uzs:
+          type: integer
+          readOnly: true
+          description: One-time price in UZS.
+        cover_url:
+          type: string
+          readOnly: true
+        lesson_count:
+          type: integer
+          readOnly: true
+        module_count:
+          type: integer
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        enrolled:
+          type: boolean
+          readOnly: true
+        percent:
+          type: integer
+          nullable: true
+          readOnly: true
+      required:
+      - access
+      - cover_url
+      - enrolled
+      - lesson_count
+      - level
+      - locale
+      - locales
+      - module_count
+      - percent
+      - price_qvant
+      - price_uzs
+      - published_at
+      - slug
+      - summary
+      - title
+    CourseDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+        summary:
+          type: string
+          readOnly: true
+        locale:
+          type: string
+          readOnly: true
+        locales:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/CourseLevelEnum'
+          readOnly: true
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AccessEnum'
+          readOnly: true
+        price_qvant:
+          type: integer
+          readOnly: true
+        price_uzs:
+          type: integer
+          readOnly: true
+          description: One-time price in UZS.
+        cover_url:
+          type: string
+          readOnly: true
+        lesson_count:
+          type: integer
+          readOnly: true
+        module_count:
+          type: integer
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        enrolled:
+          type: boolean
+          readOnly: true
+        percent:
+          type: integer
+          nullable: true
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        outcomes:
+          type: string
+          readOnly: true
+        requirements:
+          type: string
+          readOnly: true
+        audience:
+          type: string
+          readOnly: true
+        sequential:
+          type: boolean
+          readOnly: true
+          description: A lesson opens only after the previous required one is done.
+        certificate_threshold:
+          type: integer
+          readOnly: true
+          description: Final quiz score, in percent, needed for the certificate.
+        reward_qvant:
+          type: integer
+          readOnly: true
+          description: Paid once when the course is completed.
+        has_final_quiz:
+          type: boolean
+          readOnly: true
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+          readOnly: true
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModuleOutline'
+          readOnly: true
+        enrollment:
+          allOf:
+          - $ref: '#/components/schemas/Enrollment'
+          nullable: true
+          readOnly: true
+        progress:
+          allOf:
+          - $ref: '#/components/schemas/Progress'
+          readOnly: true
+      required:
+      - access
+      - audience
+      - authors
+      - certificate_threshold
+      - cover_url
+      - description
+      - enrolled
+      - enrollment
+      - has_final_quiz
+      - lesson_count
+      - level
+      - locale
+      - locales
+      - module_count
+      - modules
+      - outcomes
+      - percent
+      - price_qvant
+      - price_uzs
+      - progress
+      - published_at
+      - requirements
+      - reward_qvant
+      - sequential
+      - slug
+      - summary
+      - title
+    CourseLevelEnum:
+      enum:
+      - beginner
+      - intermediate
+      - advanced
+      type: string
+      description: |-
+        * `beginner` - Beginner
+        * `intermediate` - Intermediate
+        * `advanced` - Advanced
     Crew:
       type: object
       description: Who prepared the contest — told on its page, always (ADR-0055,
@@ -14227,6 +14697,26 @@ components:
           type: string
         username:
           type: string
+    Enrollment:
+      type: object
+      properties:
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - completed_at
+      - created_at
+      - source
     ExternalIn:
       type: object
       properties:
@@ -14822,6 +15312,168 @@ components:
       required:
       - code
       - name
+    LessonDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        locale:
+          type: string
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/LessonKindEnum'
+          readOnly: true
+        is_required:
+          type: boolean
+          readOnly: true
+        is_preview:
+          type: boolean
+          readOnly: true
+          description: Open to visitors who have not enrolled (never a paid video).
+        quiz_pass_percent:
+          type: integer
+          readOnly: true
+        problem:
+          allOf:
+          - $ref: '#/components/schemas/LessonProblem'
+          nullable: true
+          readOnly: true
+        quiz:
+          allOf:
+          - $ref: '#/components/schemas/LessonQuiz'
+          nullable: true
+          readOnly: true
+        video:
+          allOf:
+          - $ref: '#/components/schemas/LessonVideo'
+          nullable: true
+          readOnly: true
+        completed:
+          type: boolean
+          readOnly: true
+        previous:
+          allOf:
+          - $ref: '#/components/schemas/Neighbour'
+          nullable: true
+          readOnly: true
+        next:
+          allOf:
+          - $ref: '#/components/schemas/Neighbour'
+          nullable: true
+          readOnly: true
+        progress:
+          allOf:
+          - $ref: '#/components/schemas/Progress'
+          readOnly: true
+      required:
+      - body
+      - completed
+      - id
+      - is_preview
+      - is_required
+      - kind
+      - locale
+      - next
+      - previous
+      - problem
+      - progress
+      - quiz
+      - quiz_pass_percent
+      - title
+      - video
+    LessonKindEnum:
+      enum:
+      - text
+      - problem
+      - quiz
+      - video
+      type: string
+      description: |-
+        * `text` - Text
+        * `problem` - Problem
+        * `quiz` - Quiz
+        * `video` - Video
+    LessonProblem:
+      type: object
+      properties:
+        slug:
+          type: string
+        code:
+          type: integer
+          nullable: true
+        title:
+          type: string
+      required:
+      - code
+      - slug
+      - title
+    LessonQuiz:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+      required:
+      - slug
+      - title
+    LessonRow:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/LessonKindEnum'
+          readOnly: true
+        is_required:
+          type: boolean
+          readOnly: true
+        is_preview:
+          type: boolean
+          readOnly: true
+          description: Open to visitors who have not enrolled (never a paid video).
+        video_seconds:
+          type: integer
+          readOnly: true
+        state:
+          type: string
+          description: '`done`, `open` or `locked` for this reader.'
+          readOnly: true
+      required:
+      - id
+      - is_preview
+      - is_required
+      - kind
+      - state
+      - title
+      - video_seconds
+    LessonVideo:
+      type: object
+      properties:
+        provider:
+          type: string
+        ref:
+          type: string
+          nullable: true
+        seconds:
+          type: integer
+      required:
+      - provider
+      - ref
+      - seconds
     LevelEnum:
       enum:
       - debug
@@ -15224,6 +15876,37 @@ components:
         * `content` - Kontent
         * `design` - Dizayn
         * `core` - Umumiy
+    ModuleOutline:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        reward_qvant:
+          type: integer
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectionOutline'
+      required:
+      - id
+      - reward_qvant
+      - sections
+      - title
+    MyCourse:
+      type: object
+      properties:
+        course:
+          $ref: '#/components/schemas/CourseCard'
+        enrollment:
+          $ref: '#/components/schemas/Enrollment'
+        progress:
+          $ref: '#/components/schemas/Progress'
+      required:
+      - course
+      - enrollment
+      - progress
     NavBadge:
       type: object
       description: One side-menu badge. Sections with nothing to show are left out.
@@ -15257,6 +15940,19 @@ components:
             $ref: '#/components/schemas/NavBadge'
       required:
       - badges
+    Neighbour:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        state:
+          type: string
+      required:
+      - id
+      - state
+      - title
     Notification:
       type: object
       properties:
@@ -15614,6 +16310,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Contest'
+    PaginatedCourseCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseCard'
     PaginatedDuelList:
       type: object
       required:
@@ -15771,6 +16490,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MineProblem'
+    PaginatedMyCourseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MyCourse'
     PaginatedNotificationList:
       type: object
       required:
@@ -18884,6 +19626,23 @@ components:
         * `translation` - Tarjima xato
         * `duplicate` - Takroriy masala
         * `other` - Boshqa
+    Progress:
+      type: object
+      properties:
+        done:
+          type: integer
+        total:
+          type: integer
+          readOnly: true
+        percent:
+          type: integer
+        completed:
+          type: boolean
+      required:
+      - completed
+      - done
+      - percent
+      - total
     ProviderEnum:
       enum:
       - google
@@ -19733,6 +20492,21 @@ components:
       description: |-
         * `core` - Asosiy jamoa
         * `contributor` - Hissa qo'shgan
+    SectionOutline:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonRow'
+      required:
+      - id
+      - lessons
+      - title
     ShirtSizeEnum:
       enum:
       - XS
@@ -19926,6 +20700,22 @@ components:
       - languages
       - slug
       - title
+    SourceEnum:
+      enum:
+      - free
+      - qvant
+      - purchase
+      - plan
+      - classroom
+      - staff
+      type: string
+      description: |-
+        * `free` - Free
+        * `qvant` - Qvant
+        * `purchase` - Purchase
+        * `plan` - Plan
+        * `classroom` - Classroom
+        * `staff` - Staff grant
     StaffArena:
       type: object
       properties:

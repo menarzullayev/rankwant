@@ -1176,6 +1176,97 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/courses/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** kurslar ro'yxati */
+        get: operations["courses_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/courses/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitta kurs */
+        get: operations["courses_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/courses/{slug}/enroll/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Kursga yozilish */
+        post: operations["courses_enroll_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/courses/{slug}/lessons/{lesson_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Dars
+         * @description One lesson, in the reader's language. Guests get 401 (ADR-0054).
+         */
+        get: operations["courses_lessons_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/courses/{slug}/lessons/{lesson_id}/complete/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Darsni tugatish
+         * @description Mark a text or video lesson done; problem and quiz lessons finish on their own.
+         */
+        post: operations["courses_lessons_complete_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/custom-test/": {
         parameters: {
             query?: never;
@@ -1710,6 +1801,26 @@ export interface paths {
          * @description Ulangan Google/GitHub/Telegram hisobining rasmini avatar qiladi.
          */
         post: operations["me_avatar_import_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/courses/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mening kurslarim
+         * @description Courses the reader is enrolled in, most recent first.
+         */
+        get: operations["me_courses_list"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -5965,6 +6076,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description * `free` - Free
+         *     * `qvant` - Qvant
+         *     * `paid` - Paid
+         * @enum {string}
+         */
+        AccessEnum: "free" | "qvant" | "paid";
         ActivityEvent: {
             readonly id: number;
             kind: components["schemas"]["ActivityEventKindEnum"];
@@ -6218,6 +6336,10 @@ export interface components {
             /** Format: int64 */
             memory_kb?: number;
         };
+        Author: {
+            username: string;
+            display_name: string;
+        };
         AvatarImport: {
             provider: components["schemas"]["ProviderEnum"];
         };
@@ -6410,6 +6532,66 @@ export interface components {
             disqualified_reason: string | null;
             judge: boolean;
         };
+        CourseCard: {
+            readonly slug: string;
+            readonly title: string;
+            readonly summary: string;
+            readonly locale: string;
+            readonly locales: string[];
+            readonly level: components["schemas"]["CourseLevelEnum"];
+            readonly access: components["schemas"]["AccessEnum"];
+            readonly price_qvant: number;
+            /** @description One-time price in UZS. */
+            readonly price_uzs: number;
+            readonly cover_url: string;
+            readonly lesson_count: number;
+            readonly module_count: number;
+            /** Format: date-time */
+            readonly published_at: string | null;
+            readonly enrolled: boolean;
+            readonly percent: number | null;
+        };
+        CourseDetail: {
+            readonly slug: string;
+            readonly title: string;
+            readonly summary: string;
+            readonly locale: string;
+            readonly locales: string[];
+            readonly level: components["schemas"]["CourseLevelEnum"];
+            readonly access: components["schemas"]["AccessEnum"];
+            readonly price_qvant: number;
+            /** @description One-time price in UZS. */
+            readonly price_uzs: number;
+            readonly cover_url: string;
+            readonly lesson_count: number;
+            readonly module_count: number;
+            /** Format: date-time */
+            readonly published_at: string | null;
+            readonly enrolled: boolean;
+            readonly percent: number | null;
+            readonly description: string;
+            readonly outcomes: string;
+            readonly requirements: string;
+            readonly audience: string;
+            /** @description A lesson opens only after the previous required one is done. */
+            readonly sequential: boolean;
+            /** @description Final quiz score, in percent, needed for the certificate. */
+            readonly certificate_threshold: number;
+            /** @description Paid once when the course is completed. */
+            readonly reward_qvant: number;
+            readonly has_final_quiz: boolean;
+            readonly authors: components["schemas"]["Author"][];
+            readonly modules: components["schemas"]["ModuleOutline"][];
+            readonly enrollment: components["schemas"]["Enrollment"] | null;
+            readonly progress: components["schemas"]["Progress"];
+        };
+        /**
+         * @description * `beginner` - Beginner
+         *     * `intermediate` - Intermediate
+         *     * `advanced` - Advanced
+         * @enum {string}
+         */
+        CourseLevelEnum: "beginner" | "intermediate" | "advanced";
         /** @description Who prepared the contest — told on its page, always (ADR-0055, part 2). */
         Crew: {
             authors: components["schemas"]["CrewPerson"][];
@@ -6572,6 +6754,13 @@ export interface components {
             token?: string;
             code?: string;
             username?: string;
+        };
+        Enrollment: {
+            readonly source: components["schemas"]["SourceEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly completed_at: string | null;
         };
         ExternalIn: {
             kind: components["schemas"]["ExternalProfileKindEnum"];
@@ -6824,6 +7013,57 @@ export interface components {
             name: string;
             version?: string;
         };
+        LessonDetail: {
+            readonly id: number;
+            readonly title: string;
+            readonly body: string;
+            readonly locale: string;
+            readonly kind: components["schemas"]["LessonKindEnum"];
+            readonly is_required: boolean;
+            /** @description Open to visitors who have not enrolled (never a paid video). */
+            readonly is_preview: boolean;
+            readonly quiz_pass_percent: number;
+            readonly problem: components["schemas"]["LessonProblem"] | null;
+            readonly quiz: components["schemas"]["LessonQuiz"] | null;
+            readonly video: components["schemas"]["LessonVideo"] | null;
+            readonly completed: boolean;
+            readonly previous: components["schemas"]["Neighbour"] | null;
+            readonly next: components["schemas"]["Neighbour"] | null;
+            readonly progress: components["schemas"]["Progress"];
+        };
+        /**
+         * @description * `text` - Text
+         *     * `problem` - Problem
+         *     * `quiz` - Quiz
+         *     * `video` - Video
+         * @enum {string}
+         */
+        LessonKindEnum: "text" | "problem" | "quiz" | "video";
+        LessonProblem: {
+            slug: string;
+            code: number | null;
+            title: string;
+        };
+        LessonQuiz: {
+            slug: string;
+            title: string;
+        };
+        LessonRow: {
+            readonly id: number;
+            readonly title: string;
+            readonly kind: components["schemas"]["LessonKindEnum"];
+            readonly is_required: boolean;
+            /** @description Open to visitors who have not enrolled (never a paid video). */
+            readonly is_preview: boolean;
+            readonly video_seconds: number;
+            /** @description `done`, `open` or `locked` for this reader. */
+            readonly state: string;
+        };
+        LessonVideo: {
+            provider: string;
+            ref: string | null;
+            seconds: number;
+        };
         /**
          * @description * `debug` - debug
          *     * `info` - info
@@ -7002,6 +7242,17 @@ export interface components {
          * @enum {string}
          */
         ModuleEnum: "problems" | "contests" | "arena" | "judge" | "ratings" | "qvant" | "profile" | "classroom" | "quizzes" | "content" | "design" | "core";
+        ModuleOutline: {
+            id: number;
+            title: string;
+            reward_qvant: number;
+            sections: components["schemas"]["SectionOutline"][];
+        };
+        MyCourse: {
+            course: components["schemas"]["CourseCard"];
+            enrollment: components["schemas"]["Enrollment"];
+            progress: components["schemas"]["Progress"];
+        };
         /** @description One side-menu badge. Sections with nothing to show are left out. */
         NavBadge: {
             section: string;
@@ -7015,6 +7266,11 @@ export interface components {
         /** @description `/me/nav-badges/` — what the side menu marks for this user. */
         NavBadges: {
             badges: components["schemas"]["NavBadge"][];
+        };
+        Neighbour: {
+            id: number;
+            title: string;
+            state: string;
         };
         Notification: {
             readonly id: number;
@@ -7204,6 +7460,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Contest"][];
         };
+        PaginatedCourseCardList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CourseCard"][];
+        };
         PaginatedDuelList: {
             /** @example 123 */
             count: number;
@@ -7306,6 +7577,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["MineProblem"][];
+        };
+        PaginatedMyCourseList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["MyCourse"][];
         };
         PaginatedNotificationList: {
             /**
@@ -8908,6 +9194,12 @@ export interface components {
          * @enum {string}
          */
         ProblemReportReasonEnum: "statement" | "tests" | "translation" | "duplicate" | "other";
+        Progress: {
+            done: number;
+            readonly total: number;
+            percent: number;
+            completed: boolean;
+        };
         /**
          * @description * `google` - google
          *     * `github` - github
@@ -9278,6 +9570,11 @@ export interface components {
          * @enum {string}
          */
         SectionEnum: "core" | "contributor";
+        SectionOutline: {
+            id: number;
+            title: string;
+            lessons: components["schemas"]["LessonRow"][];
+        };
         /**
          * @description * `XS` - XS
          *     * `S` - S
@@ -9353,6 +9650,16 @@ export interface components {
             readonly best_memory_kb: number | null;
             readonly languages: string[];
         };
+        /**
+         * @description * `free` - Free
+         *     * `qvant` - Qvant
+         *     * `purchase` - Purchase
+         *     * `plan` - Plan
+         *     * `classroom` - Classroom
+         *     * `staff` - Staff grant
+         * @enum {string}
+         */
+        SourceEnum: "free" | "qvant" | "purchase" | "plan" | "classroom" | "staff";
         StaffArena: {
             slug: string;
             title: string;
@@ -12046,6 +12353,131 @@ export interface operations {
             };
         };
     };
+    courses_list: {
+        parameters: {
+            query?: {
+                access?: "free" | "paid" | "qvant";
+                /** @description Content language; falls back to the course's base language. */
+                lang?: "en" | "ru" | "uz";
+                level?: "advanced" | "beginner" | "intermediate";
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCourseCardList"];
+                };
+            };
+        };
+    };
+    courses_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Content language; falls back to the course's base language. */
+                lang?: "en" | "ru" | "uz";
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseDetail"];
+                };
+            };
+        };
+    };
+    courses_enroll_create: {
+        parameters: {
+            query?: {
+                /** @description Content language; falls back to the course's base language. */
+                lang?: "en" | "ru" | "uz";
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Enrollment"];
+                };
+            };
+        };
+    };
+    courses_lessons_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Content language; falls back to the course's base language. */
+                lang?: "en" | "ru" | "uz";
+            };
+            header?: never;
+            path: {
+                lesson_id: number;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonDetail"];
+                };
+            };
+        };
+    };
+    courses_lessons_complete_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lesson_id: number;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Progress"];
+                };
+            };
+        };
+    };
     custom_test_create: {
         parameters: {
             query?: never;
@@ -12793,6 +13225,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    me_courses_list: {
+        parameters: {
+            query?: {
+                /** @description Content language; falls back to the course's base language. */
+                lang?: "en" | "ru" | "uz";
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedMyCourseList"];
+                };
             };
         };
     };
