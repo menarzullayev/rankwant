@@ -106,6 +106,17 @@ export function numericStamp(value: string | number | Date): string {
   return `${parts.day}.${parts.month}.${parts.year} ${parts.hour}:${parts.minute}:${parts.second}`;
 }
 
+/** A date in digits only — `06.10.2026`, site zone. Same reason as
+ *  `numericStamp`: safe in a client component rendered on the server. */
+export function numericDate(value: string | number | Date): string {
+  return numericStamp(value).slice(0, 10);
+}
+
+/** A time in digits only — `18:32`, site zone, 24-hour. */
+export function numericTime(value: string | number | Date): string {
+  return numericStamp(value).slice(11, 16);
+}
+
 /** Vaqt belgisining sayt zonasidagi kuni: «2026-09-09». */
 export function isoDay(value: string | Date): string {
   const parts = Object.fromEntries(

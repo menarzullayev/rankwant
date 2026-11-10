@@ -1,5 +1,6 @@
 "use client";
 
+import { numericStamp } from "@rankwant/shared/format";
 import { SignInGate } from "@/components/auth/SignInGate";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,7 @@ import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, errorText, t } from "@/i18n/messages";
+import { errorText, t } from "@/i18n/messages";
 import {
   ApiError,
   getJson,
@@ -52,7 +53,7 @@ function DuelRow({
           {d.opponent && ` vs @${d.opponent}`} · {d.problem_count}{" "}
           {t(locale, "duel.problems")} · ~{d.difficulty} · {d.duration_minutes}{" "}
           {t(locale, "duel.minutes")} ·{" "}
-          {dateTime(d.start_at, locale)}
+          {numericStamp(d.start_at)}
         </p>
       </div>
       <Badge color={color}>{d.status}</Badge>

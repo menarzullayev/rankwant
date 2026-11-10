@@ -1,5 +1,6 @@
 "use client";
 
+import { numericTime } from "@rankwant/shared/format";
 import { SignInGate } from "@/components/auth/SignInGate";
 import { useCallback, useEffect, useState } from "react";
 
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText, time } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import {
   API_BASE,
   ApiError,
@@ -157,7 +158,7 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
             <Badge color="success">{t(locale, "arena.joined")}</Badge>
             <p className="mt-2 text-theme-sm rw-faint">
               {t(locale, "arena.waiting")} —{" "}
-              {time(arena.start_at, locale)}
+              {numericTime(arena.start_at)}
             </p>
           </Card>
         )}

@@ -1,5 +1,6 @@
 "use client";
 
+import { numericStamp } from "@rankwant/shared/format";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -9,7 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, fill, t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import { deleteJson, postJson, type SessionRow } from "@/lib/api";
 import { fieldErrors, passwordChangeSchema } from "@rankwant/shared/validation";
 import { Hint, Loading, Status, useAction, useLoad } from "./section-kit";
@@ -296,7 +297,7 @@ function SessionsCard({ version }: { version: number }) {
                 {[
                   row.ip,
                   fill(t(locale, "settings.sessionSeen"), {
-                    time: dateTime(row.last_seen, locale),
+                    time: numericStamp(row.last_seen),
                   }),
                 ]
                   .filter(Boolean)

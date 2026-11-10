@@ -1,5 +1,6 @@
 "use client";
 
+import { numericStamp } from "@rankwant/shared/format";
 import { useCallback, useEffect, useState } from "react";
 
 import { Select, TextArea } from "@/components/form/SettingsKit";
@@ -12,7 +13,7 @@ import { Verdict } from "@/components/ui/Verdict";
 import { UserName } from "@/components/ui/Identity";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, t } from "@/i18n/messages";
+import { t } from "@/i18n/messages";
 import {
   fetchAttemptHacks,
   fetchHackEligibility,
@@ -233,7 +234,7 @@ export function HackPanel({ attempt }: { attempt: AttemptDetail }) {
                 dateTime={hack.created_at}
                 className="ml-auto text-theme-xs rw-faint"
               >
-                {dateTime(hack.created_at, locale)}
+                {numericStamp(hack.created_at)}
               </time>
               {hack.detail && (
                 <p className="w-full text-theme-xs rw-faint">{hack.detail}</p>
