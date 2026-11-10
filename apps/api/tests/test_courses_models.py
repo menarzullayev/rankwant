@@ -136,15 +136,18 @@ class TestTranslationPick:
 
     def test_reader_locale_wins(self):
         rows = self._lesson_with("uz", "ru").translations.all()
-        assert i18n.pick(rows, "ru", "uz").locale == "ru"
+        picked = i18n.pick(rows, "ru", "uz")
+        assert picked is not None and picked.locale == "ru"
 
     def test_falls_back_to_base_locale(self):
         rows = self._lesson_with("uz", "ru").translations.all()
-        assert i18n.pick(rows, "en", "uz").locale == "uz"
+        picked = i18n.pick(rows, "en", "uz")
+        assert picked is not None and picked.locale == "uz"
 
     def test_falls_back_to_any_when_base_is_missing(self):
         rows = self._lesson_with("ru").translations.all()
-        assert i18n.pick(rows, "en", "uz").locale == "ru"
+        picked = i18n.pick(rows, "en", "uz")
+        assert picked is not None and picked.locale == "ru"
 
     def test_nothing_to_pick(self):
         assert i18n.pick([], "uz", "uz") is None
