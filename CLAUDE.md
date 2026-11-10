@@ -234,6 +234,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-build-cache-budget.md) · Build cache 10 GB gacha saqlanadi (2026-10-06 ni almashtiradi); judge base obrazi qayta ishlatiladi; disk qo'riqchisi 5 GB · `build_cache_kept_within_budget`
 - [2026-11-10](docs/decisions/2026-11-10-ci-fast-installs.md) · CI: Python paketlari `uv` bilan, `node_modules` lockfile va Node versiyasi bo'yicha keshlanadi · `ci_installs_are_fast`
 - [2026-11-10](docs/decisions/2026-11-10-pr-update-queue.md) · Orqada qolgan auto-merge PR'larni watcher navbat bilan, bittadan yangilaydi; agentlar o'zi `update-branch` qilmaydi · `behind_prs_update_one_at_a_time`
+- [2026-11-10](docs/decisions/2026-11-10-pr-negative-scope.md) · PR CI qaror salbiy testlarini faqat o'zgargan fayllar uchun yuritadi; main va Nightly — to'liq · `pr_runs_decision_cases_for_changed_files`
 - [2026-11-10](docs/decisions/2026-11-10-revive-failed-containers.md) · Docker ko'tara olmagan konteynerni watcher ko'taradi (qo'lda to'xtatilgani emas); Docker o'chiqda deploy to'sig'i yo'q · `failed_containers_are_revived`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-public-env-reaches-build.md) · Web o'qiydigan har `NEXT_PUBLIC_*` build'ga uzatiladi; bo'sh `SITE_URL` = API origin'i · `flags_reach_the_web_build`

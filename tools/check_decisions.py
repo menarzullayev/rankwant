@@ -2929,6 +2929,31 @@ def behind_prs_update_one_at_a_time() -> str | None:
     return None
 
 
+def pr_runs_decision_cases_for_changed_files() -> str | None:
+    """2026-11-10 (HITL): PR CI qaror testlarini faqat o'zgargan fayllar uchun yuritadi.
+
+    O'lchandi: Web job'idagi salbiy testlar ~90 s, 678 tadan 464 tasi
+    `decisions`; har `_decision_broken` testi bitta faylni buzadi. Fayl ham,
+    qoida kodi ham o'zgarmagan bo'lsa natija o'zgara olmaydi. Ro'yxat faqat
+    PR'da beriladi; `main` CI va Nightly to'liq to'plamni yuritadi.
+    """
+    neg = read("tools/check_negative.py")
+    for needle, why in (
+        ('    if changed is not None and rel not in changed:\n', "o'zgarmagan fayl testi o'tkazilmaydi"),
+        ('    "tools/check_decisions.py",\n    "tools/check_negative.py",\n', "qoida kodi o'zgarsa to'liq yurmaydi"),
+        ('        if files and not files & _FULL_RUN_TRIGGERS:\n', "bo'sh ro'yxat to'liq yurish emas"),
+        ("            f\"{len(SKIPPED_UNCHANGED)} ta qaror testi", "o'tkazilganlar hisobotda aytilmaydi"),
+    ):
+        if needle not in neg:
+            return f"tools/check_negative.py: {why}"
+    ci = read(".github/workflows/ci.yml")
+    if "github.event_name == 'pull_request' }}\n        env:\n          GH_TOKEN" not in ci:
+        return "ci.yml: o'zgargan fayllar ro'yxati faqat PR'da emas"
+    if '.filename == "tools/check_negative.py") and .deletions == 0 | not)' not in ci:
+        return "ci.yml: faqat qo'shilgan qoida/test ham to'liq yurishga olib keladi (add-only filtri yo'q)"
+    return None
+
+
 def failed_containers_are_revived() -> str | None:
     """2026-11-10 (HITL): Docker ko'tara olmagan konteyner o'zi tiklanadi.
 
@@ -4943,6 +4968,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
+    ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
     ("CI paketlarni tez o'rnatadi", ci_installs_are_fast),
     ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),
