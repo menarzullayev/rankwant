@@ -2706,6 +2706,39 @@ def studio_problems_panel() -> str | None:
     return None
 
 
+def studio_contests_panel() -> str | None:
+    """2026-11-10 (HITL, audit Q-07.2): organizator musobaqasi `/studio/contests` da.
+
+    `contests/mine/` API'si bor edi, sahifasi yo'q edi; `participants` 500
+    berardi va masalani faqat staff-ops biriktirardi. Egasi tanlovi: 5 ta
+    qoralama chegarasi, faqat o'z NASHR QILINMAGAN masalalari va faqat
+    musobaqa qoralama paytida; D8-F tayyorlik darvozasi bu yo'lda ham.
+    """
+    views = read("apps/api/contests/organizer_views.py")
+    server = re.search(r"^MAX_DRAFTS = (\d+)$", views, re.M)
+    client = re.search(
+        r"^export const STUDIO_CONTEST_LIMIT = (\d+);$",
+        read("apps/web/src/features/studio/api/contests.ts"),
+        re.M,
+    )
+    if not server or not client or server.group(1) != client.group(1):
+        return "musobaqa qoralamasi chegarasi server (`MAX_DRAFTS`) va sahifada har xil"
+    if "def participants(self, request: Request, slug: str | None = None)" not in views:
+        return "organizer_views.py: `participants` slug'ni qabul qilmaydi — har chaqiruv 500"
+    listing = views.split("class OrganizerContestProblemListSerializer", 1)[-1].split("\nclass ", 1)[0]
+    if "user.authored_problems.filter(is_public=False)" not in listing:
+        return "organizer_views.py: musobaqaga begona yoki nashr qilingan masala qo'shiladi"
+    if "row[\"problem\"].readiness != GRADED_READY" not in listing:
+        return "organizer_views.py: D8-F tayyorlik darvozasi organizator yo'lida yo'q"
+    action = views.split("def contest_problems(", 1)[-1]
+    if "if contest.is_public:" not in action.split("serializer = ", 1)[0]:
+        return "organizer_views.py: nashr qilingan musobaqaning masalalari organizator qo'lida"
+    nav = read("apps/web/src/features/studio/components/StudioNav.tsx")
+    if '{ href: "/studio/contests", key: "studio.nav.contests" }' not in nav:
+        return "StudioNav.tsx: «Musobaqalarim» bo'limi navigatsiyada yo'q"
+    return None
+
+
 def external_ratings_refresh_daily() -> str | None:
     """2026-11-10 (HITL, audit Q-07.4): bog'langan tashqi reytinglar kunlik yangilanadi.
 
@@ -4621,6 +4654,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("muallif qoralamasi studio sahifasida", studio_problems_panel),
+    ("organizator musobaqasi studio sahifasida", studio_contests_panel),
     ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
     ("judge privileged emas", judge_is_not_privileged),
     ("viloyat A/B kalit bilan yoqiladi va o'lchanadi", region_ab_is_switched_and_measured),

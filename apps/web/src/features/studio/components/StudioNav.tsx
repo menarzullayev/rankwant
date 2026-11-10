@@ -7,10 +7,11 @@ import { usePathname } from "next/navigation";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, type MessageKey } from "@/i18n/messages";
 
-/** The sections of `/studio` (2026-11-10). One list, so a new section —
- *  contests next — is a line here, not a second menu. */
+/** The sections of `/studio` (2026-11-10). One list, so a new section
+ *  is a line here, not a second menu. */
 const SECTIONS: readonly { href: Route; key: MessageKey }[] = [
   { href: "/studio/problems", key: "studio.nav.problems" },
+  { href: "/studio/contests", key: "studio.nav.contests" },
 ];
 
 export function StudioNav() {

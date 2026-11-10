@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2625 strings.**
+**2671 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -830,6 +830,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Башталышы жок дегенде 5 мүнөттөн кийин болушу керек |  |
 | `error.wrong_question` | Bu savol hozir ochiq emas | Бул суроо азыр ачык эмес |  |
 | `error.draft_limit` | Qoralamalar chegarasiga yetdingiz — avval birini yakunlang yoki o'chiring | Долбоор чегине жеттиңиз — адегенде бирин аяктаңыз же өчүрүңүз |  |
+| `error.contest_draft_limit` | Qoralama musobaqalar chegarasiga yetdingiz — avval birini o'chiring | Долбоор мелдештер чегине жеттиңиз — адегенде бирин өчүрүңүз |  |
+| `error.contest_locked` | Nashr qilingan musobaqaning masalalarini xodim boshqaradi | Жарыяланган мелдештин маселелерин кызматкерлер башкарат |  |
 | `error.review_not_ready` | Qoralama ko'rikka tayyor emas | Долбоор текшерүүгө даяр эмес |  |
 | `error.already_public` | Masala allaqachon nashr qilingan | Маселе буга чейин жарыяланган |  |
 | `profile.aboutEmpty` | Foydalanuvchi hali o'zi haqida ma'lumot qo'shmagan. | Колдонуучу өзү тууралуу азырынча маалымат кошо элек. |  |
@@ -1782,6 +1784,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.filter.all` | Hammasi | Баары |  |
 | `admin.filter.reviewQueue` | Ko'rik navbati | Текшерүү кезеги |  |
 | `admin.label.misc.authors` | Mualliflar | Авторлор |  |
+| `admin.label.misc.organizers` | Organizatorlar | Уюштуруучулар |  |
 | `admin.label.date.reviewRequested` | Ko'rik so'ralgan | Текшерүү суралды |  |
 | `admin.label.text.reward` | Mukofot | Сыйлык |  |
 | `admin.label.text.qvant` | Qvant | Qvant |  |
@@ -1957,6 +1960,49 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.review.public` | Masala nashr qilingan va arxivda turibdi. | Маселе жарыяланган жана архивде турат. |  |
 | `studio.delete` | Qoralamani o'chirish | Долбоорду өчүрүү |  |
 | `studio.deleteConfirm` | «{title}» qoralamasini o'chirasizmi? Testlari ham o'chadi. | «{title}» долбоорун өчүрөсүзбү? Тесттери да өчөт. |  |
+| `studio.nav.contests` | Musobaqalarim | Менин мелдештерим |  |
+| `studio.contests.intro` | Siz tashkil qilgan musobaqalar. Nashr va reyting — xodim qarori. | Сиз уюштурган мелдештер. Жарыялоо жана рейтинг — кызматкерлердин чечими. |  |
+| `studio.contests.new` | Yangi musobaqa | Жаңы мелдеш |  |
+| `studio.contests.empty` | Hali musobaqangiz yo'q | Сизде азырынча мелдеш жок |  |
+| `studio.contests.emptyHint` | Vaqtini belgilang, o'z qoralama masalalaringizni qo'shing — nashrni xodim hal qiladi. | Убактысын белгилеп, өз долбоор маселелериңизди кошуңуз — жарыялоону кызматкер чечет. |  |
+| `studio.contests.full` | Qoralama musobaqalar chegarasi: {count} / {limit}. Yangisi uchun birini o'chiring yoki nashrga tayyorlang. | Долбоор мелдештер чегине жеттиңиз: {count} / {limit}. Жаңысы үчүн бирин өчүрүңүз же жарыялоого даярдаңыз. |  |
+| `studio.col.contest` | Musobaqa | Мелдеш |  |
+| `studio.col.start` | Boshlanish | Башталышы |  |
+| `studio.col.problems` | Masalalar | Маселелер |  |
+| `studio.col.participants` | Qatnashchilar | Катышуучулар |  |
+| `studio.contest.tab.settings` | Sozlamalar | Жөндөөлөр |  |
+| `studio.contest.tab.problems` | Masalalar | Маселелер |  |
+| `studio.contest.tab.participants` | Qatnashchilar | Катышуучулар |  |
+| `studio.contest.description` | Tavsif | Сүрөттөмө |  |
+| `studio.contest.end` | Tugash | Аякташы |  |
+| `studio.contest.zoneHint` | Vaqt Toshkent vaqtida (UTC+5) kiritiladi — saytdagi barcha sanalar kabi. | Убакыт сайттагы бардык даталар сыяктуу Ташкент убактысы менен (UTC+5) киргизилет. |  |
+| `studio.contest.scoring` | Hisoblash qoidasi | Эсептөө эрежеси |  |
+| `studio.contest.freeze` | Muzlatish (daqiqa) | Тоңдуруу (мүнөт) |  |
+| `studio.contest.freezeHint` | Oxirgi N daqiqada natijalar jadvali muzlaydi | Акыркы N мүнөттө натыйжалар таблицасы тоңдурулат |  |
+| `studio.contest.testers` | Testerlar | Тестерлер |  |
+| `studio.contest.testersHint` | Taxalluslar vergul bilan. Ular masalalarni oldindan ko'radi va reytingsiz qatnashadi; musobaqa boshlangach o'zgarmaydi. | Лакап аттар үтүр менен. Алар маселелерди алдын ала көрүп, рейтингсиз катышат; мелдеш башталгандан кийин өзгөрбөйт. |  |
+| `studio.contest.staffDecides` | Nashr qilish va reytingli bo'lishini xodim hal qiladi — sizda bu tugmalar yo'q. | Жарыялоону жана рейтингди кызматкер чечет — сизде бул которгучтар жок. |  |
+| `studio.contest.delete` | Musobaqani o'chirish | Мелдешти өчүрүү |  |
+| `studio.contest.deleteConfirm` | «{title}» musobaqasini o'chirasizmi? | «{title}» мелдешин өчүрөсүзбү? |  |
+| `studio.contest.problemsIntro` | Faqat o'zingiz yozgan, hali nashr qilinmagan masalalar. Musobaqa tugagach ular arxivga o'tadi. | Өзүңүз жазган, азырынча жарыялана элек маселелер гана. Мелдеш бүткөндө алар архивге өтөт. |  |
+| `studio.contest.problemsLocked` | Musobaqa nashr qilingan: uning masalalarini endi xodim boshqaradi. | Мелдеш жарыяланган: анын маселелерин эми кызматкерлер башкарат. |  |
+| `studio.contest.letter` | Harf | Тамга |  |
+| `studio.contest.points` | Ball | Упай |  |
+| `studio.contest.pointsOf` | {letter} masala bali | {letter} маселесинин упайы |  |
+| `studio.contest.moveUp` | {letter} masalani yuqoriga | {letter} маселесин өйдө |  |
+| `studio.contest.moveDown` | {letter} masalani pastga | {letter} маселесин ылдый |  |
+| `studio.contest.remove` | Olib tashlash | Алып салуу |  |
+| `studio.contest.noProblems` | Hali masala qo'shilmagan | Азырынча маселе кошула элек |  |
+| `studio.contest.addProblem` | Masala qo'shish | Маселе кошуу |  |
+| `studio.contest.pickProblem` | Qoralamalaringizdan tanlang | Долбоорлоруңуздан тандаңыз |  |
+| `studio.contest.add` | Qo'shish | Кошуу |  |
+| `studio.contest.noDrafts` | Qo'shiladigan qoralama yo'q — avval «Masalalarim» bo'limida masala yozing. | Кошо турган долбоор жок — адегенде «Менин маселелерим» бөлүмүндө маселе жазыңыз. |  |
+| `studio.contest.participant` | Qatnashchi | Катышуучу |  |
+| `studio.contest.registeredAt` | Ro'yxatdan o'tgan | Катталган |  |
+| `studio.contest.noParticipants` | Hali hech kim ro'yxatdan o'tmagan | Азырынча эч ким катталган жок |  |
+| `studio.error.endBeforeStart` | Tugash vaqti boshlanishdan keyin bo'lishi kerak | Аякташы башталышынан кийин болушу керек |  |
+| `studio.error.testers` | Tester taxallusi topilmadi yoki musobaqa allaqachon boshlangan | Тестердин лакап аты табылган жок же мелдеш башталып калган |  |
+| `studio.error.problems` | Masalalar ro'yxati qabul qilinmadi: faqat o'z nashr qilinmagan masalalaringiz, har biri bir marta | Маселелер тизмеси кабыл алынган жок: өзүңүздүн жарыяланбаган маселелериңиз гана, ар бири бир жолу |  |
 | `admin.placeholder.questionId` | Savol ID | Суроо ID |  |
 | `admin.placeholder.problemSlug` | masala slug'i | маселе слагы |  |
 | `admin.placeholder.title` | Sarlavha | Аталыш |  |

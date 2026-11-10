@@ -46,6 +46,11 @@ class StaffContestSerializer(serializers.ModelSerializer[Contest]):
     #: early and take part unrated.
     testers = crew_field()
     jury = crew_field()
+    #: Who drafted the contest in `/studio/contests` — read-only here: staff
+    #: see whose draft they are publishing.
+    organizers = serializers.SlugRelatedField[User](
+        slug_field="username", many=True, read_only=True
+    )
     problems = StaffContestProblemSerializer(many=True, read_only=True)
     is_running = serializers.BooleanField(read_only=True)
     is_finished = serializers.BooleanField(read_only=True)
@@ -71,6 +76,7 @@ class StaffContestSerializer(serializers.ModelSerializer[Contest]):
             "is_finished",
             "testers",
             "jury",
+            "organizers",
         ]
         read_only_fields = ["ratings_applied_at", "created_at"]
 
