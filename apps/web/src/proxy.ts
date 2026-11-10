@@ -234,11 +234,10 @@ export function proxy(request: NextRequest): NextResponse {
   // lekin BIRINCHI javob baribir URL bo'yicha ajratilishi kerak. Ya'ni
   // keshlashdan oldin `Vary` hal qilinishi SHART.
   //
-  // TODO(keshlashdan OLDIN): `Vary` ni Next.js'dan TASHQARIDA qo'shish
-  // kerak — cloudflared tunnel ingress header rewrite qo'llamaydi
-  // (o'lchandi: `cloudflared 2026.9.1`, bunday direktiva yo'q), ya'ni
-  // oldiga kichik proxy qo'yiladi yoki CDN darajasida Transformation
-  // Rule yoziladi. Batafsil: `docs/08-technical-spec/i18n-precedence.md`.
+  // Hal qilingan (2026-09-20): Next.js in-process `Vary` ni o'chiradi, shuning
+  // uchun u chekkada Cloudflare Transform Rule bilan qo'shiladi —
+  // `tools/cf-vary-accept-language.json`, `tools/cf_vary_apply.py`. Bu qator
+  // origin'da qoladi. Batafsil: `docs/08-technical-spec/i18n-precedence.md`.
   if (!boshqa_domen) {
     response.headers.set("Vary", "Accept-Language");
     // Cookie shu javobda qo'yiladi — havolani olgan odamning keyingi

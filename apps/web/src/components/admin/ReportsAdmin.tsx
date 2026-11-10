@@ -1,5 +1,6 @@
 "use client";
 
+import { numericDate } from "@rankwant/shared/format";
 import Link from "next/link";
 
 import {
@@ -9,7 +10,7 @@ import {
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { date, t, type MessageKey } from "@/i18n/messages";
+import { t, type MessageKey } from "@/i18n/messages";
 
 type Report = {
   id: number;
@@ -97,7 +98,7 @@ const columns: ColumnDef<Report>[] = [
     align: "right",
     render: (r, _reload, locale) => (
       <span className="rw-faint tabular-nums">
-        {date(r.created_at, locale)}
+        {numericDate(r.created_at)}
       </span>
     ),
   },

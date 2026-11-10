@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Owner decisions must stay true in the code, not only in CLAUDE.md.
+"""Owner decisions must stay true in the code, not only in the docs.
 
-Every rule mirrors a row of CLAUDE.md § "Saidakbar aka qarorlari". On
+Every rule mirrors a decision in `docs/decisions/` (one file per decision,
+indexed in CLAUDE.md § "Saidakbar aka qarorlari"). On
 2026-09-17 the owner chose local-only backups, and within hours another agent
 that had not seen the decision merged unencrypted offsite uploads (#31); dumps
 with user data left the machine. A table nobody checks does not stop that.
 This script runs on every PR, so reverting a decision needs a deliberate edit
-of both the code and the table.
+of both the code and the decision file.
 
 Exit codes: 0 every decision holds, 1 a decision is violated, 2 a file could
 not be read (never treated as "fine").
@@ -849,6 +850,83 @@ def language_rule_written() -> str | None:
 def decisions_table_present() -> str | None:
     if "## Saidakbar aka qarorlari" not in read("CLAUDE.md"):
         return "CLAUDE.md: `## Saidakbar aka qarorlari` jadvali yo'q"
+    return None
+
+
+#: Owner decisions live one per file here; CLAUDE.md keeps a one-line index.
+DECISIONS_DIR = "docs/decisions"
+_DECISIONS_HEADING = "## Saidakbar aka qarorlari"
+_DECISION_INDEX_LINE = re.compile(
+    r"^- \[(\d{4}-\d{2}-\d{2})\]\(docs/decisions/([^)/]+\.md)\) · (.+) · `([^`]+)`$"
+)
+_DECISION_ROW = re.compile(r"^\| \d{4}-\d{2}-\d{2}")
+#: A `where` field shaped like a rule function, not a path.
+_RULE_NAME = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)+")
+
+
+def decisions_index_matches_files() -> str | None:
+    """Every decision is a file in `docs/decisions/` AND a line in the index.
+
+    Measured 2026-11-10 (audit Q-10): `CLAUDE.md` was 278 874 bytes, of which
+    the decisions table was 159 rows, and every agent session loads the file
+    in full; the same day eleven PRs appended rows and four of them hit merge
+    conflicts on that one table. The rows now live one per file, and
+    CLAUDE.md keeps one line each. Two copies drift, so this rule fails on a
+    decision that exists in one place only, on an index line whose date or
+    rule name is wrong, on a file that does not hold exactly one row, and on a
+    table row written back into CLAUDE.md — what a branch cut before the move
+    would merge in.
+    """
+    claude = read("CLAUDE.md")
+    stray = [line for line in claude.splitlines() if _DECISION_ROW.match(line)]
+    if stray:
+        return (
+            f"CLAUDE.md da jadval qatori bor — qaror `{DECISIONS_DIR}/` ga yoziladi: "
+            f"{stray[0][:70]!r}"
+        )
+    if _DECISIONS_HEADING not in claude:
+        return f"CLAUDE.md: `{_DECISIONS_HEADING}` yo'q"
+    section = claude.split(_DECISIONS_HEADING, 1)[1].split("\n## ", 1)[0]
+    rules = {fn.__name__ for _, fn in RULES}
+    indexed: set[str] = set()
+    last = ""
+    for line in section.splitlines():
+        if not line.startswith("- ["):
+            continue
+        m = _DECISION_INDEX_LINE.match(line)
+        if not m:
+            return f"indeks qatori formatda emas: {line[:80]!r}"
+        date, name, _summary, where = m.groups()
+        if name in indexed:
+            return f"indeksda ikki marta: {name}"
+        if not name.startswith(f"{date}-"):
+            return f"indeks sanasi fayl nomiga mos emas: {date} → {name}"
+        if date < last:
+            return f"indeks sana tartibida emas: {date} ({name}) {last} dan keyin"
+        last = date
+        if _RULE_NAME.fullmatch(where) and where not in rules:
+            return f"{name}: `{where}` — check_decisions.py da bunday qoida yo'q"
+        indexed.add(name)
+    folder = ROOT / DECISIONS_DIR
+    files = (
+        {p.name for p in folder.glob("*.md") if p.name != "README.md"}
+        if folder.is_dir()
+        else set()
+    )
+    # An empty side would make every comparison below vacuously true.
+    if not files or not indexed:
+        return f"qarorlar topilmadi: {len(files)} fayl, {len(indexed)} indeks qatori"
+    for name in sorted(indexed - files):
+        return f"indeksda bor, fayli yo'q: {DECISIONS_DIR}/{name}"
+    for name in sorted(files - indexed):
+        return f"fayli bor, indeksda yo'q: {DECISIONS_DIR}/{name}"
+    for name in sorted(files):
+        text = (folder / name).read_bytes().decode("utf-8")
+        rows = [line for line in text.splitlines() if _DECISION_ROW.match(line)]
+        if len(rows) != 1:
+            return f"{DECISIONS_DIR}/{name}: {len(rows)} ta qaror qatori (bitta kerak)"
+        if not rows[0].startswith(f"| {name[:10]}"):
+            return f"{DECISIONS_DIR}/{name}: qatordagi sana fayl nomiga mos emas"
     return None
 
 
@@ -1792,7 +1870,7 @@ def deploy_skips_non_image_bake() -> str | None:
     auto = read(AUTO_DEPLOY)
     if "deploy_scope.py" not in auto:
         return f"{AUTO_DEPLOY}: obraz doirasi hisoblanmaydi"
-    if 'log "obrazga tushmaydi — bake yo\'q' not in auto:
+    if 'log_once "noimage:$TARGET" "obrazga tushmaydi — bake yo\'q' not in auto:
         return f"{AUTO_DEPLOY}: bo'sh doirada bake o'tkazilmaydi"
 
     kick = read(KICK_AUTO_DEPLOY)
@@ -2534,6 +2612,57 @@ def external_ratings_refresh_daily() -> str | None:
     task = read("apps/api/profiles/tasks.py").split("def refresh_stale_externals", 1)[-1]
     if "user__is_active=True" not in task or "kind__in=list(external.FETCHERS)" not in task:
         return "profiles/tasks.py: kunlik yangilash nofaol yoki reytingsiz profillarni ham oladi"
+def client_dates_are_numeric() -> str | None:
+    """2026-11-10 (audit Q-16, L-01): klient komponent sanani raqam bilan yozadi.
+
+    `dateTime`/`date`/`time` lokal bo'yicha formatlaydi: Node'da `uz` ma'lumoti
+    bor, brauzerda yo'q — serverda chizilgan klient komponentda gidratsiya
+    xatosi (2026-10-06 o'lchangan). 15 ta klient komponent `numericStamp`,
+    `numericDate`, `numericTime` ga o'tdi; bu qoida qaytishini to'xtatadi.
+    """
+    import re as _re
+
+    pattern = _re.compile(r'import \{([^}]*)\} from "@/i18n/messages";')
+    for path in sorted((ROOT / "apps/web/src").rglob("*.tsx")):
+        text = path.read_text(encoding="utf-8")
+        if '"use client"' not in text:
+            continue
+        for match in pattern.finditer(text):
+            names = {n.strip() for n in match.group(1).split(",")}
+            bad = sorted(names & {"dateTime", "date", "time"})
+            if bad:
+                rel = path.relative_to(ROOT).as_posix()
+                return f"{rel}: klient komponent `{', '.join(bad)}` bilan sana yozadi — numericStamp/numericDate/numericTime"
+    return None
+
+
+def optimistic_save_reports_refusals() -> str | None:
+    """2026-11-10 (HITL, audit Q-13): `optimisticSave` sozlamalar saqlashini boshqaradi.
+
+    Bayroq standart holatda o'chiq. Yoqilganda bar server javobini kutmaydi:
+    so'rovlar bir vaqtda ketadi (`MeSerializer.update` faqat yuborilgan
+    maydonlarni yozadi), rad etilsa tahrir joyida qoladi va xato ko'rinadi —
+    bo'lim yopilgan bo'lsa ham (toast). Yo'lda turgan so'rov sahifadan
+    chiqishni ham ogohlantiradi: to'liq yuklanish uni bekor qilardi.
+    """
+    flags = read("apps/web/src/lib/flags.ts").split("export const FLAGS", 1)[-1].split("} as const", 1)[0]
+    if not re.search(r"^\s+optimisticSave: false,$", flags, re.M):
+        return "lib/flags.ts: `optimisticSave` standart holatda yoniq yoki ro'yxatda yo'q"
+    bar = read("apps/web/src/features/account/components/SaveBar.tsx")
+    if 'if (flight && isOn("optimisticSave")) {' not in bar:
+        return "SaveBar.tsx: `optimisticSave` bayrog'i saqlashni boshqarmaydi"
+    # Words with `role="alert"`: the style's phone default is a bare circle
+    # with `role="img"` — the error would be neither read nor announced.
+    refusal = 'variant="iconText"\n            alert\n            label={t(locale, "settings.saveFailed")}'
+    if refusal not in bar:
+        return "SaveBar.tsx: rad etilgan optimistik saqlash ko'rinmaydi"
+    if 'toast(t(locale, "settings.saveFailedGone"))' not in bar:
+        return "SaveBar.tsx: yopilgan bo'limning rad etilgan saqlashi aytilmaydi"
+    if "const holding = dirty.length + inFlight.size;" not in bar:
+        return "SaveBar.tsx: yo'ldagi so'rov sahifadan chiqishda ogohlantirmaydi"
+    queue = read("apps/web/src/features/account/save-queue.ts")
+    if "      } catch {\n        ok = false;\n      }" not in queue:
+        return "save-queue.ts: yiqilgan so'rov saqlandi deb sanaladi"
     return None
 
 
@@ -2603,6 +2732,54 @@ def nightly_bakeoff_is_a_gate() -> str | None:
         return "docker-compose.ci.yml: `bakeoff` servisi topilmadi"
     if not re.search(r"^    command: \['python', '/bakeoff/harness/runner\.py'", service.group(1), re.M):
         return "docker-compose.ci.yml: `bakeoff` harness'ni yurgizmaydi — obrazning standart buyrug'i ishlaydi"
+    return None
+
+
+#: The two Nightly `e2e` steps that read a page rendered by the CI stack.
+LIVE_GATES = {
+    "Visual gate is live (mutation proof)": "tools/ci_visual_gate.sh",
+    "CSP nonce coverage is live": "tools/ci_csp_gate.sh",
+}
+
+
+def _code_lines(text: str) -> str:
+    """`text` without comment lines — an anchor in a comment proves nothing."""
+    return "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
+
+
+def nightly_live_gates_measure() -> str | None:
+    """2026-11-10: the visual mutation proof and the CSP nonce gate measure the CI stack.
+
+    Both pointed at `localhost:3400`; the CI stack publishes no host ports
+    (`docker-compose.ci.yml` → `ports: !reset []`), so on every hosted run they
+    printed a warning and exited 0 (runs 42716046958, 42721061218) — the proof
+    that the pixel gate is not decorative, and the CSP gate, measured nothing
+    while Nightly showed them green. Now each finds the stack's web container
+    by its compose labels, and a missing stack fails the step.
+    """
+    steps = _workflow_steps(_workflow_job(read(".github/workflows/nightly.yml"), "e2e"))
+    for name, script in LIVE_GATES.items():
+        step = steps.get(name)
+        if step is None:
+            return f"nightly.yml: e2e job'ida `{name}` qadami yo'q"
+        code = _code_lines(step)
+        if f"run: bash {script}" not in code:
+            return f"nightly.yml: `{name}` `{script}` ni yurgizmaydi"
+        if re.search(r"^        continue-on-error:", code, re.M):
+            return f"nightly.yml: `{name}` `continue-on-error` bilan — yiqilsa ham Nightly yashil"
+        if re.search(r"localhost|127\.0\.0\.1", code):
+            return f"nightly.yml: `{name}` host portiga qaratilgan — CI stack portsiz, qadam hech narsa o'lchamaydi"
+        if script.endswith("ci_csp_gate.sh") and not re.search(r"^        if: \$\{\{ !cancelled\(\) && ", code, re.M):
+            return f"nightly.yml: `{name}` `!cancelled()` siz — vizual farq uni o'lchovsiz qoldiradi"
+        body = _code_lines(read(script))
+        if re.search(r"^\s*exit 0\b", body, re.M) or "::warning::" in body:
+            return f"{script}: stack topilmasa jim o'tadi (`exit 0` yoki `::warning::`) — darvoza o'lik"
+        if "label=com.docker.compose.service=web" not in body:
+            return f"{script}: CI stack'ning web konteynerini qidirmaydi"
+    if "VISUAL_STACK=compose python3 tools/check_negative.py --group visual" not in _code_lines(
+        read("tools/ci_visual_gate.sh")
+    ):
+        return "tools/ci_visual_gate.sh: mutatsiya isboti CI stack'ida yurmaydi"
     return None
 
 
@@ -3210,7 +3387,7 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     if "contest_entries__contest__is_public=True" not in visibility:
         return "qoralama musobaqa ham masalani ochadi"
     views = read("apps/api/problems/views.py")
-    if 'Q(is_public=True) if self.action == "list" else visibility.openable_q()' not in views:
+    if 'Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)' not in views:
         return "arxiv ro'yxati musobaqa masalasini ham beradi (yoki masala sahifasi uni ochmaydi)"
     submit = read("apps/api/judging/serializers.py")
     if "This problem belongs to a contest" not in submit:
@@ -3229,6 +3406,109 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     serializer = read("apps/api/problems/serializers.py")
     if "if not problem.editorial or not problem.is_public:" not in serializer:
         return "tahlil musobaqa paytida ochiq"
+    return None
+
+
+def contest_fair_play_is_judged() -> str | None:
+    # 2026-11-10 (ADR-0055, part 4, HITL): AI assistants are forbidden in a
+    # contest and the page says so; the editor tells with each contest
+    # attempt how it was written (pastes, leaving the page, time open); the
+    # jury reads the report after the end and nothing is decided by itself.
+    # A disqualification voids the attempts, shows «DQ» with no place,
+    # removes the certificate and re-rates the whole contest.
+    integrity = read("apps/api/contests/integrity.py")
+    if "def can_judge(" not in integrity or "contest.jury.filter(pk=user.pk).exists()" not in integrity:
+        return "chetlatishni hakam bo'lmagan ham qila oladi"
+    if "skip_attempts(contest.attempts.filter(user=user))" not in integrity:
+        return "chetlatilgan ishtirokchining urinishlari bekor qilinmaydi"
+    if "rerate_contest(contest)" not in integrity:
+        return "chetlatishdan keyin reyting qayta hisoblanmaydi"
+    if 'raise FairPlayError("reason_required"' not in integrity:
+        return "chetlatish sababsiz qilinadi"
+    services = read("apps/api/contests/services.py")
+    if "is_disqualified=row.user_id in dq," not in services:
+        return "chetlatilgan qator jadvalda rasmiy bo'lib yoziladi"
+    models = read("apps/api/contests/models.py")
+    if 'return self.filter(insider_role="", is_disqualified=False)' not in models:
+        return "chetlatilgan qator reyting va o'rinlarga kiradi"
+    views = read("apps/api/contests/views.py")
+    if "if not contest.is_finished:" not in views:
+        return "halol o'yin hisoboti musobaqa davomida ochiladi"
+    page = read("apps/web/src/app/(site)/contests/[slug]/page.tsx")
+    if 't(locale, "contest.fair.rule")' not in page:
+        return "AI taqiqi musobaqa sahifasida aytilmaydi"
+    panel = read("apps/web/src/features/problems/components/SubmitPanel.tsx")
+    if "editor: signals.snapshot()" not in panel:
+        return "muharrir signallari musobaqa urinishi bilan yuborilmaydi"
+    return None
+
+
+def contest_questions_stay_private() -> str | None:
+    # 2026-11-10 (ADR-0055, part 3, HITL): any signed-in user asks until the
+    # contest ends; the jury, organizers and staff-ops answer and announce. A
+    # question is its author's and the moderators'; an answer reaches the
+    # author or, when published, everybody. 20 questions, one a minute.
+    # Once the contest is finalized every answered question is public — the
+    # author's name never is.
+    qa = read("apps/api/contests/clarifications.py")
+    if "    shown = Q(is_public=True, answered_at__isnull=False)" not in qa:
+        return "savol yopiq emas — hamma ko'radi"
+    if "contest.organizers.filter(pk=user.pk).exists()" not in qa:
+        return "tashkilotchi javob bera olmaydi"
+    if "    if mine.count() >= MAX_QUESTIONS:" not in qa or "MAX_QUESTIONS = 20" not in qa:
+        return "savollar soni cheklanmagan"
+    if "    if last is not None and now - last < INTERVAL:" not in qa:
+        return "daqiqasiga bitta savol cheklovi yo'q"
+    if "    if contest.ratings_applied_at is not None:" not in qa:
+        return "yakunlangach savol-javob ochilmaydi"
+    views = read("apps/api/contests/views.py")
+    if views.count("if not qa.can_moderate(contest, request.user):") < 2:
+        return "javob yoki e'lonni hakam bo'lmagan ham yozadi"
+    serializers = read("apps/api/contests/serializers.py")
+    if 'if not self.context.get("moderator") or row.author is None:' not in serializers:
+        return "savol muallifining ismi hakamdan boshqaga ko'rinadi"
+    return None
+
+
+def contest_insiders_play_unrated() -> str | None:
+    # 2026-11-10 (ADR-0055, part 2, HITL): the problem authors, testers, jury
+    # and organizers know the problems before the start. A tester opens and
+    # sends to them early — the attempt counts nowhere and only its author
+    # sees it — and every insider who takes part is unrated: a star in the
+    # table, no place, no rating, no certificate, no championship points.
+    services = read("apps/api/contests/services.py")
+    if "attempts.exclude(user_id__in=list(roles), created_at__lt=contest.start_at)" not in services:
+        return "sinovchining musobaqadan oldingi urinishi jadvalga tushadi"
+    if 'insider_role=roles.get(row.user_id, ""),' not in services:
+        return "ichkaridagi ishtirokchi qatori rasmiy bo'lib yoziladi"
+    if "        if row.user_id in roles or row.user_id in dq:\n            places.append(0)" not in services:
+        return "ichkaridagi ishtirokchi rasmiy o'rin oladi"
+    ratings = read("apps/api/ratings/services.py")
+    if 'Standing.objects.filter(contest=contest).official().select_related("user")' not in ratings:
+        return "reyting ichkaridagi ishtirokchiga ham hisoblanadi"
+    certificates = read("apps/api/contests/certificates.py")
+    if ".official()" not in certificates:
+        return "ichkaridagi ishtirokchi sertifikat oladi"
+    tournaments = read("apps/api/tournaments/services.py")
+    if "Standing.objects.filter(contest=stage.contest).official()" not in tournaments:
+        return "ichkaridagi ishtirokchi chempionat bali oladi"
+    judging = read("apps/api/judging/services.py")
+    if "    testing = is_testing(attempt)\n    if not testing:\n" not in judging:
+        return "sinov urinishi «yechilgan» va reytingga yoziladi"
+    feed = read("apps/api/judging/views.py")
+    if "for contest_id, start_at in testing_windows()" not in feed:
+        return "sinov urinishi boshqalarning lentasida ko'rinadi"
+    problems = read("apps/api/problems/views.py")
+    if problems.count("visibility.without_testing(") < 2:
+        return "sinov urinishi masala statistikasi yoki yechganlar ro'yxatiga tushadi"
+    submit = read("apps/api/judging/serializers.py")
+    if "if registration is None and not testing:" not in submit:
+        return "sinovchi boshlanishdan oldin yubora olmaydi (yoki hamma yuboradi)"
+    if "timezone.now() < contest.start_at and bool(role_of(contest, user))" not in submit:
+        return "boshlanishdan oldin ichkaridagi bo'lmagan ham yuboradi"
+    board = read("apps/api/contests/views.py")
+    if '.order_by("position")[:STANDINGS_TOP]' not in board:
+        return "ommaviy jadval ichkaridagilarni o'z joyida ko'rsatmaydi"
     return None
 
 
@@ -4145,6 +4425,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("arxiv ro'yxat mehmon CDN keshi", problems_list_guest_cdn),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
+    ("qarorlar indeksi fayllarga mos", decisions_index_matches_files),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
@@ -4168,6 +4449,9 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
     ("musobaqa masalasi arxivdan tashqarida", contest_problems_stay_out_of_the_archive),
     ("tozalagich natijani kutadi", reaper_waits_for_unapplied_results),
+    ("ichkaridagilar reytingsiz qatnashadi", contest_insiders_play_unrated),
+    ("musobaqa savoli yopiq, javobni hakam beradi", contest_questions_stay_private),
+    ("halol o'yin: hakam hisoboti va chetlatish", contest_fair_play_is_judged),
     ("mehmon zonalari yopiq", guest_zones_are_gated),
     ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),
@@ -4182,15 +4466,18 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
+    ("klient komponent sanani raqam bilan yozadi", client_dates_are_numeric),
     ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
+    ("Nightly jonli darvozalar CI stack'ini o'lchaydi", nightly_live_gates_measure),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("muallif qoralamasi studio sahifasida", studio_problems_panel),
+    ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
     ("judge privileged emas", judge_is_not_privileged),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
@@ -4229,7 +4516,10 @@ def main() -> int:
         print(f"✗ Qarorlarni o'qib bo'lmadi — {exc}")
         return 2
     if problems:
-        print(f"✗ {len(problems)} ta qaror buzilgan (CLAUDE.md § Saidakbar aka qarorlari):")
+        print(
+            f"✗ {len(problems)} ta qaror buzilgan "
+            f"({DECISIONS_DIR}/, indeks — CLAUDE.md § Saidakbar aka qarorlari):"
+        )
         for problem in problems:
             print(f"  - {problem}")
         print("  Qarorni o'zgartirish faqat Saidakbar akaning aniq tasdig'i bilan.")

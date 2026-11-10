@@ -49,7 +49,9 @@ import _console
 
 _console.force_utf8()
 
-#: The running stack. `tools/ci_csp_gate.sh` and the E2E job share the default.
+#: A host `next start` on a developer machine. Nightly passes `--base` instead:
+#: the CI stack publishes no host ports, so `tools/ci_csp_gate.sh` reads its web
+#: container on the compose network (this default skipped every run until 2026-11-10).
 DEFAULT_BASE = "http://localhost:3400"
 
 #: Routes worth measuring: guest pages that carry the nonce-bearing layout and

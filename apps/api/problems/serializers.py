@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
@@ -354,7 +355,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
         if problem.pk not in cache:
             from problems import visibility
 
-            cache[problem.pk] = visibility.holding_entry(problem)
+            cache[problem.pk] = visibility.holding_entry(problem, user=self._user())
         return cache[problem.pk]
 
     def get_contest(self, problem: Problem) -> dict[str, Any] | None:
@@ -381,6 +382,9 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "is_running": contest.is_running,
             "is_frozen": contest.is_frozen,
             "registered": registered,
+            # Only an insider reaches a contest problem before the start:
+            # what they send is a testing attempt (ADR-0055, part 2).
+            "testing": timezone.now() < contest.start_at,
         }
 
     def to_representation(self, problem: Problem) -> dict[str, Any]:

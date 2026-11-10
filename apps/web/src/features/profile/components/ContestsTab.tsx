@@ -92,7 +92,13 @@ export async function ContestsTab({
                 </Link>
               </TD>
               <TD align="right" className="tabular-nums rw-strong">
-                {row.rank_from === row.rank_to ? row.rank_from : `${row.rank_from}–${row.rank_to}`}
+                {row.insider_role ? (
+                  <span title={t(locale, "standings.unofficial")}>*</span>
+                ) : row.rank_from === row.rank_to ? (
+                  row.rank_from
+                ) : (
+                  `${row.rank_from}–${row.rank_to}`
+                )}
               </TD>
               <TD align="right">
                 <Rating row={row} />

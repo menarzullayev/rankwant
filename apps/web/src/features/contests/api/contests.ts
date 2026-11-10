@@ -31,11 +31,81 @@ export type ContestProblem = {
   points: number;
 };
 
+/** Someone who knew the problems beforehand (ADR-0055, part 2). */
+export type InsiderRole = "author" | "tester" | "jury" | "organizer";
+
+export type CrewPerson = { username: string; user_title: UserTitle | null };
+
 export type ContestDetail = Contest & {
   description: string;
   /** Empty until the contest starts — a title is a hint (ADR-0055). */
   problems: ContestProblem[];
   problem_count: number;
+  /** Who prepared the contest — told always. */
+  crew: { authors: CrewPerson[]; testers: CrewPerson[]; jury: CrewPerson[] };
+};
+
+/** A question, the jury's answer, or an announcement (ADR-0055, part 3). */
+export type Clarification = {
+  id: number;
+  /** Index letter; `null` — about the contest as a whole. */
+  problem: string | null;
+  /** Empty on an announcement. */
+  question: string;
+  answer: string;
+  /** A quick answer, drawn in the reader's language. */
+  answer_code: "" | "yes" | "no" | "read_statement" | "no_comment";
+  is_public: boolean;
+  is_announcement: boolean;
+  mine: boolean;
+  /** Filled for the moderators only. */
+  author: string | null;
+  created_at: string;
+  answered_at: string | null;
+};
+
+export type ClarificationList = {
+  moderator: boolean;
+  can_ask: boolean;
+  questions_left: number;
+  results: Clarification[];
+};
+
+/** The signed-in visitor's own standing with a contest (`/viewer/`). */
+export type ContestViewer = {
+  /** "" for a participant. */
+  role: InsiderRole | "";
+  registered: boolean;
+  /** An insider before the start: the problems are open to them and
+   *  what they send is a testing attempt that counts nowhere. */
+  testing: boolean;
+  /** Filled while `testing`. */
+  problems: ContestProblem[];
+  /** The jury's reason, when the viewer was disqualified (part 4). */
+  disqualified_reason: string | null;
+  /** The viewer reads the fair-play report and disqualifies. */
+  judge: boolean;
+};
+
+/** An attempt whose editor signals stand out (ADR-0055, part 4). */
+export type IntegrityRow = {
+  attempt: number;
+  username: string;
+  problem: string;
+  verdict: string;
+  created_at: string;
+  flags: ("pasted" | "fast" | "away")[];
+  source_chars: number;
+  pasted_chars: number;
+  largest_paste: number;
+  paste_count: number;
+  blur_count: number;
+  active_ms: number;
+};
+
+export type IntegrityReport = {
+  results: IntegrityRow[];
+  disqualified: { username: string; reason: string; at: string }[];
 };
 
 export type Standing = {
@@ -52,6 +122,10 @@ export type Standing = {
   hacks_successful: number;
   hacks_unsuccessful: number;
   last_ac_at: string | null;
+  /** Set on an insider's row: unrated, no place (`rank` is 0). */
+  insider_role: InsiderRole | "";
+  /** Disqualified by the jury: «DQ», no place (part 4). */
+  is_disqualified: boolean;
 };
 
 export type Arena = {

@@ -1,5 +1,6 @@
 "use client";
 
+import { numericStamp } from "@rankwant/shared/format";
 import { useState } from "react";
 
 import { FM_INP } from "@/components/form/chrome";
@@ -12,7 +13,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, t, type Locale, type MessageKey, errorText } from "@/i18n/messages";
+import { t, type Locale, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -46,7 +47,7 @@ function toLocalInput(iso: string): string {
 }
 
 function fmt(iso: string | null, locale: Locale): string {
-  return iso ? dateTime(iso, locale) : "—";
+  return iso ? numericStamp(iso) : "—";
 }
 
 function statusOf(item: ArenaRow): {

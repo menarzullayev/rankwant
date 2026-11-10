@@ -26,6 +26,7 @@ const ROLE_COLOR: Record<ProfileRole["code"], BadgeColor> = {
   champion: "warning",
   staff: "brand",
   jury: "info",
+  tester: "info",
   author: "success",
 };
 

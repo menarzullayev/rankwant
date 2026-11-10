@@ -1255,6 +1255,199 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContestDetail'
           description: ''
+  /api/v1/contests/{slug}/announcements/:
+    post:
+      operationId: contests_announcements_create
+      summary: E'lon qilish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContestAnnouncement'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContestAnnouncement'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContestAnnouncement'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clarification'
+          description: ''
+  /api/v1/contests/{slug}/clarifications/:
+    get:
+      operationId: contests_clarifications_retrieve
+      description: Questions, answers and announcements; POST asks a question.
+      summary: Savol-javob va e'lonlar
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClarificationList'
+          description: ''
+    post:
+      operationId: contests_clarifications_create
+      description: Questions, answers and announcements; POST asks a question.
+      summary: Savol-javob va e'lonlar
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClarificationAsk'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClarificationAsk'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClarificationAsk'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clarification'
+          description: ''
+        '400':
+          description: No response body
+        '429':
+          description: No response body
+  /api/v1/contests/{slug}/clarifications/{row_id}/answer/:
+    post:
+      operationId: contests_clarifications_answer_create
+      summary: Savolga javob berish
+      parameters:
+      - in: path
+        name: row_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClarificationAnswer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClarificationAnswer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClarificationAnswer'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clarification'
+          description: ''
+  /api/v1/contests/{slug}/disqualify/:
+    post:
+      operationId: contests_disqualify_create
+      summary: Diskvalifikatsiya
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Disqualify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Disqualify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Disqualify'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registration'
+          description: ''
+  /api/v1/contests/{slug}/integrity/:
+    get:
+      operationId: contests_integrity_retrieve
+      description: The editor signals that stand out — for the jury, after the end.
+      summary: Halol o'yin hisoboti
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrityReport'
+          description: ''
   /api/v1/contests/{slug}/register/:
     post:
       operationId: contests_register_create
@@ -1353,6 +1546,33 @@ paths:
           description: ''
         '404':
           description: No response body
+  /api/v1/contests/{slug}/viewer/:
+    get:
+      operationId: contests_viewer_retrieve
+      description: |-
+        The visitor's own standing with the contest (ADR-0055, part 2).
+
+        Their insider role, whether they are registered, and — for an
+        insider before the start — the problems they test.
+      summary: Mening musobaqadagi holatim
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContestViewer'
+          description: ''
   /api/v1/contests/{slug}/virtual/:
     post:
       operationId: contests_virtual_create
@@ -12377,6 +12597,18 @@ components:
       required:
       - choice_id
       - question_id
+    AnswerCodeEnum:
+      enum:
+      - 'yes'
+      - 'no'
+      - read_statement
+      - no_comment
+      type: string
+      description: |-
+        * `yes` - Ha
+        * `no` - Yo'q
+        * `read_statement` - Shartni o'qing
+        * `no_comment` - Izoh yo'q
     AnswerResult:
       type: object
       properties:
@@ -12846,6 +13078,8 @@ components:
           type: string
           nullable: true
           pattern: ^[-a-zA-Z0-9_]+$
+        editor:
+          $ref: '#/components/schemas/EditorSignal'
       required:
       - language
       - problem
@@ -13073,6 +13307,96 @@ components:
       - id
       - order
       - text
+    Clarification:
+      type: object
+      description: |-
+        One question, answer or announcement (ADR-0055, part 3).
+
+        `author` is filled for the moderators only; everybody else is told
+        whether the row is theirs (`mine`) and nothing about whose it is.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        problem:
+          type: string
+          nullable: true
+        question:
+          type: string
+        answer:
+          type: string
+        answer_code:
+          oneOf:
+          - $ref: '#/components/schemas/AnswerCodeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        is_public:
+          type: boolean
+        is_announcement:
+          type: boolean
+          readOnly: true
+        mine:
+          type: boolean
+          readOnly: true
+        author:
+          type: string
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        answered_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - author
+      - created_at
+      - id
+      - is_announcement
+      - mine
+    ClarificationAnswer:
+      type: object
+      properties:
+        answer:
+          type: string
+          maxLength: 4000
+        answer_code:
+          type: string
+          maxLength: 16
+        public:
+          type: boolean
+          default: false
+    ClarificationAsk:
+      type: object
+      properties:
+        problem:
+          type: string
+          nullable: true
+          maxLength: 3
+        question:
+          type: string
+          maxLength: 4000
+      required:
+      - question
+    ClarificationList:
+      type: object
+      properties:
+        moderator:
+          type: boolean
+        can_ask:
+          type: boolean
+        questions_left:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Clarification'
+      required:
+      - can_ask
+      - moderator
+      - questions_left
+      - results
     Classroom:
       type: object
       properties:
@@ -13208,6 +13532,18 @@ components:
       - slug
       - start_at
       - title
+    ContestAnnouncement:
+      type: object
+      properties:
+        problem:
+          type: string
+          nullable: true
+          maxLength: 3
+        text:
+          type: string
+          maxLength: 4000
+      required:
+      - text
     ContestDetail:
       type: object
       properties:
@@ -13268,7 +13604,12 @@ components:
         problem_count:
           type: integer
           readOnly: true
+        crew:
+          allOf:
+          - $ref: '#/components/schemas/Crew'
+          readOnly: true
       required:
+      - crew
       - end_at
       - hack_open_until
       - is_finished
@@ -13302,6 +13643,69 @@ components:
       - index_letter
       - slug
       - title
+    ContestViewer:
+      type: object
+      description: |-
+        The signed-in visitor's own standing with a contest.
+
+        Kept off the contest itself so that the contest stays one answer for
+        everybody.
+      properties:
+        role:
+          type: string
+        registered:
+          type: boolean
+        testing:
+          type: boolean
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContestProblem'
+        disqualified_reason:
+          type: string
+          nullable: true
+        judge:
+          type: boolean
+      required:
+      - disqualified_reason
+      - judge
+      - problems
+      - registered
+      - role
+      - testing
+    Crew:
+      type: object
+      description: Who prepared the contest — told on its page, always (ADR-0055,
+        part 2).
+      properties:
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewPerson'
+        testers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewPerson'
+        jury:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewPerson'
+      required:
+      - authors
+      - jury
+      - testers
+    CrewPerson:
+      type: object
+      properties:
+        username:
+          type: string
+        user_title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+      required:
+      - user_title
+      - username
     CurrentQuestion:
       type: object
       properties:
@@ -13392,6 +13796,32 @@ components:
       - attempts
       - date
       - new_users
+    Disqualified:
+      type: object
+      properties:
+        username:
+          type: string
+        reason:
+          type: string
+        at:
+          type: string
+          format: date-time
+      required:
+      - at
+      - reason
+      - username
+    Disqualify:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 150
+        reason:
+          type: string
+          maxLength: 2000
+      required:
+      - reason
+      - username
     Duel:
       type: object
       properties:
@@ -13534,6 +13964,26 @@ components:
         * `accepted` - Qabul qilindi
         * `finished` - Tugadi
         * `cancelled` - Bekor qilindi
+    EditorSignal:
+      type: object
+      description: What the editor tells about a contest solution (ADR-0055, part
+        4).
+      properties:
+        pasted_chars:
+          type: integer
+          minimum: 0
+        largest_paste:
+          type: integer
+          minimum: 0
+        paste_count:
+          type: integer
+          minimum: 0
+        blur_count:
+          type: integer
+          minimum: 0
+        active_ms:
+          type: integer
+          minimum: 0
     Education:
       type: object
       description: Yil + oy. `current=True` yoki tugash yili yo'q — hozirgacha.
@@ -14073,6 +14523,76 @@ components:
       - submission_count
       - submission_deadline
       - title
+    InsiderRoleEnum:
+      enum:
+      - author
+      - tester
+      - jury
+      - organizer
+      type: string
+      description: |-
+        * `author` - Muallif
+        * `tester` - Sinovchi
+        * `jury` - Hakam
+        * `organizer` - Tashkilotchi
+    IntegrityReport:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrityRow'
+        disqualified:
+          type: array
+          items:
+            $ref: '#/components/schemas/Disqualified'
+      required:
+      - disqualified
+      - results
+    IntegrityRow:
+      type: object
+      description: One attempt whose editor signals stand out (ADR-0055, part 4).
+      properties:
+        attempt:
+          type: integer
+        username:
+          type: string
+        problem:
+          type: string
+        verdict:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        flags:
+          type: array
+          items:
+            type: string
+        source_chars:
+          type: integer
+        pasted_chars:
+          type: integer
+        largest_paste:
+          type: integer
+        paste_count:
+          type: integer
+        blur_count:
+          type: integer
+        active_ms:
+          type: integer
+      required:
+      - active_ms
+      - attempt
+      - blur_count
+      - created_at
+      - flags
+      - largest_paste
+      - paste_count
+      - pasted_chars
+      - problem
+      - source_chars
+      - username
+      - verdict
     Inventory:
       type: object
       properties:
@@ -14652,6 +15172,8 @@ components:
 
         `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
         staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+        The organizer picks the testers (ADR-0055, part 2); the jury is a
+        staff decision.
       properties:
         slug:
           type: string
@@ -14682,6 +15204,12 @@ components:
         is_rated:
           type: boolean
           readOnly: true
+        testers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
       required:
       - end_at
       - is_public
@@ -16412,6 +16940,8 @@ components:
 
         `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
         staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+        The organizer picks the testers (ADR-0055, part 2); the jury is a
+        staff decision.
       properties:
         slug:
           type: string
@@ -16442,6 +16972,12 @@ components:
         is_rated:
           type: boolean
           readOnly: true
+        testers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
     PatchedStaffArena:
       type: object
       properties:
@@ -16616,6 +17152,18 @@ components:
         is_finished:
           type: boolean
           readOnly: true
+        testers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+        jury:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
     PatchedStaffHackathon:
       type: object
       properties:
@@ -19340,6 +19888,18 @@ components:
         is_finished:
           type: boolean
           readOnly: true
+        testers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+        jury:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
       required:
       - created_at
       - end_at
@@ -20858,6 +21418,12 @@ components:
           type: string
           format: date-time
           nullable: true
+        insider_role:
+          oneOf:
+          - $ref: '#/components/schemas/InsiderRoleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        is_disqualified:
+          type: boolean
       required:
       - user_title
       - username

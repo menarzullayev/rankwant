@@ -845,6 +845,101 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/contests/{slug}/announcements/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** E'lon qilish */
+        post: operations["contests_announcements_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/{slug}/clarifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Savol-javob va e'lonlar
+         * @description Questions, answers and announcements; POST asks a question.
+         */
+        get: operations["contests_clarifications_retrieve"];
+        put?: never;
+        /**
+         * Savol-javob va e'lonlar
+         * @description Questions, answers and announcements; POST asks a question.
+         */
+        post: operations["contests_clarifications_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/{slug}/clarifications/{row_id}/answer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Savolga javob berish */
+        post: operations["contests_clarifications_answer_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/{slug}/disqualify/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Diskvalifikatsiya */
+        post: operations["contests_disqualify_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/{slug}/integrity/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Halol o'yin hisoboti
+         * @description The editor signals that stand out — for the jury, after the end.
+         */
+        get: operations["contests_integrity_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contests/{slug}/register/": {
         parameters: {
             query?: never;
@@ -900,6 +995,29 @@ export interface paths {
          *     kichik va keshlanmaydigan so'rov.
          */
         get: operations["contests_standings_me_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contests/{slug}/viewer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mening musobaqadagi holatim
+         * @description The visitor's own standing with the contest (ADR-0055, part 2).
+         *
+         *     Their insider role, whether they are registered, and — for an
+         *     insider before the start — the problems they test.
+         */
+        get: operations["contests_viewer_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5812,6 +5930,14 @@ export interface components {
             question_id: number;
             choice_id: number;
         };
+        /**
+         * @description * `yes` - Ha
+         *     * `no` - Yo'q
+         *     * `read_statement` - Shartni o'qing
+         *     * `no_comment` - Izoh yo'q
+         * @enum {string}
+         */
+        AnswerCodeEnum: "yes" | "no" | "read_statement" | "no_comment";
         AnswerResult: {
             is_correct: boolean;
             points: number;
@@ -5975,6 +6101,7 @@ export interface components {
             language: string;
             source_code: string;
             contest?: string | null;
+            editor?: components["schemas"]["EditorSignal"];
         };
         AttemptDetail: {
             readonly id: number;
@@ -6062,6 +6189,43 @@ export interface components {
             order: number;
             text: string;
         };
+        /**
+         * @description One question, answer or announcement (ADR-0055, part 3).
+         *
+         *     `author` is filled for the moderators only; everybody else is told
+         *     whether the row is theirs (`mine`) and nothing about whose it is.
+         */
+        Clarification: {
+            readonly id: number;
+            problem?: string | null;
+            question?: string;
+            answer?: string;
+            answer_code?: components["schemas"]["AnswerCodeEnum"] | components["schemas"]["BlankEnum"];
+            is_public?: boolean;
+            readonly is_announcement: boolean;
+            readonly mine: boolean;
+            readonly author: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            answered_at?: string | null;
+        };
+        ClarificationAnswer: {
+            answer?: string;
+            answer_code?: string;
+            /** @default false */
+            public: boolean;
+        };
+        ClarificationAsk: {
+            problem?: string | null;
+            question: string;
+        };
+        ClarificationList: {
+            moderator: boolean;
+            can_ask: boolean;
+            questions_left: number;
+            results: components["schemas"]["Clarification"][];
+        };
         Classroom: {
             slug: string;
             name: string;
@@ -6119,6 +6283,10 @@ export interface components {
             /** @default 0 */
             readonly participant_count: number;
         };
+        ContestAnnouncement: {
+            problem?: string | null;
+            text: string;
+        };
         ContestDetail: {
             slug: string;
             title: string;
@@ -6146,6 +6314,7 @@ export interface components {
             description?: string;
             readonly problems: components["schemas"]["ContestProblem"][];
             readonly problem_count: number;
+            readonly crew: components["schemas"]["Crew"];
         };
         ContestProblem: {
             index_letter: string;
@@ -6153,6 +6322,30 @@ export interface components {
             readonly title: string;
             /** Format: int64 */
             points?: number;
+        };
+        /**
+         * @description The signed-in visitor's own standing with a contest.
+         *
+         *     Kept off the contest itself so that the contest stays one answer for
+         *     everybody.
+         */
+        ContestViewer: {
+            role: string;
+            registered: boolean;
+            testing: boolean;
+            problems: components["schemas"]["ContestProblem"][];
+            disqualified_reason: string | null;
+            judge: boolean;
+        };
+        /** @description Who prepared the contest — told on its page, always (ADR-0055, part 2). */
+        Crew: {
+            authors: components["schemas"]["CrewPerson"][];
+            testers: components["schemas"]["CrewPerson"][];
+            jury: components["schemas"]["CrewPerson"][];
+        };
+        CrewPerson: {
+            username: string;
+            user_title: components["schemas"]["UserTitle"] | null;
         };
         CurrentQuestion: {
             index: number;
@@ -6191,6 +6384,16 @@ export interface components {
             new_users: number;
             active_users: number;
             attempts: number;
+        };
+        Disqualified: {
+            username: string;
+            reason: string;
+            /** Format: date-time */
+            at: string;
+        };
+        Disqualify: {
+            username: string;
+            reason: string;
         };
         Duel: {
             slug: string;
@@ -6256,6 +6459,14 @@ export interface components {
          * @enum {string}
          */
         DuelStatusEnum: "open" | "accepted" | "finished" | "cancelled";
+        /** @description What the editor tells about a contest solution (ADR-0055, part 4). */
+        EditorSignal: {
+            pasted_chars?: number;
+            largest_paste?: number;
+            paste_count?: number;
+            blur_count?: number;
+            active_ms?: number;
+        };
         /** @description Yil + oy. `current=True` yoki tugash yili yo'q — hozirgacha. */
         Education: {
             organization: string;
@@ -6486,6 +6697,34 @@ export interface components {
             readonly submission_count: number;
             readonly accepts_submissions: boolean;
             readonly is_finished: boolean;
+        };
+        /**
+         * @description * `author` - Muallif
+         *     * `tester` - Sinovchi
+         *     * `jury` - Hakam
+         *     * `organizer` - Tashkilotchi
+         * @enum {string}
+         */
+        InsiderRoleEnum: "author" | "tester" | "jury" | "organizer";
+        IntegrityReport: {
+            results: components["schemas"]["IntegrityRow"][];
+            disqualified: components["schemas"]["Disqualified"][];
+        };
+        /** @description One attempt whose editor signals stand out (ADR-0055, part 4). */
+        IntegrityRow: {
+            attempt: number;
+            username: string;
+            problem: string;
+            verdict: string;
+            /** Format: date-time */
+            created_at: string;
+            flags: string[];
+            source_chars: number;
+            pasted_chars: number;
+            largest_paste: number;
+            paste_count: number;
+            blur_count: number;
+            active_ms: number;
         };
         Inventory: {
             readonly id: number;
@@ -6738,6 +6977,8 @@ export interface components {
          *
          *     `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
          *     staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+         *     The organizer picks the testers (ADR-0055, part 2); the jury is a
+         *     staff decision.
          */
         OrganizerContest: {
             slug: string;
@@ -6755,6 +6996,7 @@ export interface components {
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             readonly is_public: boolean;
             readonly is_rated: boolean;
+            testers?: string[];
         };
         OrganizerParticipant: {
             username: string;
@@ -7814,6 +8056,8 @@ export interface components {
          *
          *     `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
          *     staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+         *     The organizer picks the testers (ADR-0055, part 2); the jury is a
+         *     staff decision.
          */
         PatchedOrganizerContest: {
             slug?: string;
@@ -7831,6 +8075,7 @@ export interface components {
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             readonly is_public?: boolean;
             readonly is_rated?: boolean;
+            testers?: string[];
         };
         PatchedStaffArena: {
             slug?: string;
@@ -7905,6 +8150,8 @@ export interface components {
             readonly problems?: components["schemas"]["StaffContestProblem"][];
             readonly is_running?: boolean;
             readonly is_finished?: boolean;
+            testers?: string[];
+            jury?: string[];
         };
         PatchedStaffHackathon: {
             slug?: string;
@@ -9076,6 +9323,8 @@ export interface components {
             readonly problems: components["schemas"]["StaffContestProblem"][];
             readonly is_running: boolean;
             readonly is_finished: boolean;
+            testers?: string[];
+            jury?: string[];
         };
         /** @description `PUT staff/contests/<slug>/problems/` ro'yxatining bitta elementi. */
         StaffContestProblem: {
@@ -9666,6 +9915,8 @@ export interface components {
             hacks_unsuccessful?: number;
             /** Format: date-time */
             last_ac_at?: string | null;
+            insider_role?: components["schemas"]["InsiderRoleEnum"] | components["schemas"]["BlankEnum"];
+            is_disqualified?: boolean;
         };
         Submission: {
             readonly id: number;
@@ -11159,6 +11410,171 @@ export interface operations {
             };
         };
     };
+    contests_announcements_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContestAnnouncement"];
+                "application/x-www-form-urlencoded": components["schemas"]["ContestAnnouncement"];
+                "multipart/form-data": components["schemas"]["ContestAnnouncement"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
+                };
+            };
+        };
+    };
+    contests_clarifications_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClarificationList"];
+                };
+            };
+        };
+    };
+    contests_clarifications_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClarificationAsk"];
+                "application/x-www-form-urlencoded": components["schemas"]["ClarificationAsk"];
+                "multipart/form-data": components["schemas"]["ClarificationAsk"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    contests_clarifications_answer_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                row_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ClarificationAnswer"];
+                "application/x-www-form-urlencoded": components["schemas"]["ClarificationAnswer"];
+                "multipart/form-data": components["schemas"]["ClarificationAnswer"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
+                };
+            };
+        };
+    };
+    contests_disqualify_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Disqualify"];
+                "application/x-www-form-urlencoded": components["schemas"]["Disqualify"];
+                "multipart/form-data": components["schemas"]["Disqualify"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Registration"];
+                };
+            };
+        };
+    };
+    contests_integrity_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrityReport"];
+                };
+            };
+        };
+    };
     contests_register_create: {
         parameters: {
             query?: never;
@@ -11233,6 +11649,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    contests_viewer_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContestViewer"];
+                };
             };
         };
     };

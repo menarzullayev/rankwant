@@ -297,8 +297,10 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
     if not contest.is_rated:
         return 0
 
+    # Insiders took part unrated (ADR-0055, part 2): their rows have no
+    # place and do not count towards the minimum either.
     standings = list(
-        Standing.objects.filter(contest=contest).select_related("user").order_by("rank")
+        Standing.objects.filter(contest=contest).official().select_related("user").order_by("rank")
     )
     if len(standings) < formulas.MIN_RATED_PARTICIPANTS:
         log.info("contest %s: %s ishtirokchi — reyting hisoblanmadi", contest.pk, len(standings))
@@ -381,6 +383,58 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
         # Bildirishnoma reytingni ushlab qolmasligi kerak (notifications.notify).
         log.exception("contest %s natijalari e'lon qilinmadi", contest.slug)
     return len(standings)
+
+
+@transaction.atomic
+def rerate_contest(contest) -> int:  # type: ignore[no-untyped-def]
+    """Undo a contest's rating changes and apply them again (ADR-0055, part 4).
+
+    Called when the jury disqualifies someone after the rating was applied
+    (decision 15: the rating does not wait for the review; a removal
+    re-rates). Each change is taken back from the person's current rating,
+    so a later contest's change stays; the result is close to — not equal
+    to — rating the contests again in order.
+
+    Call it BEFORE the table is rebuilt: the rows that were rated are read
+    from the table as it stands.
+    """
+    from django.db.models import Max
+
+    from contests.models import Standing
+    from contests.services import rebuild_standings
+
+    rated = list(
+        Standing.objects.filter(contest=contest).official().values_list("user_id", flat=True)
+    )
+    if len(rated) < formulas.MIN_RATED_PARTICIPANTS:
+        rated = []
+    history = RatingHistory.objects.filter(
+        rating_type=RatingHistory.Type.CONTEST,
+        reason=RatingHistory.Reason.CONTEST,
+        ref_type="contest",
+        ref_id=contest.slug,
+    )
+    deltas = dict(history.values_list("user_id", "delta"))
+    users = list(User.objects.select_for_update().filter(pk__in=set(rated) | set(deltas)))
+    history.delete()
+    highest = dict(
+        RatingHistory.objects.filter(
+            user_id__in=[u.pk for u in users], rating_type=RatingHistory.Type.CONTEST
+        )
+        .values("user_id")
+        .annotate(top=Max("value_after"))
+        .values_list("user_id", "top")
+    )
+    for user in users:
+        user.rating_contest -= deltas.get(user.pk, 0)
+        if user.pk in rated:
+            user.rated_contest_count = max(0, user.rated_contest_count - 1)
+        user.max_rating_contest = highest.get(user.pk)
+    User.objects.bulk_update(
+        users, ["rating_contest", "rated_contest_count", "max_rating_contest"], batch_size=500
+    )
+    rebuild_standings(contest)
+    return apply_contest_ratings(contest)
 
 
 @transaction.atomic

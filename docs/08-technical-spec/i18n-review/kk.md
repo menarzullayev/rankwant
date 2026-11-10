@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2499 strings.**
+**2608 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -634,6 +634,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.name` | Ism | Аты |  |
 | `settings.unsaved` | Saqlanmagan o'zgarishlar | Сақталмаған өзгерістер |  |
 | `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Сақталмаған өзгерістер: {count} |  |
+| `settings.saveFailed` | Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi. | Сақталмады. Себебі бөлімде көрсетілген — түзетулеріңіз орнында қалды. |  |
+| `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Соңғы өзгеріс сақталмады. Бөлімді қайта ашып, оны қайта енгізіңіз. |  |
 | `settings.discard` | Bekor qilish | Бас тарту |  |
 | `settings.channelEmail` | Pochta | Пошта |  |
 | `settings.soon` | tez orada | жақында |  |
@@ -1210,6 +1212,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `role.staff` | Xodim | Қызметкер |  |
 | `role.author` | Masala muallifi | Есеп авторы |  |
 | `role.jury` | Hakam | Қазы |  |
+| `role.tester` | Sinovchi | Тестер |  |
 | `role.champion` | Chempion | Чемпион |  |
 | `role.championOf` | {contest} g'olibi | {contest} жеңімпазы |  |
 | `profile.online` | Onlayn | Желіде |  |
@@ -2019,6 +2022,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Талдауы бар |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Тесттер дайын емес — шешімдер қабылданбайды |  |
 | `qvant.marathon` | Haftalik marafon | Апталық марафон |  |
+| `qvant.history` | Tranzaksiyalar | Транзакциялар |  |
+| `qvant.historyEmpty` | Hali Qvant harakati yo'q. | Әзірге Qvant қозғалысы жоқ. |  |
+| `qvant.historyOlder` | Oldingilari | Ертеректегі |  |
+| `qvant.historyNewer` | Yangilari | Жаңалары |  |
+| `qvant.col.when` | Vaqt | Уақыт |  |
+| `qvant.col.reason` | Sabab | Себеп |  |
+| `qvant.col.amount` | Miqdor | Сома |  |
+| `qvant.col.balance` | Qoldiq | Қалдық |  |
+| `qvant.reason.quest` | Kunlik topshiriq | Күнделікті тапсырма |  |
+| `qvant.reason.streak` | Ketma-ketlik mukofoti | Серия сыйлығы |  |
+| `qvant.reason.contest` | Musobaqa | Жарыс |  |
+| `qvant.reason.purchase` | Xarid | Сатып алу |  |
+| `qvant.reason.refund` | Qaytarish | Қайтару |  |
+| `qvant.reason.admin` | Ma'muriy tuzatish | Әкімші түзетуі |  |
+| `qvant.reason.quiz` | Test | Тест |  |
+| `qvant.reason.achievement` | Yutuq | Жетістік |  |
 | `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Жібермес бұрын шешіміңізді жазыңыз немесе жүктеңіз |  |
 | `submit.sourceTooLong` | Manba kodi juda katta | Бастапқы код тым үлкен |  |
 | `submit.solution` | Yechim | Шешім |  |
@@ -2519,4 +2538,94 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.gate.endedTitle` | Musobaqa tugadi | Жарыс аяқталды |  |
 | `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Нәтижелер қорытындыланған соң есеп мұрағатқа өтеді және жіберу қайта ашылады. |  |
 | `contest.gate.cta` | Musobaqa sahifasi | Жарыс беті |  |
+| `standings.unofficial` | Reytingsiz | Рейтингсіз |  |
+| `standings.showInsiders` | Reytingsizlarni ko'rsatish | Рейтингсіз қатысушыларды көрсету |  |
+| `contest.role.author` | muallif | автор |  |
+| `contest.role.tester` | sinovchi | тестер |  |
+| `contest.role.jury` | hakam | қазы |  |
+| `contest.role.organizer` | tashkilotchi | ұйымдастырушы |  |
+| `contest.insider.title.author` | Siz bu musobaqa masalalaridan birining muallifisiz | Сіз осы жарыстағы есептердің бірінің авторысыз |  |
+| `contest.insider.title.tester` | Siz bu musobaqaning sinovchisisiz | Сіз осы жарыстың тестерісіз |  |
+| `contest.insider.title.jury` | Siz bu musobaqaning hakamisiz | Сіз осы жарыстың қазысысыз |  |
+| `contest.insider.title.organizer` | Siz bu musobaqaning tashkilotchisisiz | Сіз осы жарыстың ұйымдастырушысысыз |  |
+| `contest.insider.testing` | Masalalar sizga hozirdan ochiq. Sinov yechimlari jadvalga, «yechilgan» hisobiga va boshqalarning lentasiga tushmaydi. Musobaqada qatnashsangiz — reytingsiz. | Есептер сізге қазірден ашық. Сынақ шешімдері кестеге, «шешілген» санына және басқалардың лентасына түспейді. Жарысқа қатыссаңыз — рейтингсіз. |  |
+| `contest.insider.unrated` | Masalalarni oldindan bilasiz: qatnashsangiz — reytingsiz, jadvalda «*» bilan va o'rinsiz. | Есептерді алдын ала білесіз: қатыссаңыз — рейтингсіз, кестеде «*» белгісімен және орынсыз. |  |
+| `contest.insider.testingProblem` | Sinov rejimi: musobaqa hali boshlanmagan. Bu yechim jadvalga, «yechilgan» hisobiga va masala statistikasiga tushmaydi. | Сынақ режимі: жарыс әлі басталмаған. Бұл шешім кестеге, «шешілген» санына және есеп статистикасына түспейді. |  |
+| `contest.entry.title` | Ishtirok | Қатысу |  |
+| `contest.entry.register` | Ro'yxatdan o'tish | Тіркелу |  |
+| `contest.entry.registered` | Siz ro'yxatdan o'tgansiz | Сіз тіркелгенсіз |  |
+| `contest.entry.unratedNote` | Reytingsiz qatnashasiz | Рейтингсіз қатысасыз |  |
+| `contest.crew.title` | Musobaqani tayyorlaganlar | Жарысты дайындағандар |  |
+| `contest.crew.authors` | Masala mualliflari | Есеп авторлары |  |
+| `contest.crew.testers` | Sinovchilar | Тестерлер |  |
+| `contest.crew.jury` | Hakamlar | Қазылар |  |
+| `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Олар есептерді алдын ала біледі, сондықтан рейтингсіз қатысады. |  |
+| `standings.dq` | DQ | DQ |  |
+| `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Жарыста жасанды интеллект көмекшілерін (ChatGPT, Copilot және т.б.) пайдалануға тыйым салынады. Редакторға код қою және беттен шығу тіркеледі — қазы көреді. |  |
+| `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Жарыс: ЖИ көмекшілеріне тыйым салынған. Код қою және беттен шығу тіркеледі. |  |
+| `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Сіз бұл жарыстан шеттетілдіңіз |  |
+| `contest.fair.title` | Halol o'yin | Адал ойын |  |
+| `contest.fair.intro` | Muharrir signallari ajralib turgan urinishlar. Bu ayblov emas — kodni ko'rib, o'zingiz qaror qiling. | Редактор сигналдары ерекшеленген жіберулер. Бұл айып емес — кодты қарап, өзіңіз шешіңіз. |  |
+| `contest.fair.clean` | Ajralib turgan urinish yo'q. | Ерекшеленген жіберу жоқ. |  |
+| `contest.fair.flag.pasted` | Katta joylash | Үлкен қою |  |
+| `contest.fair.flag.fast` | Juda tez yozilgan | Өте жылдам жазылған |  |
+| `contest.fair.flag.away` | Ko'p marta chiqib ketgan | Беттен жиі шыққан |  |
+| `contest.fair.attempt` | Urinish #{id} | Жіберу #{id} |  |
+| `contest.fair.signals` | Kod: {source} belgi · joylangan: {pasted} (eng kattasi {largest}) · sahifadan chiqish: {blurs} · ochiq turgan: {minutes} daq | Код: {source} таңба · қойылған: {pasted} (ең үлкені {largest}) · беттен шығу: {blurs} · ашық тұрды: {minutes} мин |  |
+| `contest.fair.dq` | Chetlatish | Шеттету |  |
+| `contest.fair.dqWhat` | {user}: musobaqadagi urinishlari bekor qilinadi, jadvalda «DQ», sertifikat olib tashlanadi, reyting qayta hisoblanadi. | {user}: жарыстағы жіберулері жойылады, кестеде «DQ», сертификат алынады, рейтинг қайта есептеледі. |  |
+| `contest.fair.reason` | Sabab (ishtirokchiga yuboriladi) | Себеп (қатысушыға жіберіледі) |  |
+| `contest.fair.dqConfirm` | Tasdiqlash va chetlatish | Растау және шеттету |  |
+| `contest.fair.cancel` | Bekor qilish | Болдырмау |  |
+| `contest.fair.disqualified` | Chetlatilganlar | Шеттетілгендер |  |
+| `error.reason_required` | Sababni yozing | Себебін жазыңыз |  |
+| `error.already_disqualified` | Bu ishtirokchi allaqachon chetlatilgan | Бұл қатысушы бұрыннан шеттетілген |  |
+| `error.contest_not_started` | Musobaqa hali boshlanmagan | Жарыс әлі басталмаған |  |
+| `error.contest_running` | Hisobot musobaqa tugagach ochiladi | Есеп жарыс аяқталғанда ашылады |  |
+| `error.user_not_found` | Bunday foydalanuvchi yo'q | Мұндай пайдаланушы жоқ |  |
+| `notif.msg.contest_disqualified.title` | «{contest}»: siz musobaqadan chetlatildingiz | «{contest}»: сіз шеттетілдіңіз |  |
+| `notif.msg.contest_disqualified.body` | Sabab: {reason} | Себеп: {reason} |  |
+| `contest.qa.title` | Savol-javob | Сұрақ-жауап |  |
+| `contest.qa.general` | Umumiy | Жалпы |  |
+| `contest.qa.problem` | Masala | Есеп |  |
+| `contest.qa.askTitle` | Savol berish | Сұрақ қою |  |
+| `contest.qa.askHint` | Faqat shart va qoidalar haqida. Yechim yoki kod so'ramang — javob «Izoh yo'q» bo'ladi. | Тек шарт пен ережелер туралы. Шешім немесе код сұрамаңыз — жауап «Түсініктеме жоқ» болады. |  |
+| `contest.qa.send` | Yuborish | Жіберу |  |
+| `contest.qa.left` | Yana {count} ta savol berishingiz mumkin | Тағы {count} сұрақ қоя аласыз |  |
+| `contest.qa.announceTitle` | E'lon yozish | Хабарландыру жазу |  |
+| `contest.qa.announce` | E'lon qilish | Хабарлау |  |
+| `contest.qa.announceNote` | Barcha ro'yxatdan o'tganlarga bildirishnoma ketadi | Барлық тіркелгендерге хабарлама жіберіледі |  |
+| `contest.qa.waiting` | Javob kutayotgan savollar: {count} | Жауап күткен сұрақтар: {count} |  |
+| `contest.qa.mine` | Mening savollarim | Менің сұрақтарым |  |
+| `contest.qa.answered` | Javob berilgan savollar | Жауап берілген сұрақтар |  |
+| `contest.qa.public` | Hammaga e'lon qilindi | Барлығына хабарланды |  |
+| `contest.qa.pending` | Javob kutilmoqda… | Жауап күтілуде… |  |
+| `contest.qa.answer` | Javob berish | Жауап беру |  |
+| `contest.qa.answerLabel` | Javob | Жауап |  |
+| `contest.qa.answerPlaceholder` | Yoki o'z javobingiz… | Немесе өз жауабыңыз… |  |
+| `contest.qa.makePublic` | Hammaga e'lon qilish | Барлығына хабарлау |  |
+| `contest.qa.waitSeconds` | Keyingi savolni {seconds} soniyadan keyin bera olasiz | Келесі сұрақты {seconds} секундтан кейін қоя аласыз |  |
+| `contest.qa.quick.yes` | Ha. | Иә. |  |
+| `contest.qa.quick.no` | Yo'q. | Жоқ. |  |
+| `contest.qa.quick.read_statement` | Shartni diqqat bilan o'qing. | Шартты мұқият оқыңыз. |  |
+| `contest.qa.quick.no_comment` | Izoh yo'q. | Түсініктеме жоқ. |  |
+| `error.problems_closed` | Masalalar musobaqa boshlanganda ochiladi | Есептер жарыс басталғанда ашылады |  |
+| `error.problem_not_found` | Bu masala musobaqada yo'q | Бұл есеп жарыста жоқ |  |
+| `error.text_empty` | Avval matnni yozing | Алдымен мәтінді жазыңыз |  |
+| `error.text_too_long` | Matn juda uzun | Мәтін тым ұзын |  |
+| `error.too_many_questions` | Bu musobaqada savollar chegarasiga yetdingiz | Бұл жарыстағы сұрақтар шегіне жеттіңіз |  |
+| `error.question_too_soon` | Daqiqasiga bitta savol berish mumkin | Минутына бір сұрақ қоюға болады |  |
+| `error.unknown_answer` | Noma'lum tez javob | Белгісіз жылдам жауап |  |
+| `notif.msg.contest_question.title` | «{contest}»: yangi savol | «{contest}»: жаңа сұрақ |  |
+| `notif.msg.contest_question.body` | Savol: {text} | Сұрақ: {text} |  |
+| `notif.msg.contest_answer.title` | «{contest}»: savolingizga javob berildi | «{contest}»: сұрағыңызға жауап берілді |  |
+| `notif.msg.contest_answer.body` | Savol: {question} | Сұрақ: {question} |  |
+| `notif.msg.contest_announcement.title` | «{contest}»: hakamlar e'loni | «{contest}»: қазылар хабарландыруы |  |
+| `notif.msg.contest_announcement.body` | E'lon: {text} | Хабарландыру: {text} |  |
+| `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Жарысқа тіркелу үшін жүйеге кіріңіз |  |
+| `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Тестерлер (лақап аттар, үтір арқылы) |  |
+| `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Қазылар (лақап аттар, үтір арқылы) |  |
+| `admin.help.contestTesters` | Boshlanishdan oldin masalalarni ko'radi va sinaydi; qatnashsa — reytingsiz. | Басталғанға дейін есептерді көріп, сынайды; қатысса — рейтингсіз. |  |
+| `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Сіз «{contest}» жарысына тестер ретінде қосылдыңыз |  |
+| `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Есептер сізге басталғанға дейін ашық. Қатыссаңыз — рейтингсіз. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} есеп — жарыс басталғанда ашылады. |  |

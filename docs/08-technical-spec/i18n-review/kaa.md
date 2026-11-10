@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2499 strings.**
+**2608 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -634,6 +634,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.name` | Ism | At |  |
 | `settings.unsaved` | Saqlanmagan o'zgarishlar | Saqlanbaǵan ózgerisler |  |
 | `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Saqlanbaǵan ózgerisler: {count} |  |
+| `settings.saveFailed` | Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi. | Saqlanbadı. Sebebi bólimde kórsetilgen — dúzetiwińiz ornında qaldı. |  |
+| `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Sońǵı ózgeris saqlanbadı. Bólimdi qayta ashıp, onı jáne kiritiń. |  |
 | `settings.discard` | Bekor qilish | Biykar etiw |  |
 | `settings.channelEmail` | Pochta | Pochta |  |
 | `settings.soon` | tez orada | tez arada |  |
@@ -1210,6 +1212,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `role.staff` | Xodim | Xızmetker |  |
 | `role.author` | Masala muallifi | Másele avtorı |  |
 | `role.jury` | Hakam | Tóreshi |  |
+| `role.tester` | Sinovchi | Testlewshi |  |
 | `role.champion` | Chempion | Chempion |  |
 | `role.championOf` | {contest} g'olibi | {contest} jeńimpazı |  |
 | `profile.online` | Onlayn | Onlayn |  |
@@ -2019,6 +2022,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Sheshim analizi bar |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Testler tayar emes — sheshimler qabıl etilmeydi |  |
 | `qvant.marathon` | Haftalik marafon | Háptelik marafon |  |
+| `qvant.history` | Tranzaksiyalar | Tranzakciyalar |  |
+| `qvant.historyEmpty` | Hali Qvant harakati yo'q. | Ázirshe Qvant háreketi joq. |  |
+| `qvant.historyOlder` | Oldingilari | Aldınǵıları |  |
+| `qvant.historyNewer` | Yangilari | Jańaları |  |
+| `qvant.col.when` | Vaqt | Waqıt |  |
+| `qvant.col.reason` | Sabab | Sebep |  |
+| `qvant.col.amount` | Miqdor | Muǵdar |  |
+| `qvant.col.balance` | Qoldiq | Qaldıq |  |
+| `qvant.reason.quest` | Kunlik topshiriq | Kúndelikli tapsırma |  |
+| `qvant.reason.streak` | Ketma-ketlik mukofoti | Izbe-izlik sıylıǵı |  |
+| `qvant.reason.contest` | Musobaqa | Jarıs |  |
+| `qvant.reason.purchase` | Xarid | Satıp alıw |  |
+| `qvant.reason.refund` | Qaytarish | Qaytarıw |  |
+| `qvant.reason.admin` | Ma'muriy tuzatish | Administrator dúzetiwi |  |
+| `qvant.reason.quiz` | Test | Sınaq |  |
+| `qvant.reason.achievement` | Yutuq | Jetiskenlik |  |
 | `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Jiberiwden aldın sheshimińizdi jazıń yamasa júkleń |  |
 | `submit.sourceTooLong` | Manba kodi juda katta | Manba kodı júdá úlken |  |
 | `submit.solution` | Yechim | Sheshim |  |
@@ -2519,4 +2538,94 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.gate.endedTitle` | Musobaqa tugadi | Jarıs tamamlandı |  |
 | `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Nátiyjeler juwmaqlanǵannan keyin másele arxivke ótedi hám jiberiw qayta ashıladı. |  |
 | `contest.gate.cta` | Musobaqa sahifasi | Jarıs beti |  |
+| `standings.unofficial` | Reytingsiz | Reytingten tıs |  |
+| `standings.showInsiders` | Reytingsizlarni ko'rsatish | Reytingsiz qatnasıwshılardı kórsetiw |  |
+| `contest.role.author` | muallif | avtor |  |
+| `contest.role.tester` | sinovchi | testlewshi |  |
+| `contest.role.jury` | hakam | tóreshi |  |
+| `contest.role.organizer` | tashkilotchi | shólkemlestiriwshi |  |
+| `contest.insider.title.author` | Siz bu musobaqa masalalaridan birining muallifisiz | Siz bul jarıstaǵı máselelerdiń biriniń avtorısız |  |
+| `contest.insider.title.tester` | Siz bu musobaqaning sinovchisisiz | Siz bul jarıstıń testlewshisisiz |  |
+| `contest.insider.title.jury` | Siz bu musobaqaning hakamisiz | Siz bul jarıstıń tóreshisisiz |  |
+| `contest.insider.title.organizer` | Siz bu musobaqaning tashkilotchisisiz | Siz bul jarıstıń shólkemlestiriwshisisiz |  |
+| `contest.insider.testing` | Masalalar sizga hozirdan ochiq. Sinov yechimlari jadvalga, «yechilgan» hisobiga va boshqalarning lentasiga tushmaydi. Musobaqada qatnashsangiz — reytingsiz. | Máseleler sizge házirden ashıq. Sınaq sheshimleri kestege, «sheshilgen» sanına hám basqalardıń lentasına túspeydi. Jarısqa qatnassańız — reytingsiz. |  |
+| `contest.insider.unrated` | Masalalarni oldindan bilasiz: qatnashsangiz — reytingsiz, jadvalda «*» bilan va o'rinsiz. | Máselelerdi aldın ala bilesiz: qatnassańız — reytingsiz, kestede «*» belgisi menen hám orınsız. |  |
+| `contest.insider.testingProblem` | Sinov rejimi: musobaqa hali boshlanmagan. Bu yechim jadvalga, «yechilgan» hisobiga va masala statistikasiga tushmaydi. | Sınaq rejimi: jarıs ele baslanbaǵan. Bul sheshim kestege, «sheshilgen» sanına hám máseleniń statistikasına túspeydi. |  |
+| `contest.entry.title` | Ishtirok | Qatnasıw |  |
+| `contest.entry.register` | Ro'yxatdan o'tish | Dizimnen ótiw |  |
+| `contest.entry.registered` | Siz ro'yxatdan o'tgansiz | Siz dizimnen ótkensiz |  |
+| `contest.entry.unratedNote` | Reytingsiz qatnashasiz | Reytingsiz qatnasasız |  |
+| `contest.crew.title` | Musobaqani tayyorlaganlar | Jarıstı tayarlaǵanlar |  |
+| `contest.crew.authors` | Masala mualliflari | Másele avtorları |  |
+| `contest.crew.testers` | Sinovchilar | Testlewshiler |  |
+| `contest.crew.jury` | Hakamlar | Tóreshiler |  |
+| `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Olar máselelerdi aldın ala biledi, sonıń ushın reytingsiz qatnasadı. |  |
+| `standings.dq` | DQ | DQ |  |
+| `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Jarısta jasalma intellekt járdemshilerinen (ChatGPT, Copilot hám t.b.) paydalanıwǵa tıyım salınadı. Redaktorǵa kod qoyıw hám betten shıǵıw dizimge alınadı — tóreshi kóredi. |  |
+| `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Jarıs: JI járdemshilerine tıyım salınǵan. Kod qoyıw hám betten shıǵıw dizimge alınadı. |  |
+| `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Siz bul jarıstan shetletildińiz |  |
+| `contest.fair.title` | Halol o'yin | Ádil oyın |  |
+| `contest.fair.intro` | Muharrir signallari ajralib turgan urinishlar. Bu ayblov emas — kodni ko'rib, o'zingiz qaror qiling. | Redaktor signalları ajıralıp turǵan jiberiwler. Bul ayıplaw emes — kodtı kórip, ózińiz sheshiń. |  |
+| `contest.fair.clean` | Ajralib turgan urinish yo'q. | Ajıralıp turǵan jiberiw joq. |  |
+| `contest.fair.flag.pasted` | Katta joylash | Úlken qoyıw |  |
+| `contest.fair.flag.fast` | Juda tez yozilgan | Júdá tez jazılǵan |  |
+| `contest.fair.flag.away` | Ko'p marta chiqib ketgan | Betten kóp shıqqan |  |
+| `contest.fair.attempt` | Urinish #{id} | Jiberiw #{id} |  |
+| `contest.fair.signals` | Kod: {source} belgi · joylangan: {pasted} (eng kattasi {largest}) · sahifadan chiqish: {blurs} · ochiq turgan: {minutes} daq | Kod: {source} belgi · qoyılǵan: {pasted} (eń úlkeni {largest}) · betten shıǵıw: {blurs} · ashıq turdı: {minutes} min |  |
+| `contest.fair.dq` | Chetlatish | Shetletiw |  |
+| `contest.fair.dqWhat` | {user}: musobaqadagi urinishlari bekor qilinadi, jadvalda «DQ», sertifikat olib tashlanadi, reyting qayta hisoblanadi. | {user}: jarıstaǵı jiberiwleri biykar etiledi, kestede «DQ», sertifikat alınadı, reyting qayta esaplanadı. |  |
+| `contest.fair.reason` | Sabab (ishtirokchiga yuboriladi) | Sebep (qatnasıwshıǵa jiberiledi) |  |
+| `contest.fair.dqConfirm` | Tasdiqlash va chetlatish | Tastıyıqlaw hám shetletiw |  |
+| `contest.fair.cancel` | Bekor qilish | Biykar etiw |  |
+| `contest.fair.disqualified` | Chetlatilganlar | Shetletilgenler |  |
+| `error.reason_required` | Sababni yozing | Sebebin jazıń |  |
+| `error.already_disqualified` | Bu ishtirokchi allaqachon chetlatilgan | Bul qatnasıwshı áldeqashan shetletilgen |  |
+| `error.contest_not_started` | Musobaqa hali boshlanmagan | Jarıs ele baslanbaǵan |  |
+| `error.contest_running` | Hisobot musobaqa tugagach ochiladi | Esabat jarıs tamamlanǵanda ashıladı |  |
+| `error.user_not_found` | Bunday foydalanuvchi yo'q | Bunday paydalanıwshı joq |  |
+| `notif.msg.contest_disqualified.title` | «{contest}»: siz musobaqadan chetlatildingiz | «{contest}»: siz shetletildińiz |  |
+| `notif.msg.contest_disqualified.body` | Sabab: {reason} | Sebep: {reason} |  |
+| `contest.qa.title` | Savol-javob | Soraw-juwap |  |
+| `contest.qa.general` | Umumiy | Ulıwma |  |
+| `contest.qa.problem` | Masala | Másele |  |
+| `contest.qa.askTitle` | Savol berish | Soraw beriw |  |
+| `contest.qa.askHint` | Faqat shart va qoidalar haqida. Yechim yoki kod so'ramang — javob «Izoh yo'q» bo'ladi. | Tek shárt hám qaǵıydalar haqqında. Sheshim yamasa kod soramań — juwap «Túsindirme joq» boladı. |  |
+| `contest.qa.send` | Yuborish | Jiberiw |  |
+| `contest.qa.left` | Yana {count} ta savol berishingiz mumkin | Jáne {count} soraw bere alasız |  |
+| `contest.qa.announceTitle` | E'lon yozish | Daǵaza jazıw |  |
+| `contest.qa.announce` | E'lon qilish | Daǵazalaw |  |
+| `contest.qa.announceNote` | Barcha ro'yxatdan o'tganlarga bildirishnoma ketadi | Barlıq dizimnen ótkenlerge xabarlama jiberiledi |  |
+| `contest.qa.waiting` | Javob kutayotgan savollar: {count} | Juwap kútip turǵan sorawlar: {count} |  |
+| `contest.qa.mine` | Mening savollarim | Meniń sorawlarım |  |
+| `contest.qa.answered` | Javob berilgan savollar | Juwap berilgen sorawlar |  |
+| `contest.qa.public` | Hammaga e'lon qilindi | Hámmege daǵazalandı |  |
+| `contest.qa.pending` | Javob kutilmoqda… | Juwap kútilmekte… |  |
+| `contest.qa.answer` | Javob berish | Juwap beriw |  |
+| `contest.qa.answerLabel` | Javob | Juwap |  |
+| `contest.qa.answerPlaceholder` | Yoki o'z javobingiz… | Yamasa óz juwabıńız… |  |
+| `contest.qa.makePublic` | Hammaga e'lon qilish | Hámmege daǵazalaw |  |
+| `contest.qa.waitSeconds` | Keyingi savolni {seconds} soniyadan keyin bera olasiz | Keyingi sorawdı {seconds} sekundtan keyin bere alasız |  |
+| `contest.qa.quick.yes` | Ha. | Awa. |  |
+| `contest.qa.quick.no` | Yo'q. | Yaq. |  |
+| `contest.qa.quick.read_statement` | Shartni diqqat bilan o'qing. | Shártti dıqqat penen oqıń. |  |
+| `contest.qa.quick.no_comment` | Izoh yo'q. | Túsindirme joq. |  |
+| `error.problems_closed` | Masalalar musobaqa boshlanganda ochiladi | Máseleler jarıs baslanǵanda ashıladı |  |
+| `error.problem_not_found` | Bu masala musobaqada yo'q | Bul másele jarısta joq |  |
+| `error.text_empty` | Avval matnni yozing | Aldın tekstti jazıń |  |
+| `error.text_too_long` | Matn juda uzun | Tekst júdá uzın |  |
+| `error.too_many_questions` | Bu musobaqada savollar chegarasiga yetdingiz | Bul jarıstaǵı sorawlar shegine jettińiz |  |
+| `error.question_too_soon` | Daqiqasiga bitta savol berish mumkin | Minutına bir soraw beriwge boladı |  |
+| `error.unknown_answer` | Noma'lum tez javob | Belgisiz tez juwap |  |
+| `notif.msg.contest_question.title` | «{contest}»: yangi savol | «{contest}»: jańa soraw |  |
+| `notif.msg.contest_question.body` | Savol: {text} | Soraw: {text} |  |
+| `notif.msg.contest_answer.title` | «{contest}»: savolingizga javob berildi | «{contest}»: sorawıńızǵa juwap berildi |  |
+| `notif.msg.contest_answer.body` | Savol: {question} | Soraw: {question} |  |
+| `notif.msg.contest_announcement.title` | «{contest}»: hakamlar e'loni | «{contest}»: tóreshiler daǵazası |  |
+| `notif.msg.contest_announcement.body` | E'lon: {text} | Daǵaza: {text} |  |
+| `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Jarısqa jazılıw ushın sistemaǵa kiriń |  |
+| `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Testlewshiler (laqap atlar, útir menen) |  |
+| `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Tóreshiler (laqap atlar, útir menen) |  |
+| `admin.help.contestTesters` | Boshlanishdan oldin masalalarni ko'radi va sinaydi; qatnashsa — reytingsiz. | Baslanıwdan aldın máselelerdi kórip sınaydı; qatnassa — reytingsiz. |  |
+| `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Siz «{contest}» jarısına testlewshi bolıp qosıldıńız |  |
+| `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Máseleler sizge baslanıwdan aldın ashıq. Qatnassańız — reytingsiz. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} másele — jarıs baslanǵanda ashıladı. |  |

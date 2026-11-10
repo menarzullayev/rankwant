@@ -1,5 +1,6 @@
 "use client";
 
+import { numericStamp } from "@rankwant/shared/format";
 import { useState } from "react";
 
 import { FM_INP } from "@/components/form/chrome";
@@ -12,7 +13,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, fill, t, type Locale, errorText } from "@/i18n/messages";
+import { fill, t, type Locale, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff, staffFetch } from "@/lib/staff";
 
@@ -39,6 +40,8 @@ type ContestRow = {
   problems: ContestProblemRow[];
   is_running: boolean;
   is_finished: boolean;
+  testers: string[];
+  jury: string[];
   [key: string]: unknown;
 };
 
@@ -76,6 +79,15 @@ const FIELDS: FieldDef[] = [
   { name: "is_rated", labelKey: "admin.label.flag.rated", type: "checkbox" },
   { name: "is_virtual", labelKey: "admin.label.flag.virtual", type: "checkbox" },
   { name: "is_public", labelKey: "admin.label.flag.public", type: "checkbox" },
+  // Insiders (ADR-0055, part 2): they see the problems before the start
+  // and take part unrated. Usernames, comma-separated.
+  {
+    name: "testers",
+    labelKey: "admin.label.text.testers",
+    type: "list",
+    helpKey: "admin.help.contestTesters",
+  },
+  { name: "jury", labelKey: "admin.label.text.jury", type: "list" },
   {
     name: "description",
     labelKey: "admin.label.text.descriptionMarkdown",
@@ -85,7 +97,7 @@ const FIELDS: FieldDef[] = [
 ];
 
 function fmt(iso: string, locale: Locale): string {
-  return dateTime(iso, locale);
+  return numericStamp(iso);
 }
 
 const COLUMNS: ColumnDef<ContestRow>[] = [

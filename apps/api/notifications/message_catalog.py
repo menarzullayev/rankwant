@@ -7,9 +7,29 @@ The sentences live in `apps/web/src/i18n/locales/*.ts` (`notif.msg.*`).
 
 CATALOG: dict[str, dict[str, dict[str, str]]] = {
     "en": {
+        "contest_announcement": {
+            "title": "“{contest}”: an announcement from the jury",
+            "body": "Announcement: {text}",
+        },
+        "contest_answer": {
+            "title": "“{contest}”: your question was answered",
+            "body": "Question: {question}",
+        },
+        "contest_disqualified": {
+            "title": "“{contest}”: you were disqualified",
+            "body": "Reason: {reason}",
+        },
+        "contest_question": {
+            "title": "“{contest}”: a new question",
+            "body": "Question: {text}",
+        },
         "contest_result": {
             "title": "{contest}: place {rank}, rating {delta}",
             "body": "Contests rating: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "You were added as a tester of “{contest}”",
+            "body": "The problems are open to you before the start. If you take part, you are unrated.",
         },
         "duel_accepted": {
             "title": "{user} accepted your challenge",
@@ -67,9 +87,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "es": {
+        "contest_announcement": {
+            "title": "«{contest}»: anuncio del jurado",
+            "body": "Anuncio: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: respondieron tu pregunta",
+            "body": "Pregunta: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: fuiste descalificado",
+            "body": "Motivo: {reason}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: nueva pregunta",
+            "body": "Pregunta: {text}",
+        },
         "contest_result": {
             "title": "{contest}: puesto {rank}, rating {delta}",
             "body": "Rating de Contests: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Te añadieron como probador de «{contest}»",
+            "body": "Los problemas están abiertos para ti antes del inicio. Si participas, será sin rating.",
         },
         "duel_accepted": {
             "title": "{user} aceptó tu reto",
@@ -127,9 +167,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kaa": {
+        "contest_announcement": {
+            "title": "«{contest}»: tóreshiler daǵazası",
+            "body": "Daǵaza: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: sorawıńızǵa juwap berildi",
+            "body": "Soraw: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: siz shetletildińiz",
+            "body": "Sebep: {reason}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: jańa soraw",
+            "body": "Soraw: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-orın, reyting {delta}",
             "body": "Contests reytingi: {before} → {after}.",
+        },
+        "contest_tester": {
+            "title": "Siz «{contest}» jarısına testlewshi bolıp qosıldıńız",
+            "body": "Máseleler sizge baslanıwdan aldın ashıq. Qatnassańız — reytingsiz.",
         },
         "duel_accepted": {
             "title": "{user} shaqırıǵıńızdı qabıl etti",
@@ -187,9 +247,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kk": {
+        "contest_announcement": {
+            "title": "«{contest}»: қазылар хабарландыруы",
+            "body": "Хабарландыру: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: сұрағыңызға жауап берілді",
+            "body": "Сұрақ: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: сіз шеттетілдіңіз",
+            "body": "Себеп: {reason}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: жаңа сұрақ",
+            "body": "Сұрақ: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-орын, рейтинг {delta}",
             "body": "Contests рейтингі: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Сіз «{contest}» жарысына тестер ретінде қосылдыңыз",
+            "body": "Есептер сізге басталғанға дейін ашық. Қатыссаңыз — рейтингсіз.",
         },
         "duel_accepted": {
             "title": "{user} шақыруыңызды қабылдады",
@@ -247,9 +327,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ky": {
+        "contest_announcement": {
+            "title": "«{contest}»: калыстардын жарыясы",
+            "body": "Жарыя: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: сурооңузга жооп берилди",
+            "body": "Суроо: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: сиз четтетилдиңиз",
+            "body": "Себеп: {reason}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: жаңы суроо",
+            "body": "Суроо: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-орун, рейтинг {delta}",
             "body": "Contests рейтинги: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Сиз «{contest}» мелдешине тестер катары кошулдуңуз",
+            "body": "Маселелер сизге башталганга чейин ачык. Катышсаңыз — рейтингсиз.",
         },
         "duel_accepted": {
             "title": "{user} чакырыгыңызды кабыл алды",
@@ -307,9 +407,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ru": {
+        "contest_announcement": {
+            "title": "«{contest}»: объявление жюри",
+            "body": "Объявление: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: на ваш вопрос ответили",
+            "body": "Вопрос: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: вы дисквалифицированы",
+            "body": "Причина: {reason}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: новый вопрос",
+            "body": "Вопрос: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-е место, рейтинг {delta}",
             "body": "Рейтинг Contests: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Вас добавили тестером соревнования «{contest}»",
+            "body": "Задачи открыты для вас до начала. Если будете участвовать — вне конкурса.",
         },
         "duel_accepted": {
             "title": "{user} принял ваш вызов",
@@ -367,9 +487,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tg": {
+        "contest_announcement": {
+            "title": "«{contest}»: эълони ҳакамон",
+            "body": "Эълон: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: ба саволатон ҷавоб доданд",
+            "body": "Савол: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: шумо хориҷ карда шудед",
+            "body": "Сабаб: {reason}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: саволи нав",
+            "body": "Савол: {text}",
+        },
         "contest_result": {
             "title": "{contest}: ҷойи {rank}, рейтинг {delta}",
             "body": "Рейтинги Contests: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Шумо ба мусобиқаи «{contest}» ҳамчун санҷишгар илова шудед",
+            "body": "Масъалаҳо то оғоз барои шумо кушодаанд. Агар иштирок кунед — бе рейтинг.",
         },
         "duel_accepted": {
             "title": "{user} даъвати шуморо қабул кард",
@@ -427,9 +567,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tr": {
+        "contest_announcement": {
+            "title": "“{contest}”: jüri duyurusu",
+            "body": "Duyuru: {text}",
+        },
+        "contest_answer": {
+            "title": "“{contest}”: sorunuz cevaplandı",
+            "body": "Soru: {question}",
+        },
+        "contest_disqualified": {
+            "title": "“{contest}”: diskalifiye edildiniz",
+            "body": "Gerekçe: {reason}",
+        },
+        "contest_question": {
+            "title": "“{contest}”: yeni soru",
+            "body": "Soru: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}. sıra, puan {delta}",
             "body": "Contests puanı: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "“{contest}” yarışmasına test eden olarak eklendiniz",
+            "body": "Problemler başlangıçtan önce size açık. Katılırsanız puansız katılırsınız.",
         },
         "duel_accepted": {
             "title": "{user} meydan okumanızı kabul etti",
@@ -487,9 +647,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "uz": {
+        "contest_announcement": {
+            "title": "«{contest}»: hakamlar e'loni",
+            "body": "E'lon: {text}",
+        },
+        "contest_answer": {
+            "title": "«{contest}»: savolingizga javob berildi",
+            "body": "Savol: {question}",
+        },
+        "contest_disqualified": {
+            "title": "«{contest}»: siz musobaqadan chetlatildingiz",
+            "body": "Sabab: {reason}",
+        },
+        "contest_question": {
+            "title": "«{contest}»: yangi savol",
+            "body": "Savol: {text}",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-o'rin, reyting {delta}",
             "body": "Contests reytingi: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz",
+            "body": "Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz.",
         },
         "duel_accepted": {
             "title": "{user} chaqirig'ingizni qabul qildi",
@@ -547,9 +727,29 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "zh": {
+        "contest_announcement": {
+            "title": "“{contest}”：评委公告",
+            "body": "公告：{text}",
+        },
+        "contest_answer": {
+            "title": "“{contest}”：你的问题已得到回答",
+            "body": "问题：{question}",
+        },
+        "contest_disqualified": {
+            "title": "“{contest}”：你已被取消资格",
+            "body": "原因：{reason}",
+        },
+        "contest_question": {
+            "title": "“{contest}”：新问题",
+            "body": "问题：{text}",
+        },
         "contest_result": {
             "title": "{contest}:第 {rank} 名,评分 {delta}",
             "body": "Contests 评分:{before} → {after}",
+        },
+        "contest_tester": {
+            "title": "你已被添加为“{contest}”的测试员",
+            "body": "题目在开赛前已对你开放。如果参赛，将不计分。",
         },
         "duel_accepted": {
             "title": "{user} 接受了你的挑战",

@@ -11,6 +11,7 @@ from typing import Any
 from django.db import transaction
 from django.utils import timezone
 
+from contests.insiders import insiders
 from contests.models import Contest, ContestProblem, ContestRegistration, Standing
 from core.cache import cache_delete
 from judging.models import Attempt
@@ -133,10 +134,22 @@ def rebuild_standings(contest: Contest) -> int:
     if contest.is_frozen:
         attempts = attempts.filter(created_at__lt=contest.freeze_at)
 
+    # Insiders take part unofficially (ADR-0055, part 2). Their testing
+    # attempts — sent before the start — are no part of the contest at all.
+    roles = insiders(contest)
+    # Disqualified by the jury (part 4): «DQ», no place, at the bottom.
+    dq = set(
+        ContestRegistration.objects.filter(
+            contest=contest, disqualified_at__isnull=False
+        ).values_list("user_id", flat=True)
+    )
+    if roles:
+        attempts = attempts.exclude(user_id__in=list(roles), created_at__lt=contest.start_at)
+
     totals = _hack_totals(contest)
 
     if contest.scoring_type == Contest.Scoring.IOI:
-        return _rebuild_ioi(contest, attempts, totals)
+        return _rebuild_ioi(contest, attempts, totals, roles, dq)
 
     per_user: dict[int, dict[int, _ProblemState]] = {}
     # Hack qilgan, lekin bu musobaqada urinishi yo'q ishtirokchi ham
@@ -180,19 +193,48 @@ def rebuild_standings(contest: Contest) -> int:
     # ta'siri esa boshqa yo'l bilan keladi — himoyachining `AC` si
     # `HACKED` ga aylanib, yechilgan masalalari orasidan chiqib ketadi.
     _attach_hacks(rows, totals)
-    rows.sort(key=lambda r: (-r.solved, r.penalty))
-    return _write(contest, rows, score=lambda r: r.solved)
+    rows.sort(key=lambda r: (r.user_id in dq, -r.solved, r.penalty))
+    return _write(contest, rows, score=lambda r: r.solved, roles=roles, dq=dq)
 
 
-def _write(contest: Contest, rows: list[_Row], score: Callable[[_Row], int]) -> int:
+def _places(rows: list[_Row], roles: dict[int, str], dq: set[int]) -> list[int]:
+    """Official place of each row; 0 for an insider, who has none.
+
+    The places are counted among official rows only: an insider above
+    you does not push you down (ADR-0055, part 2).
+    """
+    places: list[int] = []
+    place = 0
+    for row in rows:
+        if row.user_id in roles or row.user_id in dq:
+            places.append(0)
+        else:
+            place += 1
+            places.append(place)
+    return places
+
+
+def _write(
+    contest: Contest,
+    rows: list[_Row],
+    score: Callable[[_Row], int],
+    roles: dict[int, str] | None = None,
+    dq: set[int] | None = None,
+) -> int:
     """Saralangan qatorlarni jadvalga yozadi — tartib ALLAQACHON berilgan."""
+    roles = roles or {}
+    dq = dq or set()
+    places = _places(rows, roles, dq)
     Standing.objects.filter(contest=contest).delete()
     Standing.objects.bulk_create(
         [
             Standing(
                 contest=contest,
                 user_id=row.user_id,
-                rank=i + 1,
+                rank=places[i],
+                position=i + 1,
+                insider_role=roles.get(row.user_id, ""),
+                is_disqualified=row.user_id in dq,
                 solved_count=row.solved,
                 penalty=row.penalty,
                 # `total_score` — musbat maydon, hack bali esa manfiy
@@ -212,7 +254,13 @@ def _write(contest: Contest, rows: list[_Row], score: Callable[[_Row], int]) -> 
     return len(rows)
 
 
-def _rebuild_ioi(contest: Contest, attempts: Any, totals: dict[int, tuple[int, int, int]]) -> int:
+def _rebuild_ioi(
+    contest: Contest,
+    attempts: Any,
+    totals: dict[int, tuple[int, int, int]],
+    roles: dict[int, str],
+    dq: set[int],
+) -> int:
     """IOI jadvali — ball bo'yicha.
 
     O'lchandi: `scoring_type` tanlanardi, judge qisman ballarni to'g'ri
@@ -256,8 +304,8 @@ def _rebuild_ioi(contest: Contest, attempts: Any, totals: dict[int, tuple[int, i
     for row in rows_out:
         row.total += row.hack_score
 
-    rows_out.sort(key=lambda r: (-r.total, r.last_ac or contest.end_at))
-    return _write(contest, rows_out, score=lambda r: r.total)
+    rows_out.sort(key=lambda r: (r.user_id in dq, -r.total, r.last_ac or contest.end_at))
+    return _write(contest, rows_out, score=lambda r: r.total, roles=roles, dq=dq)
 
 
 @transaction.atomic
@@ -383,6 +431,18 @@ def frozen_windows(now: datetime | None = None) -> list[tuple[int, datetime]]:
     return windows
 
 
+def testing_windows(now: datetime | None = None) -> list[tuple[int, datetime]]:
+    """(contest id, start) of every contest whose testing attempts are hidden.
+
+    An insider's attempt sent before the start is a testing one (ADR-0055,
+    part 2). Until the contest ends only its author sees it: the feed would
+    otherwise tell the problems' slugs and how hard they were before the
+    contest did.
+    """
+    now = now or timezone.now()
+    return list(Contest.objects.filter(end_at__gt=now).values_list("pk", "start_at"))
+
+
 def finalize_contest(contest: Contest) -> int:
     """Musobaqa tugagach: standings + Contests reytingi.
 
@@ -424,14 +484,19 @@ def finalize_contest(contest: Contest) -> int:
         try:
             from qvant.services import on_contest_finished
 
-            for standing in Standing.objects.filter(contest=contest).select_related("user"):
+            # Insiders took part unrated: no contest reward (ADR-0055).
+            for standing in (
+                Standing.objects.filter(contest=contest).official().select_related("user")
+            ):
                 on_contest_finished(standing.user, contest.slug)
         except Exception:
             log.exception("contest %s uchun Qvant berilmadi", contest.slug)
         try:
             from profiles.achievements import on_rated_contest
 
-            for standing in Standing.objects.filter(contest=contest).select_related("user"):
+            for standing in (
+                Standing.objects.filter(contest=contest).official().select_related("user")
+            ):
                 with transaction.atomic():
                     on_rated_contest(standing.user)
         except Exception:

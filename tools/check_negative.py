@@ -351,6 +351,199 @@ def _kill_port(port: int) -> None:
     time.sleep(1)
 
 
+#: The visible change the mutation proof makes, appended to `theme.css`.
+#:
+#: Until 2026-11-10 the proof replaced `--rw-ground: #f9fafb;` with `#bf3a6e`.
+#: That line sits on `:root`, and the factory style `clay` (D57) sets its own
+#: `--rw-ground` on `[data-style="clay"]` — the same specificity, later in the
+#: file — so on every page the suite screenshots the mutation was invisible:
+#: the 2026-09-24 trap (`--rw-rank-grey`) again, only nobody saw it because
+#: the step never ran on CI. `!important` on every element that can carry a
+#: style wins over whichever style block is the default, now or later.
+VISUAL_MUTANT_CSS = "\n/* visual-gate mutant */\n:root, [data-style] { --rw-ground: #bf3a6e !important; }\n"
+
+#: Selects the CI compose driver for the visual proof (`tools/ci_visual_gate.sh`).
+VISUAL_STACK_ENV = "VISUAL_STACK"
+
+
+def _visual_on_compose() -> bool:
+    return os.environ.get(VISUAL_STACK_ENV) == "compose"
+
+
+def _compose_web_container() -> tuple[str, str] | str:
+    """`(container id, project)` of the CI stack's web service, or why it is missing.
+
+    The CI stack publishes no host ports (`docker-compose.ci.yml` resets them),
+    so `localhost:3400` never answers there — that is why both live gates
+    skipped on every hosted run until 2026-11-10. The container is found by
+    its compose labels instead.
+    """
+    project = os.environ.get("COMPOSE_PROJECT_NAME", "")
+    if not project:
+        return "COMPOSE_PROJECT_NAME yo'q — CI stack qaysi loyihada ekani noma'lum"
+    if shutil.which("docker") is None:
+        return "docker topilmadi"
+    code, out = run(
+        [
+            "docker", "ps", "-q",
+            "--filter", f"label=com.docker.compose.project={project}",
+            "--filter", "label=com.docker.compose.service=web",
+        ]
+    )
+    cid = out.strip().splitlines()[0] if code == 0 and out.strip() else ""
+    if not cid:
+        return f"`{project}` stack'ida ishlab turgan web konteyneri yo'q"
+    return cid, project
+
+
+def _compose_visual_run(
+    project: str, image: str, alias: str, env: list[str], *extra: str
+) -> tuple[int, str]:
+    """Serve `image` next to the CI stack as `alias` and run the visual suite on it.
+
+    A container of its own, not the stack's `web`: the smoke and bake-off
+    steps after this one keep the web they were given, and the control run
+    goes through exactly the same path as the mutant, so a red mutant can
+    only be the mutation.
+    """
+    name = f"{project}-{alias}"
+    run(["docker", "rm", "-f", name])
+    argv = ["docker", "run", "-d", "--init", "--name", name,
+            "--network", f"{project}_default", "--network-alias", alias]
+    for item in env:
+        argv += ["-e", item]
+    code, out = run([*argv, image])
+    if code != 0:
+        return 2, f"{alias} ishga tushmadi — {out.strip()[-200:]}"
+    try:
+        probe = "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        deadline = time.time() + 120
+        while True:
+            if run(["docker", "exec", name, "node", "-e", probe])[0] == 0:
+                break
+            if time.time() > deadline:
+                logs = run(["docker", "logs", "--tail", "20", name])[1]
+                return 2, f"{alias} 120 s da javob bermadi — {logs.strip()[-300:]}"
+            time.sleep(2)
+        proc = subprocess.run(
+            [_bash(), "tools/ci_playwright.sh", "--",
+             "npx", "playwright", "test", "--project=visual", "--reporter=list", *extra],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env={**os.environ, "E2E_BASE_URL": f"http://{alias}:3000",
+                 "E2E_API_BASE": "http://api:8000/api/v1"},
+        )
+        return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+    finally:
+        run(["docker", "rm", "-f", name])
+
+
+_PIXEL_RE = re.compile(r"(\d+)\s+pixels?\s+\(ratio")
+_SHOT_RE = re.compile(r"(?:Snapshot|Expected):\s*\S*?([\w-]+?)(?:-actual|-diff)?\.png")
+_FAIL_HEAD_RE = re.compile(r"(?m)^\s+\d+\) \[visual\] ")
+
+
+def visual_pixel_diffs(out: str) -> tuple[dict[str, int], int]:
+    """`({screenshot: pixels}, failures without a pixel count)` from a list-reporter run.
+
+    Each numbered failure block names its baseline and the pixel count. A block
+    with an error but no count failed for another reason (timeout, crash) —
+    that is not evidence the pixel gate is live, so it is counted apart.
+    """
+    shots: dict[str, int] = {}
+    other = 0
+    heads = [m.start() for m in _FAIL_HEAD_RE.finditer(out)] + [len(out)]
+    for start, end in zip(heads, heads[1:]):
+        block = out[start:end]
+        if "Error:" not in block:
+            continue  # the summary re-lists the titles without a body
+        pixels = _PIXEL_RE.search(block)
+        shot = _SHOT_RE.search(block)
+        if pixels is None:
+            other += 1
+            continue
+        shots[shot.group(1) + ".png" if shot else f"#{len(shots) + 1}"] = int(pixels.group(1))
+    return shots, other
+
+
+def _visual_spec_shots() -> set[str]:
+    spec = ROOT / "tests" / "e2e" / "visual" / "visual.spec.ts"
+    return set(re.findall(r'toHaveScreenshot\(\s*"([^"]+\.png)"', spec.read_bytes().decode("utf-8")))
+
+
+def _visual_proof_on_compose() -> tuple[bool, str]:
+    """The mutation proof against the CI compose stack (Nightly `e2e`).
+
+    control (stack image, own container) must be green → mutant (the same
+    image rebuilt with `VISUAL_MUTANT_CSS`) must be red on EVERY baseline,
+    each with a pixel count. Anything else means the proof measured nothing.
+    """
+    found = _compose_web_container()
+    if isinstance(found, str):
+        return False, f"visual: {found}"
+    cid, project = found
+    code, raw = run(["docker", "inspect", "-f", "{{json .Config.Env}}", cid])
+    if code != 0:
+        return False, f"visual: web konteyneri muhiti o'qilmadi — {raw.strip()[-160:]}"
+    env = json.loads(raw)
+    image = f"{project}-web"
+
+    code, out = _compose_visual_run(project, image, "visual-control", env)
+    if code != 0:
+        shots, other = visual_pixel_diffs(out)
+        found = ", ".join(f"{name} {pixels} px" for name, pixels in sorted(shots.items()))
+        return False, (
+            f"visual: NAZORAT qizil (exit {code}) — o'zgarmagan obraz ham farq berdi, isbot "
+            f"o'lchanmadi: {found or out.strip()[-240:]}"
+            + (f"; pikseldan boshqa sabab {other} ta" if other else "")
+        )
+
+    css = ROOT / "apps" / "web" / "src" / "app" / "theme.css"
+    text = css.read_bytes().decode("utf-8")
+    mutant = f"{project}-web-mutant"
+    # Same build argument as `tools/ci_stack.sh`, so the bundle differs from
+    # the stack's image by the mutation alone.
+    next_api = os.environ.get("NEXT_PUBLIC_API_BASE", "http://localhost:8000/api/v1")
+    with Mutation(css, text, text + VISUAL_MUTANT_CSS):
+        code, built = run(
+            ["docker", "build", "-f", "apps/web/Dockerfile",
+             "--build-arg", f"NEXT_PUBLIC_API_BASE={next_api}", "-t", mutant, "."]
+        )
+    if code != 0:
+        return False, f"visual: mutant obraz qurilmadi — {built.strip()[-240:]}"
+    try:
+        code, out = _compose_visual_run(project, mutant, "visual-mutant", env, "--retries=0")
+    finally:
+        run(["docker", "rmi", "-f", mutant])
+    if code == 0:
+        return False, "visual: fon rangi o'zgardi, lekin suite YASHIL — baseline o'lik"
+    shots, other = visual_pixel_diffs(out)
+    expected = _visual_spec_shots()
+    if other:
+        return False, f"visual: mutantda {other} ta test pikseldan boshqa sabab bilan yiqildi — {out.strip()[-240:]}"
+    # Names come from the failure text; the diff images Playwright wrote are
+    # the second witness, in case a release words the error differently.
+    results = ROOT / "tests" / "e2e" / "test-results"
+    diffs = {p.name.replace("-diff.png", ".png") for p in results.rglob("*-diff.png")}
+    missed = sorted(expected - (set(shots) | diffs))
+    if missed or len(shots) < len(expected):
+        return False, (
+            f"visual: mutatsiya {len(shots)}/{len(expected)} skrinshotda piksel farqi berdi "
+            f"(farqsiz: {', '.join(missed) or '?'}) — bu baseline'lar o'lik. {out.strip()[-200:]}"
+        )
+    # A passing proof leaves no mutant screenshots behind for a later
+    # failure's artifact upload to pass off as a real regression.
+    shutil.rmtree(results, ignore_errors=True)
+    listed = ", ".join(f"{name} {pixels}" for name, pixels in sorted(shots.items()))
+    return True, (
+        f"visual: nazorat 0 farq; mutant {len(shots)}/{len(expected)} skrinshotda "
+        f"{sum(shots.values())} piksel farq ({listed})"
+    )
+
+
 def visual_precondition() -> str | None:
     """Vizual guruh yurishi uchun stack va playwright joyidami?
 
@@ -358,6 +551,9 @@ def visual_precondition() -> str | None:
     tekshiriladigan narsa — «muhit tayyor emas» ni «buzuq holatni tutdi»
     deb o'qib qo'ymaslik uchun (node_precondition bilan bir mantiq).
     """
+    if _visual_on_compose():
+        found = _compose_web_container()
+        return found if isinstance(found, str) else None
     pw = _find_playwright()
     if pw is None:
         return "playwright cli topilmadi — `cd tests/e2e && npm ci` kerak"
@@ -2966,7 +3162,13 @@ def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
 
     This is the non-vacuous proof for the whole `visual` project: if this
     passes while the suite stays green, the baselines are decorative.
+
+    Two drivers: the CI compose stack (`VISUAL_STACK=compose`, Nightly via
+    `tools/ci_visual_gate.sh`) and a host `next start` (a developer machine,
+    `E2E_BASE_URL`). Both make the same mutation (`VISUAL_MUTANT_CSS`).
     """
+    if _visual_on_compose():
+        return _visual_proof_on_compose()
     pw = _find_playwright()
     if pw is None:
         return False, "visual: playwright cli topilmadi (tests/e2e/node_modules)"
@@ -2978,12 +3180,9 @@ def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
     text = css.read_bytes().decode("utf-8")
     # `--rw-ground` — sahifa foni. `--rw-rank-grey` EMAS: u skrinshot
     # olinadigan sahifalarda ko'rinmaydi (yuqoridagi izohga qarang).
-    anchor = "--rw-ground: #f9fafb;"
-    if anchor not in text:
-        return False, f"visual: fon tokeni langari topilmadi ({css.name})"
 
     env = {**os.environ, "E2E_BASE_URL": base}
-    with Mutation(css, anchor, "--rw-ground: #bf3a6e;"):
+    with Mutation(css, text, text + VISUAL_MUTANT_CSS):
         # ⚠️ BUILD YETMAYDI — SERVER HAM QAYTA ISHGA TUSHISHI KERAK.
         #
         # `next start` chiqishni XOTIRADA ushlab turadi: yangi `.next`
@@ -3307,6 +3506,145 @@ def neg_decisions_bakeoff_runs_the_image_default() -> tuple[bool, str]:
         "",
         "harness'ni yurgizmaydi",
     )
+
+
+def neg_decisions_visual_gate_exits_zero() -> tuple[bool, str]:
+    """The visual gate's «no stack» branch goes back to `exit 0`.
+
+    That is how it measured nothing on every hosted run until 2026-11-10.
+    """
+    return _decision_broken(
+        "tools/ci_visual_gate.sh",
+        "  echo \"Vizual darvoza o'lchanmadi — qadam yiqiladi (o'tkazib yuborilmaydi).\"\n  exit 1\n",
+        "  echo \"Vizual darvoza o'lchanmadi — qadam yiqiladi (o'tkazib yuborilmaydi).\"\n  exit 0\n",
+        "stack topilmasa jim o'tadi",
+    )
+
+
+def neg_decisions_csp_gate_only_warns() -> tuple[bool, str]:
+    """The CSP gate reports a missing stack as a warning again."""
+    return _decision_broken(
+        "tools/ci_csp_gate.sh",
+        '  echo "::error::$1"\n',
+        '  echo "::warning::$1"\n',
+        "stack topilmasa jim o'tadi",
+    )
+
+
+def neg_decisions_live_gate_on_host_port() -> tuple[bool, str]:
+    """The visual step is pointed at a host port the CI stack never publishes."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        timeout-minutes: 10\n        run: bash tools/ci_visual_gate.sh\n",
+        "        timeout-minutes: 10\n        env:\n          E2E_BASE_URL: http://localhost:3400\n"
+        "        run: bash tools/ci_visual_gate.sh\n",
+        "host portiga qaratilgan",
+    )
+
+
+def neg_decisions_live_gate_soft() -> tuple[bool, str]:
+    """The CSP step may fail without turning Nightly red."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        timeout-minutes: 3\n        run: bash tools/ci_csp_gate.sh\n",
+        "        timeout-minutes: 3\n        continue-on-error: true\n        run: bash tools/ci_csp_gate.sh\n",
+        "`CSP nonce coverage is live` `continue-on-error` bilan",
+    )
+
+
+def neg_decisions_csp_gate_skipped_after_visual() -> tuple[bool, str]:
+    """The CSP step is gated on `success()` again: a pixel diff leaves it unmeasured.
+
+    Measured on the first run of this rule's branch (Nightly 42730658697): the
+    proof went red and the CSP step was `skipped`.
+    """
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        if: ${{ !cancelled() && vars.STAGING_URL == '' }}\n        timeout-minutes: 3\n",
+        "        if: ${{ vars.STAGING_URL == '' }}\n        timeout-minutes: 3\n",
+        "`CSP nonce coverage is live` `!cancelled()` siz",
+    )
+
+
+def neg_decisions_visual_proof_off_stack() -> tuple[bool, str]:
+    """The proof runs in host mode again, i.e. looks for `next start` on the runner."""
+    return _decision_broken(
+        "tools/ci_visual_gate.sh",
+        "VISUAL_STACK=compose python3 tools/check_negative.py --group visual",
+        "python3 tools/check_negative.py --group visual",
+        "mutatsiya isboti CI stack'ida yurmaydi",
+    )
+
+
+def _live_gate_without_stack(script: str) -> tuple[bool, str]:
+    """Run a Nightly live gate where no CI stack exists: it must fail, loudly.
+
+    A behaviour test, not a text one: whatever the script looks like, a
+    missing target has to end in a non-zero exit and an `::error::` line.
+    """
+    env = {**os.environ, "COMPOSE_PROJECT_NAME": "rw-negative-no-such-stack"}
+    env.pop("GITHUB_STEP_SUMMARY", None)
+    proc = subprocess.run(
+        [_bash(), script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+        timeout=60,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode == 0:
+        return False, f"{script}: stack yo'q, lekin exit 0 — darvoza yana jim o'tkazib yuboradi"
+    if "::error::" not in out:
+        return False, f"{script}: exit {proc.returncode}, lekin `::error::` yo'q — {out.strip()[-160:]}"
+    return True, f"{script}: stack yo'q — exit {proc.returncode} va `::error::` (o'tkazib yuborilmadi)"
+
+
+def neg_live_visual_gate_fails_without_stack() -> tuple[bool, str]:
+    return _live_gate_without_stack("tools/ci_visual_gate.sh")
+
+
+def neg_live_csp_gate_fails_without_stack() -> tuple[bool, str]:
+    return _live_gate_without_stack("tools/ci_csp_gate.sh")
+
+
+#: Two failure blocks as Playwright's list reporter prints them: one pixel diff,
+#: one test that timed out before any comparison.
+_PW_SAMPLE = """
+  1) [visual] › visual/visual.spec.ts:68:7 › vizual regressiya › bosh sahifa ─────
+
+    Error: expect(page).toHaveScreenshot(expected) failed
+
+      107105 pixels (ratio 0.10 of all image pixels) are different.
+
+    Expected: /e2e/visual/visual.spec.ts-snapshots/home.png
+    Received: /e2e/test-results/visual-bosh-sahifa-visual/home-actual.png
+
+  2) [visual] › visual/visual.spec.ts:86:7 › vizual regressiya › kirish sahifasi ──
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+
+  2 failed
+    [visual] › visual/visual.spec.ts:68:7 › vizual regressiya › bosh sahifa ─────
+"""
+
+
+def neg_live_visual_red_without_pixels_is_not_proof() -> tuple[bool, str]:
+    """A red mutant run counts only for the screenshots that report pixels.
+
+    A timeout is red too; if the parser took it for a diff, a broken stack
+    would pass as "the pixel gate is live".
+    """
+    shots, other = visual_pixel_diffs(_PW_SAMPLE)
+    if shots != {"home.png": 107105}:
+        return False, f"visual/parse: piksel farqi noto'g'ri o'qildi — {shots}"
+    if other != 1:
+        return False, f"visual/parse: timeout isbot deb sanaldi (boshqa sabab {other}, 1 kerak)"
+    return True, "visual/parse: faqat piksel farqi isbot, timeout alohida sanaldi"
 
 
 def neg_decisions_smoke_skipped_after_visual() -> tuple[bool, str]:
@@ -4088,6 +4426,66 @@ def neg_decisions_studio_author_cannot_delete_tests() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_client_date_in_locale() -> tuple[bool, str]:
+    """A client component imports the locale date helper again."""
+    return _decision_broken(
+        "apps/web/src/features/duels/components/DuelDetail.tsx",
+        'import { t } from "@/i18n/messages";',
+        'import { dateTime, t } from "@/i18n/messages";',
+        "klient komponent `dateTime` bilan sana yozadi",
+    )
+
+
+def neg_decisions_optimistic_save_on_by_default() -> tuple[bool, str]:
+    """The flag ships switched on."""
+    return _decision_broken(
+        "apps/web/src/lib/flags.ts",
+        "  optimisticSave: false,\n",
+        "  optimisticSave: true,\n",
+        "`optimisticSave` standart holatda yoniq",
+    )
+
+
+def neg_decisions_optimistic_save_unwired() -> tuple[bool, str]:
+    """The bar stops reading the flag: it gates nothing again."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SaveBar.tsx",
+        'if (flight && isOn("optimisticSave")) {',
+        "if (flight && false) {",
+        "bayrog'i saqlashni boshqarmaydi",
+    )
+
+
+def neg_decisions_optimistic_refusal_silent() -> tuple[bool, str]:
+    """A refused optimistic save no longer shows an alert in the bar."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SaveBar.tsx",
+        'variant="iconText"\n            alert\n            label={t(locale, "settings.saveFailed")}',
+        'label={t(locale, "settings.saveFailed")}',
+        "rad etilgan optimistik saqlash ko'rinmaydi",
+    )
+
+
+def neg_decisions_optimistic_unload_unguarded() -> tuple[bool, str]:
+    """A request still out no longer holds the page."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SaveBar.tsx",
+        "const holding = dirty.length + inFlight.size;",
+        "const holding = dirty.length;",
+        "yo'ldagi so'rov sahifadan chiqishda ogohlantirmaydi",
+    )
+
+
+def neg_decisions_optimistic_throw_counts_as_saved() -> tuple[bool, str]:
+    """A save that throws is counted as written."""
+    return _decision_broken(
+        "apps/web/src/features/account/save-queue.ts",
+        "      } catch {\n        ok = false;\n      }",
+        "      } catch {\n        ok = true;\n      }",
+        "yiqilgan so'rov saqlandi deb sanaladi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -4566,10 +4964,12 @@ def neg_notification_code_removed() -> tuple[bool, str]:
     baseline gains a code the catalogue lacks — the same state as a removal.
     """
     path = ROOT / "tools/notification-codes.json"
-    old = '{\n  "contest_result": ['
+    # Anchored on the entry itself, not on it being first: a new code that
+    # sorts before it would move it down and leave the anchor nowhere.
+    old = '\n  "contest_result": ['
     if old not in path.read_bytes().decode("utf-8"):
         return False, "bildirishnoma kodi: langar topilmadi (notification-codes.json)"
-    with Mutation(path, old, '{\n  "ghost_code": ["x"],\n  "contest_result": ['):
+    with Mutation(path, old, '\n  "ghost_code": ["x"],\n  "contest_result": ['):
         code, out = run([PY, "tools/check_notification_codes.py"])
     if code != 1:
         return False, f"bildirishnoma kodi: o'chirilgan kod exit {code} berdi (1 kerak)"
@@ -5092,7 +5492,7 @@ def neg_decisions_contest_problem_in_the_archive_list() -> tuple[bool, str]:
     """The archive list uses the wider "may be opened" scope."""
     return _decision_broken(
         "apps/api/problems/views.py",
-        'scope = Q(is_public=True) if self.action == "list" else visibility.openable_q()',
+        'scope = Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)',
         "scope = visibility.openable_q()",
         "arxiv ro'yxati musobaqa masalasini ham beradi",
     )
@@ -5125,6 +5525,156 @@ def neg_decisions_contest_page_names_problems_early() -> tuple[bool, str]:
         "        if timezone.now() < contest.start_at:\n",
         "        if False:\n",
         "boshlanishdan oldin ko'rsatadi",
+    )
+
+
+def neg_decisions_anybody_disqualifies() -> tuple[bool, str]:
+    """An organizer (not the jury) disqualifies."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "contest.jury.filter(pk=user.pk).exists()",
+        "True",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_keeps_attempts() -> tuple[bool, str]:
+    """A disqualified participant's attempts still count."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "skip_attempts(contest.attempts.filter(user=user))",
+        "None",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_without_rerating() -> tuple[bool, str]:
+    """A disqualification after finalizing leaves the ratings as they were."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "            rerate_contest(contest)",
+        "            pass",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_row_is_official() -> tuple[bool, str]:
+    """A disqualified row is rated and placed."""
+    return _decision_broken(
+        "apps/api/contests/models.py",
+        'return self.filter(insider_role="", is_disqualified=False)',
+        'return self.filter(insider_role="")',
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_editor_signals_dropped() -> tuple[bool, str]:
+    """The editor no longer sends its signals with a contest attempt."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/SubmitPanel.tsx",
+        "editor: signals.snapshot()",
+        "editor: undefined",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_question_is_public() -> tuple[bool, str]:
+    """A participant's question is shown to everybody."""
+    return _decision_broken(
+        "apps/api/contests/clarifications.py",
+        "    shown = Q(is_public=True, answered_at__isnull=False)",
+        "    shown = Q()",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_anybody_answers() -> tuple[bool, str]:
+    """A participant answers another's question."""
+    return _decision_broken(
+        "apps/api/contests/views.py",
+        "if not qa.can_moderate(contest, request.user):",
+        "if False:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_question_limit_dropped() -> tuple[bool, str]:
+    """The questions per contest are not limited."""
+    return _decision_broken(
+        "apps/api/contests/clarifications.py",
+        "    if mine.count() >= MAX_QUESTIONS:",
+        "    if False:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_asker_named() -> tuple[bool, str]:
+    """The asker's name is shown to everybody."""
+    return _decision_broken(
+        "apps/api/contests/serializers.py",
+        'if not self.context.get("moderator") or row.author is None:',
+        "if row.author is None:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_insider_testing_in_the_table() -> tuple[bool, str]:
+    """A tester's attempt from before the start counts in the table."""
+    return _decision_broken(
+        "apps/api/contests/services.py",
+        "attempts.exclude(user_id__in=list(roles), created_at__lt=contest.start_at)",
+        "attempts.exclude(pk__in=[])",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_insider_gets_a_place() -> tuple[bool, str]:
+    """An insider's row is given an official place."""
+    return _decision_broken(
+        "apps/api/contests/services.py",
+        "        if row.user_id in roles or row.user_id in dq:\n            places.append(0)",
+        "        if False:\n            places.append(0)",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_insider_is_rated() -> tuple[bool, str]:
+    """The rating is applied to an insider's row too."""
+    return _decision_broken(
+        "apps/api/ratings/services.py",
+        'Standing.objects.filter(contest=contest).official().select_related("user")',
+        'Standing.objects.filter(contest=contest).select_related("user")',
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_testing_attempt_counts_as_solved() -> tuple[bool, str]:
+    """A testing attempt is written as a solved problem."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        "    testing = is_testing(attempt)\n    if not testing:\n",
+        "    testing = False\n    if not testing:\n",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_testing_attempt_in_the_feed() -> tuple[bool, str]:
+    """Other people's feed shows a testing attempt."""
+    return _decision_broken(
+        "apps/api/judging/views.py",
+        "for contest_id, start_at in testing_windows()",
+        "for contest_id, start_at in []",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_anybody_tests_early() -> tuple[bool, str]:
+    """Anybody, not only an insider, sends before the start."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        "timezone.now() < contest.start_at and bool(role_of(contest, user))",
+        "timezone.now() < contest.start_at",
+        "ichkaridagilar reytingsiz qatnashadi",
     )
 
 
@@ -5577,6 +6127,89 @@ def neg_decisions_language_rule() -> tuple[bool, str]:
 def neg_decisions_table_removed() -> tuple[bool, str]:
     return _decision_broken(
         "CLAUDE.md", "## Saidakbar aka qarorlari", "## Qarorlar", "qarorlar jadvali"
+    )
+
+
+# ── Decisions index ↔ `docs/decisions/` (2026-11-10, audit Q-10) ──────────
+#
+# The table left CLAUDE.md for one file per decision plus a one-line index.
+# Each case below leaves a decision in one place only, or the two places
+# disagreeing; `decisions_index_matches_files` must name what is wrong.
+
+_INDEX_LINE = (
+    "- [2026-09-17](docs/decisions/2026-09-17-local-only-backups.md)"
+    " · Zaxira 30 kunda bir marta, faqat lokal; offsite yo'q · `backup_local_only`\n"
+)
+_INDEX_RULE = "qarorlar indeksi fayllarga mos"
+
+
+def _decisions_index_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break the index or a decision file in `rel`; the rule must say `expect`."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"decisions/indeks: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("decisions")
+    if code != 1:
+        return False, f"decisions/indeks: buzilgan holat exit {code} berdi (1 kerak)"
+    if _INDEX_RULE not in out or expect not in out:
+        return False, f"decisions/indeks: yiqildi, lekin boshqa sabab — {out.strip()[-170:]}"
+    return True, f"decisions/indeks: «{expect}» tutildi (exit 1)"
+
+
+def neg_decisions_index_line_dropped() -> tuple[bool, str]:
+    """The file stays, its index line goes: the decision is in one place only."""
+    return _decisions_index_broken("CLAUDE.md", _INDEX_LINE, "", "fayli bor, indeksda yo'q")
+
+
+def neg_decisions_file_dropped() -> tuple[bool, str]:
+    """The index line stays, its file goes. A file cannot be mutated away, so
+    the sandbox drops it from the copy."""
+    code, out = _decisions_sandbox({}, drop=("docs/decisions/2026-09-17-local-only-backups.md",))
+    if code != 1 or _INDEX_RULE not in out or "indeksda bor, fayli yo'q" not in out:
+        return False, f"decisions/indeks: o'chgan fayl exit {code} — {out.strip()[-170:]}"
+    return True, "decisions/indeks: «indeksda bor, fayli yo'q» tutildi (exit 1)"
+
+
+def neg_decisions_row_back_in_claude() -> tuple[bool, str]:
+    """A table row is written into CLAUDE.md again — what a branch cut before
+    the move merges in."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        "\n## Tekshiruvlar\n",
+        "\n| 2026-11-10 | **Yangi qaror** | `tools/x.py` |\n\n## Tekshiruvlar\n",
+        "jadval qatori bor",
+    )
+
+
+def neg_decisions_index_unknown_rule() -> tuple[bool, str]:
+    """The index names a guard that check_decisions.py does not have."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        _INDEX_LINE,
+        _INDEX_LINE.replace("`backup_local_only`", "`backup_is_local_only`"),
+        "bunday qoida yo'q",
+    )
+
+
+def neg_decisions_index_date_mismatch() -> tuple[bool, str]:
+    """The index date disagrees with the file it links to."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        _INDEX_LINE,
+        _INDEX_LINE.replace("- [2026-09-17]", "- [2026-09-18]"),
+        "fayl nomiga mos emas",
+    )
+
+
+def neg_decisions_file_holds_two_rows() -> tuple[bool, str]:
+    """A second decision is appended to an existing file instead of a new one."""
+    rel = "docs/decisions/2026-09-17-local-only-backups.md"
+    text = (ROOT / rel).read_bytes().decode("utf-8")
+    last = text.rstrip("\n").split("\n")[-1] + "\n"
+    return _decisions_index_broken(
+        rel, last, last + "| 2026-11-10 | **Yangi qaror** | `tools/x.py` |\n", "2 ta qaror qatori"
     )
 
 
@@ -7097,6 +7730,10 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Nightly live gates (2026-11-10): the rule reads both scripts to prove a
+    # missing stack fails the step instead of skipping it.
+    "tools/ci_visual_gate.sh",
+    "tools/ci_csp_gate.sh",
     # Daily external refresh (2026-11-10).
     "apps/api/profiles/tasks.py",
     # Staff harness editor (2026-11-10).
@@ -7192,6 +7829,15 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/serializers.py",
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
+    "apps/api/contests/certificates.py",
+    "apps/api/contests/clarifications.py",
+    "apps/api/contests/integrity.py",
+    "apps/api/contests/models.py",
+    "apps/web/src/app/(site)/contests/[slug]/page.tsx",
+    "apps/web/src/features/problems/components/SubmitPanel.tsx",
+    "apps/api/contests/views.py",
+    "apps/api/ratings/services.py",
+    "apps/api/tournaments/services.py",
     "apps/api/judging/tasks.py",
     "apps/api/judging/provider.py",
     "services/judge-go/protocol.go",
@@ -7208,6 +7854,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/components/ui/Identity/TitleIcon.tsx",
     "apps/web/src/features/profile/components/ProfileCard.tsx",
     "apps/web/src/app/(site)/users/[username]/page.tsx",
+    # Feature flags wired (2026-11-10, audit Q-13): the registry default and
+    # the optimistic save path.
+    "apps/web/src/lib/flags.ts",
+    "apps/web/src/features/account/components/SaveBar.tsx",
+    "apps/web/src/features/account/save-queue.ts",
 )
 
 
@@ -7229,6 +7880,12 @@ def _decisions_sandbox(
         for rel in _DECISIONS_SANDBOX_FILES:
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             (root / rel).write_bytes((ROOT / rel).read_bytes())
+        # `decisions_index_matches_files` globs the whole folder, so no
+        # `read("...")` names its files and the list above cannot stage them.
+        decisions = root / "docs/decisions"
+        decisions.mkdir(parents=True, exist_ok=True)
+        for path in (ROOT / "docs/decisions").glob("*.md"):
+            (decisions / path.name).write_bytes(path.read_bytes())
         for rel in drop:
             (root / rel).unlink()
         workflows = root / ".github/workflows"
@@ -10431,6 +11088,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ],
     ),
     (
+        "live_gates",
+        [
+            ("vizual darvoza stack'siz yiqilsin", neg_live_visual_gate_fails_without_stack),
+            ("CSP darvozasi stack'siz yiqilsin", neg_live_csp_gate_fails_without_stack),
+            ("piksel bo'lmagan qizil isbot sanalmasin", neg_live_visual_red_without_pixels_is_not_proof),
+        ],
+    ),
+    (
         "push_guard",
         [
             ("soxta muallif rad etilsin", neg_push_guard_placeholder_author),
@@ -10558,6 +11223,21 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bitta urinish muzlatishni chetlasa tutilsin", neg_decisions_single_attempt_ignores_the_freeze),
             ("musobaqa sahifasi masalani erta aytsa tutilsin", neg_decisions_contest_page_names_problems_early),
             ("masalalar arxivga o'tmasa tutilsin", neg_decisions_contest_problems_never_released),
+            ("sinov urinishi jadvalga tushsa tutilsin", neg_decisions_insider_testing_in_the_table),
+            ("ichkaridagi rasmiy o'rin olsa tutilsin", neg_decisions_insider_gets_a_place),
+            ("ichkaridagiga reyting berilsa tutilsin", neg_decisions_insider_is_rated),
+            ("sinov urinishi yechilgan sanalsa tutilsin", neg_decisions_testing_attempt_counts_as_solved),
+            ("sinov urinishi lentada ko'rinsa tutilsin", neg_decisions_testing_attempt_in_the_feed),
+            ("har kim erta yuborsa tutilsin", neg_decisions_anybody_tests_early),
+            ("savol hammaga ochilsa tutilsin", neg_decisions_question_is_public),
+            ("hakam bo'lmagan javob bersa tutilsin", neg_decisions_anybody_answers),
+            ("savol chegarasi tushsa tutilsin", neg_decisions_question_limit_dropped),
+            ("so'raganning ismi ochilsa tutilsin", neg_decisions_asker_named),
+            ("hakam bo'lmagan chetlatsa tutilsin", neg_decisions_anybody_disqualifies),
+            ("chetlatilganning urinishlari qolsa tutilsin", neg_decisions_dq_keeps_attempts),
+            ("chetlatishdan keyin reyting qolsa tutilsin", neg_decisions_dq_without_rerating),
+            ("chetlatilgan qator rasmiy bo'lsa tutilsin", neg_decisions_dq_row_is_official),
+            ("muharrir signallari tushsa tutilsin", neg_decisions_editor_signals_dropped),
             ("tozalagich natijani kutmasa tutilsin", neg_decisions_reaper_ignores_waiting_results),
             ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
             ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),
@@ -10603,6 +11283,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),
             ("tillar paneli chizilmasa tutilsin", neg_decisions_languages_panel_unmounted),
             ("tashqi reyting jadvaldan tushsa tutilsin", neg_decisions_external_refresh_unscheduled),
+            ("optimistik saqlash standart yoniq bo'lsa tutilsin", neg_decisions_optimistic_save_on_by_default),
+            ("optimistik bayroq ulanmasa tutilsin", neg_decisions_optimistic_save_unwired),
+            ("rad etilgan optimistik saqlash jim qolsa tutilsin", neg_decisions_optimistic_refusal_silent),
+            ("yo'ldagi so'rov sahifani ushlamasa tutilsin", neg_decisions_optimistic_unload_unguarded),
+            ("yiqilgan so'rov saqlangan sanalsa tutilsin", neg_decisions_optimistic_throw_counts_as_saved),
+            ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("studio mehmonga ochilsa tutilsin", neg_decisions_studio_open_to_guests),
             ("studio chegarasi ajralsa tutilsin", neg_decisions_studio_limit_drifts),
@@ -10634,6 +11320,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bake-off vizualdan keyin o'tkazilsa tutilsin", neg_decisions_bakeoff_skipped_after_visual),
             ("smoke vizualdan keyin o'tkazilsa tutilsin", neg_decisions_smoke_skipped_after_visual),
             ("bake-off harness'siz qolsa tutilsin", neg_decisions_bakeoff_runs_the_image_default),
+            ("vizual darvoza yana exit 0 bilan o'tsa tutilsin", neg_decisions_visual_gate_exits_zero),
+            ("CSP darvozasi yana faqat ogohlantirsa tutilsin", neg_decisions_csp_gate_only_warns),
+            ("jonli darvoza host portiga qaratilsa tutilsin", neg_decisions_live_gate_on_host_port),
+            ("jonli darvoza continue-on-error bilan tutilsin", neg_decisions_live_gate_soft),
+            ("mutatsiya isboti stack'dan chiqsa tutilsin", neg_decisions_visual_proof_off_stack),
+            ("CSP darvozasi vizualdan keyin o'tkazilsa tutilsin", neg_decisions_csp_gate_skipped_after_visual),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),
@@ -10705,6 +11397,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
             ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
+            ("qaror fayli indekssiz qolsa tutilsin", neg_decisions_index_line_dropped),
+            ("indeks qatori faylsiz qolsa tutilsin", neg_decisions_file_dropped),
+            ("CLAUDE.md ga jadval qatori qaytsa tutilsin", neg_decisions_row_back_in_claude),
+            ("indeks yo'q qoidani atasa tutilsin", neg_decisions_index_unknown_rule),
+            ("indeks sanasi faylga mos kelmasa tutilsin", neg_decisions_index_date_mismatch),
+            ("qaror faylida ikki qator bo'lsa tutilsin", neg_decisions_file_holds_two_rows),
             ("endonim tor ekranda chegarasiz qolsa tutilsin", neg_decisions_locale_label_unbounded),
             ("tor ekranda til kodi qaytsa tutilsin", neg_decisions_locale_code_restored),
             (

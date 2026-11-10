@@ -119,8 +119,10 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         # Baho ro'yxatda ham ko'rinadi — har qatorga alohida so'rov
         # bo'lmasligi uchun annotatsiya.
         # The list is the archive. One problem opened by its address may
-        # also be a contest problem whose contest has started (ADR-0055).
-        scope = Q(is_public=True) if self.action == "list" else visibility.openable_q()
+        # also be a contest problem whose contest has started (ADR-0055) —
+        # or, for its insiders, one whose contest has not (part 2).
+        viewer = self.request.user
+        scope = Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)
         return (
             Problem.objects.filter(scope)
             .select_related("author")
@@ -371,7 +373,7 @@ class ProblemStatsView(APIView):
         if cached is not None:
             return edge_cacheable(Response(cached), PUBLIC_STATS_CACHE_S)
 
-        attempts = Attempt.objects.filter(problem=problem)
+        attempts = visibility.without_testing(Attempt.objects.filter(problem=problem), problem)
         if frozen:
             attempts = attempts.filter(created_at__lt=frozen)
 
@@ -447,7 +449,9 @@ class ProblemSolversView(APIView):
         from judging.models import Attempt
 
         problem = get_object_or_404(Problem.objects.filter(visibility.openable_q()), slug=slug)
-        accepted = Attempt.objects.filter(problem=problem, verdict=Verdict.AC)
+        accepted = visibility.without_testing(
+            Attempt.objects.filter(problem=problem, verdict=Verdict.AC), problem
+        )
         frozen = visibility.frozen_since(problem)
         if frozen:
             accepted = accepted.filter(created_at__lt=frozen)

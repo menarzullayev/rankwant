@@ -283,6 +283,8 @@ def roles(user: User) -> list[dict[str, str]]:
         out.append({"code": "author"})
     if Contest.objects.filter(jury=user).exists():
         out.append({"code": "jury"})
+    if Contest.objects.filter(testers=user, is_public=True).exists():
+        out.append({"code": "tester"})
     won = champion_of(user)
     if won is not None:
         out.append({"code": "champion", "contest": won.slug, "contest_title": won.title})
@@ -302,7 +304,8 @@ def champion_of(user: User) -> Any:
         "contest_id"
     )
     rows = (
-        Standing.objects.filter(
+        Standing.objects.official()
+        .filter(
             user=user,
             contest__is_rated=True,
             contest__is_public=True,

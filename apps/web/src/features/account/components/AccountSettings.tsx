@@ -1,5 +1,6 @@
 "use client";
 
+import { numericDate } from "@rankwant/shared/format";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -9,7 +10,7 @@ import { Status } from "@/components/ui/Status";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { date, errorText, fill, t } from "@/i18n/messages";
+import { errorText, fill, t } from "@/i18n/messages";
 import { API_BASE, ApiError, deleteJson, postJson } from "@/lib/api";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -120,7 +121,7 @@ export function AccountSettings() {
         >
           <p className="text-theme-sm font-medium rw-warn-ink">
             {fill(t(locale, "settings.deletePending"), {
-              date: date(due, locale),
+              date: numericDate(due),
               days: String(daysLeft),
             })}
           </p>

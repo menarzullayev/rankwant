@@ -85,6 +85,14 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   problem_rerated: { body: true },
   contest_result: { body: true },
   problem_review_requested: { body: true },
+  // Made a tester of a contest (ADR-0055, part 2).
+  contest_tester: { body: true },
+  // Questions and announcements during a contest (ADR-0055, part 3).
+  contest_question: { body: true },
+  contest_answer: { body: true },
+  contest_announcement: { body: true },
+  // Disqualified by the jury (ADR-0055, part 4).
+  contest_disqualified: { body: true },
 };
 
 /** The words of a notification in the language it is being read in.
@@ -114,6 +122,8 @@ export function notificationHref(row: Notification): string | null {
       return `/duels/${id}`;
     case "contest":
       return `/contests/${id}`;
+    case "contest_qa":
+      return `/contests/${id}#clarifications`;
     case "problem":
       return `/problems/${id}`;
     case "attempt":

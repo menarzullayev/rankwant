@@ -1,5 +1,6 @@
 "use client";
 
+import { numericDate } from "@rankwant/shared/format";
 import type { Route } from "next";
 import Link from "next/link";
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { UpdateKindBadge } from "@/features/updates";
 import { useSession } from "@/context/SessionContext";
 import { useUpdates } from "@/context/UpdatesContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { date, t } from "@/i18n/messages";
+import { t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { fetchUpdateUnread, type SystemUpdate } from "@/lib/api";
 
@@ -127,7 +128,7 @@ export function UpdatesBell() {
                     <span className="flex flex-wrap items-center gap-2">
                       <UpdateKindBadge kind={row.kind} locale={locale} />
                       <span className="text-theme-xs rw-faint">
-                        {date(row.released_at, locale)}
+                        {numericDate(row.released_at)}
                       </span>
                     </span>
                     <span className="mt-2 block font-medium rw-strong">

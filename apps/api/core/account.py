@@ -297,7 +297,7 @@ def is_anonymized(user: User) -> bool:
 
 def export(user: User) -> dict[str, Any]:
     """Foydalanuvchining o'z ma'lumoti — o'chirishdan oldin olib qolish uchun."""
-    from contests.models import ContestRegistration, Standing
+    from contests.models import AttemptSignal, Clarification, ContestRegistration, Standing
     from duels.models import Duel
     from judging.models import Attempt
     from quizzes.models import QuizAttempt
@@ -431,6 +431,26 @@ def export(user: User) -> dict[str, Any]:
             Standing.objects.filter(user=user)
             .order_by("id")
             .values("contest__slug", "rank", "solved_count", "penalty", "total_score")
+        ),
+        # Questions asked during contests (ADR-0055, part 3) — the user's text.
+        "contest_questions": list(
+            Clarification.objects.filter(author=user)
+            .order_by("id")
+            .values("contest__slug", "question", "answer", "answer_code", "created_at")
+        ),
+        # Editor signals of contest attempts (ADR-0055, part 4).
+        "contest_signals": list(
+            AttemptSignal.objects.filter(user=user)
+            .order_by("id")
+            .values(
+                "contest__slug",
+                "attempt_id",
+                "pasted_chars",
+                "largest_paste",
+                "paste_count",
+                "blur_count",
+                "active_ms",
+            )
         ),
         "duels": list(
             Duel.objects.filter(Q(challenger=user) | Q(opponent=user))
