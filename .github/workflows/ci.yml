@@ -438,7 +438,7 @@ jobs:
       # The `visual` group is skipped here by design: it needs the
       # Playwright CLI (`tests/e2e/node_modules`) and a live web stack,
       # neither of which this job provisions. It is exercised by
-      # `tools/ci_visual_gate.sh` in the dedicated visual job instead.
+      # `tools/ci_visual_gate.sh` in the Nightly `e2e` job, against its stack.
       - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         run: npm run build
         working-directory: apps/web

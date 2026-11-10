@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prove the CSP nonce gate is LIVE against the running stack before CI is green.
+# Prove the CSP nonce gate is LIVE against the running CI stack before CI is green.
 #
 # WHY THIS EXISTS
 # ---------------
@@ -19,22 +19,56 @@
 # WHERE IT RUNS
 # -------------
 # Nightly, next to the visual gate, because it needs a running stack. It does
-# NOT rebuild: it reads the HTML the stack already serves, so it costs seconds
-# rather than the visual gate's ~20 minutes.
+# NOT rebuild: it reads the HTML the stack already serves.
 #
-# Skips LOUDLY when no stack is listening, so a missing target is never
-# mistaken for a passing gate.
+# 2026-11-10: until now it read `localhost:3400`, which the CI stack never
+# serves (`docker-compose.ci.yml` resets every host port) — so it warned and
+# exited 0 on every hosted run (runs 42716046958, 42721061218). It now reads
+# the stack's web container at its address on the compose network, and a
+# missing stack FAILS the step instead of skipping it.
 set -euo pipefail
 
-BASE="${E2E_BASE_URL:-http://localhost:3400}"
+root="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$root"
 
-if ! curl -sf -o /dev/null "$BASE/"; then
-  echo "::warning::Web stack $BASE da javob bermadi — CSP darvozasi O'TKAZIB YUBORILDI"
-  echo "Bu qadam o'lchovsiz qoldi. Stack ko'tarilgan muhitda u qayta yuritilishi kerak:"
-  echo "  E2E_BASE_URL=$BASE python tools/check_negative.py --group csp_nonce"
-  exit 0
+fail() {
+  echo "::error::$1"
+  echo "CSP darvozasi o'lchanmadi — qadam yiqiladi (o'tkazib yuborilmaydi)."
+  exit 1
+}
+
+project="${COMPOSE_PROJECT_NAME:-}"
+[ -n "$project" ] || fail "COMPOSE_PROJECT_NAME yo'q — CI stack topilmadi"
+web="$(docker ps -q \
+  --filter "label=com.docker.compose.project=$project" \
+  --filter "label=com.docker.compose.service=web" 2>/dev/null || true)"
+[ -n "$web" ] || fail "$project stack'ida web konteyneri ishlamayapti — CSP qamrovi yo'q"
+# The host reaches a container on a user-defined bridge network by its address
+# (Linux runner); no port has to be published for that.
+ip="$(docker inspect -f \
+  "{{with index .NetworkSettings.Networks \"${project}_default\"}}{{.IPAddress}}{{end}}" \
+  "$web" 2>/dev/null || true)"
+[ -n "$ip" ] || fail "web konteynerining ${project}_default dagi manzili topilmadi"
+base="http://$ip:3000"
+curl -sf -o /dev/null --max-time 15 "$base/login" || fail "web $base/login da javob bermadi"
+
+echo "--> $project stack'i $base da javob berdi, CSP qamrovi o'lchanadi"
+log="$(mktemp)"
+set +e
+{
+  python3 tools/check_csp_nonce.py --base "$base" &&
+    E2E_BASE_URL="$base" python3 tools/check_negative.py --group csp_nonce
+} 2>&1 | tee "$log"
+status=${PIPESTATUS[0]}
+set -e
+
+if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+  {
+    echo "### CSP nonce coverage is live"
+    echo '```'
+    grep -E "skript nonce bilan|csp_nonce/|qamrovi|salbiy test" "$log" || echo "natija qatori topilmadi (exit $status)"
+    echo '```'
+  } >>"$GITHUB_STEP_SUMMARY"
 fi
-
-echo "--> Stack $BASE da javob berdi, CSP qamrovi o'lchanadi"
-python tools/check_csp_nonce.py --base "$BASE"
-E2E_BASE_URL="$BASE" python tools/check_negative.py --group csp_nonce
+[ "$status" = 0 ] || echo "::error::CSP nonce darvozasi yiqildi (exit $status)"
+exit "$status"

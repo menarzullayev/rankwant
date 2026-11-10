@@ -351,6 +351,199 @@ def _kill_port(port: int) -> None:
     time.sleep(1)
 
 
+#: The visible change the mutation proof makes, appended to `theme.css`.
+#:
+#: Until 2026-11-10 the proof replaced `--rw-ground: #f9fafb;` with `#bf3a6e`.
+#: That line sits on `:root`, and the factory style `clay` (D57) sets its own
+#: `--rw-ground` on `[data-style="clay"]` — the same specificity, later in the
+#: file — so on every page the suite screenshots the mutation was invisible:
+#: the 2026-09-24 trap (`--rw-rank-grey`) again, only nobody saw it because
+#: the step never ran on CI. `!important` on every element that can carry a
+#: style wins over whichever style block is the default, now or later.
+VISUAL_MUTANT_CSS = "\n/* visual-gate mutant */\n:root, [data-style] { --rw-ground: #bf3a6e !important; }\n"
+
+#: Selects the CI compose driver for the visual proof (`tools/ci_visual_gate.sh`).
+VISUAL_STACK_ENV = "VISUAL_STACK"
+
+
+def _visual_on_compose() -> bool:
+    return os.environ.get(VISUAL_STACK_ENV) == "compose"
+
+
+def _compose_web_container() -> tuple[str, str] | str:
+    """`(container id, project)` of the CI stack's web service, or why it is missing.
+
+    The CI stack publishes no host ports (`docker-compose.ci.yml` resets them),
+    so `localhost:3400` never answers there — that is why both live gates
+    skipped on every hosted run until 2026-11-10. The container is found by
+    its compose labels instead.
+    """
+    project = os.environ.get("COMPOSE_PROJECT_NAME", "")
+    if not project:
+        return "COMPOSE_PROJECT_NAME yo'q — CI stack qaysi loyihada ekani noma'lum"
+    if shutil.which("docker") is None:
+        return "docker topilmadi"
+    code, out = run(
+        [
+            "docker", "ps", "-q",
+            "--filter", f"label=com.docker.compose.project={project}",
+            "--filter", "label=com.docker.compose.service=web",
+        ]
+    )
+    cid = out.strip().splitlines()[0] if code == 0 and out.strip() else ""
+    if not cid:
+        return f"`{project}` stack'ida ishlab turgan web konteyneri yo'q"
+    return cid, project
+
+
+def _compose_visual_run(
+    project: str, image: str, alias: str, env: list[str], *extra: str
+) -> tuple[int, str]:
+    """Serve `image` next to the CI stack as `alias` and run the visual suite on it.
+
+    A container of its own, not the stack's `web`: the smoke and bake-off
+    steps after this one keep the web they were given, and the control run
+    goes through exactly the same path as the mutant, so a red mutant can
+    only be the mutation.
+    """
+    name = f"{project}-{alias}"
+    run(["docker", "rm", "-f", name])
+    argv = ["docker", "run", "-d", "--init", "--name", name,
+            "--network", f"{project}_default", "--network-alias", alias]
+    for item in env:
+        argv += ["-e", item]
+    code, out = run([*argv, image])
+    if code != 0:
+        return 2, f"{alias} ishga tushmadi — {out.strip()[-200:]}"
+    try:
+        probe = "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        deadline = time.time() + 120
+        while True:
+            if run(["docker", "exec", name, "node", "-e", probe])[0] == 0:
+                break
+            if time.time() > deadline:
+                logs = run(["docker", "logs", "--tail", "20", name])[1]
+                return 2, f"{alias} 120 s da javob bermadi — {logs.strip()[-300:]}"
+            time.sleep(2)
+        proc = subprocess.run(
+            [_bash(), "tools/ci_playwright.sh", "--",
+             "npx", "playwright", "test", "--project=visual", "--reporter=list", *extra],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env={**os.environ, "E2E_BASE_URL": f"http://{alias}:3000",
+                 "E2E_API_BASE": "http://api:8000/api/v1"},
+        )
+        return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+    finally:
+        run(["docker", "rm", "-f", name])
+
+
+_PIXEL_RE = re.compile(r"(\d+)\s+pixels?\s+\(ratio")
+_SHOT_RE = re.compile(r"(?:Snapshot|Expected):\s*\S*?([\w-]+?)(?:-actual|-diff)?\.png")
+_FAIL_HEAD_RE = re.compile(r"(?m)^\s+\d+\) \[visual\] ")
+
+
+def visual_pixel_diffs(out: str) -> tuple[dict[str, int], int]:
+    """`({screenshot: pixels}, failures without a pixel count)` from a list-reporter run.
+
+    Each numbered failure block names its baseline and the pixel count. A block
+    with an error but no count failed for another reason (timeout, crash) —
+    that is not evidence the pixel gate is live, so it is counted apart.
+    """
+    shots: dict[str, int] = {}
+    other = 0
+    heads = [m.start() for m in _FAIL_HEAD_RE.finditer(out)] + [len(out)]
+    for start, end in zip(heads, heads[1:]):
+        block = out[start:end]
+        if "Error:" not in block:
+            continue  # the summary re-lists the titles without a body
+        pixels = _PIXEL_RE.search(block)
+        shot = _SHOT_RE.search(block)
+        if pixels is None:
+            other += 1
+            continue
+        shots[shot.group(1) + ".png" if shot else f"#{len(shots) + 1}"] = int(pixels.group(1))
+    return shots, other
+
+
+def _visual_spec_shots() -> set[str]:
+    spec = ROOT / "tests" / "e2e" / "visual" / "visual.spec.ts"
+    return set(re.findall(r'toHaveScreenshot\(\s*"([^"]+\.png)"', spec.read_bytes().decode("utf-8")))
+
+
+def _visual_proof_on_compose() -> tuple[bool, str]:
+    """The mutation proof against the CI compose stack (Nightly `e2e`).
+
+    control (stack image, own container) must be green → mutant (the same
+    image rebuilt with `VISUAL_MUTANT_CSS`) must be red on EVERY baseline,
+    each with a pixel count. Anything else means the proof measured nothing.
+    """
+    found = _compose_web_container()
+    if isinstance(found, str):
+        return False, f"visual: {found}"
+    cid, project = found
+    code, raw = run(["docker", "inspect", "-f", "{{json .Config.Env}}", cid])
+    if code != 0:
+        return False, f"visual: web konteyneri muhiti o'qilmadi — {raw.strip()[-160:]}"
+    env = json.loads(raw)
+    image = f"{project}-web"
+
+    code, out = _compose_visual_run(project, image, "visual-control", env)
+    if code != 0:
+        shots, other = visual_pixel_diffs(out)
+        found = ", ".join(f"{name} {pixels} px" for name, pixels in sorted(shots.items()))
+        return False, (
+            f"visual: NAZORAT qizil (exit {code}) — o'zgarmagan obraz ham farq berdi, isbot "
+            f"o'lchanmadi: {found or out.strip()[-240:]}"
+            + (f"; pikseldan boshqa sabab {other} ta" if other else "")
+        )
+
+    css = ROOT / "apps" / "web" / "src" / "app" / "theme.css"
+    text = css.read_bytes().decode("utf-8")
+    mutant = f"{project}-web-mutant"
+    # Same build argument as `tools/ci_stack.sh`, so the bundle differs from
+    # the stack's image by the mutation alone.
+    next_api = os.environ.get("NEXT_PUBLIC_API_BASE", "http://localhost:8000/api/v1")
+    with Mutation(css, text, text + VISUAL_MUTANT_CSS):
+        code, built = run(
+            ["docker", "build", "-f", "apps/web/Dockerfile",
+             "--build-arg", f"NEXT_PUBLIC_API_BASE={next_api}", "-t", mutant, "."]
+        )
+    if code != 0:
+        return False, f"visual: mutant obraz qurilmadi — {built.strip()[-240:]}"
+    try:
+        code, out = _compose_visual_run(project, mutant, "visual-mutant", env, "--retries=0")
+    finally:
+        run(["docker", "rmi", "-f", mutant])
+    if code == 0:
+        return False, "visual: fon rangi o'zgardi, lekin suite YASHIL — baseline o'lik"
+    shots, other = visual_pixel_diffs(out)
+    expected = _visual_spec_shots()
+    if other:
+        return False, f"visual: mutantda {other} ta test pikseldan boshqa sabab bilan yiqildi — {out.strip()[-240:]}"
+    # Names come from the failure text; the diff images Playwright wrote are
+    # the second witness, in case a release words the error differently.
+    results = ROOT / "tests" / "e2e" / "test-results"
+    diffs = {p.name.replace("-diff.png", ".png") for p in results.rglob("*-diff.png")}
+    missed = sorted(expected - (set(shots) | diffs))
+    if missed or len(shots) < len(expected):
+        return False, (
+            f"visual: mutatsiya {len(shots)}/{len(expected)} skrinshotda piksel farqi berdi "
+            f"(farqsiz: {', '.join(missed) or '?'}) — bu baseline'lar o'lik. {out.strip()[-200:]}"
+        )
+    # A passing proof leaves no mutant screenshots behind for a later
+    # failure's artifact upload to pass off as a real regression.
+    shutil.rmtree(results, ignore_errors=True)
+    listed = ", ".join(f"{name} {pixels}" for name, pixels in sorted(shots.items()))
+    return True, (
+        f"visual: nazorat 0 farq; mutant {len(shots)}/{len(expected)} skrinshotda "
+        f"{sum(shots.values())} piksel farq ({listed})"
+    )
+
+
 def visual_precondition() -> str | None:
     """Vizual guruh yurishi uchun stack va playwright joyidami?
 
@@ -358,6 +551,9 @@ def visual_precondition() -> str | None:
     tekshiriladigan narsa — «muhit tayyor emas» ni «buzuq holatni tutdi»
     deb o'qib qo'ymaslik uchun (node_precondition bilan bir mantiq).
     """
+    if _visual_on_compose():
+        found = _compose_web_container()
+        return found if isinstance(found, str) else None
     pw = _find_playwright()
     if pw is None:
         return "playwright cli topilmadi — `cd tests/e2e && npm ci` kerak"
@@ -2966,7 +3162,13 @@ def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
 
     This is the non-vacuous proof for the whole `visual` project: if this
     passes while the suite stays green, the baselines are decorative.
+
+    Two drivers: the CI compose stack (`VISUAL_STACK=compose`, Nightly via
+    `tools/ci_visual_gate.sh`) and a host `next start` (a developer machine,
+    `E2E_BASE_URL`). Both make the same mutation (`VISUAL_MUTANT_CSS`).
     """
+    if _visual_on_compose():
+        return _visual_proof_on_compose()
     pw = _find_playwright()
     if pw is None:
         return False, "visual: playwright cli topilmadi (tests/e2e/node_modules)"
@@ -2978,12 +3180,9 @@ def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
     text = css.read_bytes().decode("utf-8")
     # `--rw-ground` — sahifa foni. `--rw-rank-grey` EMAS: u skrinshot
     # olinadigan sahifalarda ko'rinmaydi (yuqoridagi izohga qarang).
-    anchor = "--rw-ground: #f9fafb;"
-    if anchor not in text:
-        return False, f"visual: fon tokeni langari topilmadi ({css.name})"
 
     env = {**os.environ, "E2E_BASE_URL": base}
-    with Mutation(css, anchor, "--rw-ground: #bf3a6e;"):
+    with Mutation(css, text, text + VISUAL_MUTANT_CSS):
         # ⚠️ BUILD YETMAYDI — SERVER HAM QAYTA ISHGA TUSHISHI KERAK.
         #
         # `next start` chiqishni XOTIRADA ushlab turadi: yangi `.next`
@@ -3307,6 +3506,145 @@ def neg_decisions_bakeoff_runs_the_image_default() -> tuple[bool, str]:
         "",
         "harness'ni yurgizmaydi",
     )
+
+
+def neg_decisions_visual_gate_exits_zero() -> tuple[bool, str]:
+    """The visual gate's «no stack» branch goes back to `exit 0`.
+
+    That is how it measured nothing on every hosted run until 2026-11-10.
+    """
+    return _decision_broken(
+        "tools/ci_visual_gate.sh",
+        "  echo \"Vizual darvoza o'lchanmadi — qadam yiqiladi (o'tkazib yuborilmaydi).\"\n  exit 1\n",
+        "  echo \"Vizual darvoza o'lchanmadi — qadam yiqiladi (o'tkazib yuborilmaydi).\"\n  exit 0\n",
+        "stack topilmasa jim o'tadi",
+    )
+
+
+def neg_decisions_csp_gate_only_warns() -> tuple[bool, str]:
+    """The CSP gate reports a missing stack as a warning again."""
+    return _decision_broken(
+        "tools/ci_csp_gate.sh",
+        '  echo "::error::$1"\n',
+        '  echo "::warning::$1"\n',
+        "stack topilmasa jim o'tadi",
+    )
+
+
+def neg_decisions_live_gate_on_host_port() -> tuple[bool, str]:
+    """The visual step is pointed at a host port the CI stack never publishes."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        timeout-minutes: 10\n        run: bash tools/ci_visual_gate.sh\n",
+        "        timeout-minutes: 10\n        env:\n          E2E_BASE_URL: http://localhost:3400\n"
+        "        run: bash tools/ci_visual_gate.sh\n",
+        "host portiga qaratilgan",
+    )
+
+
+def neg_decisions_live_gate_soft() -> tuple[bool, str]:
+    """The CSP step may fail without turning Nightly red."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        timeout-minutes: 3\n        run: bash tools/ci_csp_gate.sh\n",
+        "        timeout-minutes: 3\n        continue-on-error: true\n        run: bash tools/ci_csp_gate.sh\n",
+        "`CSP nonce coverage is live` `continue-on-error` bilan",
+    )
+
+
+def neg_decisions_csp_gate_skipped_after_visual() -> tuple[bool, str]:
+    """The CSP step is gated on `success()` again: a pixel diff leaves it unmeasured.
+
+    Measured on the first run of this rule's branch (Nightly 42730658697): the
+    proof went red and the CSP step was `skipped`.
+    """
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "        if: ${{ !cancelled() && vars.STAGING_URL == '' }}\n        timeout-minutes: 3\n",
+        "        if: ${{ vars.STAGING_URL == '' }}\n        timeout-minutes: 3\n",
+        "`CSP nonce coverage is live` `!cancelled()` siz",
+    )
+
+
+def neg_decisions_visual_proof_off_stack() -> tuple[bool, str]:
+    """The proof runs in host mode again, i.e. looks for `next start` on the runner."""
+    return _decision_broken(
+        "tools/ci_visual_gate.sh",
+        "VISUAL_STACK=compose python3 tools/check_negative.py --group visual",
+        "python3 tools/check_negative.py --group visual",
+        "mutatsiya isboti CI stack'ida yurmaydi",
+    )
+
+
+def _live_gate_without_stack(script: str) -> tuple[bool, str]:
+    """Run a Nightly live gate where no CI stack exists: it must fail, loudly.
+
+    A behaviour test, not a text one: whatever the script looks like, a
+    missing target has to end in a non-zero exit and an `::error::` line.
+    """
+    env = {**os.environ, "COMPOSE_PROJECT_NAME": "rw-negative-no-such-stack"}
+    env.pop("GITHUB_STEP_SUMMARY", None)
+    proc = subprocess.run(
+        [_bash(), script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+        timeout=60,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode == 0:
+        return False, f"{script}: stack yo'q, lekin exit 0 — darvoza yana jim o'tkazib yuboradi"
+    if "::error::" not in out:
+        return False, f"{script}: exit {proc.returncode}, lekin `::error::` yo'q — {out.strip()[-160:]}"
+    return True, f"{script}: stack yo'q — exit {proc.returncode} va `::error::` (o'tkazib yuborilmadi)"
+
+
+def neg_live_visual_gate_fails_without_stack() -> tuple[bool, str]:
+    return _live_gate_without_stack("tools/ci_visual_gate.sh")
+
+
+def neg_live_csp_gate_fails_without_stack() -> tuple[bool, str]:
+    return _live_gate_without_stack("tools/ci_csp_gate.sh")
+
+
+#: Two failure blocks as Playwright's list reporter prints them: one pixel diff,
+#: one test that timed out before any comparison.
+_PW_SAMPLE = """
+  1) [visual] › visual/visual.spec.ts:68:7 › vizual regressiya › bosh sahifa ─────
+
+    Error: expect(page).toHaveScreenshot(expected) failed
+
+      107105 pixels (ratio 0.10 of all image pixels) are different.
+
+    Expected: /e2e/visual/visual.spec.ts-snapshots/home.png
+    Received: /e2e/test-results/visual-bosh-sahifa-visual/home-actual.png
+
+  2) [visual] › visual/visual.spec.ts:86:7 › vizual regressiya › kirish sahifasi ──
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+
+  2 failed
+    [visual] › visual/visual.spec.ts:68:7 › vizual regressiya › bosh sahifa ─────
+"""
+
+
+def neg_live_visual_red_without_pixels_is_not_proof() -> tuple[bool, str]:
+    """A red mutant run counts only for the screenshots that report pixels.
+
+    A timeout is red too; if the parser took it for a diff, a broken stack
+    would pass as "the pixel gate is live".
+    """
+    shots, other = visual_pixel_diffs(_PW_SAMPLE)
+    if shots != {"home.png": 107105}:
+        return False, f"visual/parse: piksel farqi noto'g'ri o'qildi — {shots}"
+    if other != 1:
+        return False, f"visual/parse: timeout isbot deb sanaldi (boshqa sabab {other}, 1 kerak)"
+    return True, "visual/parse: faqat piksel farqi isbot, timeout alohida sanaldi"
 
 
 def neg_decisions_smoke_skipped_after_visual() -> tuple[bool, str]:
@@ -7064,6 +7402,10 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Nightly live gates (2026-11-10): the rule reads both scripts to prove a
+    # missing stack fails the step instead of skipping it.
+    "tools/ci_visual_gate.sh",
+    "tools/ci_csp_gate.sh",
     # Daily external refresh (2026-11-10).
     "apps/api/profiles/tasks.py",
     # Staff harness editor (2026-11-10).
@@ -10398,6 +10740,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ],
     ),
     (
+        "live_gates",
+        [
+            ("vizual darvoza stack'siz yiqilsin", neg_live_visual_gate_fails_without_stack),
+            ("CSP darvozasi stack'siz yiqilsin", neg_live_csp_gate_fails_without_stack),
+            ("piksel bo'lmagan qizil isbot sanalmasin", neg_live_visual_red_without_pixels_is_not_proof),
+        ],
+    ),
+    (
         "push_guard",
         [
             ("soxta muallif rad etilsin", neg_push_guard_placeholder_author),
@@ -10598,6 +10948,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bake-off vizualdan keyin o'tkazilsa tutilsin", neg_decisions_bakeoff_skipped_after_visual),
             ("smoke vizualdan keyin o'tkazilsa tutilsin", neg_decisions_smoke_skipped_after_visual),
             ("bake-off harness'siz qolsa tutilsin", neg_decisions_bakeoff_runs_the_image_default),
+            ("vizual darvoza yana exit 0 bilan o'tsa tutilsin", neg_decisions_visual_gate_exits_zero),
+            ("CSP darvozasi yana faqat ogohlantirsa tutilsin", neg_decisions_csp_gate_only_warns),
+            ("jonli darvoza host portiga qaratilsa tutilsin", neg_decisions_live_gate_on_host_port),
+            ("jonli darvoza continue-on-error bilan tutilsin", neg_decisions_live_gate_soft),
+            ("mutatsiya isboti stack'dan chiqsa tutilsin", neg_decisions_visual_proof_off_stack),
+            ("CSP darvozasi vizualdan keyin o'tkazilsa tutilsin", neg_decisions_csp_gate_skipped_after_visual),
             ("taxallus so'rovga qo'shilmasa tutilsin", neg_decisions_sign_up_loses_the_handle),
             ("1-qadam taxallusni tekshirmasa tutilsin", neg_decisions_step_one_stops_checking_the_handle),
             ("2-qadam yana bitta ism bo'lsa tutilsin", neg_decisions_step_one_drops_the_last_name),
