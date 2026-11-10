@@ -2553,6 +2553,12 @@ def flags_reach_the_web_build() -> str | None:
     ham, `build.args` da ham yo'q edi, ya'ni `.env.public` ga yozilgan
     bayroq production'da hech qachon yoqilmasdi. Endi `FLAGS` dagi har kalit
     uchta joyda bo'lishi shart.
+
+    2026-11-10 (davomi): xuddi shu sinf `NEXT_PUBLIC_SITE_URL` va
+    `NEXT_PUBLIC_CUSTOMIZER` da ham bor edi. Shuning uchun ro'yxat endi qo'lda
+    emas: web manbasidagi har `process.env.NEXT_PUBLIC_*` o'qilishi topiladi
+    va har biri Dockerfile'da (`ARG` + `ENV`) va `web.build.args` da bo'lishi
+    shart — yangi build-time o'zgaruvchi ulanmasa CI qizaradi.
     """
     flags = read("apps/web/src/lib/flags.ts")
     block = flags.split("export const FLAGS = {", 1)[-1].split("} as const", 1)[0]
@@ -2569,7 +2575,57 @@ def flags_reach_the_web_build() -> str | None:
             return f"apps/web/Dockerfile: `{env}` build'ga e'lon qilinmagan"
         if f"        {env}: ${{{env}:-}}\n" not in compose:
             return f"docker-compose.public.yml: `{env}` web build'iga uzatilmaydi"
+
+    baked = _web_build_env_names()
+    if "NEXT_PUBLIC_API_BASE" not in baked:
+        return "apps/web/src: `process.env.NEXT_PUBLIC_*` o'qilishlari topilmadi — skaner buzilgan"
+    web = _compose_service(compose, "web").split("\n    build:\n      args:\n", 1)
+    if len(web) != 2:
+        return "docker-compose.public.yml: `web.build.args` topilmadi"
+    # Only the lines under `args:` (8-space keys or comments) reach the build.
+    web = re.match(r"(?:(?:        |\s*$).*\n?)*", web[1]).group(0)
+    for env in sorted(baked):
+        declared = re.search(rf"^ARG {env}(=[^\n]*)?$", docker, re.M)
+        if not declared or f"\nENV {env}=${env}\n" not in docker:
+            return f"apps/web/Dockerfile: `{env}` build'ga e'lon qilinmagan"
+        if not re.search(rf"^        {env}: \S", web, re.M):
+            return f"docker-compose.public.yml: `{env}` web build'iga uzatilmaydi"
     return None
+
+
+def _web_build_env_names() -> set[str]:
+    """Every `NEXT_PUBLIC_*` the web bundle reads; Next bakes each at build time.
+
+    Only the static `process.env.NEXT_PUBLIC_X` form is inlined, so only that
+    form is collected. Comments are stripped first: `lib/flags.ts` explains the
+    mechanism with a placeholder `process.env.NEXT_PUBLIC_X` in its JSDoc. A
+    `//` right after `:` is a URL inside a string, not a comment, and is kept.
+    """
+    names: set[str] = set()
+    sources = [ROOT / "apps/web/next.config.ts"]
+    for base in ("apps/web/src", "packages/shared/src"):
+        sources += sorted((ROOT / base).rglob("*.ts*"))
+    for path in sources:
+        text = read(str(path.relative_to(ROOT)))
+        text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
+        text = re.sub(r"(?<!:)//[^\n]*", "", text)
+        names |= set(re.findall(r"process\.env\.(NEXT_PUBLIC_[A-Z0-9_]+)", text))
+    return names
+
+
+def _compose_service(compose: str, name: str) -> str:
+    """The lines of one service in a compose file (up to the next service)."""
+    lines = compose.split("\n")
+    try:
+        start = lines.index(f"  {name}:")
+    except ValueError:
+        return ""
+    body: list[str] = []
+    for line in lines[start + 1 :]:
+        if re.match(r"^(\S|  [A-Za-z_][\w-]*:)", line):
+            break
+        body.append(line)
+    return "\n".join(body)
 
 
 def notification_email_is_opt_in_and_bounded() -> str | None:
