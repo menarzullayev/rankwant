@@ -552,6 +552,31 @@ kichraymaydi.
 ⚠️ Bu Docker Desktop'ni ham o'chiradi → sayt va CI ~10 daqiqa to'xtaydi.  
 ⚠️ Siqishdan oldin **zaxira majburiy** (§5).
 
+### 4.5 Docker qaytgach bitta konteyner `Exited (128)` da qoladi
+
+**Alomat** (o'lchandi 2026-11-10): Docker Desktop to'xtab qayta ko'tarilgach
+hamma konteyner tirik, faqat `rankwant-judge-1` `Exited (128)`. Sayt 200
+qaytaradi, monitor «OK» deydi — lekin urinishlar hakamlanmaydi:
+
+```
+failed to create task for container: ... unable to apply cgroup configuration:
+failed to write 872: write /sys/fs/cgroup/docker/<id>/cgroup.procs: device or resource busy
+```
+
+**Sabab:** Docker konteynerni ishga tushirishga urindi va uddalay olmadi;
+`restart: unless-stopped` bunday (task yaratilmagan) holatda qayta urinmaydi.
+
+**Yechim — avtomatik:** watcher har daqiqada `tools/revive_containers.sh`
+ni chaqiradi. U faqat `.State.Error` yozilgan konteynerni (`docker start`)
+ko'taradi va logga `qayta ko'tarildi: <nom>` yozadi; ko'tarilmasa
+`ko'tarilmadi: <nom>` — bir marta. Qo'lda to'xtatilgan konteynerda Error
+bo'sh, ya'ni bake-off uchun to'xtatilgan `worker`/`beat` tegilmaydi.
+Qo'lda tekshirish: `bash tools/revive_containers.sh rankwant --dry-run`.
+
+Docker javob bermagan daqiqalarda watcher deploy'ga **urinmaydi** va
+30 daqiqalik to'siq qo'ymaydi (`Docker engine javob bermayapti — deploy
+qilinmadi, to'siq YO'Q`); qaytgach `Docker engine yana javob beryapti`.
+
 ---
 
 ## 5. Reboot / elektr uzilishi
@@ -561,6 +586,7 @@ O'lchangan xulq (ikki marta kuzatilgan):
 | Nima bo'ladi                  | Izoh                                                  |
 | ----------------------------- | ----------------------------------------------------- |
 | Konteynerlar o'zi tiklanadi   | `restart: unless-stopped`                             |
+| Tiklanmagani 1 daqiqada turadi | watcher → `tools/revive_containers.sh` (§4.5)        |
 | **Tunnel o'ladi**             | `cloudflared` — foydalanuvchi jarayoni → sayt **503** |
 | Monitor 5 daqiqada tiklaydi   | `StartWhenAvailable: True`, `NextRun` sikli           |
 | Soat orqada qoladi (CMOS)     | R2 imzolangan so'rovlar o'tmaydi → `UNMEASURED`       |

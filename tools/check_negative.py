@@ -4675,6 +4675,36 @@ def neg_decisions_optimistic_throw_counts_as_saved() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_revive_touches_manual_stops() -> tuple[bool, str]:
+    """The revive script stops filtering on `.State.Error` (would start bake-off's stopped worker)."""
+    return _decision_broken(
+        "tools/revive_containers.sh",
+        '  [ -n "$err" ] || continue\n',
+        "",
+        "qo'lda to'xtatilgan konteyner ham ko'tariladi",
+    )
+
+
+def neg_decisions_watcher_skips_revive() -> tuple[bool, str]:
+    """The watcher no longer calls the revive script."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '  revive_out="$(bash tools/revive_containers.sh "${revive_args[@]}" 2>&1)"\n',
+        '  revive_out=""\n',
+        "Docker ko'tara olmagan konteyner tiklanmaydi",
+    )
+
+
+def neg_decisions_watcher_deploys_without_docker() -> tuple[bool, str]:
+    """A Docker outage is again treated as a failed deploy with a 30-minute backoff."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '  log_once "nodocker" "Docker engine javob bermayapti — deploy qilinmadi, to\'siq YO\'Q"\n  exit 0\n',
+        '  log_once "nodocker" "Docker engine javob bermayapti — deploy qilinmadi, to\'siq YO\'Q"\n',
+        "Docker javob bermasa deploy'ga urinadi",
+    )
+
+
 def neg_decisions_flag_not_declared_in_dockerfile() -> tuple[bool, str]:
     """A flag's build arg is dropped from the web Dockerfile."""
     return _decision_broken(
@@ -7725,6 +7755,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "tools/revive_containers.sh",
     "apps/api/contests/organizer_views.py",
     "apps/web/src/features/studio/api/contests.ts",
     "apps/web/src/features/studio/components/StudioNav.tsx",
@@ -11600,6 +11631,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yo'ldagi so'rov sahifani ushlamasa tutilsin", neg_decisions_optimistic_unload_unguarded),
             ("yiqilgan so'rov saqlangan sanalsa tutilsin", neg_decisions_optimistic_throw_counts_as_saved),
             ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
+            ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
+            ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),
+            ("Docker o'chiqda deploy'ga urinilsa tutilsin", neg_decisions_watcher_deploys_without_docker),
             ("bayroq Dockerfile'dan tushsa tutilsin", neg_decisions_flag_not_declared_in_dockerfile),
             ("bayroq compose build'iga uzatilmasa tutilsin", neg_decisions_flag_not_passed_by_compose),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
