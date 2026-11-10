@@ -134,7 +134,7 @@ function Task({ data, locale }: { data: LessonDetail; locale: Locale }) {
       </div>
     );
   }
-  if (data.kind === "video" && data.video) return <LessonVideo video={data.video} />;
+  if (data.kind === "video" && data.video) return <LessonVideo video={data.video} title={data.title} />;
   return null;
 }
 

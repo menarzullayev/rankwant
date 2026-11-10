@@ -34,11 +34,14 @@ describe("contentSecurityPolicy connect-src", () => {
 });
 
 describe("contentSecurityPolicy frame-src", () => {
-  it("lets the Turnstile check be framed, and nothing else", () => {
+  it("frames the Turnstile check and the two course video players, nothing else", () => {
     // Without the directive `default-src 'self'` blocks the frame: the
-    // widget yields no token and the API refuses every sign-up.
+    // widget yields no token and the API refuses every sign-up. Course
+    // lessons embed YouTube (no-cookie host) and Vimeo (ADR-0056).
     const csp = contentSecurityPolicy("test-nonce", false, true);
-    expect(csp).toContain("frame-src https://challenges.cloudflare.com;");
+    expect(csp).toContain(
+      "frame-src https://challenges.cloudflare.com https://www.youtube-nocookie.com https://player.vimeo.com;",
+    );
     expect(csp).toContain("frame-ancestors 'none'");
   });
 });

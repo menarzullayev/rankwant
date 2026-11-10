@@ -6,34 +6,49 @@ import { t } from "@/i18n/messages";
 
 import type { LessonDetail } from "../api/courses";
 
-/** Where a hosted video plays. The ref is the provider's video id. */
-const WATCH: Record<string, (ref: string) => string> = {
-  youtube: (ref) => `https://www.youtube.com/watch?v=${encodeURIComponent(ref)}`,
-  vimeo: (ref) => `https://vimeo.com/${encodeURIComponent(ref)}`,
+/** The embed address of a hosted video. The id was checked by the API
+ *  (`courses.video.normalise`); it is encoded here all the same, because it
+ *  ends up in a frame's address. The hosts are the two `frame-src` allows
+ *  (`VIDEO_FRAME_ORIGINS`). */
+const EMBED: Record<string, (ref: string) => string> = {
+  youtube: (ref) => `https://www.youtube-nocookie.com/embed/${encodeURIComponent(ref)}?rel=0`,
+  vimeo: (ref) => `https://player.vimeo.com/video/${encodeURIComponent(ref)}?dnt=1`,
 };
 
-/** Part 3 links out; the embedded player (and the signed HLS playlist for
- *  paid courses) comes with the video pipeline, ADR-0056 § 3.6. */
-export function LessonVideo({ video }: { video: NonNullable<LessonDetail["video"]> }) {
+/** A free lesson's YouTube or Vimeo player. A paid lesson's video lives on
+ *  R2 and plays through a signed address (ADR-0056 § 3.5); until that part
+ *  ships, the block says the video is being prepared. */
+export function LessonVideo({
+  video,
+  title,
+}: {
+  video: NonNullable<LessonDetail["video"]>;
+  title: string;
+}) {
   const locale = useLocale();
-  const watch = video.ref ? WATCH[video.provider] : undefined;
+  const embed = video.ref ? EMBED[video.provider] : undefined;
+  if (embed && video.ref) {
+    return (
+      <div className="aspect-video overflow-hidden rw-radius border rw-line bg-black">
+        <iframe
+          src={embed(video.ref)}
+          title={title}
+          className="size-full"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allow="encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+          // The player may run its own scripts; it may not navigate this
+          // page or open forms on it.
+          sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+        />
+      </div>
+    );
+  }
   return (
     <div className="flex aspect-video flex-col items-center justify-center gap-3 rw-radius border rw-line rw-surface p-6 text-center">
       <Icon name="content.video" size="xl" className="size-8 rw-dim" />
-      {watch && video.ref ? (
-        <a
-          href={watch(video.ref)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center gap-2 rw-radius-sm px-4 text-theme-sm font-medium rw-accent-ink rw-hover-bg rw-focus-ring"
-        >
-          {t(locale, "course.lesson.videoExternal")}
-          <Icon name="nav.external" size="sm" className="size-4" />
-          <span className="sr-only">{t(locale, "footer.opensNewTab")}</span>
-        </a>
-      ) : (
-        <p className="text-theme-sm rw-dim">{t(locale, "course.lesson.videoPending")}</p>
-      )}
+      <p className="text-theme-sm rw-dim">{t(locale, "course.lesson.videoPending")}</p>
     </div>
   );
 }

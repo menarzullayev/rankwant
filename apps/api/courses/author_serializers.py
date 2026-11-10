@@ -7,7 +7,7 @@ from typing import Any
 from django.utils.text import slugify
 from rest_framework import serializers
 
-from courses import review
+from courses import review, video
 from courses.models import (
     CONTENT_LOCALES,
     Course,
@@ -99,6 +99,20 @@ class StudioLessonSerializer(serializers.ModelSerializer[Lesson]):
         kind = attrs.get("kind", getattr(self.instance, "kind", Lesson.Kind.TEXT))
         provider = attrs.get("video_provider", getattr(self.instance, "video_provider", ""))
         preview = attrs.get("is_preview", getattr(self.instance, "is_preview", False))
+        if "video_ref" in attrs or "video_provider" in attrs:
+            ref = attrs.get("video_ref", getattr(self.instance, "video_ref", ""))
+            if provider == Lesson.VideoProvider.HLS and "video_ref" in attrs and ref:
+                # An R2 key names a stored video; typing one could point a
+                # lesson at another course's paid video. The upload writes it.
+                if not review.is_course_staff(self.context["request"].user):
+                    raise serializers.ValidationError(
+                        {"video_ref": "R2 videos are attached by uploading them."}
+                    )
+            if provider and ref:
+                try:
+                    attrs["video_ref"] = video.normalise(provider, ref)
+                except ValueError as error:
+                    raise serializers.ValidationError({"video_ref": str(error)}) from error
         if course.access == Course.Access.PAID and kind == Lesson.Kind.VIDEO:
             # ADR-0056 § 3.5: a YouTube or Vimeo link of a paid lesson can be
             # passed around; R2 serves it behind a signed URL.

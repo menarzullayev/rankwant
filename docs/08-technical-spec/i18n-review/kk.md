@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2857 strings.**
+**2856 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2769,7 +2769,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `course.lesson.openProblem` | Masalani ochish | Есепті ашу |  |
 | `course.lesson.quizHint` | Testdan kamida {percent}% to'plang — dars o'zi tugaydi. | Тесттен кемінде {percent}% жинаңыз — сабақ өзі аяқталады. |  |
 | `course.lesson.openQuiz` | Testni boshlash | Тестті бастау |  |
-| `course.lesson.videoExternal` | Videoni ochish | Бейнені ашу |  |
 | `course.lesson.videoPending` | Video tayyorlanmoqda. | Бейне дайындалуда. |  |
 | `course.lesson.backToCourse` | Kurs sahifasi | Курс беті |  |
 | `gate.course.title` | Darslarni o'qish uchun tizimga kiring | Сабақтарды оқу үшін жүйеге кіріңіз |  |
@@ -2862,7 +2861,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.provider.vimeo` | Vimeo | Vimeo |  |
 | `studio.course.provider.hls` | Bizning serverda (R2) | Біздің серверде (R2) |  |
 | `studio.course.videoRef` | Video identifikatori | Бейне ID |  |
-| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasidagi identifikator (masalan dQw4w9WgXcQ). | YouTube не Vimeo сілтемесіндегі идентификатор (мысалы dQw4w9WgXcQ). |  |
+| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasini yoki video identifikatorini qo'ying — sayt faqat identifikatorni saqlaydi. | YouTube не Vimeo сілтемесін немесе бейне идентификаторын қойыңыз — тек идентификатор сақталады. |  |
 | `studio.course.videoSeconds` | Davomiyligi, soniya | Ұзақтығы, секунд |  |
 | `studio.course.saveLesson` | Darsni saqlash | Сабақты сақтау |  |
 | `studio.course.reviewIntro` | Xodim kursni o'qib chiqadi, narxini belgilaydi va nashr qiladi. Yuborishdan oldin quyidagilar bajarilishi kerak. | Қызметкер курсты оқып, бағасын белгілеп, жариялайды. Жібермес бұрын төмендегілер орындалуы керек. |  |

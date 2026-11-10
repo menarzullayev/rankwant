@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2857 strings.**
+**2856 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2769,7 +2769,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `course.lesson.openProblem` | Masalani ochish | Кушодани масъала |  |
 | `course.lesson.quizHint` | Testdan kamida {percent}% to'plang — dars o'zi tugaydi. | Аз тест на камтар аз {percent}% гиред — дарс худаш анҷом меёбад. |  |
 | `course.lesson.openQuiz` | Testni boshlash | Оғози тест |  |
-| `course.lesson.videoExternal` | Videoni ochish | Кушодани видео |  |
 | `course.lesson.videoPending` | Video tayyorlanmoqda. | Видео омода мешавад. |  |
 | `course.lesson.backToCourse` | Kurs sahifasi | Саҳифаи курс |  |
 | `gate.course.title` | Darslarni o'qish uchun tizimga kiring | Барои хондани дарсҳо ворид шавед |  |
@@ -2862,7 +2861,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.provider.vimeo` | Vimeo | Vimeo |  |
 | `studio.course.provider.hls` | Bizning serverda (R2) | Дар сервери мо (R2) |  |
 | `studio.course.videoRef` | Video identifikatori | ID-и видео |  |
-| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasidagi identifikator (masalan dQw4w9WgXcQ). | Идентификатор аз пайванди YouTube ё Vimeo (масалан dQw4w9WgXcQ). |  |
+| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasini yoki video identifikatorini qo'ying — sayt faqat identifikatorni saqlaydi. | Пайванди YouTube ё Vimeo ё идентификатори видеоро гузоред — танҳо идентификатор нигоҳ дошта мешавад. |  |
 | `studio.course.videoSeconds` | Davomiyligi, soniya | Давомнокӣ, сония |  |
 | `studio.course.saveLesson` | Darsni saqlash | Нигоҳ доштани дарс |  |
 | `studio.course.reviewIntro` | Xodim kursni o'qib chiqadi, narxini belgilaydi va nashr qiladi. Yuborishdan oldin quyidagilar bajarilishi kerak. | Корманд курсро мехонад, нархашро муайян ва нашр мекунад. Пеш аз фиристодан инҳо бояд иҷро шаванд. |  |
