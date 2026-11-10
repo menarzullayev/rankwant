@@ -2544,6 +2544,34 @@ def _python_function(text: str, name: str) -> str:
     return "\n".join(body)
 
 
+def flags_reach_the_web_build() -> str | None:
+    """2026-11-10 (HITL, audit Q-13): har bayroq web obrazi qurilishiga yetadi.
+
+    `NEXT_PUBLIC_FLAG_*` bundle'ga build paytida singadi. Compose'ning
+    `--env-file` i faqat compose faylidagi `${...}` ni to'ldiradi — Docker
+    build'ga hech narsa uzatmaydi. O'lchandi: birorta bayroq Dockerfile'da
+    ham, `build.args` da ham yo'q edi, ya'ni `.env.public` ga yozilgan
+    bayroq production'da hech qachon yoqilmasdi. Endi `FLAGS` dagi har kalit
+    uchta joyda bo'lishi shart.
+    """
+    flags = read("apps/web/src/lib/flags.ts")
+    block = flags.split("export const FLAGS = {", 1)[-1].split("} as const", 1)[0]
+    names = re.findall(r"^  ([a-zA-Z]+): (?:true|false),$", block, re.M)
+    if len(names) < 4:
+        return f"lib/flags.ts: `FLAGS` ro'yxati o'qilmadi ({len(names)} ta kalit)"
+    docker = read("apps/web/Dockerfile")
+    compose = read("docker-compose.public.yml")
+    for name in names:
+        env = "NEXT_PUBLIC_FLAG_" + re.sub(r"(?<!^)(?=[A-Z])", "_", name).upper()
+        if f"process.env.{env};" not in flags:
+            return f"lib/flags.ts: `{name}` muhit o'zgaruvchisi `{env}` ni o'qimaydi"
+        if f"ARG {env}=\n" not in docker or f"ENV {env}=${env}\n" not in docker:
+            return f"apps/web/Dockerfile: `{env}` build'ga e'lon qilinmagan"
+        if f"        {env}: ${{{env}:-}}\n" not in compose:
+            return f"docker-compose.public.yml: `{env}` web build'iga uzatilmaydi"
+    return None
+
+
 def notification_email_is_opt_in_and_bounded() -> str | None:
     """2026-11-10 (HITL, audit Q-07/3): email bildirishnomasi — opt-in va chegaralangan.
 
@@ -4519,6 +4547,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
     ("email bildirishnomasi opt-in va chegaralangan", notification_email_is_opt_in_and_bounded),
+    ("bayroqlar web build'iga yetadi", flags_reach_the_web_build),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),

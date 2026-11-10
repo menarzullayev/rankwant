@@ -126,6 +126,20 @@ RUN test -n "$NEXT_PUBLIC_API_BASE" \
   || (echo "NEXT_PUBLIC_API_BASE kerak (masalan: https://rankwant.uz/api/v1)" >&2 \
       && exit 1)
 ENV NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE
+# Feature flags (`src/lib/flags.ts`) — baked into the bundle like the API base.
+# Without these lines a `NEXT_PUBLIC_FLAG_*` in `.env.public` never reached
+# `next build`: compose's `--env-file` only fills `${...}` in the compose
+# file, it does not pass variables into a Docker build (measured 2026-11-10:
+# no flag was declared here or in any `build.args`). Empty = the flag's
+# default, which is off for all four.
+ARG NEXT_PUBLIC_FLAG_GEO_EARLY_REGION=
+ARG NEXT_PUBLIC_FLAG_NEW_NAV=
+ARG NEXT_PUBLIC_FLAG_NEW_PALETTE=
+ARG NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE=
+ENV NEXT_PUBLIC_FLAG_GEO_EARLY_REGION=$NEXT_PUBLIC_FLAG_GEO_EARLY_REGION
+ENV NEXT_PUBLIC_FLAG_NEW_NAV=$NEXT_PUBLIC_FLAG_NEW_NAV
+ENV NEXT_PUBLIC_FLAG_NEW_PALETTE=$NEXT_PUBLIC_FLAG_NEW_PALETTE
+ENV NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE=$NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE
 # Next.js'ning o'z keshi `.next/cache` da (webpack/SWC). U ham qatlam
 # keshiga qo'shiladi: kod o'zgarganda qayta kompilyatsiya tezroq ketadi.
 RUN --mount=type=cache,target=/app/apps/web/.next/cache \
