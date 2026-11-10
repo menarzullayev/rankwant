@@ -11,9 +11,13 @@ import { api, type AppearancePrefs } from "@/lib/api";
 import { getSessionUser } from "@/lib/api.server";
 import { STYLE_IDS, type StyleId } from "@/layout/styles";
 import { isOnServer } from "@/lib/flags";
+
 import { styleInit, teamDefaultLiteral } from "@/lib/theme/first-paint";
 import { MARKUP_COOKIE, parseMarkupCookie } from "@/lib/prefs";
 import { SITE_INDEXABLE, SITE_URL } from "@/lib/site";
+
+/** `theme.css` → `[data-style="clay"].dark[data-palette="graphite"]`. */
+const GRAPHITE_PALETTE = "graphite";
 
 const TITLE = "RankWant — reyting xohlaganlar uchun";
 
@@ -268,7 +272,7 @@ export default async function RootLayout({
       // `newPalette` (2026-11-10): the graphite dark palette for `clay`
       // (`theme.css`). A build-time flag, baked into server and client alike,
       // so the attribute is the same on both sides; no cookie can change it.
-      data-palette={isOnServer("newPalette", undefined) ? "graphite" : undefined}
+      data-palette={isOnServer("newPalette", undefined) ? GRAPHITE_PALETTE : undefined}
     >
       <head>
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_INIT }} />

@@ -2692,7 +2692,7 @@ def graphite_palette_is_flagged() -> str | None:
     if not re.search(r"^\s+newPalette: false,$", flags, re.M):
         return "lib/flags.ts: `newPalette` standart holatda yoniq yoki ro'yxatda yo'q"
     layout = read("apps/web/src/app/layout.tsx")
-    if 'data-palette={isOnServer("newPalette", undefined) ? "graphite" : undefined}' not in layout:
+    if 'data-palette={isOnServer("newPalette", undefined) ? GRAPHITE_PALETTE : undefined}' not in layout:
         return "layout.tsx: Grafit palitrasi `newPalette` bayrog'iga bog'lanmagan"
     css = read("apps/web/src/app/theme.css")
     block = re.search(r'^\[data-style="clay"\]\.dark\[data-palette="graphite"\] \{([^}]*)\}', css, re.M)

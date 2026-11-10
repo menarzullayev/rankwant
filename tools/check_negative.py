@@ -4409,8 +4409,8 @@ def neg_decisions_graphite_unflagged() -> tuple[bool, str]:
     """The graphite palette is applied without the flag."""
     return _decision_broken(
         "apps/web/src/app/layout.tsx",
-        'data-palette={isOnServer("newPalette", undefined) ? "graphite" : undefined}',
-        'data-palette="graphite"',
+        'data-palette={isOnServer("newPalette", undefined) ? GRAPHITE_PALETTE : undefined}',
+        "data-palette={GRAPHITE_PALETTE}",
         "Grafit palitrasi `newPalette` bayrog'iga bog'lanmagan",
     )
 
