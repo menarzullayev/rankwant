@@ -31,6 +31,9 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   certificates: "public",
   classroom: "public",
   contests: "public",
+  // Catalogue and programme are open; lessons ask for a session and an
+  // enrolment in the API, the page shows the sign-in card (ADR-0056).
+  courses: "public",
   duels: "public",
   hackathons: "public",
   leaderboard: "public",

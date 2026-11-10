@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2692 strings.**
+**2759 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2713,3 +2713,70 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Шумо ба мусобиқаи «{contest}» ҳамчун санҷишгар илова шудед |  |
 | `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Масъалаҳо то оғоз барои шумо кушодаанд. Агар иштирок кунед — бе рейтинг. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} масъала — бо оғози мусобиқа кушода мешаванд. |  |
+| `nav.courses` | Kurslar | Курсҳо |  |
+| `course.subtitle` | Bosqichma-bosqich o'rganish: matn, masala, test va video darslar. | Қадам ба қадам омӯзед: матн, масъала, тест ва дарсҳои видеоӣ. |  |
+| `course.mine` | Mening kurslarim | Курсҳои ман |  |
+| `course.all` | Barcha kurslar | Ҳамаи курсҳо |  |
+| `course.empty` | Hozircha kurs yo'q. | Ҳоло курс нест. |  |
+| `course.filter.level` | Daraja | Сатҳ |  |
+| `course.filter.access` | Kirish | Дастрасӣ |  |
+| `course.filter.anyLevel` | Har qanday daraja | Ҳар гуна сатҳ |  |
+| `course.filter.anyAccess` | Har qanday kirish | Ҳар гуна дастрасӣ |  |
+| `course.level.beginner` | Boshlang'ich | Ибтидоӣ |  |
+| `course.level.intermediate` | O'rta | Миёна |  |
+| `course.level.advanced` | Yuqori | Олӣ |  |
+| `course.access.free` | Bepul | Ройгон |  |
+| `course.access.qvant` | Qvant bilan | Бо Qvant |  |
+| `course.access.paid` | Pullik | Пулакӣ |  |
+| `course.price.qvant` | {amount} Qvant | {amount} Qvant |  |
+| `course.price.uzs` | {amount} so'm | {amount} сӯм |  |
+| `course.lessons` | {count} ta dars | {count} дарс |  |
+| `course.modules` | {count} ta modul | {count} модул |  |
+| `course.minutes` | {count} daq | {count} дақ |  |
+| `course.progress` | {percent}% bajarildi | {percent}% иҷро шуд |  |
+| `course.progressDetail` | {done} / {total} majburiy dars | {done} / {total} дарси ҳатмӣ |  |
+| `course.completed` | Kurs tugatildi | Курс анҷом ёфт |  |
+| `course.enroll` | Kursga yozilish | Ба курс сабти ном |  |
+| `course.start` | Boshlash | Оғоз |  |
+| `course.continue` | Davom etish | Идома додан |  |
+| `course.soonQvant` | Qvant bilan ochish tez orada qo'shiladi. | Кушодан бо Qvant ба наздикӣ илова мешавад. |  |
+| `course.soonPaid` | Sotib olish tez orada qo'shiladi. | Харидан ба наздикӣ илова мешавад. |  |
+| `course.about` | Kurs haqida | Дар бораи курс |  |
+| `course.outcomes` | Nimani o'rganasiz | Чиро меомӯзед |  |
+| `course.requirements` | Talablar | Талабот |  |
+| `course.audience` | Kim uchun | Барои кӣ |  |
+| `course.programme` | Dastur | Барнома |  |
+| `course.sequential` | Darslar ketma-ket ochiladi: avval oldingi majburiy darsni tugating. | Дарсҳо пай дар пай кушода мешаванд: аввал дарси ҳатмии қаблиро анҷом диҳед. |  |
+| `course.certificate` | Sertifikat: barcha majburiy darslar va yakuniy testdan kamida {percent}%. | Сертификат: ҳамаи дарсҳои ҳатмӣ ва дар тести ниҳоӣ на камтар аз {percent}%. |  |
+| `course.authors` | Mualliflar | Муаллифон |  |
+| `course.fallback` | Bu matn hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Ин матн ҳоло бо забони {locale} нест — бо забони {shown} нишон дода мешавад. |  |
+| `course.enrollToKeep` | Bu namuna dars. Progressingiz saqlanishi uchun kursga yoziling. | Ин дарси намунавӣ аст. Барои нигоҳ доштани пешрафт ба курс сабти ном кунед. |  |
+| `course.lesson.kind.text` | Matn | Матн |  |
+| `course.lesson.kind.problem` | Masala | Масъала |  |
+| `course.lesson.kind.quiz` | Test | Тест |  |
+| `course.lesson.kind.video` | Video dars | Видео |  |
+| `course.lesson.state.done` | Bajarildi | Иҷро шуд |  |
+| `course.lesson.state.open` | Ochiq | Кушода |  |
+| `course.lesson.state.locked` | Yopiq | Пӯшида |  |
+| `course.lesson.optional` | Ixtiyoriy | Ихтиёрӣ |  |
+| `course.lesson.preview` | Namuna dars | Дарси намунавӣ |  |
+| `course.lesson.complete` | Tugatdim | Анҷом додам |  |
+| `course.lesson.previous` | Oldingi dars | Дарси қаблӣ |  |
+| `course.lesson.next` | Keyingi dars | Дарси навбатӣ |  |
+| `course.lesson.around` | Darslar orasida | Байни дарсҳо |  |
+| `course.lesson.problemHint` | Masalani yeching — qabul qilingan yechim bilan dars o'zi tugaydi. | Масъаларо ҳал кунед — бо ҳалли қабулшуда дарс худаш анҷом меёбад. |  |
+| `course.lesson.problemHidden` | Bu masala hali arxivda emas. | Ин масъала ҳоло дар бойгонӣ нест. |  |
+| `course.lesson.openProblem` | Masalani ochish | Кушодани масъала |  |
+| `course.lesson.quizHint` | Testdan kamida {percent}% to'plang — dars o'zi tugaydi. | Аз тест на камтар аз {percent}% гиред — дарс худаш анҷом меёбад. |  |
+| `course.lesson.openQuiz` | Testni boshlash | Оғози тест |  |
+| `course.lesson.videoExternal` | Videoni ochish | Кушодани видео |  |
+| `course.lesson.videoPending` | Video tayyorlanmoqda. | Видео омода мешавад. |  |
+| `course.lesson.backToCourse` | Kurs sahifasi | Саҳифаи курс |  |
+| `gate.course.title` | Darslarni o'qish uchun tizimga kiring | Барои хондани дарсҳо ворид шавед |  |
+| `error.course_forbidden` | Bu dars sizga hali ochiq emas. | Ин дарс ҳоло барои шумо кушода нест. |  |
+| `error.course_sign_in` | Darslarni ochish uchun tizimga kiring. | Барои кушодани дарсҳо ворид шавед. |  |
+| `error.course_not_enrolled` | Bu darsni o'qish uchun avval kursga yoziling. | Барои хондани ин дарс аввал ба курс сабти ном кунед. |  |
+| `error.course_locked` | Avval oldingi majburiy darslarni tugating. | Аввал дарсҳои ҳатмии қаблиро анҷом диҳед. |  |
+| `error.course_not_self_completed` | Masala va test darslari yechilganda o'zi tugaydi. | Дарсҳои масъала ва тест ҳангоми ҳал шудан худашон анҷом меёбанд. |  |
+| `error.course_qvant_required` | Bu kurs Qvant bilan ochiladi. | Ин курс бо Qvant кушода мешавад. |  |
+| `error.course_payment_required` | Bu kurs pullik. | Ин курс пулакӣ аст. |  |

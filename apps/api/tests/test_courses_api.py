@@ -88,6 +88,12 @@ class TestCatalogue:
         assert (ru["title"], ru["locale"]) == ("C++ asoslari", "uz")
         assert ru["locales"] == ["en", "uz"]
 
+    def test_partial_translation_falls_back_field_by_field(self):
+        course = _course()
+        CourseTranslation.objects.filter(course=course, locale="uz").update(description="Uzun matn")
+        body = _client().get(reverse("course-detail", args=[course.slug]), {"lang": "en"}).json()
+        assert (body["title"], body["description"]) == ("C++ basics", "Uzun matn")
+
     def test_filters_by_level_and_access(self):
         _course("a", level=Course.Level.ADVANCED)
         _course("b", access=Course.Access.QVANT, price_qvant=50)
@@ -166,8 +172,8 @@ class TestEnrol:
     @pytest.mark.parametrize(
         ("access", "price", "code"),
         [
-            (Course.Access.QVANT, {"price_qvant": 50}, "qvant_required"),
-            (Course.Access.PAID, {"price_uzs": 99_000}, "payment_required"),
+            (Course.Access.QVANT, {"price_qvant": 50}, "course_qvant_required"),
+            (Course.Access.PAID, {"price_uzs": 99_000}, "course_payment_required"),
         ],
     )
     def test_priced_course_is_not_free_to_join(self, user, access, price, code):
@@ -184,7 +190,7 @@ class TestLesson:
         (lesson,) = _lessons(course, [Lesson.Kind.TEXT])
         resp = _client().get(_lesson_url(course, lesson))
         assert resp.status_code == 401
-        assert resp.json()["error"]["code"] == "sign_in"
+        assert resp.json()["error"]["code"] == "course_sign_in"
 
     def test_preview_opens_without_enrolment(self, user):
         course = _course()
@@ -199,7 +205,7 @@ class TestLesson:
         Enrollment.objects.create(user=user, course=course)
         resp = _client(user).get(_lesson_url(course, b))
         assert resp.status_code == 403
-        assert resp.json()["error"]["code"] == "locked"
+        assert resp.json()["error"]["code"] == "course_locked"
 
     def test_lesson_body_and_neighbours(self, user):
         course = _course()
