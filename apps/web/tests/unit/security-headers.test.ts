@@ -45,3 +45,21 @@ describe("contentSecurityPolicy frame-src", () => {
     expect(csp).toContain("frame-ancestors 'none'");
   });
 });
+
+describe("contentSecurityPolicy media", () => {
+  afterEach(() => {
+    delete process.env.NEXT_PUBLIC_VIDEO_ORIGIN;
+  });
+
+  it("plays MSE video from blob: and adds nothing else by default", () => {
+    const csp = contentSecurityPolicy("n", false, true);
+    expect(csp).toContain("media-src 'self' blob:;");
+  });
+
+  it("lets the course video bucket in once its origin is configured", () => {
+    process.env.NEXT_PUBLIC_VIDEO_ORIGIN = "https://video.example.uz/some/path, not a url";
+    const csp = contentSecurityPolicy("n", false, true);
+    expect(csp).toContain("media-src 'self' blob: https://video.example.uz;");
+    expect(csp).toMatch(/connect-src 'self' https:\/\/video\.example\.uz[;\s]/);
+  });
+});

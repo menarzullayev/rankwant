@@ -13,7 +13,7 @@ from typing import Any
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from courses import progress
+from courses import progress, videos
 from courses.i18n import pick
 from courses.models import Course, Enrollment, Lesson
 
@@ -261,6 +261,8 @@ class LessonVideoSerializer(serializers.Serializer[dict[str, Any]]):
     provider = serializers.CharField()
     ref = serializers.CharField(allow_null=True)
     seconds = serializers.IntegerField()
+    #: API path of the HLS master playlist (our own video), else null.
+    playlist = serializers.CharField(allow_null=True)
 
 
 class NeighbourSerializer(serializers.Serializer[dict[str, Any]]):
@@ -340,7 +342,16 @@ class LessonDetailSerializer(serializers.ModelSerializer[Lesson]):
         # with the video pipeline (ADR-0056 § 3.6), never the raw key.
         hls = obj.video_provider == Lesson.VideoProvider.HLS
         ref = None if hls else obj.video_ref
-        return {"provider": obj.video_provider, "ref": ref, "seconds": obj.video_seconds}
+        playlist = None
+        if hls and videos.asset_for(obj) is not None:
+            course = self.context["course_slug"]
+            playlist = f"/courses/{course}/lessons/{obj.id}/hls/master.m3u8"
+        return {
+            "provider": obj.video_provider,
+            "ref": ref,
+            "seconds": obj.video_seconds,
+            "playlist": playlist,
+        }
 
     def get_completed(self, obj: Lesson) -> bool:
         return obj.id in self.context["state"].completed

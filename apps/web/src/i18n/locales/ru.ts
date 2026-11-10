@@ -2939,4 +2939,5 @@ export const ru: Record<MessageKey, string> = {
   "studio.course.openPublic": "Открыть публичную страницу",
   "studio.course.delete": "Удалить курс",
   "studio.course.deleteConfirm": "Удалить курс «{title}» со всеми уроками?",
+  "course.lesson.videoFailed": "Не удалось открыть видео. Попробуйте обновить страницу.",
 };

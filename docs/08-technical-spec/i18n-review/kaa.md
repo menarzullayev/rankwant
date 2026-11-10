@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2856 strings.**
+**2857 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2877,3 +2877,4 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.openPublic` | Ommaviy sahifani ochish | Ashıq betti ashıw |  |
 | `studio.course.delete` | Kursni o'chirish | Kurstı óshiriw |  |
 | `studio.course.deleteConfirm` | «{title}» kursi barcha darslari bilan o'chirilsinmi? | «{title}» kursı barlıq sabaqları menen óshirilsin be? |  |
+| `course.lesson.videoFailed` | Videoni ochib bo'lmadi. Sahifani yangilab ko'ring. | Videonı ashıw múmkin bolmadı. Betti jańalap kóriń. |  |

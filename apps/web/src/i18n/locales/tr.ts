@@ -2939,4 +2939,5 @@ export const tr: Record<MessageKey, string> = {
   "studio.course.openPublic": "Herkese açık sayfayı aç",
   "studio.course.delete": "Kursu sil",
   "studio.course.deleteConfirm": "«{title}» kursu tüm dersleriyle silinsin mi?",
+  "course.lesson.videoFailed": "Video açılamadı. Sayfayı yenilemeyi deneyin.",
 };

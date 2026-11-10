@@ -18,6 +18,7 @@ from courses.models import (
     ModuleTranslation,
     Section,
     SectionTranslation,
+    VideoAsset,
 )
 
 # Other apps' models are not imported here (`tools/check_architecture.py`):
@@ -102,11 +103,13 @@ class StudioLessonSerializer(serializers.ModelSerializer[Lesson]):
         if "video_ref" in attrs or "video_provider" in attrs:
             ref = attrs.get("video_ref", getattr(self.instance, "video_ref", ""))
             if provider == Lesson.VideoProvider.HLS and "video_ref" in attrs and ref:
-                # An R2 key names a stored video; typing one could point a
-                # lesson at another course's paid video. The upload writes it.
-                if not review.is_course_staff(self.context["request"].user):
+                # An R2 key names a stored video: only this course's own may
+                # be attached, or a lesson could point at another course's
+                # paid video (and hand out its key).
+                own = VideoAsset.objects.filter(key=ref, course=self.context["course"]).exists()
+                if not own:
                     raise serializers.ValidationError(
-                        {"video_ref": "R2 videos are attached by uploading them."}
+                        {"video_ref": "Attach a video uploaded to this course."}
                     )
             if provider and ref:
                 try:

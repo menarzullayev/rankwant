@@ -2939,4 +2939,5 @@ export const ky: Record<MessageKey, string> = {
   "studio.course.openPublic": "Ачык баракты ачуу",
   "studio.course.delete": "Курсту өчүрүү",
   "studio.course.deleteConfirm": "«{title}» курсу бардык сабактары менен өчүрүлсүнбү?",
+  "course.lesson.videoFailed": "Видеону ачуу мүмкүн болбоду. Баракты жаңыртып көрүңүз.",
 };

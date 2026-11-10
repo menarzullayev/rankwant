@@ -386,15 +386,15 @@ class TestVideoReference:
         assert resp.status_code == 201, resp.json()
         assert resp.json()["video_ref"] == "dQw4w9WgXcQ"
 
-    def test_author_cannot_type_an_r2_key(self, user, staff):
+    def test_an_r2_key_must_be_this_courses_video(self, user, staff):
         course = _ready_course(user)
         section = Section.objects.get(module__course=course)
         data = {
             "section": section.pk,
             "kind": "video",
             "video_provider": "hls",
-            "video_ref": "videos/x/master",
+            "video_ref": "v/nowhere",
         }
         url = reverse("studio-course-lesson-list", args=[course.slug])
         assert _client(user).post(url, data, format="json").status_code == 400
-        assert _client(staff).post(url, data, format="json").status_code == 201
+        assert _client(staff).post(url, data, format="json").status_code == 400

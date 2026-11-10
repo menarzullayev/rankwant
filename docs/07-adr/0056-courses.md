@@ -188,6 +188,24 @@ identifikator iframe manziliga tushadi. R2 (HLS) kalitini muallif qo'lda
 **yoza olmaydi**: u saqlangan videoni nomlaydi va boshqa kursning pullik
 videosiga ishora qilish mumkin bo'lardi — kalitni yuklash oqimi (5b) yozadi.
 
+**5b-qism qanday qurildi** ([qaror yozuvi](../decisions/2026-11-10-courses-video.md)).
+`VideoAsset` — kursning o'z videosi: bucket'dagi kalit (`v/<id>`), holat,
+sifatlar, davomiylik va AES-128 kaliti (hech qachon serializatsiya
+qilinmaydi). `courses/hls.py` ffmpeg bilan har sifatni alohida kodlaydi
+(`yuv420p`, H.264 main, AAC, 6 soniyalik segmentlar), segmentlarni
+shifrlaydi va bucket'ga qo'yadi; master pleylistni o'zimiz yozamiz. API:
+`hls/master.m3u8`, `hls/<sifat>.m3u8` (segment manzillari ochiq domen yoki
+imzoli havola bilan qayta yoziladi) va `hls/key` — uchalasi ham dars
+bilan **bir eshikdan** (`check_open`), kalit `no-store`. Dars faqat **o'z
+kursining** tayyor videosini o'ynatadi; studio ham boshqa kurs kalitini
+biriktirishni rad etadi. Web: Safari HLS'ni o'zi o'ynatadi, qolganlarida
+`hls.js` (faqat shunday video bor sahifada yuklanadi); sessiya faqat API'ga
+yuboriladi, bucket'ga emas. CSP: `media-src 'self' blob:` va
+`NEXT_PUBLIC_VIDEO_ORIGIN`. Xodim buyrug'i: `manage.py encode_course_video
+<kurs> <fayl> [--heights 360,720] [--lesson <id>]`. ⚠️ Production'da hali
+o'chiq: `COURSE_VIDEO_BUCKET` bo'sh (R2 egasi tomonidan keyin), worker
+obrazida ffmpeg yo'q (5c).
+
 ## 4. Ochiq qolganlar
 
 - Robocontest tariflari va pullik xizmatlarining chuqur tahlili — egasi

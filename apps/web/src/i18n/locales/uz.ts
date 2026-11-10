@@ -2990,6 +2990,7 @@ export const uz = {
   "studio.course.openPublic": "Ommaviy sahifani ochish",
   "studio.course.delete": "Kursni o'chirish",
   "studio.course.deleteConfirm": "«{title}» kursi barcha darslari bilan o'chirilsinmi?",
+  "course.lesson.videoFailed": "Videoni ochib bo'lmadi. Sahifani yangilab ko'ring.",
 } as const;
 
 export type MessageKey = keyof typeof uz;

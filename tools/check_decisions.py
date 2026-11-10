@@ -2972,6 +2972,25 @@ def monitor_watches_disk_and_commit() -> str | None:
     return None
 
 
+def course_video_is_encrypted_and_own() -> str | None:
+    """2026-11-10 (HITL, ADR-0056 5-qism): pullik video — shifrlangan HLS.
+
+    Segmentlar AES-128 bilan shifrlanadi, kalit faqat API'dan, keshlanmasdan
+    va faqat darsni ocha oladigan o'quvchiga beriladi; dars faqat O'Z
+    kursining videosini o'ynatadi (boshqa kursning kaliti chiqmasin).
+    """
+    hls_py = read("apps/api/courses/hls.py")
+    if '"-hls_key_info_file",' not in hls_py:
+        return "courses/hls.py: HLS segmentlari shifrlanmayapti"
+    views_py = read("apps/api/courses/video_views.py")
+    if '"private, no-store"' not in views_py or "services.check_open(request.user, lesson, state)" not in views_py:
+        return "courses/video_views.py: kalit eshigi yoki no-store yo'q"
+    videos_py = read("apps/api/courses/videos.py")
+    if "        course_id=lesson.section.module.course_id,\n" not in videos_py:
+        return "courses/videos.py: dars boshqa kursning videosini o'ynata oladi"
+    return None
+
+
 def course_studio_rules() -> str | None:
     """2026-11-10 (HITL, ADR-0056 4-qism): kurs studio'si — uchta egasi qarori.
 
@@ -5063,6 +5082,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
     ("kurslar: to'rt daraja, pullik video R2, bayroq ortida", courses_structure_and_access),
     ("kurs studio'si: limit 3, tuzilma va narx xodimda", course_studio_rules),
+    ("kurs videosi: shifrlangan HLS, kalit eshik ortida, o'z kursi", course_video_is_encrypted_and_own),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),

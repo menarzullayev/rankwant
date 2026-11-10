@@ -2939,4 +2939,5 @@ export const kaa: Record<MessageKey, string> = {
   "studio.course.openPublic": "Ashıq betti ashıw",
   "studio.course.delete": "Kurstı óshiriw",
   "studio.course.deleteConfirm": "«{title}» kursı barlıq sabaqları menen óshirilsin be?",
+  "course.lesson.videoFailed": "Videonı ashıw múmkin bolmadı. Betti jańalap kóriń.",
 };
