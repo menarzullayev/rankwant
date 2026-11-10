@@ -10,8 +10,10 @@ if a label is missing the script prints every service (cannot prove skip).
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
+import tempfile
 from collections.abc import Callable
 from pathlib import Path
 
@@ -28,18 +30,39 @@ SERVICE_PATHS: dict[str, tuple[str, ...]] = {
     #: shart. Ochilgan oqimlar uziladi-yu, `EventSource` qayta ulanadi va
     #: replay buferi yo'qolganini to'ldiradi.
     "realtime": ("apps/api",),
-    "web": ("apps/web",),
+    #: The web build context is the repo root (`apps/web/Dockerfile` copies
+    #: the workspace manifests, the lockfile and `packages/shared`), so a
+    #: change there is a web change too.
+    "web": (
+        "apps/web",
+        "packages",
+        "package.json",
+        "package-lock.json",
+        ".dockerignore",
+    ),
     "judge": ("services/judge-go",),
 }
 
-# Compose / deploy.sh change the bake itself — every image, not just one.
-GLOBAL_PATHS: tuple[str, ...] = (
+# deploy.sh changes how every image is built — every image, not just one.
+GLOBAL_PATHS: tuple[str, ...] = ("tools/deploy.sh",)
+
+# A compose edit rebuilds only the services whose resolved `build:` section
+# changed. Everything else in a service (env, ports, volumes) is container
+# config: `deploy.sh` runs `up` over every service and compose recreates
+# exactly the containers whose config drifted. Until 2026-11-11 any compose
+# edit rebuilt all six images; on 2026-11-10, six of seven judge rebuilds came
+# from compose edits that did not touch the judge's build, and each one wrote
+# 10.7 GB into Docker's disk (measured: importing the toolchain base image
+# into the build cache).
+COMPOSE_PATHS: tuple[str, ...] = (
     "docker-compose.yml",
     "docker-compose.public.yml",
-    "tools/deploy.sh",
 )
 
 ChangedFn = Callable[[str, str, tuple[str, ...]], bool]
+#: `build_changed(old, new, service)` — did that service's resolved `build:`
+#: section differ between the two commits? Unreadable must answer True.
+BuildChangedFn = Callable[[str, str, str], bool]
 
 
 def compute_scope(
@@ -47,8 +70,13 @@ def compute_scope(
     new: str,
     *,
     changed: ChangedFn,
+    build_changed: BuildChangedFn | None = None,
 ) -> list[str]:
-    """Return services whose image context changed from `old` to `new`."""
+    """Return services whose image inputs changed from `old` to `new`.
+
+    Without `build_changed` a compose edit rebuilds every service, as before:
+    nothing proves a build section stayed the same.
+    """
     if isinstance(old, str):
         shas = {name: old for name in ALL_SERVICES}
     else:
@@ -70,7 +98,79 @@ def compute_scope(
             continue
         if changed(sha, new, SERVICE_PATHS[name]):
             out.append(name)
+            continue
+        if changed(sha, new, COMPOSE_PATHS) and (
+            build_changed is None or build_changed(sha, new, name)
+        ):
+            out.append(name)
     return out
+
+
+def compose_builds(sha: str, cwd: Path) -> dict[str, str] | None:
+    """Each service's resolved `build:` section at `sha`, as canonical JSON.
+
+    `--no-interpolate` keeps `${GIT_SHA}` and friends as written, so the
+    per-deploy values do not count as a change and no env file is needed;
+    `--no-path-resolution` keeps contexts relative to the repo. None when the
+    files cannot be read or resolved.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        for name in COMPOSE_PATHS:
+            proc = subprocess.run(
+                ["git", "show", f"{sha}:{name}"],
+                cwd=cwd,
+                capture_output=True,
+                check=False,
+            )
+            if proc.returncode != 0:
+                return None
+            (Path(tmp) / name).write_bytes(proc.stdout)
+        args = ["docker", "compose", "-p", "rankwant-scope"]
+        for name in COMPOSE_PATHS:
+            args += ["-f", name]
+        args += [
+            "config",
+            "--no-interpolate",
+            "--no-path-resolution",
+            "--format",
+            "json",
+        ]
+        proc = subprocess.run(
+            args,
+            cwd=tmp,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    if proc.returncode != 0:
+        return None
+    try:
+        services = json.loads(proc.stdout)["services"]
+    except (ValueError, KeyError, TypeError):
+        return None
+    return {
+        name: json.dumps(spec.get("build"), sort_keys=True)
+        for name, spec in services.items()
+        if isinstance(spec, dict)
+    }
+
+
+def git_build_changed(cwd: Path) -> BuildChangedFn:
+    cache: dict[str, dict[str, str] | None] = {}
+
+    def builds(sha: str) -> dict[str, str] | None:
+        if sha not in cache:
+            cache[sha] = compose_builds(sha, cwd)
+        return cache[sha]
+
+    def build_changed(old: str, new: str, service: str) -> bool:
+        left, right = builds(old), builds(new)
+        if left is None or right is None:
+            return True
+        return left.get(service) != right.get(service)
+
+    return build_changed
 
 
 def git_changed(old: str, new: str, paths: tuple[str, ...], cwd: Path) -> bool:
@@ -109,7 +209,9 @@ def live_shas() -> dict[str, str] | None:
 
 def _parse_argv(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--from", dest="old", default="", help="base commit (or --from-live)")
+    parser.add_argument(
+        "--from", dest="old", default="", help="base commit (or --from-live)"
+    )
     parser.add_argument("--to", dest="new", default="HEAD", help="target commit")
     parser.add_argument(
         "--from-live",
@@ -137,7 +239,9 @@ def main(argv: list[str] | None = None) -> int:
     def changed(left: str, right: str, paths: tuple[str, ...]) -> bool:
         return git_changed(left, right, paths, cwd)
 
-    scope = compute_scope(old, args.new, changed=changed)
+    scope = compute_scope(
+        old, args.new, changed=changed, build_changed=git_build_changed(cwd)
+    )
     if scope:
         print(" ".join(scope))
     return 0

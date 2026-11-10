@@ -500,8 +500,16 @@ time_finish showmigrations
 
 # ── 8. Ko'tarish ─────────────────────────────────────────────────────
 time_begin up
+# `up` covers EVERY service, not just the rebuilt ones (2026-11-11): a compose
+# edit no longer rebuilds images whose `build:` section stayed the same
+# (`deploy_scope.py`), so their containers must still pick up the new config.
+# Compose recreates only a container whose image or config changed and leaves
+# the rest `Running` (measured with `--dry-run`: a changed build arg alone is
+# not drift).
 if [ "$SKIP_BAKE" -eq 1 ]; then
-  step "6/8 Ko'tarish — o'tkazib yuborildi (bake yo'q)"
+  step "6/8 Ko'tarish — obraz qurilmadi; faqat config'i o'zgargan konteynerlar"
+  "${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || die "up yiqildi"
+  ok "ko'tarildi"
 else
   # ── 6a/8 Infra: judge-queue + minio-init (ADR-0028) ────────────────
   # Ular BUILD doirasiga kirmaydi (obraz qurilmaydi: redis:7 / minio),
@@ -547,7 +555,7 @@ else
     ok "judge-queue healthy, minio-init tugadi (judge-ro tayyor)"
   fi
   step "6/8 Konteynerlar qayta ko'tarilmoqda"
-  "${COMPOSE[@]}" up -d --no-deps "${BUILD_SERVICES[@]}" || die "up yiqildi"
+  "${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || die "up yiqildi"
   ok "ko'tarildi"
 fi
 time_finish up

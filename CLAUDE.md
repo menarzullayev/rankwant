@@ -253,6 +253,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-11](docs/decisions/2026-11-11-new-alphabet.md) · Yangi alifbo (O'RQ-1184): avtomatik o'giruvchi, hozirdan standart, butun platforma, qidiruvda ikkalasi bir · `hali kod yo'q`
 - [2026-11-11](docs/decisions/2026-11-11-community-and-contests.md) · Muhokama, fayl yuklash, taymer, fokus; hudud filtri, PDF, hamkor/mirror; bloglar va karma; seriya, xarita · `hali kod yo'q`
 - [2026-11-11](docs/decisions/2026-11-11-problem-translations.md) · Masala tarjimalari: asosiy matn + `ProblemTranslation`, maydonma-maydon zaxira, yopiq tahlil yopiq, nashrni xodim tahrirlaydi, qidiruvda tarjima nomlari · `problem_translations_fall_back`
+- [2026-11-11](docs/decisions/2026-11-11-deploy-disk-writes.md) · Deploy diskka kamroq yozadi: compose tahriri faqat `build:` bo'limi o'zgargan obrazni quradi, `up` hamma servisga; web'da `node_modules` `.next` dan oldin · `tools/deploy_scope.py`
 
 ## Tekshiruvlar
 

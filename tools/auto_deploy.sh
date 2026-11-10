@@ -348,18 +348,38 @@ fi
 # `git diff` jonli yorliq ↔ TARGET. Worktree endi TARGET da.
 # Stack yiqilgan bo'lsa bo'sh doira ham to'liq bake (all_up shart).
 SCOPE="$(image_scope "$TARGET")"
-if all_up && [ -z "$SCOPE" ]; then
+# A compose edit with no image to build (2026-11-11: `deploy_scope.py` no
+# longer rebuilds images whose `build:` section stayed the same) still has to
+# reach the containers. Compose itself says which ones drifted; `--dry-run`
+# changes nothing (measured 0.7 s). Unreadable = no drift: the old behaviour.
+config_drift() {
+  [ -f "$ENV_FILE" ] || return 1
+  docker compose -p rankwant --env-file "$ENV_FILE" \
+    -f docker-compose.yml -f docker-compose.public.yml \
+    --dry-run up -d --no-deps api worker beat judge web realtime 2>/dev/null \
+    | grep -qE ' Recreate *$| Create *$'
+}
+DRIFT=0
+if all_up && config_drift; then
+  DRIFT=1
+fi
+if all_up && [ -z "$SCOPE" ] && [ "$DRIFT" -eq 0 ]; then
   log_once "noimage:$TARGET" "obrazga tushmaydi — bake yo'q (target ${TARGET:0:7})"
   exit 0
 fi
-if [ -z "$SCOPE" ]; then
+if [ "$DRIFT" -eq 1 ] && [ -z "$SCOPE" ]; then
+  log "config: compose o'zgargan, obraz yo'q — faqat konteynerlar qayta yaratiladi"
+fi
+if [ -z "$SCOPE" ] && ! all_up; then
   SCOPE="api worker beat judge web"
 fi
 
 # ── 6. Drift bormi? ──────────────────────────────────────────────────
 # Qaror ikki manbadan: konteynerlar tirikmi (o'zimiz) va kod joriymi
 # (`check_deploy.sh`). Ikkisi ham kerak — sabab yuqoridagi izohda.
-if all_up; then
+if [ "$DRIFT" -eq 1 ]; then
+  log "drift: compose config o'zgargan (scope: ${SCOPE})"
+elif all_up; then
   if cdo="$(bash tools/check_deploy.sh 2>&1)"; then
     # Eng ko'p uchraydigan holat: ish yo'q. JIM chiqamiz — log shishmasin.
     exit 0
