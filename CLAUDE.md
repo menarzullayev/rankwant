@@ -221,6 +221,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-qvant-history.md) · Qvant tranzaksiyalar tarixi `/qvant` da · `apps/web/src/app/(site)/qvant/page.tsx`
 - [2026-11-10](docs/decisions/2026-11-10-optimistic-save.md) · `optimisticSave` sozlamalar saqlashini boshqaradi, standart o'chiq · `optimistic_save_reports_refusals`
 - [2026-11-10](docs/decisions/2026-11-10-decisions-out-of-claude-md.md) · Qarorlar `docs/decisions/` da, CLAUDE.md da faqat bir qatorli indeks · `decisions_index_matches_files`
+- [2026-11-10](docs/decisions/2026-11-10-contest-questions-and-announcements.md) · Musobaqa savol-javobi va e'lonlari; savollar yopiq (ADR-0055, 3-qism) · `contest_questions_stay_private`
 
 ## Tekshiruvlar
 

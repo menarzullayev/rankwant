@@ -1,4 +1,16 @@
 {
+  "contest_announcement": [
+    "contest",
+    "text"
+  ],
+  "contest_answer": [
+    "contest",
+    "question"
+  ],
+  "contest_question": [
+    "contest",
+    "text"
+  ],
   "contest_result": [
     "after",
     "before",

@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from contests.models import Certificate, Contest, ContestProblem, ContestRegistration, Standing
+from contests.models import (
+    Certificate,
+    Clarification,
+    Contest,
+    ContestProblem,
+    ContestRegistration,
+    Standing,
+)
 
 
 class ContestProblemInline(admin.TabularInline):
@@ -22,7 +29,7 @@ class ContestAdmin(admin.ModelAdmin):
     list_filter = ("is_rated", "is_virtual", "is_public", "scoring_type")
     search_fields = ("slug", "title")
     # O'n ming foydalanuvchini ro'yxatga yuklamaslik uchun — qidiruv bilan.
-    autocomplete_fields = ("jury",)
+    autocomplete_fields = ("jury", "testers", "organizers")
     inlines = [ContestProblemInline]
     readonly_fields = ("ratings_applied_at", "created_at")
 
@@ -42,3 +49,11 @@ class CertificateAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     list_filter = ("tier",)
     search_fields = ("user__username", "contest__slug")
     readonly_fields = ("id", "issued_at")
+
+
+@admin.register(Clarification)
+class ClarificationAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("contest", "problem", "author", "is_public", "answered_at", "created_at")
+    list_filter = ("is_public",)
+    search_fields = ("contest__slug", "author__username", "question")
+    raw_id_fields = ("author", "answered_by")

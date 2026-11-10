@@ -28,7 +28,7 @@ of date order, or when a table row is written back into `CLAUDE.md`.
 
 ## Why the table moved (2026-11-10, audit Q-10)
 
-The table had grown to 158 rows inside a 276 969-byte `CLAUDE.md`, which
+The table had grown to 159 rows inside a 278 874-byte `CLAUDE.md`, which
 every session loads in full, so the rules that matter were lost in it. On the
 day of the move eleven PRs appended rows, and four of them hit merge conflicts
 on that one table. A new decision is now a new file, so two PRs never edit

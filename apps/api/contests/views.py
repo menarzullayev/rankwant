@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from django.db.models import Count, QuerySet
@@ -16,9 +17,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests import certificate_pdf
-from contests.models import Certificate, Contest, ContestRegistration, Standing
+from contests.models import Certificate, Clarification, Contest, ContestRegistration, Standing
 from contests.serializers import (
     CertificateSerializer,
+    ClarificationAnswerSerializer,
+    ClarificationAskSerializer,
+    ClarificationListSerializer,
+    ClarificationSerializer,
+    ContestAnnouncementSerializer,
     ContestDetailSerializer,
     ContestSerializer,
     ContestViewerSerializer,
@@ -46,6 +52,17 @@ STANDINGS_CACHE_S = 10
 STANDINGS_TOP = 500
 
 
+def _error(code: str, message: str, http: int, retry_after: int | None = None) -> Response:
+    response = Response({"error": {"code": code, "message": message, "details": {}}}, status=http)
+    if retry_after is not None:
+        response["Retry-After"] = str(retry_after)
+    return response
+
+
+def _clar_error(exc: Any) -> Response:
+    return _error(exc.code, exc.message, exc.status, exc.retry_after)
+
+
 @crud_summaries(
     one="musobaqa",
     many="musobaqa",
@@ -56,6 +73,9 @@ STANDINGS_TOP = 500
         "my_standing": "O'z o'rni",
         "virtual": "Virtual qatnashish",
         "viewer": "Mening musobaqadagi holatim",
+        "clarifications": "Savol-javob va e'lonlar",
+        "answer": "Savolga javob berish",
+        "announcements": "E'lon qilish",
     },
 )
 class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
@@ -148,6 +168,117 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
                     "problems": problems,
                 }
             ).data
+        )
+
+    # ── Questions and announcements (ADR-0055, part 3) ──────────────
+
+    def _clarifications(self, request: Request, contest: Contest) -> Response:
+        from contests import clarifications as qa
+
+        user = request.user
+        moderator = qa.can_moderate(contest, user)
+        signed_in = bool(user and user.is_authenticated)
+        asked = (
+            Clarification.objects.filter(contest=contest, author_id=user.pk).count()
+            if signed_in
+            else 0
+        )
+        rows = qa.visible(contest, user)[: qa.LIST_LIMIT]
+        payload = {
+            "moderator": moderator,
+            "can_ask": signed_in and timezone.now() < contest.end_at,
+            "questions_left": max(0, qa.MAX_QUESTIONS - asked) if signed_in else 0,
+            "results": ClarificationSerializer(
+                rows, many=True, context={"request": request, "moderator": moderator}
+            ).data,
+        }
+        # Already serialized; `ClarificationListSerializer` describes it.
+        return Response(payload)
+
+    @extend_schema(methods=["GET"], request=None, responses={200: ClarificationListSerializer})
+    @extend_schema(
+        methods=["POST"],
+        request=ClarificationAskSerializer,
+        responses={201: ClarificationSerializer, 400: None, 429: None},
+    )
+    @action(detail=True, methods=["get", "post"], permission_classes=[AllowAny])
+    def clarifications(self, request: Request, slug: str | None = None) -> Response:
+        """Questions, answers and announcements; POST asks a question."""
+        from contests import clarifications as qa
+
+        contest = self.get_object()
+        if request.method == "GET":
+            return self._clarifications(request, contest)
+        if not request.user.is_authenticated:
+            return _error("not_authenticated", "Sign in to ask", status.HTTP_401_UNAUTHORIZED)
+        form = ClarificationAskSerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        try:
+            row = qa.ask(
+                contest,
+                request.user,
+                form.validated_data.get("problem"),
+                form.validated_data["question"],
+            )
+        except qa.ClarificationError as exc:
+            return _clar_error(exc)
+        return Response(
+            ClarificationSerializer(row, context={"request": request}).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(request=ClarificationAnswerSerializer, responses={200: ClarificationSerializer})
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path=r"clarifications/(?P<row_id>\d+)/answer",
+        permission_classes=[IsAuthenticated],
+    )
+    def answer(self, request: Request, slug: str | None = None, row_id: str = "") -> Response:
+        from contests import clarifications as qa
+
+        contest = self.get_object()
+        if not qa.can_moderate(contest, request.user):
+            return _error("forbidden", "Only the jury answers", status.HTTP_403_FORBIDDEN)
+        row = get_object_or_404(Clarification, pk=row_id, contest=contest, author__isnull=False)
+        form = ClarificationAnswerSerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        try:
+            qa.answer(
+                row,
+                request.user,
+                form.validated_data.get("answer", ""),
+                form.validated_data.get("answer_code", ""),
+                form.validated_data["public"],
+            )
+        except qa.ClarificationError as exc:
+            return _clar_error(exc)
+        return Response(
+            ClarificationSerializer(row, context={"request": request, "moderator": True}).data
+        )
+
+    @extend_schema(request=ContestAnnouncementSerializer, responses={201: ClarificationSerializer})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def announcements(self, request: Request, slug: str | None = None) -> Response:
+        from contests import clarifications as qa
+
+        contest = self.get_object()
+        if not qa.can_moderate(contest, request.user):
+            return _error("forbidden", "Only the jury announces", status.HTTP_403_FORBIDDEN)
+        form = ContestAnnouncementSerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        try:
+            row = qa.announce(
+                contest,
+                request.user,
+                form.validated_data.get("problem"),
+                form.validated_data["text"],
+            )
+        except qa.ClarificationError as exc:
+            return _clar_error(exc)
+        return Response(
+            ClarificationSerializer(row, context={"request": request, "moderator": True}).data,
+            status=status.HTTP_201_CREATED,
         )
 
     @extend_schema(request=None, responses={201: RegistrationSerializer})

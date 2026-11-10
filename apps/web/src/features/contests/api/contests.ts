@@ -45,6 +45,32 @@ export type ContestDetail = Contest & {
   crew: { authors: CrewPerson[]; testers: CrewPerson[]; jury: CrewPerson[] };
 };
 
+/** A question, the jury's answer, or an announcement (ADR-0055, part 3). */
+export type Clarification = {
+  id: number;
+  /** Index letter; `null` — about the contest as a whole. */
+  problem: string | null;
+  /** Empty on an announcement. */
+  question: string;
+  answer: string;
+  /** A quick answer, drawn in the reader's language. */
+  answer_code: "" | "yes" | "no" | "read_statement" | "no_comment";
+  is_public: boolean;
+  is_announcement: boolean;
+  mine: boolean;
+  /** Filled for the moderators only. */
+  author: string | null;
+  created_at: string;
+  answered_at: string | null;
+};
+
+export type ClarificationList = {
+  moderator: boolean;
+  can_ask: boolean;
+  questions_left: number;
+  results: Clarification[];
+};
+
 /** The signed-in visitor's own standing with a contest (`/viewer/`). */
 export type ContestViewer = {
   /** "" for a participant. */
