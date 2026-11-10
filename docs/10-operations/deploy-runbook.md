@@ -460,10 +460,15 @@ esa oxirida web qatori «ESKIRGAN» bilan qizil tugardi (#49 va #50
 deploy'larida o'lchandi).
 
 - `NEXT_PUBLIC_*` qiymatlari **build vaqtida** bundle'ga singadi. Skript
-  compose'ga `--env-file .env.public` beradi, ya'ni ular deploy'ning o'zida
-  to'g'ri singadi. `.env.public` dagi `NEXT_PUBLIC_*` o'zgarsa ham oddiy
-  `bash tools/deploy.sh` yetarli: bunda `up` emas, qayta qurish kerak, skript
-  esa baribir quradi.
+  compose'ga `--env-file .env.public` beradi, lekin u faqat compose
+  faylidagi `${...}` ni to'ldiradi — Docker build'ga o'zicha hech narsa
+  uzatmaydi. Qiymat bundle'ga faqat `docker-compose.public.yml` →
+  `web.build.args` va `apps/web/Dockerfile` dagi `ARG` + `ENV` orqali yetadi
+  (2026-11-10 gacha `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CUSTOMIZER` va
+  bayroqlar yetmasdi). Web yangi `NEXT_PUBLIC_*` o'qisa, uchala joyga
+  yoziladi — `flags_reach_the_web_build` CI'da tekshiradi. `.env.public` dagi
+  `NEXT_PUBLIC_*` o'zgarsa oddiy `bash tools/deploy.sh` yetarli: bunda `up`
+  emas, qayta qurish kerak, skript esa baribir quradi.
 - Next.js chiqishi siqilgan, shuning uchun `check_deploy.sh` web'ni fayl
   hash'i bilan emas, **build yorlig'i** (`org.rankwant.git-sha`) bilan
   solishtiradi. Deploy tasdig'idan keyin bundle manzilini ham tekshiradi

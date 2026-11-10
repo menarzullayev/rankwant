@@ -77,8 +77,11 @@ COMPOSE=(docker compose -p "$PROJECT" --env-file "$ENV_FILE"
 #
 # `web` is built and restarted here too (owner decision, 2026-09-17). It used
 # to be left out because `NEXT_PUBLIC_*` values are baked into the bundle at
-# build time, but COMPOSE passes `--env-file .env.public` to the build as well,
-# so this script bakes the right values in. Leaving it out cost a manual step
+# build time; rebuilding here bakes the current `.env.public` values in. Only
+# the ones listed in `docker-compose.public.yml` → `web.build.args` reach the
+# build: `--env-file` fills `${...}` in the compose file and passes nothing
+# into Docker by itself (`flags_reach_the_web_build`, 2026-11-10).
+# Leaving it out cost a manual step
 # after every web change and ended each such deploy red on the web row
 # (measured on the #49 and #50 deploys).
 # `realtime` — SSE xizmati (ADR-0029). Ro'yxatda bo'lmasa konteyner UMUMAN

@@ -201,8 +201,12 @@ source of truth.
 panel. Saved settings stay in the database and on the device.
 
 **Limitation:** `NEXT_PUBLIC_*` is baked into the bundle at build time, so
-turning it off needs a rebuild (~40 s). A runtime switch would need an
-API-side flag, which is separate work.
+turning it off means `NEXT_PUBLIC_CUSTOMIZER=0` in `.env.public` plus a web
+rebuild (~40 s; the next deploy does it). It reaches `next build` as a Docker
+build arg (`docker-compose.public.yml` → `apps/web/Dockerfile`); until
+2026-11-10 it was not passed at all, so the switch did nothing in production.
+Empty means on. A runtime switch would need an API-side flag, which is
+separate work.
 
 ## Pitfalls worth keeping
 

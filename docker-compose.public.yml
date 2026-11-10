@@ -204,6 +204,10 @@ services:
       args:
         # Brauzer bundle'i — o'sha domenning o'zi, ya'ni same-origin.
         NEXT_PUBLIC_API_BASE: ${PUBLIC_ORIGIN}/api/v1
+        # Empty = the origin of NEXT_PUBLIC_API_BASE (`src/lib/site.ts`).
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
+        # Empty = the theme customizer is on; 0 hides it (`src/lib/theme/flag.ts`).
+        NEXT_PUBLIC_CUSTOMIZER: ${NEXT_PUBLIC_CUSTOMIZER:-}
         # Feature flags from `.env.public` (`src/lib/flags.ts`); empty = off.
         NEXT_PUBLIC_FLAG_GEO_EARLY_REGION: ${NEXT_PUBLIC_FLAG_GEO_EARLY_REGION:-}
         NEXT_PUBLIC_FLAG_NEW_NAV: ${NEXT_PUBLIC_FLAG_NEW_NAV:-}

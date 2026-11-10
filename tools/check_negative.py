@@ -4725,6 +4725,36 @@ def neg_decisions_flag_not_passed_by_compose() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_site_url_not_declared_in_dockerfile() -> tuple[bool, str]:
+    """The site origin override is dropped from the web Dockerfile again."""
+    return _decision_broken(
+        "apps/web/Dockerfile",
+        "ARG NEXT_PUBLIC_SITE_URL=\n",
+        "",
+        "`NEXT_PUBLIC_SITE_URL` build'ga e'lon qilinmagan",
+    )
+
+
+def neg_decisions_customizer_not_passed_by_compose() -> tuple[bool, str]:
+    """The public compose stops passing the customizer kill switch into the build."""
+    return _decision_broken(
+        "docker-compose.public.yml",
+        "        NEXT_PUBLIC_CUSTOMIZER: ${NEXT_PUBLIC_CUSTOMIZER:-}\n",
+        "",
+        "`NEXT_PUBLIC_CUSTOMIZER` web build'iga uzatilmaydi",
+    )
+
+
+def neg_decisions_new_public_env_not_plumbed() -> tuple[bool, str]:
+    """A new `NEXT_PUBLIC_*` read in the web source, wired nowhere: found from the source."""
+    return _decision_broken(
+        "apps/web/src/lib/theme/flag.ts",
+        'process.env.NEXT_PUBLIC_CUSTOMIZER !== "0"',
+        'process.env.NEXT_PUBLIC_CUSTOMIZER_V2 !== "0"',
+        "`NEXT_PUBLIC_CUSTOMIZER_V2` build'ga e'lon qilinmagan",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -11636,6 +11666,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("Docker o'chiqda deploy'ga urinilsa tutilsin", neg_decisions_watcher_deploys_without_docker),
             ("bayroq Dockerfile'dan tushsa tutilsin", neg_decisions_flag_not_declared_in_dockerfile),
             ("bayroq compose build'iga uzatilmasa tutilsin", neg_decisions_flag_not_passed_by_compose),
+            ("SITE_URL Dockerfile'dan tushsa tutilsin", neg_decisions_site_url_not_declared_in_dockerfile),
+            ("CUSTOMIZER compose build'iga uzatilmasa tutilsin", neg_decisions_customizer_not_passed_by_compose),
+            ("yangi NEXT_PUBLIC_* ulanmasa tutilsin", neg_decisions_new_public_env_not_plumbed),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("studio mehmonga ochilsa tutilsin", neg_decisions_studio_open_to_guests),
             ("studio chegarasi ajralsa tutilsin", neg_decisions_studio_limit_drifts),

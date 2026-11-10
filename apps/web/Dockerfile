@@ -126,6 +126,15 @@ RUN test -n "$NEXT_PUBLIC_API_BASE" \
   || (echo "NEXT_PUBLIC_API_BASE kerak (masalan: https://rankwant.uz/api/v1)" >&2 \
       && exit 1)
 ENV NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE
+# Site origin override (`src/lib/site.ts`) and the customizer kill switch
+# (`src/lib/theme/flag.ts`) — baked the same way. Empty `NEXT_PUBLIC_SITE_URL`
+# = the origin of `NEXT_PUBLIC_API_BASE`; empty `NEXT_PUBLIC_CUSTOMIZER` = on,
+# `0` hides it. Until 2026-11-10 neither was declared here, so setting them in
+# `.env.public` changed nothing in production.
+ARG NEXT_PUBLIC_SITE_URL=
+ARG NEXT_PUBLIC_CUSTOMIZER=
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_CUSTOMIZER=$NEXT_PUBLIC_CUSTOMIZER
 # Feature flags (`src/lib/flags.ts`) — baked into the bundle like the API base.
 # Without these lines a `NEXT_PUBLIC_FLAG_*` in `.env.public` never reached
 # `next build`: compose's `--env-file` only fills `${...}` in the compose

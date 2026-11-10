@@ -21,6 +21,9 @@ docker compose -f docker-compose.yml up -d --wait   # repo ildizida
 | O'zgaruvchi | Kim o'qiydi | Izoh |
 | ----------- | ----------- | ---- |
 | `NEXT_PUBLIC_API_BASE` | brauzer | **Build vaqtida** bundle'ga yoziladi (`Dockerfile` da `ARG`). Runtime'da o'zgartirib bo'lmaydi. |
+| `NEXT_PUBLIC_SITE_URL` | sitemap, canonical, `proxy.ts` | Build vaqtida. Bo'sh = `NEXT_PUBLIC_API_BASE` ning origin'i. |
+| `NEXT_PUBLIC_CUSTOMIZER` | brauzer | Build vaqtida. Bo'sh = sozlagich yoniq, `0` — yashirin. |
+| `NEXT_PUBLIC_FLAG_*` | brauzer, SSR | Build vaqtida (`src/lib/flags.ts`). Bo'sh = o'chiq. |
 | `API_BASE_INTERNAL` | SSR | Konteyner ichidan API manzili (`http://api:8000/api/v1`). Brauzerdagi `localhost` SSR uchun ishlamaydi. |
 
 API boshqa origin'da bo'lgani uchun backend'da `CORS_ALLOWED_ORIGINS` va

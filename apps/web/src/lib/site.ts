@@ -17,9 +17,14 @@ function fromApiBase(): string | null {
   }
 }
 
+/* `||`, not `??`: an empty `NEXT_PUBLIC_SITE_URL` means "not set". The web
+ * Dockerfile declares `ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL`, so a
+ * build without the override bakes `""`, not `undefined`. With `??` that `""`
+ * won, `SITE_URL` was empty and `new URL(SITE_URL)` in `proxy.ts` threw at
+ * module load (tests/unit/site-url.test.ts). */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  fromApiBase() ??
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  fromApiBase() ||
   "http://localhost:3000";
 
 export function absolute(path: string): string {
