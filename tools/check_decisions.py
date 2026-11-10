@@ -2579,9 +2579,11 @@ def flags_reach_the_web_build() -> str | None:
     baked = _web_build_env_names()
     if "NEXT_PUBLIC_API_BASE" not in baked:
         return "apps/web/src: `process.env.NEXT_PUBLIC_*` o'qilishlari topilmadi — skaner buzilgan"
-    web = _compose_service(compose, "web")
-    if not web:
-        return "docker-compose.public.yml: `web` servisi topilmadi"
+    web = _compose_service(compose, "web").split("\n    build:\n      args:\n", 1)
+    if len(web) != 2:
+        return "docker-compose.public.yml: `web.build.args` topilmadi"
+    # Only the lines under `args:` (8-space keys or comments) reach the build.
+    web = re.match(r"(?:(?:        |\s*$).*\n?)*", web[1]).group(0)
     for env in sorted(baked):
         declared = re.search(rf"^ARG {env}(=[^\n]*)?$", docker, re.M)
         if not declared or f"\nENV {env}=${env}\n" not in docker:
