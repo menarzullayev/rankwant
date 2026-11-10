@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { Icon } from "@/components/ui/Icon";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t, type MessageKey } from "@/i18n/messages";
 
@@ -42,7 +43,7 @@ function LessonLine({
   const body = (
     <>
       <Icon name={KIND_ICON[row.kind] ?? "content.article"} size="sm" className="size-4 shrink-0 rw-dim" />
-      <span className="min-w-0 flex-1 truncate">{row.title}</span>
+      <span className="min-w-0 flex-1 truncate">{inReaderAlphabet(row.title, row.locale)}</span>
       {!row.is_required && (
         <span className="text-theme-xs rw-faint">{t(locale, "course.lesson.optional")}</span>
       )}
@@ -96,14 +97,14 @@ export function Programme({
       {modules.map((module, mi) => (
         <li key={module.id}>
           <h3 className="text-theme-sm font-semibold rw-strong">
-            {mi + 1}. {module.title}
+            {mi + 1}. {inReaderAlphabet(module.title, module.locale)}
           </h3>
           <div className="mt-2 space-y-3">
             {module.sections.map((section) => (
               <section key={section.id}>
                 {section.title && (
                   <h4 className="px-2 text-theme-xs font-medium rw-dim">
-                    {section.title}
+                    {inReaderAlphabet(section.title, section.locale)}
                   </h4>
                 )}
                 <ul className="mt-1">

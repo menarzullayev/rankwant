@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import {
@@ -70,7 +71,7 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
         const r = review.get(q.id);
         return (
           <Card key={q.id} title={`${i + 1}.`}>
-            <Markdown>{q.text}</Markdown>
+            <Markdown lang="uz">{q.text}</Markdown>
             <div className="mt-4 grid gap-2">
               {q.choices.map((c) => {
                 const chosen = answers[q.id] === c.id;
@@ -89,7 +90,7 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
                     onClick={() => setAnswers((a) => ({ ...a, [q.id]: c.id }))}
                     className={`rw-radius-sm border px-4 py-2.5 text-left text-theme-sm transition ${tone}`}
                   >
-                    {c.text}
+                    {inReaderAlphabet(c.text, "uz")}
                   </button>
                 );
               })}

@@ -177,8 +177,11 @@ function wordToOld(word: string): string {
 }
 
 function convert(text: string, word: (value: string) => string, skip: (value: string) => boolean): string {
+  // A word right before `(` is a call — `chr(65)`, `push(x)` — not Uzbek.
   const plain = (part: string) =>
-    part.replace(WORD, (match) => (skip(match) ? match : word(match)));
+    part.replace(WORD, (match: string, offset: number, whole: string) =>
+      whole[offset + match.length] === "(" || skip(match) ? match : word(match),
+    );
   let out = "";
   let cursor = 0;
   for (const match of text.matchAll(PROTECTED)) {

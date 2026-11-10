@@ -91,7 +91,9 @@ function Neighbour({
   const text = (
     <>
       <span className="block text-theme-xs rw-dim">{label}</span>
-      <span className="block truncate text-theme-sm font-medium">{row.title}</span>
+      <span className="block truncate text-theme-sm font-medium">
+        {inReaderAlphabet(row.title, row.locale)}
+      </span>
     </>
   );
   const cls = `min-h-11 min-w-0 max-w-[48%] rw-radius-sm px-3 py-2 ${align === "end" ? "text-right" : ""}`;

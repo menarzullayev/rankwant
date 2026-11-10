@@ -18,6 +18,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
+import { inReaderAlphabet } from "@/i18n/alphabet";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import {
@@ -178,7 +179,7 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
               </span>
             }
           >
-            <Markdown>{current.question.text}</Markdown>
+            <Markdown lang="uz">{current.question.text}</Markdown>
             <div className="mt-4 grid gap-2">
               {current.question.choices.map((c) => (
                 <button
@@ -188,7 +189,7 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
                   onClick={() => answer(c.id)}
                   className="rw-radius-sm border rw-line px-4 py-2.5 text-left text-theme-sm transition rw-hover-line disabled:opacity-60"
                 >
-                  {c.text}
+                  {inReaderAlphabet(c.text, "uz")}
                 </button>
               ))}
             </div>
