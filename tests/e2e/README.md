@@ -109,7 +109,10 @@ SSR HTML'da `/users/` havolasi yo'q (o'lchandi: 0 ta).
 ⚠️ **Darvoza o'lik emasligi isbotlangan bo'lishi kerak.** "Piksel
 solishtirish o'tdi" faqat mutatsiya KO'RINADIGAN bo'lsa dalil: `--rw-rank-grey`
 bilan suite yashil qoldi (token sahifalarda ko'rinmasdi). Isbot
-`check_negative.py --group visual` da (`--rw-ground` mutanti).
+`check_negative.py --group visual` da (`--rw-ground` mutanti, `!important` bilan —
+`:root` dagi token standart `clay` uslubida ko'rinmasdi, 2026-11-10). Nightly uni
+`tools/ci_visual_gate.sh` orqali CI stack'ida yuritadi: nazorat yashil, mutant esa
+HAR baseline'da piksel farqi bilan qizil bo'lishi shart; stack topilmasa qadam yiqiladi.
 
 ⚠️ Yangi sahifa qo'shilsa, birinchi yurish baseline yozadi va **yiqiladi**.
 Bu ataylab: hech kim ko'rib chiqmagan skrinshot jimgina "haqiqat" bo'lib
