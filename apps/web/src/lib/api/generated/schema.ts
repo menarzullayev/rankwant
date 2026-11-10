@@ -1267,6 +1267,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/courses/{slug}/lessons/{lesson_id}/hls/{height}.m3u8": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dars videosining bitta sifat pleylisti */
+        get: operations["courses_lessons_hls_.m3u8_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/courses/{slug}/lessons/{lesson_id}/hls/key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dars videosining AES-128 kaliti */
+        get: operations["courses_lessons_hls_key_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/courses/{slug}/lessons/{lesson_id}/hls/master.m3u8": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dars videosining master pleylisti */
+        get: operations["courses_lessons_hls_master.m3u8_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/custom-test/": {
         parameters: {
             query?: never;
@@ -7414,6 +7465,7 @@ export interface components {
             provider: string;
             ref: string | null;
             seconds: number;
+            playlist: string | null;
         };
         /**
          * @description * `debug` - debug
@@ -13120,6 +13172,73 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Progress"];
+                };
+            };
+        };
+    };
+    "courses_lessons_hls_.m3u8_retrieve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                height: number;
+                lesson_id: number;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.apple.mpegurl": string;
+                };
+            };
+        };
+    };
+    courses_lessons_hls_key_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lesson_id: number;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+        };
+    };
+    "courses_lessons_hls_master.m3u8_retrieve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lesson_id: number;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.apple.mpegurl": string;
                 };
             };
         };

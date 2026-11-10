@@ -2877,3 +2877,4 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.openPublic` | Ommaviy sahifani ochish | Кушодани саҳифаи оммавӣ |  |
 | `studio.course.delete` | Kursni o'chirish | Нест кардани курс |  |
 | `studio.course.deleteConfirm` | «{title}» kursi barcha darslari bilan o'chirilsinmi? | Курси «{title}» бо ҳамаи дарсҳояш нест карда шавад? |  |
+| `course.lesson.videoFailed` | Videoni ochib bo'lmadi. Sahifani yangilab ko'ring. | Видеоро кушодан нашуд. Саҳифаро нав карда бинед. |  |

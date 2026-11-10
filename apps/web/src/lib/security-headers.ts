@@ -76,6 +76,25 @@ export const VIDEO_FRAME_ORIGINS = [
   "https://player.vimeo.com",
 ] as const;
 
+/** Where a paid lesson's encrypted video segments come from (ADR-0056
+ *  § 3.5): the R2 public domain, or the bucket's S3 origin while segments
+ *  are signed. Empty = no paid video yet, and nothing is added. The key
+ *  and the playlists come from the API, which is already allowed. */
+export function videoOrigins(): string[] {
+  const raw = process.env.NEXT_PUBLIC_VIDEO_ORIGIN ?? "";
+  const origins = new Set<string>();
+  for (const part of raw.split(",")) {
+    const value = part.trim();
+    if (!value) continue;
+    try {
+      origins.add(new URL(value).origin);
+    } catch {
+      /* ignore malformed env */
+    }
+  }
+  return [...origins];
+}
+
 /** CSP uchun `nonce` yasaydi — kriptografik tasodifiy, base64. */
 export function makeNonce(): string {
   const bytes = new Uint8Array(16);
@@ -111,9 +130,14 @@ export function contentSecurityPolicy(
   ];
   if (dev) scriptSrc.push("'unsafe-eval'");
 
-  const connectSrc = ["'self'"];
+  const connectSrc = ["'self'", ...videoOrigins()];
   if (dev) connectSrc.push("ws:", "wss:");
   if (dev || loopbackSplitStack) connectSrc.push(...devApiConnectOrigins());
+
+  // hls.js plays through Media Source Extensions, i.e. a `blob:` URL; iOS
+  // plays HLS natively and loads the playlists (API) and segments as media.
+  const mediaSrc = ["'self'", "blob:", ...videoOrigins()];
+  if (dev || loopbackSplitStack) mediaSrc.push(...devApiConnectOrigins());
 
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
@@ -122,6 +146,7 @@ export function contentSecurityPolicy(
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:", "https:"],
     "font-src": ["'self'", "data:"],
+    "media-src": mediaSrc,
     "connect-src": connectSrc,
     // `object`/`embed` butunlay o'chirilgan — Flash davri qoldig'i,
     // bizda ishlatilmaydi.

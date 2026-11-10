@@ -2877,3 +2877,4 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.openPublic` | Ommaviy sahifani ochish | Ачык баракты ачуу |  |
 | `studio.course.delete` | Kursni o'chirish | Курсту өчүрүү |  |
 | `studio.course.deleteConfirm` | «{title}» kursi barcha darslari bilan o'chirilsinmi? | «{title}» курсу бардык сабактары менен өчүрүлсүнбү? |  |
+| `course.lesson.videoFailed` | Videoni ochib bo'lmadi. Sahifani yangilab ko'ring. | Видеону ачуу мүмкүн болбоду. Баракты жаңыртып көрүңүз. |  |

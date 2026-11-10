@@ -2940,4 +2940,5 @@ export const tg: Record<MessageKey, string> = {
   "studio.course.openPublic": "Кушодани саҳифаи оммавӣ",
   "studio.course.delete": "Нест кардани курс",
   "studio.course.deleteConfirm": "Курси «{title}» бо ҳамаи дарсҳояш нест карда шавад?",
+  "course.lesson.videoFailed": "Видеоро кушодан нашуд. Саҳифаро нав карда бинед.",
 };

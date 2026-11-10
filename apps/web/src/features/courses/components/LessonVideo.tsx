@@ -4,6 +4,8 @@ import { Icon } from "@/components/ui/Icon";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 
+import { HlsPlayer } from "./HlsPlayer";
+
 import type { LessonDetail } from "../api/courses";
 
 /** The embed address of a hosted video. The id was checked by the API
@@ -26,6 +28,9 @@ export function LessonVideo({
   title: string;
 }) {
   const locale = useLocale();
+  if (video.provider === "hls" && video.playlist) {
+    return <HlsPlayer playlist={video.playlist} title={title} />;
+  }
   const embed = video.ref ? EMBED[video.provider] : undefined;
   if (embed && video.ref) {
     return (

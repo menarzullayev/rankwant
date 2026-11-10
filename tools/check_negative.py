@@ -5083,6 +5083,26 @@ def neg_decisions_course_studio_ungated() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_course_video_unencrypted() -> tuple[bool, str]:
+    """Course video segments are written without AES-128."""
+    return _decision_broken(
+        "apps/api/courses/hls.py",
+        '"-hls_key_info_file",',
+        '"-hls_flags_off",',
+        "shifrlanmayapti",
+    )
+
+
+def neg_decisions_course_video_foreign_asset() -> tuple[bool, str]:
+    """A lesson plays (and hands the key of) another course's video."""
+    return _decision_broken(
+        "apps/api/courses/videos.py",
+        "        course_id=lesson.section.module.course_id,\n",
+        "",
+        "boshqa kursning videosini",
+    )
+
+
 def neg_decisions_course_flag_on() -> tuple[bool, str]:
     """The Courses section is switched on by default before the owner opens it."""
     return _decision_broken(
@@ -8208,6 +8228,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/courses/services.py",
     "apps/api/courses/review.py",
     "apps/api/courses/author_serializers.py",
+    "apps/api/courses/hls.py",
+    "apps/api/courses/video_views.py",
+    "apps/api/courses/videos.py",
     "apps/web/src/app/(site)/studio/courses/page.tsx",
     "apps/web/src/app/(site)/studio/courses/[slug]/page.tsx",
     "apps/web/src/app/(site)/courses/page.tsx",
@@ -12347,6 +12370,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("muallif kurs narxini qo'ysa tutilsin", neg_decisions_author_sets_course_price),
             ("nashr qilingan kurs tuzilmasi ochilsa tutilsin", neg_decisions_published_structure_open),
             ("kurs studio'si qo'riqchisiz ochilsa tutilsin", neg_decisions_course_studio_ungated),
+            ("kurs videosi shifrsiz yozilsa tutilsin", neg_decisions_course_video_unencrypted),
+            ("boshqa kurs videosi o'ynasa tutilsin", neg_decisions_course_video_foreign_asset),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

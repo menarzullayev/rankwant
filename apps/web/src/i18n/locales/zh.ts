@@ -2936,4 +2936,5 @@ export const zh: Record<MessageKey, string> = {
   "studio.course.openPublic": "打开公开页面",
   "studio.course.delete": "删除课程",
   "studio.course.deleteConfirm": "要删除课程“{title}”及其所有课时吗？",
+  "course.lesson.videoFailed": "无法打开视频。请尝试刷新页面。",
 };

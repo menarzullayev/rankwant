@@ -2939,4 +2939,5 @@ export const es: Record<MessageKey, string> = {
   "studio.course.openPublic": "Abrir la página pública",
   "studio.course.delete": "Eliminar el curso",
   "studio.course.deleteConfirm": "¿Eliminar el curso «{title}» con todas sus lecciones?",
+  "course.lesson.videoFailed": "No se pudo abrir el vídeo. Prueba a recargar la página.",
 };

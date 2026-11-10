@@ -205,6 +205,7 @@ class LessonDetailView(APIView):
             "request": request,
             "locale": content_locale(request),
             "base": course.base_locale,
+            "course_slug": course.slug,
             "state": state,
             "lessons": lessons,
         }

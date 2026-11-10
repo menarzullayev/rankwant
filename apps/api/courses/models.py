@@ -281,3 +281,38 @@ class LessonProgress(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id}:{self.lesson}"
+
+
+class VideoAsset(CreatedModel):
+    """A course's own video on R2 (or MinIO), as encrypted HLS (ADR-0056 § 3.5).
+
+    Owner decisions of 2026-11-10: renditions up to the source's own height,
+    the uploader picks which; segments are AES-128 encrypted and may be served
+    from a public bucket, the key only through the API to readers the lesson
+    is open to. A lesson may only point at an asset of its own course — a key
+    typed by hand could otherwise reach another course's paid video.
+    """
+
+    class Status(models.TextChoices):
+        PROCESSING = "processing", "Processing"
+        READY = "ready", "Ready"
+        FAILED = "failed", "Failed"
+
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="videos")
+    #: Object key prefix in the video bucket, e.g. `v/4f1c…`; also the value
+    #: a lesson keeps in `video_ref`.
+    key = models.CharField(max_length=64, unique=True)
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.PROCESSING)
+    #: Rendition heights in pixels, ascending, e.g. `[360, 720, 1080]`.
+    heights = models.JSONField(default=list, blank=True)
+    seconds = models.PositiveIntegerField(default=0)
+    #: The AES-128 key of every segment. Never serialised; served only by
+    #: the key endpoint, to readers the lesson is open to.
+    aes_key = models.BinaryField(max_length=16, editable=False)
+    error = models.TextField(blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    def __str__(self) -> str:
+        return f"{self.course.slug}:{self.key}"

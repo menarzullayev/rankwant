@@ -443,6 +443,17 @@ S3_KEY = os.environ.get("S3_KEY", "")
 S3_SECRET = os.environ.get("S3_SECRET", "")
 S3_REGION = os.environ.get("S3_REGION", "us-east-1")
 
+# Course video (ADR-0056 § 3.5): encrypted HLS in its own bucket — R2 in
+# production, MinIO locally. Empty bucket = paid video is unavailable.
+COURSE_VIDEO_BUCKET = os.environ.get("COURSE_VIDEO_BUCKET", "")
+COURSE_VIDEO_S3_ENDPOINT = os.environ.get("COURSE_VIDEO_S3_ENDPOINT", S3_ENDPOINT)
+COURSE_VIDEO_S3_KEY = os.environ.get("COURSE_VIDEO_S3_KEY", S3_KEY)
+COURSE_VIDEO_S3_SECRET = os.environ.get("COURSE_VIDEO_S3_SECRET", S3_SECRET)
+COURSE_VIDEO_S3_REGION = os.environ.get("COURSE_VIDEO_S3_REGION", "auto")
+# Public address of the bucket for the (encrypted) segments, e.g. an R2
+# custom domain. Empty = segments are handed out as signed addresses.
+COURSE_VIDEO_PUBLIC_BASE = os.environ.get("COURSE_VIDEO_PUBLIC_BASE", "")
+
 #: So'rov tanasining yuqori chegarasi. Django standarti — 2.5 MB.
 #:
 #: ⚠️ O'lchandi 2026-09-30: bu standart `storage.MAX_TEST_BYTES` (8 MiB) dan
