@@ -2768,9 +2768,13 @@ def region_ab_is_switched_and_measured() -> str | None:
     form = read("apps/web/src/features/account/components/AuthForm.tsx")
     if "const regionNotAskedOnServer = () => false;" not in form:
         return "AuthForm.tsx: viloyat maydoni serverda chiziladi (chekka keshi guruhni aralashtiradi)"
+    if 'const regionAskedHere = () => experimentGroupForPage("geoEarlyRegion") === "b";' not in form:
+        return "AuthForm.tsx: viloyat maydoni guruhni sahifaga qotirmaydi"
     if "useSyncExternalStore(noSubscription, regionAskedHere, regionNotAskedOnServer)" not in form:
         return "AuthForm.tsx: viloyat maydoni `geoEarlyRegion` ga bog'lanmagan"
     analytics = read("apps/web/src/lib/analytics.ts")
+    if 'const group = experimentGroupForPage("geoEarlyRegion");' not in analytics:
+        return "lib/analytics.ts: hodisa guruhi forma chizilgan guruhdan farq qilishi mumkin"
     if "...(group ? { exp: group } : {})" not in analytics:
         return "lib/analytics.ts: guruhsiz hodisa guruhga yoziladi"
     if "fid: funnel()" not in analytics:

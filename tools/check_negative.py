@@ -4506,6 +4506,16 @@ def neg_decisions_region_field_drawn_on_server() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_event_group_not_latched() -> tuple[bool, str]:
+    """Analytics reads the live cookie again, not the page's group."""
+    return _decision_broken(
+        "apps/web/src/lib/analytics.ts",
+        'const group = experimentGroupForPage("geoEarlyRegion");',
+        'const group = experimentGroup("geoEarlyRegion");',
+        "hodisa guruhi forma chizilgan guruhdan farq qilishi mumkin",
+    )
+
+
 def neg_decisions_untagged_event_counted_as_control() -> tuple[bool, str]:
     """An event without a group is written as the control group again."""
     return _decision_broken(
@@ -11054,6 +11064,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("server sinov kalitini o'qimasa tutilsin", neg_decisions_region_ab_server_ignores_switch),
             ("viloyat maydoni serverda chizilsa tutilsin", neg_decisions_region_field_drawn_on_server),
             ("guruhsiz hodisa nazoratga yozilsa tutilsin", neg_decisions_untagged_event_counted_as_control),
+            ("hodisa guruhi qotmasa tutilsin", neg_decisions_event_group_not_latched),
             ("mehmon hodisalari bitta sessiyaga tushsa tutilsin", neg_decisions_guest_events_share_one_session),
             ("ro'yxatdagi viloyat tekshirilmasa tutilsin", neg_decisions_sign_up_region_unchecked),
             ("judge yana privileged bo'lsa tutilsin", neg_decisions_judge_privileged_again),

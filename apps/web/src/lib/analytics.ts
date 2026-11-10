@@ -11,7 +11,7 @@
  */
 
 import { API_BASE } from "./api";
-import { experimentGroup } from "./flags";
+import { experimentGroupForPage } from "./flags";
 
 const ENDPOINT = `${API_BASE}/analytics/events/`;
 const MAX_BATCH = 25;
@@ -104,7 +104,8 @@ function schedule() {
  */
 export function track(name: string, props?: Record<string, unknown>) {
   if (typeof window === "undefined") return;
-  const group = experimentGroup("geoEarlyRegion");
+  // The group the form was drawn for, fixed for this page load.
+  const group = experimentGroupForPage("geoEarlyRegion");
   queue.push({
     name,
     path: window.location.pathname,

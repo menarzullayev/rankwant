@@ -15,7 +15,7 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
-import { isOn } from "@/lib/flags";
+import { experimentGroupForPage } from "@/lib/flags";
 import { REGION_CODES, regionName } from "@rankwant/shared/regions";
 import {
   fieldErrors,
@@ -50,7 +50,9 @@ type Provider = keyof typeof PROVIDER_LABEL;
  *  always "no", the client one reads the flag; React swaps them after
  *  hydration without a mismatch. */
 const noSubscription = () => () => {};
-const regionAskedHere = () => isOn("geoEarlyRegion");
+// Fixed for the page load: `rw_exp` may arrive mid-visit, and the field must
+// not pop in while the person types (analytics reads the same value).
+const regionAskedHere = () => experimentGroupForPage("geoEarlyRegion") === "b";
 const regionNotAskedOnServer = () => false;
 
 /** Inputs that can carry their own error. */

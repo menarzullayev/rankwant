@@ -14,8 +14,10 @@ import {
   experimentGroup,
   isOn,
   isOnServer,
+  experimentGroupForPage,
   parseGroup,
   parseVariant,
+  resetPageGroups,
 } from "@/lib/flags";
 
 /** The geo experiment's own switch. Read at call time, so a test can turn
@@ -60,6 +62,7 @@ afterEach(() => {
   jar.clear();
   Reflect.deleteProperty(globalThis, "document");
   experimentOn(false);
+  resetPageGroups();
 });
 
 describe("parseVariant — sof funksiya", () => {
@@ -136,6 +139,15 @@ describe("isOn — qavatlar tartibi", () => {
     document.cookie = `${EXP_COOKIE}=geo:b`;
     expect(isOn("geoEarlyRegion")).toBe(false);
     expect(experimentGroup("geoEarlyRegion")).toBeNull();
+  });
+
+  it("sahifa guruhi qotadi: tashrif o'rtasida kelgan cookie uni o'zgartirmaydi", () => {
+    experimentOn();
+    expect(experimentGroupForPage("geoEarlyRegion")).toBeNull();
+    document.cookie = `${EXP_COOKIE}=geo:b`; // proxy sets it on a later request
+    expect(experimentGroupForPage("geoEarlyRegion")).toBeNull();
+    resetPageGroups(); // next page load
+    expect(experimentGroupForPage("geoEarlyRegion")).toBe("b");
   });
 
   it("experimentGroup — faqat ishlayotgan sinovda va faqat haqiqiy guruh", () => {

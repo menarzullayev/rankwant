@@ -159,6 +159,24 @@ export function experimentGroup(name: FlagName): "a" | "b" | null {
   return parseGroup(cookieValue(EXP_COOKIE), experiment);
 }
 
+/** Guruh — sahifa yuklanishi davomida BIR XIL (birinchi o'qishda qotadi).
+ *
+ *  `rw_exp` keshlangan `/login` da qo'yilmaydi: uni tashrif davomidagi
+ *  keyingi so'rov beradi. Har safar cookie'dan o'qilsa, forma maydonsiz
+ *  chizilgan bo'lsa ham keyingi render'da maydon paydo bo'lardi va
+ *  `form_started` bir guruhda, `register_done` boshqasida yozilardi.
+ *  Forma va analitika shu funksiyani o'qiydi — ikkalasi bitta qiymatni. */
+const pageGroups = new Map<FlagName, "a" | "b" | null>();
+export function experimentGroupForPage(name: FlagName): "a" | "b" | null {
+  if (!pageGroups.has(name)) pageGroups.set(name, experimentGroup(name));
+  return pageGroups.get(name) ?? null;
+}
+
+/** Faqat testlar uchun: qotirilgan guruhlarni tozalaydi. */
+export function resetPageGroups(): void {
+  pageGroups.clear();
+}
+
 /** Bayroq yoniqmi — shartsiz, server va mijozda bir xil.
  *
  *  Tartib:
