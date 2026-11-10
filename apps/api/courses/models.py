@@ -294,9 +294,17 @@ class VideoAsset(CreatedModel):
     """
 
     class Status(models.TextChoices):
+        UPLOADING = "uploading", "Uploading"
+        QUEUED = "queued", "Queued"
         PROCESSING = "processing", "Processing"
         READY = "ready", "Ready"
         FAILED = "failed", "Failed"
+
+    class Source(models.TextChoices):
+        #: A video file, encoded here (owner decision: ffmpeg in a worker).
+        FILE = "file", "Video file"
+        #: A ready HLS folder in a zip, re-muxed and encrypted here.
+        HLS_ZIP = "hls_zip", "HLS zip"
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="videos")
     #: Object key prefix in the video bucket, e.g. `v/4f1c…`; also the value
@@ -306,6 +314,14 @@ class VideoAsset(CreatedModel):
     #: Rendition heights in pixels, ascending, e.g. `[360, 720, 1080]`.
     heights = models.JSONField(default=list, blank=True)
     seconds = models.PositiveIntegerField(default=0)
+    source = models.CharField(max_length=8, choices=Source.choices, default=Source.FILE)
+    #: What the uploader asked for; the encoder keeps the rungs at or below
+    #: the source. Empty = every rung up to the source.
+    requested_heights = models.JSONField(default=list, blank=True)
+    #: Where the browser uploads the original, and the S3 multipart upload.
+    source_key = models.CharField(max_length=128, blank=True)
+    upload_id = models.CharField(max_length=256, blank=True)
+    size = models.BigIntegerField(default=0)
     #: The AES-128 key of every segment. Never serialised; served only by
     #: the key endpoint, to readers the lesson is open to.
     aes_key = models.BinaryField(max_length=16, editable=False)

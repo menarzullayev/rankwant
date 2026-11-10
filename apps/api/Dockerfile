@@ -57,3 +57,14 @@ EXPOSE 8000
 ENV GUNICORN_WORKERS=4
 # Shell — `GUNICORN_WORKERS` compose'dan keladi (50k: api replica × worker).
 CMD gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS}
+
+# Course video encoding (ADR-0056 § 3.5): only the `video-worker` service
+# builds this stage (`target: video`). ffmpeg is not in the API image.
+FROM base AS video
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+CMD ["celery", "-A", "config", "worker", "-Q", "video", "--concurrency", "1", "-l", "info"]
+
+# The default target stays the plain API image: a stage that changes
+# nothing, last in the file.
+FROM base AS app

@@ -258,3 +258,166 @@ def encode_and_store(source: Path, asset_key: str, aes_key: bytes, heights: list
 
 def ffmpeg_available() -> bool:
     return bool(shutil.which("ffmpeg") and shutil.which("ffprobe"))
+
+
+# --- Uploads (part 5c): the browser sends the original straight to the bucket.
+
+#: Largest original accepted. Cloudflare's 100 MB request cap is why the
+#: upload bypasses the site; the bucket takes multi-gigabyte objects.
+MAX_UPLOAD_BYTES = 8 * 1024**3
+#: S3 multipart: parts of at least 5 MB, at most 10 000 of them.
+MIN_PART = 16 * 1024**2
+MAX_PARTS = 10_000
+#: A ready HLS zip: how many files and how many bytes once unpacked.
+MAX_ZIP_FILES = 20_000
+MAX_ZIP_BYTES = 12 * 1024**3
+
+
+def part_size(size: int) -> int:
+    return max(MIN_PART, -(-size // MAX_PARTS))
+
+
+def start_multipart(key: str, content_type: str) -> str:
+    response = client().create_multipart_upload(
+        Bucket=settings.COURSE_VIDEO_BUCKET, Key=key, ContentType=content_type
+    )
+    return str(response["UploadId"])
+
+
+def part_urls(key: str, upload_id: str, count: int, expires: int = 6 * 3600) -> list[str]:
+    s3 = client()
+    return [
+        str(
+            s3.generate_presigned_url(
+                "upload_part",
+                Params={
+                    "Bucket": settings.COURSE_VIDEO_BUCKET,
+                    "Key": key,
+                    "UploadId": upload_id,
+                    "PartNumber": number,
+                },
+                ExpiresIn=expires,
+            )
+        )
+        for number in range(1, count + 1)
+    ]
+
+
+def complete_multipart(key: str, upload_id: str, parts: list[dict[str, Any]]) -> None:
+    client().complete_multipart_upload(
+        Bucket=settings.COURSE_VIDEO_BUCKET,
+        Key=key,
+        UploadId=upload_id,
+        MultipartUpload={"Parts": [{"PartNumber": p["number"], "ETag": p["etag"]} for p in parts]},
+    )
+
+
+def abort_multipart(key: str, upload_id: str) -> None:
+    client().abort_multipart_upload(
+        Bucket=settings.COURSE_VIDEO_BUCKET, Key=key, UploadId=upload_id
+    )
+
+
+def download(key: str, target: Path) -> None:
+    client().download_file(settings.COURSE_VIDEO_BUCKET, key, str(target))
+
+
+def delete_prefix(prefix: str) -> None:
+    s3 = client()
+    bucket = settings.COURSE_VIDEO_BUCKET
+    for page in s3.get_paginator("list_objects_v2").paginate(Bucket=bucket, Prefix=f"{prefix}/"):
+        keys = [{"Key": item["Key"]} for item in page.get("Contents", [])]
+        if keys:
+            s3.delete_objects(Bucket=bucket, Delete={"Objects": keys})
+
+
+def delete_object(key: str) -> None:
+    client().delete_object(Bucket=settings.COURSE_VIDEO_BUCKET, Key=key)
+
+
+def unpack_zip(archive: Path, target: Path) -> None:
+    """Unpack a ready HLS folder, refusing anything that escapes `target`."""
+    import zipfile
+
+    with zipfile.ZipFile(archive) as zf:
+        members = zf.infolist()
+        if len(members) > MAX_ZIP_FILES:
+            raise ValueError("The zip holds too many files.")
+        if sum(m.file_size for m in members) > MAX_ZIP_BYTES:
+            raise ValueError("The zip is too large once unpacked.")
+        root = target.resolve()
+        for member in members:
+            dest = (target / member.filename).resolve()
+            if root != dest and root not in dest.parents:
+                raise ValueError("The zip contains a path outside its folder.")
+        zf.extractall(target)
+
+
+def variant_playlists(folder: Path) -> list[Path]:
+    """Every media playlist (one with segments) under `folder`."""
+    found: list[Path] = []
+    for path in sorted(folder.rglob("*.m3u8")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if "#EXT-X-KEY" in text and "METHOD=NONE" not in text:
+            raise ValueError("An encrypted HLS cannot be imported; upload it unencrypted.")
+        if "#EXTINF" in text:
+            found.append(path)
+    if not found:
+        raise ValueError("The zip has no HLS playlist with segments.")
+    return found
+
+
+def import_hls(folder: Path, aes_key: bytes, workdir: Path) -> tuple[list[int], int]:
+    """Re-mux every variant of a ready HLS into our encrypted layout.
+
+    The video is not re-encoded (`-c copy`), only re-segmented and
+    encrypted. Returns the heights and the length in seconds.
+    """
+    key_file = workdir / "aes.key"
+    key_file.write_bytes(aes_key)
+    info = workdir / "key.info"
+    info.write_text(f"{KEY_PLACEHOLDER}\n{key_file}\n", encoding="utf-8")
+    heights: list[int] = []
+    seconds = 0
+    try:
+        for playlist in variant_playlists(folder):
+            found = probe(playlist)
+            if found.height in heights:
+                continue
+            out = workdir / str(found.height)
+            out.mkdir()
+            subprocess.run(
+                [
+                    "ffmpeg",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-y",
+                    "-allowed_extensions",
+                    "ALL",
+                    "-protocol_whitelist",
+                    "file,crypto,data",
+                    "-i",
+                    str(playlist),
+                    "-c",
+                    "copy",
+                    "-f",
+                    "hls",
+                    "-hls_time",
+                    str(SEGMENT_SECONDS),
+                    "-hls_playlist_type",
+                    "vod",
+                    "-hls_key_info_file",
+                    str(info),
+                    "-hls_segment_filename",
+                    str(out / "seg%05d.ts"),
+                    str(out / "index.m3u8"),
+                ],
+                check=True,
+                timeout=6 * 3600,
+            )
+            heights.append(found.height)
+            seconds = max(seconds, found.seconds)
+    finally:
+        key_file.unlink(missing_ok=True)
+    return sorted(heights), seconds

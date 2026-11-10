@@ -206,6 +206,23 @@ yuboriladi, bucket'ga emas. CSP: `media-src 'self' blob:` va
 o'chiq: `COURSE_VIDEO_BUCKET` bo'sh (R2 egasi tomonidan keyin), worker
 obrazida ffmpeg yo'q (5c).
 
+**5c-qism qanday qurildi.** Studio'dagi «Videolar» bloki: muallif video fayl
+(.mp4/.mov/.mkv/.webm) yoki tayyor HLS papkasini zip qilib tanlaydi va
+sifatlarni belgilaydi. API multipart yuklashni ochib imzoli qism
+manzillarini beradi, brauzer faylni **to'g'ridan bucket'ga** bo'laklab
+yuboradi (sayt orqali 100 MB cheklovi yo'q), `complete` kodlashni
+`video` navbatiga qo'yadi. `video-worker` (alohida servis, ffmpeg faqat
+uning obrazida — Dockerfile `video` bosqichi) asl faylni yuklab oladi:
+fayl bo'lsa kodlaydi, zip bo'lsa xavfsiz ochadi (papkadan chiqib ketadigan
+yo'l, juda ko'p fayl yoki hajm rad etiladi; shifrlangan HLS rad etiladi) va
+**qayta kodlamasdan** (`-c copy`) shifrlab qayta bo'laklaydi; so'ng asl
+faylni o'chiradi. Bir kursda bir vaqtda ko'pi bilan 3 ta yuklash/kodlash;
+darsda ishlatilayotgan video o'chirilmaydi; darsga faqat **tayyor** va o'z
+kursining videosi biriktiriladi (studio'da tanlash ro'yxati). R2 uchun CORS
+qoidasi `tools/r2-video-cors.json` da. **Yoqish tartibi** (egasi): R2 bucket
+va token → `.env.public` da `COURSE_VIDEO_*` va `NEXT_PUBLIC_VIDEO_ORIGIN` →
+bucket'ga CORS → `video-worker` ni deploy ro'yxatiga qo'shadigan kichik PR.
+
 ## 4. Ochiq qolganlar
 
 - Robocontest tariflari va pullik xizmatlarining chuqur tahlili — egasi

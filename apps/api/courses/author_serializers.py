@@ -106,7 +106,9 @@ class StudioLessonSerializer(serializers.ModelSerializer[Lesson]):
                 # An R2 key names a stored video: only this course's own may
                 # be attached, or a lesson could point at another course's
                 # paid video (and hand out its key).
-                own = VideoAsset.objects.filter(key=ref, course=self.context["course"]).exists()
+                own = VideoAsset.objects.filter(
+                    key=ref, course=self.context["course"], status=VideoAsset.Status.READY
+                ).exists()
                 if not own:
                     raise serializers.ValidationError(
                         {"video_ref": "Attach a video uploaded to this course."}
@@ -271,3 +273,52 @@ class StaffCourseSerializer(StudioCourseSerializer):
 
 class CourseReturnSerializer(serializers.Serializer[dict[str, Any]]):
     reason = serializers.CharField(max_length=1000)
+
+
+class StudioVideoSerializer(serializers.ModelSerializer[VideoAsset]):
+    """A course's uploaded video as the studio lists it (never its AES key)."""
+
+    used = serializers.SerializerMethodField()
+    heights = serializers.ListField(child=serializers.IntegerField(), read_only=True)
+    requested_heights = serializers.ListField(child=serializers.IntegerField(), read_only=True)
+
+    class Meta:
+        model = VideoAsset
+        fields = [
+            "id",
+            "key",
+            "status",
+            "source",
+            "heights",
+            "requested_heights",
+            "seconds",
+            "size",
+            "error",
+            "created_at",
+            "used",
+        ]
+        read_only_fields = fields
+
+    def get_used(self, obj: VideoAsset) -> bool:
+        return obj.key in self.context.get("used_keys", set())
+
+
+class VideoUploadStartSerializer(serializers.Serializer[dict[str, Any]]):
+    filename = serializers.CharField(max_length=255)
+    size = serializers.IntegerField(min_value=1)
+    heights = serializers.ListField(child=serializers.IntegerField(), required=False, default=list)
+
+
+class VideoUploadStartedSerializer(serializers.Serializer[dict[str, Any]]):
+    video = StudioVideoSerializer()
+    part_size = serializers.IntegerField()
+    parts = serializers.ListField(child=serializers.URLField())
+
+
+class VideoPartSerializer(serializers.Serializer[dict[str, Any]]):
+    number = serializers.IntegerField(min_value=1, max_value=10_000)
+    etag = serializers.CharField(max_length=200)
+
+
+class VideoUploadCompleteSerializer(serializers.Serializer[dict[str, Any]]):
+    parts = VideoPartSerializer(many=True)

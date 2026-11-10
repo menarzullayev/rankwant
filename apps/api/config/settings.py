@@ -432,6 +432,9 @@ HACK_ROOM_SIZE = int(os.environ.get("HACK_ROOM_SIZE", 40))
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_TASK_ALWAYS_EAGER = env_bool("CELERY_EAGER", False)
+# Course video encoding takes minutes; it has its own queue and worker
+# (`video-worker`) so judge results never wait behind it (ADR-0056 § 3.5).
+CELERY_TASK_ROUTES = {"courses.encode_video": {"queue": "video"}}
 
 # Davriy tasklar. Judge natijalari tez-tez o'qiladi, chunki foydalanuvchi
 # verdictni kutib turadi (NFR: p50 < 5s) — navbat bo'sh bo'lsa BRPOP

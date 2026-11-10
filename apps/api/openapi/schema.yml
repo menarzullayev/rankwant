@@ -12215,6 +12215,165 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/studio/courses/{course_slug}/videos/:
+    get:
+      operationId: studio_courses_videos_list
+      description: |-
+        A course's own videos (ADR-0056 § 3.5, part 5c).
+
+        The browser uploads the original straight to the bucket in parts (the
+        site caps a request at 100 MB); `complete` queues the encoding on the
+        video worker. Anyone who may open the course in the studio may upload;
+        attaching a video to a lesson follows the structure rules.
+      summary: kurs videolari ro'yxati
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudioVideo'
+          description: ''
+    post:
+      operationId: studio_courses_videos_create
+      description: |-
+        A course's own videos (ADR-0056 § 3.5, part 5c).
+
+        The browser uploads the original straight to the bucket in parts (the
+        site caps a request at 100 MB); `complete` queues the encoding on the
+        video worker. Anyone who may open the course in the studio may upload;
+        attaching a video to a lesson follows the structure rules.
+      summary: Video yuklashni boshlash
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoUploadStart'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoUploadStart'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoUploadStart'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoUploadStarted'
+          description: ''
+  /api/v1/studio/courses/{course_slug}/videos/{id}/:
+    delete:
+      operationId: studio_courses_videos_destroy
+      description: |-
+        A course's own videos (ADR-0056 § 3.5, part 5c).
+
+        The browser uploads the original straight to the bucket in parts (the
+        site caps a request at 100 MB); `complete` queues the encoding on the
+        video worker. Anyone who may open the course in the studio may upload;
+        attaching a video to a lesson follows the structure rules.
+      summary: kurs videosini o'chirish
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video asset.
+        required: true
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/studio/courses/{course_slug}/videos/{id}/complete/:
+    post:
+      operationId: studio_courses_videos_complete_create
+      description: |-
+        A course's own videos (ADR-0056 § 3.5, part 5c).
+
+        The browser uploads the original straight to the bucket in parts (the
+        site caps a request at 100 MB); `complete` queues the encoding on the
+        video worker. Anyone who may open the course in the studio may upload;
+        attaching a video to a lesson follows the structure rules.
+      summary: Video yuklashni yakunlash
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video asset.
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoUploadComplete'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoUploadComplete'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoUploadComplete'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioVideo'
+          description: ''
   /api/v1/studio/courses/{slug}/:
     get:
       operationId: studio_courses_retrieve
@@ -15521,7 +15680,7 @@ components:
       properties:
         source:
           allOf:
-          - $ref: '#/components/schemas/SourceEnum'
+          - $ref: '#/components/schemas/EnrollmentSourceEnum'
           readOnly: true
         created_at:
           type: string
@@ -15536,6 +15695,22 @@ components:
       - completed_at
       - created_at
       - source
+    EnrollmentSourceEnum:
+      enum:
+      - free
+      - qvant
+      - purchase
+      - plan
+      - classroom
+      - staff
+      type: string
+      description: |-
+        * `free` - Free
+        * `qvant` - Qvant
+        * `purchase` - Purchase
+        * `plan` - Plan
+        * `classroom` - Classroom
+        * `staff` - Staff grant
     ExternalIn:
       type: object
       properties:
@@ -21873,22 +22048,6 @@ components:
       - languages
       - slug
       - title
-    SourceEnum:
-      enum:
-      - free
-      - qvant
-      - purchase
-      - plan
-      - classroom
-      - staff
-      type: string
-      description: |-
-        * `free` - Free
-        * `qvant` - Qvant
-        * `purchase` - Purchase
-        * `plan` - Plan
-        * `classroom` - Classroom
-        * `staff` - Staff grant
     StaffArena:
       type: object
       properties:
@@ -24023,6 +24182,85 @@ components:
       required:
       - locale
       - target
+    StudioVideo:
+      type: object
+      description: A course's uploaded video as the studio lists it (never its AES
+        key).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        key:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StudioVideoStatusEnum'
+          readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/StudioVideoSourceEnum'
+          readOnly: true
+        heights:
+          type: array
+          items:
+            type: integer
+          readOnly: true
+        requested_heights:
+          type: array
+          items:
+            type: integer
+          readOnly: true
+        seconds:
+          type: integer
+          readOnly: true
+        size:
+          type: integer
+          readOnly: true
+        error:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        used:
+          type: boolean
+          readOnly: true
+      required:
+      - created_at
+      - error
+      - heights
+      - id
+      - key
+      - requested_heights
+      - seconds
+      - size
+      - source
+      - status
+      - used
+    StudioVideoSourceEnum:
+      enum:
+      - file
+      - hls_zip
+      type: string
+      description: |-
+        * `file` - Video file
+        * `hls_zip` - HLS zip
+    StudioVideoStatusEnum:
+      enum:
+      - uploading
+      - queued
+      - processing
+      - ready
+      - failed
+      type: string
+      description: |-
+        * `uploading` - Uploading
+        * `queued` - Queued
+        * `processing` - Processing
+        * `ready` - Ready
+        * `failed` - Failed
     Submission:
       type: object
       properties:
@@ -25086,6 +25324,19 @@ components:
         * `TESTING_ABORTED` - Tekshiruv bekor qilindi
         * `RATE_LIMITED` - Submit limiti
         * `DENIAL_OF_JUDGEMENT` - Infra nosozligi
+    VideoPart:
+      type: object
+      properties:
+        number:
+          type: integer
+          maximum: 10000
+          minimum: 1
+        etag:
+          type: string
+          maxLength: 200
+      required:
+      - etag
+      - number
     VideoProviderEnum:
       enum:
       - youtube
@@ -25096,6 +25347,47 @@ components:
         * `youtube` - YouTube
         * `vimeo` - Vimeo
         * `hls` - HLS (R2)
+    VideoUploadComplete:
+      type: object
+      properties:
+        parts:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoPart'
+      required:
+      - parts
+    VideoUploadStart:
+      type: object
+      properties:
+        filename:
+          type: string
+          maxLength: 255
+        size:
+          type: integer
+          minimum: 1
+        heights:
+          type: array
+          items:
+            type: integer
+      required:
+      - filename
+      - size
+    VideoUploadStarted:
+      type: object
+      properties:
+        video:
+          $ref: '#/components/schemas/StudioVideo'
+        part_size:
+          type: integer
+        parts:
+          type: array
+          items:
+            type: string
+            format: uri
+      required:
+      - part_size
+      - parts
+      - video
     Vote:
       type: object
       properties:

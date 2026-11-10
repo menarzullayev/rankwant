@@ -5635,6 +5635,90 @@ export interface paths {
         patch: operations["studio_courses_sections_partial_update"];
         trace?: never;
     };
+    "/api/v1/studio/courses/{course_slug}/videos/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * kurs videolari ro'yxati
+         * @description A course's own videos (ADR-0056 § 3.5, part 5c).
+         *
+         *     The browser uploads the original straight to the bucket in parts (the
+         *     site caps a request at 100 MB); `complete` queues the encoding on the
+         *     video worker. Anyone who may open the course in the studio may upload;
+         *     attaching a video to a lesson follows the structure rules.
+         */
+        get: operations["studio_courses_videos_list"];
+        put?: never;
+        /**
+         * Video yuklashni boshlash
+         * @description A course's own videos (ADR-0056 § 3.5, part 5c).
+         *
+         *     The browser uploads the original straight to the bucket in parts (the
+         *     site caps a request at 100 MB); `complete` queues the encoding on the
+         *     video worker. Anyone who may open the course in the studio may upload;
+         *     attaching a video to a lesson follows the structure rules.
+         */
+        post: operations["studio_courses_videos_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{course_slug}/videos/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * kurs videosini o'chirish
+         * @description A course's own videos (ADR-0056 § 3.5, part 5c).
+         *
+         *     The browser uploads the original straight to the bucket in parts (the
+         *     site caps a request at 100 MB); `complete` queues the encoding on the
+         *     video worker. Anyone who may open the course in the studio may upload;
+         *     attaching a video to a lesson follows the structure rules.
+         */
+        delete: operations["studio_courses_videos_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{course_slug}/videos/{id}/complete/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Video yuklashni yakunlash
+         * @description A course's own videos (ADR-0056 § 3.5, part 5c).
+         *
+         *     The browser uploads the original straight to the bucket in parts (the
+         *     site caps a request at 100 MB); `complete` queues the encoding on the
+         *     video worker. Anyone who may open the course in the studio may upload;
+         *     attaching a video to a lesson follows the structure rules.
+         */
+        post: operations["studio_courses_videos_complete_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/studio/courses/{slug}/": {
         parameters: {
             query?: never;
@@ -7152,12 +7236,22 @@ export interface components {
             username?: string;
         };
         Enrollment: {
-            readonly source: components["schemas"]["SourceEnum"];
+            readonly source: components["schemas"]["EnrollmentSourceEnum"];
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
             readonly completed_at: string | null;
         };
+        /**
+         * @description * `free` - Free
+         *     * `qvant` - Qvant
+         *     * `purchase` - Purchase
+         *     * `plan` - Plan
+         *     * `classroom` - Classroom
+         *     * `staff` - Staff grant
+         * @enum {string}
+         */
+        EnrollmentSourceEnum: "free" | "qvant" | "purchase" | "plan" | "classroom" | "staff";
         ExternalIn: {
             kind: components["schemas"]["ExternalProfileKindEnum"];
             handle: string;
@@ -10201,16 +10295,6 @@ export interface components {
             readonly best_memory_kb: number | null;
             readonly languages: string[];
         };
-        /**
-         * @description * `free` - Free
-         *     * `qvant` - Qvant
-         *     * `purchase` - Purchase
-         *     * `plan` - Plan
-         *     * `classroom` - Classroom
-         *     * `staff` - Staff grant
-         * @enum {string}
-         */
-        SourceEnum: "free" | "qvant" | "purchase" | "plan" | "classroom" | "staff";
         StaffArena: {
             slug: string;
             title: string;
@@ -11024,6 +11108,36 @@ export interface components {
             audience?: string;
             body?: string;
         };
+        /** @description A course's uploaded video as the studio lists it (never its AES key). */
+        StudioVideo: {
+            readonly id: number;
+            readonly key: string;
+            readonly status: components["schemas"]["StudioVideoStatusEnum"];
+            readonly source: components["schemas"]["StudioVideoSourceEnum"];
+            readonly heights: number[];
+            readonly requested_heights: number[];
+            readonly seconds: number;
+            readonly size: number;
+            readonly error: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly used: boolean;
+        };
+        /**
+         * @description * `file` - Video file
+         *     * `hls_zip` - HLS zip
+         * @enum {string}
+         */
+        StudioVideoSourceEnum: "file" | "hls_zip";
+        /**
+         * @description * `uploading` - Uploading
+         *     * `queued` - Queued
+         *     * `processing` - Processing
+         *     * `ready` - Ready
+         *     * `failed` - Failed
+         * @enum {string}
+         */
+        StudioVideoStatusEnum: "uploading" | "queued" | "processing" | "ready" | "failed";
         Submission: {
             readonly id: number;
             readonly username: string;
@@ -11469,6 +11583,10 @@ export interface components {
          * @enum {string}
          */
         VerdictEnum: "PENDING" | "RUNNING" | "AC" | "WA" | "TLE" | "MLE" | "OLE" | "RE" | "RE_SIGNAL" | "RE_EXIT" | "CE" | "PE" | "HACKED" | "PARTIAL" | "IE" | "WRONG_TEST" | "SKIPPED" | "COMPILE_TIMEOUT" | "IDLENESS" | "SECURITY_VIOLATION" | "CHECKER_ERROR" | "TESTING_ABORTED" | "RATE_LIMITED" | "DENIAL_OF_JUDGEMENT";
+        VideoPart: {
+            number: number;
+            etag: string;
+        };
         /**
          * @description * `youtube` - YouTube
          *     * `vimeo` - Vimeo
@@ -11476,6 +11594,19 @@ export interface components {
          * @enum {string}
          */
         VideoProviderEnum: "youtube" | "vimeo" | "hls";
+        VideoUploadComplete: {
+            parts: components["schemas"]["VideoPart"][];
+        };
+        VideoUploadStart: {
+            filename: string;
+            size: number;
+            heights?: number[];
+        };
+        VideoUploadStarted: {
+            video: components["schemas"]["StudioVideo"];
+            part_size: number;
+            parts: string[];
+        };
         Vote: {
             value: components["schemas"]["ValueEnum"];
         };
@@ -21321,6 +21452,108 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StudioSection"];
+                };
+            };
+        };
+    };
+    studio_courses_videos_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+            };
+            header?: never;
+            path: {
+                course_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioVideo"][];
+                };
+            };
+        };
+    };
+    studio_courses_videos_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VideoUploadStart"];
+                "application/x-www-form-urlencoded": components["schemas"]["VideoUploadStart"];
+                "multipart/form-data": components["schemas"]["VideoUploadStart"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoUploadStarted"];
+                };
+            };
+        };
+    };
+    studio_courses_videos_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+                /** @description A unique integer value identifying this video asset. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    studio_courses_videos_complete_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+                /** @description A unique integer value identifying this video asset. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VideoUploadComplete"];
+                "application/x-www-form-urlencoded": components["schemas"]["VideoUploadComplete"];
+                "multipart/form-data": components["schemas"]["VideoUploadComplete"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioVideo"];
                 };
             };
         };
