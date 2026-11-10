@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from drf_spectacular.utils import extend_schema_field
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from billing import services

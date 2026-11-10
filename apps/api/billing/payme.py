@@ -12,6 +12,7 @@ from __future__ import annotations
 import base64
 import binascii
 import hmac
+import logging
 import time
 from typing import Any
 
@@ -20,6 +21,8 @@ from django.db import transaction
 
 from billing import services
 from billing.models import Order, PaymeTransaction
+
+log = logging.getLogger(__name__)
 
 TIMEOUT_MS = 43_200_000
 REASON_TIMEOUT = 4
@@ -56,6 +59,7 @@ CANNOT = _msg(
 )
 BAD_REQUEST = _msg("Noto'g'ri so'rov", "Неверный запрос", "Invalid request")
 NO_METHOD = _msg("Metod topilmadi", "Метод не найден", "Method not found")
+SYSTEM = _msg("Tizim xatosi", "Системная ошибка", "System error")
 
 
 def now_ms() -> int:
@@ -150,6 +154,13 @@ def create(params: dict[str, Any]) -> dict[str, Any]:
                 raise PaymeError(-31008, CANNOT)
             return _created(tx)
         order = _order(params["account"], lock=True)
+        # A repeat that raced the first call waited on the order lock: answer
+        # it as the first one, not as a second transaction.
+        raced = _find(params["id"])
+        if raced is not None:
+            if raced.state != State.CREATED:
+                raise PaymeError(-31008, CANNOT)
+            return _created(raced)
         _check_amount(order, params["amount"])
         if order.payme_transactions.filter(state__in=[State.CREATED, State.PERFORMED]).exists():
             # The sandbox expects -31008 here: a one-time account already
@@ -270,9 +281,19 @@ def handle(body: Any, auth_header: str) -> dict[str, Any]:
         if method is None:
             raise PaymeError(-32601, NO_METHOD, body.get("method"))
         return {"jsonrpc": "2.0", "id": rpc_id, "result": method(body["params"])}
+    except (TypeError, ValueError, KeyError):
+        # A malformed field: still HTTP 200, as Payme requires.
+        return _error(rpc_id, PaymeError(-32600, BAD_REQUEST))
     except PaymeError as error:
-        return {
-            "jsonrpc": "2.0",
-            "id": rpc_id,
-            "error": {"code": error.code, "message": error.message, "data": error.data},
-        }
+        return _error(rpc_id, error)
+    except Exception:
+        log.exception("payme: system error")
+        return _error(rpc_id, PaymeError(-32400, SYSTEM))
+
+
+def _error(rpc_id: Any, error: PaymeError) -> dict[str, Any]:
+    return {
+        "jsonrpc": "2.0",
+        "id": rpc_id,
+        "error": {"code": error.code, "message": error.message, "data": error.data},
+    }

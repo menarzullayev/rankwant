@@ -21,11 +21,15 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import APIException
 
-from billing.models import RANK, Order, Plan, PlanCode, PlanPrice, Subscription
+from billing.models import RANK, Order, Plan, PlanPrice, Subscription
 from core.models import User
 from courses import services as courses
 
 log = logging.getLogger(__name__)
+
+#: `courses.Enrollment.Source.PURCHASE`, by value: billing does not import
+#: another app's models.
+PURCHASED = "purchase"
 
 
 class BillingError(APIException):
@@ -125,9 +129,9 @@ def create_plan_order(user: User, plan_code: str, months: int, provider: str) ->
 
 def create_course_order(user: User, course: Any, provider: str) -> Order:
     _check_provider(provider)
-    if not course.is_published or course.access != "paid" or course.price_uzs <= 0:
+    if not course.is_published or course.access != course.Access.PAID or course.price_uzs <= 0:
         raise billing_error("billing_not_on_sale", "This course is not sold.")
-    if user.enrollments.filter(course=course, source="purchase").exists():
+    if user.enrollments.filter(course=course, source=PURCHASED).exists():
         raise billing_error(
             "billing_already_owned", "You already own this course.", status.HTTP_409_CONFLICT
         )
@@ -140,8 +144,26 @@ def create_course_order(user: User, course: Any, provider: str) -> Order:
     )
 
 
+def in_flight(order: Order) -> bool:
+    """A provider is mid-payment: Payme holds a created transaction, or Click
+    has prepared one (after a successful Prepare and debit, Click's Complete
+    must not be refused)."""
+    return (
+        order.payme_transactions.filter(state=1).exists()
+        or order.click_transactions.filter(status="prepared").exists()
+    )
+
+
+def abandon(order: Order) -> bool:
+    """The buyer, or the expiry task, gives up an unpaid order. Refused while
+    a provider is mid-payment: that payment decides the order."""
+    if in_flight(order):
+        return False
+    return cancel_pending(order)
+
+
 def cancel_pending(order: Order) -> bool:
-    """Cancel an unpaid order; False if it was no longer pending."""
+    """Cancel an unpaid order (provider callbacks); False if it was no longer pending."""
     with transaction.atomic():
         locked = Order.objects.select_for_update().get(pk=order.pk)
         if locked.status != Order.Status.PENDING:
@@ -178,6 +200,20 @@ def period_start(user: User, plan_code: str) -> datetime:
     rank = RANK[plan_code]
     ends = [s.ends_at for s in _live(user) if RANK[s.plan] >= rank]
     return max([timezone.now(), *ends])
+
+
+def _push_lower(user: User, plan_code: str, start: datetime, end: datetime) -> None:
+    """A higher plan runs over a lower one: the lower one's remaining days
+    move to after it instead of elapsing underneath."""
+    rank = RANK[plan_code]
+    length = end - start
+    for sub in _live(user):
+        if RANK[sub.plan] >= rank or sub.ends_at <= start:
+            continue
+        sub.ends_at += length
+        if sub.starts_at > start:
+            sub.starts_at += length
+        sub.save(update_fields=["starts_at", "ends_at"])
 
 
 def sync_user_plan(user: User) -> None:
@@ -230,12 +266,10 @@ def fulfil(order: Order) -> bool:
         user = locked.user
         if locked.kind == Order.Kind.PLAN:
             start = period_start(user, locked.plan)
+            end = add_months(start, locked.months or 1)
+            _push_lower(user, locked.plan, start, end)
             Subscription.objects.create(
-                user=user,
-                plan=locked.plan,
-                order=locked,
-                starts_at=start,
-                ends_at=add_months(start, locked.months or 1),
+                user=user, plan=locked.plan, order=locked, starts_at=start, ends_at=end
             )
             sync_user_plan(user)
         else:
@@ -270,7 +304,3 @@ def revoke(order: Order) -> None:
 def features(plan: Plan, locale: str) -> list[str]:
     text = getattr(plan, f"features_{locale}", "") or plan.features_uz
     return [line.strip() for line in text.splitlines() if line.strip()]
-
-
-def plan_codes() -> list[str]:
-    return [code for code in PlanCode.values]

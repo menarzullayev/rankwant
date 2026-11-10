@@ -10,6 +10,8 @@ import {
   type BillingOverview,
   type CheckoutItem,
   type PaidPlan,
+  PERIOD_KEYS,
+  PLAN_KEYS,
 } from "@/features/billing";
 import { langQuery, type CourseDetail } from "@/features/courses";
 import { getLocale } from "@/i18n/server";
@@ -23,8 +25,6 @@ export const dynamic = "force-dynamic";
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
-const PERIOD_KEYS: Record<number, string> = { 1: "billing.period.month", 6: "billing.period.halfYear", 12: "billing.period.year" };
-const PLAN_KEYS: Record<string, string> = { plus: "billing.plan.plus", pro: "billing.plan.pro", judge: "billing.plan.judge" };
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: t(await getLocale(), "billing.checkout.title"), robots: { index: false } };

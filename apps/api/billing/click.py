@@ -137,6 +137,12 @@ def _complete(
             return _answer(-4, **ids)
         if tx.status == ClickTransaction.Status.CANCELLED:
             return _answer(-9, **ids)
+        if Order.objects.select_for_update().get(pk=order.pk).status == Order.Status.PAID:
+            # Paid already through another Click transaction: Click's
+            # "already paid" answer, never a second fulfilment.
+            tx.status = ClickTransaction.Status.CANCELLED
+            tx.save(update_fields=["status"])
+            return _answer(-4, **ids)
         if click_error < 0:
             # Click could not charge the card: the order is void.
             tx.status = ClickTransaction.Status.CANCELLED

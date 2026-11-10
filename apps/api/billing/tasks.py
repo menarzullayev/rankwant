@@ -6,7 +6,7 @@ from celery import shared_task
 from django.utils import timezone
 
 from billing import payme, services
-from billing.models import ClickTransaction, Order, PaymeTransaction
+from billing.models import Order, PaymeTransaction
 
 #: An unpaid order is dropped after a day (a Payme transaction times out
 #: after 12 hours on Payme's side; Click has no stated limit).
@@ -27,12 +27,9 @@ def expire_orders() -> int:
         state=PaymeTransaction.State.CREATED, create_time__lt=cutoff_ms
     ).select_related("order"):
         payme._expire(tx)
-    stale = (
-        Order.objects.filter(status=Order.Status.PENDING, created_at__lt=timezone.now() - ORDER_TTL)
-        .exclude(payme_transactions__state=PaymeTransaction.State.CREATED)
-        .exclude(click_transactions__status=ClickTransaction.Status.CONFIRMED)
+    stale = Order.objects.filter(
+        status=Order.Status.PENDING, created_at__lt=timezone.now() - ORDER_TTL
     )
-    count = 0
-    for order in stale:
-        count += services.cancel_pending(order)
-    return count
+    # `abandon` leaves an order alone while Payme holds a transaction or
+    # Click has prepared one: that payment still decides the order.
+    return sum(services.abandon(order) for order in stale)

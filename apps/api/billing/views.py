@@ -111,7 +111,7 @@ class OrderViewSet(
     @action(detail=True, methods=["post"])
     def cancel(self, request: Request, pk: str | None = None) -> Response:
         order = self.get_object()
-        services.cancel_pending(order)
+        services.abandon(order)
         order.refresh_from_db()
         return Response(OrderSerializer(order, context=self.get_serializer_context()).data)
 

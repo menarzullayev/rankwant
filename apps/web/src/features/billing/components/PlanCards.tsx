@@ -13,18 +13,8 @@ import { loginHref } from "@/lib/access";
 
 import { PERIODS, PLANS_WITH_COURSES, type BillingOverview, type Period, type PlanOffer } from "../api/billing";
 import { discountPercent, groupDigits } from "../format";
+import { PERIOD_KEYS, PLAN_KEYS } from "../labels";
 
-const PERIOD_KEYS: Record<Period, string> = {
-  1: "billing.period.month",
-  6: "billing.period.halfYear",
-  12: "billing.period.year",
-};
-const PLAN_KEYS: Record<string, string> = {
-  free: "billing.plan.free",
-  plus: "billing.plan.plus",
-  pro: "billing.plan.pro",
-  judge: "billing.plan.judge",
-};
 /** Buying the current plan again adds a period after the running one. */
 const ACTION_KEYS = { guest: "billing.signIn", extend: "billing.extend", choose: "billing.choose" } as const;
 

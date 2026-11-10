@@ -212,6 +212,15 @@ class TestPayme:
         assert statuses[waiting.pk] == statuses[forgotten.pk] == Order.Status.CANCELLED
         assert statuses[fresh.pk] == Order.Status.PENDING
 
+    def test_a_malformed_field_is_still_http_200(self, user):
+        order = _order(user)
+        _rpc(
+            "CreateTransaction",
+            {"id": "tx1", "time": 1, "amount": 4_900_000, "account": {"order_id": order.pk}},
+        )
+        assert _code(_rpc("CancelTransaction", {"id": "tx1", "reason": "x"})) == -32600
+        assert _code(_rpc("GetStatement", {"from": None, "to": 1})) == -32600
+
     def test_unknown_transaction_and_method(self, user):
         assert _code(_rpc("PerformTransaction", {"id": "none"})) == -31003
         assert _code(_rpc("Nope", {})) == -32601
@@ -297,6 +306,26 @@ class TestClick:
         assert _click(order, 1, prepare_id=999)["error"] == -6
         missing = Order(pk=999_999, amount_uzs=49_000)
         assert _click(missing, 0)["error"] == -5
+
+    def test_a_second_click_payment_on_a_paid_order_is_already_paid(self, user):
+        order = _order(user, "click")
+        first = _click(order, 0, trans=1)
+        second = _click(order, 0, trans=2)
+        assert _click(order, 1, trans=1, prepare_id=first["merchant_prepare_id"])["error"] == 0
+        assert _click(order, 1, trans=2, prepare_id=second["merchant_prepare_id"])["error"] == -4
+        assert Subscription.objects.count() == 1
+
+    def test_a_prepared_order_is_not_abandoned(self, user):
+        from billing.tasks import expire_orders
+
+        order = _order(user, "click")
+        prepared = _click(order, 0)
+        assert services.abandon(order) is False
+        Order.objects.filter(pk=order.pk).update(created_at=timezone.now() - timedelta(days=2))
+        expire_orders()
+        order.refresh_from_db()
+        assert order.status == Order.Status.PENDING
+        assert _click(order, 1, prepare_id=prepared["merchant_prepare_id"])["error"] == 0
 
     def test_a_failed_charge_cancels_the_order(self, user):
         order = _order(user, "click")
@@ -408,6 +437,15 @@ class TestPeriods:
         user.refresh_from_db()
         assert user.plan == "judge"
 
+    def test_a_higher_plan_keeps_the_lower_plans_days(self, user):
+        services.fulfil(_order(user, plan="pro", months=12))
+        pro = Subscription.objects.get(plan="pro")
+        before = pro.ends_at
+        services.fulfil(_order(user, plan="judge"))
+        judge = Subscription.objects.get(plan="judge")
+        pro.refresh_from_db()
+        assert pro.ends_at == before + (judge.ends_at - judge.starts_at)
+
     def test_sync_after_the_end(self, user):
         services.fulfil(_order(user))
         ended = timezone.now() - timedelta(days=1)
@@ -445,6 +483,18 @@ class TestCourseAccess:
         user.refresh_from_db()
         assert _client(user).get(lesson_url).status_code == 403
         assert _client(user).post(url, {}).status_code == 402
+
+    def test_the_catalogue_drops_a_lapsed_plan_course(self, user):
+        course, _ = _paid_course()
+        services.fulfil(_order(user))
+        user.refresh_from_db()
+        _client(user).post(reverse("course-enroll", args=[course.slug]), {})
+        User.objects.filter(pk=user.pk).update(
+            plan_expires_at=timezone.now() - timedelta(seconds=1)
+        )
+        user.refresh_from_db()
+        rows = _client(user).get(reverse("course-list")).json()["results"]
+        assert next(r for r in rows if r["slug"] == course.slug)["enrolled"] is False
 
     def test_plus_does_not_open_courses(self, user):
         course, _ = _paid_course()

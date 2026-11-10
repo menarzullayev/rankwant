@@ -24,6 +24,7 @@ from rest_framework.views import APIView
 from core.models import User
 from core.openapi_docs import crud_summaries
 from courses import progress, services
+from courses.access import plan_covers_courses
 from courses.models import (
     CONTENT_LOCALES,
     Course,
@@ -69,9 +70,12 @@ def percents(user: Any, courses: list[Course]) -> dict[int, int]:
     if not getattr(user, "is_authenticated", False) or not courses:
         return {}
     ids = [c.pk for c in courses]
-    enrolled = set(
-        Enrollment.objects.filter(user=user, course_id__in=ids).values_list("course_id", flat=True)
-    )
+    rows = Enrollment.objects.filter(user=user, course_id__in=ids)
+    if not plan_covers_courses(user):
+        # A paid course opened by a plan that lapsed is closed (as on the
+        # course page, `progress.state`).
+        rows = rows.exclude(source=Enrollment.Source.PLAN, course__access=Course.Access.PAID)
+    enrolled = set(rows.values_list("course_id", flat=True))
     if not enrolled:
         return {}
     required = dict(
