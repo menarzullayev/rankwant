@@ -209,6 +209,7 @@ services:
         # Empty = the theme customizer is on; 0 hides it (`src/lib/theme/flag.ts`).
         NEXT_PUBLIC_CUSTOMIZER: ${NEXT_PUBLIC_CUSTOMIZER:-}
         # Feature flags from `.env.public` (`src/lib/flags.ts`); empty = off.
+        NEXT_PUBLIC_FLAG_COURSES: ${NEXT_PUBLIC_FLAG_COURSES:-}
         NEXT_PUBLIC_FLAG_GEO_EARLY_REGION: ${NEXT_PUBLIC_FLAG_GEO_EARLY_REGION:-}
         NEXT_PUBLIC_FLAG_NEW_NAV: ${NEXT_PUBLIC_FLAG_NEW_NAV:-}
         NEXT_PUBLIC_FLAG_NEW_PALETTE: ${NEXT_PUBLIC_FLAG_NEW_PALETTE:-}

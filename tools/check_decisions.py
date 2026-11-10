@@ -2972,6 +2972,26 @@ def monitor_watches_disk_and_commit() -> str | None:
     return None
 
 
+def courses_structure_and_access() -> str | None:
+    """2026-11-10 (HITL, ADR-0056): Kurs \u2192 Modul \u2192 Bo'lim \u2192 Dars, to'rt dars turi.
+
+    Pullik kursning videosi faqat R2 (HLS) dan beriladi \u2014 YouTube/Vimeo
+    havolasini tarqatish mumkin. Sertifikat chegarasi standart 70%. Bo'lim
+    egasi \u00abochamiz\u00bb deguncha `courses` bayrog'i ortida.
+    """
+    models_py = read("apps/api/courses/models.py")
+    for kind in ('TEXT = "text"', 'PROBLEM = "problem"', 'QUIZ = "quiz"', 'VIDEO = "video"'):
+        if kind not in models_py:
+            return f"courses/models.py: dars turi yo'q \u2014 {kind}"
+    if "if paid and self.video_provider != self.VideoProvider.HLS:" not in models_py:
+        return "courses/models.py: pullik kurs videosi R2 (HLS) bilan cheklanmagan"
+    if "        default=70,\n        validators=[MinValueValidator(1), MaxValueValidator(100)],\n        help_text=\"Final quiz" not in models_py:
+        return "courses/models.py: sertifikat chegarasi standart 70% emas"
+    if "  courses: false,\n" not in read("apps/web/src/lib/flags.ts"):
+        return "flags.ts: `courses` bayrog'i standart holatda o'chiq emas"
+    return None
+
+
 def failed_containers_are_revived() -> str | None:
     """2026-11-10 (HITL): Docker ko'tara olmagan konteyner o'zi tiklanadi.
 
@@ -4986,6 +5006,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
+    ("kurslar: to'rt daraja, pullik video R2, bayroq ortida", courses_structure_and_access),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
