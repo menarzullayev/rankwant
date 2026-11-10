@@ -4803,6 +4803,46 @@ def neg_decisions_watcher_drops_main_ci_verdict() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_cache_budget_raised() -> tuple[bool, str]:
+    """The build cache budget is quietly raised (the 2026-10-06 disk incident class)."""
+    return _decision_broken(
+        "tools/prune_docker_disk.sh",
+        'CACHE_MAX_GB="${RANKWANT_BUILD_CACHE_MAX_GB:-10}"\n',
+        'CACHE_MAX_GB="${RANKWANT_BUILD_CACHE_MAX_GB:-100}"\n',
+        "kesh byudjeti 10 GB emas",
+    )
+
+
+def neg_decisions_disk_guard_removed() -> tuple[bool, str]:
+    """The low-disk clear is dropped: a full C: no longer clears the cache."""
+    return _decision_broken(
+        "tools/prune_docker_disk.sh",
+        'if [ -n "$free_bytes" ] && [ "$free_bytes" -lt "$((DISK_MIN_FREE_GB * 1000000000))" ]; then\n',
+        "if false; then\n",
+        "disk qo'riqchisi yo'q",
+    )
+
+
+def neg_decisions_unknown_cache_kept() -> tuple[bool, str]:
+    """An unreadable cache size is treated as small (unknown must clear)."""
+    return _decision_broken(
+        "tools/prune_docker_disk.sh",
+        '  reason="kesh hajmi o\'qilmadi"\n',
+        "  :\n",
+        "o'qilmagan kesh hajmi tozalanmaydi",
+    )
+
+
+def neg_decisions_judge_base_not_reused() -> tuple[bool, str]:
+    """deploy.sh rebuilds the judge toolchains every time again."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '  if [ "$NO_CACHE" -eq 0 ] && docker image inspect "$JUDGE_BASE" >/dev/null 2>&1; then\n',
+        "  if false; then\n",
+        "judge base obrazi qayta ishlatilmaydi",
+    )
+
+
 def neg_decisions_revive_touches_manual_stops() -> tuple[bool, str]:
     """The revive script stops filtering on `.State.Error` (would start bake-off's stopped worker)."""
     return _decision_broken(
@@ -7010,8 +7050,8 @@ def neg_decisions_build_cache_kept_after_deploy() -> tuple[bool, str]:
     """The post-deploy prune goes back to the form that frees nothing."""
     return _decision_broken(
         "tools/prune_docker_disk.sh",
-        "\ndocker builder prune -af >/dev/null || true\n",
-        "\ndocker builder prune -f >/dev/null || true\n",
+        "\n  docker builder prune -af >/dev/null || true\n",
+        "\n  docker builder prune -f >/dev/null || true\n",
         "docker disk chegaralangan",
     )
 
@@ -11940,6 +11980,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("o'qilmagan baza migratsiyasiz deb olinsa tutilsin", neg_decisions_unreadable_db_means_no_migration),
             ("darvoza daraxtni solishtirmasa tutilsin", neg_decisions_gate_skips_tree_compare),
             ("watcher main CI hukmini kuzatmasa tutilsin", neg_decisions_watcher_drops_main_ci_verdict),
+            ("kesh byudjeti oshirilsa tutilsin", neg_decisions_cache_budget_raised),
+            ("disk qo'riqchisi olinsa tutilsin", neg_decisions_disk_guard_removed),
+            ("o'qilmagan kesh saqlansa tutilsin", neg_decisions_unknown_cache_kept),
+            ("judge base qayta qurilsa tutilsin", neg_decisions_judge_base_not_reused),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),
             ("Docker o'chiqda deploy'ga urinilsa tutilsin", neg_decisions_watcher_deploys_without_docker),

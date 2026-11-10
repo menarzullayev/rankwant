@@ -2855,6 +2855,33 @@ def gate_trusts_green_pr_on_same_tree() -> str | None:
     return None
 
 
+def build_cache_kept_within_budget() -> str | None:
+    """2026-11-10 (HITL): build cache 10 GB gacha saqlanadi, judge base qayta ishlatiladi.
+
+    O'lchandi (34 deploy): build deploy'ning 79% i (median 136 s, `npm ci`
+    46 s), judge o'zgargan deploy 1221 s — chunki 2026-10-06 dan keshni har
+    deploy `-af` bilan butunlay tozalardi. Endi kesh 10 GB dan oshsa, hajmi
+    o'qilmasa yoki Docker diskida 5 GB dan kam joy qolsa tozalanadi; judge
+    toolchain qatlami Dockerfile xeshi bilan teglangan obrazda saqlanadi.
+    """
+    prune = read("tools/prune_docker_disk.sh")
+    for needle, why in (
+        ('CACHE_MAX_GB="${RANKWANT_BUILD_CACHE_MAX_GB:-10}"\n', "kesh byudjeti 10 GB emas"),
+        ('DISK_MIN_FREE_GB="${RANKWANT_DISK_MIN_FREE_GB:-5}"\n', "disk qo'riqchisi chegarasi 5 GB emas"),
+        ('if [ -n "$free_bytes" ] && [ "$free_bytes" -lt "$((DISK_MIN_FREE_GB * 1000000000))" ]; then\n',
+         "disk qo'riqchisi yo'q"),
+        ('  reason="kesh hajmi o\'qilmadi"\n', "o'qilmagan kesh hajmi tozalanmaydi"),
+    ):
+        if needle not in prune:
+            return f"tools/prune_docker_disk.sh: {why}"
+    deploy = read("tools/deploy.sh")
+    if '  if [ "$NO_CACHE" -eq 0 ] && docker image inspect "$JUDGE_BASE" >/dev/null 2>&1; then\n' not in deploy:
+        return "tools/deploy.sh: judge base obrazi qayta ishlatilmaydi"
+    if "        JUDGE_BASE: ${JUDGE_BASE:-base}\n" not in read("docker-compose.yml"):
+        return "docker-compose.yml: judge build'iga JUDGE_BASE uzatilmaydi"
+    return None
+
+
 def behind_prs_update_one_at_a_time() -> str | None:
     """2026-11-10 (HITL): orqada qolgan PR'lar navbat bilan, bittadan yangilanadi.
 
@@ -4082,7 +4109,7 @@ def docker_disk_stays_bounded() -> str | None:
     prune = read("tools/prune_docker_disk.sh")
     if "docker image prune -f" not in prune:
         return "tools/prune_docker_disk.sh: `docker image prune -f` yo'q"
-    if "\ndocker builder prune -af >/dev/null || true\n" not in prune:
+    if "\n  docker builder prune -af >/dev/null || true\n" not in prune:
         return "tools/prune_docker_disk.sh: build cache to'liq tozalanmaydi — `-f` ning o'zi 0 bayt bo'shatadi"
     if "docker volume prune" in prune:
         return "tools/prune_docker_disk.sh: volume prune — postgres/minio o'chadi"
@@ -4895,6 +4922,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
+    ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),
     ("darvoza bir xil daraxtda PR CI'ga ishonadi", gate_trusts_green_pr_on_same_tree),
     ("pg_dump faqat migratsiyada, build bilan parallel", dump_only_for_pending_migrations),
     ("versiya nuqtalari ulangan", versioning_points_are_wired),
