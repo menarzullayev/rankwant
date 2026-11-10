@@ -204,6 +204,11 @@ services:
       args:
         # Brauzer bundle'i — o'sha domenning o'zi, ya'ni same-origin.
         NEXT_PUBLIC_API_BASE: ${PUBLIC_ORIGIN}/api/v1
+        # Feature flags from `.env.public` (`src/lib/flags.ts`); empty = off.
+        NEXT_PUBLIC_FLAG_GEO_EARLY_REGION: ${NEXT_PUBLIC_FLAG_GEO_EARLY_REGION:-}
+        NEXT_PUBLIC_FLAG_NEW_NAV: ${NEXT_PUBLIC_FLAG_NEW_NAV:-}
+        NEXT_PUBLIC_FLAG_NEW_PALETTE: ${NEXT_PUBLIC_FLAG_NEW_PALETTE:-}
+        NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE: ${NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE:-}
     ports: !override ['127.0.0.1:8300:3000']
 
   judge:
