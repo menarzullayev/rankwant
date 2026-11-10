@@ -34,6 +34,7 @@ from core.openapi_docs import crud_summaries
 from core.permissions import STAFF_GROUP_OPS, CanSubmit
 from problems.models import Problem
 from problems.serializers import MineProblemSerializer
+from problems.translation_views import TranslationActions
 
 #: Unpublished problems one author may hold. Measured 2026-11-10: nobody
 #: had authored a problem yet (0 rows in `Problem.authors`), so the number
@@ -98,9 +99,14 @@ def staff_reviewers() -> Any:
 @crud_summaries(
     one="draft masala",
     many="draft masalalar",
-    extra={"review": "Qoralamani xodim ko'rigiga yuborish"},
+    extra={
+        "review": "Qoralamani xodim ko'rigiga yuborish",
+        "translations": "Qoralama tarjimalari (ADR-0058)",
+        "translation": "Bitta tarjimani yozish yoki o'chirish",
+    },
 )
 class MineProblemViewSet(
+    TranslationActions,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
@@ -140,6 +146,13 @@ class MineProblemViewSet(
                 self.request, message="A published problem is edited by staff-ops"
             )
         serializer.save()
+
+    def _check_translation_write(self, problem: Problem) -> None:
+        # Like the statement: a published problem's text is staff-ops' (ADR-0025).
+        if problem.is_public:
+            self.permission_denied(
+                self.request, message="A published problem is edited by staff-ops"
+            )
 
     def perform_destroy(self, instance: Problem) -> None:
         if instance.is_public:

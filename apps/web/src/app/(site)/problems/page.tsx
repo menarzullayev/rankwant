@@ -40,6 +40,14 @@ import { getSessionUser, getWithSession } from "@/lib/api.server";
 // ISR keyinroq optimizatsiya sifatida qo'shilishi mumkin.
 export const dynamic = "force-dynamic";
 
+/** The API query with the reader's language (ADR-0058), the page's own
+ *  filters untouched. */
+function withLang(query: URLSearchParams, locale: string): string {
+  const api = new URLSearchParams(query);
+  api.set("lang", locale);
+  return api.toString();
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   return { title: t(await getLocale(), "problems.title") };
 }
@@ -111,9 +119,8 @@ export default async function ProblemsPage({ searchParams }: Props) {
     popular,
     liked,
   ] = await Promise.all([
-    getWithSession<Paginated<Problem>>(
-      `/problems/${query.size ? `?${query}` : ""}`,
-    ),
+    // Titles in the reader's language (ADR-0058).
+    getWithSession<Paginated<Problem>>(`/problems/?${withLang(query, locale)}`),
     api.topics(),
     api.stats(),
     getWithSession<ArchiveProgress>("/problems/progress/"),

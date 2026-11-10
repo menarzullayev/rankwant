@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2964 strings.**
+**2972 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1937,6 +1937,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.testsCount` | Testlar ({count}) | Testler ({count}) |  |
 | `studio.tab.editorial` | Yechim tahlili | Sheshim talqısı |  |
 | `studio.tab.review` | Ko'rik | Tekseriw |  |
+| `studio.tab.translations` | Tarjimalar | Awdarmalar |  |
+| `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Máseleniń teksti basqa tillerde. Awdarılmaǵan maydan oqıwshıǵa túp nusqadan kórsetiledi. |  |
+| `translation.base` | Asl til: {locale} | Túp til: {locale} |  |
+| `translation.none` | Tarjima yo'q | Awdarma joq |  |
+| `translation.add` | Qo'shish | Qosıw |  |
+| `translation.edit` | Tahrirlash | Ózgertiw |  |
+| `translation.delete` | O'chirish | Óshiriw |  |
+| `translation.deleteConfirm` | {locale} tarjimasi o'chirilsinmi? | {locale} awdarması óshirilsinbe? |  |
 | `studio.field.title` | Nomi | Atı |  |
 | `studio.field.slug` | Manzil (slug) | Mánzil (slug) |  |
 | `studio.field.slugHint` | Kichik lotin harflari, raqamlar va chiziqcha. Yaratilgandan keyin o'zgarmaydi. | Kishi latın háripleri, sanlar hám sızıqsha. Jaratılǵannan keyin ózgermeydi. |  |

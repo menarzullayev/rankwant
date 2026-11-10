@@ -59,3 +59,24 @@ def _test_deleted(sender: type[TestCase], instance: TestCase, **_: Any) -> None:
     if instance.is_sample:
         return
     _maybe_crossed(instance.problem_id)
+
+
+# ADR-0058: translated titles feed the site search through one stored column.
+def _translation_changed(sender: Any, instance: Any, **kwargs: Any) -> None:
+    from problems import translations
+
+    translations.on_change(sender, instance, **kwargs)
+
+
+def _connect_translations() -> None:
+    from problems.models import ProblemTranslation
+
+    post_save.connect(
+        _translation_changed, sender=ProblemTranslation, dispatch_uid="problem-translation-save"
+    )
+    post_delete.connect(
+        _translation_changed, sender=ProblemTranslation, dispatch_uid="problem-translation-delete"
+    )
+
+
+_connect_translations()

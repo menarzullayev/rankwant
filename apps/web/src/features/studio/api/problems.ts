@@ -29,6 +29,8 @@ export type MineProblem = {
   output_format: string;
   note: string;
   editorial: string;
+  /** The author's language (ADR-0058); other languages are translations. */
+  statement_locale: string;
   difficulty: number;
   time_limit_ms: number;
   memory_limit_kb: number;

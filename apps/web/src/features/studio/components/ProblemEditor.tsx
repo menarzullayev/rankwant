@@ -9,6 +9,7 @@ import { numericStamp } from "@rankwant/shared/format";
 import { FM_INP, FM_LAB } from "@/components/form/chrome";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { Button } from "@/components/ui/Button";
+import { ProblemTranslations } from "@/components/problems/ProblemTranslations";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Markdown } from "@/components/ui/Markdown";
@@ -38,6 +39,7 @@ const TAB_LABEL: Record<EditorTab, MessageKey> = {
   statement: "studio.tab.statement",
   tests: "studio.tab.tests",
   editorial: "studio.tab.editorial",
+  translations: "studio.tab.translations",
   review: "studio.tab.review",
 };
 
@@ -503,7 +505,7 @@ export function ProblemEditor({
           </div>
           <Card>
             <div id={`${base}-panel`} role="tabpanel" aria-labelledby={`${base}-${tab}`}>
-              {problem.is_public && tab !== "review" && tab !== "tests" ? (
+              {problem.is_public && (tab === "statement" || tab === "editorial") ? (
                 // Published: staff-ops edit it now (the API answers 403).
                 <div className="space-y-4">
                   <p className="text-theme-sm rw-dim">{t(locale, "studio.review.public")}</p>
@@ -521,6 +523,18 @@ export function ProblemEditor({
               )}
               {tab === "editorial" && !problem.is_public && (
                 <EditorialForm problem={problem} onSaved={setProblem} />
+              )}
+              {tab === "translations" && (
+                <div className="space-y-3">
+                  {problem.is_public && (
+                    <p className="text-theme-sm rw-dim">{t(locale, "studio.review.public")}</p>
+                  )}
+                  <ProblemTranslations
+                    base={`/problems/mine/${encodeURIComponent(problem.slug)}/`}
+                    baseLocale={problem.statement_locale}
+                    readOnly={problem.is_public}
+                  />
+                </div>
               )}
               {tab === "review" && <ReviewPanel problem={problem} onSaved={setProblem} />}
             </div>

@@ -54,7 +54,7 @@ export async function generateMetadata({
   const locale = await getLocale();
   try {
     const problem = await getWithSession<ProblemDetail>(
-      `/problems/${slug}/`,
+      `/problems/${slug}/?lang=${locale}`,
     );
     const title = problem.code
       ? `#${String(problem.code).padStart(4, "0")} · ${problem.title}`
@@ -113,7 +113,8 @@ export default async function ProblemPage({ params, searchParams }: Props) {
 
   let problem: ProblemDetail;
   try {
-    problem = await getWithSession<ProblemDetail>(`/problems/${slug}/`);
+    // The reader's language (ADR-0058); the author's text when it has none.
+    problem = await getWithSession<ProblemDetail>(`/problems/${slug}/?lang=${locale}`);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
     throw error;

@@ -5143,6 +5143,48 @@ def neg_decisions_refund_keeps_access() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_translation_blanks_field() -> tuple[bool, str]:
+    """An empty translated field replaces the author's text with nothing."""
+    return _decision_broken(
+        "apps/api/problems/translations.py",
+        "        value = getattr(row, field)\n        if value:\n            data[field] = value\n",
+        "        value = getattr(row, field)\n        data[field] = value\n",
+        "asl matnni o'chiradi",
+    )
+
+
+def neg_decisions_translation_opens_editorial() -> tuple[bool, str]:
+    """A translation reveals a locked editorial."""
+    return _decision_broken(
+        "apps/api/problems/translations.py",
+        '        if field == "editorial" and not data[field]:\n            continue\n',
+        "",
+        "yopiq tahlil",
+    )
+
+
+def neg_decisions_author_translates_published() -> tuple[bool, str]:
+    """The author changes a published problem's translation."""
+    return _decision_broken(
+        "apps/api/problems/author_views.py",
+        "        if problem.is_public:\n            self.permission_denied(\n"
+        '                self.request, message="A published problem is edited by staff-ops"\n',
+        "        if False:\n            self.permission_denied(\n"
+        '                self.request, message="A published problem is edited by staff-ops"\n',
+        "nashr qilingan masala tarjimasini",
+    )
+
+
+def neg_decisions_search_skips_translations() -> tuple[bool, str]:
+    """The site search does not find a translated title."""
+    return _decision_broken(
+        "apps/api/problems/search.py",
+        '        secondary=("slug", "translated_titles"),\n',
+        '        secondary=("slug",),\n',
+        "tarjima nomlarini topmaydi",
+    )
+
+
 def neg_decisions_plus_opens_courses() -> tuple[bool, str]:
     """Plus opens paid courses too."""
     return _decision_broken(
@@ -8332,6 +8374,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/courses/access.py",
     "apps/api/billing/payme.py",
     "apps/api/billing/click.py",
+    "apps/api/problems/translations.py",
     "apps/api/classroom/services.py",
     "apps/api/qvant/ledger.py",
     "apps/api/courses/author_serializers.py",
@@ -12489,6 +12532,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("Payme summasi tekshirilmasa tutilsin", neg_decisions_payme_any_amount),
             ("qaytarishda huquq qolsa tutilsin", neg_decisions_refund_keeps_access),
             ("Plus kursni ochsa tutilsin", neg_decisions_plus_opens_courses),
+            ("tarjima bo'sh maydoni matnni o'chirsa tutilsin", neg_decisions_translation_blanks_field),
+            ("tarjima yopiq tahlilni ochsa tutilsin", neg_decisions_translation_opens_editorial),
+            ("muallif nashr tarjimasini o'zgartirsa tutilsin", neg_decisions_author_translates_published),
+            ("qidiruv tarjima nomini topmasa tutilsin", neg_decisions_search_skips_translations),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2964 strings.**
+**2972 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1937,6 +1937,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.testsCount` | Testlar ({count}) | Тесттер ({count}) |  |
 | `studio.tab.editorial` | Yechim tahlili | Шешім талдауы |  |
 | `studio.tab.review` | Ko'rik | Тексеру |  |
+| `studio.tab.translations` | Tarjimalar | Аудармалар |  |
+| `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Есептің мәтіні басқа тілдерде. Аударылмаған өріс оқырманға түпнұсқадан көрсетіледі. |  |
+| `translation.base` | Asl til: {locale} | Түпнұсқа тілі: {locale} |  |
+| `translation.none` | Tarjima yo'q | Аударма жоқ |  |
+| `translation.add` | Qo'shish | Қосу |  |
+| `translation.edit` | Tahrirlash | Өңдеу |  |
+| `translation.delete` | O'chirish | Жою |  |
+| `translation.deleteConfirm` | {locale} tarjimasi o'chirilsinmi? | {locale} аудармасы жойылсын ба? |  |
 | `studio.field.title` | Nomi | Атауы |  |
 | `studio.field.slug` | Manzil (slug) | Мекенжай (slug) |  |
 | `studio.field.slugHint` | Kichik lotin harflari, raqamlar va chiziqcha. Yaratilgandan keyin o'zgarmaydi. | Кіші латын әріптері, сандар және сызықша. Жасалғаннан кейін өзгермейді. |  |

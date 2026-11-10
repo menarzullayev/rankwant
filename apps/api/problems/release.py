@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import Any, NamedTuple
 
-from problems import testgroups
+from problems import testgroups, translations
 from problems.evaluation import EVALUATION_MODE_INVALID as EVALUATION_MODE_INVALID
 from problems.evaluation import evaluation_error
 from problems.models import (
@@ -254,6 +254,11 @@ def snapshot_package(problem: Problem) -> dict[str, Any]:
             "note": problem.note,
             "editorial": problem.editorial,
             "locale": problem.statement_locale,
+            # Other languages (ADR-0058): not versioned, recorded as they are.
+            "translations": [
+                {field: getattr(row, field) for field in ("locale", *translations.FIELDS)}
+                for row in problem.translations.all()
+            ],
         },
         "limits": {
             "time_limit_ms": problem.time_limit_ms,

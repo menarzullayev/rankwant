@@ -16,7 +16,7 @@ import {
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { CopyButton } from "@/components/kit/CopyControl";
-import { fill, t, type Locale } from "@/i18n/messages";
+import { fill, LOCALE_NAMES, t, type Locale } from "@/i18n/messages";
 import type { ProblemDetail } from "@/lib/api";
 import { stripDuplicateStatementHeading } from "@/lib/statement-body";
 
@@ -69,6 +69,15 @@ export function ProblemDescription({
           <StatementTextSizeControls />
           <CopyButton text={slug} size="sm" />
         </div>
+        {problem.locale !== locale && (
+          // ADR-0058: no translation in the reader's language yet.
+          <p className="mt-2 text-theme-xs rw-faint">
+            {fill(t(locale, "course.fallback"), {
+              locale: LOCALE_NAMES[locale] ?? locale,
+              shown: LOCALE_NAMES[problem.locale as Locale] ?? problem.locale,
+            })}
+          </p>
+        )}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <DifficultyBadge value={problem.difficulty} />
           <span className={`level-${problem.level} text-theme-sm font-medium`}>

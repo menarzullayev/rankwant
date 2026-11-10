@@ -7,6 +7,7 @@ import { numericStamp } from "@rankwant/shared/format";
 import { FormCheck } from "@/components/form/FormKit";
 import { FM_INP } from "@/components/form/chrome";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
+import { ProblemTranslations } from "@/components/problems/ProblemTranslations";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Status } from "@/components/ui/Status";
@@ -766,6 +767,15 @@ export function ProblemsAdmin({ review: initialReview = false }: { review?: bool
           <div className="space-y-6">
             <ProblemTestsPanel problem={p} reload={reload} />
             <ProblemLanguagesPanel problem={p} />
+            <div className="space-y-3">
+              <p className="text-theme-sm font-medium rw-strong">
+                {t(locale, "studio.tab.translations")}
+              </p>
+              <ProblemTranslations
+                base={`/staff/problems/${encodeURIComponent(p.slug)}/`}
+                baseLocale={p.statement_locale || "uz"}
+              />
+            </div>
           </div>
         )}
       />

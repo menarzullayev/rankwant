@@ -7,12 +7,13 @@ from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from problems import storage, testsets
+from problems import storage, testsets, translations
 from problems.models import (
     Language,
     Problem,
     ProblemAttachment,
     ProblemReport,
+    ProblemTranslation,
     ProblemVote,
     Topic,
 )
@@ -106,6 +107,24 @@ class RateProblemSerializer(serializers.Serializer[dict[str, Any]]):
     score = serializers.IntegerField(min_value=1, max_value=5)
 
 
+class ProblemTranslationSerializer(serializers.ModelSerializer[ProblemTranslation]):
+    """One other language of a problem's text (ADR-0058); the locale is in the URL."""
+
+    class Meta:
+        model = ProblemTranslation
+        fields = [
+            "locale",
+            "title",
+            "statement",
+            "input_format",
+            "output_format",
+            "note",
+            "editorial",
+            "updated_at",
+        ]
+        read_only_fields = ["locale", "updated_at"]
+
+
 class ProblemListSerializer(serializers.ModelSerializer[Problem]):
     level = serializers.CharField(read_only=True)
     is_solved = serializers.SerializerMethodField()
@@ -123,6 +142,14 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
     has_hidden_tests = serializers.SerializerMethodField()
     topics = serializers.SlugRelatedField[Topic](many=True, read_only=True, slug_field="slug")
     author = serializers.SerializerMethodField()
+
+    def to_representation(self, instance: Problem) -> dict[str, Any]:
+        data: dict[str, Any] = super().to_representation(instance)
+        locale = self.context.get("locale")
+        if locale:
+            # The archive list: the reader's title only (ADR-0058).
+            translations.apply(data, instance, locale)
+        return data
 
     def get_author(self, problem: Problem) -> dict[str, Any] | None:
         """Author name, plus whether a profile page exists.
@@ -214,6 +241,10 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
 
 
 class ProblemDetailSerializer(ProblemListSerializer):
+    #: The language the text is shown in, and every language it exists in
+    #: (ADR-0058): the author's first.
+    locale = serializers.SerializerMethodField()
+    locales = serializers.SerializerMethodField()
     samples = serializers.SerializerMethodField()
     answer_tests = serializers.SerializerMethodField()
 
@@ -419,6 +450,12 @@ class ProblemDetailSerializer(ProblemListSerializer):
             return ""
         return problem.editorial if self._editorial_access(problem) in EDITORIAL_OPEN else ""
 
+    def get_locale(self, problem: Problem) -> str:
+        return translations.shown(problem, self.context.get("locale") or problem.statement_locale)
+
+    def get_locales(self, problem: Problem) -> list[str]:
+        return translations.available(problem)
+
     def get_editorial_state(self, problem: Problem) -> dict[str, Any]:
         return {
             "available": bool(problem.editorial) and problem.is_public,
@@ -447,6 +484,8 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "editorial",
             "author",
             "statement_locale",
+            "locale",
+            "locales",
             "time_limit_ms",
             "memory_limit_kb",
             "checker_type",
@@ -483,6 +522,7 @@ class MineProblemSerializer(serializers.ModelSerializer[Problem]):
             "output_format",
             "note",
             "editorial",
+            "statement_locale",
             "difficulty",
             "time_limit_ms",
             "memory_limit_kb",
@@ -494,6 +534,7 @@ class MineProblemSerializer(serializers.ModelSerializer[Problem]):
             "updated_at",
         ]
         read_only_fields = [
+            "statement_locale",
             "time_limit_ms",
             "memory_limit_kb",
             "is_public",

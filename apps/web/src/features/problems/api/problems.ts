@@ -111,6 +111,11 @@ export type ProblemDetail = Problem & {
   my_rating: number | null;
   is_favourite: boolean;
   statement_locale: string;
+  /** The language the text is shown in (ADR-0058): the reader's when a
+   *  translation exists, else the author's (`statement_locale`). */
+  locale: string;
+  /** The author's language first, then every translation. */
+  locales: string[];
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: string;

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2964 strings.**
+**2972 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1937,6 +1937,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.testsCount` | Testlar ({count}) | Тестҳо ({count}) |  |
 | `studio.tab.editorial` | Yechim tahlili | Таҳлили ҳал |  |
 | `studio.tab.review` | Ko'rik | Тафтиш |  |
+| `studio.tab.translations` | Tarjimalar | Тарҷумаҳо |  |
+| `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Матни масъала бо забонҳои дигар. Майдони тарҷуманашуда ба хонанда аз матни аслӣ нишон дода мешавад. |  |
+| `translation.base` | Asl til: {locale} | Забони аслӣ: {locale} |  |
+| `translation.none` | Tarjima yo'q | Тарҷума нест |  |
+| `translation.add` | Qo'shish | Илова кардан |  |
+| `translation.edit` | Tahrirlash | Таҳрир |  |
+| `translation.delete` | O'chirish | Нест кардан |  |
+| `translation.deleteConfirm` | {locale} tarjimasi o'chirilsinmi? | Тарҷумаи {locale} нест карда шавад? |  |
 | `studio.field.title` | Nomi | Ном |  |
 | `studio.field.slug` | Manzil (slug) | Нишонӣ (slug) |  |
 | `studio.field.slugHint` | Kichik lotin harflari, raqamlar va chiziqcha. Yaratilgandan keyin o'zgarmaydi. | Ҳарфҳои хурди лотинӣ, рақамҳо ва дефис. Пас аз сохтан тағйир намеёбад. |  |

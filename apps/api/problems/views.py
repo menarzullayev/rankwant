@@ -23,7 +23,7 @@ from core.models import User
 from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 from judging.verdicts import Verdict
-from problems import testsets, visibility
+from problems import testsets, translations, visibility
 from problems.filters import ProblemFilter
 from problems.models import (
     DIFFICULTY_LEVELS,
@@ -126,7 +126,9 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         return (
             Problem.objects.filter(scope)
             .select_related("author")
-            .prefetch_related("topics")
+            .prefetch_related(
+                "topics", translations.prefetch(translations.reader_locale(self.request))
+            )
             .annotate(
                 rating_avg=Avg("ratings__score"),
                 rating_count=Count("ratings", distinct=True),
@@ -141,6 +143,8 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
 
     def get_serializer_context(self):  # type: ignore[no-untyped-def]
         context: dict[str, Any] = dict(super().get_serializer_context())
+        # The reader's language for titles and statements (ADR-0058).
+        context["locale"] = translations.reader_locale(self.request)
         user = self.request.user
         if not user.is_authenticated:
             return context

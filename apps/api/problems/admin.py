@@ -2,7 +2,15 @@
 
 from django.contrib import admin
 
-from problems.models import Language, Problem, ProblemLanguage, Subtask, TestCase, Topic
+from problems.models import (
+    Language,
+    Problem,
+    ProblemLanguage,
+    ProblemTranslation,
+    Subtask,
+    TestCase,
+    Topic,
+)
 
 
 class TestCaseInline(admin.TabularInline):
@@ -13,6 +21,13 @@ class TestCaseInline(admin.TabularInline):
 
 class SubtaskInline(admin.TabularInline):
     model = Subtask
+    extra = 0
+
+
+class ProblemTranslationInline(admin.StackedInline):
+    """Other languages of the text (ADR-0058)."""
+
+    model = ProblemTranslation
     extra = 0
 
 
@@ -41,7 +56,7 @@ class ProblemAdmin(admin.ModelAdmin):
     search_fields = ("slug", "title", "code")
     filter_horizontal = ("topics",)
     readonly_fields = ("code", "solved_count", "attempt_count", "created_at", "updated_at")
-    inlines = [SubtaskInline, TestCaseInline, ProblemLanguageInline]
+    inlines = [SubtaskInline, TestCaseInline, ProblemLanguageInline, ProblemTranslationInline]
     fieldsets = (
         (None, {"fields": ("slug", "title", "is_public", "author")}),
         ("Matn", {"fields": ("statement", "statement_locale")}),
