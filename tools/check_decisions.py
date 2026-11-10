@@ -2795,6 +2795,37 @@ def studio_contests_panel() -> str | None:
     return None
 
 
+def gate_trusts_green_pr_on_same_tree() -> str | None:
+    """2026-11-10 (HITL): main CI tugamasdan PR CI yetadi — faqat bir xil daraxtda.
+
+    O'lchandi: 30 PR'da merge \u2192 deploy boshlanishi median 4:28, shundan main
+    CI 3:02 — u PR CI yashil o'tkazgan aynan o'sha daraxtni qayta tekshirardi
+    (5 PR'da daraxt bayt-bayt bir xil, ruleset `strict`). Endi darvoza merge
+    qilingan PR head daraxti main bilan bir xil, PR CI yashil va oxirgi tugagan
+    main CI yashil bo'lsa ochiladi. main CI baribir yuradi: tugab qizil chiqsa
+    darvoza yopiq, watcher natijani logga yozadi, panel ko'rsatadi.
+    """
+    gate = read("tools/check_deploy_gate.py")
+    for needle, why in (
+        ('    if not ev.get("head_tree") or ev.get("head_tree") != ev.get("main_tree"):\n',
+         "daraxt solishtirilmaydi"),
+        ('        if last.get("conclusion") != "success":\n', "qizil main CI qisqa yo'lni yopmaydi"),
+        ('    if last_pr.get("status") != "completed" or last_pr.get("conclusion") != "success":\n',
+         "PR CI natijasi tekshirilmaydi"),
+        ('            # A finished main run is the final word, green or red.\n            if run.get("conclusion") != "success":\n',
+         "tugagan qizil main CI hal qiluvchi emas"),
+    ):
+        if needle not in gate:
+            return f"check_deploy_gate.py: PR CI qisqa yo'li — {why}"
+    watcher = read("tools/auto_deploy.sh")
+    if '      printf \'%s\\n\' "$TARGET" >> "$VERIFY" 2>/dev/null || true\n' not in watcher:
+        return "tools/auto_deploy.sh: PR CI bilan chiqqan deploy'ning main CI natijasi kuzatilmaydi"
+    panel = read("tools/mods/deploy-panel/hooks/register.tsx")
+    if "'--workflow', 'CI', '--event', 'push'" not in panel:
+        return "deploy paneli main CI holatini ko'rsatmaydi"
+    return None
+
+
 def failed_containers_are_revived() -> str | None:
     """2026-11-10 (HITL): Docker ko'tara olmagan konteyner o'zi tiklanadi.
 
@@ -4809,6 +4840,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
+    ("darvoza bir xil daraxtda PR CI'ga ishonadi", gate_trusts_green_pr_on_same_tree),
     ("versiya nuqtalari ulangan", versioning_points_are_wired),
     ("urg'u rang keshi rejimga bog'liq", accent_cache_follows_the_mode),
     ("unvon zinapoyasi o'qiladi", title_ladder_is_readable),
