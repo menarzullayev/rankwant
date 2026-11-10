@@ -15,6 +15,7 @@ from django.conf import settings
 from django.utils import timezone
 from fpdf import FPDF
 
+from core.alphabet import for_user
 from courses.models import CourseCertificate
 
 logging.getLogger("fontTools").setLevel(logging.WARNING)
@@ -62,7 +63,12 @@ def render(cert: CourseCertificate) -> bytes:
     line("RANKWANT", 26, 11, "B", MUTED)
     line("SERTIFIKAT", 38, 34, "B", INK)
     line("CERTIFICATE", 56, 12, "", MUTED)
-    line("KURS TUGATILDI  ·  COURSE COMPLETED", 70, 15, "B", ACCENT)
+
+    # Uzbek words in the owner's alphabet (ADR-0059); the name as typed.
+    def uz(text: str) -> str:
+        return for_user(text, cert.user)
+
+    line(uz("KURS TUGATILDI  ·  COURSE COMPLETED"), 70, 15, "B", ACCENT)
 
     size = 30.0
     pdf.set_font("DejaVu", "B", size)
@@ -71,9 +77,10 @@ def render(cert: CourseCertificate) -> bytes:
         pdf.set_font("DejaVu", "B", size)
     line(cert.name, 88, size, "B", INK)
 
-    line(f"«{cert.course_title}» kursi", 108, 15, "", INK)
+    title = for_user(cert.course_title, cert.user, cert.course.base_locale)
+    line(f"«{title}» {uz('kursi')}", 108, 15, "", INK)
     if cert.final_score is not None:
-        line(f"Yakuniy test / Final quiz: {cert.final_score}%", 118, 12, "", MUTED)
+        line(f"{uz('Yakuniy test')} / Final quiz: {cert.final_score}%", 118, 12, "", MUTED)
 
     qr = segno.make(verify_url(cert), error="m")
     rows = [list(row) for row in qr.matrix_iter(border=0)]
@@ -92,8 +99,8 @@ def render(cert: CourseCertificate) -> bytes:
     pdf.multi_cell(
         160,
         5,
-        f"ID: {cert.pk}\nTekshirish / Verify: {verify_url(cert)}\n"
-        f"Berilgan / Issued: {issued:%d.%m.%Y}",
+        f"ID: {cert.pk}\n{uz('Tekshirish')} / Verify: {verify_url(cert)}\n"
+        f"{uz('Berilgan')} / Issued: {issued:%d.%m.%Y}",
         align="L",
     )
     return bytes(pdf.output())

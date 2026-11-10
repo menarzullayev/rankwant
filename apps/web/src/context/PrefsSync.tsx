@@ -4,6 +4,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { useSession } from "@/context/SessionContext";
+import {
+  ALPHABET_LOCALE,
+  OLD_ALPHABET,
+  alphabetCookieLine,
+  parseAlphabet,
+} from "@/i18n/alphabet";
 import { DEFAULT_LOCALE, isLocale } from "@/i18n/messages";
 import { STYLE_IDS, type StyleId } from "@/layout/styles";
 import {
@@ -195,6 +201,30 @@ export function PrefsSync() {
     } else if (isLocale(user.locale) && user.locale !== DEFAULT_LOCALE) {
       document.cookie = `rw_locale=${user.locale}; path=/; max-age=31536000; samesite=lax`;
       router.refresh();
+    }
+
+    // ── Alifbo (ADR-0059): qurilma ustun, hisob — urug' ─────────────
+    // The cookie is what this device shows; the account is what mail and
+    // Telegram use. The switcher writes both, so a cookie that differs from
+    // the account is a choice made here; no cookie and an old-alphabet
+    // account is a choice made on another device — it seeds this one. The
+    // dictionary file changes with it, hence a full reload.
+    const alphabetCookie = document.cookie.match(/(?:^|;\s*)rw_alphabet=([^;]+)/)?.[1];
+    if (alphabetCookie) {
+      const chosen = parseAlphabet(alphabetCookie);
+      if (chosen !== user.alphabet) patch.alphabet = chosen;
+    } else if (user.alphabet === OLD_ALPHABET) {
+      document.cookie = alphabetCookieLine(OLD_ALPHABET);
+      // Reload only when the cookie took: a browser that refuses cookies
+      // would otherwise reload forever.
+      if (/(?:^|;\s*)rw_alphabet=old/.test(document.cookie)) {
+        // The guest CDN rules skip a request carrying `rw_locale`.
+        if (!cookie) {
+          document.cookie = `rw_locale=${ALPHABET_LOCALE}; path=/; max-age=31536000; samesite=lax`;
+        }
+        window.location.reload();
+        return;
+      }
     }
 
     rememberPrefs({ sound: prefs.sound, effect: prefs.effect });

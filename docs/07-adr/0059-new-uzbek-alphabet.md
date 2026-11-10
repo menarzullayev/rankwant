@@ -1,6 +1,6 @@
 # ADR 0059 — Yangi o'zbek alifbosi: o'giruvchi va qidiruv
 
-**STATUS:** accepted (1-bosqich: o'giruvchi va qidiruv; 2-bosqich: interfeys va tanlov; 3-bosqich: kontent; pochta va Telegram — keyingi bosqich)
+**STATUS:** accepted (1-bosqich: o'giruvchi va qidiruv; 2-bosqich: interfeys va tanlov; 3-bosqich: kontent; 4-bosqich: xat, Telegram, sertifikatlar)
 **Sana:** 2026-11-11
 **Tasdiqlagan:** Saidakbar (owner) — 2026-11-11 ([qaror yozuvi](../decisions/2026-11-11-new-alphabet.md): 4 savol)
 **Ta'sir doirasi:** `packages/shared` (`alphabet.ts`), `apps/api/core` (`alphabet.py`, `search.py`), web qidiruvi; migratsiyalar `core.0036`, `problems.0038`
@@ -69,14 +69,25 @@ ishlayveradi, qidiruvda ikkalasi bir.
 4. **Daraja nomlari** API'ning o'zbekcha `level_label` matni o'rniga lug'atdan (`level.*`) — tarjima ham,
    alifbo ham shu bilan hal bo'ladi.
 
-## 5. Keyingi bosqichlar
+## 5. 4-bosqich: xat, Telegram va sertifikatlar
+
+1. **Tanlov hisobda ham** — `User.alphabet` (`new` | `old`, standart `new`). Xat, Telegram va
+   sertifikat brauzersiz yoziladi, ya'ni cookie'ni ko'rmaydi. Til tanlagich ikkalasini yozadi (hisobni
+   sahifa qayta yuklanishidan OLDIN — aks holda so'rov bekor bo'lardi). Kirganda: cookie hisobdan farq
+   qilsa — bu qurilmadagi tanlov, hisob yangilanadi; cookie yo'q, hisob `old` — boshqa qurilmadagi
+   tanlov, bu qurilmaga urug' bo'ladi (sahifa bir marta qayta yuklanadi).
+2. **Xat**: shablon matni (`email_text`) hisob alifbosida, faqat o'zbekcha xatda.
+3. **Bildirishnoma katalogi** (sayt zaxira matni, Telegram, xat): shablon PARAMETRLARDAN OLDIN o'giriladi
+   — musobaqa yoki post nomi yozilganidek. Odam yozgan erkin matn (hakam izohi) o'girilmaydi.
+4. **Sertifikatlar** (kurs va musobaqa): o'zbekcha yorliqlar egasining alifbosida; ism va musobaqa nomi
+   yozilganidek; kurs nomi kurs tili o'zbekcha bo'lsa o'giriladi.
+
+## 6. Keyingi bosqichlar
 
 - Qolgan kontent: ro'yxat sahifalari (maqolalar, blog, kurslar katalogi), musobaqa va arena matnlari,
   mavzu nomlari, xakaton va turnir tavsiflari (ularda til maydoni yo'q).
-- Pochta, Telegram, sertifikatlar (`apps/api/core/alphabet.py` bilan).
-- Tanlov hozircha qurilmada (cookie); hisob sozlamasiga yozish — keyin.
 
-## 6. Oqibatlar
+## 7. Oqibatlar
 
 - Turkcha matndagi `ş`, `ç`, `ö`, `ğ` ham katlanadi (`çeviri` ↔ `cheviri`) — ikkala tomon bir xil
   katlangani uchun moslik buzilmaydi.

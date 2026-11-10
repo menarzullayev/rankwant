@@ -5185,6 +5185,36 @@ def neg_decisions_search_skips_translations() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_catalogue_ignores_alphabet() -> tuple[bool, str]:
+    """Notifications are written in the stored spelling whatever the account chose."""
+    return _decision_broken(
+        "apps/api/notifications/messages.py",
+        "            template = for_alphabet(template, alphabet)\n",
+        "",
+        "katalogi alifboga ergashmaydi",
+    )
+
+
+def neg_decisions_mail_ignores_alphabet() -> tuple[bool, str]:
+    """Mail is written in the stored spelling whatever the account chose."""
+    return _decision_broken(
+        "apps/api/core/emails.py",
+        "    strings = {key: alphabet.for_user(text, user, locale) for key, text in strings.items()}\n",
+        "",
+        "xat matni hisob alifbosida emas",
+    )
+
+
+def neg_decisions_certificate_ignores_alphabet() -> tuple[bool, str]:
+    """Certificate labels ignore the owner's alphabet."""
+    return _decision_broken(
+        "apps/api/courses/certificate_pdf.py",
+        "        return for_user(text, cert.user)\n",
+        "        return text\n",
+        "sertifikat yorlig'i",
+    )
+
+
 def neg_decisions_content_converts_every_language() -> tuple[bool, str]:
     """English content loses its `sh` and `ch` too."""
     return _decision_broken(
@@ -8917,6 +8947,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/i18n/messages.server.ts",
     "apps/web/src/i18n/alphabet.ts",
     "apps/web/src/components/ui/Markdown.tsx",
+    "apps/api/notifications/messages.py",
+    "apps/api/core/emails.py",
+    "apps/api/courses/certificate_pdf.py",
 )
 
 
@@ -12744,6 +12777,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qidiruv tarjima nomini topmasa tutilsin", neg_decisions_search_skips_translations),
             ("qidiruv yangi tutuqni tashlamasa tutilsin", neg_decisions_search_keeps_tutuq),
             ("inglizcha kontent ham o'girilsa tutilsin", neg_decisions_content_converts_every_language),
+            ("bildirishnoma katalogi alifbosiz bo'lsa tutilsin", neg_decisions_catalogue_ignores_alphabet),
+            ("xat alifbosiz bo'lsa tutilsin", neg_decisions_mail_ignores_alphabet),
+            ("sertifikat alifbosiz bo'lsa tutilsin", neg_decisions_certificate_ignores_alphabet),
             ("Markdown alifboni e'tiborsiz qoldirsa tutilsin", neg_decisions_markdown_ignores_alphabet),
             ("shart tilisiz chizilsa tutilsin", neg_decisions_statement_without_language),
             ("alifbo so'rov kontekstisiz bo'lsa tutilsin", neg_decisions_alphabet_not_per_request),

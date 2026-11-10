@@ -6820,6 +6820,12 @@ export interface components {
          */
         ActivityEventKindEnum: "solved" | "rating" | "qvant" | "contest" | "quest";
         /**
+         * @description * `new` - new
+         *     * `old` - old
+         * @enum {string}
+         */
+        AlphabetEnum: "new" | "old";
+        /**
          * @description Hodisalar partiyasi.
          *
          *     Bir sahifada bir nechta hodisa yig'iladi va BITTA so'rovda yuboriladi:
@@ -7979,6 +7985,7 @@ export interface components {
             readonly avatar_url: string;
             bio?: string;
             locale?: components["schemas"]["LocaleEnum"];
+            alphabet?: components["schemas"]["AlphabetEnum"];
             theme?: string;
             country?: string;
             region?: string;
@@ -9301,6 +9308,7 @@ export interface components {
             readonly avatar_url?: string;
             bio?: string;
             locale?: components["schemas"]["LocaleEnum"];
+            alphabet?: components["schemas"]["AlphabetEnum"];
             theme?: string;
             country?: string;
             region?: string;

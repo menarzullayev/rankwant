@@ -175,6 +175,8 @@ export type Me = {
   avatar_url: string;
   bio: string;
   locale: string;
+  /** The Uzbek alphabet for mail, Telegram and certificates (ADR-0059). */
+  alphabet: "new" | "old";
   theme: string;
   country: string;
   region: string;

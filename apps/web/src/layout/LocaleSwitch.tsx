@@ -22,6 +22,8 @@ import {
   t,
   type Locale,
 } from "@/i18n/messages";
+import { useSession } from "@/context/SessionContext";
+import { patchJson } from "@/lib/api/client";
 import { announcePrefs } from "@/lib/prefs";
 
 import { LocaleFlag } from "./LocaleFlag";
@@ -109,6 +111,7 @@ export function LocaleSwitch() {
   const locale = useLocale();
   const auto = useLocaleAuto();
   const alphabet = useAlphabet();
+  const { user } = useSession();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [optimistic, setOptimistic] = useState<string | null>(null);
@@ -152,15 +155,20 @@ export function LocaleSwitch() {
       // The alphabet changes the dictionary file itself, so the page is
       // loaded again rather than refreshed (ADR-0059).
       const wantOld = next === UZ_OLD;
+      const target = wantOld ? OLD_ALPHABET : DEFAULT_ALPHABET;
       let reload = false;
       if (next === UZ_OLD || next === ALPHABET_LOCALE) {
         reload = wantOld !== (alphabet === "old");
-        if (reload)
-          document.cookie = alphabetCookieLine(
-            wantOld ? OLD_ALPHABET : DEFAULT_ALPHABET,
-          );
+        if (reload) document.cookie = alphabetCookieLine(target);
         next = ALPHABET_LOCALE;
       }
+      // The account keeps the choice too: mail, Telegram and certificates
+      // are written without a browser (ADR-0059). Saved before the reload,
+      // which would cancel the request.
+      const saved =
+        reload && user
+          ? patchJson("/me/", { alphabet: target }).catch(() => undefined)
+          : Promise.resolve(undefined);
 
       if (next === AUTO) {
         document.cookie =
@@ -176,7 +184,7 @@ export function LocaleSwitch() {
         const nextUrl = `${url.pathname}${url.search}${url.hash}`;
         if (reload) {
           // A full load: the dictionary file differs (ADR-0059).
-          window.location.assign(url.toString());
+          void saved.then(() => window.location.assign(url.toString()));
           return;
         }
         startTransition(() => {
@@ -186,12 +194,12 @@ export function LocaleSwitch() {
         return;
       }
       if (reload) {
-        window.location.reload();
+        void saved.then(() => window.location.reload());
         return;
       }
       startTransition(() => router.refresh());
     },
-    [router, alphabet],
+    [router, alphabet, user],
   );
 
   const options: DropdownOption[] = [

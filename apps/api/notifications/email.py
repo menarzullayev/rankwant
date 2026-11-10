@@ -35,7 +35,7 @@ from django.core import signing
 from django.db import transaction
 from django.template.loader import render_to_string
 
-from core import email_text, mail_quota
+from core import alphabet, email_text, mail_quota
 from core.mailer import is_placeholder, send_email
 from core.models import EmailDelivery, User
 from notifications.message_catalog import KIND_NAMES
@@ -145,8 +145,12 @@ def render(user: User, kind: str, title: str, body: str) -> dict[str, Any]:
         **email_text.strings(email_text.SHARED, locale),
         **email_text.strings(email_text.NOTIFY, locale),
     }
+    # Uzbek in the alphabet the person chose (ADR-0059). `title` and `body`
+    # come from `compose`, which already follows it for catalogue text.
+    t = {key: alphabet.for_user(text, user, locale) for key, text in t.items()}
     names = KIND_NAMES.get(locale) or KIND_NAMES[email_text.DEFAULT_LOCALE]
-    t["footer"] = t["footer"].replace("{kind}", names.get(kind, kind))
+    kind_name = alphabet.for_user(names.get(kind, kind), user, locale)
+    t["footer"] = t["footer"].replace("{kind}", kind_name)
     t["heading"] = title
     t["body"] = body
     t["subject"] = f"{t['brand']} — {title}"[:200]

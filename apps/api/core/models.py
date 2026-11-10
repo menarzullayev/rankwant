@@ -119,6 +119,12 @@ class User(AbstractUser):
     rated_contest_count = models.PositiveIntegerField(default=0)
 
     locale = models.CharField(max_length=8, choices=Locale.choices, default=Locale.UZ)
+    #: Uzbek alphabet for what the server writes to this person — mail,
+    #: Telegram, certificates (ADR-0059). The site reads the device's
+    #: `rw_alphabet` cookie; the switcher keeps this in step with it.
+    alphabet = models.CharField(
+        max_length=3, choices=[("new", "new"), ("old", "old")], default="new"
+    )
     theme = models.CharField(max_length=16, default="system")
 
     streak_count = models.PositiveIntegerField(default=0)

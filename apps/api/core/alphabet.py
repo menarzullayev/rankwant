@@ -185,3 +185,22 @@ def to_old_alphabet(text: str) -> str:
     """The new alphabet → old Uzbek Latin (``oʻ``, ``gʻ`` with U+02BB)."""
     # Only letters outside Uzbek (ü, é, …) keep a word as it is here.
     return _convert(text, _word_to_old, lambda w: bool(_NOT_UZBEK_NEW.search(w.lower())))
+
+
+def for_alphabet(text: str, alphabet: str) -> str:
+    """Uzbek ``text`` in ``alphabet`` (``"new"`` or ``"old"``)."""
+    if not text:
+        return text
+    return to_old_alphabet(text) if alphabet == "old" else to_new_alphabet(text)
+
+
+def for_user(text: str, user: object, lang: str | None = "uz") -> str:
+    """Text the server writes to ``user`` — mail, Telegram, a certificate.
+
+    Only Uzbek text is touched (``lang`` is the TEXT's language, not the
+    interface's), and only text the platform wrote: what a person typed —
+    a name, a judge's feedback — stays as written.
+    """
+    if lang != "uz":
+        return text
+    return for_alphabet(text, getattr(user, "alphabet", "new") or "new")

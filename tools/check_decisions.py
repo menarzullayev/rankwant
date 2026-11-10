@@ -3647,6 +3647,30 @@ def about_page_is_one_searchable_page() -> str | None:
     return None
 
 
+def outbound_text_follows_the_account() -> str | None:
+    """2026-11-11 (HITL, ADR-0059, 4-bosqich): xat, Telegram va sertifikat
+    hisobdagi alifboda.
+
+    Ular brauzersiz yoziladi, shuning uchun tanlov `User.alphabet` da. Katalog
+    shablonini o'giriladi, parametr (musobaqa, post nomi) esa yozilganidek;
+    xat shablon matni ham, sertifikat yorlig'i ham hisob alifbosida.
+    """
+    if "            template = for_alphabet(template, alphabet)\n" not in read(
+        "apps/api/notifications/messages.py"
+    ):
+        return "notifications/messages.py: bildirishnoma katalogi alifboga ergashmaydi"
+    if (
+        "    strings = {key: alphabet.for_user(text, user, locale) for key, text in strings.items()}\n"
+        not in read("apps/api/core/emails.py")
+    ):
+        return "core/emails.py: xat matni hisob alifbosida emas"
+    if "        return for_user(text, cert.user)\n" not in read(
+        "apps/api/courses/certificate_pdf.py"
+    ):
+        return "courses/certificate_pdf.py: sertifikat yorlig'i hisob alifbosida emas"
+    return None
+
+
 def uzbek_content_follows_the_reader() -> str | None:
     """2026-11-11 (HITL, ADR-0059, 3-bosqich): o'zbekcha kontent o'quvchi
     tanlagan alifboda.
@@ -5261,6 +5285,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),
     ("o'zbekcha interfeys yangi alifboda, eskisi so'rov bo'yicha tanlov", uz_alphabet_follows_the_request),
     ("o'zbekcha kontent o'quvchi alifbosida, faqat o'zbekcha matn", uzbek_content_follows_the_reader),
+    ("xat, Telegram, sertifikat hisob alifbosida", outbound_text_follows_the_account),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
