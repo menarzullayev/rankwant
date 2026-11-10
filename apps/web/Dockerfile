@@ -80,8 +80,10 @@ COPY apps/web ./apps/web
 #
 #         > next build
 #         sh: 1: next: not found
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+#
+# Both are bind-mounted from `deps` into the `npm run build` step below,
+# not copied here (2026-11-11): a copy at this point sits above
+# `COPY apps/web`, so every web commit wrote both trees again (923 MB).
 # ⚠️ QO'SHIMCHA "tuzatish" QADAMI YO'Q — va bu ATAYLAB.
 #
 # Bu joyda avval `ln -s`/`cp -r` bilan `picocolors`/`nanoid`/`source-map-js`
@@ -159,18 +161,49 @@ ENV NEXT_PUBLIC_FLAG_NEW_PALETTE=$NEXT_PUBLIC_FLAG_NEW_PALETTE
 ENV NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE=$NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE
 # Next.js'ning o'z keshi `.next/cache` da (webpack/SWC). U ham qatlam
 # keshiga qo'shiladi: kod o'zgarganda qayta kompilyatsiya tezroq ketadi.
+#
+# `node_modules`: bind mounts from `deps` (see above). `rw` lets the build
+# write into them; whatever it writes is discarded, and the image below
+# takes both trees from `deps` anyway.
 RUN --mount=type=cache,target=/app/apps/web/.next/cache \
+    --mount=type=bind,from=deps,source=/app/node_modules,target=/app/node_modules,rw \
+    --mount=type=bind,from=deps,source=/app/apps/web/node_modules,target=/app/apps/web/node_modules,rw \
     npm run build
 
 FROM node:22-slim
 WORKDIR /app
 ENV NODE_ENV=production
+# ⚠️ ORDER: what changes least goes first. Every layer after a changed one
+# is a new layer, written to disk again. Until 2026-11-11 `.next` (new on
+# every commit) came first and the commit labels sat above everything, so
+# each web deploy wrote both `node_modules` trees again (923 MB of layers).
+#
+# Runtime faqat `apps/web` ni ishlatadi: `next start` shu katalogdan
+# ishga tushadi. Monorepo daraxtini ko'chirish SHART EMAS — ildiz
+# `node_modules` yetarli, chunki Next o'z bog'liqliklarini hoist
+# qilingan daraxtdan oladi.
+# `next` hoist QILINMAGAN — u `apps/web/node_modules` da qoladi. Ildiz
+# daraxti yolg'iz o'zi yetmaydi: `npx next start` uni topa olmaydi.
+# Ikkalasi ham kerak (deps bosqichidagi izohga qarang). Both come from
+# `deps`, which changes only with `package-lock.json`.
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+COPY --from=build /app/apps/web/package.json ./apps/web/
+# `next.config.ts` runtime'da qayta o'qiladi (`next start` uni yuklaydi).
+COPY --from=build /app/apps/web/next.config.ts ./apps/web/
+# `public/` — favicon, logotip, xat sarlavhasidagi rasm. Next uni build
+# ichiga QO'SHMAYDI, runtime da o'qiydi: usiz `/favicon.ico` va
+# `/brand/*` 404 beradi. O'lchandi — xatdagi logotip aynan shu sababli
+# siniq kelgan.
+COPY --from=build /app/apps/web/public ./apps/web/public
+COPY --from=build /app/apps/web/.next ./apps/web/.next
 # Build qaysi manbadan chiqqanini belgilaydi. `.git` build kontekstiga
 # kirmaydi (.dockerignore), shuning uchun commit tashqaridan beriladi.
 # Nega kerak: `tools/check_deploy.sh` ishlab turgan konteyner manbadan
 # eskimi yoki yo'qmi shu yorliq orqali aniqlaydi. Usiz Next.js'ning
 # siqilgan `.next` chiqishini solishtirishning ishonchli yo'li yo'q edi
 # va 2026-09-13 dagi «eski image» hodisasi sezilmay qoldi.
+# Last: it changes on every commit.
 ARG GIT_SHA=unknown
 ARG BUILT_AT=unknown
 # `ENV` too: a `LABEL` is invisible from inside the container, and `/version`
@@ -178,24 +211,6 @@ ARG BUILT_AT=unknown
 ENV GIT_SHA=$GIT_SHA
 LABEL org.rankwant.git-sha=$GIT_SHA
 LABEL org.rankwant.built-at=$BUILT_AT
-# Runtime faqat `apps/web` ni ishlatadi: `next start` shu katalogdan
-# ishga tushadi. Monorepo daraxtini ko'chirish SHART EMAS — ildiz
-# `node_modules` yetarli, chunki Next o'z bog'liqliklarini hoist
-# qilingan daraxtdan oladi.
-COPY --from=build /app/apps/web/.next ./apps/web/.next
-COPY --from=build /app/apps/web/package.json ./apps/web/
-# `next` hoist QILINMAGAN — u `apps/web/node_modules` da qoladi. Ildiz
-# daraxti yolg'iz o'zi yetmaydi: `npx next start` uni topa olmaydi.
-# Ikkalasi ham kerak (deps bosqichidagi izohga qarang).
-COPY --from=build /app/apps/web/node_modules ./apps/web/node_modules
-COPY --from=build /app/node_modules ./node_modules
-# `public/` — favicon, logotip, xat sarlavhasidagi rasm. Next uni build
-# ichiga QO'SHMAYDI, runtime da o'qiydi: usiz `/favicon.ico` va
-# `/brand/*` 404 beradi. O'lchandi — xatdagi logotip aynan shu sababli
-# siniq kelgan.
-COPY --from=build /app/apps/web/public ./apps/web/public
-# `next.config.ts` runtime'da qayta o'qiladi (`next start` uni yuklaydi).
-COPY --from=build /app/apps/web/next.config.ts ./apps/web/
 WORKDIR /app/apps/web
 EXPOSE 3000
 CMD ["npx", "next", "start"]

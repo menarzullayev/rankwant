@@ -386,7 +386,7 @@ if docker inspect rankwant-web-1 >/dev/null 2>&1; then
   src_sha="$(git rev-parse HEAD 2>/dev/null)"
 
   if [ -n "$img_sha" ] && [ "$img_sha" != "<no value>" ] && [ "$img_sha" != "unknown" ]; then
-    case "$(label_state "$img_sha" apps/web)" in
+    case "$(label_state "$img_sha" apps/web packages package.json package-lock.json .dockerignore)" in
       same)
         printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$G" 'joyida' "$N" "$cshow" "git-sha ${img_sha:0:7}" ;;
       current)

@@ -10342,6 +10342,116 @@ def neg_scope_compose_rebuilds_all() -> tuple[bool, str]:
     return True, "deploy_scope: compose — hamma servis"
 
 
+def neg_scope_compose_build_section_only() -> tuple[bool, str]:
+    """A compose edit rebuilds only the service whose `build:` changed."""
+
+    def changed(_o: str, _n: str, paths: tuple[str, ...]) -> bool:
+        return "docker-compose.public.yml" in paths
+
+    scope = _load_deploy_scope().compute_scope(
+        "a", "b", changed=changed, build_changed=lambda _o, _n, s: s == "web"
+    )
+    if scope != ["web"]:
+        return False, f"deploy_scope: compose build bo'limi — faqat web emas: {scope}"
+    return True, "deploy_scope: compose — faqat build'i o'zgargan servis"
+
+
+def neg_scope_compose_config_only() -> tuple[bool, str]:
+    """Compose config without a build change: no image (up applies it)."""
+
+    def changed(_o: str, _n: str, paths: tuple[str, ...]) -> bool:
+        return "docker-compose.yml" in paths
+
+    scope = _load_deploy_scope().compute_scope(
+        "a", "b", changed=changed, build_changed=lambda _o, _n, _s: False
+    )
+    if scope:
+        return False, f"deploy_scope: faqat config o'zgardi, obraz quriladi: {scope}"
+    return True, "deploy_scope: compose config — obraz yo'q"
+
+
+def neg_scope_deploy_sh_rebuilds_all() -> tuple[bool, str]:
+    def changed(_o: str, _n: str, paths: tuple[str, ...]) -> bool:
+        return "tools/deploy.sh" in paths
+
+    scope = _load_deploy_scope().compute_scope(
+        "a", "b", changed=changed, build_changed=lambda _o, _n, _s: False
+    )
+    if scope != ["api", "worker", "beat", "judge", "web", "realtime"]:
+        return False, f"deploy_scope: deploy.sh hamma emas — {scope}"
+    return True, "deploy_scope: deploy.sh — hamma servis"
+
+
+def neg_scope_shared_package_rebuilds_web() -> tuple[bool, str]:
+    """The web image copies `packages/shared` and the root lockfile."""
+    mod = _load_deploy_scope()
+    for path in ("packages", "package-lock.json"):
+
+        def changed(_o: str, _n: str, paths: tuple[str, ...], path: str = path) -> bool:
+            return path in paths
+
+        scope = mod.compute_scope("a", "b", changed=changed)
+        if scope != ["web"]:
+            return False, f"deploy_scope: {path} o'zgarsa web qurilmaydi — {scope}"
+    return True, "deploy_scope: packages/lockfile → web"
+
+
+def neg_scope_reads_real_build_sections() -> tuple[bool, str]:
+    """`--no-interpolate` keeps `${GIT_SHA}` literal: equal at two commits.
+
+    Without it every deploy's new SHA would read as a changed build section.
+    """
+    src = (ROOT / "tools/deploy_scope.py").read_text(encoding="utf-8")
+    for needle in ('"--no-interpolate"', '"--no-path-resolution"', "build_changed=git_build_changed("):
+        if needle not in src:
+            return False, f"deploy_scope.py: {needle} yo'q"
+    return True, "deploy_scope: build bo'limi interpolyatsiyasiz solishtiriladi"
+
+
+def neg_deploy_up_covers_every_service() -> tuple[bool, str]:
+    """A service not rebuilt must still get its new compose config."""
+    src = (ROOT / "tools/deploy.sh").read_text(encoding="utf-8")
+    up = src.split("time_begin up", 1)[-1].split("time_finish up", 1)[0]
+    if 'up -d --no-deps "${BUILD_SERVICES[@]}"' in up:
+        return False, "deploy.sh: up faqat qurilgan servislarga — config o'zgarishi yetib bormaydi"
+    if up.count('up -d --no-deps "${SERVICES[@]}"') < 2:
+        return False, "deploy.sh: up hamma servisga emas (bake va bake-siz yo'l)"
+    return True, "deploy.sh: up hamma servisga"
+
+
+def neg_auto_deploy_config_drift_deploys() -> tuple[bool, str]:
+    """An empty image scope must not hide a compose config change."""
+    src = (ROOT / "tools/auto_deploy.sh").read_text(encoding="utf-8")
+    if "--dry-run up -d --no-deps" not in src:
+        return False, "auto_deploy.sh: compose drift o'lchanmaydi"
+    if 'if all_up && [ -z "$SCOPE" ] && [ "$DRIFT" -eq 0 ]; then' not in src:
+        return False, "auto_deploy.sh: bo'sh doira config o'zgarishini ham o'tkazib yuboradi"
+    if 'if [ -z "$SCOPE" ] && ! all_up; then' not in src:
+        return False, "auto_deploy.sh: config drift'da bo'sh doira hamma obrazga aylanadi"
+    return True, "auto_deploy.sh: compose drift deploy qiladi, obraz qurmaydi"
+
+
+def neg_web_dockerfile_stable_layers_first() -> tuple[bool, str]:
+    """`.next` and the commit labels change every deploy: they go last."""
+    src = (ROOT / "apps/web/Dockerfile").read_text(encoding="utf-8")
+    final = src.rsplit("\nFROM ", 1)[-1]
+    try:
+        nm = final.index("COPY --from=deps /app/node_modules ./node_modules")
+        nm_web = final.index("COPY --from=deps /app/apps/web/node_modules")
+        nxt = final.index("COPY --from=build /app/apps/web/.next")
+        sha = final.index("ARG GIT_SHA")
+    except ValueError as exc:
+        return False, f"apps/web/Dockerfile final bosqich: qator yo'q ({exc})"
+    if not nm < nxt or not nm_web < nxt:
+        return False, "apps/web/Dockerfile: node_modules .next dan keyin — har deploy qayta yoziladi"
+    if not nxt < sha:
+        return False, "apps/web/Dockerfile: GIT_SHA COPY lardan oldin"
+    build = src.split("AS build", 1)[-1].split("\nFROM ", 1)[0]
+    if "COPY --from=deps /app/node_modules" in build:
+        return False, "apps/web/Dockerfile build: node_modules nusxalanadi (bind mount emas)"
+    return True, "apps/web/Dockerfile: barqaror qatlamlar oldin"
+
+
 def neg_deploy_verify_uses_health() -> tuple[bool, str]:
     src = (ROOT / "tools/deploy.sh").read_text(encoding="utf-8")
     if "time_begin verify" not in src:
@@ -13267,6 +13377,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("faqat judge", neg_scope_judge_only),
             ("api triplet", neg_scope_api_triplet),
             ("compose hamma", neg_scope_compose_rebuilds_all),
+            ("compose: faqat build'i o'zgargan", neg_scope_compose_build_section_only),
+            ("compose: config — obraz yo'q", neg_scope_compose_config_only),
+            ("deploy.sh hamma", neg_scope_deploy_sh_rebuilds_all),
+            ("packages → web", neg_scope_shared_package_rebuilds_web),
+            ("compose build bo'limi o'qiladi", neg_scope_reads_real_build_sections),
+            ("up hamma servisga", neg_deploy_up_covers_every_service),
+            ("compose drift deploy qiladi", neg_auto_deploy_config_drift_deploys),
+            ("web: node_modules .next dan oldin", neg_web_dockerfile_stable_layers_first),
             ("verify health", neg_deploy_verify_uses_health),
             ("tools npm ci ajratilgan", neg_ci_python_tools_skip_npm),
             (
