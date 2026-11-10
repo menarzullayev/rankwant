@@ -666,6 +666,8 @@ export const zh: Record<MessageKey, string> = {
   "settings.name": "姓名",
   "settings.unsaved": "未保存的更改",
   "settings.unsavedCount": "未保存的更改:{count}",
+  "settings.saveFailed": "未保存。原因显示在该部分中——您的修改仍保留着。",
+  "settings.saveFailedGone": "最近的更改未保存。请重新打开该部分并再次输入。",
   "settings.discard": "放弃",
   "settings.channelEmail": "邮箱",
   "settings.soon": "即将推出",

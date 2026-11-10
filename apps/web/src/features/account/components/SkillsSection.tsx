@@ -64,7 +64,8 @@ function SkillsCard() {
   const save = () =>
     action.run(async () => {
       mine.setData(await putJson<MySkill[]>("/me/skills/", rows));
-      setEdited(null);
+      // Levels changed while the request was out stay unsaved.
+      setEdited((current) => (current === edited ? null : current));
     });
   useSaveSlot(edited !== null, save, () => setEdited(null));
 
@@ -159,7 +160,7 @@ function TechCard() {
   const save = () =>
     action.run(async () => {
       mine.setData(await putJson<Technology[]>("/me/technologies/", current));
-      setPicked(null);
+      setPicked((now) => (now === picked ? null : now));
     });
   useSaveSlot(picked !== null, save, () => setPicked(null));
 
@@ -246,7 +247,7 @@ function BadgesCard() {
     action.run(async () => {
       const filled = rows.filter((row) => row.text.trim());
       loaded.setData(await putJson<SkillBadge[]>("/me/skill-badges/", filled));
-      setEdited(null);
+      setEdited((current) => (current === edited ? null : current));
     });
   useSaveSlot(edited !== null, save, () => setEdited(null));
 

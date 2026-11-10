@@ -78,7 +78,8 @@ export function PrivacyCard() {
       await patchJson("/me/", { hidden_fields: current });
       await reload();
     });
-    if (ok) setHidden(null);
+    // Switches flipped while the request was out stay unsaved.
+    if (ok) setHidden((current) => (current === hidden ? null : current));
     return ok;
   };
   useSaveSlot(hidden !== null, save, () => setHidden(null));

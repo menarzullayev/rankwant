@@ -52,7 +52,8 @@ function RowsCard<T extends CareerRow>({
     action.run(async () => {
       const filled = rows.filter((row) => cell(row, first).trim());
       loaded.setData(await putJson<T[]>(path, filled));
-      setEdited(null);
+      // Rows edited while the request was out stay unsaved.
+      setEdited((current) => (current === edited ? null : current));
     });
   useSaveSlot(edited !== null, save, () => setEdited(null));
 

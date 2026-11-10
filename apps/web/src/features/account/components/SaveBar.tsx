@@ -11,9 +11,13 @@ import {
   useState,
 } from "react";
 
+import { useToast } from "@/components/overlay/OverlayHost";
 import { Button } from "@/components/ui/Button";
+import { Status } from "@/components/ui/Status";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
+import { isOn } from "@/lib/flags";
+import { shownDirty, startAll } from "../save-queue";
 
 /** One editable thing on a settings page: a form, a table of switches.
  *
@@ -30,8 +34,24 @@ type Registry = {
   drop: (id: string) => void;
 };
 
+/** Optimistic saves in flight (`optimisticSave` flag) and the last outcome.
+ *
+ *  `notice` is what the bar says once it has nothing left to ask for:
+ *  "saved" right after the click (the optimism), "failed" when the server
+ *  turned a write down — that replaces "saved" and brings the bar back. */
+type Flight = {
+  inFlight: ReadonlySet<string>;
+  notice: "saved" | "failed" | null;
+  start: (entries: [string, Slot][]) => void;
+  dismiss: () => void;
+};
+
 const RegistryContext = createContext<Registry | null>(null);
 const SlotsContext = createContext<Map<string, Slot>>(new Map());
+const FlightContext = createContext<Flight | null>(null);
+
+/** How long the optimistic "Saved" stays up when nothing goes wrong. */
+const SAVED_NOTICE_MS = 2500;
 
 /** Holds every slot of the page and draws one bar for all of them
  *  (decision of 2026-10-05).
@@ -41,31 +61,91 @@ const SlotsContext = createContext<Map<string, Slot>>(new Map());
  *  Actions that are not "edit, then save" keep their own button: changing
  *  the password, the username, joining a team. */
 export function SaveBarProvider({ children }: { children: React.ReactNode }) {
+  const locale = useLocale();
+  const toast = useToast();
   const [slots, setSlots] = useState<Map<string, Slot>>(() => new Map());
+  const [inFlight, setInFlight] = useState<ReadonlySet<string>>(() => new Set());
+  const [notice, setNotice] = useState<Flight["notice"]>(null);
+  // Read when a save settles, possibly after this page has gone: a refusal
+  // nobody can see on the page goes to the site-wide toast instead.
+  const mounted = useRef(true);
+  const registered = useRef(new Set<string>());
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (notice !== "saved") return;
+    const timer = window.setTimeout(
+      () => setNotice((current) => (current === "saved" ? null : current)),
+      SAVED_NOTICE_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+
+  const flight = useMemo<Flight>(
+    () => ({
+      inFlight,
+      notice,
+      start: (entries) => {
+        setInFlight((current) => new Set([...current, ...entries.map(([id]) => id)]));
+        setNotice("saved");
+        void startAll(
+          entries.map(([id, slot]) => ({ id, save: slot.save })),
+          (id, ok) => {
+            setInFlight((current) => {
+              const next = new Set(current);
+              next.delete(id);
+              return next;
+            });
+            if (ok) return;
+            // Rollback: the optimistic "Saved" is withdrawn and the slot,
+            // still dirty, brings the bar back with the edits in place.
+            setNotice("failed");
+            // The page or the section is gone (the person moved on): the
+            // edits went with it, so say so where it is still seen.
+            if (!mounted.current || !registered.current.has(id))
+              toast(t(locale, "settings.saveFailedGone"));
+          },
+        );
+      },
+      dismiss: () => setNotice(null),
+    }),
+    [inFlight, notice, locale, toast],
+  );
 
   const registry = useMemo<Registry>(
     () => ({
-      set: (id, slot) =>
+      set: (id, slot) => {
+        registered.current.add(id);
         setSlots((current) => {
           const known = current.get(id);
           if (known && known.dirty === slot.dirty && known.save === slot.save && known.reset === slot.reset)
             return current;
           return new Map(current).set(id, slot);
-        }),
-      drop: (id) =>
+        });
+      },
+      drop: (id) => {
+        registered.current.delete(id);
         setSlots((current) => {
           if (!current.has(id)) return current;
           const next = new Map(current);
           next.delete(id);
           return next;
-        }),
+        });
+      },
     }),
     [],
   );
 
   return (
     <RegistryContext.Provider value={registry}>
-      <SlotsContext.Provider value={slots}>{children}</SlotsContext.Provider>
+      <SlotsContext.Provider value={slots}>
+        <FlightContext.Provider value={flight}>{children}</FlightContext.Provider>
+      </SlotsContext.Provider>
     </RegistryContext.Provider>
   );
 }
@@ -176,14 +256,18 @@ export function SavedForm({
       onKeyUp={check}
       onSubmit={async (event) => {
         event.preventDefault();
+        // What leaves now is what the server will hold. Typing on while the
+        // request is out must stay unsaved — with an optimistic save the
+        // form is never locked, so the snapshot cannot be taken later.
+        const sent = snapshot(event.currentTarget);
         let ok = false;
         try {
           ok = (await onSubmit(event)) !== false;
         } finally {
           if (ok) {
             // What was just saved is the new baseline.
-            if (ref.current) base.current = snapshot(ref.current);
-            setTouched(false);
+            base.current = sent;
+            setTouched(ref.current ? snapshot(ref.current) !== sent : false);
           }
           pending.current?.(ok);
           pending.current = null;
@@ -195,24 +279,55 @@ export function SavedForm({
   );
 }
 
-/** The bar itself: shown only while something is unsaved. */
+const NO_FLIGHT: ReadonlySet<string> = new Set();
+
+/** The bar itself: shown only while something is unsaved.
+ *
+ *  With the `optimisticSave` flag the click does not wait for the server:
+ *  the bar steps aside at once and says "Saved", the requests go out
+ *  together, and a refusal brings it back with the edits still in their
+ *  fields and an alert in place of "Saved". Without the flag it saves one
+ *  section after another and holds the button busy until the last reply. */
 export function SaveBar() {
   const locale = useLocale();
   const slots = useContext(SlotsContext);
+  const flight = useContext(FlightContext);
   const [busy, setBusy] = useState(false);
-  const dirty = [...slots.values()].filter((slot) => slot.dirty);
+  const inFlight = flight?.inFlight ?? NO_FLIGHT;
+  const shown = shownDirty(slots, inFlight);
+  const dirty = shown.map(([, slot]) => slot);
 
   // Leaving with unsaved edits asks first; the browser words the question.
+  // A request still out counts too: a full unload would cancel it.
+  const holding = dirty.length + inFlight.size;
   useEffect(() => {
-    if (dirty.length === 0) return;
+    if (holding === 0) return;
     const warn = (event: BeforeUnloadEvent) => event.preventDefault();
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty.length]);
+  }, [holding]);
 
-  if (dirty.length === 0) return null;
+  if (dirty.length === 0) {
+    if (flight?.notice !== "saved") return null;
+    return (
+      <div className="sticky bottom-4 z-10 flex justify-end">
+        <div className="rw-radius border rw-line rw-surface px-4 py-3 rw-shadow">
+          {/* `iconText`, not the style's responsive default: on a phone that is a
+              bare circle, and this line must be read. */}
+          <Status status="ok" variant="iconText" live label={t(locale, "settings.saved")} />
+        </div>
+      </div>
+    );
+  }
 
   async function saveAll() {
+    // Read at the click, not at render: the flag changes nothing the server
+    // drew, so the page hydrates the same either way.
+    if (flight && isOn("optimisticSave")) {
+      flight.start(shown);
+      return;
+    }
+    flight?.dismiss();
     setBusy(true);
     try {
       // One after another: two sections may write the same record.
@@ -229,14 +344,32 @@ export function SaveBar() {
       aria-label={t(locale, "settings.unsaved")}
       className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rw-radius border rw-line rw-surface px-4 py-3 rw-shadow"
     >
-      <p className="text-theme-sm font-medium rw-strong" aria-live="polite">
-        {fill(t(locale, "settings.unsavedCount"), { count: String(dirty.length) })}
-      </p>
+      {/* `min-w-0` + a basis: the alert line wraps inside the bar instead of
+          pushing it past a 320 px screen (measured: 449 px before). */}
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-1">
+        <p className="text-theme-sm font-medium rw-strong" aria-live="polite">
+          {fill(t(locale, "settings.unsavedCount"), { count: String(dirty.length) })}
+        </p>
+        {flight?.notice === "failed" && (
+          // Always words, never the phone's bare circle: an error
+          // must be read, and the circle drops `role="alert"`.
+          <Status
+            status="bad"
+            variant="iconText"
+            alert
+            label={t(locale, "settings.saveFailed")}
+            className="rw-status-wrap"
+          />
+        )}
+      </div>
       <div className="flex gap-3">
         <Button
           variant="outline"
           disabled={busy}
-          onClick={() => dirty.forEach((slot) => slot.reset())}
+          onClick={() => {
+            flight?.dismiss();
+            dirty.forEach((slot) => slot.reset());
+          }}
         >
           {t(locale, "settings.discard")}
         </Button>

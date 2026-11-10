@@ -667,6 +667,8 @@ export const kk: Record<MessageKey, string> = {
   "settings.name": "Аты",
   "settings.unsaved": "Сақталмаған өзгерістер",
   "settings.unsavedCount": "Сақталмаған өзгерістер: {count}",
+  "settings.saveFailed": "Сақталмады. Себебі бөлімде көрсетілген — түзетулеріңіз орнында қалды.",
+  "settings.saveFailedGone": "Соңғы өзгеріс сақталмады. Бөлімді қайта ашып, оны қайта енгізіңіз.",
   "settings.discard": "Бас тарту",
   "settings.channelEmail": "Пошта",
   "settings.soon": "жақында",

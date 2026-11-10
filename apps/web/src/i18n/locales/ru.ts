@@ -667,6 +667,8 @@ export const ru: Record<MessageKey, string> = {
   "settings.name": "Имя",
   "settings.unsaved": "Несохранённые изменения",
   "settings.unsavedCount": "Несохранённые изменения: {count}",
+  "settings.saveFailed": "Не сохранено. Причина указана в разделе — ваши правки остались на месте.",
+  "settings.saveFailedGone": "Последнее изменение не сохранено. Откройте раздел снова и введите его ещё раз.",
   "settings.discard": "Отменить",
   "settings.channelEmail": "Почта",
   "settings.soon": "скоро",

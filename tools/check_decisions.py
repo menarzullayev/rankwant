@@ -2525,6 +2525,36 @@ def client_dates_are_numeric() -> str | None:
     return None
 
 
+def optimistic_save_reports_refusals() -> str | None:
+    """2026-11-10 (HITL, audit Q-13): `optimisticSave` sozlamalar saqlashini boshqaradi.
+
+    Bayroq standart holatda o'chiq. Yoqilganda bar server javobini kutmaydi:
+    so'rovlar bir vaqtda ketadi (`MeSerializer.update` faqat yuborilgan
+    maydonlarni yozadi), rad etilsa tahrir joyida qoladi va xato ko'rinadi —
+    bo'lim yopilgan bo'lsa ham (toast). Yo'lda turgan so'rov sahifadan
+    chiqishni ham ogohlantiradi: to'liq yuklanish uni bekor qilardi.
+    """
+    flags = read("apps/web/src/lib/flags.ts").split("export const FLAGS", 1)[-1].split("} as const", 1)[0]
+    if not re.search(r"^\s+optimisticSave: false,$", flags, re.M):
+        return "lib/flags.ts: `optimisticSave` standart holatda yoniq yoki ro'yxatda yo'q"
+    bar = read("apps/web/src/features/account/components/SaveBar.tsx")
+    if 'if (flight && isOn("optimisticSave")) {' not in bar:
+        return "SaveBar.tsx: `optimisticSave` bayrog'i saqlashni boshqarmaydi"
+    # Words with `role="alert"`: the style's phone default is a bare circle
+    # with `role="img"` — the error would be neither read nor announced.
+    refusal = 'variant="iconText"\n            alert\n            label={t(locale, "settings.saveFailed")}'
+    if refusal not in bar:
+        return "SaveBar.tsx: rad etilgan optimistik saqlash ko'rinmaydi"
+    if 'toast(t(locale, "settings.saveFailedGone"))' not in bar:
+        return "SaveBar.tsx: yopilgan bo'limning rad etilgan saqlashi aytilmaydi"
+    if "const holding = dirty.length + inFlight.size;" not in bar:
+        return "SaveBar.tsx: yo'ldagi so'rov sahifadan chiqishda ogohlantirmaydi"
+    queue = read("apps/web/src/features/account/save-queue.ts")
+    if "      } catch {\n        ok = false;\n      }" not in queue:
+        return "save-queue.ts: yiqilgan so'rov saqlandi deb sanaladi"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -4179,6 +4209,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
+    ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
     ("judge privileged emas", judge_is_not_privileged),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),

@@ -4058,6 +4058,56 @@ def neg_decisions_client_date_in_locale() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_optimistic_save_on_by_default() -> tuple[bool, str]:
+    """The flag ships switched on."""
+    return _decision_broken(
+        "apps/web/src/lib/flags.ts",
+        "  optimisticSave: false,\n",
+        "  optimisticSave: true,\n",
+        "`optimisticSave` standart holatda yoniq",
+    )
+
+
+def neg_decisions_optimistic_save_unwired() -> tuple[bool, str]:
+    """The bar stops reading the flag: it gates nothing again."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SaveBar.tsx",
+        'if (flight && isOn("optimisticSave")) {',
+        "if (flight && false) {",
+        "bayrog'i saqlashni boshqarmaydi",
+    )
+
+
+def neg_decisions_optimistic_refusal_silent() -> tuple[bool, str]:
+    """A refused optimistic save no longer shows an alert in the bar."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SaveBar.tsx",
+        'variant="iconText"\n            alert\n            label={t(locale, "settings.saveFailed")}',
+        'label={t(locale, "settings.saveFailed")}',
+        "rad etilgan optimistik saqlash ko'rinmaydi",
+    )
+
+
+def neg_decisions_optimistic_unload_unguarded() -> tuple[bool, str]:
+    """A request still out no longer holds the page."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SaveBar.tsx",
+        "const holding = dirty.length + inFlight.size;",
+        "const holding = dirty.length;",
+        "yo'ldagi so'rov sahifadan chiqishda ogohlantirmaydi",
+    )
+
+
+def neg_decisions_optimistic_throw_counts_as_saved() -> tuple[bool, str]:
+    """A save that throws is counted as written."""
+    return _decision_broken(
+        "apps/web/src/features/account/save-queue.ts",
+        "      } catch {\n        ok = false;\n      }",
+        "      } catch {\n        ok = true;\n      }",
+        "yiqilgan so'rov saqlandi deb sanaladi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -7175,6 +7225,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/components/ui/Identity/TitleIcon.tsx",
     "apps/web/src/features/profile/components/ProfileCard.tsx",
     "apps/web/src/app/(site)/users/[username]/page.tsx",
+    # Feature flags wired (2026-11-10, audit Q-13): the registry default and
+    # the optimistic save path.
+    "apps/web/src/lib/flags.ts",
+    "apps/web/src/features/account/components/SaveBar.tsx",
+    "apps/web/src/features/account/save-queue.ts",
 )
 
 
@@ -10570,6 +10625,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),
             ("tillar paneli chizilmasa tutilsin", neg_decisions_languages_panel_unmounted),
             ("tashqi reyting jadvaldan tushsa tutilsin", neg_decisions_external_refresh_unscheduled),
+            ("optimistik saqlash standart yoniq bo'lsa tutilsin", neg_decisions_optimistic_save_on_by_default),
+            ("optimistik bayroq ulanmasa tutilsin", neg_decisions_optimistic_save_unwired),
+            ("rad etilgan optimistik saqlash jim qolsa tutilsin", neg_decisions_optimistic_refusal_silent),
+            ("yo'ldagi so'rov sahifani ushlamasa tutilsin", neg_decisions_optimistic_unload_unguarded),
+            ("yiqilgan so'rov saqlangan sanalsa tutilsin", neg_decisions_optimistic_throw_counts_as_saved),
             ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
