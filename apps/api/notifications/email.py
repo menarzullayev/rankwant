@@ -212,18 +212,19 @@ def deliver(*, user_id: int, kind: str, title: str, body: str, notification_id: 
         if row["read_at"] is not None:
             return "skipped:read"
 
-    mail = render(user, kind, title, body)
     refusal = budget_refusal(user)
     if refusal:
         EmailDelivery.objects.create(
             to_email=user.email[:254],
             purpose=EmailDelivery.Purpose.NOTIFICATION,
-            subject=mail["subject"][:200],
+            subject=title[:200],
             status=EmailDelivery.Status.SKIPPED,
             attempts=[{"provider": "", "error": SKIP_DETAIL[refusal]}],
         )
         log.info("bildirishnoma xati o'tkazib yuborildi (%s): %s", refusal, user.pk)
         return f"skipped:{refusal}"
+
+    mail = render(user, kind, title, body)
 
     delivery = send_email(
         to=user.email,
