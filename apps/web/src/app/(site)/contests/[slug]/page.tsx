@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, type ContestViewer } from "@/lib/api";
+import { getSessionUser, getWithSession } from "@/lib/api.server";
 import { getLocale } from "@/i18n/server";
 import { Countdown, TimeStamp } from "@/components/kit/TimeStamp";
 import { fill, t } from "@/i18n/messages";
-import { StandingsTable } from "@/features/contests";
+import { ContestCrew, ContestEntry, StandingsTable } from "@/features/contests";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { SITE_URL, jsonLd } from "@/lib/site";
@@ -44,6 +45,17 @@ export default async function ContestPage({ params }: Props) {
     if (error instanceof ApiError && error.status === 404) notFound();
     throw error;
   }
+
+  // The visitor's own standing: registered, an insider, testing before the
+  // start (ADR-0055, part 2). Asked separately so the contest stays one
+  // answer for everybody.
+  const signedIn = (await getSessionUser()) !== null;
+  const viewer = signedIn
+    ? await getWithSession<ContestViewer>(`/contests/${slug}/viewer/`).catch(() => null)
+    : null;
+  // Before the start the problems are shown to the people who test them.
+  const problems =
+    contest.problems.length > 0 ? contest.problems : viewer?.testing ? viewer.problems : [];
 
   return (
     <div className="space-y-6">
@@ -113,16 +125,23 @@ export default async function ContestPage({ params }: Props) {
         </div>
       )}
 
-      {contest.problems.length === 0 && contest.problem_count > 0 && (
+      <ContestEntry
+        slug={slug}
+        viewer={viewer}
+        signedIn={signedIn}
+        finished={contest.is_finished}
+      />
+
+      {problems.length === 0 && contest.problem_count > 0 && (
         <div className="rw-radius border rw-line rw-surface p-5 text-theme-sm rw-dim" data-problems-hidden="">
           {fill(t(locale, "contest.problemsAtStart"), { count: contest.problem_count })}
         </div>
       )}
 
-      {contest.problems.length > 0 && (
+      {problems.length > 0 && (
         <Card title={t(locale, "contest.problems")} bodyClassName="p-0">
           <ul className="rw-divide divide-y">
-            {contest.problems.map((entry) => (
+            {problems.map((entry) => (
               <li key={entry.slug}>
                 <Link
                   href={{
@@ -157,6 +176,8 @@ export default async function ContestPage({ params }: Props) {
           hacks={contest.hack_room || contest.hack_open_until !== null}
         />
       </Card>
+
+      <ContestCrew crew={contest.crew} locale={locale} />
     </div>
   );
 }

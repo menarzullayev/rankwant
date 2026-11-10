@@ -341,6 +341,7 @@ def contest_rows(user: User, standings: list[Standing]) -> list[dict[str, Any]]:
     ids = [row.contest_id for row in standings]
     participants = dict(
         Standing.objects.filter(contest_id__in=ids)
+        .official()
         .values_list("contest_id")
         .annotate(n=Count("id"))
     )
@@ -366,13 +367,19 @@ def contest_rows(user: User, standings: list[Standing]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for standing in standings:
         contest = standing.contest
-        same = Standing.objects.filter(contest_id=standing.contest_id)
+        # An insider's row has no place (ADR-0055, part 2): its range is
+        # empty and `rank` stays 0.
+        same = Standing.objects.filter(contest_id=standing.contest_id).official()
         same = (
             same.filter(total_score=standing.total_score)
             if contest.scoring_type == Contest.Scoring.IOI
             else same.filter(solved_count=standing.solved_count, penalty=standing.penalty)
         )
-        tie = same.aggregate(lo=Min("rank"), hi=Max("rank"))
+        tie = (
+            same.aggregate(lo=Min("rank"), hi=Max("rank"))
+            if standing.is_official
+            else {"lo": None, "hi": None}
+        )
         change = history.get(contest.slug)
         rating: dict[str, Any] | None = None
         if change is not None:
@@ -400,6 +407,7 @@ def contest_rows(user: User, standings: list[Standing]) -> list[dict[str, Any]]:
                 "duration_min": int((contest.end_at - contest.start_at).total_seconds() // 60),
                 "is_rated": contest.is_rated,
                 "virtual": contest.pk in virtual,
+                "insider_role": standing.insider_role,
             }
         )
     return out

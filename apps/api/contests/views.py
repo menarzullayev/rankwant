@@ -5,6 +5,7 @@ from uuid import UUID
 from django.db.models import Count, QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from rest_framework import generics, status, viewsets
@@ -20,6 +21,7 @@ from contests.serializers import (
     CertificateSerializer,
     ContestDetailSerializer,
     ContestSerializer,
+    ContestViewerSerializer,
     RegistrationSerializer,
     StandingSerializer,
 )
@@ -53,6 +55,7 @@ STANDINGS_TOP = 500
         "standings": "Turnik jadvali",
         "my_standing": "O'z o'rni",
         "virtual": "Virtual qatnashish",
+        "viewer": "Mening musobaqadagi holatim",
     },
 )
 class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
@@ -76,10 +79,12 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
         key = STANDINGS_CACHE_KEY.format(contest_id=contest.pk)
         payload = cache_get(key)
         if payload is None:
+            # Insiders sit among the others with a star and no place
+            # (ADR-0055, part 2): the table follows `position`, not `rank`.
             rows = (
                 Standing.objects.filter(contest=contest)
                 .select_related("user")
-                .order_by("rank")[:STANDINGS_TOP]
+                .order_by("position")[:STANDINGS_TOP]
             )
             payload = {
                 "frozen": contest.is_frozen,
@@ -118,6 +123,32 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
         if row is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(StandingSerializer(row).data)
+
+    @extend_schema(responses={200: ContestViewerSerializer})
+    @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
+    def viewer(self, request: Request, slug: str | None = None) -> Response:
+        """The visitor's own standing with the contest (ADR-0055, part 2).
+
+        Their insider role, whether they are registered, and — for an
+        insider before the start — the problems they test.
+        """
+        from contests.insiders import role_of
+
+        contest = self.get_object()
+        assert isinstance(request.user, User)
+        role = role_of(contest, request.user)
+        testing = bool(role) and timezone.now() < contest.start_at
+        problems = contest.problems.select_related("problem") if testing else []
+        return Response(
+            ContestViewerSerializer(
+                {
+                    "role": role,
+                    "registered": contest.registrations.filter(user=request.user).exists(),
+                    "testing": testing,
+                    "problems": problems,
+                }
+            ).data
+        )
 
     @extend_schema(request=None, responses={201: RegistrationSerializer})
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])

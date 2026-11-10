@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2442 strings.**
+**2471 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1209,6 +1209,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `role.staff` | Xodim | Кызматкер |  |
 | `role.author` | Masala muallifi | Маселе автору |  |
 | `role.jury` | Hakam | Калыс |  |
+| `role.tester` | Sinovchi | Тестер |  |
 | `role.champion` | Chempion | Чемпион |  |
 | `role.championOf` | {contest} g'olibi | {contest} жеңүүчүсү |  |
 | `profile.online` | Onlayn | Онлайн |  |
@@ -2462,4 +2463,32 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.gate.endedTitle` | Musobaqa tugadi | Мелдеш аяктады |  |
 | `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Жыйынтыктар чыккандан кийин маселе архивге өтөт жана жөнөтүү кайра ачылат. |  |
 | `contest.gate.cta` | Musobaqa sahifasi | Мелдеш барагы |  |
+| `standings.unofficial` | Reytingsiz | Рейтингсиз |  |
+| `standings.showInsiders` | Reytingsizlarni ko'rsatish | Рейтингсиз катышуучуларды көрсөтүү |  |
+| `contest.role.author` | muallif | автор |  |
+| `contest.role.tester` | sinovchi | тестер |  |
+| `contest.role.jury` | hakam | калыс |  |
+| `contest.role.organizer` | tashkilotchi | уюштуруучу |  |
+| `contest.insider.title.author` | Siz bu musobaqa masalalaridan birining muallifisiz | Сиз бул мелдештеги маселелердин биринин авторусуз |  |
+| `contest.insider.title.tester` | Siz bu musobaqaning sinovchisisiz | Сиз бул мелдештин тестерисиз |  |
+| `contest.insider.title.jury` | Siz bu musobaqaning hakamisiz | Сиз бул мелдештин калысысыз |  |
+| `contest.insider.title.organizer` | Siz bu musobaqaning tashkilotchisisiz | Сиз бул мелдештин уюштуруучусусуз |  |
+| `contest.insider.testing` | Masalalar sizga hozirdan ochiq. Sinov yechimlari jadvalga, «yechilgan» hisobiga va boshqalarning lentasiga tushmaydi. Musobaqada qatnashsangiz — reytingsiz. | Маселелер сизге азыртадан ачык. Сыноо чечимдери таблицага, «чечилген» санына жана башкалардын лентасына түшпөйт. Мелдешке катышсаңыз — рейтингсиз. |  |
+| `contest.insider.unrated` | Masalalarni oldindan bilasiz: qatnashsangiz — reytingsiz, jadvalda «*» bilan va o'rinsiz. | Маселелерди алдын ала билесиз: катышсаңыз — рейтингсиз, таблицада «*» белгиси менен жана орунсуз. |  |
+| `contest.insider.testingProblem` | Sinov rejimi: musobaqa hali boshlanmagan. Bu yechim jadvalga, «yechilgan» hisobiga va masala statistikasiga tushmaydi. | Сыноо режими: мелдеш али башталган жок. Бул чечим таблицага, «чечилген» санына жана маселенин статистикасына түшпөйт. |  |
+| `contest.entry.title` | Ishtirok | Катышуу |  |
+| `contest.entry.register` | Ro'yxatdan o'tish | Катталуу |  |
+| `contest.entry.registered` | Siz ro'yxatdan o'tgansiz | Сиз катталгансыз |  |
+| `contest.entry.unratedNote` | Reytingsiz qatnashasiz | Рейтингсиз катышасыз |  |
+| `contest.crew.title` | Musobaqani tayyorlaganlar | Мелдешти даярдагандар |  |
+| `contest.crew.authors` | Masala mualliflari | Маселелердин авторлору |  |
+| `contest.crew.testers` | Sinovchilar | Тестерлер |  |
+| `contest.crew.jury` | Hakamlar | Калыстар |  |
+| `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Алар маселелерди алдын ала билишет, ошондуктан рейтингсиз катышат. |  |
+| `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Мелдешке катталуу үчүн системага кириңиз |  |
+| `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Тестерлер (лакап аттар, үтүр менен) |  |
+| `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Калыстар (лакап аттар, үтүр менен) |  |
+| `admin.help.contestTesters` | Boshlanishdan oldin masalalarni ko'radi va sinaydi; qatnashsa — reytingsiz. | Башталганга чейин маселелерди көрүп, сынайт; катышса — рейтингсиз. |  |
+| `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Сиз «{contest}» мелдешине тестер катары кошулдуңуз |  |
+| `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Маселелер сизге башталганга чейин ачык. Катышсаңыз — рейтингсиз. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} маселе — мелдеш башталганда ачылат. |  |

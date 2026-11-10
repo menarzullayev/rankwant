@@ -171,6 +171,7 @@ class TestDuringTheContest:
             "is_running": True,
             "is_frozen": False,
             "registered": False,
+            "testing": False,
         }
 
     def test_it_is_still_in_no_list(self, client: APIClient, problem_: Problem) -> None:

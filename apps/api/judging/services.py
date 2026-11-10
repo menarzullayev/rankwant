@@ -191,7 +191,11 @@ def enqueue(attempt: Attempt) -> str:
     Attempt DB da ALLAQACHON saqlangan bo'lishi kerak: navbat yiqilsa ham
     submission yo'qolmasligi shart (10-operations § recovery).
     """
-    Problem.objects.filter(pk=attempt.problem_id).update(attempt_count=F("attempt_count") + 1)
+    from contests.insiders import is_testing
+
+    # A tester's attempt before the start counts nowhere (ADR-0055, part 2).
+    if not is_testing(attempt):
+        Problem.objects.filter(pk=attempt.problem_id).update(attempt_count=F("attempt_count") + 1)
     job = build_job(attempt)
     job_id = get_provider().submit(job)
 
@@ -344,14 +348,19 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
             attempt.verdict,
         )
 
+    from contests.insiders import is_testing
     from ratings.services import on_accept_revoked, on_attempt_judged
 
-    if accept_revoked:
-        on_accept_revoked(attempt)
-    else:
-        on_attempt_judged(attempt)
+    # A testing attempt — a tester's, before the start — is judged and
+    # counts nowhere: no solved problem, no rating, no table (ADR-0055).
+    testing = is_testing(attempt)
+    if not testing:
+        if accept_revoked:
+            on_accept_revoked(attempt)
+        else:
+            on_attempt_judged(attempt)
 
-    if attempt.contest_id:
+    if attempt.contest_id and not testing:
         _schedule_standings_rebuild(attempt.contest_id)
     _clear_progress_throttle(attempt.pk)
     return attempt

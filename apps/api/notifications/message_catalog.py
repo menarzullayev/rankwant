@@ -11,6 +11,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{contest}: place {rank}, rating {delta}",
             "body": "Contests rating: {before} → {after}",
         },
+        "contest_tester": {
+            "title": "You were added as a tester of “{contest}”",
+            "body": "The problems are open to you before the start. If you take part, you are unrated.",
+        },
         "duel_accepted": {
             "title": "{user} accepted your challenge",
             "body": "“{duel}” starts at {start_at}.",
@@ -66,6 +70,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_result": {
             "title": "{contest}: puesto {rank}, rating {delta}",
             "body": "Rating de Contests: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Te añadieron como probador de «{contest}»",
+            "body": "Los problemas están abiertos para ti antes del inicio. Si participas, será sin rating.",
         },
         "duel_accepted": {
             "title": "{user} aceptó tu reto",
@@ -123,6 +131,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{contest}: {rank}-orın, reyting {delta}",
             "body": "Contests reytingi: {before} → {after}.",
         },
+        "contest_tester": {
+            "title": "Siz «{contest}» jarısına testlewshi bolıp qosıldıńız",
+            "body": "Máseleler sizge baslanıwdan aldın ashıq. Qatnassańız — reytingsiz.",
+        },
         "duel_accepted": {
             "title": "{user} shaqırıǵıńızdı qabıl etti",
             "body": "«{duel}» {start_at} da baslanadı.",
@@ -178,6 +190,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_result": {
             "title": "{contest}: {rank}-орын, рейтинг {delta}",
             "body": "Contests рейтингі: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Сіз «{contest}» жарысына тестер ретінде қосылдыңыз",
+            "body": "Есептер сізге басталғанға дейін ашық. Қатыссаңыз — рейтингсіз.",
         },
         "duel_accepted": {
             "title": "{user} шақыруыңызды қабылдады",
@@ -235,6 +251,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{contest}: {rank}-орун, рейтинг {delta}",
             "body": "Contests рейтинги: {before} → {after}",
         },
+        "contest_tester": {
+            "title": "Сиз «{contest}» мелдешине тестер катары кошулдуңуз",
+            "body": "Маселелер сизге башталганга чейин ачык. Катышсаңыз — рейтингсиз.",
+        },
         "duel_accepted": {
             "title": "{user} чакырыгыңызды кабыл алды",
             "body": "«{duel}» {start_at} башталат.",
@@ -290,6 +310,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_result": {
             "title": "{contest}: {rank}-е место, рейтинг {delta}",
             "body": "Рейтинг Contests: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "Вас добавили тестером соревнования «{contest}»",
+            "body": "Задачи открыты для вас до начала. Если будете участвовать — вне конкурса.",
         },
         "duel_accepted": {
             "title": "{user} принял ваш вызов",
@@ -347,6 +371,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{contest}: ҷойи {rank}, рейтинг {delta}",
             "body": "Рейтинги Contests: {before} → {after}",
         },
+        "contest_tester": {
+            "title": "Шумо ба мусобиқаи «{contest}» ҳамчун санҷишгар илова шудед",
+            "body": "Масъалаҳо то оғоз барои шумо кушодаанд. Агар иштирок кунед — бе рейтинг.",
+        },
         "duel_accepted": {
             "title": "{user} даъвати шуморо қабул кард",
             "body": "«{duel}» {start_at} оғоз мешавад.",
@@ -402,6 +430,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_result": {
             "title": "{contest}: {rank}. sıra, puan {delta}",
             "body": "Contests puanı: {before} → {after}",
+        },
+        "contest_tester": {
+            "title": "“{contest}” yarışmasına test eden olarak eklendiniz",
+            "body": "Problemler başlangıçtan önce size açık. Katılırsanız puansız katılırsınız.",
         },
         "duel_accepted": {
             "title": "{user} meydan okumanızı kabul etti",
@@ -459,6 +491,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{contest}: {rank}-o'rin, reyting {delta}",
             "body": "Contests reytingi: {before} → {after}",
         },
+        "contest_tester": {
+            "title": "Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz",
+            "body": "Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz.",
+        },
         "duel_accepted": {
             "title": "{user} chaqirig'ingizni qabul qildi",
             "body": "«{duel}» {start_at} da boshlanadi.",
@@ -514,6 +550,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "contest_result": {
             "title": "{contest}:第 {rank} 名,评分 {delta}",
             "body": "Contests 评分:{before} → {after}",
+        },
+        "contest_tester": {
+            "title": "你已被添加为“{contest}”的测试员",
+            "body": "题目在开赛前已对你开放。如果参赛，将不计分。",
         },
         "duel_accepted": {
             "title": "{user} 接受了你的挑战",

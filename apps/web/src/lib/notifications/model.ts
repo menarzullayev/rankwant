@@ -84,6 +84,8 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   streak: { body: true },
   problem_rerated: { body: true },
   contest_result: { body: true },
+  // Made a tester of a contest (ADR-0055, part 2).
+  contest_tester: { body: true },
 };
 
 /** The words of a notification in the language it is being read in.

@@ -27,7 +27,11 @@ def issue(contest: Contest) -> int:
     )
     rows = [
         row
-        for row in Standing.objects.filter(contest=contest).select_related("user").order_by("rank")
+        # An insider took part unrated: no place, no certificate (ADR-0055).
+        for row in Standing.objects.filter(contest=contest)
+        .official()
+        .select_related("user")
+        .order_by("rank")
         if row.user_id in submitted and row.user.is_active
     ]
     if not rows:

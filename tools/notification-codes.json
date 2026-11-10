@@ -6,6 +6,9 @@
     "delta",
     "rank"
   ],
+  "contest_tester": [
+    "contest"
+  ],
   "duel_accepted": [
     "duel",
     "start_at",

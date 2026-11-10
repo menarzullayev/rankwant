@@ -1353,6 +1353,33 @@ paths:
           description: ''
         '404':
           description: No response body
+  /api/v1/contests/{slug}/viewer/:
+    get:
+      operationId: contests_viewer_retrieve
+      description: |-
+        The visitor's own standing with the contest (ADR-0055, part 2).
+
+        Their insider role, whether they are registered, and — for an
+        insider before the start — the problems they test.
+      summary: Mening musobaqadagi holatim
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContestViewer'
+          description: ''
   /api/v1/contests/{slug}/virtual/:
     post:
       operationId: contests_virtual_create
@@ -13236,7 +13263,12 @@ components:
         problem_count:
           type: integer
           readOnly: true
+        crew:
+          allOf:
+          - $ref: '#/components/schemas/Crew'
+          readOnly: true
       required:
+      - crew
       - end_at
       - hack_open_until
       - is_finished
@@ -13270,6 +13302,62 @@ components:
       - index_letter
       - slug
       - title
+    ContestViewer:
+      type: object
+      description: |-
+        The signed-in visitor's own standing with a contest.
+
+        Kept off the contest itself so that the contest stays one answer for
+        everybody.
+      properties:
+        role:
+          type: string
+        registered:
+          type: boolean
+        testing:
+          type: boolean
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContestProblem'
+      required:
+      - problems
+      - registered
+      - role
+      - testing
+    Crew:
+      type: object
+      description: Who prepared the contest — told on its page, always (ADR-0055,
+        part 2).
+      properties:
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewPerson'
+        testers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewPerson'
+        jury:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewPerson'
+      required:
+      - authors
+      - jury
+      - testers
+    CrewPerson:
+      type: object
+      properties:
+        username:
+          type: string
+        user_title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+      required:
+      - user_title
+      - username
     CurrentQuestion:
       type: object
       properties:
@@ -14041,6 +14129,18 @@ components:
       - submission_count
       - submission_deadline
       - title
+    InsiderRoleEnum:
+      enum:
+      - author
+      - tester
+      - jury
+      - organizer
+      type: string
+      description: |-
+        * `author` - Muallif
+        * `tester` - Sinovchi
+        * `jury` - Hakam
+        * `organizer` - Tashkilotchi
     Inventory:
       type: object
       properties:
@@ -14573,6 +14673,8 @@ components:
 
         `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
         staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+        The organizer picks the testers (ADR-0055, part 2); the jury is a
+        staff decision.
       properties:
         slug:
           type: string
@@ -14603,6 +14705,12 @@ components:
         is_rated:
           type: boolean
           readOnly: true
+        testers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
       required:
       - end_at
       - is_public
@@ -16293,6 +16401,8 @@ components:
 
         `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
         staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+        The organizer picks the testers (ADR-0055, part 2); the jury is a
+        staff decision.
       properties:
         slug:
           type: string
@@ -16323,6 +16433,12 @@ components:
         is_rated:
           type: boolean
           readOnly: true
+        testers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
     PatchedStaffArena:
       type: object
       properties:
@@ -16497,6 +16613,18 @@ components:
         is_finished:
           type: boolean
           readOnly: true
+        testers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+        jury:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
     PatchedStaffHackathon:
       type: object
       properties:
@@ -19209,6 +19337,18 @@ components:
         is_finished:
           type: boolean
           readOnly: true
+        testers:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+        jury:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
       required:
       - created_at
       - end_at
@@ -20713,6 +20853,10 @@ components:
           type: string
           format: date-time
           nullable: true
+        insider_role:
+          oneOf:
+          - $ref: '#/components/schemas/InsiderRoleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
       required:
       - user_title
       - username

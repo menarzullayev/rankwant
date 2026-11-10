@@ -97,6 +97,9 @@ export type ProblemDetail = Problem & {
     is_running: boolean;
     is_frozen: boolean;
     registered: boolean;
+    /** Before the start — only an insider gets this far: what they send
+     *  is a testing attempt that counts nowhere (ADR-0055, part 2). */
+    testing: boolean;
   } | null;
   /** `has_profile` — nofaol import mualliflarining profil sahifasi yo'q. */
   author: {
