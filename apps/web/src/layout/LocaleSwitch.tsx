@@ -7,7 +7,12 @@ import { useCallback, useRef, useState, useTransition } from "react";
 import { Dropdown, type DropdownOption } from "@/components/ui/Dropdown";
 import { toNewAlphabet } from "@rankwant/shared/alphabet";
 
-import { ALPHABET_LOCALE, alphabetCookieLine } from "@/i18n/alphabet";
+import {
+  ALPHABET_LOCALE,
+  DEFAULT_ALPHABET,
+  OLD_ALPHABET,
+  alphabetCookieLine,
+} from "@/i18n/alphabet";
 import { useAlphabet, useLocale, useLocaleAuto } from "@/i18n/LocaleProvider";
 import { LOCALE_PARAM } from "@/i18n/locale-params";
 import {
@@ -150,7 +155,7 @@ export function LocaleSwitch() {
       if (next === UZ_OLD || next === ALPHABET_LOCALE) {
         if (wantOld !== (alphabet === "old")) {
           document.cookie = `rw_locale=${ALPHABET_LOCALE}; path=/; max-age=31536000; samesite=lax`;
-          document.cookie = alphabetCookieLine(wantOld ? "old" : "new");
+          document.cookie = alphabetCookieLine(wantOld ? OLD_ALPHABET : DEFAULT_ALPHABET);
           announcePrefs({ locale: ALPHABET_LOCALE });
           const url = new URL(window.location.href);
           url.searchParams.delete(LOCALE_PARAM);

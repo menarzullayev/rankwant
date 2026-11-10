@@ -17,6 +17,8 @@ export const ALPHABET_COOKIE = "rw_alphabet";
 export const ALPHABETS = ["new", "old"] as const;
 export type Alphabet = (typeof ALPHABETS)[number];
 export const DEFAULT_ALPHABET: Alphabet = "new";
+/** The alphabet in force before O'RQ-1184. */
+export const OLD_ALPHABET: Alphabet = "old";
 
 /** The only locale with two alphabets. */
 export const ALPHABET_LOCALE: Locale = "uz";
