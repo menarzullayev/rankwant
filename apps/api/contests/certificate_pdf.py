@@ -16,6 +16,7 @@ from django.utils import timezone
 from fpdf import FPDF
 
 from contests.models import Certificate
+from core.alphabet import for_user
 
 FONTS = Path(__file__).resolve().parent / "fonts"
 #: DejaVu'da CJK yo'q — xitoycha ism uchun zaxira (Droid Sans Fallback, Apache-2.0).
@@ -79,7 +80,13 @@ def render(cert: Certificate) -> bytes:
     line("RANKWANT", 26, 11, "B", MUTED)
     line("SERTIFIKAT", 38, 34, "B", INK)
     line("CERTIFICATE", 56, 12, "", MUTED)
-    line(RIBBON[Certificate.Tier(cert.tier)], 70, 15, "B", accent)
+
+    # Uzbek words in the owner's alphabet (ADR-0059); names and the
+    # contest's title as typed.
+    def uz(text: str) -> str:
+        return for_user(text, cert.user)
+
+    line(uz(RIBBON[Certificate.Tier(cert.tier)]), 70, 15, "B", accent)
 
     # Uzun ism kichraytiriladi — varaqdan chiqmasin.
     size = 30.0
@@ -90,9 +97,11 @@ def render(cert: Certificate) -> bytes:
     line(cert.name, 88, size, "B", INK)
 
     ended = timezone.localtime(contest.end_at)
-    line(f"«{contest.title}» musobaqasi", 108, 15, "", INK)
+    line(f"«{contest.title}» {uz('musobaqasi')}", 108, 15, "", INK)
+    place_word, participants_word = uz("o'rin"), uz("ishtirokchi")
     line(
-        f"{cert.place}-o'rin  ·  {cert.participants} ishtirokchi  ·  {ended:%d.%m.%Y}",
+        f"{cert.place}-{place_word}  ·  {cert.participants} {participants_word}"
+        f"  ·  {ended:%d.%m.%Y}",
         118,
         12,
         "",
@@ -117,8 +126,8 @@ def render(cert: Certificate) -> bytes:
     pdf.multi_cell(
         160,
         5,
-        f"ID: {cert.pk}\nTekshirish / Verify: {verify_url(cert)}\n"
-        f"Berilgan / Issued: {issued:%d.%m.%Y}",
+        f"ID: {cert.pk}\n{uz('Tekshirish')} / Verify: {verify_url(cert)}\n"
+        f"{uz('Berilgan')} / Issued: {issued:%d.%m.%Y}",
         align="L",
     )
     return bytes(pdf.output())

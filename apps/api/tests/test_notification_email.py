@@ -151,6 +151,9 @@ class TestDeliver:
 
     def test_sends_with_one_click_headers(self, brevo) -> None:
         user = _reader(email=True)
+        # The old alphabet keeps the apostrophe checked below (ADR-0059).
+        user.alphabet = "old"
+        user.save(update_fields=["alphabet"])
         assert self._deliver(user) == EmailDelivery.Status.SENT
         [msg] = brevo.calls
         assert msg.to == user.email

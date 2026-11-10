@@ -22,6 +22,7 @@ from typing import Any
 
 from django.utils import timezone
 
+from core.alphabet import for_alphabet
 from notifications.message_catalog import CATALOG
 
 _SLOT = re.compile(r"\{(\w+)\}")
@@ -54,10 +55,25 @@ def _fill(template: str, params: dict[str, Any]) -> str:
     )
 
 
-def render(code: str, params: dict[str, Any] | None, locale: str) -> tuple[str, str]:
-    """`(title, body)` for a code, in `locale` or — failing that — in Uzbek."""
-    entry = CATALOG.get(locale, {}).get(code) or CATALOG.get(SOURCE_LOCALE, {}).get(code)
+def render(
+    code: str, params: dict[str, Any] | None, locale: str, alphabet: str = "new"
+) -> tuple[str, str]:
+    """`(title, body)` for a code, in `locale` or — failing that — in Uzbek.
+
+    Uzbek follows `alphabet` (ADR-0059). The template is converted BEFORE the
+    parameters go in: a contest's or a post's name is shown as it was typed.
+    """
+    in_locale = CATALOG.get(locale, {}).get(code)
+    entry = in_locale or CATALOG.get(SOURCE_LOCALE, {}).get(code)
     if not entry:
         return "", ""
+    shown = locale if in_locale else SOURCE_LOCALE
     values = params or {}
-    return _fill(entry.get("title", ""), values), _fill(entry.get("body", ""), values)
+
+    def text(field: str) -> str:
+        template = entry.get(field, "")
+        if shown == SOURCE_LOCALE:
+            template = for_alphabet(template, alphabet)
+        return _fill(template, values)
+
+    return text("title"), text("body")

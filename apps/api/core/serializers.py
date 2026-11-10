@@ -255,6 +255,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "avatar_url",
             "bio",
             "locale",
+            "alphabet",
             "theme",
             "country",
             "region",

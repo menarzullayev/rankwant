@@ -85,7 +85,9 @@ def compose(
     the recipient's language; `title`/`body` given explicitly win (free
     text a person wrote, such as a judge's feedback)."""
     if code:
-        made_title, made_body = messages.render(code, params, user.locale)
+        made_title, made_body = messages.render(
+            code, params, user.locale, getattr(user, "alphabet", "new")
+        )
         title = title or made_title
         body = body or made_body
     return Notification(

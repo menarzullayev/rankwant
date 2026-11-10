@@ -89,7 +89,11 @@ class TestParolniTiklash:
     def test_matnli_nusxa_html_escape_qilinmaydi(self, zanjir: Yozib) -> None:
         """The plain-text part is not HTML: `so'ramagan` must not arrive as
         `so&#x27;ramagan` (measured 2026-11-10 — `base.txt` was autoescaped)."""
-        emails.send_password_reset(odam(), token="TOK", code="482913")
+        # The old alphabet keeps the apostrophe this test is about (ADR-0059).
+        user = odam()
+        user.alphabet = "old"
+        user.save(update_fields=["alphabet"])
+        emails.send_password_reset(user, token="TOK", code="482913")
 
         assert zanjir.last is not None
         assert "&#x27;" not in zanjir.last.text
@@ -140,7 +144,8 @@ class TestParolniTiklash:
     @pytest.mark.parametrize(
         ("locale", "kutilgan"),
         [
-            ("uz", "parolni tiklash"),
+            # Uzbek in the new alphabet by default (ADR-0059).
+            ("uz", "parolni tiklaş"),
             ("ru", "восстановление пароля"),
             ("en", "password reset"),
             # Qolgan yetti til — qaror 5. Ilgari ular jimgina o'zbekchaga

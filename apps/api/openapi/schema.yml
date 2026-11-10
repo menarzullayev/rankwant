@@ -14398,6 +14398,14 @@ components:
         * `qvant` - Qvant
         * `contest` - Musobaqaga yozildi
         * `quest` - Vazifa bajarildi
+    AlphabetEnum:
+      enum:
+      - new
+      - old
+      type: string
+      description: |-
+        * `new` - new
+        * `old` - old
     AnalyticsBatch:
       type: object
       description: |-
@@ -17363,6 +17371,8 @@ components:
           type: string
         locale:
           $ref: '#/components/schemas/LocaleEnum'
+        alphabet:
+          $ref: '#/components/schemas/AlphabetEnum'
         theme:
           type: string
           maxLength: 16
@@ -19677,6 +19687,8 @@ components:
           type: string
         locale:
           $ref: '#/components/schemas/LocaleEnum'
+        alphabet:
+          $ref: '#/components/schemas/AlphabetEnum'
         theme:
           type: string
           maxLength: 16

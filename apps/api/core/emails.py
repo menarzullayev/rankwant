@@ -13,7 +13,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from core import email_text
+from core import alphabet, email_text
 from core.mailer import send_email
 from core.models import EmailDelivery, User
 
@@ -31,6 +31,8 @@ def _context(
 ) -> dict[str, object]:
     locale = user.locale or email_text.DEFAULT_LOCALE
     strings = {**email_text.strings(email_text.SHARED, locale), **email_text.strings(table, locale)}
+    # Uzbek in the alphabet the person chose (ADR-0059).
+    strings = {key: alphabet.for_user(text, user, locale) for key, text in strings.items()}
     # Havola BIZNING domenimizda qoladi: kuzatuv o'chirilgan (ADR-0015),
     # ya'ni foydalanuvchi manzilni ko'rib ishonch hosil qila oladi.
     # `?tab=` bo'limni tanlaydi (1-qaror: yagona `/login` sahifasi),
