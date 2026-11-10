@@ -172,9 +172,9 @@ successful attack means **arbitrary code execution inside our infrastructure**.
 | S | — | judge accepts no connections; it pulls work from Redis (ADR-0004) | none known |
 | T | Job forgery on the queue | Redis is internal-only; a forged job still lands in the sandbox | a network neighbour could inject jobs |
 | R | — | verdicts carry the judge's own timestamps | none known |
-| I | Reading hidden tests or other submissions from inside the sandbox | nsjail: namespaces + cgroup limits; five isolation cases (`09-fork-bomb`, `10-file-write`, `11-network`, `12-proc-read`, `13-symlink`) run in Nightly against real nsjail | **the sandbox is verified, the container is not** — see E below |
-| D | Fork bomb, memory exhaustion, TLE loops | cgroup limits, process limits, `PreflightCgroup` fails closed at startup | a flood of submissions is bounded by `submit 6/min` per user, not globally |
-| E | **Container escape** | **`privileged: true` + `cgroup: host`** — required by nsjail. No inbound port. No DB credential (`DATABASE_URL` absent; the worker exits 1 if it is set). Only documented mitigation: `docker compose … stop judge` | **open, and the largest single risk in this document** — A-1 |
+| I | Reading hidden tests or other submissions from inside the sandbox | nsjail: namespaces + cgroup limits; the isolation cases (`09-fork-bomb`, `10-file-write`, `11-network`, `12-proc-read`, `13-symlink`, and since 2026-11-10 `33-nested-userns`) run in Nightly against real nsjail | the sandbox is verified; the container's settings are guarded (`check_decisions` → `judge privileged emas`) and checked at startup — see E below |
+| D | Fork bomb, memory exhaustion, TLE loops | cgroup limits (`pids.max`, `memory.max` per run, a root-owned ceiling over all runs), `PreflightCgroup` and `PreflightSandbox` fail closed at startup | a flood of submissions is bounded by `submit 6/min` per user, not globally |
+| E | **Container escape** | Until 2026-11-10 **`privileged: true` + `cgroup: host`**, and the sandboxed program was host uid 0. Since then ([ADR-0046](../07-adr/0046-judge-privilege-model.md)) **not privileged**: `cap_drop: [ALL]` plus three capabilities the launcher uses once to write an id map; Docker's seccomp plus six syscalls nsjail needs, closed again for the program by nsjail's own policy; `no-new-privileges`; a delegated cgroup in the container's own cgroup namespace; worker and program run as uid 10001 and the worker refuses to start otherwise. No inbound port. No DB credential (`DATABASE_URL` absent; the worker exits 1 if it is set) | **narrowed** — `systempaths=unconfined` and `apparmor=unconfined` remain (both were implied by `privileged`); nsjail needs user namespaces, so the kernel's userns code is reachable from the container; the judge still shares the machine with Postgres and Redis — A-1 |
 
 **The judge is the reason the boundary is a container boundary, not a host
 boundary.** See § 9.
@@ -196,7 +196,7 @@ inputs, not as findings.
 
 | # | Risk | Why accepted | Decided | Revisit when |
 |---|---|---|---|---|
-| **A-1** | Judge runs `privileged: true` with `cgroup: host`, on the same machine as Postgres and Redis | Narrowing capabilities is not possible while nsjail needs namespaces; the owner chose to keep the model and let the external audit verify it | 2026-09-21 | the audit reports; or the target four-host topology lands |
+| **A-1** | ~~Judge runs `privileged: true` with `cgroup: host`~~ **Narrowed 2026-11-10 ([ADR-0046](../07-adr/0046-judge-privilege-model.md)):** the judge is no longer privileged and nothing in it runs as uid 0 after start-up; it still runs on the same machine as Postgres and Redis, so the judge↔data boundary is a container boundary | Host separation ([ADR-0047](../07-adr/0047-judge-host-separation.md)) needs a second machine; on one machine the non-privileged container is the boundary that is left | 2026-09-21 · 2026-11-10 (narrowed) | the audit reports; the four-host topology lands; or a user-namespace kernel CVE (nsjail needs them) |
 | **A-2** | ~~MinIO root credentials are the literal `devdevdev`, in a public repo~~ **Closed 2026-11-10:** database, MinIO root and judge keys rotated; the deploy preflight refuses the repository defaults | Not internet-reachable; judged defence-in-depth rather than exposure | 2026-09-21 (recorded) · 2026-11-10 (closed) | — |
 | **A-3** | Secret scanning, dependency audit and the static security checks run nowhere (`security.yml` disabled) | The owner turned the run off; the deploy gate is `CI` only | 2026-09-21 | if the escape suite or scanning is wanted back, it belongs in Nightly, not PR CI |
 | **A-4** | The Cloudflare Free Worker quota (100 k/day) can be spent by crawlers before noon | Mitigated by the zone-side WAF rule; upgrading is a cost decision | 2026-09-18 (ADR-0023) | a second quota exhaustion, or launch traffic |
@@ -214,7 +214,7 @@ argument* in ADR-0004 depends on them.
 | Locked statement | Today | Consequence |
 |---|---|---|
 | ADR-0004: "Judge host **never** on the same server as API/DB" | one host; everything in one compose project | the judge↔data isolation is a **container** boundary, not a host boundary. A container escape lands on the machine holding Postgres and Redis |
-| ADR-0004: "outbound network from the judge host closed" | no `network_mode` restriction; the judge can reach the compose network and the internet | a submission cannot exfiltrate through nsjail, but an **escape** could |
+| ADR-0004: "outbound network from the judge host closed" | closed at the **container** level since 2026-09-24 ([ADR-0028](../07-adr/0028-judge-container-isolation.md)): the judge sits only on `judge-net` (`internal: true`) and refuses to start if Postgres or the API answer (`PreflightNetwork`); the host itself is not separated | a submission cannot exfiltrate through nsjail; an escape out of the (since 2026-11-10 non-privileged) container lands on the shared host |
 | `docs/06`: target topology is four hosts | one host | all of the above |
 | `docs/06`: "no inbound port on the judge host" | satisfied at the container level (verified) | none — this one holds |
 

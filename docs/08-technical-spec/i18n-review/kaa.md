@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2447 strings.**
+**2453 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2004,6 +2004,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.testsStoredRemotely` | Judge testlarni DB dan emas, S3 dan o'qiydi: matn yuklanganda tests/{slug}/<order>.in/.out sifatida saqlanadi, bu yerda faqat havola ko'rinadi. Bir xil tartib raqami qayta yuklansa — ustiga yoziladi. | Sudya testlerdi DB den emes, S3 ten oqıydı: júklengen mátn tests/{slug}/<order>.in/.out túrinde saqlanadı, bul jerde tek silteme kórinedi. Sol tártip nomeri qayta júklense — ústine jazıladı. |  |
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Ele test joq — sheshimler tekserilmeydi. |  |
 | `admin.text.addTest` | Test qo'shish | Test qosıw |  |
+| `admin.text.problemLanguages` | Tillar: limit, shablon va hakam dasturi | Tiller: sheklewler, úlgi hám qabıq |  |
+| `admin.help.problemLanguages` | Har til uchun alohida limit va muharrir shabloni. Masalada kamida bitta til qatori bo'lsa, faqat qatori bor tillar taklif qilinadi. | Hár til ushın bólek sheklew hám redaktor úlgisi. Máselede keminde bir til qatarı bolsa, tek qatarı bar tiller usınıladı. |  |
+| `admin.help.harness` | Funksiya masalasi: hakam dasturida yechim o'rni bir marta, alohida qatorda turishi shart: | Funkciya máselesi: qabıqta sheshim belgisi tap bir ret, bólek qatarda turıwı shárt: |  |
+| `admin.text.harness` | Hakam dasturi | Qabıq |  |
+| `admin.text.codeTemplate` | Muharrir shabloni | Redaktor úlgisi |  |
+| `admin.text.noLanguageRows` | Til qatori yo'q — hamma faol tillar umumiy limit bilan taklif qilinadi. | Til qatarı joq — barlıq aktiv tiller máseleniń ulıwma sheklewleri menen usınıladı. |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Kóp kórilgen |  |
 | `archive.mostLiked` | Ko'p yoqtirilgan | Kóp unatılǵan |  |
 | `archive.tagCloud` | Mavzular | Temalar |  |

@@ -4018,6 +4018,26 @@ def neg_decisions_uz_tier_name_translated() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_harness_saved_unchecked() -> tuple[bool, str]:
+    """The staff serializer stops validating the harness marker."""
+    return _decision_broken(
+        "apps/api/problems/staff_serializers.py",
+        "            error = taskkinds.harness_error(harness)\n",
+        "            error = None\n",
+        "hakam dasturi tekshirilmasdan saqlanadi",
+    )
+
+
+def neg_decisions_languages_panel_unmounted() -> tuple[bool, str]:
+    """The languages panel is no longer rendered under a problem row."""
+    return _decision_broken(
+        "apps/web/src/components/admin/ProblemsAdmin.tsx",
+        "            <ProblemLanguagesPanel problem={p} />\n",
+        "",
+        "tillar paneli xodim panelida chizilmaydi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -4035,6 +4055,97 @@ def neg_decisions_deploy_ignores_secret_failure() -> tuple[bool, str]:
         '  || die "env-faylda standart yoki kuchsiz sir',
         '  || echo "env-faylda standart yoki kuchsiz sir',
         "sir tekshiruvi yiqilsa ham deploy davom etadi",
+    )
+
+
+# ── ADR-0046: the judge container is not privileged (2026-11-10) ──
+#
+# One mutation per way the old trust comes back with every other check green:
+# a compose key, a capability, the seccomp profile, the sandbox's own policy,
+# the worker's fail-closed identity check.
+
+_JUDGE_PRIV_RULE = "judge privileged emas"
+_JUDGE_CAP_DROP = "    cap_drop: [ALL]\n"
+
+
+def neg_decisions_judge_privileged_again() -> tuple[bool, str]:
+    return _decision_broken(
+        "docker-compose.yml", _JUDGE_CAP_DROP, "    privileged: true\n" + _JUDGE_CAP_DROP, _JUDGE_PRIV_RULE
+    )
+
+
+def neg_decisions_judge_host_cgroup_again() -> tuple[bool, str]:
+    return _decision_broken(
+        "docker-compose.yml", _JUDGE_CAP_DROP, "    cgroup: host\n" + _JUDGE_CAP_DROP, _JUDGE_PRIV_RULE
+    )
+
+
+def neg_decisions_judge_privileged_in_overlay() -> tuple[bool, str]:
+    """The production overlay is merged on top: a key there wins."""
+    return _decision_broken(
+        "docker-compose.public.yml",
+        "  judge:\n    <<: *restart\n",
+        "  judge:\n    <<: *restart\n    privileged: true\n",
+        _JUDGE_PRIV_RULE,
+    )
+
+
+def neg_decisions_judge_extra_capability() -> tuple[bool, str]:
+    return _decision_broken(
+        "docker-compose.yml",
+        "    cap_add: [SETUID, SETGID, SETFCAP]\n",
+        "    cap_add: [SETUID, SETGID, SETFCAP, SYS_ADMIN]\n",
+        _JUDGE_PRIV_RULE,
+    )
+
+
+def neg_decisions_judge_seccomp_unconfined() -> tuple[bool, str]:
+    return _decision_broken(
+        "docker-compose.yml",
+        "      - seccomp=./services/judge-go/seccomp.json\n",
+        "      - seccomp=unconfined\n",
+        _JUDGE_PRIV_RULE,
+    )
+
+
+def neg_decisions_judge_new_privileges() -> tuple[bool, str]:
+    return _decision_broken(
+        "docker-compose.yml", "      - no-new-privileges:true\n", "", _JUDGE_PRIV_RULE
+    )
+
+
+def neg_decisions_judge_seccomp_widened() -> tuple[bool, str]:
+    """`unshare` was measured as not needed: opening it is a widening."""
+    return _decision_broken(
+        "services/judge-go/seccomp.json",
+        '        "sethostname"\n',
+        '        "sethostname",\n        "unshare"\n',
+        _JUDGE_PRIV_RULE,
+    )
+
+
+def neg_decisions_judge_sandbox_policy_dropped() -> tuple[bool, str]:
+    """Without it the program can create a user namespace (bake-off 33)."""
+    return _decision_broken(
+        "services/judge-go/sandbox.go",
+        '"--seccomp_string", sandboxSeccomp,',
+        "// seccomp policy removed",
+        _JUDGE_PRIV_RULE,
+    )
+
+
+def neg_decisions_judge_identity_unchecked() -> tuple[bool, str]:
+    return _decision_broken(
+        "services/judge-go/main.go",
+        "if err := PreflightIdentity(); err != nil",
+        "if err := error(nil); err != nil",
+        _JUDGE_PRIV_RULE,
+    )
+
+
+def neg_decisions_judge_launcher_off() -> tuple[bool, str]:
+    return _decision_broken(
+        "docker-compose.yml", "      JUDGE_USERNS: '1'\n", "      JUDGE_USERNS: '0'\n", _JUDGE_PRIV_RULE
     )
 
 
@@ -6993,6 +7104,10 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/check_security_boundary.py",
     # Default secrets (2026-11-10): the rule reads the checker's SECRETS list.
     "tools/check_env_secrets.py",
+    # Staff harness editor (2026-11-10).
+    "apps/api/problems/staff_views.py",
+    "apps/api/problems/staff_serializers.py",
+    "apps/web/src/components/admin/ProblemsAdmin.tsx",
     # Untranslated names (2026-11-10): the checker, the glossary and Uzbek tier names.
     "tools/check_i18n.py",
     "apps/web/src/i18n/glossary.ts",
@@ -7089,6 +7204,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/judging/tasks.py",
     "apps/api/judging/provider.py",
     "services/judge-go/protocol.go",
+    # ADR-0046 (2026-11-10): the non-privileged judge rule reads these.
+    "services/judge-go/seccomp.json",
+    "services/judge-go/sandbox.go",
+    "services/judge-go/main.go",
     "apps/api/judging/models.py",
     "apps/api/ratings/models.py",
     "apps/web/src/lib/useEventStream.ts",
@@ -7594,8 +7713,8 @@ def neg_decisions_boundary_judge_gets_port() -> tuple[bool, str]:
     """Judge port e'lon qilsa tutilsin — 06-architecture: kiruvchi port yo'q."""
     return _decision_broken(
         _BOUNDARY_BASE,
-        "    privileged: true          # nsjail namespace va cgroup uchun",
-        "    ports: ['9100:9100']\n    privileged: true          # nsjail namespace va cgroup uchun",
+        "    cap_drop: [ALL]\n",
+        "    ports: ['9100:9100']\n    cap_drop: [ALL]\n",
         _BOUNDARY_RULE,
     )
 
@@ -10496,8 +10615,20 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
             ("glossariy tekshiruvi uzilsa tutilsin", neg_decisions_glossary_check_unwired),
             ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),
+            ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),
+            ("tillar paneli chizilmasa tutilsin", neg_decisions_languages_panel_unmounted),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
+            ("judge yana privileged bo'lsa tutilsin", neg_decisions_judge_privileged_again),
+            ("judge yana cgroup: host bo'lsa tutilsin", neg_decisions_judge_host_cgroup_again),
+            ("overlay judge'ni privileged qilsa tutilsin", neg_decisions_judge_privileged_in_overlay),
+            ("judge'ga SYS_ADMIN qo'shilsa tutilsin", neg_decisions_judge_extra_capability),
+            ("judge seccomp'siz qolsa tutilsin", neg_decisions_judge_seccomp_unconfined),
+            ("judge no-new-privileges'siz qolsa tutilsin", neg_decisions_judge_new_privileges),
+            ("judge seccomp profili kengaysa tutilsin", neg_decisions_judge_seccomp_widened),
+            ("sandbox seccomp siyosati tushsa tutilsin", neg_decisions_judge_sandbox_policy_dropped),
+            ("worker identity tekshirilmasa tutilsin", neg_decisions_judge_identity_unchecked),
+            ("judge launcher o'chirilsa tutilsin", neg_decisions_judge_launcher_off),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("api_tests job olib tashlansa tutilsin", neg_decisions_api_tests_job_removed),

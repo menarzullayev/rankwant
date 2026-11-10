@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2447 strings.**
+**2453 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2004,6 +2004,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.testsStoredRemotely` | Judge testlarni DB dan emas, S3 dan o'qiydi: matn yuklanganda tests/{slug}/<order>.in/.out sifatida saqlanadi, bu yerda faqat havola ko'rinadi. Bir xil tartib raqami qayta yuklansa — ustiga yoziladi. | Каттоочу тесттерди БДдан эмес, S3тен окуйт: жүктөлгөн текст tests/{slug}/<order>.in/.out түрүндө сакталат, бул жерде шилтеме гана көрүнөт. Ошол номер кайра жүктөлсө — үстүнө жазылат. |  |
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Азырынча тест жок — чечимдер текшерилбейт. |  |
 | `admin.text.addTest` | Test qo'shish | Тест кошуу |  |
+| `admin.text.problemLanguages` | Tillar: limit, shablon va hakam dasturi | Тилдер: чектөөлөр, үлгү жана кабык |  |
+| `admin.help.problemLanguages` | Har til uchun alohida limit va muharrir shabloni. Masalada kamida bitta til qatori bo'lsa, faqat qatori bor tillar taklif qilinadi. | Ар бир тил үчүн өзүнчө чектөө жана редактор үлгүсү. Маселеде жок дегенде бир тил сабы болсо, сабы бар тилдер гана сунушталат. |  |
+| `admin.help.harness` | Funksiya masalasi: hakam dasturida yechim o'rni bir marta, alohida qatorda turishi shart: | Функция маселеси: кабыкта чечимдин белгиси так бир жолу, өзүнчө сапта турушу керек: |  |
+| `admin.text.harness` | Hakam dasturi | Кабык |  |
+| `admin.text.codeTemplate` | Muharrir shabloni | Редактор үлгүсү |  |
+| `admin.text.noLanguageRows` | Til qatori yo'q — hamma faol tillar umumiy limit bilan taklif qilinadi. | Тил сабы жок — бардык активдүү тилдер маселенин жалпы чектөөлөрү менен сунушталат. |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Көп көрүлгөн |  |
 | `archive.mostLiked` | Ko'p yoqtirilgan | Көп жактырылган |  |
 | `archive.tagCloud` | Mavzular | Темалар |  |

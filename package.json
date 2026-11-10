@@ -36,9 +36,9 @@
   ],
   "optionalDependencies": {
     "@img/sharp-linux-x64": "0.35.5",
-    "@next/swc-linux-x64-gnu": "16.4.1",
-    "@tailwindcss/oxide-linux-x64-gnu": "4.3.3",
-    "@unrs/resolver-binding-linux-x64-gnu": "1.12.2"
+    "@next/swc-linux-x64-gnu": "16.4.5",
+    "@tailwindcss/oxide-linux-x64-gnu": "4.3.5",
+    "@unrs/resolver-binding-linux-x64-gnu": "1.13.0"
   },
   "#overrides": [
     "npm reads `overrides` only from the workspace ROOT; the block in apps/web/package.json",
