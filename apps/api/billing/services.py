@@ -255,7 +255,11 @@ def sync_due_plans() -> int:
 def fulfil(order: Order) -> bool:
     """Grant what a paid order buys, once. False if the order was cancelled."""
     with transaction.atomic():
-        locked = Order.objects.select_for_update().select_related("user", "course").get(pk=order.pk)
+        locked = (
+            Order.objects.select_for_update(of=("self",))
+            .select_related("user", "course")
+            .get(pk=order.pk)
+        )
         if locked.status == Order.Status.PAID:
             return True
         if locked.status != Order.Status.PENDING:
@@ -282,7 +286,11 @@ def fulfil(order: Order) -> bool:
 def revoke(order: Order) -> None:
     """The payment was refunded: access ends at once (owner decision 2026-11-10)."""
     with transaction.atomic():
-        locked = Order.objects.select_for_update().select_related("user", "course").get(pk=order.pk)
+        locked = (
+            Order.objects.select_for_update(of=("self",))
+            .select_related("user", "course")
+            .get(pk=order.pk)
+        )
         if locked.status != Order.Status.PAID:
             return
         locked.status = Order.Status.REFUNDED
