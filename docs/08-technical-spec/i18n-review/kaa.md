@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2424 strings.**
+**2440 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1946,6 +1946,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Sheshim analizi bar |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Testler tayar emes — sheshimler qabıl etilmeydi |  |
 | `qvant.marathon` | Haftalik marafon | Háptelik marafon |  |
+| `qvant.history` | Tranzaksiyalar | Tranzakciyalar |  |
+| `qvant.historyEmpty` | Hali Qvant harakati yo'q. | Ázirshe Qvant háreketi joq. |  |
+| `qvant.historyOlder` | Oldingilari | Aldınǵıları |  |
+| `qvant.historyNewer` | Yangilari | Jańaları |  |
+| `qvant.col.when` | Vaqt | Waqıt |  |
+| `qvant.col.reason` | Sabab | Sebep |  |
+| `qvant.col.amount` | Miqdor | Muǵdar |  |
+| `qvant.col.balance` | Qoldiq | Qaldıq |  |
+| `qvant.reason.quest` | Kunlik topshiriq | Kúndelikli tapsırma |  |
+| `qvant.reason.streak` | Ketma-ketlik mukofoti | Izbe-izlik sıylıǵı |  |
+| `qvant.reason.contest` | Musobaqa | Jarıs |  |
+| `qvant.reason.purchase` | Xarid | Satıp alıw |  |
+| `qvant.reason.refund` | Qaytarish | Qaytarıw |  |
+| `qvant.reason.admin` | Ma'muriy tuzatish | Administrator dúzetiwi |  |
+| `qvant.reason.quiz` | Test | Sınaq |  |
+| `qvant.reason.achievement` | Yutuq | Jetiskenlik |  |
 | `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Jiberiwden aldın sheshimińizdi jazıń yamasa júkleń |  |
 | `submit.sourceTooLong` | Manba kodi juda katta | Manba kodı júdá úlken |  |
 | `submit.solution` | Yechim | Sheshim |  |

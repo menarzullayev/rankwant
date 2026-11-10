@@ -1,5 +1,6 @@
 "use client";
 
+import { numericStamp } from "@rankwant/shared/format";
 import { useCallback, useEffect, useState } from "react";
 
 import { FM_INP } from "@/components/form/chrome";
@@ -20,7 +21,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, t, type Locale, type MessageKey, errorText } from "@/i18n/messages";
+import { t, type Locale, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -90,7 +91,7 @@ const FIELDS: FieldDef[] = [
 ];
 
 function fmt(iso: string, locale: Locale): string {
-  return dateTime(iso, locale);
+  return numericStamp(iso);
 }
 
 function status(h: Hackathon): {

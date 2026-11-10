@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2424 strings.**
+**2440 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1946,6 +1946,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Талдоосу бар |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Тесттер даяр эмес — чечимдер кабыл алынбайт |  |
 | `qvant.marathon` | Haftalik marafon | Жумалык марафон |  |
+| `qvant.history` | Tranzaksiyalar | Транзакциялар |  |
+| `qvant.historyEmpty` | Hali Qvant harakati yo'q. | Азырынча Qvant кыймылы жок. |  |
+| `qvant.historyOlder` | Oldingilari | Мурункулар |  |
+| `qvant.historyNewer` | Yangilari | Жаңылар |  |
+| `qvant.col.when` | Vaqt | Убакыт |  |
+| `qvant.col.reason` | Sabab | Себеп |  |
+| `qvant.col.amount` | Miqdor | Сумма |  |
+| `qvant.col.balance` | Qoldiq | Калдык |  |
+| `qvant.reason.quest` | Kunlik topshiriq | Күнүмдүк тапшырма |  |
+| `qvant.reason.streak` | Ketma-ketlik mukofoti | Серия сыйлыгы |  |
+| `qvant.reason.contest` | Musobaqa | Мелдеш |  |
+| `qvant.reason.purchase` | Xarid | Сатып алуу |  |
+| `qvant.reason.refund` | Qaytarish | Кайтаруу |  |
+| `qvant.reason.admin` | Ma'muriy tuzatish | Администратордун оңдоосу |  |
+| `qvant.reason.quiz` | Test | Тест |  |
+| `qvant.reason.achievement` | Yutuq | Жетишкендик |  |
 | `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Жөнөтүүдөн мурун чечимиңизди жазыңыз же жүктөңүз |  |
 | `submit.sourceTooLong` | Manba kodi juda katta | Баштапкы код өтө чоң |  |
 | `submit.solution` | Yechim | Чечим |  |
