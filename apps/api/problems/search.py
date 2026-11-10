@@ -21,7 +21,8 @@ register(
         queryset=lambda: Problem.objects.filter(is_public=True),
         primary="title_search",
         stored=True,
-        secondary=("slug",),
+        # Translated titles (ADR-0058), one stored column — no join.
+        secondary=("slug", "translated_titles"),
         exact=by_number,
         order=("difficulty", "pk"),
         hit=lambda problem: {

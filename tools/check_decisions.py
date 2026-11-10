@@ -2993,6 +2993,30 @@ def billing_is_checked_and_reversible() -> str | None:
     return None
 
 
+def problem_translations_fall_back() -> str | None:
+    """2026-11-11 (HITL, ADR-0058): masala tarjimalari.
+
+    Tarjima maydonma-maydon: bo'sh maydon asl matndan olinadi (qisman
+    tarjima blokni bo'shatmaydi); yopiq tahlil tarjima orqali OCHILMAYDI;
+    nashr qilingan masala tarjimasini muallif emas, xodim tahrirlaydi;
+    qidiruv tarjima nomlarini ham topadi.
+    """
+    translations_py = read("apps/api/problems/translations.py")
+    if '        value = getattr(row, field)\n        if value:\n            data[field] = value\n' not in translations_py:
+        return "problems/translations.py: bo'sh tarjima maydoni asl matnni o'chiradi"
+    if '        if field == "editorial" and not data[field]:\n            continue\n' not in translations_py:
+        return "problems/translations.py: yopiq tahlil tarjima orqali ochiladi"
+    if (
+        "    def _check_translation_write(self, problem: Problem) -> None:\n"
+        "        # Like the statement: a published problem's text is staff-ops' (ADR-0025).\n"
+        "        if problem.is_public:\n"
+    ) not in read("apps/api/problems/author_views.py"):
+        return "problems/author_views.py: muallif nashr qilingan masala tarjimasini o'zgartiradi"
+    if '        secondary=("slug", "translated_titles"),\n' not in read("apps/api/problems/search.py"):
+        return "problems/search.py: qidiruv tarjima nomlarini topmaydi"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -5156,6 +5180,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kurs sertifikati, bir martalik mukofot, tasdiqlangan Qvant narxi", course_rewards_and_certificate),
     ("sinfga kurs: faqat bepul ochiladi, hisobot egasiga, kutilayotgan ish", course_given_to_a_class),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
+    ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),

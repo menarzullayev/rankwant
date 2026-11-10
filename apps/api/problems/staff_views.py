@@ -46,6 +46,7 @@ from problems.staff_serializers import (
     StaffValidatorSerializer,
     TestCaseUploadSerializer,
 )
+from problems.translation_views import TranslationActions
 
 
 @crud_summaries(one="mavzu", many="mavzular")
@@ -111,9 +112,11 @@ def _require_ops_or_draft_author(request: Request, problem: Problem) -> None:
         "reference_solution": "Namuna yechim yuklash",
         "languages": "Masala tillari (limit, shablon, hakam dasturi)",
         "language_row": "Bitta til qatorini yozish yoki o'chirish",
+        "translations": "Masala tarjimalari (ADR-0058)",
+        "translation": "Bitta tarjimani yozish yoki o'chirish",
     },
 )
-class StaffProblemViewSet(StaffViewSet):
+class StaffProblemViewSet(TranslationActions, StaffViewSet):
     # StaffOps — ADR-0025 guruh bo'linishi.
     permission_classes = [StaffOps]
 

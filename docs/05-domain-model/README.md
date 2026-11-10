@@ -62,7 +62,7 @@ Formulalar: [04-prd § Reyting formulalari](../04-prd/README.md#reyting-formulal
 | Maydon                                    | Tavsif                                        |
 | ----------------------------------------- | --------------------------------------------- |
 | `slug` (uniq), `title`                    |                                               |
-| `statement`, `statement_locale`           | Markdown + LaTeX; muallif tilida (04-prd P0-7) |
+| `statement`, `statement_locale`           | Markdown + LaTeX; muallif tilida (04-prd P0-7); boshqa tillar — `ProblemTranslation` ([ADR-0058](../07-adr/0058-problem-translations.md)) |
 | `difficulty`                              | 800–3500, qadam 100 — **joriy qiymat reytingga kiradi** ([ADR-0007](../07-adr/0007-skills-uses-current-difficulty.md)) |
 | `topics[]`                                | M2M → Topic                                   |
 | `time_limit_ms`, `memory_limit_kb`        | Judge                                         |

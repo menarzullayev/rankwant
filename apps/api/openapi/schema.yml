@@ -5263,6 +5263,7 @@ paths:
   /api/v1/problems/mine/:
     get:
       operationId: problems_mine_list
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: draft masalalar ro'yxati
       parameters:
       - name: ordering
@@ -5297,6 +5298,7 @@ paths:
           description: ''
     post:
       operationId: problems_mine_create
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: Yangi draft masala yaratish
       tags:
       - problems
@@ -5325,6 +5327,7 @@ paths:
   /api/v1/problems/mine/{slug}/:
     get:
       operationId: problems_mine_retrieve
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: Bitta draft masala
       parameters:
       - in: path
@@ -5346,6 +5349,7 @@ paths:
           description: ''
     put:
       operationId: problems_mine_update
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: draft masalani yangilash
       parameters:
       - in: path
@@ -5379,6 +5383,7 @@ paths:
           description: ''
     patch:
       operationId: problems_mine_partial_update
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: draft masalani qisman yangilash
       parameters:
       - in: path
@@ -5411,6 +5416,7 @@ paths:
           description: ''
     delete:
       operationId: problems_mine_destroy
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: draft masalani o'chirish
       parameters:
       - in: path
@@ -5453,6 +5459,132 @@ paths:
               schema:
                 $ref: '#/components/schemas/MineProblem'
           description: ''
+  /api/v1/problems/mine/{slug}/translations/:
+    get:
+      operationId: problems_mine_translations_list
+      description: Every other language of the problem's text.
+      summary: Qoralama tarjimalari (ADR-0058)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProblemTranslationList'
+          description: ''
+  /api/v1/problems/mine/{slug}/translations/{locale}/:
+    put:
+      operationId: problems_mine_translations_update
+      description: Create, replace or remove one language.
+      summary: Bitta tarjimani yozish yoki o'chirish
+      parameters:
+      - in: path
+        name: locale
+        schema:
+          type: string
+          pattern: ^[a-z]{2,3}$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemTranslation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProblemTranslation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProblemTranslation'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemTranslation'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemTranslation'
+          description: ''
+        '204':
+          description: No response body
+    delete:
+      operationId: problems_mine_translations_destroy
+      description: Create, replace or remove one language.
+      summary: Bitta tarjimani yozish yoki o'chirish
+      parameters:
+      - in: path
+        name: locale
+        schema:
+          type: string
+          pattern: ^[a-z]{2,3}$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemTranslation'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemTranslation'
+          description: ''
+        '204':
+          description: No response body
   /api/v1/problems/progress/:
     get:
       operationId: problems_progress_retrieve
@@ -8579,6 +8711,7 @@ paths:
   /api/v1/staff/problems/:
     get:
       operationId: staff_problems_list
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: masalalar ro'yxati
       parameters:
       - name: ordering
@@ -8624,6 +8757,7 @@ paths:
           description: ''
     post:
       operationId: staff_problems_create
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: Yangi masala yaratish
       tags:
       - staff
@@ -8652,6 +8786,7 @@ paths:
   /api/v1/staff/problems/{slug}/:
     get:
       operationId: staff_problems_retrieve
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: Bitta masala
       parameters:
       - in: path
@@ -8673,6 +8808,7 @@ paths:
           description: ''
     put:
       operationId: staff_problems_update
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: masalani yangilash
       parameters:
       - in: path
@@ -8706,6 +8842,7 @@ paths:
           description: ''
     patch:
       operationId: staff_problems_partial_update
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: masalani qisman yangilash
       parameters:
       - in: path
@@ -8738,6 +8875,7 @@ paths:
           description: ''
     delete:
       operationId: staff_problems_destroy
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: masalani o'chirish
       parameters:
       - in: path
@@ -9084,6 +9222,7 @@ paths:
   /api/v1/staff/problems/{slug}/revisions/{id}/freeze/:
     post:
       operationId: staff_problems_revisions_freeze_create
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       parameters:
       - in: path
         name: id
@@ -9163,6 +9302,7 @@ paths:
   /api/v1/staff/problems/{slug}/tests/:
     get:
       operationId: staff_problems_tests_list
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: Masala testlari bilan ishlash
       parameters:
       - name: ordering
@@ -9214,6 +9354,7 @@ paths:
           description: ''
     post:
       operationId: staff_problems_tests_create
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: Masala testlari bilan ishlash
       parameters:
       - name: ordering
@@ -9278,6 +9419,7 @@ paths:
   /api/v1/staff/problems/{slug}/tests/{order}/:
     delete:
       operationId: staff_problems_tests_destroy
+      description: '`translations/` (list) and `translations/<locale>/` (put, delete).'
       summary: Testni o'chirish
       parameters:
       - in: path
@@ -9297,6 +9439,138 @@ paths:
       - bearerAuth: []
       - cookieAuth: []
       responses:
+        '204':
+          description: No response body
+  /api/v1/staff/problems/{slug}/translations/:
+    get:
+      operationId: staff_problems_translations_list
+      description: Every other language of the problem's text.
+      summary: Masala tarjimalari (ADR-0058)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProblemTranslationList'
+          description: ''
+  /api/v1/staff/problems/{slug}/translations/{locale}/:
+    put:
+      operationId: staff_problems_translations_update
+      description: Create, replace or remove one language.
+      summary: Bitta tarjimani yozish yoki o'chirish
+      parameters:
+      - in: path
+        name: locale
+        schema:
+          type: string
+          pattern: ^[a-z]{2,3}$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemTranslation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProblemTranslation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProblemTranslation'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemTranslation'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemTranslation'
+          description: ''
+        '204':
+          description: No response body
+    delete:
+      operationId: staff_problems_translations_destroy
+      description: Create, replace or remove one language.
+      summary: Bitta tarjimani yozish yoki o'chirish
+      parameters:
+      - in: path
+        name: locale
+        schema:
+          type: string
+          pattern: ^[a-z]{2,3}$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemTranslation'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemTranslation'
+          description: ''
         '204':
           description: No response body
   /api/v1/staff/problems/{slug}/validator/:
@@ -17270,6 +17544,9 @@ components:
         editorial:
           type: string
           description: Markdown + LaTeX
+        statement_locale:
+          type: string
+          readOnly: true
         difficulty:
           type: integer
           maximum: 3500
@@ -17313,6 +17590,7 @@ components:
       - sample_count
       - slug
       - statement
+      - statement_locale
       - time_limit_ms
       - title
       - updated_at
@@ -18249,6 +18527,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProblemList'
+    PaginatedProblemTranslationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemTranslation'
     PaginatedQuizList:
       type: object
       required:
@@ -19539,6 +19840,9 @@ components:
         editorial:
           type: string
           description: Markdown + LaTeX
+        statement_locale:
+          type: string
+          readOnly: true
         difficulty:
           type: integer
           maximum: 3500
@@ -20040,7 +20344,7 @@ components:
           format: int64
         statement_locale:
           type: string
-          maxLength: 2
+          maxLength: 3
         difficulty:
           type: integer
           maximum: 3500
@@ -21396,7 +21700,15 @@ components:
           readOnly: true
         statement_locale:
           type: string
-          maxLength: 2
+          maxLength: 3
+        locale:
+          type: string
+          readOnly: true
+        locales:
+          type: array
+          items:
+            type: string
+          readOnly: true
         time_limit_ms:
           type: integer
           maximum: 9223372036854775807
@@ -21451,6 +21763,8 @@ components:
       - languages
       - level
       - level_label
+      - locale
+      - locales
       - my_rating
       - my_verdict
       - rating
@@ -21625,6 +21939,41 @@ components:
         * `translation` - Tarjima xato
         * `duplicate` - Takroriy masala
         * `other` - Boshqa
+    ProblemTranslation:
+      type: object
+      description: One other language of a problem's text (ADR-0058); the locale is
+        in the URL.
+      properties:
+        locale:
+          allOf:
+          - $ref: '#/components/schemas/LocaleEnum'
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        statement:
+          type: string
+          description: Markdown + LaTeX
+        input_format:
+          type: string
+          description: Markdown + LaTeX
+        output_format:
+          type: string
+          description: Markdown + LaTeX
+        note:
+          type: string
+          description: Markdown + LaTeX
+        editorial:
+          type: string
+          description: Markdown + LaTeX
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - locale
+      - title
+      - updated_at
     Progress:
       type: object
       properties:
@@ -23343,7 +23692,7 @@ components:
           format: int64
         statement_locale:
           type: string
-          maxLength: 2
+          maxLength: 3
         difficulty:
           type: integer
           maximum: 3500

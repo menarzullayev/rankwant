@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import IntegrityError, models, transaction
 
@@ -182,7 +183,12 @@ class Problem(TimeStampedModel):
     note = models.TextField(blank=True, help_text="Markdown + LaTeX")
     #: Yechim tahlili. Yechmagan foydalanuvchiga spoyler sifatida yopiq.
     editorial = models.TextField(blank=True, help_text="Markdown + LaTeX")
-    statement_locale = models.CharField(max_length=2, default="uz")
+    #: The author's language; other languages are `ProblemTranslation` rows
+    #: (ADR-0058). Three characters: Karakalpak is `kaa`.
+    statement_locale = models.CharField(max_length=3, default="uz")
+    #: Every translation's title in search form, one per line (ADR-0058):
+    #: search matches it without joining the translations table.
+    translated_titles = models.TextField(blank=True, default="")
 
     difficulty = models.PositiveIntegerField(
         validators=[MinValueValidator(DIFFICULTY_MIN), MaxValueValidator(DIFFICULTY_MAX)],
@@ -630,6 +636,33 @@ class ReferenceSolution(UpdatedModel):
 
     def __str__(self) -> str:
         return f"etalon · {self.problem.slug}"
+
+
+class ProblemTranslation(TimeStampedModel):
+    """The statement in another language (ADR-0058).
+
+    The author's language lives on `Problem` itself; a row here is one other
+    language. An empty field falls back to the problem's own text, so a
+    partial translation never blanks a block.
+    """
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="translations")
+    locale = models.CharField(max_length=3, choices=settings.LANGUAGES)
+    title = models.CharField(max_length=200)
+    statement = models.TextField(blank=True, help_text="Markdown + LaTeX")
+    input_format = models.TextField(blank=True, help_text="Markdown + LaTeX")
+    output_format = models.TextField(blank=True, help_text="Markdown + LaTeX")
+    note = models.TextField(blank=True, help_text="Markdown + LaTeX")
+    editorial = models.TextField(blank=True, help_text="Markdown + LaTeX")
+
+    class Meta:
+        ordering: ClassVar = ["locale"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["problem", "locale"], name="problem_translation_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.problem_id}:{self.locale}"
 
 
 class Favourite(CreatedModel):

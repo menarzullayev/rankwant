@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2964 strings.**
+**2973 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1862,7 +1862,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.languageCodes` | uz / ru / en | uz / ru / en |  |
 | `admin.help.zeroAuto` | 0 = avtomatik | 0 = автоматтык |  |
 | `admin.help.upTo300Chars` | 300 belgigacha | 300 белгиге чейин |  |
-| `admin.help.twoLetterDefaultUz` | 2 harf, standart: uz | 2 тамга, демейки: uz |  |
+| `admin.help.localeDefaultUz` | Sayt tili kodi (uz, ru, kaa…), standart: uz | Сайт тилинин коду (uz, ru, kaa…), демейки: uz |  |
 | `admin.help.ownerRepo` | owner/repo | ээси/репозиторий |  |
 | `admin.text.eventFormStarted` | Forma boshlandi | Форма башталды |  |
 | `admin.text.eventRegisterDone` | Ro'yxatdan o'tdi | Катталды |  |
@@ -1937,6 +1937,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.testsCount` | Testlar ({count}) | Тесттер ({count}) |  |
 | `studio.tab.editorial` | Yechim tahlili | Чыгарылыштын талдоосу |  |
 | `studio.tab.review` | Ko'rik | Текшерүү |  |
+| `studio.tab.translations` | Tarjimalar | Котормолор |  |
+| `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Бул маселе азырынча {locale} тилинде жок — {shown} тилинде көрсөтүлүүдө. |  |
+| `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Маселенин тексти башка тилдерде. Которулбаган талаа окурманга түп нускадан көрсөтүлөт. |  |
+| `translation.base` | Asl til: {locale} | Түп нуска тили: {locale} |  |
+| `translation.none` | Tarjima yo'q | Котормо жок |  |
+| `translation.add` | Qo'shish | Кошуу |  |
+| `translation.edit` | Tahrirlash | Түзөтүү |  |
+| `translation.delete` | O'chirish | Өчүрүү |  |
+| `translation.deleteConfirm` | {locale} tarjimasi o'chirilsinmi? | {locale} котормосу өчүрүлсүнбү? |  |
 | `studio.field.title` | Nomi | Аталышы |  |
 | `studio.field.slug` | Manzil (slug) | Дарек (slug) |  |
 | `studio.field.slugHint` | Kichik lotin harflari, raqamlar va chiziqcha. Yaratilgandan keyin o'zgarmaydi. | Кичине латын тамгалары, сандар жана сызыкча. Түзүлгөндөн кийин өзгөрбөйт. |  |
