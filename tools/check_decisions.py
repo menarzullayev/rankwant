@@ -2954,6 +2954,24 @@ def pr_runs_decision_cases_for_changed_files() -> str | None:
     return None
 
 
+def monitor_watches_disk_and_commit() -> str | None:
+    """2026-11-10 (HITL): monitor C: bo'sh joyini va commit'ni ham kuzatadi.
+
+    O'sha kuni C: 20.7 \u2192 10.6 GB ga tushdi, commit 52.3 / 57.4 GB, Windows
+    \u00ablow virtual memory\u00bb yozdi va pagefile 25.6 GB ga o'sdi \u2014 monitor esa
+    har 5 daqiqada \u00abOK\u00bb dedi. Endi C: < 15 GB va commit \u2265 90% chegarasi
+    kesib o'tilganda va qaytganda bir martadan yoziladi, sababi bilan.
+    """
+    mon = read("tools/monitor.ps1")
+    if any(ord(c) > 127 for c in mon):
+        return "tools/monitor.ps1 ASCII emas \u2014 PowerShell 5.1 BOM'siz UTF-8 ni ANSI deb o'qiydi"
+    if "  try { Test-HostResources } catch {" not in mon:
+        return "tools/monitor.ps1: disk va commit tekshirilmaydi"
+    if "$diskMinFreeGB = 15\n" not in mon or "$commitMaxPct = 90\n" not in mon:
+        return "tools/monitor.ps1: chegaralar 15 GB / 90% emas"
+    return None
+
+
 def failed_containers_are_revived() -> str | None:
     """2026-11-10 (HITL): Docker ko'tara olmagan konteyner o'zi tiklanadi.
 
@@ -4968,6 +4986,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
+    ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
     ("CI paketlarni tez o'rnatadi", ci_installs_are_fast),

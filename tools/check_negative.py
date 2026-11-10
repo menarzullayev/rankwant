@@ -2076,6 +2076,91 @@ def monitor_precondition() -> str | None:
     return None
 
 
+def _run_monitor_resources(stubs: list[str]) -> tuple[int, list[str]]:
+    """Run the monitor once per stub in ONE work dir (the state file persists)."""
+    shell = _powershell()
+    if shell is None:
+        return 127, [POWERSHELL_MISSING]
+    outs: list[str] = []
+    with tempfile.TemporaryDirectory() as work:
+        for stub in stubs:
+            env = dict(os.environ)
+            env["MONITOR_HTTP_STUB"] = "public-web\t200\topen\npublic-api\t200\topen"
+            env["MONITOR_OWNER_STUB"] = "windows"
+            env["MONITOR_DRY_RUN"] = "1"
+            env["MONITOR_WORK_DIR"] = work
+            env["MONITOR_RESOURCE_STUB"] = stub
+            proc = subprocess.run(
+                [shell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(ROOT / "tools" / "monitor.ps1")],
+                cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env,
+            )
+            outs.append((proc.stdout or "") + (proc.stderr or ""))
+    return 0, outs
+
+
+_RES_OK = "50;20;57.4;vmmemWSL 10.0GB x1"
+_RES_DISK = "9.5;20;57.4;vmmemWSL 10.0GB x1"
+_RES_COMMIT = "50;54;57.4;vmmemWSL 10.0GB x1, node 9.9GB x88"
+
+
+def neg_monitor_low_disk_logged() -> tuple[bool, str]:
+    code, outs = _run_monitor_resources([_RES_DISK])
+    if code == 127:
+        return True, f"monitor/disk: {outs[0]}"
+    if "LOW DISK C: 9.5 GB free (< 15 GB)" not in outs[0]:
+        return False, f"monitor/disk: LOW DISK yozilmadi — {outs[0][-160:]}"
+    return True, "monitor/disk: 9.5 GB da LOW DISK yozildi"
+
+
+def neg_monitor_high_commit_names_top() -> tuple[bool, str]:
+    code, outs = _run_monitor_resources([_RES_COMMIT])
+    if code == 127:
+        return True, f"monitor/commit: {outs[0]}"
+    if "HIGH COMMIT" not in outs[0] or "node 9.9GB x88" not in outs[0]:
+        return False, f"monitor/commit: HIGH COMMIT yoki iste'molchilar yo'q — {outs[0][-160:]}"
+    return True, "monitor/commit: 94% da HIGH COMMIT va iste'molchilar yozildi"
+
+
+def neg_monitor_resources_quiet_when_fine() -> tuple[bool, str]:
+    # Positive control: a monitor that always warns would pass both cases above.
+    code, outs = _run_monitor_resources([_RES_OK])
+    if code == 127:
+        return True, f"monitor/sokin: {outs[0]}"
+    if "LOW DISK" in outs[0] or "HIGH COMMIT" in outs[0]:
+        return False, f"monitor/sokin: chegara ichida ogohlantirdi — {outs[0][-160:]}"
+    return True, "monitor/sokin: chegara ichida jim"
+
+
+def neg_monitor_resources_once_then_ok() -> tuple[bool, str]:
+    # Every 5 minutes the same state must not refill the log; leaving it is said once.
+    code, outs = _run_monitor_resources([_RES_DISK, _RES_DISK, _RES_OK])
+    if code == 127:
+        return True, f"monitor/bir marta: {outs[0]}"
+    if "LOW DISK" not in outs[0] or "LOW DISK" in outs[1] or "RESOURCES OK" not in outs[2]:
+        return False, "monitor/bir marta: holat o'zgarishi bir marta yozilmadi"
+    return True, "monitor/bir marta: kirish va chiqish bittadan"
+
+
+def neg_decisions_monitor_skips_resources() -> tuple[bool, str]:
+    """The monitor stops checking disk and commit."""
+    return _decision_broken(
+        "tools/monitor.ps1",
+        "  try { Test-HostResources } catch {",
+        "  try { } catch {",
+        "disk va commit tekshirilmaydi",
+    )
+
+
+def neg_decisions_monitor_not_ascii() -> tuple[bool, str]:
+    """A non-ASCII character in monitor.ps1 (PowerShell 5.1 reads it as ANSI)."""
+    return _decision_broken(
+        "tools/monitor.ps1",
+        "# Host resources: C: free space and commit charge",
+        "# Host resources: C: free space and commit charge \u00ab",
+        "ASCII emas",
+    )
+
+
 def neg_monitor_api_only_outage() -> tuple[bool, str]:
     """Sayt 200, API yiqiq — tutilsinmi?
 
@@ -8026,6 +8111,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "tools/monitor.ps1",
     "tools/check_negative.py",
     "tools/pr_update_queue.py",
     "tools/mods/deploy-panel/hooks/register.tsx",
@@ -11955,6 +12041,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 neg_monitor_app_down_is_not_restarted,
             ),
             ("handoff qoidasi saqlansin", neg_monitor_handoff_guard_holds),
+            ("past disk logga yoziladi", neg_monitor_low_disk_logged),
+            ("yuqori commit iste'molchilar bilan yoziladi", neg_monitor_high_commit_names_top),
+            ("chegara ichida jim (nazorat)", neg_monitor_resources_quiet_when_fine),
+            ("holat o'zgarishi bir marta yoziladi", neg_monitor_resources_once_then_ok),
+            ("monitor disk/commit tekshirmasa tutilsin", neg_decisions_monitor_skips_resources),
+            ("monitor.ps1 ASCII bo'lmasa tutilsin", neg_decisions_monitor_not_ascii),
         ],
     ),
     (
