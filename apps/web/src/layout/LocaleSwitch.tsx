@@ -152,16 +152,13 @@ export function LocaleSwitch() {
       // The alphabet changes the dictionary file itself, so the page is
       // loaded again rather than refreshed (ADR-0059).
       const wantOld = next === UZ_OLD;
+      let reload = false;
       if (next === UZ_OLD || next === ALPHABET_LOCALE) {
-        if (wantOld !== (alphabet === "old")) {
-          document.cookie = `rw_locale=${ALPHABET_LOCALE}; path=/; max-age=31536000; samesite=lax`;
-          document.cookie = alphabetCookieLine(wantOld ? OLD_ALPHABET : DEFAULT_ALPHABET);
-          announcePrefs({ locale: ALPHABET_LOCALE });
-          const url = new URL(window.location.href);
-          url.searchParams.delete(LOCALE_PARAM);
-          window.location.assign(url.toString());
-          return;
-        }
+        reload = wantOld !== (alphabet === "old");
+        if (reload)
+          document.cookie = alphabetCookieLine(
+            wantOld ? OLD_ALPHABET : DEFAULT_ALPHABET,
+          );
         next = ALPHABET_LOCALE;
       }
 
@@ -177,10 +174,19 @@ export function LocaleSwitch() {
       if (url.searchParams.has(LOCALE_PARAM)) {
         url.searchParams.delete(LOCALE_PARAM);
         const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+        if (reload) {
+          // A full load: the dictionary file differs (ADR-0059).
+          window.location.assign(url.toString());
+          return;
+        }
         startTransition(() => {
           router.replace(nextUrl as Route);
           router.refresh();
         });
+        return;
+      }
+      if (reload) {
+        window.location.reload();
         return;
       }
       startTransition(() => router.refresh());
