@@ -31,3 +31,12 @@ describe("dates are written in the site's zone", () => {
     expect(numericStamp("2026-01-05T19:00:00Z")).toBe("06.01.2026 00:00:00");
   });
 });
+
+describe("numericDate and numericTime (audit Q-16)", () => {
+  it("write digits only, in the site zone", async () => {
+    const { numericDate, numericTime } = await import("@rankwant/shared/format");
+    // 23:30 UTC is already the next day in Tashkent (UTC+5).
+    expect(numericDate("2026-10-06T23:30:00Z")).toBe("07.10.2026");
+    expect(numericTime("2026-10-06T09:56:31Z")).toBe("14:56");
+  });
+});

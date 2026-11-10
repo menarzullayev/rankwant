@@ -4038,6 +4038,16 @@ def neg_decisions_languages_panel_unmounted() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_client_date_in_locale() -> tuple[bool, str]:
+    """A client component imports the locale date helper again."""
+    return _decision_broken(
+        "apps/web/src/features/duels/components/DuelDetail.tsx",
+        'import { t } from "@/i18n/messages";',
+        'import { dateTime, t } from "@/i18n/messages";',
+        "klient komponent `dateTime` bilan sana yozadi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -10547,6 +10557,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),
             ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),
             ("tillar paneli chizilmasa tutilsin", neg_decisions_languages_panel_unmounted),
+            ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("judge yana privileged bo'lsa tutilsin", neg_decisions_judge_privileged_again),

@@ -1,5 +1,6 @@
 "use client";
 
+import { numericStamp, numericTime } from "@rankwant/shared/format";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -7,7 +8,7 @@ import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, t, time } from "@/i18n/messages";
+import { t } from "@/i18n/messages";
 import { getJson, type Duel } from "@/lib/api";
 
 /** Masalalar faqat ishtirokchiga va faqat boshlangach — sessiya kerak,
@@ -56,8 +57,8 @@ export function DuelDetail({ initial }: { initial: Duel }) {
           )}
         </div>
         <p className="mt-2 text-theme-xs rw-faint">
-          {dateTime(duel.start_at, locale)} —{" "}
-          {time(duel.end_at, locale)} ·{" "}
+          {numericStamp(duel.start_at)} —{" "}
+          {numericTime(duel.end_at)} ·{" "}
           {duel.problem_count} {t(locale, "duel.problems")} · ~{duel.difficulty}
         </p>
       </Card>

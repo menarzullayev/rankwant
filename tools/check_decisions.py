@@ -2490,6 +2490,30 @@ def function_harness_is_editable_by_staff() -> str | None:
     return None
 
 
+def client_dates_are_numeric() -> str | None:
+    """2026-11-10 (audit Q-16, L-01): klient komponent sanani raqam bilan yozadi.
+
+    `dateTime`/`date`/`time` lokal bo'yicha formatlaydi: Node'da `uz` ma'lumoti
+    bor, brauzerda yo'q — serverda chizilgan klient komponentda gidratsiya
+    xatosi (2026-10-06 o'lchangan). 15 ta klient komponent `numericStamp`,
+    `numericDate`, `numericTime` ga o'tdi; bu qoida qaytishini to'xtatadi.
+    """
+    import re as _re
+
+    pattern = _re.compile(r'import \{([^}]*)\} from "@/i18n/messages";')
+    for path in sorted((ROOT / "apps/web/src").rglob("*.tsx")):
+        text = path.read_text(encoding="utf-8")
+        if '"use client"' not in text:
+            continue
+        for match in pattern.finditer(text):
+            names = {n.strip() for n in match.group(1).split(",")}
+            bad = sorted(names & {"dateTime", "date", "time"})
+            if bad:
+                rel = path.relative_to(ROOT).as_posix()
+                return f"{rel}: klient komponent `{', '.join(bad)}` bilan sana yozadi — numericStamp/numericDate/numericTime"
+    return None
+
+
 def deploy_refuses_default_secrets() -> str | None:
     """2026-11-10 (HITL, audit Q-02): deploy standart yoki kuchsiz sir bilan to'xtaydi.
 
@@ -4135,6 +4159,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
+    ("klient komponent sanani raqam bilan yozadi", client_dates_are_numeric),
     ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
