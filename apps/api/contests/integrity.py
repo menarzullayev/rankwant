@@ -104,7 +104,8 @@ def report(contest: Contest) -> list[dict[str, Any]]:
     """Attempts whose signals stand out, the most flags first."""
     rows: list[dict[str, Any]] = []
     signals = (
-        AttemptSignal.objects.filter(contest=contest)
+        # The official run only: a virtual attempt comes after the end.
+        AttemptSignal.objects.filter(contest=contest, attempt__created_at__lt=contest.end_at)
         .select_related("user", "attempt", "attempt__problem")
         .order_by("attempt__created_at")
     )

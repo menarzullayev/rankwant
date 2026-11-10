@@ -24,8 +24,13 @@ export function useEditorSignals(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return;
     opened.current = Date.now();
+    // Switching tabs fires both `blur` and `visibilitychange`; one
+    // departure is counted once.
+    let last = 0;
     const away = () => {
-      stats.current.blurs += 1;
+      const now = Date.now();
+      if (now - last > 1000) stats.current.blurs += 1;
+      last = now;
     };
     const hidden = () => {
       if (document.visibilityState === "hidden") away();

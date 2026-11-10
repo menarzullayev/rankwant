@@ -112,6 +112,9 @@ class TestReport:
         url = f"/api/v1/contests/{contest.slug}/integrity/"
         assert as_user(judge).get(url).status_code == 400  # still running
         Contest.objects.filter(pk=contest.pk).update(end_at=timezone.now() - timedelta(minutes=1))
+        Attempt.objects.filter(contest=contest).update(
+            created_at=timezone.now() - timedelta(minutes=5)
+        )
         assert as_user(user).get(url).status_code == 403
         rows = as_user(judge).get(url).json()["results"]
         assert rows[0]["username"] == "ishtirokchi" and rows[0]["flags"] == ["pasted"]

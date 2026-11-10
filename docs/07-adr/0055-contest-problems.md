@@ -252,6 +252,10 @@ hisoboti shu sababli qurilmadi.
 - Chetlatishni bekor qilish yo'q (qo'lda, Django admin).
 - Qvant'ning musobaqa mukofoti (+30) qaytarilmaydi.
 - Signallar uchun saqlash muddati belgilanmagan.
+- Qayta hisoblash hamma ishtirokchiga natija bildirishnomasini yana yuboradi
+  va faollik lentasiga ikkinchi reyting yozuvi tushadi.
+- «Ochiq turgan vaqt» sahifa qayta yuklanganda noldan boshlanadi — «juda
+  tez» belgisi shunda yolg'on bo'lishi mumkin.
 - Ishtirokchilar o'zaro o'xshashligi va AI etalonlari bilan solishtirish —
   egasi tanlamadi; kerak bo'lsa alohida qaror.
 
