@@ -8,12 +8,14 @@ import { isForeignWord, toNewAlphabet, toOldAlphabet } from "@rankwant/shared/al
 // One set of cases for both converters (ADR-0059): the Python twin
 // (`apps/api/core/alphabet.py`) runs the same file.
 type Case = { old?: string; new: string; back?: string };
-const cases: Case[] = JSON.parse(
+const file = JSON.parse(
   readFileSync(
     fileURLToPath(new URL("../../../../packages/shared/src/alphabet-cases.json", import.meta.url)),
     "utf8",
   ),
-).cases;
+);
+const cases: Case[] = file.cases;
+const folds: { text: string; folded: string }[] = file.fold;
 
 describe("toNewAlphabet", () => {
   for (const c of cases.filter((item) => item.old !== undefined)) {
@@ -46,5 +48,12 @@ describe("search fold", () => {
     expect(foldText("Çiqiş maʼlumoti")).toBe("chiqish malumoti");
     const parts = highlight("Şart va çiqiş", "shart");
     expect(parts[0]).toEqual({ text: "Şart", hit: true });
+  });
+});
+
+describe("search fold, shared cases", () => {
+  it.each(folds)("$text", async ({ text, folded }) => {
+    const { foldText } = await import("@/lib/search/model");
+    expect(foldText(text)).toBe(folded);
   });
 });

@@ -41,3 +41,13 @@ def test_foreign_words(word: str) -> None:
 @pytest.mark.parametrize("word", ["Shart", "o'qish", "chiqish", "yig'indi", "SHARTLAR"])
 def test_uzbek_words(word: str) -> None:
     assert not is_foreign_word(word)
+
+
+FOLDS = json.loads(CASES_FILE.read_text(encoding="utf-8"))["fold"]
+
+
+@pytest.mark.parametrize("case", FOLDS, ids=lambda c: c["text"])
+def test_search_fold_matches_the_shared_cases(case: dict[str, str]) -> None:
+    from core.search import normalize_search
+
+    assert normalize_search(case["text"]) == case["folded"]

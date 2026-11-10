@@ -70,7 +70,9 @@ _PROTECTED = re.compile(
             r"\]\([^)\n]*\)",
             r"<[^<>\n]+>",
             r"\{[A-Za-z_][\w.]*\}",
-            r"\b[\w-]+\.[A-Za-z][A-Za-z0-9]{0,4}\b",
+            # A file name's extension is lower case: `Main.java`, not the
+            # `yechildi.Shu` of a missing space.
+            r"\b[\w-]+\.[a-z][a-z0-9]{0,4}\b",
         ]
     ),
     re.ASCII,
@@ -78,7 +80,7 @@ _PROTECTED = re.compile(
 
 _WORD = re.compile(f"[{_LETTER}]+(?:[{_APOS}][{_LETTER}]+)*[{_APOS}]?")
 _APOS_RE = re.compile(f"[{_APOS}]")
-_FOREIGN_LETTERS = re.compile(r"w|c(?!h)|oo|ee|th")
+_FOREIGN_LETTERS = re.compile(r"w|c|oo|ee|th")
 _NOT_UZBEK = re.compile(r"[^a-zöğşç]")
 _NOT_UZBEK_NEW = re.compile(r"[^a-zöğşçʼ'’ʻ‘`´]")
 
@@ -95,10 +97,13 @@ def is_foreign_word(word: str) -> bool:
     # A short all-caps word is an acronym: SSH, SHA, CPU.
     if 1 < len(bare) <= 4 and bare == bare.upper():
         return True
-    if _FOREIGN_LETTERS.search(lower):
+    # Letters are judged on the new spelling: `Qo'oq` is `qöoq`, not
+    # `qooq`, and every Uzbek `c` has become `ç`.
+    letters = _APOS_RE.sub("", _word_to_new(word)).lower()
+    if _FOREIGN_LETTERS.search(letters):
         return True
     # A letter Uzbek does not use (ü, ı, â, é, …) — Turkish, French, German.
-    return bool(_NOT_UZBEK.search(lower))
+    return bool(_NOT_UZBEK.search(letters))
 
 
 def _word_to_new(word: str) -> str:

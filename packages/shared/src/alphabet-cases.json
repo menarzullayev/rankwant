@@ -31,8 +31,19 @@
     {"old": "Cache va Check", "new": "Cache va Check"},
     {"old": "Python, TypeScript, Chrome", "new": "Python, TypeScript, Chrome"},
     {"old": "```\nprint('o'k', 'ch')\n```\nshu kod", "new": "```\nprint('o'k', 'ch')\n```\nşu kod", "back": "```\nprint('o'k', 'ch')\n```\nshu kod"},
+    {"old": "Masala yechildi.Shu sababli", "new": "Masala yeçildi.Şu sababli", "back": "Masala yechildi.Shu sababli"},
+    {"old": "Qo'oq shahri", "new": "Qöoq şahri", "back": "Qoʻoq shahri"},
     {"old": "Решение задачи", "new": "Решение задачи"},
     {"old": "u 'salom' dedi", "new": "u 'salom' dedi"},
     {"new": "Türkçe öğren", "back": "Türkçe oʻgʻren", "oneway": "new"}
+  ],
+  "_fold_comment": "The search fold (core.search.normalize_search and lib/search/model.ts foldText) on both alphabets.",
+  "fold": [
+    {"text": "O'zbekiston", "folded": "ozbekiston"},
+    {"text": "Özbekiston", "folded": "ozbekiston"},
+    {"text": "ÖZBEKISTON", "folded": "ozbekiston"},
+    {"text": "Çiqiş  maʼlumoti", "folded": "chiqish malumoti"},
+    {"text": "Yigʻindi", "folded": "yigindi"},
+    {"text": "Şart", "folded": "shart"}
   ]
 }

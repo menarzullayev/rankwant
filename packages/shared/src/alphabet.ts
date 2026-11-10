@@ -77,7 +77,9 @@ const PROTECTED = new RegExp(
     "\\]\\([^)\\n]*\\)",
     "<[^<>\\n]+>",
     "\\{[A-Za-z_][\\w.]*\\}",
-    "\\b[\\w-]+\\.[A-Za-z][A-Za-z0-9]{0,4}\\b",
+    // A file name's extension is lower case: `Main.java`, not the
+    // `yechildi.Shu` of a missing space.
+    "\\b[\\w-]+\\.[a-z][a-z0-9]{0,4}\\b",
   ].join("|"),
   "g",
 );
@@ -96,9 +98,12 @@ export function isForeignWord(word: string): boolean {
   if (/\p{Ll}\p{Lu}/u.test(bare)) return true;
   // A short all-caps word is an acronym: SSH, SHA, CPU.
   if (bare.length <= 4 && bare.length > 1 && bare === bare.toUpperCase()) return true;
-  if (/w|c(?!h)|oo|ee|th/.test(lower)) return true;
+  // Letters are judged on the new spelling: `Qo'oq` is `qöoq`, not
+  // `qooq`, and every Uzbek `c` has become `ç`.
+  const letters = wordToNew(word).replace(new RegExp(`[${APOS}]`, "g"), "").toLowerCase();
+  if (/w|c|oo|ee|th/.test(letters)) return true;
   // A letter Uzbek does not use (ü, ı, â, é, …) — Turkish, French, German.
-  return /[^a-zöğşç]/.test(lower);
+  return /[^a-zöğşç]/.test(letters);
 }
 
 function wordToNew(word: string): string {
