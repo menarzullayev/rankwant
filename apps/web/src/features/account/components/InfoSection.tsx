@@ -170,7 +170,13 @@ export function DetailsCard() {
       });
       await reload();
     });
-    if (ok) clear();
+    if (ok) {
+      // Only what was sent is now saved: a choice changed while the request
+      // was out stays (an optimistic save does not lock the form).
+      setCountry((now) => (now === country ? null : now));
+      setRegion((now) => (now === region ? null : now));
+      setSites((now) => (now === sites ? null : now));
+    }
     return ok;
   }
 

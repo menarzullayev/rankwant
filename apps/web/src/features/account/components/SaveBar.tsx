@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/Button";
 import { Status } from "@/components/ui/Status";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
+import { useSession } from "@/context/SessionContext";
 import { isOn } from "@/lib/flags";
 import { shownDirty, startAll } from "../save-queue";
 
@@ -63,9 +64,13 @@ const SAVED_NOTICE_MS = 2500;
 export function SaveBarProvider({ children }: { children: React.ReactNode }) {
   const locale = useLocale();
   const toast = useToast();
+  const { reload } = useSession();
   const [slots, setSlots] = useState<Map<string, Slot>>(() => new Map());
   const [inFlight, setInFlight] = useState<ReadonlySet<string>>(() => new Set());
   const [notice, setNotice] = useState<Flight["notice"]>(null);
+  // Bumped on every optimistic save, so a second save restarts the
+  // "Saved" timer instead of inheriting the first one's remainder.
+  const [savedAt, setSavedAt] = useState(0);
   // Read when a save settles, possibly after this page has gone: a refusal
   // nobody can see on the page goes to the site-wide toast instead.
   const mounted = useRef(true);
@@ -84,7 +89,7 @@ export function SaveBarProvider({ children }: { children: React.ReactNode }) {
       SAVED_NOTICE_MS,
     );
     return () => window.clearTimeout(timer);
-  }, [notice]);
+  }, [notice, savedAt]);
 
   const flight = useMemo<Flight>(
     () => ({
@@ -93,6 +98,7 @@ export function SaveBarProvider({ children }: { children: React.ReactNode }) {
       start: (entries) => {
         setInFlight((current) => new Set([...current, ...entries.map(([id]) => id)]));
         setNotice("saved");
+        setSavedAt((n) => n + 1);
         void startAll(
           entries.map(([id, slot]) => ({ id, save: slot.save })),
           (id, ok) => {
@@ -110,11 +116,17 @@ export function SaveBarProvider({ children }: { children: React.ReactNode }) {
             if (!mounted.current || !registered.current.has(id))
               toast(t(locale, "settings.saveFailedGone"));
           },
+        ).then(
+          // The sections reload `/me/` after their own writes, in parallel,
+          // and those answers may land out of order — an early read would
+          // then show a saved value as unsaved. One read after the last
+          // write settles has the final word.
+          () => reload(),
         );
       },
       dismiss: () => setNotice(null),
     }),
-    [inFlight, notice, locale, toast],
+    [inFlight, notice, locale, toast, reload],
   );
 
   const registry = useMemo<Registry>(
