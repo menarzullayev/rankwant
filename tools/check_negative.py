@@ -5113,6 +5113,36 @@ def neg_decisions_video_on_judge_queue() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_class_opens_priced_course() -> tuple[bool, str]:
+    """A class enrols its students in a Qvant or paid course for free."""
+    return _decision_broken(
+        "apps/api/courses/teaching.py",
+        '    return course.is_published and course.access == Course.Access.FREE\n',
+        "    return course.is_published\n",
+        "sinf pullik yoki Qvant kursni ham ochadi",
+    )
+
+
+def neg_decisions_class_report_not_owner_only() -> tuple[bool, str]:
+    """Any member of the class reads every student's progress."""
+    return _decision_broken(
+        "apps/api/classroom/views.py",
+        '        """Each student\'s standing in the course given to the class."""\n        classroom = self.get_object()\n        if classroom.owner_id != request.user.pk:\n',
+        '        """Each student\'s standing in the course given to the class."""\n        classroom = self.get_object()\n        if False:\n',
+        "sinf egasidan boshqasi ham ko'radi",
+    )
+
+
+def neg_decisions_class_course_not_pending() -> tuple[bool, str]:
+    """A course given to the class never shows as pending work."""
+    return _decision_broken(
+        "apps/api/classroom/services.py",
+        '        or (assignment_id in courses and courses[assignment_id] not in finished)\n',
+        "        or False\n",
+        "belgisiga kirmaydi",
+    )
+
+
 def neg_decisions_qvant_price_unconfirmed() -> tuple[bool, str]:
     """A Qvant course takes whatever price it has, unconfirmed."""
     return _decision_broken(
@@ -8257,6 +8287,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/courses/serializers.py",
     "apps/api/courses/services.py",
     "apps/api/courses/review.py",
+    "apps/api/courses/teaching.py",
+    "apps/api/classroom/views.py",
+    "apps/api/classroom/services.py",
     "apps/api/qvant/ledger.py",
     "apps/api/courses/author_serializers.py",
     "apps/api/courses/hls.py",
@@ -12406,6 +12439,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("video kodlash judge navbatiga tushsa tutilsin", neg_decisions_video_on_judge_queue),
             ("Qvant narxi tasdiqsiz yechilsa tutilsin", neg_decisions_qvant_price_unconfirmed),
             ("sertifikat testsiz berilsa tutilsin", neg_decisions_certificate_without_quiz),
+            ("sinf pullik kursni tekin ochsa tutilsin", neg_decisions_class_opens_priced_course),
+            ("kurs hisoboti egasiz ochilsa tutilsin", neg_decisions_class_report_not_owner_only),
+            ("berilgan kurs kutilmasa tutilsin", neg_decisions_class_course_not_pending),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("qo'lda to'xtatilgan konteyner ko'tarilsa tutilsin", neg_decisions_revive_touches_manual_stops),
             ("watcher konteynerni tiklamasa tutilsin", neg_decisions_watcher_skips_revive),

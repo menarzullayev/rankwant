@@ -112,6 +112,14 @@ export type Assignment = {
   title: string;
   description: string;
   problems: string[];
+  /** A course given to the class (ADR-0056 part 8). */
+  course: AssignmentCourse | null;
   due_at: string | null;
   created_at: string;
+};
+export type AssignmentCourse = {
+  slug: string;
+  title: string;
+  access: string;
+  price_qvant: number;
 };

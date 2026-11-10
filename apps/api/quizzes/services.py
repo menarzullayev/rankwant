@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import TypedDict
 
 from django.db import transaction
@@ -85,11 +86,16 @@ def submit(user: User, quiz: Quiz, answers: dict[int, int]) -> tuple[QuizAttempt
 
 def best_percent(user: User, quiz: Quiz) -> int | None:
     """The user's best score on `quiz` in percent, or None if never taken."""
-    best = None
-    for score, total in QuizAttempt.objects.filter(user=user, quiz=quiz).values_list(
-        "score", "total"
-    ):
+    return best_percents([user.pk], quiz).get(user.pk)
+
+
+def best_percents(user_ids: Iterable[int], quiz: Quiz) -> dict[int, int]:
+    """Best score in percent per user; users who never took `quiz` are absent."""
+    best: dict[int, int] = {}
+    for user_id, score, total in QuizAttempt.objects.filter(
+        user_id__in=list(user_ids), quiz=quiz
+    ).values_list("user_id", "score", "total"):
         if total:
             percent = (100 * score) // total
-            best = percent if best is None else max(best, percent)
+            best[user_id] = max(best.get(user_id, percent), percent)
     return best

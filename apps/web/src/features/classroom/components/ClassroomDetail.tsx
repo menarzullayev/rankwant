@@ -2,10 +2,12 @@
 
 import { numericDate } from "@rankwant/shared/format";
 import { SignInGate } from "@/components/auth/SignInGate";
+import type { Route } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import {
   EmptyRow,
@@ -24,6 +26,16 @@ import {
   type Assignment,
   type ClassroomDetail as Detail,
 } from "@/lib/api";
+import { isOn } from "@/lib/flags";
+
+import { ClassCourseReport } from "./ClassCourseReport";
+import { CourseAssignForm } from "./CourseAssignForm";
+
+const ACCESS_KEYS: Record<string, string> = {
+  free: "course.access.free",
+  qvant: "course.access.qvant",
+  paid: "course.access.paid",
+};
 
 export function ClassroomDetail({ slug }: { slug: string }) {
   const locale = useLocale();
@@ -31,6 +43,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
   const [room, setRoom] = useState<Detail | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [missing, setMissing] = useState(false);
+  const [open, setOpen] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -51,6 +64,9 @@ export function ClassroomDetail({ slug }: { slug: string }) {
       </Card>
     );
   if (!room) return null;
+  // The owner's view carries the join code (ClassroomOwnerSerializer).
+  const owner = Boolean(room.join_code);
+  const coursesOpen = isOn("courses") || Boolean(user?.is_staff);
 
   return (
     <div className="space-y-6">
@@ -74,9 +90,28 @@ export function ClassroomDetail({ slug }: { slug: string }) {
         <ul className="divide-y rw-divide">
           {assignments.map((a) => (
             <li key={a.id} className="px-5 py-3">
-              <p className="font-medium rw-strong">{a.title}</p>
+              {/* A course given under its own name needs no second title. */}
+              {a.title !== a.course?.title && (
+                <p className="font-medium rw-strong">{a.title}</p>
+              )}
               {a.description && (
                 <p className="text-theme-sm rw-dim">{a.description}</p>
+              )}
+              {a.course && (
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/courses/${encodeURIComponent(a.course.slug)}` as Route}
+                    className="font-medium rw-accent-ink hover:underline"
+                  >
+                    {a.course.title}
+                  </Link>
+                  <Badge>{t(locale, ACCESS_KEYS[a.course.access] ?? "course.access.free")}</Badge>
+                  {a.course.access !== "free" && (
+                    <span className="text-theme-xs rw-dim">
+                      {t(locale, "classroom.course.pricedNote")}
+                    </span>
+                  )}
+                </div>
               )}
               <div className="mt-2 flex flex-wrap gap-2">
                 {a.problems.map((p) => (
@@ -94,6 +129,23 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                   </span>
                 )}
               </div>
+              {owner && a.course && (
+                <div className="mt-3 space-y-3">
+                  <Button
+                    variant="outline"
+                    aria-expanded={open === a.id}
+                    aria-controls={`class-course-${a.id}`}
+                    onClick={() => setOpen(open === a.id ? null : a.id)}
+                  >
+                    {t(locale, "classroom.course.progress")}
+                  </Button>
+                  {open === a.id && (
+                    <div id={`class-course-${a.id}`}>
+                      <ClassCourseReport slug={slug} assignmentId={a.id} />
+                    </div>
+                  )}
+                </div>
+              )}
             </li>
           ))}
           {assignments.length === 0 && (
@@ -103,6 +155,15 @@ export function ClassroomDetail({ slug }: { slug: string }) {
           )}
         </ul>
       </Card>
+
+      {owner && coursesOpen && (
+        <Card title={t(locale, "classroom.course.give")}>
+          <CourseAssignForm
+            slug={slug}
+            onCreated={(created) => setAssignments((rows) => [created, ...rows])}
+          />
+        </Card>
+      )}
 
       {room.members && (
         <Card title={t(locale, "classroom.members")} bodyClassName="p-0">

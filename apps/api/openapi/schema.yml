@@ -1065,6 +1065,12 @@ paths:
                 items:
                   $ref: '#/components/schemas/Assignment'
           description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+          description: ''
     post:
       operationId: classrooms_assignments_create
       description: PRD P2-2 — o'qituvchi sinfi.
@@ -1087,13 +1093,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Classroom'
+              $ref: '#/components/schemas/AssignmentCreate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Classroom'
+              $ref: '#/components/schemas/AssignmentCreate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Classroom'
+              $ref: '#/components/schemas/AssignmentCreate'
         required: true
       security:
       - bearerAuth: []
@@ -1106,6 +1112,41 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Assignment'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+          description: ''
+  /api/v1/classrooms/{slug}/assignments/{id}/course/:
+    get:
+      operationId: classrooms_assignments_course_retrieve
+      description: Each student's standing in the course given to the class.
+      summary: 'Sinfga berilgan kurs: o''quvchilar progressi'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassCourseReport'
           description: ''
   /api/v1/classrooms/{slug}/assignments/{id}/progress/:
     get:
@@ -14351,6 +14392,11 @@ components:
           items:
             type: string
           readOnly: true
+        course:
+          allOf:
+          - $ref: '#/components/schemas/AssignmentCourse'
+          nullable: true
+          readOnly: true
         due_at:
           type: string
           format: date-time
@@ -14360,9 +14406,53 @@ components:
           format: date-time
           readOnly: true
       required:
+      - course
       - created_at
       - id
       - problems
+      - title
+    AssignmentCourse:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        access:
+          type: string
+        price_qvant:
+          type: integer
+      required:
+      - access
+      - price_qvant
+      - slug
+      - title
+    AssignmentCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          default: ''
+        problems:
+          type: array
+          items:
+            type: string
+            pattern: ^[-a-zA-Z0-9_]+$
+        course:
+          oneOf:
+          - type: string
+            default: ''
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
       - title
     Attachment:
       type: object
@@ -14816,6 +14906,105 @@ components:
       - moderator
       - questions_left
       - results
+    ClassCourseLesson:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        kind:
+          type: string
+        is_required:
+          type: boolean
+      required:
+      - id
+      - is_required
+      - kind
+      - title
+    ClassCourseModule:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassCourseLesson'
+      required:
+      - id
+      - lessons
+      - title
+    ClassCourseReport:
+      type: object
+      properties:
+        course:
+          $ref: '#/components/schemas/AssignmentCourse'
+        has_final_quiz:
+          type: boolean
+        certificate_threshold:
+          type: integer
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassCourseModule'
+        students:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassCourseStudent'
+      required:
+      - certificate_threshold
+      - course
+      - has_final_quiz
+      - modules
+      - students
+    ClassCourseStudent:
+      type: object
+      properties:
+        username:
+          type: string
+        display_name:
+          type: string
+        enrolled:
+          type: boolean
+        done:
+          type: integer
+        total:
+          type: integer
+        percent:
+          type: integer
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        final_score:
+          type: integer
+          nullable: true
+        certificate:
+          type: string
+          nullable: true
+        last_activity:
+          type: string
+          format: date-time
+          nullable: true
+        lessons:
+          type: array
+          items:
+            type: integer
+      required:
+      - certificate
+      - completed_at
+      - display_name
+      - done
+      - enrolled
+      - final_score
+      - last_activity
+      - lessons
+      - percent
+      - total
+      - username
     Classroom:
       type: object
       properties:

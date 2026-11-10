@@ -64,12 +64,21 @@ class ClassroomMember(models.Model):
 
 
 class Assignment(CreatedModel):
-    """Uy vazifasi — sinfga berilgan masalalar to'plami."""
+    """Uy vazifasi — sinfga berilgan masalalar to'plami va/yoki kurs."""
 
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name="assignments")
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     problems = models.ManyToManyField("problems.Problem", related_name="assignments")
+    #: A course given to the class (ADR-0056 part 8). A free course enrols
+    #: every student; a Qvant or paid one is unlocked by each student.
+    course = models.ForeignKey(
+        "courses.Course",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="classroom_assignments",
+    )
     due_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:

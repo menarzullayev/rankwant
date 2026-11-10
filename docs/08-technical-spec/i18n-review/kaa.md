@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2889 strings.**
+**2910 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2910,3 +2910,24 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `cert.pdf` | PDF yuklab olish | PDF júklep alıw |  |
 | `error.course_qvant_insufficient` | Bu kurs uchun Qvant yetarli emas. | Bul kurs ushın Qvant jetkiliksiz. |  |
 | `error.course_price_changed` | Kurs narxi o'zgardi. Sahifani yangilab, yangi narxni tasdiqlang. | Kurs bahası ózgerdi. Betti jańalap, jańa bahanı tastıyıqlań. |  |
+| `classroom.course.give` | Kursni sinfga berish | Klasqa kurs beriw |  |
+| `classroom.course.pick` | Kurs tanlash | Kurs tańlaw |  |
+| `classroom.course.pickPlaceholder` | Ro'yxatdan tanlang | Dizimnen tańlań |  |
+| `classroom.course.name` | Topshiriq nomi | Tapsırma atı |  |
+| `classroom.course.due` | Muddat (ixtiyoriy) | Múddet (ıqtıyarlı) |  |
+| `classroom.course.submit` | Sinfga berish | Klasqa beriw |  |
+| `classroom.course.none` | Hali nashr qilingan kurs yo'q. | Házirshe járiyalanǵan kurs joq. |  |
+| `classroom.course.freeNote` | Bepul kurs: sinfdagi barcha o'quvchilar, keyin qo'shilganlar ham, kursga avtomatik yoziladi. | Biypul kurs: klastaǵı barlıq oqıwshılar, keyin qosılǵanlar da, kursqa avtomat túrde jazıladı. |  |
+| `classroom.course.pricedNote` | Bu kurs avtomatik ochilmaydi: har bir o'quvchi uni o'zi ochadi. | Bul kurs avtomat túrde ashılmaydı: hár bir oqıwshı onı ózi ashadı. |  |
+| `classroom.course.progress` | O'quvchilar progressi | Oqıwshılar progressi |  |
+| `classroom.course.enrolled` | {count} / {total} yozilgan | {count} / {total} jazılǵan |  |
+| `classroom.course.completed` | {count} ta tugatgan | {count} tamamladı |  |
+| `classroom.course.certificates` | {count} ta sertifikat | {count} sertifikat |  |
+| `classroom.course.notEnrolled` | Yozilmagan | Jazılmaǵan |  |
+| `classroom.course.noQuiz` | Yakuniy test topshirilmagan | Juwmaqlawshı test tapsırılmaǵan |  |
+| `classroom.course.lastActivity` | Oxirgi faollik: {date} | Sońǵı aktivlik: {date} |  |
+| `classroom.course.noStudents` | Sinfda hali o'quvchi yo'q. | Klasta házirshe oqıwshı joq. |  |
+| `classroom.course.optional` | ixtiyoriy | ıqtıyarlı |  |
+| `classroom.course.lessonDone` | bajarilgan | orınlanǵan |  |
+| `classroom.course.lessonOpen` | bajarilmagan | orınlanbaǵan |  |
+| `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Bul kurs tabılmadı yamasa ele járiyalanbaǵan. |  |

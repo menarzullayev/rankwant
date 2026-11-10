@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2889 strings.**
+**2910 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2910,3 +2910,24 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `cert.pdf` | PDF yuklab olish | Боргирии PDF |  |
 | `error.course_qvant_insufficient` | Bu kurs uchun Qvant yetarli emas. | Барои ин курс Qvant кифоя нест. |  |
 | `error.course_price_changed` | Kurs narxi o'zgardi. Sahifani yangilab, yangi narxni tasdiqlang. | Нархи курс тағйир ёфт. Саҳифаро нав карда, нархи навро тасдиқ кунед. |  |
+| `classroom.course.give` | Kursni sinfga berish | Ба синф курс додан |  |
+| `classroom.course.pick` | Kurs tanlash | Интихоби курс |  |
+| `classroom.course.pickPlaceholder` | Ro'yxatdan tanlang | Аз рӯйхат интихоб кунед |  |
+| `classroom.course.name` | Topshiriq nomi | Номи супориш |  |
+| `classroom.course.due` | Muddat (ixtiyoriy) | Мӯҳлат (ихтиёрӣ) |  |
+| `classroom.course.submit` | Sinfga berish | Ба синф додан |  |
+| `classroom.course.none` | Hali nashr qilingan kurs yo'q. | Ҳоло курси нашршуда нест. |  |
+| `classroom.course.freeNote` | Bepul kurs: sinfdagi barcha o'quvchilar, keyin qo'shilganlar ham, kursga avtomatik yoziladi. | Курси ройгон: ҳамаи хонандагони синф, инчунин онҳое ки баъдтар ҳамроҳ мешаванд, ба таври худкор сабт мешаванд. |  |
+| `classroom.course.pricedNote` | Bu kurs avtomatik ochilmaydi: har bir o'quvchi uni o'zi ochadi. | Ин курс худкор кушода намешавад: ҳар хонанда онро худаш мекушояд. |  |
+| `classroom.course.progress` | O'quvchilar progressi | Пешрафти хонандагон |  |
+| `classroom.course.enrolled` | {count} / {total} yozilgan | {count} / {total} сабтшуда |  |
+| `classroom.course.completed` | {count} ta tugatgan | {count} анҷом доданд |  |
+| `classroom.course.certificates` | {count} ta sertifikat | {count} сертификат |  |
+| `classroom.course.notEnrolled` | Yozilmagan | Сабт нашудааст |  |
+| `classroom.course.noQuiz` | Yakuniy test topshirilmagan | Тести ниҳоӣ супорида нашудааст |  |
+| `classroom.course.lastActivity` | Oxirgi faollik: {date} | Фаъолияти охирин: {date} |  |
+| `classroom.course.noStudents` | Sinfda hali o'quvchi yo'q. | Дар синф ҳоло хонанда нест. |  |
+| `classroom.course.optional` | ixtiyoriy | ихтиёрӣ |  |
+| `classroom.course.lessonDone` | bajarilgan | иҷрошуда |  |
+| `classroom.course.lessonOpen` | bajarilmagan | иҷронашуда |  |
+| `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Ин курс ёфт нашуд ё ҳоло нашр нашудааст. |  |

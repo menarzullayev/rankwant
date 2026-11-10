@@ -68,7 +68,9 @@ def pending_assignments(user: User) -> int:
     """Assignments a student still has work in: not past due, not all solved.
 
     Read from `UserSolvedProblem`, as `assignment_progress` is - an
-    assignment keeps no completion record of its own.
+    assignment keeps no completion record of its own. A course given to the
+    class is pending until the student's enrolment is complete (a priced
+    course the student has not unlocked yet is pending too).
     """
     from django.db.models import Q
     from django.utils import timezone
@@ -82,17 +84,30 @@ def pending_assignments(user: User) -> int:
             classroom__members__role=ClassroomMember.Role.STUDENT,
         )
         .filter(Q(due_at__isnull=True) | Q(due_at__gt=timezone.now()))
-        .values_list("pk", "problems__pk")
+        .values_list("pk", "problems__pk", "course_id")
     )
     wanted: dict[int, set[int]] = {}
-    for assignment_id, problem_id in rows:
+    courses: dict[int, int] = {}
+    for assignment_id, problem_id, course_id in rows:
         if problem_id is not None:
             wanted.setdefault(assignment_id, set()).add(problem_id)
-    if not wanted:
+        if course_id is not None:
+            courses[assignment_id] = course_id
+    if not wanted and not courses:
         return 0
     solved = set(
         UserSolvedProblem.objects.filter(
-            user=user, problem_id__in=set().union(*wanted.values())
+            user=user, problem_id__in=set().union(set(), *wanted.values())
         ).values_list("problem_id", flat=True)
     )
-    return sum(1 for problems in wanted.values() if problems - solved)
+    finished = set(
+        user.enrollments.filter(
+            course_id__in=set(courses.values()), completed_at__isnull=False
+        ).values_list("course_id", flat=True)
+    )
+    return sum(
+        1
+        for assignment_id in set(wanted) | set(courses)
+        if wanted.get(assignment_id, set()) - solved
+        or (assignment_id in courses and courses[assignment_id] not in finished)
+    )
