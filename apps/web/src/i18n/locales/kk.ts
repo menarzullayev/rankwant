@@ -2843,4 +2843,10 @@ export const kk: Record<MessageKey, string> = {
   "error.course_not_self_completed": "Есеп және тест сабақтары шешілгенде өзі аяқталады.",
   "error.course_qvant_required": "Бұл курс Qvant арқылы ашылады.",
   "error.course_payment_required": "Бұл курс ақылы.",
+  "notif.msg.course_review_requested.title": "Курсты тексеру сұралды — {course}",
+  "notif.msg.course_review_requested.body": "@{user} «{course}» курсын тексеруге жіберді.",
+  "notif.msg.course_published.title": "Курсыңыз жарияланды — {course}",
+  "notif.msg.course_published.body": "«{course}» енді курстар каталогында.",
+  "notif.msg.course_returned.title": "Курс қайтарылды — {course}",
+  "notif.msg.course_returned.body": "Қызметкер ескертпесі: {reason}",
 };

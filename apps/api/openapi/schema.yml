@@ -6675,6 +6675,156 @@ paths:
               schema:
                 type: object
           description: ''
+  /api/v1/staff/courses/:
+    get:
+      operationId: staff_courses_list
+      description: 'Staff-content: the review queue (`?review=1`), price and publishing.'
+      summary: kurslar (xodim) ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffCourseList'
+          description: ''
+  /api/v1/staff/courses/{slug}/:
+    get:
+      operationId: staff_courses_retrieve
+      description: 'Staff-content: the review queue (`?review=1`), price and publishing.'
+      summary: Bitta kurs (xodim)
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffCourse'
+          description: ''
+    patch:
+      operationId: staff_courses_partial_update
+      description: 'Staff-content: the review queue (`?review=1`), price and publishing.'
+      summary: kurs (xodim)ni qisman yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffCourse'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffCourse'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffCourse'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffCourse'
+          description: ''
+  /api/v1/staff/courses/{slug}/publish/:
+    post:
+      operationId: staff_courses_publish_create
+      description: 'Staff-content: the review queue (`?review=1`), price and publishing.'
+      summary: Kursni nashr qilish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffCourse'
+          description: ''
+  /api/v1/staff/courses/{slug}/send-back/:
+    post:
+      operationId: staff_courses_send_back_create
+      description: Return a draft to its authors with the reason.
+      summary: Kursni muallifga qaytarish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Return'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Return'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Return'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffCourse'
+          description: ''
   /api/v1/staff/duels/:
     get:
       operationId: staff_duels_list
@@ -11572,6 +11722,542 @@ paths:
                 items:
                   $ref: '#/components/schemas/DailyStats'
           description: ''
+  /api/v1/studio/courses/:
+    get:
+      operationId: studio_courses_list
+      summary: kurs qoralamalari ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudioCourseList'
+          description: ''
+    post:
+      operationId: studio_courses_create
+      summary: Yangi kurs qoralamasi yaratish
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudioCourseCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudioCourseCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudioCourseCreate'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioCourse'
+          description: ''
+  /api/v1/studio/courses/{course_slug}/lessons/:
+    post:
+      operationId: studio_courses_lessons_create
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: Yangi kurs darsi yaratish
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudioLesson'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudioLesson'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudioLesson'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioLesson'
+          description: ''
+  /api/v1/studio/courses/{course_slug}/lessons/{id}/:
+    patch:
+      operationId: studio_courses_lessons_partial_update
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: kurs darsini qisman yangilash
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this lesson.
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioLesson'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioLesson'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioLesson'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioLesson'
+          description: ''
+    delete:
+      operationId: studio_courses_lessons_destroy
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: kurs darsini o'chirish
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this lesson.
+        required: true
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/studio/courses/{course_slug}/modules/:
+    post:
+      operationId: studio_courses_modules_create
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: Yangi kurs moduli yaratish
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudioModule'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudioModule'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudioModule'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioModule'
+          description: ''
+  /api/v1/studio/courses/{course_slug}/modules/{id}/:
+    patch:
+      operationId: studio_courses_modules_partial_update
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: kurs modulini qisman yangilash
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this module.
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioModule'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioModule'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioModule'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioModule'
+          description: ''
+    delete:
+      operationId: studio_courses_modules_destroy
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: kurs modulini o'chirish
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this module.
+        required: true
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/studio/courses/{course_slug}/sections/:
+    post:
+      operationId: studio_courses_sections_create
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: Yangi kurs bo'limi yaratish
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudioSection'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudioSection'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudioSection'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioSection'
+          description: ''
+  /api/v1/studio/courses/{course_slug}/sections/{id}/:
+    patch:
+      operationId: studio_courses_sections_partial_update
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: kurs bo'limini qisman yangilash
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this section.
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioSection'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioSection'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioSection'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioSection'
+          description: ''
+    delete:
+      operationId: studio_courses_sections_destroy
+      description: |-
+        Modules, sections and lessons of one course in the studio.
+
+        Every write is structure: open to the author while the course is
+        unpublished, to staff-content always.
+      summary: kurs bo'limini o'chirish
+      parameters:
+      - in: path
+        name: course_slug
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this section.
+        required: true
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/studio/courses/{slug}/:
+    get:
+      operationId: studio_courses_retrieve
+      summary: Bitta kurs qoralamasi
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioCourse'
+          description: ''
+    patch:
+      operationId: studio_courses_partial_update
+      summary: kurs qoralamasini qisman yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioCourse'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioCourse'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudioCourse'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioCourse'
+          description: ''
+    delete:
+      operationId: studio_courses_destroy
+      summary: kurs qoralamasini o'chirish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/studio/courses/{slug}/review/:
+    post:
+      operationId: studio_courses_review_create
+      description: Ask staff-content to review. Asking twice tells them once.
+      summary: Kursni xodim ko'rigiga yuborish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - studio
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioCourse'
+          description: ''
+  /api/v1/studio/courses/{slug}/text/:
+    post:
+      operationId: studio_courses_text_create
+      description: |-
+        Write one translation of the course or one of its parts.
+
+        Allowed on a published course too: text goes live at once. Clearing
+        every field of a non-base translation removes it.
+      summary: Kurs matnini yozish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - studio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudioText'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudioText'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudioText'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudioCourse'
+          description: ''
   /api/v1/team/:
     get:
       operationId: team_retrieve
@@ -13894,6 +14580,16 @@ components:
       required:
       - message
       - scope
+    ContentLocaleEnum:
+      enum:
+      - uz
+      - ru
+      - en
+      type: string
+      description: |-
+        * `uz` - uz
+        * `ru` - ru
+        * `en` - en
     Contest:
       type: object
       properties:
@@ -14310,6 +15006,31 @@ components:
         * `beginner` - Beginner
         * `intermediate` - Intermediate
         * `advanced` - Advanced
+    CourseText:
+      type: object
+      properties:
+        locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        description:
+          type: string
+          description: Markdown + LaTeX
+        outcomes:
+          type: string
+          description: What the learner will be able to do; one per line.
+        requirements:
+          type: string
+          description: One per line.
+        audience:
+          type: string
+      required:
+      - locale
+      - title
     Crew:
       type: object
       description: Who prepared the contest — told on its page, always (ADR-0055,
@@ -15460,6 +16181,20 @@ components:
       - state
       - title
       - video_seconds
+    LessonText:
+      type: object
+      properties:
+        locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          description: Markdown + LaTeX
+      required:
+      - locale
+      - title
     LessonVideo:
       type: object
       properties:
@@ -15893,6 +16628,17 @@ components:
       - id
       - reward_qvant
       - sections
+      - title
+    ModuleText:
+      type: object
+      properties:
+        locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        title:
+          type: string
+          maxLength: 200
+      required:
+      - locale
       - title
     MyCourse:
       type: object
@@ -16873,6 +17619,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffContestProblem'
+    PaginatedStaffCourseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffCourse'
     PaginatedStaffDuelList:
       type: object
       required:
@@ -17425,6 +18194,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Standing'
+    PaginatedStudioCourseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioCourse'
     PaginatedSubmissionList:
       type: object
       required:
@@ -18170,6 +18962,98 @@ components:
             description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
               only.
           readOnly: true
+    PatchedStaffCourse:
+      type: object
+      description: 'Staff set what authors may not: access, price and the course reward.'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        base_locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        level:
+          $ref: '#/components/schemas/CourseLevelEnum'
+        sequential:
+          type: boolean
+          description: A lesson opens only after the previous required one is done.
+        certificate_threshold:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Final quiz score, in percent, needed for the certificate.
+        final_quiz:
+          type: string
+          nullable: true
+        cover_url:
+          type: string
+          maxLength: 500
+        access:
+          $ref: '#/components/schemas/AccessEnum'
+        price_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        price_uzs:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: One-time price in UZS.
+        reward_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Paid once when the course is completed.
+        is_published:
+          type: boolean
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        review_requested_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        status:
+          type: string
+          description: '`published`, `review` or `draft`.'
+          readOnly: true
+        gaps:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        structure_open:
+          type: boolean
+          readOnly: true
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseText'
+          readOnly: true
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioModule'
+          readOnly: true
+        authors:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+          readOnly: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
     PatchedStaffHackathon:
       type: object
       properties:
@@ -19070,6 +19954,182 @@ components:
           readOnly: true
           nullable: true
           title: Oxirgi kirish
+    PatchedStudioCourse:
+      type: object
+      description: 'The studio''s course: settings, texts, tree and review state.'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        base_locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        level:
+          $ref: '#/components/schemas/CourseLevelEnum'
+        sequential:
+          type: boolean
+          description: A lesson opens only after the previous required one is done.
+        certificate_threshold:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Final quiz score, in percent, needed for the certificate.
+        final_quiz:
+          type: string
+          nullable: true
+        cover_url:
+          type: string
+          maxLength: 500
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AccessEnum'
+          readOnly: true
+        price_qvant:
+          type: integer
+          readOnly: true
+        price_uzs:
+          type: integer
+          readOnly: true
+          description: One-time price in UZS.
+        reward_qvant:
+          type: integer
+          readOnly: true
+          description: Paid once when the course is completed.
+        is_published:
+          type: boolean
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        review_requested_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        status:
+          type: string
+          description: '`published`, `review` or `draft`.'
+          readOnly: true
+        gaps:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        structure_open:
+          type: boolean
+          readOnly: true
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseText'
+          readOnly: true
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioModule'
+          readOnly: true
+    PatchedStudioLesson:
+      type: object
+      description: |-
+        A lesson's structure. Completeness (a problem lesson has a problem…)
+        is the review's job, so a half-built lesson can be saved.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        section:
+          type: integer
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        kind:
+          $ref: '#/components/schemas/LessonKindEnum'
+        is_required:
+          type: boolean
+        is_preview:
+          type: boolean
+          description: Open to visitors who have not enrolled (never a paid video).
+        problem:
+          type: string
+          nullable: true
+        quiz:
+          type: string
+          nullable: true
+        quiz_pass_percent:
+          type: integer
+          maximum: 100
+          minimum: 1
+        video_provider:
+          oneOf:
+          - $ref: '#/components/schemas/VideoProviderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        video_ref:
+          type: string
+          maxLength: 200
+        video_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonText'
+          readOnly: true
+    PatchedStudioModule:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        reward_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Paid once when the module is completed.
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModuleText'
+          readOnly: true
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioSection'
+          readOnly: true
+    PatchedStudioSection:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        module:
+          type: integer
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectionText'
+          readOnly: true
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioLesson'
+          readOnly: true
     PolicyEnum:
       enum:
       - contest_room
@@ -20040,6 +21100,14 @@ components:
           default: false
       required:
       - start_at
+    Return:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+      - reason
     ReviewItem:
       type: object
       properties:
@@ -20506,6 +21574,17 @@ components:
       required:
       - id
       - lessons
+      - title
+    SectionText:
+      type: object
+      properties:
+        locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        title:
+          type: string
+          maxLength: 200
+      required:
+      - locale
       - title
     ShirtSizeEnum:
       enum:
@@ -21003,6 +22082,109 @@ components:
             $ref: '#/components/schemas/StaffContestProblem'
       required:
       - problems
+    StaffCourse:
+      type: object
+      description: 'Staff set what authors may not: access, price and the course reward.'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        base_locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        level:
+          $ref: '#/components/schemas/CourseLevelEnum'
+        sequential:
+          type: boolean
+          description: A lesson opens only after the previous required one is done.
+        certificate_threshold:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Final quiz score, in percent, needed for the certificate.
+        final_quiz:
+          type: string
+          nullable: true
+        cover_url:
+          type: string
+          maxLength: 500
+        access:
+          $ref: '#/components/schemas/AccessEnum'
+        price_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        price_uzs:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: One-time price in UZS.
+        reward_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Paid once when the course is completed.
+        is_published:
+          type: boolean
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        review_requested_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        status:
+          type: string
+          description: '`published`, `review` or `draft`.'
+          readOnly: true
+        gaps:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        structure_open:
+          type: boolean
+          readOnly: true
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseText'
+          readOnly: true
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioModule'
+          readOnly: true
+        authors:
+          type: array
+          items:
+            type: string
+            description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+              only.
+          readOnly: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - authors
+      - gaps
+      - is_published
+      - modules
+      - published_at
+      - review_requested_at
+      - slug
+      - status
+      - structure_open
+      - texts
     StaffDuel:
       type: object
       description: |-
@@ -22489,6 +23671,264 @@ components:
       required:
       - user_title
       - username
+    StudioCourse:
+      type: object
+      description: 'The studio''s course: settings, texts, tree and review state.'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        base_locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        level:
+          $ref: '#/components/schemas/CourseLevelEnum'
+        sequential:
+          type: boolean
+          description: A lesson opens only after the previous required one is done.
+        certificate_threshold:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Final quiz score, in percent, needed for the certificate.
+        final_quiz:
+          type: string
+          nullable: true
+        cover_url:
+          type: string
+          maxLength: 500
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AccessEnum'
+          readOnly: true
+        price_qvant:
+          type: integer
+          readOnly: true
+        price_uzs:
+          type: integer
+          readOnly: true
+          description: One-time price in UZS.
+        reward_qvant:
+          type: integer
+          readOnly: true
+          description: Paid once when the course is completed.
+        is_published:
+          type: boolean
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        review_requested_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        status:
+          type: string
+          description: '`published`, `review` or `draft`.'
+          readOnly: true
+        gaps:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        structure_open:
+          type: boolean
+          readOnly: true
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseText'
+          readOnly: true
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioModule'
+          readOnly: true
+      required:
+      - access
+      - gaps
+      - is_published
+      - modules
+      - price_qvant
+      - price_uzs
+      - published_at
+      - review_requested_at
+      - reward_qvant
+      - slug
+      - status
+      - structure_open
+      - texts
+    StudioCourseCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        slug:
+          oneOf:
+          - type: string
+            maxLength: 100
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        base_locale:
+          allOf:
+          - $ref: '#/components/schemas/ContentLocaleEnum'
+          default: uz
+        level:
+          allOf:
+          - $ref: '#/components/schemas/CourseLevelEnum'
+          default: beginner
+      required:
+      - title
+    StudioLesson:
+      type: object
+      description: |-
+        A lesson's structure. Completeness (a problem lesson has a problem…)
+        is the review's job, so a half-built lesson can be saved.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        section:
+          type: integer
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        kind:
+          $ref: '#/components/schemas/LessonKindEnum'
+        is_required:
+          type: boolean
+        is_preview:
+          type: boolean
+          description: Open to visitors who have not enrolled (never a paid video).
+        problem:
+          type: string
+          nullable: true
+        quiz:
+          type: string
+          nullable: true
+        quiz_pass_percent:
+          type: integer
+          maximum: 100
+          minimum: 1
+        video_provider:
+          oneOf:
+          - $ref: '#/components/schemas/VideoProviderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        video_ref:
+          type: string
+          maxLength: 200
+        video_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonText'
+          readOnly: true
+      required:
+      - id
+      - section
+      - texts
+    StudioModule:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        reward_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Paid once when the module is completed.
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModuleText'
+          readOnly: true
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioSection'
+          readOnly: true
+      required:
+      - id
+      - sections
+      - texts
+    StudioSection:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        module:
+          type: integer
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        texts:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectionText'
+          readOnly: true
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudioLesson'
+          readOnly: true
+      required:
+      - id
+      - lessons
+      - module
+      - texts
+    StudioText:
+      type: object
+      description: One translation of one part of the course.
+      properties:
+        target:
+          $ref: '#/components/schemas/TargetEnum'
+        id:
+          type: integer
+        locale:
+          $ref: '#/components/schemas/ContentLocaleEnum'
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        description:
+          type: string
+        outcomes:
+          type: string
+        requirements:
+          type: string
+        audience:
+          type: string
+        body:
+          type: string
+      required:
+      - locale
+      - target
     Submission:
       type: object
       properties:
@@ -22685,6 +24125,18 @@ components:
       - locale
       - title
       - updated_at
+    TargetEnum:
+      enum:
+      - course
+      - module
+      - section
+      - lesson
+      type: string
+      description: |-
+        * `course` - course
+        * `module` - module
+        * `section` - section
+        * `lesson` - lesson
     TaskKindEnum:
       enum:
       - program
@@ -23540,6 +24992,16 @@ components:
         * `TESTING_ABORTED` - Tekshiruv bekor qilindi
         * `RATE_LIMITED` - Submit limiti
         * `DENIAL_OF_JUDGEMENT` - Infra nosozligi
+    VideoProviderEnum:
+      enum:
+      - youtube
+      - vimeo
+      - hls
+      type: string
+      description: |-
+        * `youtube` - YouTube
+        * `vimeo` - Vimeo
+        * `hls` - HLS (R2)
     Vote:
       type: object
       properties:

@@ -108,7 +108,8 @@ qisqartiriladi; har PR o'z testlari va salbiy testlari bilan.
 | 1 | Modellar, tarjimalar, kirish turi, bayroq, admin |
 | 2 | Ommaviy API: katalog, kurs, dars, yozilish, progress, ketma-ket ochilish |
 | 3 | Web: katalog, kurs va dars sahifalari |
-| 4 | Studio mualliflik va xodim ko'rigi |
+| 4a | Studio API: muallif yuzasi, xodim ko'rigi, bildirishnomalar |
+| 4b | Web: studio muharriri va xodim sahifasi |
 | 5 | Video: YouTube/Vimeo embed, R2 + HLS kodlash va imzolangan havolalar |
 | 6 | Sertifikat, Qvant mukofoti, Qvant bilan ochish |
 | 7 | Xarid, 3 tarif, Payme/Click (sinov rejimi) |
@@ -143,6 +144,23 @@ o'chiq bo'lsa **404** beradi (`check_decisions` qo'riqlaydi). Bo'lim
 havola — o'rnatilgan pleyer va CSP 5-qismda. ⚠️ **Yon menyuga band
 qo'shilmadi**: «21 band / 5 guruh» egasining qarori (2026-09-19), kurslar
 bandi bayroq ochilganda alohida so'raladi. Sitemap'ga ham hali kirmaydi.
+
+**4a-qism qanday qurildi** (egasi qarorlari 2026-11-10, uchalasi CTO
+tavsiyasi — [qaror yozuvi](../decisions/2026-11-10-courses-studio.md)).
+Muallif yuzasi `studio/courses/` da (`courses/mine/` ommaviy
+`courses/<slug>/` bilan to'qnashardi): kurs sozlamalari, har tarjima
+(`text` amali — kurs, modul, bo'lim yoki dars, bitta yo'l) va daraxt
+(`modules/`, `sections/`, `lessons/`). Har kim 3 tagacha nashr qilinmagan
+kurs yozadi; **matn har doim darhol** chiqadi, **tuzilma va sozlamalar**
+nashrdan keyin faqat staff-content'niki; kirish turi, narx va Qvant
+mukofotlari faqat xodimniki. Chala darsni saqlash mumkin — to'liqlikni
+ko'rik tekshiradi: «ko'rikka yuborish» yetishmayotganlarni barqaror kod
+bilan aytadi (`title`, `summary`, `lessons`, `lesson_title`, `lesson_text`,
+`lesson_problem`, `lesson_quiz`, `lesson_video`). Xodim `staff/courses/`
+da navbatni (`?review=1`) ko'radi, narx qo'yadi, «nashr qilish» yoki sabab
+bilan «qaytarish»; ikkala yo'nalishda bildirishnoma (`course_review_requested`,
+`course_published`, `course_returned`). Pullik qilishda har video R2 (HLS)
+da bo'lishi talab qilinadi.
 
 ## 4. Ochiq qolganlar
 

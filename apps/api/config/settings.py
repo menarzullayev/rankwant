@@ -377,6 +377,10 @@ SPECTACULAR_SETTINGS = {
         # Courses (ADR-0056): `level` and `kind` already exist elsewhere.
         "CourseLevelEnum": "courses.models.Course.Level",
         "LessonKindEnum": "courses.models.Lesson.Kind",
+        # Course text languages (`courses.models.CONTENT_LOCALES`).
+        "ContentLocaleEnum": ["uz", "ru", "en"],
+        # The site languages keep the name they had before course languages came.
+        "LocaleEnum": "core.models.User.Locale",
         # The client log keeps the name it had before courses brought a second `level`.
         "LevelEnum": ["debug", "info", "warn", "error"],
     },

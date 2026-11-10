@@ -25,6 +25,17 @@
   "contest_tester": [
     "contest"
   ],
+  "course_published": [
+    "course"
+  ],
+  "course_returned": [
+    "course",
+    "reason"
+  ],
+  "course_review_requested": [
+    "course",
+    "user"
+  ],
   "duel_accepted": [
     "duel",
     "start_at",

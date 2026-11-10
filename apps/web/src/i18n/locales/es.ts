@@ -2842,4 +2842,10 @@ export const es: Record<MessageKey, string> = {
   "error.course_not_self_completed": "Las lecciones de problema y de test se completan al resolverlas.",
   "error.course_qvant_required": "Este curso se abre con Qvant.",
   "error.course_payment_required": "Este curso es de pago.",
+  "notif.msg.course_review_requested.title": "Revisión de curso solicitada — {course}",
+  "notif.msg.course_review_requested.body": "@{user} envió el curso «{course}» a revisión.",
+  "notif.msg.course_published.title": "Tu curso está publicado — {course}",
+  "notif.msg.course_published.body": "«{course}» ya está en el catálogo de cursos.",
+  "notif.msg.course_returned.title": "Curso devuelto — {course}",
+  "notif.msg.course_returned.body": "Nota del equipo: {reason}",
 };

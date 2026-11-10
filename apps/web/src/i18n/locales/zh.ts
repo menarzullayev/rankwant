@@ -2839,4 +2839,10 @@ export const zh: Record<MessageKey, string> = {
   "error.course_not_self_completed": "题目课和测验课在你解出或通过后自动完成。",
   "error.course_qvant_required": "此课程需用 Qvant 解锁。",
   "error.course_payment_required": "此课程为付费课程。",
+  "notif.msg.course_review_requested.title": "课程审核申请 — {course}",
+  "notif.msg.course_review_requested.body": "@{user} 已将课程“{course}”提交审核。",
+  "notif.msg.course_published.title": "你的课程已发布 — {course}",
+  "notif.msg.course_published.body": "“{course}”现已进入课程目录。",
+  "notif.msg.course_returned.title": "课程已退回 — {course}",
+  "notif.msg.course_returned.body": "工作人员备注：{reason}",
 };

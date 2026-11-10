@@ -2893,6 +2893,12 @@ export const uz = {
   "error.course_not_self_completed": "Masala va test darslari yechilganda o'zi tugaydi.",
   "error.course_qvant_required": "Bu kurs Qvant bilan ochiladi.",
   "error.course_payment_required": "Bu kurs pullik.",
+  "notif.msg.course_review_requested.title": "Kurs ko'rigi so'raldi — {course}",
+  "notif.msg.course_review_requested.body": "@{user} «{course}» kursini ko'rikka yubordi.",
+  "notif.msg.course_published.title": "Kursingiz nashr qilindi — {course}",
+  "notif.msg.course_published.body": "«{course}» endi kurslar katalogida.",
+  "notif.msg.course_returned.title": "Kurs qaytarildi — {course}",
+  "notif.msg.course_returned.body": "Xodim izohi: {reason}",
 } as const;
 
 export type MessageKey = keyof typeof uz;

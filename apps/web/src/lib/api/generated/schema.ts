@@ -3741,6 +3741,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/staff/courses/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * kurslar (xodim) ro'yxati
+         * @description Staff-content: the review queue (`?review=1`), price and publishing.
+         */
+        get: operations["staff_courses_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/courses/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Bitta kurs (xodim)
+         * @description Staff-content: the review queue (`?review=1`), price and publishing.
+         */
+        get: operations["staff_courses_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * kurs (xodim)ni qisman yangilash
+         * @description Staff-content: the review queue (`?review=1`), price and publishing.
+         */
+        patch: operations["staff_courses_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/staff/courses/{slug}/publish/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kursni nashr qilish
+         * @description Staff-content: the review queue (`?review=1`), price and publishing.
+         */
+        post: operations["staff_courses_publish_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/courses/{slug}/send-back/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kursni muallifga qaytarish
+         * @description Return a draft to its authors with the reason.
+         */
+        post: operations["staff_courses_send_back_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/staff/duels/": {
         parameters: {
             query?: never;
@@ -5323,6 +5407,245 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/studio/courses/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** kurs qoralamalari ro'yxati */
+        get: operations["studio_courses_list"];
+        put?: never;
+        /** Yangi kurs qoralamasi yaratish */
+        post: operations["studio_courses_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{course_slug}/lessons/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Yangi kurs darsi yaratish
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        post: operations["studio_courses_lessons_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{course_slug}/lessons/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * kurs darsini o'chirish
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        delete: operations["studio_courses_lessons_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * kurs darsini qisman yangilash
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        patch: operations["studio_courses_lessons_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{course_slug}/modules/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Yangi kurs moduli yaratish
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        post: operations["studio_courses_modules_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{course_slug}/modules/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * kurs modulini o'chirish
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        delete: operations["studio_courses_modules_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * kurs modulini qisman yangilash
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        patch: operations["studio_courses_modules_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{course_slug}/sections/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Yangi kurs bo'limi yaratish
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        post: operations["studio_courses_sections_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{course_slug}/sections/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * kurs bo'limini o'chirish
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        delete: operations["studio_courses_sections_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * kurs bo'limini qisman yangilash
+         * @description Modules, sections and lessons of one course in the studio.
+         *
+         *     Every write is structure: open to the author while the course is
+         *     unpublished, to staff-content always.
+         */
+        patch: operations["studio_courses_sections_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitta kurs qoralamasi */
+        get: operations["studio_courses_retrieve"];
+        put?: never;
+        post?: never;
+        /** kurs qoralamasini o'chirish */
+        delete: operations["studio_courses_destroy"];
+        options?: never;
+        head?: never;
+        /** kurs qoralamasini qisman yangilash */
+        patch: operations["studio_courses_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{slug}/review/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kursni xodim ko'rigiga yuborish
+         * @description Ask staff-content to review. Asking twice tells them once.
+         */
+        post: operations["studio_courses_review_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studio/courses/{slug}/text/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kurs matnini yozish
+         * @description Write one translation of the course or one of its parts.
+         *
+         *     Allowed on a published course too: text goes live at once. Clearing
+         *     every field of a non-base translation removes it.
+         */
+        post: operations["studio_courses_text_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/team/": {
         parameters: {
             query?: never;
@@ -6453,6 +6776,13 @@ export interface components {
             path?: string;
             release?: string;
         };
+        /**
+         * @description * `uz` - uz
+         *     * `ru` - ru
+         *     * `en` - en
+         * @enum {string}
+         */
+        ContentLocaleEnum: "uz" | "ru" | "en";
         Contest: {
             slug: string;
             title: string;
@@ -6592,6 +6922,18 @@ export interface components {
          * @enum {string}
          */
         CourseLevelEnum: "beginner" | "intermediate" | "advanced";
+        CourseText: {
+            locale: components["schemas"]["ContentLocaleEnum"];
+            title: string;
+            summary?: string;
+            /** @description Markdown + LaTeX */
+            description?: string;
+            /** @description What the learner will be able to do; one per line. */
+            outcomes?: string;
+            /** @description One per line. */
+            requirements?: string;
+            audience?: string;
+        };
         /** @description Who prepared the contest — told on its page, always (ADR-0055, part 2). */
         Crew: {
             authors: components["schemas"]["CrewPerson"][];
@@ -7059,6 +7401,12 @@ export interface components {
             /** @description `done`, `open` or `locked` for this reader. */
             readonly state: string;
         };
+        LessonText: {
+            locale: components["schemas"]["ContentLocaleEnum"];
+            title: string;
+            /** @description Markdown + LaTeX */
+            body?: string;
+        };
         LessonVideo: {
             provider: string;
             ref: string | null;
@@ -7247,6 +7595,10 @@ export interface components {
             title: string;
             reward_qvant: number;
             sections: components["schemas"]["SectionOutline"][];
+        };
+        ModuleText: {
+            locale: components["schemas"]["ContentLocaleEnum"];
+            title: string;
         };
         MyCourse: {
             course: components["schemas"]["CourseCard"];
@@ -7829,6 +8181,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["StaffContestProblem"][];
         };
+        PaginatedStaffCourseList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffCourse"][];
+        };
         PaginatedStaffDuelList: {
             /** @example 123 */
             count: number;
@@ -8188,6 +8555,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Standing"][];
+        };
+        PaginatedStudioCourseList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StudioCourse"][];
         };
         PaginatedSubmissionList: {
             /** @example 123 */
@@ -8553,6 +8935,45 @@ export interface components {
             testers?: string[];
             jury?: string[];
             readonly organizers?: string[];
+        };
+        /** @description Staff set what authors may not: access, price and the course reward. */
+        PatchedStaffCourse: {
+            readonly slug?: string;
+            base_locale?: components["schemas"]["ContentLocaleEnum"];
+            level?: components["schemas"]["CourseLevelEnum"];
+            /** @description A lesson opens only after the previous required one is done. */
+            sequential?: boolean;
+            /** @description Final quiz score, in percent, needed for the certificate. */
+            certificate_threshold?: number;
+            final_quiz?: string | null;
+            cover_url?: string;
+            access?: components["schemas"]["AccessEnum"];
+            /** Format: int64 */
+            price_qvant?: number;
+            /**
+             * Format: int64
+             * @description One-time price in UZS.
+             */
+            price_uzs?: number;
+            /**
+             * Format: int64
+             * @description Paid once when the course is completed.
+             */
+            reward_qvant?: number;
+            readonly is_published?: boolean;
+            /** Format: date-time */
+            readonly published_at?: string | null;
+            /** Format: date-time */
+            readonly review_requested_at?: string | null;
+            /** @description `published`, `review` or `draft`. */
+            readonly status?: string;
+            readonly gaps?: string[];
+            readonly structure_open?: boolean;
+            readonly texts?: components["schemas"]["CourseText"][];
+            readonly modules?: components["schemas"]["StudioModule"][];
+            readonly authors?: string[];
+            /** Format: int64 */
+            order?: number;
         };
         PatchedStaffHackathon: {
             slug?: string;
@@ -8950,6 +9371,77 @@ export interface components {
              * Format: date-time
              */
             readonly last_login?: string | null;
+        };
+        /** @description The studio's course: settings, texts, tree and review state. */
+        PatchedStudioCourse: {
+            readonly slug?: string;
+            base_locale?: components["schemas"]["ContentLocaleEnum"];
+            level?: components["schemas"]["CourseLevelEnum"];
+            /** @description A lesson opens only after the previous required one is done. */
+            sequential?: boolean;
+            /** @description Final quiz score, in percent, needed for the certificate. */
+            certificate_threshold?: number;
+            final_quiz?: string | null;
+            cover_url?: string;
+            readonly access?: components["schemas"]["AccessEnum"];
+            readonly price_qvant?: number;
+            /** @description One-time price in UZS. */
+            readonly price_uzs?: number;
+            /** @description Paid once when the course is completed. */
+            readonly reward_qvant?: number;
+            readonly is_published?: boolean;
+            /** Format: date-time */
+            readonly published_at?: string | null;
+            /** Format: date-time */
+            readonly review_requested_at?: string | null;
+            /** @description `published`, `review` or `draft`. */
+            readonly status?: string;
+            readonly gaps?: string[];
+            readonly structure_open?: boolean;
+            readonly texts?: components["schemas"]["CourseText"][];
+            readonly modules?: components["schemas"]["StudioModule"][];
+        };
+        /**
+         * @description A lesson's structure. Completeness (a problem lesson has a problem…)
+         *     is the review's job, so a half-built lesson can be saved.
+         */
+        PatchedStudioLesson: {
+            readonly id?: number;
+            section?: number;
+            /** Format: int64 */
+            order?: number;
+            kind?: components["schemas"]["LessonKindEnum"];
+            is_required?: boolean;
+            /** @description Open to visitors who have not enrolled (never a paid video). */
+            is_preview?: boolean;
+            problem?: string | null;
+            quiz?: string | null;
+            quiz_pass_percent?: number;
+            video_provider?: components["schemas"]["VideoProviderEnum"] | components["schemas"]["BlankEnum"];
+            video_ref?: string;
+            /** Format: int64 */
+            video_seconds?: number;
+            readonly texts?: components["schemas"]["LessonText"][];
+        };
+        PatchedStudioModule: {
+            readonly id?: number;
+            /** Format: int64 */
+            order?: number;
+            /**
+             * Format: int64
+             * @description Paid once when the module is completed.
+             */
+            reward_qvant?: number;
+            readonly texts?: components["schemas"]["ModuleText"][];
+            readonly sections?: components["schemas"]["StudioSection"][];
+        };
+        PatchedStudioSection: {
+            readonly id?: number;
+            module?: number;
+            /** Format: int64 */
+            order?: number;
+            readonly texts?: components["schemas"]["SectionText"][];
+            readonly lessons?: components["schemas"]["StudioLesson"][];
         };
         /**
          * @description * `contest_room` - Musobaqa xonasi
@@ -9368,6 +9860,9 @@ export interface components {
             /** @default false */
             reset: boolean;
         };
+        Return: {
+            reason: string;
+        };
         ReviewItem: {
             question_id: number;
             chosen: number | null;
@@ -9575,6 +10070,10 @@ export interface components {
             title: string;
             lessons: components["schemas"]["LessonRow"][];
         };
+        SectionText: {
+            locale: components["schemas"]["ContentLocaleEnum"];
+            title: string;
+        };
         /**
          * @description * `XS` - XS
          *     * `S` - S
@@ -9760,6 +10259,45 @@ export interface components {
         /** @description Masalalar ro'yxatini to'liq almashtirish uchun kirish. */
         StaffContestProblemList: {
             problems: components["schemas"]["StaffContestProblem"][];
+        };
+        /** @description Staff set what authors may not: access, price and the course reward. */
+        StaffCourse: {
+            readonly slug: string;
+            base_locale?: components["schemas"]["ContentLocaleEnum"];
+            level?: components["schemas"]["CourseLevelEnum"];
+            /** @description A lesson opens only after the previous required one is done. */
+            sequential?: boolean;
+            /** @description Final quiz score, in percent, needed for the certificate. */
+            certificate_threshold?: number;
+            final_quiz?: string | null;
+            cover_url?: string;
+            access?: components["schemas"]["AccessEnum"];
+            /** Format: int64 */
+            price_qvant?: number;
+            /**
+             * Format: int64
+             * @description One-time price in UZS.
+             */
+            price_uzs?: number;
+            /**
+             * Format: int64
+             * @description Paid once when the course is completed.
+             */
+            reward_qvant?: number;
+            readonly is_published: boolean;
+            /** Format: date-time */
+            readonly published_at: string | null;
+            /** Format: date-time */
+            readonly review_requested_at: string | null;
+            /** @description `published`, `review` or `draft`. */
+            readonly status: string;
+            readonly gaps: string[];
+            readonly structure_open: boolean;
+            readonly texts: components["schemas"]["CourseText"][];
+            readonly modules: components["schemas"]["StudioModule"][];
+            readonly authors: string[];
+            /** Format: int64 */
+            order?: number;
         };
         /**
          * @description Nazorat uchun to'liq ko'rinish — barcha maydonlar faqat o'qishga.
@@ -10341,6 +10879,99 @@ export interface components {
             insider_role?: components["schemas"]["InsiderRoleEnum"] | components["schemas"]["BlankEnum"];
             is_disqualified?: boolean;
         };
+        /** @description The studio's course: settings, texts, tree and review state. */
+        StudioCourse: {
+            readonly slug: string;
+            base_locale?: components["schemas"]["ContentLocaleEnum"];
+            level?: components["schemas"]["CourseLevelEnum"];
+            /** @description A lesson opens only after the previous required one is done. */
+            sequential?: boolean;
+            /** @description Final quiz score, in percent, needed for the certificate. */
+            certificate_threshold?: number;
+            final_quiz?: string | null;
+            cover_url?: string;
+            readonly access: components["schemas"]["AccessEnum"];
+            readonly price_qvant: number;
+            /** @description One-time price in UZS. */
+            readonly price_uzs: number;
+            /** @description Paid once when the course is completed. */
+            readonly reward_qvant: number;
+            readonly is_published: boolean;
+            /** Format: date-time */
+            readonly published_at: string | null;
+            /** Format: date-time */
+            readonly review_requested_at: string | null;
+            /** @description `published`, `review` or `draft`. */
+            readonly status: string;
+            readonly gaps: string[];
+            readonly structure_open: boolean;
+            readonly texts: components["schemas"]["CourseText"][];
+            readonly modules: components["schemas"]["StudioModule"][];
+        };
+        StudioCourseCreate: {
+            title: string;
+            summary?: string;
+            slug?: string;
+            /** @default uz */
+            base_locale: components["schemas"]["ContentLocaleEnum"];
+            /** @default beginner */
+            level: components["schemas"]["CourseLevelEnum"];
+        };
+        /**
+         * @description A lesson's structure. Completeness (a problem lesson has a problem…)
+         *     is the review's job, so a half-built lesson can be saved.
+         */
+        StudioLesson: {
+            readonly id: number;
+            section: number;
+            /** Format: int64 */
+            order?: number;
+            kind?: components["schemas"]["LessonKindEnum"];
+            is_required?: boolean;
+            /** @description Open to visitors who have not enrolled (never a paid video). */
+            is_preview?: boolean;
+            problem?: string | null;
+            quiz?: string | null;
+            quiz_pass_percent?: number;
+            video_provider?: components["schemas"]["VideoProviderEnum"] | components["schemas"]["BlankEnum"];
+            video_ref?: string;
+            /** Format: int64 */
+            video_seconds?: number;
+            readonly texts: components["schemas"]["LessonText"][];
+        };
+        StudioModule: {
+            readonly id: number;
+            /** Format: int64 */
+            order?: number;
+            /**
+             * Format: int64
+             * @description Paid once when the module is completed.
+             */
+            reward_qvant?: number;
+            readonly texts: components["schemas"]["ModuleText"][];
+            readonly sections: components["schemas"]["StudioSection"][];
+        };
+        StudioSection: {
+            readonly id: number;
+            module: number;
+            /** Format: int64 */
+            order?: number;
+            readonly texts: components["schemas"]["SectionText"][];
+            readonly lessons: components["schemas"]["StudioLesson"][];
+        };
+        /** @description One translation of one part of the course. */
+        StudioText: {
+            target: components["schemas"]["TargetEnum"];
+            id?: number;
+            locale: components["schemas"]["ContentLocaleEnum"];
+            title?: string;
+            summary?: string;
+            description?: string;
+            outcomes?: string;
+            requirements?: string;
+            audience?: string;
+            body?: string;
+        };
         Submission: {
             readonly id: number;
             readonly username: string;
@@ -10419,6 +11050,14 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        /**
+         * @description * `course` - course
+         *     * `module` - module
+         *     * `section` - section
+         *     * `lesson` - lesson
+         * @enum {string}
+         */
+        TargetEnum: "course" | "module" | "section" | "lesson";
         /**
          * @description * `program` - Whole program
          *     * `function` - Function
@@ -10778,6 +11417,13 @@ export interface components {
          * @enum {string}
          */
         VerdictEnum: "PENDING" | "RUNNING" | "AC" | "WA" | "TLE" | "MLE" | "OLE" | "RE" | "RE_SIGNAL" | "RE_EXIT" | "CE" | "PE" | "HACKED" | "PARTIAL" | "IE" | "WRONG_TEST" | "SKIPPED" | "COMPILE_TIMEOUT" | "IDLENESS" | "SECURITY_VIOLATION" | "CHECKER_ERROR" | "TESTING_ABORTED" | "RATE_LIMITED" | "DENIAL_OF_JUDGEMENT";
+        /**
+         * @description * `youtube` - YouTube
+         *     * `vimeo` - Vimeo
+         *     * `hls` - HLS (R2)
+         * @enum {string}
+         */
+        VideoProviderEnum: "youtube" | "vimeo" | "hls";
         Vote: {
             value: components["schemas"]["ValueEnum"];
         };
@@ -16154,6 +16800,128 @@ export interface operations {
             };
         };
     };
+    staff_courses_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffCourseList"];
+                };
+            };
+        };
+    };
+    staff_courses_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCourse"];
+                };
+            };
+        };
+    };
+    staff_courses_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStaffCourse"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStaffCourse"];
+                "multipart/form-data": components["schemas"]["PatchedStaffCourse"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCourse"];
+                };
+            };
+        };
+    };
+    staff_courses_publish_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCourse"];
+                };
+            };
+        };
+    };
+    staff_courses_send_back_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Return"];
+                "application/x-www-form-urlencoded": components["schemas"]["Return"];
+                "multipart/form-data": components["schemas"]["Return"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCourse"];
+                };
+            };
+        };
+    };
     staff_duels_list: {
         parameters: {
             query?: {
@@ -20149,6 +20917,407 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DailyStats"][];
+                };
+            };
+        };
+    };
+    studio_courses_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStudioCourseList"];
+                };
+            };
+        };
+    };
+    studio_courses_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudioCourseCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["StudioCourseCreate"];
+                "multipart/form-data": components["schemas"]["StudioCourseCreate"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioCourse"];
+                };
+            };
+        };
+    };
+    studio_courses_lessons_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudioLesson"];
+                "application/x-www-form-urlencoded": components["schemas"]["StudioLesson"];
+                "multipart/form-data": components["schemas"]["StudioLesson"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioLesson"];
+                };
+            };
+        };
+    };
+    studio_courses_lessons_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+                /** @description A unique integer value identifying this lesson. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    studio_courses_lessons_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+                /** @description A unique integer value identifying this lesson. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStudioLesson"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStudioLesson"];
+                "multipart/form-data": components["schemas"]["PatchedStudioLesson"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioLesson"];
+                };
+            };
+        };
+    };
+    studio_courses_modules_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["StudioModule"];
+                "application/x-www-form-urlencoded": components["schemas"]["StudioModule"];
+                "multipart/form-data": components["schemas"]["StudioModule"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioModule"];
+                };
+            };
+        };
+    };
+    studio_courses_modules_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+                /** @description A unique integer value identifying this module. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    studio_courses_modules_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+                /** @description A unique integer value identifying this module. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStudioModule"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStudioModule"];
+                "multipart/form-data": components["schemas"]["PatchedStudioModule"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioModule"];
+                };
+            };
+        };
+    };
+    studio_courses_sections_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudioSection"];
+                "application/x-www-form-urlencoded": components["schemas"]["StudioSection"];
+                "multipart/form-data": components["schemas"]["StudioSection"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioSection"];
+                };
+            };
+        };
+    };
+    studio_courses_sections_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+                /** @description A unique integer value identifying this section. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    studio_courses_sections_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_slug: string;
+                /** @description A unique integer value identifying this section. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStudioSection"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStudioSection"];
+                "multipart/form-data": components["schemas"]["PatchedStudioSection"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioSection"];
+                };
+            };
+        };
+    };
+    studio_courses_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioCourse"];
+                };
+            };
+        };
+    };
+    studio_courses_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    studio_courses_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStudioCourse"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStudioCourse"];
+                "multipart/form-data": components["schemas"]["PatchedStudioCourse"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioCourse"];
+                };
+            };
+        };
+    };
+    studio_courses_review_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioCourse"];
+                };
+            };
+        };
+    };
+    studio_courses_text_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudioText"];
+                "application/x-www-form-urlencoded": components["schemas"]["StudioText"];
+                "multipart/form-data": components["schemas"]["StudioText"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudioCourse"];
                 };
             };
         };

@@ -2842,4 +2842,10 @@ export const ru: Record<MessageKey, string> = {
   "error.course_not_self_completed": "Уроки с задачей и тестом завершаются сами, когда вы их решите.",
   "error.course_qvant_required": "Этот курс открывается за Qvant.",
   "error.course_payment_required": "Этот курс платный.",
+  "notif.msg.course_review_requested.title": "Запрошена проверка курса — {course}",
+  "notif.msg.course_review_requested.body": "@{user} отправил курс «{course}» на проверку.",
+  "notif.msg.course_published.title": "Ваш курс опубликован — {course}",
+  "notif.msg.course_published.body": "«{course}» теперь в каталоге курсов.",
+  "notif.msg.course_returned.title": "Курс возвращён — {course}",
+  "notif.msg.course_returned.body": "Комментарий сотрудника: {reason}",
 };

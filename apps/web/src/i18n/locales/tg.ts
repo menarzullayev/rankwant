@@ -2843,4 +2843,10 @@ export const tg: Record<MessageKey, string> = {
   "error.course_not_self_completed": "Дарсҳои масъала ва тест ҳангоми ҳал шудан худашон анҷом меёбанд.",
   "error.course_qvant_required": "Ин курс бо Qvant кушода мешавад.",
   "error.course_payment_required": "Ин курс пулакӣ аст.",
+  "notif.msg.course_review_requested.title": "Санҷиши курс дархост шуд — {course}",
+  "notif.msg.course_review_requested.body": "@{user} курси «{course}»-ро ба санҷиш фиристод.",
+  "notif.msg.course_published.title": "Курси шумо нашр шуд — {course}",
+  "notif.msg.course_published.body": "«{course}» акнун дар феҳристи курсҳо.",
+  "notif.msg.course_returned.title": "Курс баргардонида шуд — {course}",
+  "notif.msg.course_returned.body": "Шарҳи корманд: {reason}",
 };

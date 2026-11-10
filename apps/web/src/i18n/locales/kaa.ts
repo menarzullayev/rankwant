@@ -2842,4 +2842,10 @@ export const kaa: Record<MessageKey, string> = {
   "error.course_not_self_completed": "Másele hám test sabaqları sheshilgende ózi tamamlanadı.",
   "error.course_qvant_required": "Bul kurs Qvant penen ashıladı.",
   "error.course_payment_required": "Bul kurs tólemli.",
+  "notif.msg.course_review_requested.title": "Kurstı tekseriw soraldı — {course}",
+  "notif.msg.course_review_requested.body": "@{user} «{course}» kursın tekseriwge jiberdi.",
+  "notif.msg.course_published.title": "Kursıńız járiyalandı — {course}",
+  "notif.msg.course_published.body": "«{course}» endi kurslar katalogında.",
+  "notif.msg.course_returned.title": "Kurs qaytarıldı — {course}",
+  "notif.msg.course_returned.body": "Xızmetker eskertpesi: {reason}",
 };
