@@ -113,7 +113,7 @@ def main() -> int:
         for path in sorted(root.rglob("*")):
             if not path.is_file() or path.suffix not in SUFFIXES:
                 continue
-            if any(part in {"node_modules", ".next", "__pycache__", ".venv"} for part in path.parts):
+            if any(part in {"node_modules", ".next", "__pycache__", ".venv"} for part in path.relative_to(ROOT).parts):
                 continue
             try:
                 text = path.read_text(encoding="utf-8")

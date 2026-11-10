@@ -2795,6 +2795,66 @@ def studio_contests_panel() -> str | None:
     return None
 
 
+def dump_only_for_pending_migrations() -> str | None:
+    """2026-11-10 (HITL): pg_dump faqat qo'llanmagan migratsiya bo'lsa, build bilan parallel.
+
+    O'lchandi (29 deploy): dump median 33 s, build'dan KEYIN ketma-ket yurardi
+    va migratsiyasiz deploy'da ham olinardi. Endi build'dan oldin daraxtdagi
+    migratsiya fayllari bazadagi `django_migrations` bilan solishtiriladi
+    (o'qilmasa — «bor»); bor bo'lsa dump build bilan parallel olinadi va
+    migratsiya uni kutadi. Ro'yxat ko'rmagan migratsiyani (Django'ning o'zi)
+    build'dan keyin `migrate --check` ushlaydi va dump'ni oldin oladi.
+    """
+    deploy = read("tools/deploy.sh")
+    for needle, why in (
+        ('    2>/dev/null | tr -d \'\\r\')" || return 0\n', "o'qilmagan baza «migratsiya yo'q» deb olinadi"),
+        ('if [ "$SKIP_BAKE" -eq 0 ] && [ "$NEED_MIGRATE" -eq 1 ] && pending_migration_files; then\n',
+         "dump qaroriga migratsiya fayllari ta'sir qilmaydi"),
+        ('  RANKWANT_ENV_FILE="$ENV_ABS" bash tools/backup.sh --dump-only > "$DUMP_LOG" 2>&1 &\n',
+         "dump build bilan parallel emas"),
+        ('elif ! "${COMPOSE[@]}" run --rm api python manage.py migrate --check >/dev/null 2>&1; then\n',
+         "ro'yxat ko'rmagan migratsiya zaxirasiz qo'llanadi (`migrate --check` yo'q)"),
+    ):
+        if needle not in deploy:
+            return f"tools/deploy.sh: {why}"
+    wait_at = deploy.find('  wait "$DUMP_PID"\n')
+    migrate_at = deploy.find("run --rm migrate")
+    if wait_at < 0 or migrate_at < 0 or wait_at > migrate_at:
+        return "tools/deploy.sh: migratsiya parallel dump tugashini kutmaydi"
+    return None
+
+
+def gate_trusts_green_pr_on_same_tree() -> str | None:
+    """2026-11-10 (HITL): main CI tugamasdan PR CI yetadi — faqat bir xil daraxtda.
+
+    O'lchandi: 30 PR'da merge \u2192 deploy boshlanishi median 4:28, shundan main
+    CI 3:02 — u PR CI yashil o'tkazgan aynan o'sha daraxtni qayta tekshirardi
+    (5 PR'da daraxt bayt-bayt bir xil, ruleset `strict`). Endi darvoza merge
+    qilingan PR head daraxti main bilan bir xil, PR CI yashil va oxirgi tugagan
+    main CI yashil bo'lsa ochiladi. main CI baribir yuradi: tugab qizil chiqsa
+    darvoza yopiq, watcher natijani logga yozadi, panel ko'rsatadi.
+    """
+    gate = read("tools/check_deploy_gate.py")
+    for needle, why in (
+        ('    if not ev.get("head_tree") or ev.get("head_tree") != ev.get("main_tree"):\n',
+         "daraxt solishtirilmaydi"),
+        ('        if last.get("conclusion") != "success":\n', "qizil main CI qisqa yo'lni yopmaydi"),
+        ('    if last_pr.get("status") != "completed" or last_pr.get("conclusion") != "success":\n',
+         "PR CI natijasi tekshirilmaydi"),
+        ('            # A finished main run is the final word, green or red.\n            if run.get("conclusion") != "success":\n',
+         "tugagan qizil main CI hal qiluvchi emas"),
+    ):
+        if needle not in gate:
+            return f"check_deploy_gate.py: PR CI qisqa yo'li — {why}"
+    watcher = read("tools/auto_deploy.sh")
+    if '      printf \'%s\\n\' "$TARGET" >> "$VERIFY" 2>/dev/null || true\n' not in watcher:
+        return "tools/auto_deploy.sh: PR CI bilan chiqqan deploy'ning main CI natijasi kuzatilmaydi"
+    panel = read("tools/mods/deploy-panel/hooks/register.tsx")
+    if "'--workflow', 'CI', '--event', 'push'" not in panel:
+        return "deploy paneli main CI holatini ko'rsatmaydi"
+    return None
+
+
 def build_cache_kept_within_budget() -> str | None:
     """2026-11-10 (HITL): build cache 10 GB gacha saqlanadi, judge base qayta ishlatiladi.
 
@@ -4837,6 +4897,8 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
     ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),
+    ("darvoza bir xil daraxtda PR CI'ga ishonadi", gate_trusts_green_pr_on_same_tree),
+    ("pg_dump faqat migratsiyada, build bilan parallel", dump_only_for_pending_migrations),
     ("versiya nuqtalari ulangan", versioning_points_are_wired),
     ("urg'u rang keshi rejimga bog'liq", accent_cache_follows_the_mode),
     ("unvon zinapoyasi o'qiladi", title_ladder_is_readable),

@@ -9,6 +9,12 @@ export type Snapshot = {
   checkedAt: number
   /** When live and main were first seen to differ, ms; 0 while they match. */
   behindSince: number
+  /**
+   * Latest `main` push CI run as `<sha7> <conclusion|status>`, or null.
+   * The gate may deploy before it finishes (decision 2026-11-10), so a red
+   * one is shown even when the site matches main.
+   */
+  mainCi: string | null
   /** What failed on the last refresh, or null. */
   error: string | null
 }

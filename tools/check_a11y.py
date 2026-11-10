@@ -126,7 +126,7 @@ def iter_tsx() -> list[Path]:
     """Tekshiriladigan `.tsx` fayllar."""
     out: list[Path] = []
     for path in WEB.rglob("*.tsx"):
-        if any(part in SKIP_DIRS for part in path.parts):
+        if any(part in SKIP_DIRS for part in path.relative_to(ROOT).parts):
             continue
         out.append(path)
     return sorted(out)

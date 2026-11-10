@@ -369,6 +369,35 @@ if [ "$ASSUME_YES" -ne 1 ]; then
   esac
 fi
 
+# ── 3a. Zaxira — kerak bo'lsa, build bilan PARALLEL ───────────────────
+# Owner decision 2026-11-10: the pre-migration dump (median 33 s, measured
+# over 29 deploys) is taken only when there is a migration to apply, and it
+# runs while the images build instead of after them. Migrate still waits for
+# it (§ 4). Read before the build: this tree's migration files against what
+# the live database has applied. Anything unreadable counts as "yes".
+# A migration this list cannot see (a new Django release ships its own) is
+# caught after the build by `migrate --check` (§ 4), which then dumps first.
+pending_migration_files() {
+  local applied files
+  applied="$("${COMPOSE[@]}" exec -T postgres sh -c \
+    'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "select app || chr(46) || name from django_migrations"' \
+    2>/dev/null | tr -d '\r')" || return 0
+  [ -n "$applied" ] || return 0
+  files="$(cd apps/api && ls -- */migrations/[0-9]*.py 2>/dev/null \
+    | sed -E 's#^([^/]+)/migrations/([^/]+)\.py$#\1.\2#')"
+  [ -n "$files" ] || return 0
+  comm -23 <(printf '%s\n' "$files" | LC_ALL=C sort) \
+    <(printf '%s\n' "$applied" | LC_ALL=C sort) | grep -q .
+}
+DUMP_PID=""
+DUMP_LOG=""
+if [ "$SKIP_BAKE" -eq 0 ] && [ "$NEED_MIGRATE" -eq 1 ] && pending_migration_files; then
+  DUMP_LOG="$(mktemp)"
+  step "3/8 Migratsiyadan oldin zaxira (pg_dump) — build bilan parallel"
+  RANKWANT_ENV_FILE="$ENV_ABS" bash tools/backup.sh --dump-only > "$DUMP_LOG" 2>&1 &
+  DUMP_PID=$!
+fi
+
 # ── 3. Qurish ────────────────────────────────────────────────────────
 # `migrate` ham ALOHIDA obraz: usiz u eski obraz bilan yuradi va yangi
 # migration fayllarini ko'rmaydi. Docs/tools doirasi bo'sh bo'lsa bake yo'q.
@@ -422,13 +451,25 @@ time_finish build
 # yuboriladi (migratsiya ularga tegmaydi), shuning uchun tez.
 # api/worker/beat doirada bo'lmasa sxema o'zgarmaydi — dump/migrate yo'q.
 time_begin dump
-if [ "$SKIP_BAKE" -eq 1 ] || [ "$NEED_MIGRATE" -eq 0 ]; then
+if [ -n "$DUMP_PID" ]; then
+  wait "$DUMP_PID"
+  dump_rc=$?
+  cat "$DUMP_LOG"
+  rm -f "$DUMP_LOG"
+  [ "$dump_rc" -eq 0 ] \
+    || die "zaxira olinmadi — migratsiya TO'XTATILDI (zaxirasiz sxema o'zgarishi xavfli)"
+  ok "zaxira olindi (build bilan parallel)"
+elif [ "$SKIP_BAKE" -eq 1 ] || [ "$NEED_MIGRATE" -eq 0 ]; then
   step "3/8 Zaxira — o'tkazib yuborildi (api obraziga tushmaydi)"
-else
-  step "3/8 Migratsiyadan oldin zaxira (pg_dump)"
+elif ! "${COMPOSE[@]}" run --rm api python manage.py migrate --check >/dev/null 2>&1; then
+  # The file list saw nothing new, the built image does (or the check could
+  # not run): dump now, before migrate, as before.
+  step "3/8 Migratsiyadan oldin zaxira (pg_dump) — yangi obraz qo'llanmagan migratsiya ko'rdi"
   RANKWANT_ENV_FILE="$ENV_ABS" bash tools/backup.sh --dump-only \
     || die "zaxira olinmadi — migratsiya TO'XTATILDI (zaxirasiz sxema o'zgarishi xavfli)"
   ok "zaxira olindi"
+else
+  step "3/8 Zaxira — o'tkazib yuborildi (qo'llanmagan migratsiya yo'q, sxema o'zgarmaydi)"
 fi
 time_finish dump
 

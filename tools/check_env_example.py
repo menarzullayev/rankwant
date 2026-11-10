@@ -93,7 +93,7 @@ def code_vars() -> set[str]:
     settings = read(ROOT / "apps/api/config/settings.py")
     names |= set(re.findall(r'\b(?:env|env_bool)\(\s*"([A-Z][A-Z0-9_]*)"', settings))
     for path in sorted((ROOT / "apps/api").rglob("*.py")):
-        if "tests" in path.parts or ".venv" in path.parts:
+        if {"tests", ".venv"} & set(path.relative_to(ROOT).parts):
             continue
         names |= set(re.findall(r'os\.(?:environ\.get|getenv)\(\s*"([A-Z][A-Z0-9_]*)"', read(path)))
     for path in sorted((ROOT / "apps/web/src").rglob("*.ts*")):

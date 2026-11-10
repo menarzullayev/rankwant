@@ -145,7 +145,7 @@ def main() -> int:
     files = [
         p
         for p in API.rglob("*.py")
-        if not any(part in SKIP_PARTS for part in p.parts)
+        if not any(part in SKIP_PARTS for part in p.relative_to(ROOT).parts)
     ]
     if not files:
         sys.exit(f"i18n: API manba fayllar topilmadi ({API})")

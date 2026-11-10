@@ -144,6 +144,12 @@ buni o'zi ta'minlaydi — hamma narsadan oldin:
   bir xil, shu commit'ning oxirgi `CI` run'i `success`, va **jonli checkout
   yoki deploy worktree**da commit qilinmagan `docker-compose*.yml` yo'q
   (chiqish 0 — mumkin, 1 — yo'q, **2 — o'lchanmadi**, deploy baribir to'xtaydi).
+  **2026-11-10 dan:** `main` CI hali tugamagan bo'lsa, merge qilingan PR'ning
+  oxirgi `CI` run'i yashil, PR head daraxti `main` daraxti bilan bir xil va
+  oxirgi tugagan `main` CI yashil bo'lsa ham ochiladi (chiqishda
+  `PR_CI_SHORTCUT`). Watcher keyin `main` CI hukmini bir marta logga yozadi
+  (`main CI tasdiqladi` / `⚠ main CI QIZIL`). Qaror:
+  [2026-11-10-gate-trusts-pr-ci](../decisions/2026-11-10-gate-trusts-pr-ci.md).
   Uchinchi shart 2026-09-17 dagi holatdan keyin qo'shildi: jonli stack asosiy
   checkout'dagi commit qilinmagan compose bilan qayta yaratilgan edi (Turnstile
   kalitlari va yumshatilgan `register` throttle'i o'sha faylda), worktree'dan

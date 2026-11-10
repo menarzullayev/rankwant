@@ -63,7 +63,7 @@ def iter_sources() -> list[Path]:
     for path in WEB_SRC.rglob("*"):
         if path.suffix not in SUFFIXES:
             continue
-        if any(part in IGNORED_DIRS for part in path.parts):
+        if any(part in IGNORED_DIRS for part in path.relative_to(ROOT).parts):
             continue
         found.append(path)
     return sorted(found)
