@@ -2904,6 +2904,31 @@ def ci_installs_are_fast() -> str | None:
     return None
 
 
+def behind_prs_update_one_at_a_time() -> str | None:
+    """2026-11-10 (HITL): orqada qolgan PR'lar navbat bilan, bittadan yangilanadi.
+
+    O'lchandi: 30 PR'da 75 ta PR CI yurishi (median 2:51) \u2014 har merge
+    qolgan PR'larni BEHIND qilardi, agentlar darhol yangilardi va keyingi merge
+    o'sha CI'ni bekor qilardi. Endi watcher har tick'da `pr_update_queue.py`
+    ni yuritadi: auto-merge PR'laridan birortasining CI'si yurmayotgan va
+    CLEAN bo'lmaganda eng eski BEHIND PR yangilanadi. Agentlar o'zi yangilamaydi.
+    """
+    rel = "tools/pr_update_queue.py"
+    if not (ROOT / rel).exists():
+        return f"{rel} yo'q \u2014 orqada qolgan PR'lar navbatsiz yangilanadi"
+    queue = read(rel)
+    if "    if busy:\n        return None," not in queue:
+        return f"{rel}: CI yurayotganda ham yangilaydi"
+    if "--rebase" in queue or "--force" in queue:
+        return f"{rel}: rebase/force \u2014 faqat `main` ni merge qilish mumkin"
+    watcher = read("tools/auto_deploy.sh")
+    if '    queue_out="$("$QUEUE_PY" tools/pr_update_queue.py 2>&1)"\n' not in watcher:
+        return "tools/auto_deploy.sh: PR navbati yuritilmaydi"
+    if "**Orqada qolgan PR'ni o'zingiz yangilamang** (2026-11-10)" not in read("CLAUDE.md"):
+        return "CLAUDE.md: agentlarga BEHIND PR'ni yangilamaslik aytilmagan"
+    return None
+
+
 def failed_containers_are_revived() -> str | None:
     """2026-11-10 (HITL): Docker ko'tara olmagan konteyner o'zi tiklanadi.
 
@@ -4918,6 +4943,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("nusxalash bitta tugma va bitta yozish yo'li", copy_is_one_control),
     ("web ham o'z commitini aytadi", web_reports_its_own_commit),
     ("Docker ko'tara olmagan konteyner tiklanadi", failed_containers_are_revived),
+    ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
     ("CI paketlarni tez o'rnatadi", ci_installs_are_fast),
     ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),
     ("darvoza bir xil daraxtda PR CI'ga ishonadi", gate_trusts_green_pr_on_same_tree),

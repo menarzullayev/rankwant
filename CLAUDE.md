@@ -233,6 +233,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-gate-trusts-pr-ci.md) · Darvoza `main` CI tugamasdan merge qilingan PR'ning yashil CI'siga ishonadi — faqat daraxt bir xil va oxirgi main CI yashil bo'lsa · `gate_trusts_green_pr_on_same_tree`
 - [2026-11-10](docs/decisions/2026-11-10-build-cache-budget.md) · Build cache 10 GB gacha saqlanadi (2026-10-06 ni almashtiradi); judge base obrazi qayta ishlatiladi; disk qo'riqchisi 5 GB · `build_cache_kept_within_budget`
 - [2026-11-10](docs/decisions/2026-11-10-ci-fast-installs.md) · CI: Python paketlari `uv` bilan, `node_modules` lockfile va Node versiyasi bo'yicha keshlanadi · `ci_installs_are_fast`
+- [2026-11-10](docs/decisions/2026-11-10-pr-update-queue.md) · Orqada qolgan auto-merge PR'larni watcher navbat bilan, bittadan yangilaydi; agentlar o'zi `update-branch` qilmaydi · `behind_prs_update_one_at_a_time`
 - [2026-11-10](docs/decisions/2026-11-10-revive-failed-containers.md) · Docker ko'tara olmagan konteynerni watcher ko'taradi (qo'lda to'xtatilgani emas); Docker o'chiqda deploy to'sig'i yo'q · `failed_containers_are_revived`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-public-env-reaches-build.md) · Web o'qiydigan har `NEXT_PUBLIC_*` build'ga uzatiladi; bo'sh `SITE_URL` = API origin'i · `flags_reach_the_web_build`
@@ -353,6 +354,12 @@ MERGE → DEPLOY → POST-DEPLOY VERIFY → REPORT. Uch band qat'iy:
 
 Issue ishlatilmaydi — **PR asosida**. Vazifa qo'shish
 kerak bo'lsa branch va PR ochiladi, tracker'ga ticket yozilmaydi.
+
+**Orqada qolgan PR'ni o'zingiz yangilamang** (2026-11-10): PR'ga auto-merge
+yoqing va `BEHIND` bo'lsa `gh pr update-branch` qilmang — watcher
+(`tools/pr_update_queue.py`) auto-merge PR'larini navbat bilan, bittadan
+yangilaydi. Faqat `DIRTY` (konflikt) PR'ni o'zingiz hal qilasiz: `main` ni
+branch'ga merge qiling, force push'siz.
 
 Til: izoh va docstring inglizcha, mavjud hujjat o'z tilida — to'liq qoida
 [CONTRIBUTING § Til](CONTRIBUTING.md#til). Mavjud izohlarni tarjima qilmang.
