@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2857 strings.**
+**2856 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2769,7 +2769,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `course.lesson.openProblem` | Masalani ochish | Маселени ачуу |  |
 | `course.lesson.quizHint` | Testdan kamida {percent}% to'plang — dars o'zi tugaydi. | Тесттен кеминде {percent}% топтоңуз — сабак өзү бүтөт. |  |
 | `course.lesson.openQuiz` | Testni boshlash | Тестти баштоо |  |
-| `course.lesson.videoExternal` | Videoni ochish | Видеону ачуу |  |
 | `course.lesson.videoPending` | Video tayyorlanmoqda. | Видео даярдалууда. |  |
 | `course.lesson.backToCourse` | Kurs sahifasi | Курстун барагы |  |
 | `gate.course.title` | Darslarni o'qish uchun tizimga kiring | Сабактарды окуу үчүн системага кириңиз |  |
@@ -2862,7 +2861,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.provider.vimeo` | Vimeo | Vimeo |  |
 | `studio.course.provider.hls` | Bizning serverda (R2) | Биздин серверде (R2) |  |
 | `studio.course.videoRef` | Video identifikatori | Видео ID |  |
-| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasidagi identifikator (masalan dQw4w9WgXcQ). | YouTube же Vimeo шилтемесиндеги идентификатор (мисалы dQw4w9WgXcQ). |  |
+| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasini yoki video identifikatorini qo'ying — sayt faqat identifikatorni saqlaydi. | YouTube же Vimeo шилтемесин же видео идентификаторун коюңуз — идентификатор гана сакталат. |  |
 | `studio.course.videoSeconds` | Davomiyligi, soniya | Узактыгы, секунд |  |
 | `studio.course.saveLesson` | Darsni saqlash | Сабакты сактоо |  |
 | `studio.course.reviewIntro` | Xodim kursni o'qib chiqadi, narxini belgilaydi va nashr qiladi. Yuborishdan oldin quyidagilar bajarilishi kerak. | Кызматкер курсту окуп, баасын белгилеп, жарыялайт. Жөнөтүүдөн мурун төмөнкүлөр аткарылышы керек. |  |

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2857 strings.**
+**2856 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2769,7 +2769,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `course.lesson.openProblem` | Masalani ochish | Máseleni ashıw |  |
 | `course.lesson.quizHint` | Testdan kamida {percent}% to'plang — dars o'zi tugaydi. | Testten keminde {percent}% jıynań — sabaq ózi tamamlanadı. |  |
 | `course.lesson.openQuiz` | Testni boshlash | Testti baslaw |  |
-| `course.lesson.videoExternal` | Videoni ochish | Videonı ashıw |  |
 | `course.lesson.videoPending` | Video tayyorlanmoqda. | Video tayarlanbaqta. |  |
 | `course.lesson.backToCourse` | Kurs sahifasi | Kurs beti |  |
 | `gate.course.title` | Darslarni o'qish uchun tizimga kiring | Sabaqlardı oqıw ushın sistemaǵa kiriń |  |
@@ -2862,7 +2861,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.course.provider.vimeo` | Vimeo | Vimeo |  |
 | `studio.course.provider.hls` | Bizning serverda (R2) | Biziń serverde (R2) |  |
 | `studio.course.videoRef` | Video identifikatori | Video identifikatorı |  |
-| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasidagi identifikator (masalan dQw4w9WgXcQ). | YouTube yamasa Vimeo siltemesindegi identifikator (mısalı dQw4w9WgXcQ). |  |
+| `studio.course.videoRefHint` | YouTube yoki Vimeo havolasini yoki video identifikatorini qo'ying — sayt faqat identifikatorni saqlaydi. | YouTube yamasa Vimeo siltemesin yamasa video identifikatorın qoyıń — tek identifikator saqlanadı. |  |
 | `studio.course.videoSeconds` | Davomiyligi, soniya | Uzaqlıǵı, sekund |  |
 | `studio.course.saveLesson` | Darsni saqlash | Sabaqtı saqlaw |  |
 | `studio.course.reviewIntro` | Xodim kursni o'qib chiqadi, narxini belgilaydi va nashr qiladi. Yuborishdan oldin quyidagilar bajarilishi kerak. | Xızmetker kurstı oqıp, bahasın belgilep, járiyalaydı. Jiberiwden aldın tómendegiler orınlanıwı kerek. |  |

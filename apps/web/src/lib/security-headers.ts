@@ -68,6 +68,14 @@ function devApiConnectOrigins(): string[] {
 /** The only third-party origin allowed to be framed. */
 export const TURNSTILE_ORIGIN = "https://challenges.cloudflare.com";
 
+/** Players a free course lesson embeds (ADR-0056 § 3.5). YouTube's
+ *  no-cookie host sets no tracking cookies until the reader presses play.
+ *  Paid lessons never use these: their video is ours, on R2. */
+export const VIDEO_FRAME_ORIGINS = [
+  "https://www.youtube-nocookie.com",
+  "https://player.vimeo.com",
+] as const;
+
 /** CSP uchun `nonce` yasaydi — kriptografik tasodifiy, base64. */
 export function makeNonce(): string {
   const bytes = new Uint8Array(16);
@@ -134,7 +142,7 @@ export function contentSecurityPolicy(
     // "Verification token is missing" (measured on the live site, 2026-10-05,
     // the first time the keys were set). The script itself needs no entry —
     // it is loaded by a nonced script under `'strict-dynamic'`.
-    "frame-src": [TURNSTILE_ORIGIN],
+    "frame-src": [TURNSTILE_ORIGIN, ...VIDEO_FRAME_ORIGINS],
   };
 
   const parts = Object.entries(directives).map(([k, v]) => `${k} ${v.join(" ")}`);

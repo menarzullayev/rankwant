@@ -173,7 +173,7 @@ class TestStructure:
                 "section": section["id"],
                 "kind": "video",
                 "video_provider": "youtube",
-                "video_ref": "abc",
+                "video_ref": "dQw4w9WgXcQ",
             },
             format="json",
         )
@@ -336,3 +336,65 @@ class TestReview:
         )
         assert resp.status_code == 200
         assert Course.objects.get(slug=slug).final_quiz == quiz
+
+
+class TestVideoReference:
+    @pytest.mark.parametrize(
+        ("provider", "pasted", "stored"),
+        [
+            ("youtube", "dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+            ("youtube", "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10", "dQw4w9WgXcQ"),
+            ("youtube", "https://youtu.be/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+            ("youtube", "youtube.com/shorts/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+            ("vimeo", "https://vimeo.com/76979871", "76979871"),
+            ("vimeo", "https://player.vimeo.com/video/76979871?h=x", "76979871"),
+        ],
+    )
+    def test_links_are_reduced_to_the_id(self, provider, pasted, stored):
+        from courses.video import normalise
+
+        assert normalise(provider, pasted) == stored
+
+    @pytest.mark.parametrize(
+        ("provider", "pasted"),
+        [
+            ("youtube", "https://evil.example/watch?v=dQw4w9WgXcQ"),
+            ("youtube", 'dQw4w9WgXcQ"><script>'),
+            ("vimeo", "https://vimeo.com/abc"),
+            ("hls", "../other-course/master"),
+        ],
+    )
+    def test_anything_else_is_refused(self, provider, pasted):
+        from courses.video import normalise
+
+        with pytest.raises(ValueError):
+            normalise(provider, pasted)
+
+    def test_studio_stores_the_id(self, user):
+        course = _ready_course(user)
+        section = Section.objects.get(module__course=course)
+        resp = _client(user).post(
+            reverse("studio-course-lesson-list", args=[course.slug]),
+            {
+                "section": section.pk,
+                "kind": "video",
+                "video_provider": "youtube",
+                "video_ref": "https://youtu.be/dQw4w9WgXcQ",
+            },
+            format="json",
+        )
+        assert resp.status_code == 201, resp.json()
+        assert resp.json()["video_ref"] == "dQw4w9WgXcQ"
+
+    def test_author_cannot_type_an_r2_key(self, user, staff):
+        course = _ready_course(user)
+        section = Section.objects.get(module__course=course)
+        data = {
+            "section": section.pk,
+            "kind": "video",
+            "video_provider": "hls",
+            "video_ref": "videos/x/master",
+        }
+        url = reverse("studio-course-lesson-list", args=[course.slug])
+        assert _client(user).post(url, data, format="json").status_code == 400
+        assert _client(staff).post(url, data, format="json").status_code == 201

@@ -176,6 +176,18 @@ ko'rinadi — jamoa katalogni oldindan tayyorlaydi; bayroq yoqilganda har
 kirgan foydalanuvchi yoza oladi (egasi qarori: «har kim, limit 3»).
 `/admin/courses` bayroqqa bog'liq emas.
 
+**5a-qism qanday qurildi.** Bepul darsdagi YouTube va Vimeo videosi sahifaga
+o'rnatiladi: YouTube `youtube-nocookie.com` dan (o'quvchi «play» bosmaguncha
+kuzatuv cookie'si yo'q), Vimeo `dnt=1` bilan. CSP `frame-src` ga faqat shu
+ikki manzil qo'shildi (Turnstile bilan birga — boshqa hech narsa; unit test
+aniq qatorni tekshiradi). Iframe `sandbox` bilan: pleyer o'z skriptini
+yuritadi, sahifani boshqa joyga olib keta olmaydi. Muallif to'liq havolani
+yopishtirishi mumkin — API faqat identifikatorni saqlaydi va formatini
+tekshiradi (YouTube 11 belgi, Vimeo raqam); boshqa narsa rad etiladi, chunki
+identifikator iframe manziliga tushadi. R2 (HLS) kalitini muallif qo'lda
+**yoza olmaydi**: u saqlangan videoni nomlaydi va boshqa kursning pullik
+videosiga ishora qilish mumkin bo'lardi — kalitni yuklash oqimi (5b) yozadi.
+
 ## 4. Ochiq qolganlar
 
 - Robocontest tariflari va pullik xizmatlarining chuqur tahlili — egasi
