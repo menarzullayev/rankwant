@@ -3342,8 +3342,51 @@ def neg_visual_baselines_exist() -> tuple[bool, str]:
 # ── web_unit / validation ───────────────────────────────────────────────
 
 
+# ── PR CI: decisions cases for files the PR did not touch are skipped ──
+# Owner decision 2026-11-10 (deploy-time audit, step D). 464 of the 678 cases
+# are `decisions`, and a `_decision_broken` case proves that check_decisions
+# catches one mutation in ONE file. When neither that file nor the code that
+# judges it changed in the PR, the case cannot come out differently, so PR CI
+# skips it and says how many it skipped. The list arrives in
+# NEGATIVE_CHANGED_FILES (one path per line), set only by the PR CI step;
+# `main` CI and Nightly run without it — the full suite, and a red `main` run
+# still stops the next deploy. Unset, unreadable or empty means a full run.
+_FULL_RUN_TRIGGERS = frozenset({
+    "tools/check_decisions.py",
+    "tools/check_negative.py",
+    "tools/_console.py",
+    ".github/workflows/ci.yml",
+})
+_CHANGED_UNSET = object()
+_changed_cache: object = _CHANGED_UNSET
+SKIPPED_UNCHANGED: list[str] = []
+
+
+def _changed_files() -> set[str] | None:
+    """The PR's changed paths, or None for a full run."""
+    global _changed_cache
+    if _changed_cache is not _CHANGED_UNSET:
+        return _changed_cache  # type: ignore[return-value]
+    result: set[str] | None = None
+    src = os.environ.get("NEGATIVE_CHANGED_FILES")
+    if src:
+        try:
+            lines = Path(src).read_text(encoding="utf-8").splitlines()
+        except OSError:
+            lines = []
+        files = {line.strip().replace("\\", "/") for line in lines if line.strip()}
+        if files and not files & _FULL_RUN_TRIGGERS:
+            result = files
+    _changed_cache = result
+    return result
+
+
 def _decision_broken(rel: str, old: str, new: str, rule: str) -> tuple[bool, str]:
     """Break one owner decision in `rel`; check_decisions must name that rule."""
+    changed = _changed_files()
+    if changed is not None and rel not in changed:
+        SKIPPED_UNCHANGED.append(rel)
+        return True, f"decisions/{rule}: o'tkazildi — {rel} bu PR'da o'zgarmagan"
     path = ROOT / rel
     text = path.read_bytes().decode("utf-8")
     if old not in text:
@@ -7893,6 +7936,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "tools/check_negative.py",
     "tools/revive_containers.sh",
     "apps/api/contests/organizer_views.py",
     "apps/web/src/features/studio/api/contests.ts",
@@ -11279,6 +11323,90 @@ def neg_node_cases_labels_exist() -> tuple[bool, str]:
     return True, f"NODE_CASES: {len(declared)} yorliq, hammasi registrda bor"
 
 
+def _scoped(listed: list[str], case) -> tuple[bool, str]:
+    """Run one decisions case as PR CI would, with `listed` as the changed files."""
+    global _changed_cache
+    saved_env = os.environ.get("NEGATIVE_CHANGED_FILES")
+    saved_cache = _changed_cache
+    saved_skips = len(SKIPPED_UNCHANGED)
+    with tempfile.TemporaryDirectory() as tmp:
+        listing = Path(tmp) / "changed.txt"
+        listing.write_text("\n".join(listed) + "\n", encoding="utf-8")
+        os.environ["NEGATIVE_CHANGED_FILES"] = str(listing)
+        _changed_cache = _CHANGED_UNSET
+        try:
+            return case()
+        finally:
+            if saved_env is None:
+                os.environ.pop("NEGATIVE_CHANGED_FILES", None)
+            else:
+                os.environ["NEGATIVE_CHANGED_FILES"] = saved_env
+            _changed_cache = saved_cache
+            del SKIPPED_UNCHANGED[saved_skips:]
+
+
+def neg_scope_changed_file_runs() -> tuple[bool, str]:
+    # The PR touched deploy.sh: its case must really mutate and be caught.
+    ok, msg = _scoped(["tools/deploy.sh"], neg_decisions_deploy_backup_after_migrate)
+    if not ok or "tutildi" not in msg:
+        return False, f"scope/o'zgargan fayl: test yurmadi — {msg[-120:]}"
+    return True, "scope/o'zgargan fayl: test yurdi va qaror tutildi"
+
+
+def neg_scope_unchanged_file_skipped() -> tuple[bool, str]:
+    # Positive control for the skip itself: without it the narrowing is dead weight.
+    ok, msg = _scoped(["README.md"], neg_decisions_deploy_backup_after_migrate)
+    if not ok or "o'tkazildi" not in msg:
+        return False, f"scope/o'zgarmagan fayl: test o'tkazilmadi — {msg[-120:]}"
+    return True, "scope/o'zgarmagan fayl: o'tkazildi"
+
+
+def neg_scope_rule_code_runs_all() -> tuple[bool, str]:
+    # The rules themselves changed: every case runs, even for untouched files.
+    ok, msg = _scoped(["README.md", "tools/check_decisions.py"], neg_decisions_deploy_backup_after_migrate)
+    if not ok or "tutildi" not in msg:
+        return False, f"scope/qoida kodi: to'liq yurmadi — {msg[-120:]}"
+    return True, "scope/qoida kodi o'zgarsa hammasi yuradi"
+
+
+def neg_scope_empty_list_runs_all() -> tuple[bool, str]:
+    # An empty or unreadable list is a full run, never a silent skip.
+    ok, msg = _scoped([], neg_decisions_deploy_backup_after_migrate)
+    if not ok or "tutildi" not in msg:
+        return False, f"scope/bo'sh ro'yxat: to'liq yurmadi — {msg[-120:]}"
+    return True, "scope/bo'sh ro'yxat — to'liq yurish"
+
+
+def neg_decisions_scope_skips_everything() -> tuple[bool, str]:
+    """The skip loses its file check (every case would be skipped on PRs)."""
+    return _decision_broken(
+        "tools/check_negative.py",
+        "    if changed is not None and rel not in changed:\n",
+        "    if changed is not None:\n",
+        "o'zgarmagan fayl testi o'tkazilmaydi",
+    )
+
+
+def neg_decisions_scope_without_add_only() -> tuple[bool, str]:
+    """The add-only filter is dropped: 28 of the last 30 PRs would run everything again."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        ' and .deletions == 0 | not)',
+        ' | not)',
+        "add-only filtri yo'q",
+    )
+
+
+def neg_decisions_scope_on_main_too() -> tuple[bool, str]:
+    """The changed-files list is also produced on main (main would stop running the full suite)."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        " && github.event_name == 'pull_request' }}\n        env:\n          GH_TOKEN",
+        " }}\n        env:\n          GH_TOKEN",
+        "faqat PR'da emas",
+    )
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -12604,6 +12732,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("toza holat o'tadi (nazorat)", neg_check_metrics_passes),
         ],
     ),
+    (
+        "neg_scope",
+        [
+            ("o'zgargan fayl testi yuradi", neg_scope_changed_file_runs),
+            ("o'zgarmagan fayl testi o'tkaziladi (nazorat)", neg_scope_unchanged_file_skipped),
+            ("qoida kodi o'zgarsa hammasi yuradi", neg_scope_rule_code_runs_all),
+            ("bo'sh ro'yxat — to'liq yurish", neg_scope_empty_list_runs_all),
+            ("skip fayl tekshiruvini yo'qotsa tutilsin", neg_decisions_scope_skips_everything),
+            ("ro'yxat main'da ham berilsa tutilsin", neg_decisions_scope_on_main_too),
+            ("add-only filtri olinsa tutilsin", neg_decisions_scope_without_add_only),
+        ],
+    ),
 ]
 
 
@@ -13006,6 +13146,11 @@ def main(argv: list[str]) -> int:
         print(f"  ✕ {message}")
         failures.append(message)
 
+    if SKIPPED_UNCHANGED:
+        skipped.append(
+            f"{len(SKIPPED_UNCHANGED)} ta qaror testi — fayli bu PR'da o'zgarmagan "
+            "(main CI va Nightly to'liq yuradi)"
+        )
     print()
     if skipped:
         # Jimgina o'tkazib yuborish — yolg'on yashilning eng arzon turi.

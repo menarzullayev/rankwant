@@ -442,6 +442,27 @@ jobs:
       - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         run: npm run build
         working-directory: apps/web
+      # On a pull request the decisions cases run only for the files the PR
+      # changed (owner decision 2026-11-10); `main` and Nightly run them all.
+      # The list comes from the API, so the shallow checkout is enough. If it
+      # cannot be read the file stays empty, and empty means a full run.
+      # A PR that only ADDS lines to check_decisions.py / check_negative.py
+      # (a new rule and its tests — 16 of the last 30 PRs) leaves the existing
+      # rules as they were, so those two are left out of the list; any line
+      # removed or changed there keeps them in, and they force a full run.
+      # Measured on the last 30 PRs: 26 of 396 cases skipped on average
+      # without this, 231 with it.
+      - name: Changed files (PR only)
+        if: ${{ steps.check.outputs.ready == 'true' && github.event_name == 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            --jq '.[] | select((.filename == "tools/check_decisions.py" or .filename == "tools/check_negative.py") and .deletions == 0 | not) | .filename, (.previous_filename // empty)' \
+            > "$RUNNER_TEMP/changed-files.txt" \
+            || : > "$RUNNER_TEMP/changed-files.txt"
+          echo "NEGATIVE_CHANGED_FILES=$RUNNER_TEMP/changed-files.txt" >> "$GITHUB_ENV"
+          wc -l < "$RUNNER_TEMP/changed-files.txt"
       - name: Negative tests
         if: steps.check.outputs.ready == 'true'
         env:

@@ -230,6 +230,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-studio-contests.md) · Organizator musobaqasi `/studio/contests` da: 5 ta chegara, faqat o'z qoralama masalalari · `studio_contests_panel`
 - [2026-11-10](docs/decisions/2026-11-10-graphite-palette.md) · `newPalette`: clay qorong'isi uchun «Grafit», standart o'chiq · `graphite_palette_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-dump-only-for-migrations.md) · Deploy oldidagi `pg_dump` faqat qo'llanmagan migratsiya bo'lsa, build bilan parallel; ro'yxat ko'rmaganini `migrate --check` ushlaydi · `dump_only_for_pending_migrations`
+- [2026-11-10](docs/decisions/2026-11-10-pr-negative-scope.md) · PR CI qaror salbiy testlarini faqat o'zgargan fayllar uchun yuritadi; main va Nightly — to'liq · `pr_runs_decision_cases_for_changed_files`
 - [2026-11-10](docs/decisions/2026-11-10-revive-failed-containers.md) · Docker ko'tara olmagan konteynerni watcher ko'taradi (qo'lda to'xtatilgani emas); Docker o'chiqda deploy to'sig'i yo'q · `failed_containers_are_revived`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-public-env-reaches-build.md) · Web o'qiydigan har `NEXT_PUBLIC_*` build'ga uzatiladi; bo'sh `SITE_URL` = API origin'i · `flags_reach_the_web_build`
