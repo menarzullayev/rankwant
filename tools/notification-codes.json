@@ -1,10 +1,29 @@
 {
+  "contest_announcement": [
+    "contest",
+    "text"
+  ],
+  "contest_answer": [
+    "contest",
+    "question"
+  ],
+  "contest_disqualified": [
+    "contest",
+    "reason"
+  ],
+  "contest_question": [
+    "contest",
+    "text"
+  ],
   "contest_result": [
     "after",
     "before",
     "contest",
     "delta",
     "rank"
+  ],
+  "contest_tester": [
+    "contest"
   ],
   "duel_accepted": [
     "duel",

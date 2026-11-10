@@ -425,6 +425,10 @@ class EmailDelivery(models.Model):
         EMAIL_VERIFY = "email_verify", "Emailni tasdiqlash"
         #: Eski manzilga ogohlantirish — egasi o'zi qilmagan bo'lsa bilsin.
         EMAIL_CHANGED = "email_changed", "Pochta almashtirildi"
+        #: An in-app notification copied to email (opt-in per kind). Counted
+        #: on its own so the per-user daily cap and the reserve kept for the
+        #: account mail above can tell the two apart.
+        NOTIFICATION = "notification", "Bildirishnoma"
         OTHER = "other", "Boshqa"
 
     class Status(models.TextChoices):
@@ -439,7 +443,11 @@ class EmailDelivery(models.Model):
         #: yozildi — ya'ni Brevo'ning 300/kun bepul shiftini 85 soniyada
         #: yoqib yubordi. Panel «311 yuborildi» derdi, aslida 10 tasi
         #: haqiqiy edi.
-        SKIPPED = "skipped", "Yuborilmadi (zaxira domen)"
+        #:
+        #: A notification email skipped before any provider was called
+        #: (the reserve for account mail, the per-user daily cap) is
+        #: recorded the same way, with the reason in `attempts`.
+        SKIPPED = "skipped", "O'tkazib yuborildi"
 
     to_email = models.EmailField()
     purpose = models.CharField(max_length=24, choices=Purpose.choices, default=Purpose.OTHER)

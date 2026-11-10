@@ -3402,8 +3402,8 @@ def neg_decisions_verify_page_loses_the_shell() -> tuple[bool, str]:
     """`/verify-email` goes back to the site chrome."""
     return _decision_broken(
         "apps/web/src/layout/AppShell.tsx",
-        'const FULL = ["/login", "/register", "/reset-password", "/verify-email", "/onboarding"];',
-        'const FULL = ["/login", "/register", "/reset-password", "/onboarding"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/verify-email", "/onboarding"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/onboarding"];',
         "FULL ro'yxatida emas",
     )
 
@@ -3731,7 +3731,7 @@ def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
     """`/login` leaves FULL: the site header and footer return around it."""
     return _decision_broken(
         "apps/web/src/layout/AppShell.tsx",
-        'const FULL = ["/login", "/register", "/reset-password", "/verify-email", "/onboarding"];',
+        'const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/verify-email", "/onboarding"];',
         'const FULL = ["/register", "/reset-password"];',
         "FULL ro'yxatida emas",
     )
@@ -4325,6 +4325,85 @@ def neg_decisions_privacy_forgets_imported_profiles() -> tuple[bool, str]:
         "«Codeforces» ni aytmaydi",
     )
 
+
+def neg_decisions_email_on_by_default() -> tuple[bool, str]:
+    """Email starts switched on: mail goes out nobody asked for."""
+    return _decision_broken(
+        "apps/api/notifications/services.py",
+        'DEFAULT_CHANNELS = {"site": True, "telegram": False, "email": False}',
+        'DEFAULT_CHANNELS = {"site": True, "telegram": False, "email": True}',
+        "email standart holatda o'chiq emas",
+    )
+
+
+def neg_decisions_bulk_announcement_mailed() -> tuple[bool, str]:
+    """A post sent to every user is copied to email too."""
+    return _decision_broken(
+        "apps/api/notifications/services.py",
+        "    rows = [\n        compose(",
+        "    email = True\n    rows = [\n        compose(",
+        "`notify_many` email yuboradi",
+    )
+
+
+def neg_decisions_email_sent_at_once() -> tuple[bool, str]:
+    """The mail is queued without the five-minute wait."""
+    return _decision_broken(
+        "apps/api/notifications/email.py",
+        "countdown=EMAIL_DELAY_SECONDS",
+        "countdown=0",
+        "5 daqiqa kutmaydi",
+    )
+
+
+def neg_decisions_email_to_unverified_address() -> tuple[bool, str]:
+    """An unconfirmed address — maybe a typo, maybe someone else's — gets mail."""
+    return _decision_broken(
+        "apps/api/notifications/email.py",
+        "        and user.email_verified_at is not None\n",
+        "",
+        "tasdiqlanmagan manzilga",
+    )
+
+
+def neg_decisions_read_notification_mailed() -> tuple[bool, str]:
+    """A notification already read on the site is mailed anyway."""
+    return _decision_broken(
+        "apps/api/notifications/email.py",
+        '            return "skipped:read"',
+        "            pass",
+        "saytda o'qilgan",
+    )
+
+
+def neg_decisions_email_spends_the_reserve() -> tuple[bool, str]:
+    """Notification mail eats the quota password reset needs."""
+    return _decision_broken(
+        "apps/api/notifications/email.py",
+        "if left is not None and left <= RESERVE_FOR_ACCOUNT_MAIL:",
+        "if left is not None and left < 0:",
+        "zaxirasi yoki kunlik chegara yo'q",
+    )
+
+
+def neg_decisions_unsubscribe_on_get() -> tuple[bool, str]:
+    """Opening the link switches email off — a mail scanner would do it."""
+    return _decision_broken(
+        "apps/api/notifications/views.py",
+        '        return Response({"kind": target[1], "done": False})',
+        '        email_channel.unsubscribe(*target)\n        return Response({"kind": target[1], "done": False})',
+        "GET obunani bekor qiladi",
+    )
+
+
+def neg_decisions_email_column_gone() -> tuple[bool, str]:
+    """The settings table loses its Email column."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/NotificationsSection.tsx",
+        'const CHANNELS = ["site", "telegram", "email"] as const;',
+        'const CHANNELS = ["site", "telegram"] as const;',
+        "Email ustuni sozlamalarda yo'q",
+    )
 
 def neg_decisions_session_rows_kept() -> tuple[bool, str]:
     """The daily task that drops expired session rows is unscheduled."""
@@ -4994,10 +5073,12 @@ def neg_notification_code_removed() -> tuple[bool, str]:
     baseline gains a code the catalogue lacks — the same state as a removal.
     """
     path = ROOT / "tools/notification-codes.json"
-    old = '{\n  "contest_result": ['
+    # Anchored on the entry itself, not on it being first: a new code that
+    # sorts before it would move it down and leave the anchor nowhere.
+    old = '\n  "contest_result": ['
     if old not in path.read_bytes().decode("utf-8"):
         return False, "bildirishnoma kodi: langar topilmadi (notification-codes.json)"
-    with Mutation(path, old, '{\n  "ghost_code": ["x"],\n  "contest_result": ['):
+    with Mutation(path, old, '\n  "ghost_code": ["x"],\n  "contest_result": ['):
         code, out = run([PY, "tools/check_notification_codes.py"])
     if code != 1:
         return False, f"bildirishnoma kodi: o'chirilgan kod exit {code} berdi (1 kerak)"
@@ -5520,7 +5601,7 @@ def neg_decisions_contest_problem_in_the_archive_list() -> tuple[bool, str]:
     """The archive list uses the wider "may be opened" scope."""
     return _decision_broken(
         "apps/api/problems/views.py",
-        'scope = Q(is_public=True) if self.action == "list" else visibility.openable_q()',
+        'scope = Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)',
         "scope = visibility.openable_q()",
         "arxiv ro'yxati musobaqa masalasini ham beradi",
     )
@@ -5553,6 +5634,156 @@ def neg_decisions_contest_page_names_problems_early() -> tuple[bool, str]:
         "        if timezone.now() < contest.start_at:\n",
         "        if False:\n",
         "boshlanishdan oldin ko'rsatadi",
+    )
+
+
+def neg_decisions_anybody_disqualifies() -> tuple[bool, str]:
+    """An organizer (not the jury) disqualifies."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "contest.jury.filter(pk=user.pk).exists()",
+        "True",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_keeps_attempts() -> tuple[bool, str]:
+    """A disqualified participant's attempts still count."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "skip_attempts(contest.attempts.filter(user=user))",
+        "None",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_without_rerating() -> tuple[bool, str]:
+    """A disqualification after finalizing leaves the ratings as they were."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "            rerate_contest(contest)",
+        "            pass",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_row_is_official() -> tuple[bool, str]:
+    """A disqualified row is rated and placed."""
+    return _decision_broken(
+        "apps/api/contests/models.py",
+        'return self.filter(insider_role="", is_disqualified=False)',
+        'return self.filter(insider_role="")',
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_editor_signals_dropped() -> tuple[bool, str]:
+    """The editor no longer sends its signals with a contest attempt."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/SubmitPanel.tsx",
+        "editor: signals.snapshot()",
+        "editor: undefined",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_question_is_public() -> tuple[bool, str]:
+    """A participant's question is shown to everybody."""
+    return _decision_broken(
+        "apps/api/contests/clarifications.py",
+        "    shown = Q(is_public=True, answered_at__isnull=False)",
+        "    shown = Q()",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_anybody_answers() -> tuple[bool, str]:
+    """A participant answers another's question."""
+    return _decision_broken(
+        "apps/api/contests/views.py",
+        "if not qa.can_moderate(contest, request.user):",
+        "if False:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_question_limit_dropped() -> tuple[bool, str]:
+    """The questions per contest are not limited."""
+    return _decision_broken(
+        "apps/api/contests/clarifications.py",
+        "    if mine.count() >= MAX_QUESTIONS:",
+        "    if False:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_asker_named() -> tuple[bool, str]:
+    """The asker's name is shown to everybody."""
+    return _decision_broken(
+        "apps/api/contests/serializers.py",
+        'if not self.context.get("moderator") or row.author is None:',
+        "if row.author is None:",
+        "musobaqa savoli yopiq, javobni hakam beradi",
+    )
+
+
+def neg_decisions_insider_testing_in_the_table() -> tuple[bool, str]:
+    """A tester's attempt from before the start counts in the table."""
+    return _decision_broken(
+        "apps/api/contests/services.py",
+        "attempts.exclude(user_id__in=list(roles), created_at__lt=contest.start_at)",
+        "attempts.exclude(pk__in=[])",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_insider_gets_a_place() -> tuple[bool, str]:
+    """An insider's row is given an official place."""
+    return _decision_broken(
+        "apps/api/contests/services.py",
+        "        if row.user_id in roles or row.user_id in dq:\n            places.append(0)",
+        "        if False:\n            places.append(0)",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_insider_is_rated() -> tuple[bool, str]:
+    """The rating is applied to an insider's row too."""
+    return _decision_broken(
+        "apps/api/ratings/services.py",
+        'Standing.objects.filter(contest=contest).official().select_related("user")',
+        'Standing.objects.filter(contest=contest).select_related("user")',
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_testing_attempt_counts_as_solved() -> tuple[bool, str]:
+    """A testing attempt is written as a solved problem."""
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        "    testing = is_testing(attempt)\n    if not testing:\n",
+        "    testing = False\n    if not testing:\n",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_testing_attempt_in_the_feed() -> tuple[bool, str]:
+    """Other people's feed shows a testing attempt."""
+    return _decision_broken(
+        "apps/api/judging/views.py",
+        "for contest_id, start_at in testing_windows()",
+        "for contest_id, start_at in []",
+        "ichkaridagilar reytingsiz qatnashadi",
+    )
+
+
+def neg_decisions_anybody_tests_early() -> tuple[bool, str]:
+    """Anybody, not only an insider, sends before the start."""
+    return _decision_broken(
+        "apps/api/judging/serializers.py",
+        "timezone.now() < contest.start_at and bool(role_of(contest, user))",
+        "timezone.now() < contest.start_at",
+        "ichkaridagilar reytingsiz qatnashadi",
     )
 
 
@@ -6005,6 +6236,89 @@ def neg_decisions_language_rule() -> tuple[bool, str]:
 def neg_decisions_table_removed() -> tuple[bool, str]:
     return _decision_broken(
         "CLAUDE.md", "## Saidakbar aka qarorlari", "## Qarorlar", "qarorlar jadvali"
+    )
+
+
+# ── Decisions index ↔ `docs/decisions/` (2026-11-10, audit Q-10) ──────────
+#
+# The table left CLAUDE.md for one file per decision plus a one-line index.
+# Each case below leaves a decision in one place only, or the two places
+# disagreeing; `decisions_index_matches_files` must name what is wrong.
+
+_INDEX_LINE = (
+    "- [2026-09-17](docs/decisions/2026-09-17-local-only-backups.md)"
+    " · Zaxira 30 kunda bir marta, faqat lokal; offsite yo'q · `backup_local_only`\n"
+)
+_INDEX_RULE = "qarorlar indeksi fayllarga mos"
+
+
+def _decisions_index_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break the index or a decision file in `rel`; the rule must say `expect`."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"decisions/indeks: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("decisions")
+    if code != 1:
+        return False, f"decisions/indeks: buzilgan holat exit {code} berdi (1 kerak)"
+    if _INDEX_RULE not in out or expect not in out:
+        return False, f"decisions/indeks: yiqildi, lekin boshqa sabab — {out.strip()[-170:]}"
+    return True, f"decisions/indeks: «{expect}» tutildi (exit 1)"
+
+
+def neg_decisions_index_line_dropped() -> tuple[bool, str]:
+    """The file stays, its index line goes: the decision is in one place only."""
+    return _decisions_index_broken("CLAUDE.md", _INDEX_LINE, "", "fayli bor, indeksda yo'q")
+
+
+def neg_decisions_file_dropped() -> tuple[bool, str]:
+    """The index line stays, its file goes. A file cannot be mutated away, so
+    the sandbox drops it from the copy."""
+    code, out = _decisions_sandbox({}, drop=("docs/decisions/2026-09-17-local-only-backups.md",))
+    if code != 1 or _INDEX_RULE not in out or "indeksda bor, fayli yo'q" not in out:
+        return False, f"decisions/indeks: o'chgan fayl exit {code} — {out.strip()[-170:]}"
+    return True, "decisions/indeks: «indeksda bor, fayli yo'q» tutildi (exit 1)"
+
+
+def neg_decisions_row_back_in_claude() -> tuple[bool, str]:
+    """A table row is written into CLAUDE.md again — what a branch cut before
+    the move merges in."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        "\n## Tekshiruvlar\n",
+        "\n| 2026-11-10 | **Yangi qaror** | `tools/x.py` |\n\n## Tekshiruvlar\n",
+        "jadval qatori bor",
+    )
+
+
+def neg_decisions_index_unknown_rule() -> tuple[bool, str]:
+    """The index names a guard that check_decisions.py does not have."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        _INDEX_LINE,
+        _INDEX_LINE.replace("`backup_local_only`", "`backup_is_local_only`"),
+        "bunday qoida yo'q",
+    )
+
+
+def neg_decisions_index_date_mismatch() -> tuple[bool, str]:
+    """The index date disagrees with the file it links to."""
+    return _decisions_index_broken(
+        "CLAUDE.md",
+        _INDEX_LINE,
+        _INDEX_LINE.replace("- [2026-09-17]", "- [2026-09-18]"),
+        "fayl nomiga mos emas",
+    )
+
+
+def neg_decisions_file_holds_two_rows() -> tuple[bool, str]:
+    """A second decision is appended to an existing file instead of a new one."""
+    rel = "docs/decisions/2026-09-17-local-only-backups.md"
+    text = (ROOT / rel).read_bytes().decode("utf-8")
+    last = text.rstrip("\n").split("\n")[-1] + "\n"
+    return _decisions_index_broken(
+        rel, last, last + "| 2026-11-10 | **Yangi qaror** | `tools/x.py` |\n", "2 ta qaror qatori"
     )
 
 
@@ -7545,6 +7859,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
     # Privacy text (2026-11-10): the policy and the session-retention task.
     "apps/web/src/content/legal.ts",
+    # Notification email (2026-11-10): the channel, the unsubscribe view and
+    # the settings column (`notifications/services.py` is staged above).
+    "apps/api/notifications/email.py",
+    "apps/api/notifications/views.py",
+    "apps/web/src/features/account/components/NotificationsSection.tsx",
     # Judge latency gate (2026-09-21): the rule reads the harness to prove the
     # budget comparison still exists — a gate whose comparison is gone still
     # exits 0, i.e. green but measuring nothing. The compose service and the
@@ -7621,6 +7940,15 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/serializers.py",
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
+    "apps/api/contests/certificates.py",
+    "apps/api/contests/clarifications.py",
+    "apps/api/contests/integrity.py",
+    "apps/api/contests/models.py",
+    "apps/web/src/app/(site)/contests/[slug]/page.tsx",
+    "apps/web/src/features/problems/components/SubmitPanel.tsx",
+    "apps/api/contests/views.py",
+    "apps/api/ratings/services.py",
+    "apps/api/tournaments/services.py",
     "apps/api/judging/tasks.py",
     "apps/api/judging/provider.py",
     # Region A/B wired (2026-11-10, audit Q-13): the switch, the field, the
@@ -7670,6 +7998,12 @@ def _decisions_sandbox(
         for rel in _DECISIONS_SANDBOX_FILES:
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             (root / rel).write_bytes((ROOT / rel).read_bytes())
+        # `decisions_index_matches_files` globs the whole folder, so no
+        # `read("...")` names its files and the list above cannot stage them.
+        decisions = root / "docs/decisions"
+        decisions.mkdir(parents=True, exist_ok=True)
+        for path in (ROOT / "docs/decisions").glob("*.md"):
+            (decisions / path.name).write_bytes(path.read_bytes())
         for rel in drop:
             (root / rel).unlink()
         workflows = root / ".github/workflows"
@@ -11007,6 +11341,21 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bitta urinish muzlatishni chetlasa tutilsin", neg_decisions_single_attempt_ignores_the_freeze),
             ("musobaqa sahifasi masalani erta aytsa tutilsin", neg_decisions_contest_page_names_problems_early),
             ("masalalar arxivga o'tmasa tutilsin", neg_decisions_contest_problems_never_released),
+            ("sinov urinishi jadvalga tushsa tutilsin", neg_decisions_insider_testing_in_the_table),
+            ("ichkaridagi rasmiy o'rin olsa tutilsin", neg_decisions_insider_gets_a_place),
+            ("ichkaridagiga reyting berilsa tutilsin", neg_decisions_insider_is_rated),
+            ("sinov urinishi yechilgan sanalsa tutilsin", neg_decisions_testing_attempt_counts_as_solved),
+            ("sinov urinishi lentada ko'rinsa tutilsin", neg_decisions_testing_attempt_in_the_feed),
+            ("har kim erta yuborsa tutilsin", neg_decisions_anybody_tests_early),
+            ("savol hammaga ochilsa tutilsin", neg_decisions_question_is_public),
+            ("hakam bo'lmagan javob bersa tutilsin", neg_decisions_anybody_answers),
+            ("savol chegarasi tushsa tutilsin", neg_decisions_question_limit_dropped),
+            ("so'raganning ismi ochilsa tutilsin", neg_decisions_asker_named),
+            ("hakam bo'lmagan chetlatsa tutilsin", neg_decisions_anybody_disqualifies),
+            ("chetlatilganning urinishlari qolsa tutilsin", neg_decisions_dq_keeps_attempts),
+            ("chetlatishdan keyin reyting qolsa tutilsin", neg_decisions_dq_without_rerating),
+            ("chetlatilgan qator rasmiy bo'lsa tutilsin", neg_decisions_dq_row_is_official),
+            ("muharrir signallari tushsa tutilsin", neg_decisions_editor_signals_dropped),
             ("tozalagich natijani kutmasa tutilsin", neg_decisions_reaper_ignores_waiting_results),
             ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
             ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),
@@ -11046,6 +11395,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("marafon namunasiz masalani tanlasa tutilsin", neg_decisions_marathon_draws_samples_only),
             ("qayta hisoblash signali yuklanmasa tutilsin", neg_decisions_recount_signal_not_loaded),
             ("maxfiylik matni importni unutsa tutilsin", neg_decisions_privacy_forgets_imported_profiles),
+            ("email standartda yoqilsa tutilsin", neg_decisions_email_on_by_default),
+            ("e'lon emailga ketsa tutilsin", neg_decisions_bulk_announcement_mailed),
+            ("xat darhol ketsa tutilsin", neg_decisions_email_sent_at_once),
+            ("tasdiqlanmagan manzilga xat ketsa tutilsin", neg_decisions_email_to_unverified_address),
+            ("o'qilgan xabar emailga ketsa tutilsin", neg_decisions_read_notification_mailed),
+            ("hisob xatlari zaxirasi yo'qolsa tutilsin", neg_decisions_email_spends_the_reserve),
+            ("GET obunani bekor qilsa tutilsin", neg_decisions_unsubscribe_on_get),
+            ("Email ustuni yo'qolsa tutilsin", neg_decisions_email_column_gone),
             ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
             ("glossariy tekshiruvi uzilsa tutilsin", neg_decisions_glossary_check_unwired),
             ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),
@@ -11169,6 +11526,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
             ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
+            ("qaror fayli indekssiz qolsa tutilsin", neg_decisions_index_line_dropped),
+            ("indeks qatori faylsiz qolsa tutilsin", neg_decisions_file_dropped),
+            ("CLAUDE.md ga jadval qatori qaytsa tutilsin", neg_decisions_row_back_in_claude),
+            ("indeks yo'q qoidani atasa tutilsin", neg_decisions_index_unknown_rule),
+            ("indeks sanasi faylga mos kelmasa tutilsin", neg_decisions_index_date_mismatch),
+            ("qaror faylida ikki qator bo'lsa tutilsin", neg_decisions_file_holds_two_rows),
             ("endonim tor ekranda chegarasiz qolsa tutilsin", neg_decisions_locale_label_unbounded),
             ("tor ekranda til kodi qaytsa tutilsin", neg_decisions_locale_code_restored),
             (

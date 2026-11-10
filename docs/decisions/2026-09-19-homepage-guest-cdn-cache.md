@@ -1,0 +1,3 @@
+| Sana | Qaror | Kodda qayerda |
+|---|---|---|
+| 2026-09-19 | **Bosh sahifa 100k ochilishda qotmasin**: CDN HTML kesh faqat mehmon GET `/` (sessiya/`rw_locale`/`rw:markup` yo'q). Origin `Cache-Control: public, s-maxage=30, stale-while-revalidate=86400`; kirgan `private, no-store` SSR. Cloudflare `/` ni Worker'siz, origin header'ga rioya qilib keshlaydi (`Eligible` + `Respect origin`). Worker catch-all `rankwant.uz/*` olib tashlandi — `host/x*` qolgan yo'llarni qamraydi | `apps/web/src/lib/home-cache.ts`; `apps/web/src/proxy.ts`; `apps/web/src/instrumentation.ts`; `services/maintenance-worker/wrangler.toml`; `tools/check_decisions.py` → `homepage_guest_cdn_cache` |

@@ -1,0 +1,3 @@
+| Sana | Qaror | Kodda qayerda |
+|---|---|---|
+| 2026-09-20 | **`/problems` mehmon CDN, tilga bog'liq** (HITL: problems-al). Query'siz GET; `uz` majburiy emas. Origin `Vary: Accept-Language` (`guest-al`); CF Cache Rule `vary.normalize` (10 til) + default `passthrough` (`bypass` Next RSC tokenlarida CDN ni o'chiradi). Kirgan / `rw_locale` / `?page=` / `?lang=` chiqariladi. Worker `problems*` → `problems/*` | `home-cache.ts`; `instrumentation.ts`; `wrangler.toml`; `tools/cf-guest-cache-rule.json`; `tools/cf_guest_cache_apply.py`; `tools/check_decisions.py` → `problems_list_guest_cdn`; salbiy testlar 4 ta |

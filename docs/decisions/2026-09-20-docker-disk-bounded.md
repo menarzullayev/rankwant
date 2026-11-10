@@ -1,0 +1,3 @@
+| Sana | Qaror | Kodda qayerda |
+|---|---|---|
+| 2026-09-20 | **Docker disk o'smasin.** SHA obraz teglari saqlanmaydi — har deploy VHDX ni to'ldirgan (o'lchandi 15–20 sen: 40→132 GB). Muvaffaqiyatli deploy'dan keyin `tools/prune_docker_disk.sh`: `rankwant/<svc>:<sha>` hammasi, dangling obraz, builder prune (`--all` emas; `volume prune` YO'Q). Compose va `tools/docker-daemon.json`: json-file `max-size: 10m` / `max-file: 3`; builder GC **5 GB** (20 GB emas). Kodni qaytarish = kerakli commitni `deploy.sh` bilan qayta qurish; sxema = `pg-deploy` dump, qo'lda | compose fayllar; `tools/runner/docker-compose.runner.yml`; `tools/prune_docker_disk.sh`; `tools/docker-daemon.json`; `tools/deploy.sh`; `tools/check_decisions.py` → `docker_disk_stays_bounded`; salbiy testlar 4 ta |

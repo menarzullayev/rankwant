@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2448 strings.**
+**2550 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -640,7 +640,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Тағйироти охирин нигоҳ дошта нашуд. Бахшро аз нав кушода, онро боз ворид кунед. |  |
 | `settings.discard` | Bekor qilish | Бекор кардан |  |
 | `settings.channelEmail` | Pochta | Почта |  |
-| `settings.soon` | tez orada | ба наздикӣ |  |
 | `settings.privacy.title` | Kim nimani ko'radi | Кӣ чиро мебинад |  |
 | `settings.privacy.hint` | Yoqilgan maydon ommaviy profilda ko'rinadi. Pochta standart holatda yashirin. | Майдони фаъол дар профили оммавӣ намоён аст. Почта ба таври пешфарз пинҳон аст. |  |
 | `settings.privacy.preview` | Profilim boshqalarga qanday ko'rinadi | Профили ман ба дигарон чӣ гуна намоён аст |  |
@@ -879,9 +878,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.bio` | O'zim haqimda | Дар бораи худ |  |
 | `settings.bioHint` | Profil sahifasida ismingiz tagida ko'rinadi. | Дар саҳифаи профил зери номи шумо намоён мешавад. |  |
 | `settings.birthDate` | Tug'ilgan sana | Санаи таваллуд |  |
-| `settings.channelEmailSoon` | Pochta orqali yuborish keyinroq qo'shiladi. | Фиристодан тавассути почта баъдтар илова мешавад. |  |
 | `settings.channelSite` | Saytda | Дар сайт |  |
 | `settings.channelTelegram` | Telegram | Telegram |  |
+| `settings.notifyEmailHint` | Email faqat tasdiqlangan manzilga va faqat sizga tegishli xabar uchun yuboriladi — umumiy e'lonlar emailga kelmaydi. Xat 5 daqiqadan keyin ketadi; shu orada saytda o'qisangiz, yuborilmaydi. | Паём танҳо ба суроғаи тасдиқшуда ва танҳо дар бораи он чи ба шумо дахл дорад фиристода мешавад — эълонҳои умумӣ ба почта намеоянд. Паём пас аз 5 дақиқа меравад; агар дар ин муддат онро дар сайт хонед, фиристода намешавад. |  |
+| `settings.emailNeedsVerify` | Email orqali olish uchun pochta manzilingizni tasdiqlang: | Барои гирифтани паём бо почта суроғаи худро тасдиқ кунед: |  |
+| `settings.emailVerifyLink` | Pochtani tasdiqlash | Тасдиқи почта |  |
+| `unsubscribe.title` | Email bildirishnomalari | Огоҳиномаҳои почта |  |
+| `unsubscribe.askKind` | «{kind}» turidagi email xatlarni o'chirasizmi? | Паёмҳои навъи «{kind}»-ро хомӯш мекунед? |  |
+| `unsubscribe.askAll` | Barcha email bildirishnomalarni o'chirasizmi? | Ҳамаи огоҳиномаҳои почтаро хомӯш мекунед? |  |
+| `unsubscribe.confirm` | Emailni o'chirish | Хомӯш кардани почта |  |
+| `unsubscribe.doneKind` | «{kind}» turidagi email xatlar o'chirildi. | Паёмҳои навъи «{kind}» хомӯш карда шуданд. |  |
+| `unsubscribe.doneAll` | Barcha email bildirishnomalar o'chirildi. | Ҳамаи огоҳиномаҳои почта хомӯш карда шуданд. |  |
+| `unsubscribe.invalid` | Havola yaroqsiz — u buzilgan yoki eskirgan. Sozlamani o'zingiz o'zgartiring. | Пайванд нодуруст аст — он вайрон ё кӯҳна шудааст. Танзимотро худатон тағйир диҳед. |  |
+| `unsubscribe.note` | Saytdagi bildirishnomalar o'zgarmaydi. Emailni qayta yoqish — bildirishnoma sozlamalarida. | Огоҳиномаҳо дар сайт тағйир намеёбанд. Почтаро дубора фаъол кардан — дар танзимоти огоҳиномаҳо. |  |
+| `unsubscribe.settings` | Bildirishnoma sozlamalari | Танзимоти огоҳиномаҳо |  |
+| `unsubscribe.failed` | O'chirib bo'lmadi. Birozdan keyin qayta urinib ko'ring. | Хомӯш кардан муяссар нашуд. Каме баъд боз кӯшиш кунед. |  |
 | `settings.company` | Kompaniya | Ширкат |  |
 | `settings.cosmetics` | Profil bezaklari | Ороишҳои профил |  |
 | `settings.cosmeticsEmpty` | Hali bezak yo'q — ularni Qvant do'konidan olish mumkin. | Ҳоло ороиш нест — онҳоро аз мағозаи Qvant гирифтан мумкин. |  |
@@ -1211,6 +1222,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `role.staff` | Xodim | Корманд |  |
 | `role.author` | Masala muallifi | Муаллифи масъала |  |
 | `role.jury` | Hakam | Ҳакам |  |
+| `role.tester` | Sinovchi | Санҷишгар |  |
 | `role.champion` | Chempion | Қаҳрамон |  |
 | `role.championOf` | {contest} g'olibi | Ғолиби {contest} |  |
 | `profile.online` | Onlayn | Онлайн |  |
@@ -2468,4 +2480,94 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.gate.endedTitle` | Musobaqa tugadi | Мусобиқа ба охир расид |  |
 | `contest.gate.endedBody` | Natijalar yakunlangach masala arxivga o'tadi va yuborish yana ochiladi. | Пас аз ҷамъбасти натиҷаҳо масъала ба бойгонӣ мегузарад ва фиристодан боз кушода мешавад. |  |
 | `contest.gate.cta` | Musobaqa sahifasi | Саҳифаи мусобиқа |  |
+| `standings.unofficial` | Reytingsiz | Бе рейтинг |  |
+| `standings.showInsiders` | Reytingsizlarni ko'rsatish | Нишон додани иштирокчиёни бе рейтинг |  |
+| `contest.role.author` | muallif | муаллиф |  |
+| `contest.role.tester` | sinovchi | санҷишгар |  |
+| `contest.role.jury` | hakam | ҳакам |  |
+| `contest.role.organizer` | tashkilotchi | ташкилотчӣ |  |
+| `contest.insider.title.author` | Siz bu musobaqa masalalaridan birining muallifisiz | Шумо муаллифи яке аз масъалаҳои ин мусобиқа ҳастед |  |
+| `contest.insider.title.tester` | Siz bu musobaqaning sinovchisisiz | Шумо санҷишгари ин мусобиқа ҳастед |  |
+| `contest.insider.title.jury` | Siz bu musobaqaning hakamisiz | Шумо ҳаками ин мусобиқа ҳастед |  |
+| `contest.insider.title.organizer` | Siz bu musobaqaning tashkilotchisisiz | Шумо ташкилотчии ин мусобиқа ҳастед |  |
+| `contest.insider.testing` | Masalalar sizga hozirdan ochiq. Sinov yechimlari jadvalga, «yechilgan» hisobiga va boshqalarning lentasiga tushmaydi. Musobaqada qatnashsangiz — reytingsiz. | Масъалаҳо ҳоло барои шумо кушодаанд. Ҳалли санҷишӣ ба ҷадвал, ба шумораи «ҳалшуда» ва ба лентаи дигарон намеафтад. Агар дар мусобиқа иштирок кунед — бе рейтинг. |  |
+| `contest.insider.unrated` | Masalalarni oldindan bilasiz: qatnashsangiz — reytingsiz, jadvalda «*» bilan va o'rinsiz. | Шумо масъалаҳоро пешакӣ медонед: агар иштирок кунед — бе рейтинг, дар ҷадвал бо «*» ва бе ҷой. |  |
+| `contest.insider.testingProblem` | Sinov rejimi: musobaqa hali boshlanmagan. Bu yechim jadvalga, «yechilgan» hisobiga va masala statistikasiga tushmaydi. | Реҷаи санҷиш: мусобиқа ҳанӯз оғоз нашудааст. Ин ҳал ба ҷадвал, ба шумораи «ҳалшуда» ва ба омори масъала намеафтад. |  |
+| `contest.entry.title` | Ishtirok | Иштирок |  |
+| `contest.entry.register` | Ro'yxatdan o'tish | Сабти ном |  |
+| `contest.entry.registered` | Siz ro'yxatdan o'tgansiz | Шумо сабти ном шудаед |  |
+| `contest.entry.unratedNote` | Reytingsiz qatnashasiz | Бе рейтинг иштирок мекунед |  |
+| `contest.crew.title` | Musobaqani tayyorlaganlar | Омодакунандагони мусобиқа |  |
+| `contest.crew.authors` | Masala mualliflari | Муаллифони масъалаҳо |  |
+| `contest.crew.testers` | Sinovchilar | Санҷишгарон |  |
+| `contest.crew.jury` | Hakamlar | Ҳакамон |  |
+| `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Онҳо масъалаҳоро пешакӣ медонанд, бинобар ин бе рейтинг иштирок мекунанд. |  |
+| `standings.dq` | DQ | DQ |  |
+| `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Дар мусобиқа истифодаи ёрдамчиёни зеҳни сунъӣ (ChatGPT, Copilot ва ғ.) манъ аст. Гузоштани код дар муҳаррир ва баромадан аз саҳифа сабт мешавад — ҳакам мебинад. |  |
+| `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Мусобиқа: ёрдамчиёни ЗС манъ аст. Гузоштани код ва баромадан аз саҳифа сабт мешавад. |  |
+| `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Шумо аз ин мусобиқа хориҷ карда шудед |  |
+| `contest.fair.title` | Halol o'yin | Бозии ҳалол |  |
+| `contest.fair.intro` | Muharrir signallari ajralib turgan urinishlar. Bu ayblov emas — kodni ko'rib, o'zingiz qaror qiling. | Ирсолҳое, ки сигналҳои муҳаррирашон фарқ мекунанд. Ин айбдоркунӣ нест — кодро бинед ва худатон қарор диҳед. |  |
+| `contest.fair.clean` | Ajralib turgan urinish yo'q. | Ягон чизи фарқкунанда нест. |  |
+| `contest.fair.flag.pasted` | Katta joylash | Гузоштани калон |  |
+| `contest.fair.flag.fast` | Juda tez yozilgan | Хеле зуд навишта шуда |  |
+| `contest.fair.flag.away` | Ko'p marta chiqib ketgan | Аз саҳифа зиёд баромада |  |
+| `contest.fair.attempt` | Urinish #{id} | Ирсол #{id} |  |
+| `contest.fair.signals` | Kod: {source} belgi · joylangan: {pasted} (eng kattasi {largest}) · sahifadan chiqish: {blurs} · ochiq turgan: {minutes} daq | Код: {source} аломат · гузошташуда: {pasted} (калонтаринаш {largest}) · баромадан аз саҳифа: {blurs} · кушода буд: {minutes} дақ |  |
+| `contest.fair.dq` | Chetlatish | Хориҷ кардан |  |
+| `contest.fair.dqWhat` | {user}: musobaqadagi urinishlari bekor qilinadi, jadvalda «DQ», sertifikat olib tashlanadi, reyting qayta hisoblanadi. | {user}: ирсолҳои мусобиқаашон бекор мешаванд, дар ҷадвал «DQ», шаҳодатнома гирифта мешавад, рейтинг аз нав ҳисоб мешавад. |  |
+| `contest.fair.reason` | Sabab (ishtirokchiga yuboriladi) | Сабаб (ба иштирокчӣ фиристода мешавад) |  |
+| `contest.fair.dqConfirm` | Tasdiqlash va chetlatish | Тасдиқ ва хориҷ кардан |  |
+| `contest.fair.cancel` | Bekor qilish | Бекор кардан |  |
+| `contest.fair.disqualified` | Chetlatilganlar | Хориҷшудагон |  |
+| `error.reason_required` | Sababni yozing | Сабабро нависед |  |
+| `error.already_disqualified` | Bu ishtirokchi allaqachon chetlatilgan | Ин иштирокчӣ аллакай хориҷ шудааст |  |
+| `error.contest_not_started` | Musobaqa hali boshlanmagan | Мусобиқа ҳанӯз оғоз нашудааст |  |
+| `error.contest_running` | Hisobot musobaqa tugagach ochiladi | Ҳисобот пас аз анҷоми мусобиқа кушода мешавад |  |
+| `error.user_not_found` | Bunday foydalanuvchi yo'q | Чунин корбар нест |  |
+| `notif.msg.contest_disqualified.title` | «{contest}»: siz musobaqadan chetlatildingiz | «{contest}»: шумо хориҷ карда шудед |  |
+| `notif.msg.contest_disqualified.body` | Sabab: {reason} | Сабаб: {reason} |  |
+| `contest.qa.title` | Savol-javob | Савол-ҷавоб |  |
+| `contest.qa.general` | Umumiy | Умумӣ |  |
+| `contest.qa.problem` | Masala | Масъала |  |
+| `contest.qa.askTitle` | Savol berish | Савол додан |  |
+| `contest.qa.askHint` | Faqat shart va qoidalar haqida. Yechim yoki kod so'ramang — javob «Izoh yo'q» bo'ladi. | Танҳо дар бораи шарт ва қоидаҳо. Ҳал ё код напурсед — ҷавоб «Шарҳ нест» мешавад. |  |
+| `contest.qa.send` | Yuborish | Фиристодан |  |
+| `contest.qa.left` | Yana {count} ta savol berishingiz mumkin | Боз {count} савол дода метавонед |  |
+| `contest.qa.announceTitle` | E'lon yozish | Навиштани эълон |  |
+| `contest.qa.announce` | E'lon qilish | Эълон кардан |  |
+| `contest.qa.announceNote` | Barcha ro'yxatdan o'tganlarga bildirishnoma ketadi | Ба ҳамаи сабтиномшудагон огоҳинома меравад |  |
+| `contest.qa.waiting` | Javob kutayotgan savollar: {count} | Саволҳои интизори ҷавоб: {count} |  |
+| `contest.qa.mine` | Mening savollarim | Саволҳои ман |  |
+| `contest.qa.answered` | Javob berilgan savollar | Саволҳои ҷавобдодашуда |  |
+| `contest.qa.public` | Hammaga e'lon qilindi | Ба ҳама эълон шуд |  |
+| `contest.qa.pending` | Javob kutilmoqda… | Интизори ҷавоб… |  |
+| `contest.qa.answer` | Javob berish | Ҷавоб додан |  |
+| `contest.qa.answerLabel` | Javob | Ҷавоб |  |
+| `contest.qa.answerPlaceholder` | Yoki o'z javobingiz… | Ё ҷавоби худатон… |  |
+| `contest.qa.makePublic` | Hammaga e'lon qilish | Ба ҳама эълон кардан |  |
+| `contest.qa.waitSeconds` | Keyingi savolni {seconds} soniyadan keyin bera olasiz | Саволи навбатиро пас аз {seconds} сония дода метавонед |  |
+| `contest.qa.quick.yes` | Ha. | Ҳа. |  |
+| `contest.qa.quick.no` | Yo'q. | Не. |  |
+| `contest.qa.quick.read_statement` | Shartni diqqat bilan o'qing. | Шартро бодиққат хонед. |  |
+| `contest.qa.quick.no_comment` | Izoh yo'q. | Шарҳ нест. |  |
+| `error.problems_closed` | Masalalar musobaqa boshlanganda ochiladi | Масъалаҳо ҳангоми оғози мусобиқа кушода мешаванд |  |
+| `error.problem_not_found` | Bu masala musobaqada yo'q | Ин масъала дар мусобиқа нест |  |
+| `error.text_empty` | Avval matnni yozing | Аввал матнро нависед |  |
+| `error.text_too_long` | Matn juda uzun | Матн хеле дароз аст |  |
+| `error.too_many_questions` | Bu musobaqada savollar chegarasiga yetdingiz | Шумо ба ҳадди саволҳои ин мусобиқа расидед |  |
+| `error.question_too_soon` | Daqiqasiga bitta savol berish mumkin | Дар як дақиқа як савол |  |
+| `error.unknown_answer` | Noma'lum tez javob | Ҷавоби зуди номаълум |  |
+| `notif.msg.contest_question.title` | «{contest}»: yangi savol | «{contest}»: саволи нав |  |
+| `notif.msg.contest_question.body` | Savol: {text} | Савол: {text} |  |
+| `notif.msg.contest_answer.title` | «{contest}»: savolingizga javob berildi | «{contest}»: ба саволатон ҷавоб доданд |  |
+| `notif.msg.contest_answer.body` | Savol: {question} | Савол: {question} |  |
+| `notif.msg.contest_announcement.title` | «{contest}»: hakamlar e'loni | «{contest}»: эълони ҳакамон |  |
+| `notif.msg.contest_announcement.body` | E'lon: {text} | Эълон: {text} |  |
+| `gate.contest.title` | Musobaqaga yozilish uchun tizimga kiring | Барои сабти ном дар мусобиқа ворид шавед |  |
+| `admin.label.text.testers` | Sinovchilar (taxallus, vergul bilan) | Санҷишгарон (тахаллусҳо, бо вергул) |  |
+| `admin.label.text.jury` | Hakamlar (taxallus, vergul bilan) | Ҳакамон (тахаллусҳо, бо вергул) |  |
+| `admin.help.contestTesters` | Boshlanishdan oldin masalalarni ko'radi va sinaydi; qatnashsa — reytingsiz. | То оғоз масъалаҳоро мебинад ва месанҷад; агар иштирок кунад — бе рейтинг. |  |
+| `notif.msg.contest_tester.title` | Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz | Шумо ба мусобиқаи «{contest}» ҳамчун санҷишгар илова шудед |  |
+| `notif.msg.contest_tester.body` | Masalalar sizga boshlanishdan oldin ochiq. Musobaqada qatnashsangiz — reytingsiz. | Масъалаҳо то оғоз барои шумо кушодаанд. Агар иштирок кунед — бе рейтинг. |  |
 | `contest.problemsAtStart` | {count} ta masala — musobaqa boshlanganda ochiladi. | {count} масъала — бо оғози мусобиқа кушода мешаванд. |  |

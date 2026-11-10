@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from django.db.models import Count, QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from rest_framework import generics, status, viewsets
@@ -15,11 +17,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests import certificate_pdf
-from contests.models import Certificate, Contest, ContestRegistration, Standing
+from contests.models import Certificate, Clarification, Contest, ContestRegistration, Standing
 from contests.serializers import (
     CertificateSerializer,
+    ClarificationAnswerSerializer,
+    ClarificationAskSerializer,
+    ClarificationListSerializer,
+    ClarificationSerializer,
+    ContestAnnouncementSerializer,
     ContestDetailSerializer,
     ContestSerializer,
+    ContestViewerSerializer,
+    DisqualifySerializer,
+    IntegrityReportSerializer,
     RegistrationSerializer,
     StandingSerializer,
 )
@@ -44,6 +54,17 @@ STANDINGS_CACHE_S = 10
 STANDINGS_TOP = 500
 
 
+def _error(code: str, message: str, http: int, retry_after: int | None = None) -> Response:
+    response = Response({"error": {"code": code, "message": message, "details": {}}}, status=http)
+    if retry_after is not None:
+        response["Retry-After"] = str(retry_after)
+    return response
+
+
+def _clar_error(exc: Any) -> Response:
+    return _error(exc.code, exc.message, exc.status, exc.retry_after)
+
+
 @crud_summaries(
     one="musobaqa",
     many="musobaqa",
@@ -53,6 +74,12 @@ STANDINGS_TOP = 500
         "standings": "Turnik jadvali",
         "my_standing": "O'z o'rni",
         "virtual": "Virtual qatnashish",
+        "viewer": "Mening musobaqadagi holatim",
+        "clarifications": "Savol-javob va e'lonlar",
+        "answer": "Savolga javob berish",
+        "announcements": "E'lon qilish",
+        "integrity": "Halol o'yin hisoboti",
+        "disqualify": "Diskvalifikatsiya",
     },
 )
 class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
@@ -76,10 +103,12 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
         key = STANDINGS_CACHE_KEY.format(contest_id=contest.pk)
         payload = cache_get(key)
         if payload is None:
+            # Insiders sit among the others with a star and no place
+            # (ADR-0055, part 2): the table follows `position`, not `rank`.
             rows = (
                 Standing.objects.filter(contest=contest)
                 .select_related("user")
-                .order_by("rank")[:STANDINGS_TOP]
+                .order_by("position")[:STANDINGS_TOP]
             )
             payload = {
                 "frozen": contest.is_frozen,
@@ -118,6 +147,203 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
         if row is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(StandingSerializer(row).data)
+
+    @extend_schema(responses={200: ContestViewerSerializer})
+    @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
+    def viewer(self, request: Request, slug: str | None = None) -> Response:
+        """The visitor's own standing with the contest (ADR-0055, part 2).
+
+        Their insider role, whether they are registered, and — for an
+        insider before the start — the problems they test.
+        """
+        from contests.insiders import role_of
+
+        contest = self.get_object()
+        assert isinstance(request.user, User)
+        role = role_of(contest, request.user)
+        testing = bool(role) and timezone.now() < contest.start_at
+        problems = contest.problems.select_related("problem") if testing else []
+        from contests.integrity import can_judge
+
+        registration = contest.registrations.filter(user=request.user).first()
+        return Response(
+            ContestViewerSerializer(
+                {
+                    "role": role,
+                    "registered": registration is not None,
+                    "testing": testing,
+                    "problems": problems,
+                    "disqualified_reason": registration.disqualified_reason
+                    if registration is not None and registration.disqualified_at
+                    else None,
+                    "judge": can_judge(contest, request.user),
+                }
+            ).data
+        )
+
+    # ── Fair play (ADR-0055, part 4) ────────────────────────────────
+
+    @extend_schema(responses={200: IntegrityReportSerializer})
+    @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
+    def integrity(self, request: Request, slug: str | None = None) -> Response:
+        """The editor signals that stand out — for the jury, after the end."""
+        from contests import integrity as fair
+
+        contest = self.get_object()
+        if not fair.can_judge(contest, request.user):
+            return _error("forbidden", "Only the jury reads this", status.HTTP_403_FORBIDDEN)
+        if not contest.is_finished:
+            return _error("contest_running", "The report opens when the contest ends", 400)
+        disqualified = contest.registrations.filter(disqualified_at__isnull=False).select_related(
+            "user"
+        )
+        return Response(
+            IntegrityReportSerializer(
+                {
+                    "results": fair.report(contest),
+                    "disqualified": [
+                        {
+                            "username": r.user.username,
+                            "reason": r.disqualified_reason,
+                            "at": r.disqualified_at,
+                        }
+                        for r in disqualified
+                    ],
+                }
+            ).data
+        )
+
+    @extend_schema(request=DisqualifySerializer, responses={200: RegistrationSerializer})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def disqualify(self, request: Request, slug: str | None = None) -> Response:
+        from contests import integrity as fair
+
+        contest = self.get_object()
+        if not fair.can_judge(contest, request.user):
+            return _error("forbidden", "Only the jury disqualifies", status.HTTP_403_FORBIDDEN)
+        form = DisqualifySerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        target = User.objects.filter(username=form.validated_data["username"]).first()
+        if target is None:
+            return _error("user_not_found", "No such user", status.HTTP_404_NOT_FOUND)
+        try:
+            registration = fair.disqualify(
+                contest, target, request.user, form.validated_data["reason"]
+            )
+        except fair.FairPlayError as exc:
+            return _error(exc.code, exc.message, exc.status)
+        return Response(RegistrationSerializer(registration).data)
+
+    # ── Questions and announcements (ADR-0055, part 3) ──────────────
+
+    def _clarifications(self, request: Request, contest: Contest) -> Response:
+        from contests import clarifications as qa
+
+        user = request.user
+        moderator = qa.can_moderate(contest, user)
+        signed_in = bool(user and user.is_authenticated)
+        asked = (
+            Clarification.objects.filter(contest=contest, author_id=user.pk).count()
+            if signed_in
+            else 0
+        )
+        rows = qa.visible(contest, user)[: qa.LIST_LIMIT]
+        payload = {
+            "moderator": moderator,
+            "can_ask": signed_in and timezone.now() < contest.end_at,
+            "questions_left": max(0, qa.MAX_QUESTIONS - asked) if signed_in else 0,
+            "results": ClarificationSerializer(
+                rows, many=True, context={"request": request, "moderator": moderator}
+            ).data,
+        }
+        # Already serialized; `ClarificationListSerializer` describes it.
+        return Response(payload)
+
+    @extend_schema(methods=["GET"], request=None, responses={200: ClarificationListSerializer})
+    @extend_schema(
+        methods=["POST"],
+        request=ClarificationAskSerializer,
+        responses={201: ClarificationSerializer, 400: None, 429: None},
+    )
+    @action(detail=True, methods=["get", "post"], permission_classes=[AllowAny])
+    def clarifications(self, request: Request, slug: str | None = None) -> Response:
+        """Questions, answers and announcements; POST asks a question."""
+        from contests import clarifications as qa
+
+        contest = self.get_object()
+        if request.method == "GET":
+            return self._clarifications(request, contest)
+        if not request.user.is_authenticated:
+            return _error("not_authenticated", "Sign in to ask", status.HTTP_401_UNAUTHORIZED)
+        form = ClarificationAskSerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        try:
+            row = qa.ask(
+                contest,
+                request.user,
+                form.validated_data.get("problem"),
+                form.validated_data["question"],
+            )
+        except qa.ClarificationError as exc:
+            return _clar_error(exc)
+        return Response(
+            ClarificationSerializer(row, context={"request": request}).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(request=ClarificationAnswerSerializer, responses={200: ClarificationSerializer})
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path=r"clarifications/(?P<row_id>\d+)/answer",
+        permission_classes=[IsAuthenticated],
+    )
+    def answer(self, request: Request, slug: str | None = None, row_id: str = "") -> Response:
+        from contests import clarifications as qa
+
+        contest = self.get_object()
+        if not qa.can_moderate(contest, request.user):
+            return _error("forbidden", "Only the jury answers", status.HTTP_403_FORBIDDEN)
+        row = get_object_or_404(Clarification, pk=row_id, contest=contest, author__isnull=False)
+        form = ClarificationAnswerSerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        try:
+            qa.answer(
+                row,
+                request.user,
+                form.validated_data.get("answer", ""),
+                form.validated_data.get("answer_code", ""),
+                form.validated_data["public"],
+            )
+        except qa.ClarificationError as exc:
+            return _clar_error(exc)
+        return Response(
+            ClarificationSerializer(row, context={"request": request, "moderator": True}).data
+        )
+
+    @extend_schema(request=ContestAnnouncementSerializer, responses={201: ClarificationSerializer})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def announcements(self, request: Request, slug: str | None = None) -> Response:
+        from contests import clarifications as qa
+
+        contest = self.get_object()
+        if not qa.can_moderate(contest, request.user):
+            return _error("forbidden", "Only the jury announces", status.HTTP_403_FORBIDDEN)
+        form = ContestAnnouncementSerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        try:
+            row = qa.announce(
+                contest,
+                request.user,
+                form.validated_data.get("problem"),
+                form.validated_data["text"],
+            )
+        except qa.ClarificationError as exc:
+            return _clar_error(exc)
+        return Response(
+            ClarificationSerializer(row, context={"request": request, "moderator": True}).data,
+            status=status.HTTP_201_CREATED,
+        )
 
     @extend_schema(request=None, responses={201: RegistrationSerializer})
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])

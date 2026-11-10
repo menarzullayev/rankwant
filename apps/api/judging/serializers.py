@@ -114,11 +114,23 @@ def _virtual_window_open(registration: ContestRegistration) -> bool:
     return timezone.now() < virtual_deadline(registration)
 
 
+class EditorSignalSerializer(serializers.Serializer[dict[str, Any]]):
+    """What the editor tells about a contest solution (ADR-0055, part 4)."""
+
+    pasted_chars = serializers.IntegerField(min_value=0, required=False)
+    largest_paste = serializers.IntegerField(min_value=0, required=False)
+    paste_count = serializers.IntegerField(min_value=0, required=False)
+    blur_count = serializers.IntegerField(min_value=0, required=False)
+    active_ms = serializers.IntegerField(min_value=0, required=False)
+
+
 class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
     problem = serializers.SlugField()
     language = serializers.SlugField()
     source_code = serializers.CharField()
     contest = serializers.SlugField(required=False, allow_null=True)
+    #: Kept for a contest attempt only; ignored elsewhere.
+    editor = EditorSignalSerializer(required=False)
 
     def validate_source_code(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:
@@ -130,7 +142,8 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
     def validate_problem(self, value: str) -> str:
         from problems import visibility
 
-        problem = visibility.openable(value)
+        request = self.context.get("request")
+        problem = visibility.openable(value, user=getattr(request, "user", None))
         if problem is None:
             raise serializers.ValidationError("Problem not found")
         # Testsiz masalada judge IE qaytaradi. Tugmani frontendda
@@ -218,8 +231,13 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
             raise serializers.ValidationError({"contest": "Contest not found"})
 
         user = self.context["request"].user
+        # An insider before the start tests the problems (ADR-0055, part 2):
+        # no registration is needed, and the attempt counts nowhere.
+        from contests.insiders import role_of
+
+        testing = timezone.now() < contest.start_at and bool(role_of(contest, user))
         registration = ContestRegistration.objects.filter(contest=contest, user=user).first()
-        if registration is None:
+        if registration is None and not testing:
             raise serializers.ValidationError({"contest": "Register for the contest first"})
 
         # Virtual ishtirok TUGAGAN musobaqada bo'ladi, ya'ni `is_running`
@@ -228,7 +246,11 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         # muddat ko'rsatar, keyin har yuborish 400 qaytarardi.
         # Rasmiy jadval xavfsiz — u `end_at` gacha kelgan urinishlarni
         # oladi (contests.services.rebuild_standings).
-        if not contest.is_running and not _virtual_window_open(registration):
+        if (
+            not testing
+            and not contest.is_running
+            and not (registration is not None and _virtual_window_open(registration))
+        ):
             raise serializers.ValidationError({"contest": "The contest is not active"})
         if not ContestProblem.objects.filter(
             contest=contest, problem__slug=attrs["problem"]

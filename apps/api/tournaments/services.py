@@ -36,7 +36,8 @@ def rebuild(tournament: Tournament) -> int:
     played: dict[int, int] = defaultdict(int)
 
     for stage in tournament.stages.select_related("contest"):
-        rows = list(Standing.objects.filter(contest=stage.contest).order_by("rank"))
+        # Insiders took part unrated (ADR-0055): no championship points.
+        rows = list(Standing.objects.filter(contest=stage.contest).official().order_by("rank"))
         n = len(rows)
         for row in rows:
             points[row.user_id] += stage_points(stage.weight, n, row.rank)

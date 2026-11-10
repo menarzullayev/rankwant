@@ -3,10 +3,18 @@ from __future__ import annotations
 from typing import Any
 
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from contests.models import Certificate, Contest, ContestProblem, ContestRegistration, Standing
-from profiles.titles import TitleField
+from contests.models import (
+    Certificate,
+    Clarification,
+    Contest,
+    ContestProblem,
+    ContestRegistration,
+    Standing,
+)
+from profiles.titles import TitleField, UserTitleSerializer
 
 
 class ContestProblemSerializer(serializers.ModelSerializer[ContestProblem]):
@@ -51,15 +59,41 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
         ]
 
 
+class CrewPersonSerializer(serializers.Serializer[Any]):
+    username = serializers.CharField()
+    user_title = UserTitleSerializer(allow_null=True)
+
+
+class CrewSerializer(serializers.Serializer[Any]):
+    """Who prepared the contest — told on its page, always (ADR-0055, part 2)."""
+
+    authors = CrewPersonSerializer(many=True)
+    testers = CrewPersonSerializer(many=True)
+    jury = CrewPersonSerializer(many=True)
+
+
 class ContestDetailSerializer(ContestSerializer):
     problems = ContestProblemSerializer(many=True, read_only=True)
     problem_count = serializers.SerializerMethodField()
+    crew = serializers.SerializerMethodField()
 
     class Meta(ContestSerializer.Meta):
-        fields = [*ContestSerializer.Meta.fields, "description", "problems", "problem_count"]
+        fields = [
+            *ContestSerializer.Meta.fields,
+            "description",
+            "problems",
+            "problem_count",
+            "crew",
+        ]
 
     def get_problem_count(self, contest: Contest) -> int:
         return len(contest.problems.all())
+
+    @extend_schema_field(CrewSerializer)
+    def get_crew(self, contest: Contest) -> dict[str, Any]:
+        from contests.insiders import crew
+
+        return crew(contest)
 
     def to_representation(self, contest: Contest) -> dict[str, Any]:
         data = super().to_representation(contest)
@@ -95,7 +129,33 @@ class StandingSerializer(serializers.ModelSerializer[Standing]):
             "hacks_successful",
             "hacks_unsuccessful",
             "last_ac_at",
+            # Set on an insider's row: no place, shown with a star
+            # (ADR-0055, part 2). `rank` is 0 on such a row.
+            "insider_role",
+            # Disqualified by the jury (part 4): «DQ», no place.
+            "is_disqualified",
         ]
+
+
+class ContestViewerSerializer(serializers.Serializer[Any]):
+    """The signed-in visitor's own standing with a contest.
+
+    Kept off the contest itself so that the contest stays one answer for
+    everybody.
+    """
+
+    #: "" for a participant; otherwise the insider role (ADR-0055, part 2).
+    role = serializers.CharField()
+    registered = serializers.BooleanField()
+    #: An insider before the start: the problems are open to them and
+    #: what they send is a testing attempt.
+    testing = serializers.BooleanField()
+    #: Filled while `testing` — nobody else sees them before the start.
+    problems = ContestProblemSerializer(many=True)
+    #: The jury's reason, when the viewer was disqualified (part 4).
+    disqualified_reason = serializers.CharField(allow_null=True)
+    #: The viewer reads the fair-play report and disqualifies.
+    judge = serializers.BooleanField()
 
 
 class RegistrationSerializer(serializers.ModelSerializer[ContestRegistration]):
@@ -118,3 +178,103 @@ class CertificateSerializer(serializers.ModelSerializer[Certificate]):
             "title": cert.contest.title,
             "end_at": cert.contest.end_at,
         }
+
+
+class ClarificationSerializer(serializers.ModelSerializer[Clarification]):
+    """One question, answer or announcement (ADR-0055, part 3).
+
+    `author` is filled for the moderators only; everybody else is told
+    whether the row is theirs (`mine`) and nothing about whose it is.
+    """
+
+    problem = serializers.CharField(source="problem.index_letter", allow_null=True, default=None)
+    is_announcement = serializers.SerializerMethodField()
+    mine = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Clarification
+        fields = [
+            "id",
+            "problem",
+            "question",
+            "answer",
+            "answer_code",
+            "is_public",
+            "is_announcement",
+            "mine",
+            "author",
+            "created_at",
+            "answered_at",
+        ]
+
+    def get_is_announcement(self, row: Clarification) -> bool:
+        return row.author_id is None
+
+    def get_mine(self, row: Clarification) -> bool:
+        user = getattr(self.context.get("request"), "user", None)
+        return bool(user is not None and user.is_authenticated and row.author_id == user.pk)
+
+    def get_author(self, row: Clarification) -> str | None:
+        if not self.context.get("moderator") or row.author is None:
+            return None
+        return row.author.username
+
+
+class ClarificationListSerializer(serializers.Serializer[Any]):
+    #: The viewer answers and announces.
+    moderator = serializers.BooleanField()
+    #: The viewer may ask now (signed in, contest not over).
+    can_ask = serializers.BooleanField()
+    #: Questions this viewer may still ask in this contest.
+    questions_left = serializers.IntegerField()
+    results = ClarificationSerializer(many=True)
+
+
+class ClarificationAskSerializer(serializers.Serializer[Any]):
+    problem = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=3)
+    question = serializers.CharField(max_length=4000, trim_whitespace=True)
+
+
+class ClarificationAnswerSerializer(serializers.Serializer[Any]):
+    answer = serializers.CharField(required=False, allow_blank=True, max_length=4000)
+    answer_code = serializers.CharField(required=False, allow_blank=True, max_length=16)
+    public = serializers.BooleanField(default=False)
+
+
+class ContestAnnouncementSerializer(serializers.Serializer[Any]):
+    problem = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=3)
+    text = serializers.CharField(max_length=4000)
+
+
+class IntegrityRowSerializer(serializers.Serializer[Any]):
+    """One attempt whose editor signals stand out (ADR-0055, part 4)."""
+
+    attempt = serializers.IntegerField()
+    username = serializers.CharField()
+    problem = serializers.CharField()
+    verdict = serializers.CharField()
+    created_at = serializers.DateTimeField()
+    flags = serializers.ListField(child=serializers.CharField())
+    source_chars = serializers.IntegerField()
+    pasted_chars = serializers.IntegerField()
+    largest_paste = serializers.IntegerField()
+    paste_count = serializers.IntegerField()
+    blur_count = serializers.IntegerField()
+    active_ms = serializers.IntegerField()
+
+
+class DisqualifiedSerializer(serializers.Serializer[Any]):
+    username = serializers.CharField()
+    reason = serializers.CharField()
+    at = serializers.DateTimeField()
+
+
+class IntegrityReportSerializer(serializers.Serializer[Any]):
+    results = IntegrityRowSerializer(many=True)
+    disqualified = DisqualifiedSerializer(many=True)
+
+
+class DisqualifySerializer(serializers.Serializer[Any]):
+    username = serializers.CharField(max_length=150)
+    reason = serializers.CharField(max_length=2000)

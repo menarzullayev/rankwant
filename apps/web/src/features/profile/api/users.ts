@@ -242,7 +242,7 @@ export type Certificate = {
 };
 
 export type ProfileRole =
-  | { code: "staff" | "author" | "jury" }
+  | { code: "staff" | "author" | "jury" | "tester" }
   | { code: "champion"; contest: string; contest_title: string };
 
 export type AchievementTier = "bronze" | "silver" | "gold";
@@ -389,4 +389,7 @@ export type ContestRow = {
   duration_min: number;
   is_rated: boolean;
   virtual: boolean;
+  /** Set when the user knew the problems beforehand: unrated, no place
+   *  (ADR-0055, part 2). */
+  insider_role: "" | "author" | "tester" | "jury" | "organizer";
 };

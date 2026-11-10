@@ -77,7 +77,7 @@ Har band: **PASS** yoki **FAIL** + qisqa dalil (fayl yo'li, screenshot nomi, san
 | **Gate** | ☐ PASS · ☐ FAIL |
 | **Sana** | |
 | **Dalil PR** | |
-| **Tasdiq** | Saidakbar aka (brend o‘zgarishi — yangi qaror qatori `CLAUDE.md` da) |
+| **Tasdiq** | Saidakbar aka (brend o‘zgarishi — yangi qaror fayli `docs/decisions/` da, indeks qatori `CLAUDE.md` da) |
 
 **PASS qoidasi:** A1–A4, B1–B4, C1–C6 — hammasi belgilangan; B5 da A **yoki** B varianti tanlangan. O1–O3 gate uchun shart emas.
 

@@ -19,8 +19,6 @@ from argparse import ArgumentParser
 from typing import Any
 
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
-from django.utils import timezone
 
 from core.models import User
 from judging.models import Attempt
@@ -57,20 +55,9 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("(dry-run) hech narsa o'zgarmadi"))
             return
 
-        from ratings.services import on_accept_revoked
+        from judging.services import skip_attempts
 
-        bekor = 0
-        for attempt in rows.select_related("user", "problem").order_by("pk"):
-            edi_ac = attempt.verdict == Verdict.AC
-            with transaction.atomic():
-                Attempt.objects.filter(pk=attempt.pk).update(
-                    verdict=Verdict.SKIPPED, judged_at=timezone.now()
-                )
-                if edi_ac:
-                    attempt.verdict = Verdict.SKIPPED
-                    # Yechim yozuvi, Skills va Qvant qaytariladi.
-                    on_accept_revoked(attempt)
-                    bekor += 1
+        jami, bekor = skip_attempts(rows.order_by("pk"))
 
         self.stdout.write(
             self.style.SUCCESS(f"{jami} urinish bekor qilindi, {bekor} ta yechim qaytarildi")

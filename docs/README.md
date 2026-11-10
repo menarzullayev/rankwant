@@ -29,6 +29,9 @@ Idea Selection                → docs/idea-selection/
 Sanali sessiya yozuvlari (qaror sessiyalari, dizayn variantlari, auditlar) —
 pipeline bosqichi emas, tarixiy manba: [research/](research/README.md).
 
+Saidakbar akaning qarorlari — bitta fayl, bitta qaror:
+[decisions/](decisions/README.md); bir qatorli indeksi `CLAUDE.md` da.
+
 ## Status (2026-09-06)
 
 | #   | Papka             | Holat           | Izoh                                      |

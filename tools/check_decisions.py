@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Owner decisions must stay true in the code, not only in CLAUDE.md.
+"""Owner decisions must stay true in the code, not only in the docs.
 
-Every rule mirrors a row of CLAUDE.md § "Saidakbar aka qarorlari". On
+Every rule mirrors a decision in `docs/decisions/` (one file per decision,
+indexed in CLAUDE.md § "Saidakbar aka qarorlari"). On
 2026-09-17 the owner chose local-only backups, and within hours another agent
 that had not seen the decision merged unencrypted offsite uploads (#31); dumps
 with user data left the machine. A table nobody checks does not stop that.
 This script runs on every PR, so reverting a decision needs a deliberate edit
-of both the code and the table.
+of both the code and the decision file.
 
 Exit codes: 0 every decision holds, 1 a decision is violated, 2 a file could
 not be read (never treated as "fine").
@@ -849,6 +850,83 @@ def language_rule_written() -> str | None:
 def decisions_table_present() -> str | None:
     if "## Saidakbar aka qarorlari" not in read("CLAUDE.md"):
         return "CLAUDE.md: `## Saidakbar aka qarorlari` jadvali yo'q"
+    return None
+
+
+#: Owner decisions live one per file here; CLAUDE.md keeps a one-line index.
+DECISIONS_DIR = "docs/decisions"
+_DECISIONS_HEADING = "## Saidakbar aka qarorlari"
+_DECISION_INDEX_LINE = re.compile(
+    r"^- \[(\d{4}-\d{2}-\d{2})\]\(docs/decisions/([^)/]+\.md)\) · (.+) · `([^`]+)`$"
+)
+_DECISION_ROW = re.compile(r"^\| \d{4}-\d{2}-\d{2}")
+#: A `where` field shaped like a rule function, not a path.
+_RULE_NAME = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)+")
+
+
+def decisions_index_matches_files() -> str | None:
+    """Every decision is a file in `docs/decisions/` AND a line in the index.
+
+    Measured 2026-11-10 (audit Q-10): `CLAUDE.md` was 278 874 bytes, of which
+    the decisions table was 159 rows, and every agent session loads the file
+    in full; the same day eleven PRs appended rows and four of them hit merge
+    conflicts on that one table. The rows now live one per file, and
+    CLAUDE.md keeps one line each. Two copies drift, so this rule fails on a
+    decision that exists in one place only, on an index line whose date or
+    rule name is wrong, on a file that does not hold exactly one row, and on a
+    table row written back into CLAUDE.md — what a branch cut before the move
+    would merge in.
+    """
+    claude = read("CLAUDE.md")
+    stray = [line for line in claude.splitlines() if _DECISION_ROW.match(line)]
+    if stray:
+        return (
+            f"CLAUDE.md da jadval qatori bor — qaror `{DECISIONS_DIR}/` ga yoziladi: "
+            f"{stray[0][:70]!r}"
+        )
+    if _DECISIONS_HEADING not in claude:
+        return f"CLAUDE.md: `{_DECISIONS_HEADING}` yo'q"
+    section = claude.split(_DECISIONS_HEADING, 1)[1].split("\n## ", 1)[0]
+    rules = {fn.__name__ for _, fn in RULES}
+    indexed: set[str] = set()
+    last = ""
+    for line in section.splitlines():
+        if not line.startswith("- ["):
+            continue
+        m = _DECISION_INDEX_LINE.match(line)
+        if not m:
+            return f"indeks qatori formatda emas: {line[:80]!r}"
+        date, name, _summary, where = m.groups()
+        if name in indexed:
+            return f"indeksda ikki marta: {name}"
+        if not name.startswith(f"{date}-"):
+            return f"indeks sanasi fayl nomiga mos emas: {date} → {name}"
+        if date < last:
+            return f"indeks sana tartibida emas: {date} ({name}) {last} dan keyin"
+        last = date
+        if _RULE_NAME.fullmatch(where) and where not in rules:
+            return f"{name}: `{where}` — check_decisions.py da bunday qoida yo'q"
+        indexed.add(name)
+    folder = ROOT / DECISIONS_DIR
+    files = (
+        {p.name for p in folder.glob("*.md") if p.name != "README.md"}
+        if folder.is_dir()
+        else set()
+    )
+    # An empty side would make every comparison below vacuously true.
+    if not files or not indexed:
+        return f"qarorlar topilmadi: {len(files)} fayl, {len(indexed)} indeks qatori"
+    for name in sorted(indexed - files):
+        return f"indeksda bor, fayli yo'q: {DECISIONS_DIR}/{name}"
+    for name in sorted(files - indexed):
+        return f"fayli bor, indeksda yo'q: {DECISIONS_DIR}/{name}"
+    for name in sorted(files):
+        text = (folder / name).read_bytes().decode("utf-8")
+        rows = [line for line in text.splitlines() if _DECISION_ROW.match(line)]
+        if len(rows) != 1:
+            return f"{DECISIONS_DIR}/{name}: {len(rows)} ta qaror qatori (bitta kerak)"
+        if not rows[0].startswith(f"| {name[:10]}"):
+            return f"{DECISIONS_DIR}/{name}: qatordagi sana fayl nomiga mos emas"
     return None
 
 
@@ -2449,6 +2527,83 @@ def privacy_text_matches_the_data() -> str | None:
     return None
 
 
+def _python_function(text: str, name: str) -> str:
+    """The source of one top-level or method `def` — up to the next line that
+    starts at the same or a smaller indent. Empty when it is not there."""
+    match = re.search(rf"^(?P<indent>[ ]*)def {name}\(", text, re.M)
+    if not match:
+        return ""
+    indent = len(match.group("indent"))
+    lines = text[match.start() :].split("\n")
+    body = [lines[0]]
+    for line in lines[1:]:
+        dedented = len(line) - len(line.lstrip(" ")) <= indent
+        if line.strip() and dedented and not line.lstrip().startswith(")"):
+            break
+        body.append(line)
+    return "\n".join(body)
+
+
+def notification_email_is_opt_in_and_bounded() -> str | None:
+    """2026-11-10 (HITL, audit Q-07/3): email bildirishnomasi — opt-in va chegaralangan.
+
+    Egasi qarorlari: standart holatda hamma tur o'chiq; faqat shaxsiy xabar
+    (`notify`), ommaviy e'lon (`notify_many`) hech qachon emailga ketmaydi;
+    faqat tasdiqlangan manzilga; 5 daqiqa kutib, saytda o'qilgan bo'lsa
+    yuborilmaydi (so'rov ichida emas, commit'dan keyin navbatga); kuniga
+    200 xat hisob xatlari uchun zaxirada, bitta odamga kuniga ko'pi 10;
+    imzolangan bitta bosishli obuna (RFC 8058), GET hech narsani o'zgartirmaydi.
+    """
+    services = read("apps/api/notifications/services.py")
+    if '"email": False' not in services.split("DEFAULT_CHANNELS = ", 1)[-1].split("\n", 1)[0]:
+        return "notifications/services.py: email standart holatda o'chiq emas — so'ramasdan xat ketadi"
+    bulk = _python_function(services, "notify_many")
+    if not bulk:
+        return "notifications/services.py: `notify_many` topilmadi"
+    if "email" in bulk.split('"""', 2)[-1]:
+        return "notifications/services.py: `notify_many` email yuboradi — e'lon kvotani yeydi"
+    if "email_channel.schedule(" not in _python_function(services, "notify"):
+        return "notifications/services.py: `notify` email kanalini rejalashtirmaydi"
+
+    mail = read("apps/api/notifications/email.py")
+    for line in (
+        "EMAIL_DELAY_SECONDS = 300",
+        "RESERVE_FOR_ACCOUNT_MAIL = 200",
+        "PER_USER_DAILY_CAP = 10",
+    ):
+        if f"\n{line}\n" not in mail:
+            return f"notifications/email.py: `{line}` o'zgargan — qaror boshqa son aytadi"
+    if "and user.email_verified_at is not None" not in _python_function(mail, "reachable"):
+        return "notifications/email.py: tasdiqlanmagan manzilga ham xat ketadi"
+    schedule = _python_function(mail, "schedule")
+    if "countdown=EMAIL_DELAY_SECONDS" not in schedule or "transaction.on_commit(push)" not in schedule:
+        return "notifications/email.py: xat 5 daqiqa kutmaydi yoki commit'dan oldin navbatga tushadi"
+    deliver = _python_function(mail, "deliver")
+    if 'return "skipped:read"' not in deliver:
+        return "notifications/email.py: saytda o'qilgan xabar ham emailga ketadi"
+    if "budget_refusal(user)" not in deliver:
+        return "notifications/email.py: kvota zaxirasi va kunlik chegara tekshirilmaydi"
+    budget = _python_function(mail, "budget_refusal")
+    if "left <= RESERVE_FOR_ACCOUNT_MAIL" not in budget or ">= PER_USER_DAILY_CAP" not in budget:
+        return "notifications/email.py: hisob xatlari zaxirasi yoki kunlik chegara yo'q"
+    if '"List-Unsubscribe-Post": "List-Unsubscribe=One-Click"' not in mail:
+        return "notifications/email.py: bitta bosishli obuna sarlavhasi (RFC 8058) yo'q"
+
+    views = read("apps/api/notifications/views.py")
+    view = views.split("class EmailUnsubscribeView", 1)[-1]
+    if "unsubscribe(" in _python_function(view, "get"):
+        return "notifications/views.py: GET obunani bekor qiladi — pochta skaneri havolani ochib qo'yadi"
+    if "email_channel.unsubscribe(" not in _python_function(view, "post"):
+        return "notifications/views.py: POST obunani bekor qilmaydi"
+
+    section = read("apps/web/src/features/account/components/NotificationsSection.tsx")
+    if 'const CHANNELS = ["site", "telegram", "email"] as const;' not in section:
+        return "NotificationsSection.tsx: Email ustuni sozlamalarda yo'q"
+    if "settings.soon" in section:
+        return "NotificationsSection.tsx: Email ustuni yana «tez orada»"
+    return None
+
+
 def names_are_not_translated() -> str | None:
     """2026-11-10 (HITL, audit Q-15): tarjima qilinmaydigan nomlar glossariyda.
 
@@ -3313,7 +3468,7 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     if "contest_entries__contest__is_public=True" not in visibility:
         return "qoralama musobaqa ham masalani ochadi"
     views = read("apps/api/problems/views.py")
-    if 'Q(is_public=True) if self.action == "list" else visibility.openable_q()' not in views:
+    if 'Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)' not in views:
         return "arxiv ro'yxati musobaqa masalasini ham beradi (yoki masala sahifasi uni ochmaydi)"
     submit = read("apps/api/judging/serializers.py")
     if "This problem belongs to a contest" not in submit:
@@ -3332,6 +3487,109 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     serializer = read("apps/api/problems/serializers.py")
     if "if not problem.editorial or not problem.is_public:" not in serializer:
         return "tahlil musobaqa paytida ochiq"
+    return None
+
+
+def contest_fair_play_is_judged() -> str | None:
+    # 2026-11-10 (ADR-0055, part 4, HITL): AI assistants are forbidden in a
+    # contest and the page says so; the editor tells with each contest
+    # attempt how it was written (pastes, leaving the page, time open); the
+    # jury reads the report after the end and nothing is decided by itself.
+    # A disqualification voids the attempts, shows «DQ» with no place,
+    # removes the certificate and re-rates the whole contest.
+    integrity = read("apps/api/contests/integrity.py")
+    if "def can_judge(" not in integrity or "contest.jury.filter(pk=user.pk).exists()" not in integrity:
+        return "chetlatishni hakam bo'lmagan ham qila oladi"
+    if "skip_attempts(contest.attempts.filter(user=user))" not in integrity:
+        return "chetlatilgan ishtirokchining urinishlari bekor qilinmaydi"
+    if "rerate_contest(contest)" not in integrity:
+        return "chetlatishdan keyin reyting qayta hisoblanmaydi"
+    if 'raise FairPlayError("reason_required"' not in integrity:
+        return "chetlatish sababsiz qilinadi"
+    services = read("apps/api/contests/services.py")
+    if "is_disqualified=row.user_id in dq," not in services:
+        return "chetlatilgan qator jadvalda rasmiy bo'lib yoziladi"
+    models = read("apps/api/contests/models.py")
+    if 'return self.filter(insider_role="", is_disqualified=False)' not in models:
+        return "chetlatilgan qator reyting va o'rinlarga kiradi"
+    views = read("apps/api/contests/views.py")
+    if "if not contest.is_finished:" not in views:
+        return "halol o'yin hisoboti musobaqa davomida ochiladi"
+    page = read("apps/web/src/app/(site)/contests/[slug]/page.tsx")
+    if 't(locale, "contest.fair.rule")' not in page:
+        return "AI taqiqi musobaqa sahifasida aytilmaydi"
+    panel = read("apps/web/src/features/problems/components/SubmitPanel.tsx")
+    if "editor: signals.snapshot()" not in panel:
+        return "muharrir signallari musobaqa urinishi bilan yuborilmaydi"
+    return None
+
+
+def contest_questions_stay_private() -> str | None:
+    # 2026-11-10 (ADR-0055, part 3, HITL): any signed-in user asks until the
+    # contest ends; the jury, organizers and staff-ops answer and announce. A
+    # question is its author's and the moderators'; an answer reaches the
+    # author or, when published, everybody. 20 questions, one a minute.
+    # Once the contest is finalized every answered question is public — the
+    # author's name never is.
+    qa = read("apps/api/contests/clarifications.py")
+    if "    shown = Q(is_public=True, answered_at__isnull=False)" not in qa:
+        return "savol yopiq emas — hamma ko'radi"
+    if "contest.organizers.filter(pk=user.pk).exists()" not in qa:
+        return "tashkilotchi javob bera olmaydi"
+    if "    if mine.count() >= MAX_QUESTIONS:" not in qa or "MAX_QUESTIONS = 20" not in qa:
+        return "savollar soni cheklanmagan"
+    if "    if last is not None and now - last < INTERVAL:" not in qa:
+        return "daqiqasiga bitta savol cheklovi yo'q"
+    if "    if contest.ratings_applied_at is not None:" not in qa:
+        return "yakunlangach savol-javob ochilmaydi"
+    views = read("apps/api/contests/views.py")
+    if views.count("if not qa.can_moderate(contest, request.user):") < 2:
+        return "javob yoki e'lonni hakam bo'lmagan ham yozadi"
+    serializers = read("apps/api/contests/serializers.py")
+    if 'if not self.context.get("moderator") or row.author is None:' not in serializers:
+        return "savol muallifining ismi hakamdan boshqaga ko'rinadi"
+    return None
+
+
+def contest_insiders_play_unrated() -> str | None:
+    # 2026-11-10 (ADR-0055, part 2, HITL): the problem authors, testers, jury
+    # and organizers know the problems before the start. A tester opens and
+    # sends to them early — the attempt counts nowhere and only its author
+    # sees it — and every insider who takes part is unrated: a star in the
+    # table, no place, no rating, no certificate, no championship points.
+    services = read("apps/api/contests/services.py")
+    if "attempts.exclude(user_id__in=list(roles), created_at__lt=contest.start_at)" not in services:
+        return "sinovchining musobaqadan oldingi urinishi jadvalga tushadi"
+    if 'insider_role=roles.get(row.user_id, ""),' not in services:
+        return "ichkaridagi ishtirokchi qatori rasmiy bo'lib yoziladi"
+    if "        if row.user_id in roles or row.user_id in dq:\n            places.append(0)" not in services:
+        return "ichkaridagi ishtirokchi rasmiy o'rin oladi"
+    ratings = read("apps/api/ratings/services.py")
+    if 'Standing.objects.filter(contest=contest).official().select_related("user")' not in ratings:
+        return "reyting ichkaridagi ishtirokchiga ham hisoblanadi"
+    certificates = read("apps/api/contests/certificates.py")
+    if ".official()" not in certificates:
+        return "ichkaridagi ishtirokchi sertifikat oladi"
+    tournaments = read("apps/api/tournaments/services.py")
+    if "Standing.objects.filter(contest=stage.contest).official()" not in tournaments:
+        return "ichkaridagi ishtirokchi chempionat bali oladi"
+    judging = read("apps/api/judging/services.py")
+    if "    testing = is_testing(attempt)\n    if not testing:\n" not in judging:
+        return "sinov urinishi «yechilgan» va reytingga yoziladi"
+    feed = read("apps/api/judging/views.py")
+    if "for contest_id, start_at in testing_windows()" not in feed:
+        return "sinov urinishi boshqalarning lentasida ko'rinadi"
+    problems = read("apps/api/problems/views.py")
+    if problems.count("visibility.without_testing(") < 2:
+        return "sinov urinishi masala statistikasi yoki yechganlar ro'yxatiga tushadi"
+    submit = read("apps/api/judging/serializers.py")
+    if "if registration is None and not testing:" not in submit:
+        return "sinovchi boshlanishdan oldin yubora olmaydi (yoki hamma yuboradi)"
+    if "timezone.now() < contest.start_at and bool(role_of(contest, user))" not in submit:
+        return "boshlanishdan oldin ichkaridagi bo'lmagan ham yuboradi"
+    board = read("apps/api/contests/views.py")
+    if '.order_by("position")[:STANDINGS_TOP]' not in board:
+        return "ommaviy jadval ichkaridagilarni o'z joyida ko'rsatmaydi"
     return None
 
 
@@ -4248,6 +4506,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("arxiv ro'yxat mehmon CDN keshi", problems_list_guest_cdn),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
+    ("qarorlar indeksi fayllarga mos", decisions_index_matches_files),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
@@ -4271,6 +4530,9 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("muharrir varag'i yon menyudan chetda", editor_sheet_clears_the_side_menu),
     ("musobaqa masalasi arxivdan tashqarida", contest_problems_stay_out_of_the_archive),
     ("tozalagich natijani kutadi", reaper_waits_for_unapplied_results),
+    ("ichkaridagilar reytingsiz qatnashadi", contest_insiders_play_unrated),
+    ("musobaqa savoli yopiq, javobni hakam beradi", contest_questions_stay_private),
+    ("halol o'yin: hakam hisoboti va chetlatish", contest_fair_play_is_judged),
     ("mehmon zonalari yopiq", guest_zones_are_gated),
     ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),
@@ -4293,6 +4555,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
+    ("email bildirishnomasi opt-in va chegaralangan", notification_email_is_opt_in_and_bounded),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
     ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
@@ -4335,7 +4598,10 @@ def main() -> int:
         print(f"✗ Qarorlarni o'qib bo'lmadi — {exc}")
         return 2
     if problems:
-        print(f"✗ {len(problems)} ta qaror buzilgan (CLAUDE.md § Saidakbar aka qarorlari):")
+        print(
+            f"✗ {len(problems)} ta qaror buzilgan "
+            f"({DECISIONS_DIR}/, indeks — CLAUDE.md § Saidakbar aka qarorlari):"
+        )
         for problem in problems:
             print(f"  - {problem}")
         print("  Qarorni o'zgartirish faqat Saidakbar akaning aniq tasdig'i bilan.")

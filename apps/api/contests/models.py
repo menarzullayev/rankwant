@@ -48,6 +48,15 @@ class Contest(TimeWindowMixin, CreatedModel):
         related_name="organized_contests",
         help_text="O'z kontestini draft qilib yaratadi/tahrirlaydi; nashr — staff-ops (ADR-0025)",
     )
+    #: Testers (ADR-0055, part 2): open the problems and send solutions
+    #: before the start. Like every other insider they may take part, but
+    #: unrated — see `contests.insiders`.
+    testers = models.ManyToManyField(
+        "core.User",
+        blank=True,
+        related_name="tested_contests",
+        help_text="Boshlanishdan oldin masalalarni sinaydi; qatnashsa reytingsiz (ADR-0055)",
+    )
 
     # ── Hacking (ADR-0020) ───────────────────────────────────────────
     #: `contest_room` siyosati: raund davomida xona ichida hack.
@@ -132,6 +141,13 @@ class ContestRegistration(models.Model):
     )
     registered_at = models.DateTimeField(auto_now_add=True)
     virtual_start_at = models.DateTimeField(null=True, blank=True)
+    #: Disqualified by the jury (ADR-0055, part 4): the attempts are
+    #: SKIPPED, the row shows «DQ» with no place.
+    disqualified_at = models.DateTimeField(null=True, blank=True)
+    disqualified_reason = models.TextField(blank=True)
+    disqualified_by = models.ForeignKey(
+        "core.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
 
     class Meta:
         constraints: ClassVar = [
@@ -142,13 +158,40 @@ class ContestRegistration(models.Model):
         return f"{self.contest_id}/{self.user_id}"
 
 
+class StandingQuerySet(models.QuerySet["Standing"]):
+    def official(self) -> StandingQuerySet:
+        """Rows that count: ratings, places, certificates, prizes.
+
+        An insider's row (ADR-0055, part 2) is shown in the table with a
+        star and no place; everything that ranks people reads this.
+        """
+        return self.filter(insider_role="", is_disqualified=False)
+
+
 class Standing(UpdatedModel):
     """MATERIALLASHTIRILGAN — live hisoblash 500 parallel submit ostida
     standings so'rovini buzadi (04-prd NFR)."""
 
+    class InsiderRole(models.TextChoices):
+        AUTHOR = "author", "Muallif"
+        TESTER = "tester", "Sinovchi"
+        JURY = "jury", "Hakam"
+        ORGANIZER = "organizer", "Tashkilotchi"
+
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="standings")
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="standings")
+    #: Official place, 1..N among official rows. An insider's row has 0:
+    #: it has no place, and a reader that forgot `official()` cannot
+    #: mistake it for a winner.
     rank = models.PositiveIntegerField(default=0)
+    #: Order in the full table, insiders included — what the public table
+    #: sorts by.
+    position = models.PositiveIntegerField(default=0)
+    #: Set when the participant knew the problems beforehand: the row is
+    #: unofficial (ADR-0055, part 2).
+    insider_role = models.CharField(max_length=12, choices=InsiderRole.choices, blank=True)
+    #: Disqualified by the jury (ADR-0055, part 4): «DQ», no place, unrated.
+    is_disqualified = models.BooleanField(default=False)
     solved_count = models.PositiveIntegerField(default=0)
     penalty = models.PositiveIntegerField(default=0)
     total_score = models.PositiveIntegerField(default=0)
@@ -160,12 +203,21 @@ class Standing(UpdatedModel):
     hacks_successful = models.PositiveSmallIntegerField(default=0)
     hacks_unsuccessful = models.PositiveSmallIntegerField(default=0)
 
+    objects = StandingQuerySet.as_manager()
+
     class Meta:
-        ordering: ClassVar = ["rank"]
+        ordering: ClassVar = ["position"]
         constraints: ClassVar = [
             models.UniqueConstraint(fields=["contest", "user"], name="uniq_contest_standing")
         ]
-        indexes: ClassVar = [models.Index(fields=["contest", "rank"], name="standing_board")]
+        indexes: ClassVar = [
+            models.Index(fields=["contest", "rank"], name="standing_board"),
+            models.Index(fields=["contest", "position"], name="standing_table"),
+        ]
+
+    @property
+    def is_official(self) -> bool:
+        return not self.insider_role and not self.is_disqualified
 
     def __str__(self) -> str:
         return f"{self.contest.slug} #{self.rank} {self.user_id}"
@@ -203,3 +255,88 @@ class Certificate(models.Model):
 
     def __str__(self) -> str:
         return f"{self.contest_id}:{self.user_id} ({self.tier})"
+
+
+class Clarification(CreatedModel):
+    """A participant's question and the jury's answer — or a jury announcement
+    (ADR-0055, part 3).
+
+    A question is private: its author and the moderators see it. The answer
+    goes to the author, or to everybody when the jury makes it public. An
+    announcement is a public row with no question and no author. Once the
+    contest is finalized every answered row is public; the author's name
+    never is.
+    """
+
+    class QuickAnswer(models.TextChoices):
+        # Drawn in the reader's language on the site, so stored as a code.
+        YES = "yes", "Ha"
+        NO = "no", "Yo'q"
+        READ_STATEMENT = "read_statement", "Shartni o'qing"
+        NO_COMMENT = "no_comment", "Izoh yo'q"
+
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="clarifications")
+    #: `None` — about the contest as a whole.
+    problem = models.ForeignKey(
+        ContestProblem, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    #: `None` for a jury announcement.
+    author = models.ForeignKey(
+        "core.User",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="contest_questions",
+    )
+    question = models.TextField(blank=True)
+    answer = models.TextField(blank=True)
+    answer_code = models.CharField(max_length=16, choices=QuickAnswer.choices, blank=True)
+    answered_by = models.ForeignKey(
+        "core.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    answered_at = models.DateTimeField(null=True, blank=True)
+    #: Shown to everybody: an announcement, or an answer the jury published.
+    is_public = models.BooleanField(default=False)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at", "-pk"]
+        indexes: ClassVar = [
+            models.Index(fields=["contest", "-created_at"], name="clarification_feed"),
+            models.Index(fields=["contest", "author"], name="clarification_author"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.contest_id}/{self.pk}"
+
+    @property
+    def is_answered(self) -> bool:
+        return self.answered_at is not None
+
+
+class AttemptSignal(CreatedModel):
+    """How a contest solution was written in the editor (ADR-0055, part 4).
+
+    Sent by the page with the attempt: how much was pasted, how often the
+    page was left, how long it was open. The jury reads it after the
+    contest; nothing here decides anything by itself.
+    """
+
+    attempt = models.OneToOneField(
+        "judging.Attempt", on_delete=models.CASCADE, related_name="editor_signal"
+    )
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="signals")
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="+")
+    source_chars = models.PositiveIntegerField(default=0)
+    pasted_chars = models.PositiveIntegerField(default=0)
+    largest_paste = models.PositiveIntegerField(default=0)
+    paste_count = models.PositiveIntegerField(default=0)
+    #: Times the page lost focus (another tab or window).
+    blur_count = models.PositiveIntegerField(default=0)
+    #: Time the problem page was open before this attempt, in ms.
+    active_ms = models.PositiveBigIntegerField(default=0)
+
+    class Meta:
+        indexes: ClassVar = [models.Index(fields=["contest", "user"], name="signal_contest_user")]
+
+    def __str__(self) -> str:
+        return f"{self.contest_id}/{self.attempt_id}"
