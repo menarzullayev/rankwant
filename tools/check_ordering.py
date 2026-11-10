@@ -50,7 +50,7 @@ def _view_files() -> list[Path]:
     for path in ROOT.rglob("*.py"):
         if any(
             part in {".git", "node_modules", ".next", ".venv", ".tmp", "__pycache__"}
-            for part in path.parts
+            for part in path.relative_to(ROOT).parts
         ):
             continue
         rel = path.relative_to(ROOT)
