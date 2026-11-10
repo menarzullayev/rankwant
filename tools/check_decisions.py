@@ -3298,6 +3298,40 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     return None
 
 
+def contest_fair_play_is_judged() -> str | None:
+    # 2026-11-10 (ADR-0055, part 4, HITL): AI assistants are forbidden in a
+    # contest and the page says so; the editor tells with each contest
+    # attempt how it was written (pastes, leaving the page, time open); the
+    # jury reads the report after the end and nothing is decided by itself.
+    # A disqualification voids the attempts, shows «DQ» with no place,
+    # removes the certificate and re-rates the whole contest.
+    integrity = read("apps/api/contests/integrity.py")
+    if "def can_judge(" not in integrity or "contest.jury.filter(pk=user.pk).exists()" not in integrity:
+        return "chetlatishni hakam bo'lmagan ham qila oladi"
+    if "skip_attempts(contest.attempts.filter(user=user))" not in integrity:
+        return "chetlatilgan ishtirokchining urinishlari bekor qilinmaydi"
+    if "rerate_contest(contest)" not in integrity:
+        return "chetlatishdan keyin reyting qayta hisoblanmaydi"
+    if 'raise FairPlayError("reason_required"' not in integrity:
+        return "chetlatish sababsiz qilinadi"
+    services = read("apps/api/contests/services.py")
+    if "is_disqualified=row.user_id in dq," not in services:
+        return "chetlatilgan qator jadvalda rasmiy bo'lib yoziladi"
+    models = read("apps/api/contests/models.py")
+    if 'return self.filter(insider_role="", is_disqualified=False)' not in models:
+        return "chetlatilgan qator reyting va o'rinlarga kiradi"
+    views = read("apps/api/contests/views.py")
+    if "if not contest.is_finished:" not in views:
+        return "halol o'yin hisoboti musobaqa davomida ochiladi"
+    page = read("apps/web/src/app/(site)/contests/[slug]/page.tsx")
+    if 't(locale, "contest.fair.rule")' not in page:
+        return "AI taqiqi musobaqa sahifasida aytilmaydi"
+    panel = read("apps/web/src/features/problems/components/SubmitPanel.tsx")
+    if "editor: signals.snapshot()" not in panel:
+        return "muharrir signallari musobaqa urinishi bilan yuborilmaydi"
+    return None
+
+
 def contest_questions_stay_private() -> str | None:
     # 2026-11-10 (ADR-0055, part 3, HITL): any signed-in user asks until the
     # contest ends; the jury, organizers and staff-ops answer and announce. A
@@ -3336,10 +3370,10 @@ def contest_insiders_play_unrated() -> str | None:
         return "sinovchining musobaqadan oldingi urinishi jadvalga tushadi"
     if 'insider_role=roles.get(row.user_id, ""),' not in services:
         return "ichkaridagi ishtirokchi qatori rasmiy bo'lib yoziladi"
-    if "        if row.user_id in roles:\n            places.append(0)" not in services:
+    if "        if row.user_id in roles or row.user_id in dq:\n            places.append(0)" not in services:
         return "ichkaridagi ishtirokchi rasmiy o'rin oladi"
     ratings = read("apps/api/ratings/services.py")
-    if "Standing.objects.filter(contest=contest).official()" not in ratings:
+    if 'Standing.objects.filter(contest=contest).official().select_related("user")' not in ratings:
         return "reyting ichkaridagi ishtirokchiga ham hisoblanadi"
     certificates = read("apps/api/contests/certificates.py")
     if ".official()" not in certificates:
@@ -4305,6 +4339,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("tozalagich natijani kutadi", reaper_waits_for_unapplied_results),
     ("ichkaridagilar reytingsiz qatnashadi", contest_insiders_play_unrated),
     ("musobaqa savoli yopiq, javobni hakam beradi", contest_questions_stay_private),
+    ("halol o'yin: hakam hisoboti va chetlatish", contest_fair_play_is_judged),
     ("mehmon zonalari yopiq", guest_zones_are_gated),
     ("Nightly har obrazni bir marta quradi", nightly_builds_each_image_once),
     ("SQL so'rovi faqat o'qiydi", sql_queries_only_read),

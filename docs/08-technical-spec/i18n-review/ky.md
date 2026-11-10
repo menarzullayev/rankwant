@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2508 strings.**
+**2533 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2485,6 +2485,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.testers` | Sinovchilar | Тестерлер |  |
 | `contest.crew.jury` | Hakamlar | Калыстар |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Алар маселелерди алдын ала билишет, ошондуктан рейтингсиз катышат. |  |
+| `standings.dq` | DQ | DQ |  |
+| `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Мелдеште жасалма интеллект жардамчыларын (ChatGPT, Copilot ж.б.) колдонууга тыюу салынат. Редакторго код коюу жана барактан чыгуу катталат — калыс көрөт. |  |
+| `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Мелдеш: ЖИ жардамчыларына тыюу салынган. Код коюу жана барактан чыгуу катталат. |  |
+| `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Сиз бул мелдештен четтетилдиңиз |  |
+| `contest.fair.title` | Halol o'yin | Адилет оюн |  |
+| `contest.fair.intro` | Muharrir signallari ajralib turgan urinishlar. Bu ayblov emas — kodni ko'rib, o'zingiz qaror qiling. | Редактор сигналдары өзгөчөлөнгөн жөнөтүүлөр. Бул айып эмес — кодду карап, өзүңүз чечиңиз. |  |
+| `contest.fair.clean` | Ajralib turgan urinish yo'q. | Өзгөчөлөнгөн жөнөтүү жок. |  |
+| `contest.fair.flag.pasted` | Katta joylash | Чоң коюу |  |
+| `contest.fair.flag.fast` | Juda tez yozilgan | Өтө тез жазылган |  |
+| `contest.fair.flag.away` | Ko'p marta chiqib ketgan | Барактан көп чыккан |  |
+| `contest.fair.attempt` | Urinish #{id} | Жөнөтүү #{id} |  |
+| `contest.fair.signals` | Kod: {source} belgi · joylangan: {pasted} (eng kattasi {largest}) · sahifadan chiqish: {blurs} · ochiq turgan: {minutes} daq | Код: {source} белги · коюлган: {pasted} (эң чоңу {largest}) · барактан чыгуу: {blurs} · ачык турду: {minutes} мүн |  |
+| `contest.fair.dq` | Chetlatish | Четтетүү |  |
+| `contest.fair.dqWhat` | {user}: musobaqadagi urinishlari bekor qilinadi, jadvalda «DQ», sertifikat olib tashlanadi, reyting qayta hisoblanadi. | {user}: мелдештеги жөнөтүүлөрү жокко чыгарылат, таблицада «DQ», сертификат алынат, рейтинг кайра эсептелет. |  |
+| `contest.fair.reason` | Sabab (ishtirokchiga yuboriladi) | Себеп (катышуучуга жөнөтүлөт) |  |
+| `contest.fair.dqConfirm` | Tasdiqlash va chetlatish | Ырастоо жана четтетүү |  |
+| `contest.fair.cancel` | Bekor qilish | Жокко чыгаруу |  |
+| `contest.fair.disqualified` | Chetlatilganlar | Четтетилгендер |  |
+| `error.reason_required` | Sababni yozing | Себебин жазыңыз |  |
+| `error.already_disqualified` | Bu ishtirokchi allaqachon chetlatilgan | Бул катышуучу мурунтан четтетилген |  |
+| `error.contest_not_started` | Musobaqa hali boshlanmagan | Мелдеш али башталган жок |  |
+| `error.contest_running` | Hisobot musobaqa tugagach ochiladi | Отчёт мелдеш бүткөндө ачылат |  |
+| `error.user_not_found` | Bunday foydalanuvchi yo'q | Мындай колдонуучу жок |  |
+| `notif.msg.contest_disqualified.title` | «{contest}»: siz musobaqadan chetlatildingiz | «{contest}»: сиз четтетилдиңиз |  |
+| `notif.msg.contest_disqualified.body` | Sabab: {reason} | Себеп: {reason} |  |
 | `contest.qa.title` | Savol-javob | Суроо-жооп |  |
 | `contest.qa.general` | Umumiy | Жалпы |  |
 | `contest.qa.problem` | Masala | Маселе |  |

@@ -61,6 +61,7 @@ import {
   sampleConsoleIdleState,
   type SampleConsoleState,
 } from "./SampleTestConsole";
+import { useEditorSignals } from "../useEditorSignals";
 import { AttemptVerdictPanel } from "./AttemptVerdictPanel";
 import {
   useProblemSolve,
@@ -187,6 +188,8 @@ export function SubmitPanel({
   hasTests: boolean;
 }) {
   const locale = useLocale();
+  // A contest attempt carries how it was written (ADR-0055, part 4).
+  const signals = useEditorSignals(Boolean(contest));
   const { user, ready } = useSession();
   const solve = useProblemSolve();
   const [verdictLayout] = useVerdictLayoutMode();
@@ -388,7 +391,7 @@ export function SubmitPanel({
         problem,
         language,
         source_code: source,
-        ...(contest ? { contest } : {}),
+        ...(contest ? { contest, editor: signals.snapshot() } : {}),
       });
       watchAttemptId.current = created.id;
       setStreamAttemptId(created.id);
@@ -606,11 +609,19 @@ export function SubmitPanel({
           <p className="text-theme-xs rw-dim">{t(locale, "submit.function.hint")}</p>
         ) : null}
 
-        <CodeEditor
-          language={editorLanguage(language)}
-          value={source}
-          onChange={setSource}
-        />
+        {contest && (
+          <p className="text-theme-xs rw-dim" data-fair-play-note="">
+            {t(locale, "contest.fair.editorNote")}
+          </p>
+        )}
+        {/* Pastes bubble up from Monaco's textarea (ADR-0055, part 4). */}
+        <div onPaste={signals.onPaste}>
+          <CodeEditor
+            language={editorLanguage(language)}
+            value={source}
+            onChange={setSource}
+          />
+        </div>
 
         {/* A function problem: the program around the submission is shown,
             so a solver can see what calls the function and with what. */}

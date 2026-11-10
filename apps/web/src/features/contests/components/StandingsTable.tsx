@@ -56,6 +56,13 @@ function PlaceCell({
   mine?: boolean;
 }) {
   const tone = mine ? "rw-accent-ink" : "rw-strong";
+  if (row.is_disqualified) {
+    return (
+      <TD className="font-semibold rw-bad-ink">
+        <span data-disqualified="">{t(locale, "standings.dq")}</span>
+      </TD>
+    );
+  }
   if (!row.insider_role) {
     return <TD className={`font-semibold ${tone}`}>{row.rank}</TD>;
   }
@@ -140,7 +147,7 @@ export function StandingsTable({
   const tsv = rows
     .map(
       (row) =>
-        `${row.insider_role ? "*" : row.rank}\t${row.username}\t${row.solved_count}\t${row.penalty}`,
+        `${row.is_disqualified ? "DQ" : row.insider_role ? "*" : row.rank}\t${row.username}\t${row.solved_count}\t${row.penalty}`,
     )
     .join("\n");
 

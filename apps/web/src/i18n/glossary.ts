@@ -19,6 +19,8 @@
  */
 
 export const SAME_IN_EVERY_LOCALE = [
+  // «DQ» — the referee's abbreviation for disqualified (ADR-0055, part 4).
+  "standings.dq",
   // Tier names (ADR-0027 ladder) — English in every locale.
   "title.quark",
   "title.atom",

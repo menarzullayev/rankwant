@@ -17,7 +17,7 @@ TOP_SHARE = 0.10
 
 
 def issue(contest: Contest) -> int:
-    """Musobaqa yakunlangach. Takroriy chaqiruv xavfsiz — bor sertifikat tegilmaydi."""
+    """Musobaqa yakunlangach. Takroriy chaqiruv xavfsiz — bor sertifikat id'si saqlanadi."""
     if not contest.is_public or contest.is_virtual:
         return 0
     submitted = set(
@@ -68,5 +68,21 @@ def issue(contest: Contest) -> int:
                 tier=tier,
             )
         )
-    Certificate.objects.bulk_create(certificates, ignore_conflicts=True)
+    # A certificate already issued keeps its id (its QR link) and takes the
+    # current place: a disqualification moves the places (ADR-0055, part 4).
+    existing = {c.user_id: c for c in Certificate.objects.filter(contest=contest)}
+    changed = []
+    for cert in certificates:
+        held = existing.get(cert.user_id)
+        if held is not None and (held.place, held.participants, held.tier) != (
+            cert.place,
+            cert.participants,
+            cert.tier,
+        ):
+            held.place, held.participants, held.tier = cert.place, cert.participants, cert.tier
+            changed.append(held)
+    Certificate.objects.bulk_update(changed, ["place", "participants", "tier"])
+    Certificate.objects.bulk_create(
+        [c for c in certificates if c.user_id not in existing], ignore_conflicts=True
+    )
     return len(certificates)

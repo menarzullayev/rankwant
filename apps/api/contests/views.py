@@ -28,6 +28,8 @@ from contests.serializers import (
     ContestDetailSerializer,
     ContestSerializer,
     ContestViewerSerializer,
+    DisqualifySerializer,
+    IntegrityReportSerializer,
     RegistrationSerializer,
     StandingSerializer,
 )
@@ -76,6 +78,8 @@ def _clar_error(exc: Any) -> Response:
         "clarifications": "Savol-javob va e'lonlar",
         "answer": "Savolga javob berish",
         "announcements": "E'lon qilish",
+        "integrity": "Halol o'yin hisoboti",
+        "disqualify": "Diskvalifikatsiya",
     },
 )
 class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
@@ -159,16 +163,76 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
         role = role_of(contest, request.user)
         testing = bool(role) and timezone.now() < contest.start_at
         problems = contest.problems.select_related("problem") if testing else []
+        from contests.integrity import can_judge
+
+        registration = contest.registrations.filter(user=request.user).first()
         return Response(
             ContestViewerSerializer(
                 {
                     "role": role,
-                    "registered": contest.registrations.filter(user=request.user).exists(),
+                    "registered": registration is not None,
                     "testing": testing,
                     "problems": problems,
+                    "disqualified_reason": registration.disqualified_reason
+                    if registration is not None and registration.disqualified_at
+                    else None,
+                    "judge": can_judge(contest, request.user),
                 }
             ).data
         )
+
+    # ── Fair play (ADR-0055, part 4) ────────────────────────────────
+
+    @extend_schema(responses={200: IntegrityReportSerializer})
+    @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
+    def integrity(self, request: Request, slug: str | None = None) -> Response:
+        """The editor signals that stand out — for the jury, after the end."""
+        from contests import integrity as fair
+
+        contest = self.get_object()
+        if not fair.can_judge(contest, request.user):
+            return _error("forbidden", "Only the jury reads this", status.HTTP_403_FORBIDDEN)
+        if not contest.is_finished:
+            return _error("contest_running", "The report opens when the contest ends", 400)
+        disqualified = contest.registrations.filter(disqualified_at__isnull=False).select_related(
+            "user"
+        )
+        return Response(
+            IntegrityReportSerializer(
+                {
+                    "results": fair.report(contest),
+                    "disqualified": [
+                        {
+                            "username": r.user.username,
+                            "reason": r.disqualified_reason,
+                            "at": r.disqualified_at,
+                        }
+                        for r in disqualified
+                    ],
+                }
+            ).data
+        )
+
+    @extend_schema(request=DisqualifySerializer, responses={200: RegistrationSerializer})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def disqualify(self, request: Request, slug: str | None = None) -> Response:
+        from contests import integrity as fair
+
+        contest = self.get_object()
+        if not fair.can_judge(contest, request.user):
+            return _error("forbidden", "Only the jury disqualifies", status.HTTP_403_FORBIDDEN)
+        form = DisqualifySerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        target = User.objects.filter(username=form.validated_data["username"]).first()
+        if target is None:
+            return _error("user_not_found", "No such user", status.HTTP_404_NOT_FOUND)
+        try:
+            registration = fair.disqualify(
+                contest, target, request.user, form.validated_data["reason"]
+            )
+        except fair.FairPlayError as exc:
+            return _error(exc.code, exc.message, exc.status)
+        return Response(RegistrationSerializer(registration).data)
 
     # ── Questions and announcements (ADR-0055, part 3) ──────────────
 

@@ -81,6 +81,31 @@ export type ContestViewer = {
   testing: boolean;
   /** Filled while `testing`. */
   problems: ContestProblem[];
+  /** The jury's reason, when the viewer was disqualified (part 4). */
+  disqualified_reason: string | null;
+  /** The viewer reads the fair-play report and disqualifies. */
+  judge: boolean;
+};
+
+/** An attempt whose editor signals stand out (ADR-0055, part 4). */
+export type IntegrityRow = {
+  attempt: number;
+  username: string;
+  problem: string;
+  verdict: string;
+  created_at: string;
+  flags: ("pasted" | "fast" | "away")[];
+  source_chars: number;
+  pasted_chars: number;
+  largest_paste: number;
+  paste_count: number;
+  blur_count: number;
+  active_ms: number;
+};
+
+export type IntegrityReport = {
+  results: IntegrityRow[];
+  disqualified: { username: string; reason: string; at: string }[];
 };
 
 export type Standing = {
@@ -99,6 +124,8 @@ export type Standing = {
   last_ac_at: string | null;
   /** Set on an insider's row: unrated, no place (`rank` is 0). */
   insider_role: InsiderRole | "";
+  /** Disqualified by the jury: «DQ», no place (part 4). */
+  is_disqualified: boolean;
 };
 
 export type Arena = {

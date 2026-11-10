@@ -7,6 +7,10 @@
     "contest",
     "question"
   ],
+  "contest_disqualified": [
+    "contest",
+    "reason"
+  ],
   "contest_question": [
     "contest",
     "text"

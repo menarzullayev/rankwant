@@ -132,6 +132,8 @@ class StandingSerializer(serializers.ModelSerializer[Standing]):
             # Set on an insider's row: no place, shown with a star
             # (ADR-0055, part 2). `rank` is 0 on such a row.
             "insider_role",
+            # Disqualified by the jury (part 4): «DQ», no place.
+            "is_disqualified",
         ]
 
 
@@ -150,6 +152,10 @@ class ContestViewerSerializer(serializers.Serializer[Any]):
     testing = serializers.BooleanField()
     #: Filled while `testing` — nobody else sees them before the start.
     problems = ContestProblemSerializer(many=True)
+    #: The jury's reason, when the viewer was disqualified (part 4).
+    disqualified_reason = serializers.CharField(allow_null=True)
+    #: The viewer reads the fair-play report and disqualifies.
+    judge = serializers.BooleanField()
 
 
 class RegistrationSerializer(serializers.ModelSerializer[ContestRegistration]):
@@ -239,3 +245,36 @@ class ClarificationAnswerSerializer(serializers.Serializer[Any]):
 class ContestAnnouncementSerializer(serializers.Serializer[Any]):
     problem = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=3)
     text = serializers.CharField(max_length=4000)
+
+
+class IntegrityRowSerializer(serializers.Serializer[Any]):
+    """One attempt whose editor signals stand out (ADR-0055, part 4)."""
+
+    attempt = serializers.IntegerField()
+    username = serializers.CharField()
+    problem = serializers.CharField()
+    verdict = serializers.CharField()
+    created_at = serializers.DateTimeField()
+    flags = serializers.ListField(child=serializers.CharField())
+    source_chars = serializers.IntegerField()
+    pasted_chars = serializers.IntegerField()
+    largest_paste = serializers.IntegerField()
+    paste_count = serializers.IntegerField()
+    blur_count = serializers.IntegerField()
+    active_ms = serializers.IntegerField()
+
+
+class DisqualifiedSerializer(serializers.Serializer[Any]):
+    username = serializers.CharField()
+    reason = serializers.CharField()
+    at = serializers.DateTimeField()
+
+
+class IntegrityReportSerializer(serializers.Serializer[Any]):
+    results = IntegrityRowSerializer(many=True)
+    disqualified = DisqualifiedSerializer(many=True)
+
+
+class DisqualifySerializer(serializers.Serializer[Any]):
+    username = serializers.CharField(max_length=150)
+    reason = serializers.CharField(max_length=2000)

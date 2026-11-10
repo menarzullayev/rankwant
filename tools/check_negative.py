@@ -5488,6 +5488,56 @@ def neg_decisions_contest_page_names_problems_early() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_anybody_disqualifies() -> tuple[bool, str]:
+    """An organizer (not the jury) disqualifies."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "contest.jury.filter(pk=user.pk).exists()",
+        "True",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_keeps_attempts() -> tuple[bool, str]:
+    """A disqualified participant's attempts still count."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "skip_attempts(contest.attempts.filter(user=user))",
+        "None",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_without_rerating() -> tuple[bool, str]:
+    """A disqualification after finalizing leaves the ratings as they were."""
+    return _decision_broken(
+        "apps/api/contests/integrity.py",
+        "            rerate_contest(contest)",
+        "            pass",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_dq_row_is_official() -> tuple[bool, str]:
+    """A disqualified row is rated and placed."""
+    return _decision_broken(
+        "apps/api/contests/models.py",
+        'return self.filter(insider_role="", is_disqualified=False)',
+        'return self.filter(insider_role="")',
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
+def neg_decisions_editor_signals_dropped() -> tuple[bool, str]:
+    """The editor no longer sends its signals with a contest attempt."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/SubmitPanel.tsx",
+        "editor: signals.snapshot()",
+        "editor: undefined",
+        "halol o'yin: hakam hisoboti va chetlatish",
+    )
+
+
 def neg_decisions_question_is_public() -> tuple[bool, str]:
     """A participant's question is shown to everybody."""
     return _decision_broken(
@@ -5542,7 +5592,7 @@ def neg_decisions_insider_gets_a_place() -> tuple[bool, str]:
     """An insider's row is given an official place."""
     return _decision_broken(
         "apps/api/contests/services.py",
-        "        if row.user_id in roles:\n            places.append(0)",
+        "        if row.user_id in roles or row.user_id in dq:\n            places.append(0)",
         "        if False:\n            places.append(0)",
         "ichkaridagilar reytingsiz qatnashadi",
     )
@@ -5552,8 +5602,8 @@ def neg_decisions_insider_is_rated() -> tuple[bool, str]:
     """The rating is applied to an insider's row too."""
     return _decision_broken(
         "apps/api/ratings/services.py",
-        "Standing.objects.filter(contest=contest).official()",
-        "Standing.objects.filter(contest=contest)",
+        'Standing.objects.filter(contest=contest).official().select_related("user")',
+        'Standing.objects.filter(contest=contest).select_related("user")',
         "ichkaridagilar reytingsiz qatnashadi",
     )
 
@@ -7655,6 +7705,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/contests/services.py",
     "apps/api/contests/certificates.py",
     "apps/api/contests/clarifications.py",
+    "apps/api/contests/integrity.py",
+    "apps/api/contests/models.py",
+    "apps/web/src/app/(site)/contests/[slug]/page.tsx",
+    "apps/web/src/features/problems/components/SubmitPanel.tsx",
     "apps/api/contests/views.py",
     "apps/api/ratings/services.py",
     "apps/api/tournaments/services.py",
@@ -11047,6 +11101,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("hakam bo'lmagan javob bersa tutilsin", neg_decisions_anybody_answers),
             ("savol chegarasi tushsa tutilsin", neg_decisions_question_limit_dropped),
             ("so'raganning ismi ochilsa tutilsin", neg_decisions_asker_named),
+            ("hakam bo'lmagan chetlatsa tutilsin", neg_decisions_anybody_disqualifies),
+            ("chetlatilganning urinishlari qolsa tutilsin", neg_decisions_dq_keeps_attempts),
+            ("chetlatishdan keyin reyting qolsa tutilsin", neg_decisions_dq_without_rerating),
+            ("chetlatilgan qator rasmiy bo'lsa tutilsin", neg_decisions_dq_row_is_official),
+            ("muharrir signallari tushsa tutilsin", neg_decisions_editor_signals_dropped),
             ("tozalagich natijani kutmasa tutilsin", neg_decisions_reaper_ignores_waiting_results),
             ("mehmonga editor yuborilsa tutilsin", neg_decisions_guest_gets_the_editor),
             ("admin brauzerda tekshirilsa tutilsin", neg_decisions_admin_checked_in_the_browser),

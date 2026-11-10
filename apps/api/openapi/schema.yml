@@ -1391,6 +1391,63 @@ paths:
               schema:
                 $ref: '#/components/schemas/Clarification'
           description: ''
+  /api/v1/contests/{slug}/disqualify/:
+    post:
+      operationId: contests_disqualify_create
+      summary: Diskvalifikatsiya
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Disqualify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Disqualify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Disqualify'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registration'
+          description: ''
+  /api/v1/contests/{slug}/integrity/:
+    get:
+      operationId: contests_integrity_retrieve
+      description: The editor signals that stand out — for the jury, after the end.
+      summary: Halol o'yin hisoboti
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrityReport'
+          description: ''
   /api/v1/contests/{slug}/register/:
     post:
       operationId: contests_register_create
@@ -12989,6 +13046,8 @@ components:
           type: string
           nullable: true
           pattern: ^[-a-zA-Z0-9_]+$
+        editor:
+          $ref: '#/components/schemas/EditorSignal'
       required:
       - language
       - problem
@@ -13570,7 +13629,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContestProblem'
+        disqualified_reason:
+          type: string
+          nullable: true
+        judge:
+          type: boolean
       required:
+      - disqualified_reason
+      - judge
       - problems
       - registered
       - role
@@ -13698,6 +13764,32 @@ components:
       - attempts
       - date
       - new_users
+    Disqualified:
+      type: object
+      properties:
+        username:
+          type: string
+        reason:
+          type: string
+        at:
+          type: string
+          format: date-time
+      required:
+      - at
+      - reason
+      - username
+    Disqualify:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 150
+        reason:
+          type: string
+          maxLength: 2000
+      required:
+      - reason
+      - username
     Duel:
       type: object
       properties:
@@ -13840,6 +13932,26 @@ components:
         * `accepted` - Qabul qilindi
         * `finished` - Tugadi
         * `cancelled` - Bekor qilindi
+    EditorSignal:
+      type: object
+      description: What the editor tells about a contest solution (ADR-0055, part
+        4).
+      properties:
+        pasted_chars:
+          type: integer
+          minimum: 0
+        largest_paste:
+          type: integer
+          minimum: 0
+        paste_count:
+          type: integer
+          minimum: 0
+        blur_count:
+          type: integer
+          minimum: 0
+        active_ms:
+          type: integer
+          minimum: 0
     Education:
       type: object
       description: Yil + oy. `current=True` yoki tugash yili yo'q — hozirgacha.
@@ -14391,6 +14503,64 @@ components:
         * `tester` - Sinovchi
         * `jury` - Hakam
         * `organizer` - Tashkilotchi
+    IntegrityReport:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrityRow'
+        disqualified:
+          type: array
+          items:
+            $ref: '#/components/schemas/Disqualified'
+      required:
+      - disqualified
+      - results
+    IntegrityRow:
+      type: object
+      description: One attempt whose editor signals stand out (ADR-0055, part 4).
+      properties:
+        attempt:
+          type: integer
+        username:
+          type: string
+        problem:
+          type: string
+        verdict:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        flags:
+          type: array
+          items:
+            type: string
+        source_chars:
+          type: integer
+        pasted_chars:
+          type: integer
+        largest_paste:
+          type: integer
+        paste_count:
+          type: integer
+        blur_count:
+          type: integer
+        active_ms:
+          type: integer
+      required:
+      - active_ms
+      - attempt
+      - blur_count
+      - created_at
+      - flags
+      - largest_paste
+      - paste_count
+      - pasted_chars
+      - problem
+      - source_chars
+      - username
+      - verdict
     Inventory:
       type: object
       properties:
@@ -21107,6 +21277,8 @@ components:
           oneOf:
           - $ref: '#/components/schemas/InsiderRoleEnum'
           - $ref: '#/components/schemas/BlankEnum'
+        is_disqualified:
+          type: boolean
       required:
       - user_title
       - username
