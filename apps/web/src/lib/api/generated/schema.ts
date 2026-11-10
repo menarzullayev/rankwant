@@ -2247,6 +2247,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notifications/unsubscribe/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obunani tekshirish (email)
+         * @description One-click unsubscribe from notification email (`notifications.email`).
+         *
+         *     No session and no CSRF: a mail client posts here on its own (RFC 8058,
+         *     body `List-Unsubscribe=One-Click`, the token in the URL), and a reader
+         *     opens the link from another device. The signed token is the whole
+         *     credential and it can do one thing only — switch email off.
+         *
+         *     GET only reads the token (the confirmation page asks first): link
+         *     scanners in mail systems open every URL, and a GET that unsubscribed
+         *     would switch people's email off behind their backs.
+         */
+        get: operations["notifications_unsubscribe_retrieve"];
+        put?: never;
+        /**
+         * Email bildirishnomasini o'chirish
+         * @description One-click unsubscribe from notification email (`notifications.email`).
+         *
+         *     No session and no CSRF: a mail client posts here on its own (RFC 8058,
+         *     body `List-Unsubscribe=One-Click`, the token in the URL), and a reader
+         *     opens the link from another device. The signed token is the whole
+         *     credential and it can do one thing only — switch email off.
+         *
+         *     GET only reads the token (the confirmation page asks first): link
+         *     scanners in mail systems open every URL, and a GET that unsubscribed
+         *     would switch people's email off behind their backs.
+         */
+        post: operations["notifications_unsubscribe_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/platform-roadmap/": {
         parameters: {
             query?: never;
@@ -6460,6 +6502,16 @@ export interface components {
             /** Format: email */
             email: string;
             password?: string;
+        };
+        EmailUnsubscribe: {
+            /** @description Or `?token=` in the URL (RFC 8058) */
+            token?: string;
+        };
+        EmailUnsubscribeResult: {
+            /** @description A notification kind, or `*` for every kind */
+            kind: string;
+            /** @description True once email is off for that kind */
+            done: boolean;
         };
         /** @description Havola yoki `username` + kod. Ikkalasi ham bo'lmasa `consume` rad etadi. */
         EmailVerify: {
@@ -13368,6 +13420,51 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    notifications_unsubscribe_retrieve: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailUnsubscribeResult"];
+                };
+            };
+        };
+    };
+    notifications_unsubscribe_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["EmailUnsubscribe"];
+                "application/x-www-form-urlencoded": components["schemas"]["EmailUnsubscribe"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailUnsubscribeResult"];
+                };
             };
         };
     };

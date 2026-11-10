@@ -223,6 +223,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-decisions-out-of-claude-md.md) · Qarorlar `docs/decisions/` da, CLAUDE.md da faqat bir qatorli indeks · `decisions_index_matches_files`
 - [2026-11-10](docs/decisions/2026-11-10-contest-questions-and-announcements.md) · Musobaqa savol-javobi va e'lonlari; savollar yopiq (ADR-0055, 3-qism) · `contest_questions_stay_private`
 - [2026-11-10](docs/decisions/2026-11-10-contest-fair-play.md) · Halol o'yin: muharrir signallari, hakam hisoboti, chetlatish (ADR-0055, 4-qism) · `contest_fair_play_is_judged`
+- [2026-11-10](docs/decisions/2026-11-10-notification-email.md) · Email bildirishnomalari: opt-in, faqat shaxsiy, 5 daqiqa, zaxira 200, bir bosishda obuna · `notification_email_is_opt_in_and_bounded`
 
 ## Tekshiruvlar
 

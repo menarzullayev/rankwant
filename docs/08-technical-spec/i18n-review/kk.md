@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2533 strings.**
+**2544 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -638,7 +638,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Соңғы өзгеріс сақталмады. Бөлімді қайта ашып, оны қайта енгізіңіз. |  |
 | `settings.discard` | Bekor qilish | Бас тарту |  |
 | `settings.channelEmail` | Pochta | Пошта |  |
-| `settings.soon` | tez orada | жақында |  |
 | `settings.privacy.title` | Kim nimani ko'radi | Кім нені көреді |  |
 | `settings.privacy.hint` | Yoqilgan maydon ommaviy profilda ko'rinadi. Pochta standart holatda yashirin. | Қосылған өріс жария профильде көрінеді. Пошта әдепкі бойынша жасырын. |  |
 | `settings.privacy.preview` | Profilim boshqalarga qanday ko'rinadi | Профилім басқаларға қалай көрінеді |  |
@@ -877,9 +876,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.bio` | O'zim haqimda | Өзім туралы |  |
 | `settings.bioHint` | Profil sahifasida ismingiz tagida ko'rinadi. | Профиль бетінде атыңыздың астында көрінеді. |  |
 | `settings.birthDate` | Tug'ilgan sana | Туған күні |  |
-| `settings.channelEmailSoon` | Pochta orqali yuborish keyinroq qo'shiladi. | Пошта арқылы жіберу кейінірек қосылады. |  |
 | `settings.channelSite` | Saytda | Сайтта |  |
 | `settings.channelTelegram` | Telegram | Telegram |  |
+| `settings.notifyEmailHint` | Email faqat tasdiqlangan manzilga va faqat sizga tegishli xabar uchun yuboriladi — umumiy e'lonlar emailga kelmaydi. Xat 5 daqiqadan keyin ketadi; shu orada saytda o'qisangiz, yuborilmaydi. | Хат тек расталған мекенжайға және тек сізге қатысты хабар үшін жіберіледі — жалпы хабарландырулар поштаға келмейді. Хат 5 минуттан кейін кетеді; осы уақытта сайтта оқысаңыз, жіберілмейді. |  |
+| `settings.emailNeedsVerify` | Email orqali olish uchun pochta manzilingizni tasdiqlang: | Поштамен алу үшін мекенжайыңызды растаңыз: |  |
+| `settings.emailVerifyLink` | Pochtani tasdiqlash | Поштаны растау |  |
+| `unsubscribe.title` | Email bildirishnomalari | Пошта хабарландырулары |  |
+| `unsubscribe.askKind` | «{kind}» turidagi email xatlarni o'chirasizmi? | «{kind}» түріндегі хаттарды өшіресіз бе? |  |
+| `unsubscribe.askAll` | Barcha email bildirishnomalarni o'chirasizmi? | Барлық пошта хабарландыруларын өшіресіз бе? |  |
+| `unsubscribe.confirm` | Emailni o'chirish | Хаттарды өшіру |  |
+| `unsubscribe.doneKind` | «{kind}» turidagi email xatlar o'chirildi. | «{kind}» түріндегі хаттар өшірілді. |  |
+| `unsubscribe.doneAll` | Barcha email bildirishnomalar o'chirildi. | Барлық пошта хабарландырулары өшірілді. |  |
+| `unsubscribe.invalid` | Havola yaroqsiz — u buzilgan yoki eskirgan. Sozlamani o'zingiz o'zgartiring. | Сілтеме жарамсыз — ол бұзылған немесе ескірген. Баптауды өзіңіз өзгертіңіз. |  |
+| `unsubscribe.note` | Saytdagi bildirishnomalar o'zgarmaydi. Emailni qayta yoqish — bildirishnoma sozlamalarida. | Сайттағы хабарландырулар өзгермейді. Хаттарды қайта қосу — хабарландыру баптауларында. |  |
+| `unsubscribe.settings` | Bildirishnoma sozlamalari | Хабарландыру баптаулары |  |
+| `unsubscribe.failed` | O'chirib bo'lmadi. Birozdan keyin qayta urinib ko'ring. | Өшіру мүмкін болмады. Сәлден соң қайталап көріңіз. |  |
 | `settings.company` | Kompaniya | Компания |  |
 | `settings.cosmetics` | Profil bezaklari | Профиль әшекейлері |  |
 | `settings.cosmeticsEmpty` | Hali bezak yo'q — ularni Qvant do'konidan olish mumkin. | Әзірге әшекей жоқ — оларды Qvant дүкенінен алуға болады. |  |

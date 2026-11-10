@@ -63,3 +63,20 @@ def send_telegram(user_id: int, text: str) -> str:
         log.info("telegram xabari qabul qilinmadi: %s → %s", user_id, status)
         return f"failed:{status}"
     return "sent"
+
+
+@shared_task(name="notifications.send_email")
+def send_notification_email(
+    *, user_id: int, kind: str, title: str, body: str, notification_id: int | None = None
+) -> str:
+    """Email copy of a notification, five minutes after it (`notifications.email`).
+
+    Everything is checked again here, not when it was queued: the reader may
+    have read the row, switched the kind off or lost the verified address
+    in the meantime, and the day's quota is what it is now.
+    """
+    from notifications.email import deliver
+
+    return deliver(
+        user_id=user_id, kind=kind, title=title, body=body, notification_id=notification_id
+    )

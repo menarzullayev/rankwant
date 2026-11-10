@@ -30,8 +30,14 @@ const KINDS = [
   "system",
 ] as const;
 
-const CHANNELS = ["site", "telegram"] as const;
+const CHANNELS = ["site", "telegram", "email"] as const;
 type Channel = (typeof CHANNELS)[number];
+
+const CHANNEL_LABEL = {
+  site: "settings.channelSite",
+  telegram: "settings.channelTelegram",
+  email: "settings.channelEmail",
+} as const;
 
 export function NotificationsSection() {
   const locale = useLocale();
@@ -40,14 +46,22 @@ export function NotificationsSection() {
   const [edited, setEdited] = useState<NotifyPrefs | null>(null);
   const prefs = edited ?? user?.notify_prefs ?? {};
   const telegram = user?.social.includes("telegram") ?? false;
-  // Standart: saytda — ha, Telegram'da — yo'q (`notifications.services`).
+  // Email goes to a confirmed address only (`notifications.email.reachable`).
+  const email = Boolean(user?.email && user.email_verified);
+  // Standart: saytda — ha; Telegram va email — yo'q, foydalanuvchi o'zi
+  // yoqadi (`notifications.services.DEFAULT_CHANNELS`, 2026-11-10).
   const value = (kind: string, channel: Channel) =>
     prefs[kind]?.[channel] ?? channel === "site";
 
   function set(kind: string, channel: Channel, on: boolean) {
     setEdited({
       ...prefs,
-      [kind]: { site: value(kind, "site"), telegram: value(kind, "telegram"), [channel]: on },
+      [kind]: {
+        site: value(kind, "site"),
+        telegram: value(kind, "telegram"),
+        email: value(kind, "email"),
+        [channel]: on,
+      },
     });
   }
 
@@ -56,16 +70,16 @@ export function NotificationsSection() {
       await patchJson("/me/", { notify_prefs: prefs });
       await reload();
     });
-    // Edits made while the request was out stay unsaved.
-    if (ok) setEdited((current) => (current === edited ? null : current));
+    if (ok) setEdited(null);
     return ok;
   };
   useSaveSlot(edited !== null, save, () => setEdited(null));
 
   if (!user) return null;
 
-  const channelLabel = (channel: Channel) =>
-    t(locale, channel === "site" ? "settings.channelSite" : "settings.channelTelegram");
+  const channelLabel = (channel: Channel) => t(locale, CHANNEL_LABEL[channel]);
+  const available = (channel: Channel) =>
+    channel === "site" || (channel === "telegram" ? telegram : email);
 
   return (
     <Card
@@ -89,14 +103,6 @@ export function NotificationsSection() {
                   {channelLabel(channel)}
                 </th>
               ))}
-              {/* Not built yet: the column is drawn so the table does not
-                  change shape when it is, and says so instead of promising. */}
-              <th scope="col" className="px-3 py-2 text-center font-medium rw-dim">
-                {t(locale, "settings.channelEmail")}{" "}
-                <span className="rw-radius-sm rw-accent-soft px-2 py-0.5 text-theme-xs">
-                  {t(locale, "settings.soon")}
-                </span>
-              </th>
             </tr>
           </thead>
           <tbody className="divide-y rw-divide">
@@ -110,21 +116,12 @@ export function NotificationsSection() {
                     <FormBox
                       shape="switch"
                       checked={value(kind, channel)}
-                      disabled={channel === "telegram" && !telegram}
+                      disabled={!available(channel)}
                       onChange={(event) => set(kind, channel, event.target.checked)}
                       aria-label={`${t(locale, `settings.kind.${kind}`)} — ${channelLabel(channel)}`}
                     />
                   </td>
                 ))}
-                <td className="px-3 py-3 text-center">
-                  <FormBox
-                    shape="switch"
-                    checked={false}
-                    disabled
-                    readOnly
-                    aria-label={`${t(locale, `settings.kind.${kind}`)} — ${t(locale, "settings.channelEmail")}`}
-                  />
-                </td>
               </tr>
             ))}
           </tbody>
@@ -138,6 +135,18 @@ export function NotificationsSection() {
             {t(locale, "settings.telegramMissing")}{" "}
             <Link href="/settings/xavfsizlik" className="rw-accent-ink hover:underline">
               {t(locale, "settings.nav.security")}
+            </Link>
+          </>
+        )}
+      </p>
+      <p className="mt-2 text-theme-xs rw-dim">
+        {email ? (
+          t(locale, "settings.notifyEmailHint")
+        ) : (
+          <>
+            {t(locale, "settings.emailNeedsVerify")}{" "}
+            <Link href="/verify-email" className="rw-accent-ink hover:underline">
+              {t(locale, "settings.emailVerifyLink")}
             </Link>
           </>
         )}
