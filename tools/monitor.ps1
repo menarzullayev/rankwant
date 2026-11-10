@@ -287,11 +287,25 @@ function Get-TunnelProcess {
   # Stub rejimida tunnel haqida hech narsa aytilmasa, u TIRIK deb
   # hisoblanadi: test haqiqiy PID faylini o'qimasin.
   if ($script:stubMode) { return 'stub-tunnel' }
-  if (-not (Test-Path $script:cfPid)) { return $null }
-  $pidValue = 0
-  if (-not [int]::TryParse((Get-Content $script:cfPid -Raw).Trim(), [ref]$pidValue)) { return $null }
-  $p = Get-Process -Id $pidValue -ErrorAction SilentlyContinue
-  if ($p -and $p.ProcessName -eq 'cloudflared') { return $p }
+  if (Test-Path $script:cfPid) {
+    $pidValue = 0
+    if ([int]::TryParse((Get-Content $script:cfPid -Raw).Trim(), [ref]$pidValue)) {
+      $p = Get-Process -Id $pidValue -ErrorAction SilentlyContinue
+      if ($p -and $p.ProcessName -eq 'cloudflared') { return $p }
+    }
+  }
+  # PID faylida yo'q, lekin xuddi shu config bilan ishlayotgan tunnel bormi?
+  # Host'dagi «Cloudflared tunnel autostart» vazifasi tunnelni PID faylini
+  # yozmasdan ko'taradi. 2026-11-07 01:05 da tarmoq uzilganda monitor shuni
+  # «tunnel yo'q» deb o'qib IKKINCHI tunnelni ko'tardi va ikkalasi 3 kun bir
+  # log faylga yozib turdi (audit Q-16, L-08). Endi u o'zlashtiriladi.
+  $running = Get-CimInstance Win32_Process -Filter "Name='cloudflared.exe'" -ErrorAction SilentlyContinue |
+    Where-Object { $_.CommandLine -and $_.CommandLine.Contains($script:cfConfig) } |
+    Select-Object -First 1
+  if ($running) {
+    Set-Content -Path $script:cfPid -Value $running.ProcessId
+    return Get-Process -Id $running.ProcessId -ErrorAction SilentlyContinue
+  }
   return $null
 }
 

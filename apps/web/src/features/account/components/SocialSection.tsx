@@ -1,12 +1,13 @@
 "use client";
 
+import { numericStamp } from "@rankwant/shared/format";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, fill, t, type Locale } from "@/i18n/messages";
+import { fill, t, type Locale } from "@/i18n/messages";
 import {
   getJson,
   postJson,
@@ -106,7 +107,7 @@ function ExternalCard() {
     if (!row) return undefined;
     if (!row.fetched_at) return t(locale, "settings.externalPending");
     const when = fill(t(locale, "settings.externalUpdated"), {
-      time: dateTime(row.fetched_at, locale),
+      time: numericStamp(row.fetched_at),
     });
     if (row.rating === null) return `${t(locale, "settings.externalNoRating")} · ${when}`;
     const rating = fill(t(locale, "settings.externalRating"), {

@@ -71,6 +71,11 @@ concurrency:
 jobs:
   compile:
     name: Compile locks
+    # A human PR that touches a package list (e.g. apps/web/package.json) also
+    # fires `pull_request_target`; it is skipped here instead of failing the
+    # guard step below (measured on #488, 2026-11-10). The guard stays as the
+    # second line of defence.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

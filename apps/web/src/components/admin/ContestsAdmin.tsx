@@ -1,5 +1,6 @@
 "use client";
 
+import { numericStamp } from "@rankwant/shared/format";
 import { useState } from "react";
 
 import { FM_INP } from "@/components/form/chrome";
@@ -12,7 +13,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, fill, t, type Locale, errorText } from "@/i18n/messages";
+import { fill, t, type Locale, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff, staffFetch } from "@/lib/staff";
 
@@ -96,7 +97,7 @@ const FIELDS: FieldDef[] = [
 ];
 
 function fmt(iso: string, locale: Locale): string {
-  return dateTime(iso, locale);
+  return numericStamp(iso);
 }
 
 const COLUMNS: ColumnDef<ContestRow>[] = [

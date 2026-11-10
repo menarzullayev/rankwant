@@ -56,7 +56,8 @@ export function NotificationsSection() {
       await patchJson("/me/", { notify_prefs: prefs });
       await reload();
     });
-    if (ok) setEdited(null);
+    // Edits made while the request was out stay unsaved.
+    if (ok) setEdited((current) => (current === edited ? null : current));
     return ok;
   };
   useSaveSlot(edited !== null, save, () => setEdited(null));

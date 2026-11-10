@@ -1,5 +1,6 @@
 "use client";
 
+import { numericDate } from "@rankwant/shared/format";
 import { SignInGate } from "@/components/auth/SignInGate";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { date, t } from "@/i18n/messages";
+import { t } from "@/i18n/messages";
 import {
   getJson,
   type Assignment,
@@ -89,7 +90,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                 ))}
                 {a.due_at && (
                   <span className="text-theme-xs rw-faint">
-                    → {date(a.due_at, locale)}
+                    → {numericDate(a.due_at)}
                   </span>
                 )}
               </div>

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2453 strings.**
+**2471 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -634,6 +634,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.name` | Ism | At |  |
 | `settings.unsaved` | Saqlanmagan o'zgarishlar | Saqlanbaǵan ózgerisler |  |
 | `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Saqlanbaǵan ózgerisler: {count} |  |
+| `settings.saveFailed` | Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi. | Saqlanbadı. Sebebi bólimde kórsetilgen — dúzetiwińiz ornında qaldı. |  |
+| `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Sońǵı ózgeris saqlanbadı. Bólimdi qayta ashıp, onı jáne kiritiń. |  |
 | `settings.discard` | Bekor qilish | Biykar etiw |  |
 | `settings.channelEmail` | Pochta | Pochta |  |
 | `settings.soon` | tez orada | tez arada |  |
@@ -1947,6 +1949,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Sheshim analizi bar |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Testler tayar emes — sheshimler qabıl etilmeydi |  |
 | `qvant.marathon` | Haftalik marafon | Háptelik marafon |  |
+| `qvant.history` | Tranzaksiyalar | Tranzakciyalar |  |
+| `qvant.historyEmpty` | Hali Qvant harakati yo'q. | Ázirshe Qvant háreketi joq. |  |
+| `qvant.historyOlder` | Oldingilari | Aldınǵıları |  |
+| `qvant.historyNewer` | Yangilari | Jańaları |  |
+| `qvant.col.when` | Vaqt | Waqıt |  |
+| `qvant.col.reason` | Sabab | Sebep |  |
+| `qvant.col.amount` | Miqdor | Muǵdar |  |
+| `qvant.col.balance` | Qoldiq | Qaldıq |  |
+| `qvant.reason.quest` | Kunlik topshiriq | Kúndelikli tapsırma |  |
+| `qvant.reason.streak` | Ketma-ketlik mukofoti | Izbe-izlik sıylıǵı |  |
+| `qvant.reason.contest` | Musobaqa | Jarıs |  |
+| `qvant.reason.purchase` | Xarid | Satıp alıw |  |
+| `qvant.reason.refund` | Qaytarish | Qaytarıw |  |
+| `qvant.reason.admin` | Ma'muriy tuzatish | Administrator dúzetiwi |  |
+| `qvant.reason.quiz` | Test | Sınaq |  |
+| `qvant.reason.achievement` | Yutuq | Jetiskenlik |  |
 | `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Jiberiwden aldın sheshimińizdi jazıń yamasa júkleń |  |
 | `submit.sourceTooLong` | Manba kodi juda katta | Manba kodı júdá úlken |  |
 | `submit.solution` | Yechim | Sheshim |  |

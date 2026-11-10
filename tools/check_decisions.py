@@ -1792,7 +1792,7 @@ def deploy_skips_non_image_bake() -> str | None:
     auto = read(AUTO_DEPLOY)
     if "deploy_scope.py" not in auto:
         return f"{AUTO_DEPLOY}: obraz doirasi hisoblanmaydi"
-    if 'log "obrazga tushmaydi — bake yo\'q' not in auto:
+    if 'log_once "noimage:$TARGET" "obrazga tushmaydi — bake yo\'q' not in auto:
         return f"{AUTO_DEPLOY}: bo'sh doirada bake o'tkazilmaydi"
 
     kick = read(KICK_AUTO_DEPLOY)
@@ -2501,6 +2501,57 @@ def external_ratings_refresh_daily() -> str | None:
     task = read("apps/api/profiles/tasks.py").split("def refresh_stale_externals", 1)[-1]
     if "user__is_active=True" not in task or "kind__in=list(external.FETCHERS)" not in task:
         return "profiles/tasks.py: kunlik yangilash nofaol yoki reytingsiz profillarni ham oladi"
+def client_dates_are_numeric() -> str | None:
+    """2026-11-10 (audit Q-16, L-01): klient komponent sanani raqam bilan yozadi.
+
+    `dateTime`/`date`/`time` lokal bo'yicha formatlaydi: Node'da `uz` ma'lumoti
+    bor, brauzerda yo'q — serverda chizilgan klient komponentda gidratsiya
+    xatosi (2026-10-06 o'lchangan). 15 ta klient komponent `numericStamp`,
+    `numericDate`, `numericTime` ga o'tdi; bu qoida qaytishini to'xtatadi.
+    """
+    import re as _re
+
+    pattern = _re.compile(r'import \{([^}]*)\} from "@/i18n/messages";')
+    for path in sorted((ROOT / "apps/web/src").rglob("*.tsx")):
+        text = path.read_text(encoding="utf-8")
+        if '"use client"' not in text:
+            continue
+        for match in pattern.finditer(text):
+            names = {n.strip() for n in match.group(1).split(",")}
+            bad = sorted(names & {"dateTime", "date", "time"})
+            if bad:
+                rel = path.relative_to(ROOT).as_posix()
+                return f"{rel}: klient komponent `{', '.join(bad)}` bilan sana yozadi — numericStamp/numericDate/numericTime"
+    return None
+
+
+def optimistic_save_reports_refusals() -> str | None:
+    """2026-11-10 (HITL, audit Q-13): `optimisticSave` sozlamalar saqlashini boshqaradi.
+
+    Bayroq standart holatda o'chiq. Yoqilganda bar server javobini kutmaydi:
+    so'rovlar bir vaqtda ketadi (`MeSerializer.update` faqat yuborilgan
+    maydonlarni yozadi), rad etilsa tahrir joyida qoladi va xato ko'rinadi —
+    bo'lim yopilgan bo'lsa ham (toast). Yo'lda turgan so'rov sahifadan
+    chiqishni ham ogohlantiradi: to'liq yuklanish uni bekor qilardi.
+    """
+    flags = read("apps/web/src/lib/flags.ts").split("export const FLAGS", 1)[-1].split("} as const", 1)[0]
+    if not re.search(r"^\s+optimisticSave: false,$", flags, re.M):
+        return "lib/flags.ts: `optimisticSave` standart holatda yoniq yoki ro'yxatda yo'q"
+    bar = read("apps/web/src/features/account/components/SaveBar.tsx")
+    if 'if (flight && isOn("optimisticSave")) {' not in bar:
+        return "SaveBar.tsx: `optimisticSave` bayrog'i saqlashni boshqarmaydi"
+    # Words with `role="alert"`: the style's phone default is a bare circle
+    # with `role="img"` — the error would be neither read nor announced.
+    refusal = 'variant="iconText"\n            alert\n            label={t(locale, "settings.saveFailed")}'
+    if refusal not in bar:
+        return "SaveBar.tsx: rad etilgan optimistik saqlash ko'rinmaydi"
+    if 'toast(t(locale, "settings.saveFailedGone"))' not in bar:
+        return "SaveBar.tsx: yopilgan bo'limning rad etilgan saqlashi aytilmaydi"
+    if "const holding = dirty.length + inFlight.size;" not in bar:
+        return "SaveBar.tsx: yo'ldagi so'rov sahifadan chiqishda ogohlantirmaydi"
+    queue = read("apps/web/src/features/account/save-queue.ts")
+    if "      } catch {\n        ok = false;\n      }" not in queue:
+        return "save-queue.ts: yiqilgan so'rov saqlandi deb sanaladi"
     return None
 
 
@@ -2570,6 +2621,54 @@ def nightly_bakeoff_is_a_gate() -> str | None:
         return "docker-compose.ci.yml: `bakeoff` servisi topilmadi"
     if not re.search(r"^    command: \['python', '/bakeoff/harness/runner\.py'", service.group(1), re.M):
         return "docker-compose.ci.yml: `bakeoff` harness'ni yurgizmaydi — obrazning standart buyrug'i ishlaydi"
+    return None
+
+
+#: The two Nightly `e2e` steps that read a page rendered by the CI stack.
+LIVE_GATES = {
+    "Visual gate is live (mutation proof)": "tools/ci_visual_gate.sh",
+    "CSP nonce coverage is live": "tools/ci_csp_gate.sh",
+}
+
+
+def _code_lines(text: str) -> str:
+    """`text` without comment lines — an anchor in a comment proves nothing."""
+    return "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
+
+
+def nightly_live_gates_measure() -> str | None:
+    """2026-11-10: the visual mutation proof and the CSP nonce gate measure the CI stack.
+
+    Both pointed at `localhost:3400`; the CI stack publishes no host ports
+    (`docker-compose.ci.yml` → `ports: !reset []`), so on every hosted run they
+    printed a warning and exited 0 (runs 42716046958, 42721061218) — the proof
+    that the pixel gate is not decorative, and the CSP gate, measured nothing
+    while Nightly showed them green. Now each finds the stack's web container
+    by its compose labels, and a missing stack fails the step.
+    """
+    steps = _workflow_steps(_workflow_job(read(".github/workflows/nightly.yml"), "e2e"))
+    for name, script in LIVE_GATES.items():
+        step = steps.get(name)
+        if step is None:
+            return f"nightly.yml: e2e job'ida `{name}` qadami yo'q"
+        code = _code_lines(step)
+        if f"run: bash {script}" not in code:
+            return f"nightly.yml: `{name}` `{script}` ni yurgizmaydi"
+        if re.search(r"^        continue-on-error:", code, re.M):
+            return f"nightly.yml: `{name}` `continue-on-error` bilan — yiqilsa ham Nightly yashil"
+        if re.search(r"localhost|127\.0\.0\.1", code):
+            return f"nightly.yml: `{name}` host portiga qaratilgan — CI stack portsiz, qadam hech narsa o'lchamaydi"
+        if script.endswith("ci_csp_gate.sh") and not re.search(r"^        if: \$\{\{ !cancelled\(\) && ", code, re.M):
+            return f"nightly.yml: `{name}` `!cancelled()` siz — vizual farq uni o'lchovsiz qoldiradi"
+        body = _code_lines(read(script))
+        if re.search(r"^\s*exit 0\b", body, re.M) or "::warning::" in body:
+            return f"{script}: stack topilmasa jim o'tadi (`exit 0` yoki `::warning::`) — darvoza o'lik"
+        if "label=com.docker.compose.service=web" not in body:
+            return f"{script}: CI stack'ning web konteynerini qidirmaydi"
+    if "VISUAL_STACK=compose python3 tools/check_negative.py --group visual" not in _code_lines(
+        read("tools/ci_visual_gate.sh")
+    ):
+        return "tools/ci_visual_gate.sh: mutatsiya isboti CI stack'ida yurmaydi"
     return None
 
 
@@ -4192,14 +4291,17 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
+    ("klient komponent sanani raqam bilan yozadi", client_dates_are_numeric),
     ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
+    ("Nightly jonli darvozalar CI stack'ini o'lchaydi", nightly_live_gates_measure),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),
     ("hakam dasturi xodim panelida", function_harness_is_editable_by_staff),
     ("tashqi reytinglar kunlik yangilanadi", external_ratings_refresh_daily),
+    ("optimistik saqlash rad etilganini aytadi", optimistic_save_reports_refusals),
     ("judge privileged emas", judge_is_not_privileged),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),

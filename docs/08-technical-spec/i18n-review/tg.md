@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2453 strings.**
+**2471 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -634,6 +634,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.name` | Ism | Ном |  |
 | `settings.unsaved` | Saqlanmagan o'zgarishlar | Тағйироти захиранашуда |  |
 | `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Тағйироти захиранашуда: {count} |  |
+| `settings.saveFailed` | Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi. | Нигоҳ дошта нашуд. Сабаб дар бахш нишон дода шудааст — ислоҳҳои шумо дар ҷояшон монданд. |  |
+| `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Тағйироти охирин нигоҳ дошта нашуд. Бахшро аз нав кушода, онро боз ворид кунед. |  |
 | `settings.discard` | Bekor qilish | Бекор кардан |  |
 | `settings.channelEmail` | Pochta | Почта |  |
 | `settings.soon` | tez orada | ба наздикӣ |  |
@@ -1947,6 +1949,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Таҳлил дорад |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Тестҳо омода нестанд — ҳалҳо қабул намешаванд |  |
 | `qvant.marathon` | Haftalik marafon | Марафони ҳафтаина |  |
+| `qvant.history` | Tranzaksiyalar | Амалиётҳо |  |
+| `qvant.historyEmpty` | Hali Qvant harakati yo'q. | Ҳоло ҳаракати Qvant нест. |  |
+| `qvant.historyOlder` | Oldingilari | Пештара |  |
+| `qvant.historyNewer` | Yangilari | Навтар |  |
+| `qvant.col.when` | Vaqt | Вақт |  |
+| `qvant.col.reason` | Sabab | Сабаб |  |
+| `qvant.col.amount` | Miqdor | Маблағ |  |
+| `qvant.col.balance` | Qoldiq | Бақия |  |
+| `qvant.reason.quest` | Kunlik topshiriq | Супориши рӯзона |  |
+| `qvant.reason.streak` | Ketma-ketlik mukofoti | Мукофоти силсила |  |
+| `qvant.reason.contest` | Musobaqa | Мусобиқа |  |
+| `qvant.reason.purchase` | Xarid | Харид |  |
+| `qvant.reason.refund` | Qaytarish | Баргардонӣ |  |
+| `qvant.reason.admin` | Ma'muriy tuzatish | Ислоҳи маъмур |  |
+| `qvant.reason.quiz` | Test | Тест |  |
+| `qvant.reason.achievement` | Yutuq | Дастовард |  |
 | `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Пеш аз супоридан ҳалли худро нависед ё бор кунед |  |
 | `submit.sourceTooLong` | Manba kodi juda katta | Рамзи манба хеле калон аст |  |
 | `submit.solution` | Yechim | Ҳал |  |

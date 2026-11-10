@@ -1,9 +1,10 @@
 "use client";
 
+import { numericDate } from "@rankwant/shared/format";
 import { useState } from "react";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { date, fill, t, errorText as translateError, type Locale } from "@/i18n/messages";
+import { fill, t, errorText as translateError, type Locale } from "@/i18n/messages";
 
 import { FM_INP } from "@/components/form/chrome";
 import {
@@ -82,7 +83,7 @@ const COLUMNS: ColumnDef<StaffUser>[] = [
   {
     key: "date_joined",
     labelKey: "admin.label.date.joined",
-    render: (u, _reload, locale) => date(u.date_joined, locale),
+    render: (u, _reload, locale) => numericDate(u.date_joined),
   },
 ];
 

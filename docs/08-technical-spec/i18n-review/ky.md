@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2453 strings.**
+**2471 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -634,6 +634,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.name` | Ism | Аты |  |
 | `settings.unsaved` | Saqlanmagan o'zgarishlar | Сакталбаган өзгөртүүлөр |  |
 | `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Сакталбаган өзгөртүүлөр: {count} |  |
+| `settings.saveFailed` | Saqlanmadi. Sababi bo'limda ko'rsatilgan — tahriringiz joyida qoldi. | Сакталган жок. Себеби бөлүмдө көрсөтүлгөн — оңдоолоруңуз ордунда калды. |  |
+| `settings.saveFailedGone` | Oxirgi o'zgarish saqlanmadi. Bo'limni qayta ochib, uni yana kiriting. | Акыркы өзгөртүү сакталган жок. Бөлүмдү кайра ачып, аны кайра киргизиңиз. |  |
 | `settings.discard` | Bekor qilish | Жокко чыгаруу |  |
 | `settings.channelEmail` | Pochta | Почта |  |
 | `settings.soon` | tez orada | жакында |  |
@@ -1947,6 +1949,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Талдоосу бар |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Тесттер даяр эмес — чечимдер кабыл алынбайт |  |
 | `qvant.marathon` | Haftalik marafon | Жумалык марафон |  |
+| `qvant.history` | Tranzaksiyalar | Транзакциялар |  |
+| `qvant.historyEmpty` | Hali Qvant harakati yo'q. | Азырынча Qvant кыймылы жок. |  |
+| `qvant.historyOlder` | Oldingilari | Мурункулар |  |
+| `qvant.historyNewer` | Yangilari | Жаңылар |  |
+| `qvant.col.when` | Vaqt | Убакыт |  |
+| `qvant.col.reason` | Sabab | Себеп |  |
+| `qvant.col.amount` | Miqdor | Сумма |  |
+| `qvant.col.balance` | Qoldiq | Калдык |  |
+| `qvant.reason.quest` | Kunlik topshiriq | Күнүмдүк тапшырма |  |
+| `qvant.reason.streak` | Ketma-ketlik mukofoti | Серия сыйлыгы |  |
+| `qvant.reason.contest` | Musobaqa | Мелдеш |  |
+| `qvant.reason.purchase` | Xarid | Сатып алуу |  |
+| `qvant.reason.refund` | Qaytarish | Кайтаруу |  |
+| `qvant.reason.admin` | Ma'muriy tuzatish | Администратордун оңдоосу |  |
+| `qvant.reason.quiz` | Test | Тест |  |
+| `qvant.reason.achievement` | Yutuq | Жетишкендик |  |
 | `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Жөнөтүүдөн мурун чечимиңизди жазыңыз же жүктөңүз |  |
 | `submit.sourceTooLong` | Manba kodi juda katta | Баштапкы код өтө чоң |  |
 | `submit.solution` | Yechim | Чечим |  |
