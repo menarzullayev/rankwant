@@ -4565,6 +4565,26 @@ def neg_decisions_optimistic_throw_counts_as_saved() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_flag_not_declared_in_dockerfile() -> tuple[bool, str]:
+    """A flag's build arg is dropped from the web Dockerfile."""
+    return _decision_broken(
+        "apps/web/Dockerfile",
+        "ARG NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE=\n",
+        "",
+        "`NEXT_PUBLIC_FLAG_OPTIMISTIC_SAVE` build'ga e'lon qilinmagan",
+    )
+
+
+def neg_decisions_flag_not_passed_by_compose() -> tuple[bool, str]:
+    """The public compose stops passing a flag into the web build."""
+    return _decision_broken(
+        "docker-compose.public.yml",
+        "        NEXT_PUBLIC_FLAG_GEO_EARLY_REGION: ${NEXT_PUBLIC_FLAG_GEO_EARLY_REGION:-}\n",
+        "",
+        "`NEXT_PUBLIC_FLAG_GEO_EARLY_REGION` web build'iga uzatilmaydi",
+    )
+
+
 def neg_decisions_deploy_skips_secret_check() -> tuple[bool, str]:
     """The deploy preflight stops calling the secrets checker."""
     return _decision_broken(
@@ -11461,6 +11481,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yo'ldagi so'rov sahifani ushlamasa tutilsin", neg_decisions_optimistic_unload_unguarded),
             ("yiqilgan so'rov saqlangan sanalsa tutilsin", neg_decisions_optimistic_throw_counts_as_saved),
             ("klient sana lokal formatga qaytsa tutilsin", neg_decisions_client_date_in_locale),
+            ("bayroq Dockerfile'dan tushsa tutilsin", neg_decisions_flag_not_declared_in_dockerfile),
+            ("bayroq compose build'iga uzatilmasa tutilsin", neg_decisions_flag_not_passed_by_compose),
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("sir rad etilsa ham deploy davom etsa tutilsin", neg_decisions_deploy_ignores_secret_failure),
             ("viloyat sinovi kalitsiz yonsa tutilsin", neg_decisions_region_ab_without_switch),
