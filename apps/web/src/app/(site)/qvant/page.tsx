@@ -5,12 +5,15 @@ import { SignInGate } from "@/components/auth/SignInGate";
 import { Badge } from "@/components/ui/Badge";
 import { Card, StatCard } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { t, type MessageKey } from "@/i18n/messages";
+import { numericStamp } from "@rankwant/shared/format";
 import { Icon } from "@/components/ui/Icon";
 import {
   api,
   ApiError,
   type Marathon,
+  type Paginated,
+  type QvantTransaction,
   type Quest,
   type ShopItem,
   type Wallet,
@@ -24,9 +27,32 @@ export async function generateMetadata(): Promise<Metadata> {
 // Balans va questlar shaxsiy — keshlanmaydi.
 export const dynamic = "force-dynamic";
 
-export default async function QvantPage() {
+/** Ledger reasons → label keys. Arena, duel and hack reuse their section
+ *  names, so a new key never repeats the English word (Q-15 ratchet). */
+const REASON_KEY: Record<string, MessageKey> = {
+  quest: "qvant.reason.quest",
+  streak: "qvant.reason.streak",
+  contest: "qvant.reason.contest",
+  purchase: "qvant.reason.purchase",
+  refund: "qvant.reason.refund",
+  admin: "qvant.reason.admin",
+  quiz: "qvant.reason.quiz",
+  achievement: "qvant.reason.achievement",
+  arena: "nav.arena",
+  duel: "nav.duels",
+  hack: "hack.title",
+};
+
+const HISTORY_SIZE = 20;
+
+export default async function QvantPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tx?: string }>;
+}) {
   const locale = await getLocale();
   const me = await getSessionUser();
+  const { tx: txCursor } = await searchParams;
 
   let wallet: Wallet | null = null;
   let quests: Quest[] = [];
@@ -85,6 +111,8 @@ export default async function QvantPage() {
       ) : (
         <SignInGate reason="qvant" />
       )}
+
+      {wallet && <QvantHistory cursor={txCursor} locale={locale} />}
 
       {quests.length > 0 && (
         <Card title={t(locale, "qvant.quests")} bodyClassName="p-0">
@@ -188,5 +216,81 @@ export default async function QvantPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+/** Audit Q-07.2 (2026-11-10): the ledger had an API but no page. */
+async function QvantHistory({
+  cursor,
+  locale,
+}: {
+  cursor: string | undefined;
+  locale: Awaited<ReturnType<typeof getLocale>>;
+}) {
+  const query = `?page_size=${HISTORY_SIZE}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`;
+  let page: Paginated<QvantTransaction> | null = null;
+  try {
+    page = await getWithSession<Paginated<QvantTransaction>>(`/qvant/transactions/${query}`);
+  } catch {
+    page = null;
+  }
+  if (page === null) return null;
+  const cursorOf = (link: string | null) =>
+    link ? new URL(link).searchParams.get("cursor") : null;
+  const older = cursorOf(page.next);
+  const newer = cursorOf(page.previous);
+  return (
+    <Card title={t(locale, "qvant.history")} bodyClassName="p-0">
+      {page.results.length === 0 ? (
+        <p className="px-5 py-4 text-theme-sm rw-dim">{t(locale, "qvant.historyEmpty")}</p>
+      ) : (
+        <div className="rw-scroll-x">
+          <table className="min-w-full text-left text-theme-sm">
+            <thead className="text-theme-xs rw-dim">
+              <tr>
+                <th className="px-5 py-2 font-medium">{t(locale, "qvant.col.when")}</th>
+                <th className="px-5 py-2 font-medium">{t(locale, "qvant.col.reason")}</th>
+                <th className="px-5 py-2 text-right font-medium">{t(locale, "qvant.col.amount")}</th>
+                <th className="px-5 py-2 text-right font-medium">{t(locale, "qvant.col.balance")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y rw-divide">
+              {page.results.map((row) => (
+                <tr key={row.id}>
+                  <td className="px-5 py-2 tabular-nums rw-dim">{numericStamp(row.created_at)}</td>
+                  <td className="px-5 py-2">
+                    {REASON_KEY[row.reason] ? t(locale, REASON_KEY[row.reason]) : row.reason}
+                  </td>
+                  <td
+                    className={`px-5 py-2 text-right tabular-nums font-medium ${
+                      row.amount >= 0 ? "rw-ok-ink" : "rw-bad-ink"
+                    }`}
+                  >
+                    {row.amount > 0 ? `+${row.amount}` : row.amount < 0 ? `\u2212${-row.amount}` : "0"}
+                  </td>
+                  <td className="px-5 py-2 text-right tabular-nums">{row.balance_after}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {(older || newer) && (
+        <nav className="flex justify-between gap-3 border-t rw-line px-5 py-3 text-theme-sm">
+          {newer ? (
+            <Link href={`/qvant?tx=${encodeURIComponent(newer)}`} className="rw-link min-h-11 inline-flex items-center">
+              {t(locale, "qvant.historyNewer")}
+            </Link>
+          ) : (
+            <span />
+          )}
+          {older && (
+            <Link href={`/qvant?tx=${encodeURIComponent(older)}`} className="rw-link min-h-11 inline-flex items-center">
+              {t(locale, "qvant.historyOlder")}
+            </Link>
+          )}
+        </nav>
+      )}
+    </Card>
   );
 }
