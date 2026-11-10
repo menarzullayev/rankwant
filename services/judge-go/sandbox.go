@@ -69,7 +69,10 @@ func ensureParent() error {
 	if err := os.WriteFile(ctrl, []byte("+pids +memory +cpu"), 0o644); err != nil {
 		return fmt.Errorf("subtree_control yozilmadi (%s): %w", ctrl, err)
 	}
-	// Ota darajasidagi shift — ikkinchi himoya qatlami.
+	// Ota darajasidagi shift — ikkinchi himoya qatlami. ADR-0046 rejimida
+	// (JUDGE_USERNS=1) uni root `setupDelegatedCgroup` da yozadi va fayllar
+	// root'niki qoladi: bu yozuvlar EACCES bilan jim o'tadi — ataylab,
+	// worker o'z shiftini ko'tara olmasligi kerak.
 	_ = os.WriteFile(filepath.Join(cgroupParent, "pids.max"), []byte(parentPidsMax), 0o644)
 	_ = os.WriteFile(filepath.Join(cgroupParent, "memory.max"), []byte(parentMemMaxStr), 0o644)
 	return nil
@@ -157,6 +160,46 @@ func PreflightCgroup() error {
 	return nil
 }
 
+// PreflightSandbox runs one real program through nsjail before the worker
+// takes a job. The cgroup preflight proves limits can be set; this proves a
+// program can start at all. Without it a container option lost in a compose
+// edit (measured 2026-11-10: without `systempaths=unconfined` nsjail cannot
+// remount its chroot) left the worker up and every submission CE.
+//
+// It also reads the sandbox's uid map: with the launcher on (ADR-0046) the
+// program must not be uid 0 outside its namespace.
+func PreflightSandbox(ctx context.Context) error {
+	work, err := os.MkdirTemp("", "rw-preflight-*")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(work)
+	if err := os.Chmod(work, 0o777); err != nil {
+		return err
+	}
+	lim := Limits{TimeMS: 2000, MemoryKB: 131072, OutputKB: 64, Processes: 1, ProcSelf: true}
+	out, err := sandboxed(ctx, work, []string{"/bin/cat", "/proc/self/uid_map"}, "", lim, 10000)
+	if err != nil {
+		return fmt.Errorf("sandbox ishga tushmadi: %w", err)
+	}
+	if out.ExitCode != 0 {
+		return fmt.Errorf("sandbox ishlamadi: exit %d: %s", out.ExitCode, strings.TrimSpace(out.Stderr))
+	}
+	return checkUIDMap(out.Stdout, usernsEnabled())
+}
+
+// checkUIDMap reads `inside outside count` from the sandbox's uid_map.
+func checkUIDMap(uidMap string, rootless bool) error {
+	fields := strings.Fields(uidMap)
+	if len(fields) != 3 || fields[0] != "65534" {
+		return fmt.Errorf("sandbox uid_map kutilmagan: %q", strings.TrimSpace(uidMap))
+	}
+	if rootless && fields[1] == "0" {
+		return errors.New("sandbox tashqarida uid 0 — ADR-0046 buzilgan")
+	}
+	return nil
+}
+
 // sandboxLogLine — nsjail'ning O'Z jurnal qatori:
 // `[W][2026-09-16T00:55:49+0000][39] logParams():347 …`.
 var sandboxLogLine = regexp.MustCompile(`^\[([IWDEF])\]\[[^\]]*\]\[\d+\] `)
@@ -215,6 +258,15 @@ func cpuLimitSec(ms int) int {
 // nsjail's limit only reaps a sandbox whose judge has died.
 const nsjailBackstopSec = 30
 
+// sandboxSeccomp — kafel policy for the sandboxed program (nsjail applies
+// it right before exec; nsjail's own setup is not under it). EPERM, not
+// KILL: Docker's default profile answers these the same way, so a runtime
+// that probes them (glibc's clone3) behaves as it does in any container.
+// 0x7e020000 is every CLONE_NEW* flag (the mask Docker's profile uses).
+// In kafel's syscall table `umount` is umount2 (nr 166; checked by errno).
+const sandboxSeccomp = "ERRNO(1) { mount, umount, pivot_root, sethostname, unshare, setns, " +
+	"clone { (clone_flags & 0x7e020000) != 0 } }, ERRNO(38) { clone3 } DEFAULT ALLOW"
+
 // nsjailArgs — izolyatsiya konfiguratsiyasi.
 // Har bir bayroq bake-off case'iga javob beradi (services/bakeoff/cases/).
 func nsjailArgs(work string, lim Limits, wallSec int) []string {
@@ -234,13 +286,14 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 		"--chroot", "/",
 		"--bindmount", work + ":/box",
 		"--cwd", "/box",
-		// KELISHUV: inside=65534, outside=0.
-		// "65534:65534:1" ideal bo'lardi, lekin u newuidmap/subuid sozlamasini
-		// talab qiladi; usiz nsjail o'z mount daraxtini qura olmaydi
-		// ("mkdir(...): Permission denied"). Shuning uchun tashqi uid 0 qoladi.
-		// Buni qoplaydigan qatlamlar: chroot / READ-ONLY, yoziladigan yagona
-		// joy /box, tarmoq yo'q, /proc yo'q, cgroup chegaralari, va judge host
-		// arxitektura darajasida izolyatsiya qilingan (06-architecture).
+		// inside=65534, outside = nsjail'ni ishga tushirgan uid.
+		// ADR-0046 (2026-11-10): worker judge foydalanuvchisi (10001) bo'lib
+		// ishlaydi, ya'ni yechim tashqarida uid 10001 — ilgari 0 edi.
+		// Ilgarigi «mkdir(...): Permission denied» (nsjail mount nuqtasini
+		// root'niki bo'lgan / ichida yarata olmasdi) image'da `/box` oldindan
+		// yaratilgani bilan yopildi (Dockerfile).
+		// Qolgan qatlamlar: chroot / READ-ONLY, yoziladigan yagona joy /box,
+		// tarmoq yo'q, /proc yo'q, cgroup chegaralari.
 		"--user", "65534",
 		"--group", "65534",
 		"--hostname", "judge",
@@ -250,6 +303,15 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 		"--env", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 		"--env", "HOME=/box",
 		"--env", "LANG=C.UTF-8",
+		// ADR-0046: the container's seccomp profile opens six syscalls so
+		// that nsjail can build its namespaces (services/judge-go/
+		// seccomp.json). The sandboxed program gets them closed again, as
+		// Docker's default profile closes them: no mounts, no new namespaces
+		// (no user namespace to escalate from), clone3 answered ENOSYS so
+		// glibc falls back to clone, whose flags this filter can see.
+		// Measured 2026-11-10: without it a program created a user namespace
+		// with clone(CLONE_NEWUSER) (bake-off 33-nested-userns).
+		"--seccomp_string", sandboxSeccomp,
 		// 12-proc-read: --disable_proc faqat YANGI procfs mount'ini to'sadi.
 		// --chroot / bo'lgani uchun HOST /proc jail ichiga kirib keladi va
 		// /proc/1/cmdline o'qiladi. Ustiga bo'sh tmpfs qo'yib niqoblaymiz.
@@ -300,10 +362,20 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 		// nsjail bolani UseCgroupFD orqali to'g'ridan-to'g'ri unga tug'diradi,
 		// memory.max va pids.max esa runSandboxed ichida yoziladi.
 	)
-	if lim.Processes > 0 {
-		// 09-fork-bomb: cgroup pids.max dan tashqari har jarayon uchun rlimit.
-		args = append(args, "--rlimit_nproc", strconv.Itoa(lim.Processes+4))
-	}
+	// 09-fork-bomb: the process limit is the run cgroup's `pids.max`
+	// (applyLimits / runSandboxed), and nothing else. There is deliberately
+	// no `--rlimit_nproc`:
+	//
+	//  - Under `privileged` it never applied. The sandbox ran as host uid 0
+	//    and the kernel does not hold uid 0 to RLIMIT_NPROC, so `pids.max`
+	//    stopped every fork bomb in production.
+	//  - Applied for the first time, as uid 10001 (ADR-0046), it made each
+	//    failed fork cheap: the bomb retried far faster, the task structs
+	//    of the failed forks waited for RCU, and that kernel memory, charged
+	//    to the run, hit `memory.max`. 09-fork-bomb came back MLE in 7 runs
+	//    of 8 (peak 262144 kB, `task_struct` slab +177 MB); without the flag
+	//    TLE in 6 of 6 at 95-139 MB, as under `privileged` (8 of 8, 90-118
+	//    MB). Measured 2026-11-10.
 	return args
 }
 

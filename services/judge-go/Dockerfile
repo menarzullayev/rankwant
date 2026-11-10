@@ -240,6 +240,13 @@ COPY --from=runtime / /
 # The image that runs. GIT_SHA/BUILT_AT sit here so a new commit does not
 # bust the toolchain cache; `check_deploy.sh` reads these labels.
 FROM ${JUDGE_BASE}
+# ADR-0046: the judge user. The container starts as root only for the
+# launcher, which builds the delegated cgroup and drops to this uid; the
+# worker and every sandboxed program run as it. `/box` exists so nsjail,
+# running as this user, does not have to create its mount point in the
+# root-owned `/` (it could not: "mkdir('/…/box'): Permission denied").
+# Here, not in `base`: a toolchain rebuild is not needed for one user.
+RUN groupadd --system --gid 10001 judge     && useradd --system --uid 10001 --gid 10001 --no-create-home         --home-dir /nonexistent --shell /usr/sbin/nologin judge     && mkdir -p /box
 COPY --from=go-build /out/judge-go /usr/local/bin/judge-go
 ARG GIT_SHA=unknown
 LABEL org.rankwant.git-sha=$GIT_SHA

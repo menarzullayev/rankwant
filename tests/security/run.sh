@@ -99,8 +99,8 @@ if [ -n "${SECURITY_STATIC_ONLY:-}" ]; then
 elif [ -z "${REDIS_URL:-}" ]; then
   note "REDIS_URL yo'q — judge ishlamayapti, dinamik sinovlar o'tkazib yuborildi"
   note "Ularni local ishga tushirish:"
-  note "  docker compose up -d redis && docker run -d --privileged … rankwant/judge-go"
-  note "  REDIS_URL=redis://localhost:6379/0 tests/security/run.sh"
+  note "  docker compose -p <loyiha> up -d judge   # judge-queue + judge, ADR-0046 sozlamalari bilan"
+  note "  REDIS_URL=redis://<judge-queue>:6379/0 tests/security/run.sh"
 else
   python3 services/bakeoff/harness/runner.py \
       --worker "${JUDGE_WORKER:-judge-go}" \

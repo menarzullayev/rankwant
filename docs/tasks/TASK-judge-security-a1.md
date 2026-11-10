@@ -3,6 +3,12 @@
 **Beruvchi:** HITL sessiya (2026-09-24) — 4 qaror foydalanuvchi tomonidan qabul qilindi  
 **Ijrochi:** agent (Freebuff X-slot, `buffy-x1`)  
 **Manba:** threat model [§8 A-1](../10-operations/threat-model.md) · [ADR-0004 §Xavfsizlik shartlari](../07-adr/0004-judge-engine.md) · rankwant.txt tahlili (bosqich 14 tavsiyasi)  
+> **2026-11-10, ADR-0046:** judge konteyneri endi `privileged` emas va
+> `cgroup: host` yo'q (launcher + delegatsiyalangan cgroup, uid 10001,
+> seccomp profili). Pastdagi 1-cheklov shu bilan bekor bo'ldi; Phase 6 ning
+> threat model va CLAUDE.md bandlari shu ish bilan yopildi
+> ([ADR-0046 § 9](../07-adr/0046-judge-privilege-model.md)).
+
 **Holat:** Phase 0–4 bajarildi (2026-09-24; compose topologiyasi resolved config'da
 tekshirildi) — keyingi: Phase 5 Nightly isboti, Phase 6 hujjatlar
 
@@ -64,7 +70,7 @@ topologiya gated yo'l sifatida ADR'da qoladi.
 
 ## Qattiq cheklovlar
 
-1. **`nsjail` talablari o'zgarmaydi:** `privileged: true` + `cgroup: host` qoladi (PreflightCgroup bilan tekshiriladi). Bu task tarmoq chegarasi haqida, runtime izolyatsiyasi haqida emas.
+1. ~~**`nsjail` talablari o'zgarmaydi:** `privileged: true` + `cgroup: host` qoladi (PreflightCgroup bilan tekshiriladi).~~ **2026-11-10 dan bekor:** ADR-0046 ikkalasini olib tashladi. Bu task tarmoq chegarasi haqida, runtime izolyatsiyasi haqida emas.
 2. **Bake-off case to'plamiga tegilmaydi:** `ISOLATION_CASES` va 25 case o'zgarmasdi; S4 dan keyin Nightly'da 25/25 o'tishi shart (regressiya).
 3. **Deploy darvozasi:** merge faqat CI yashil bo'lgach; deploy faqat `tools/deploy.sh`. Migratsiya YO'Q — rollback = oldingi commit qayta deploy.
 4. **ADR-0028 `STATUS: proposed` bilan yoziladi** — `accepted` faqat HITL tasdig'idan keyin (L6 tamoyil: agent PRODUCTION_READY bera olmaydi).
@@ -158,10 +164,10 @@ Yangi heavy job **YO'Q** (`pr_skips_heavy_ci` va MAX_HEAVY=2 buzilmaydi).
 
 ### Phase 6 — Hujjatlar + qoidalar (hot file'lar, lock bilan)
 
-- [ ] `threat-model.md` §7⑦ E qatori: control'ga yangi qatlamlar yoziladi
-- [ ] **§8 A-1 yangilanadi:** status `accepted → narrowed (container-level)`, *Revisit when* o'lchanadigan triggerlarga almashadi: ① to'rt-host topologiya deploy bo'lsa → risk yopiladi; ② tashqi audit hisoboti kelsa; ③ `judge-net` konfiguratsiyasi o'zgarsa (guard qizaradi)
-- [ ] §9 jadval: ADR-0004 ning ikki buzilgan satri «container level bajarildi, host level gated» holatiga o'tadi
-- [ ] `CLAUDE.md` qarorlar jadvaliga qator: sana, qaror, kodda qayerda (`judge-net` + `PreflightNetwork` + `check_decisions` rule id)
+- [x] `threat-model.md` §7⑦ E qatori: control'ga yangi qatlamlar yoziladi — 2026-11-10, ADR-0046 qatlamlari (I va D qatorlari ham)
+- [x] **§8 A-1 yangilanadi:** — 2026-11-10: `narrowed` (privileged emas; host hamon umumiy), triggerlar: audit, to'rt-host, userns CVE. status `accepted → narrowed (container-level)`, *Revisit when* o'lchanadigan triggerlarga almashadi: ① to'rt-host topologiya deploy bo'lsa → risk yopiladi; ② tashqi audit hisoboti kelsa; ③ `judge-net` konfiguratsiyasi o'zgarsa (guard qizaradi)
+- [x] §9 jadval (2026-11-10: tashqi tarmoq satri — konteyner darajasida yopiq; host satri o'zgarmadi): ADR-0004 ning ikki buzilgan satri «container level bajarildi, host level gated» holatiga o'tadi
+- [ ] `CLAUDE.md` qarorlar jadvaliga qator (2026-11-10: ADR-0046 qatori qo'shildi; ADR-0028 ning o'z qatori hali yo'q): sana, qaror, kodda qayerda (`judge-net` + `PreflightNetwork` + `check_decisions` rule id)
 - [ ] `check_decisions.py` yangi qoida: ADR-0028 accepted bo'lsa compose'da `judge-net: internal: true` va `PreflightNetwork` borligini tekshiradi
 - [ ] `check_negative.py` ga 2–3 salbiy test (qoida langari mutatsiyalari — `security-suite` yozuvidagi ikki tuzoq naqshiga qarshi)
 
@@ -170,7 +176,7 @@ Yangi heavy job **YO'Q** (`pr_skips_heavy_ci` va MAX_HEAVY=2 buzilmaydi).
 - [x] ADR-0028 (proposed) + Phase 1 o'lchovi foydalanuvchiga ko'rsatiladi
 - [x] Egasining 2026-09-24 buyrug'i («merge + deploy hammasi») — ADR `accepted`; PR + merge + deploy shu buyruq asosida
 - [ ] Deploy'dan keyin `check_deploy.sh` — «Hamma konteyner joriy kodda»
-- [ ] Bake-off 25/25 Nightly'da yashil (regressiya isboti)
+- [ ] Bake-off 25/25 Nightly'da yashil (regressiya isboti) — 2026-11-10: lokal 33/33 ×3 privileged'siz judge'da (ADR-0046 § 9)
 
 ---
 

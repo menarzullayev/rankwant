@@ -1,0 +1,41 @@
+{
+  "id": "33-nested-userns",
+  "title": "Ichma-ich user namespace — yopiq",
+  "measures": "ADR-0046: konteyner seccomp'i nsjail uchun clone/mount ni ochadi; sandbox o'z siyosati bilan ularni qayta yopadimi",
+  "language": {
+    "code": "cpp23",
+    "compile": [
+      "g++",
+      "-std=c++23",
+      "-O2",
+      "-o",
+      "{bin}",
+      "{src}"
+    ],
+    "run": [
+      "{bin}"
+    ]
+  },
+  "source": "#include <sched.h>\n#include <signal.h>\n#include <sys/mount.h>\n#include <sys/syscall.h>\n#include <sys/wait.h>\n#include <unistd.h>\n#include <cstdio>\nint main(){\n  long pid = syscall(SYS_clone, CLONE_NEWUSER | SIGCHLD, 0, 0, 0, 0);\n  if (pid == 0) _exit(0);\n  if (pid > 0) waitpid(pid, nullptr, 0);\n  std::puts(pid < 0 ? \"clone blocked\" : \"clone CREATED A USER NAMESPACE\");\n  std::puts(unshare(CLONE_NEWUSER) < 0 ? \"unshare blocked\" : \"unshare CREATED A USER NAMESPACE\");\n  std::puts(mount(\"none\", \"/box\", \"tmpfs\", 0, nullptr) < 0 ? \"mount blocked\" : \"mount SUCCEEDED\");\n  pid_t child = fork();\n  if (child == 0) _exit(0);\n  if (child > 0) waitpid(child, nullptr, 0);\n  std::puts(child > 0 ? \"fork works\" : \"fork BROKEN\");\n}\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "",
+      "expected": "clone blocked\nunshare blocked\nmount blocked\nfork works\n"
+    }
+  ],
+  "expect_verdict": "AC",
+  "must_hold": [
+    "dastur user namespace yarata olmaydi (clone va unshare)",
+    "mount yopiq",
+    "oddiy fork ishlaydi — siyosat faqat namespace bayroqlarini yopadi"
+  ],
+  "mode": "acm"
+}

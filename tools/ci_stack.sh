@@ -267,6 +267,21 @@ while IFS= read -r name; do
 done < <(wanted_names)
 wait_all "${pids[@]}"
 
+# ADR-0046: the judge builds its own user namespace without CAP_SYS_ADMIN.
+# Ubuntu >= 23.10, the hosted runner included, confines exactly that through
+# AppArmor (`kernel.apparmor_restrict_unprivileged_userns=1`): the namespace
+# gets no capabilities, the judge cannot mount its cgroup and refuses to
+# start. Hosted runners only: a developer's or the production host is never
+# changed from here. Unconditional (not under CI_STACK_UP): the burst job
+# starts its judges itself after this script.
+userns_sysctl=/proc/sys/kernel/apparmor_restrict_unprivileged_userns
+if [ "${GITHUB_ACTIONS:-}" = true ] && [ -r "$userns_sysctl" ]; then
+  echo "apparmor_restrict_unprivileged_userns=$(cat "$userns_sysctl")"
+  if [ "$(cat "$userns_sysctl")" != 0 ]; then
+    sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+  fi
+fi
+
 if [ "$stack_up" = "1" ]; then
   if [ -n "$up_services" ]; then
     # shellcheck disable=SC2086

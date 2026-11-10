@@ -41,5 +41,22 @@ make build && make run          # local (nsjail o'rnatilgan bo'lishi kerak)
 make docker                     # yoki konteynerda
 ```
 
-Konteyner **privileged** yoki kamida `--cap-add=SYS_ADMIN --cgroupns=host` bilan ishlaydi —
-namespace va cgroup v2 yozish uchun.
+Konteyner **privileged emas** (ADR-0046, 2026-11-10). Compose'dagi sozlama:
+`cap_drop: [ALL]`, `cap_add: [SETUID, SETGID, SETFCAP]`, `seccomp.json`
+(Docker standarti + nsjail uchun 6 syscall), `no-new-privileges`,
+`systempaths=unconfined`, `apparmor=unconfined` va `JUDGE_USERNS=1`.
+
+`JUDGE_USERNS=1` bo'lsa binar ikki bosqichda ishlaydi (`userns.go`):
+
+1. **launcher** — PID 1, root sifatida boshlanadi: worker'ni yangi user, mount
+   va cgroup namespace'da ishga tushiradi (id map'ni yozish uchun uchta
+   capability), keyin o'zi uid 10001 ga tushadi va zombilarni yig'adi;
+2. **worker** — o'z namespace'ida konteynerning cgroup'ini yoziladigan qilib
+   ulaydi, `rankwant/` subtree'ni quradi va uid 10001 ga beradi, keyin o'zi
+   ham uid 10001 ga tushadi. Sandbox'dagi dastur tashqarida uid 10001.
+
+Ishga tushishda to'rt fail-closed tekshiruv: identity (worker root emas,
+capability yo'q), tarmoq, cgroup limitlari va bitta haqiqiy nsjail yurishi
+(`PreflightSandbox`). Ubuntu ≥ 23.10 host'da
+`kernel.apparmor_restrict_unprivileged_userns=0` kerak (CI buni
+`tools/ci_stack.sh` da qiladi).
