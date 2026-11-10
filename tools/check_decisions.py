@@ -2573,6 +2573,52 @@ def nightly_bakeoff_is_a_gate() -> str | None:
     return None
 
 
+#: The two Nightly `e2e` steps that read a page rendered by the CI stack.
+LIVE_GATES = {
+    "Visual gate is live (mutation proof)": "tools/ci_visual_gate.sh",
+    "CSP nonce coverage is live": "tools/ci_csp_gate.sh",
+}
+
+
+def _code_lines(text: str) -> str:
+    """`text` without comment lines — an anchor in a comment proves nothing."""
+    return "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
+
+
+def nightly_live_gates_measure() -> str | None:
+    """2026-11-10: the visual mutation proof and the CSP nonce gate measure the CI stack.
+
+    Both pointed at `localhost:3400`; the CI stack publishes no host ports
+    (`docker-compose.ci.yml` → `ports: !reset []`), so on every hosted run they
+    printed a warning and exited 0 (runs 42716046958, 42721061218) — the proof
+    that the pixel gate is not decorative, and the CSP gate, measured nothing
+    while Nightly showed them green. Now each finds the stack's web container
+    by its compose labels, and a missing stack fails the step.
+    """
+    steps = _workflow_steps(_workflow_job(read(".github/workflows/nightly.yml"), "e2e"))
+    for name, script in LIVE_GATES.items():
+        step = steps.get(name)
+        if step is None:
+            return f"nightly.yml: e2e job'ida `{name}` qadami yo'q"
+        code = _code_lines(step)
+        if f"run: bash {script}" not in code:
+            return f"nightly.yml: `{name}` `{script}` ni yurgizmaydi"
+        if re.search(r"^        continue-on-error:", code, re.M):
+            return f"nightly.yml: `{name}` `continue-on-error` bilan — yiqilsa ham Nightly yashil"
+        if re.search(r"localhost|127\.0\.0\.1", code):
+            return f"nightly.yml: `{name}` host portiga qaratilgan — CI stack portsiz, qadam hech narsa o'lchamaydi"
+        body = _code_lines(read(script))
+        if re.search(r"^\s*exit 0\b", body, re.M) or "::warning::" in body:
+            return f"{script}: stack topilmasa jim o'tadi (`exit 0` yoki `::warning::`) — darvoza o'lik"
+        if "label=com.docker.compose.service=web" not in body:
+            return f"{script}: CI stack'ning web konteynerini qidirmaydi"
+    if "VISUAL_STACK=compose python3 tools/check_negative.py --group visual" not in _code_lines(
+        read("tools/ci_visual_gate.sh")
+    ):
+        return "tools/ci_visual_gate.sh: mutatsiya isboti CI stack'ida yurmaydi"
+    return None
+
+
 def required_checks_cover_every_gate() -> str | None:
     """2026-11-10 (HITL, audit Q-09 + L-04): `main` bitta umumlashtiruvchi tekshiruvni talab qiladi.
 
@@ -4152,6 +4198,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
+    ("Nightly jonli darvozalar CI stack'ini o'lchaydi", nightly_live_gates_measure),
     ("namunasiz masala Skills va Qvant bermaydi", samples_only_problems_earn_nothing),
     ("maxfiylik matni yig'iladigan ma'lumotni aytadi", privacy_text_matches_the_data),
     ("tarjima qilinmaydigan nomlar glossariyda", names_are_not_translated),

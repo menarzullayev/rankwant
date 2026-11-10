@@ -298,24 +298,29 @@ jobs:
       # output. It is the only thing standing between us and a suite that
       # diffs nothing.
       #
-      # ⚠️ Runs on the HOST, not in the container: the check rebuilds the
-      # web app and restarts the server. Gated on the stack being up so a
-      # missing target skips LOUDLY instead of failing for a wrong reason.
+      #
+      # ⚠️ Against THIS job's compose stack (2026-11-10). Until then both
+      # steps below pointed at `localhost:3400`, which the CI stack never
+      # serves (`docker-compose.ci.yml` resets every host port): they warned
+      # and exited 0 on every hosted run, i.e. measured nothing (runs
+      # 42716046958, 42721061218). Now the proof serves a control and a
+      # rebuilt mutant web image next to the stack (~4-5 min; the stack's
+      # own `web` is not touched), and a missing stack FAILS the step.
+      # `check_decisions.py` → `nightly_live_gates_measure` keeps it so.
       - name: Visual gate is live (mutation proof)
         if: ${{ vars.STAGING_URL == '' }}
-        env:
-          E2E_BASE_URL: http://localhost:3400
+        timeout-minutes: 10
         run: bash tools/ci_visual_gate.sh
       # CSP nonce coverage — the same slot as the visual gate, for the same
       # reason: it reads a rendered page, so it needs the stack. It does not
       # rebuild, so it costs seconds rather than minutes. Measured 2026-09-24:
       # four scripts were blocked on the live `/login` (the three pre-hydration
       # bootstrap tags and the dictionary's fast path) while every gate in the
-      # repo stayed green.
+      # repo stayed green. It reads the stack's web container by its address
+      # on the compose network.
       - name: CSP nonce coverage is live
         if: ${{ vars.STAGING_URL == '' }}
-        env:
-          E2E_BASE_URL: http://localhost:3400
+        timeout-minutes: 3
         run: bash tools/ci_csp_gate.sh
       # Screenshots land in the container's `test-results/`, which is bind
       # mounted from the repo, so the artifact upload below picks them up.
