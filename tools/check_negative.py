@@ -5483,6 +5483,56 @@ def neg_decisions_contest_print_indexed() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_mirror_rated_in_database() -> tuple[bool, str]:
+    """The database would take a rated mirror."""
+    return _decision_broken(
+        "apps/api/contests/models.py",
+        'name="contest_mirror_unrated"',
+        'name="contest_mirror_check"',
+        "reytingli ko'zgu musobaqani rad etmaydi",
+    )
+
+
+def neg_decisions_mirror_rated_by_staff() -> tuple[bool, str]:
+    """The staff API would take a rated mirror."""
+    return _decision_broken(
+        "apps/api/contests/staff_serializers.py",
+        'raise serializers.ValidationError({"is_rated": "A mirror contest is never rated"})',
+        "pass",
+        "reytingli ko'zguni qabul qiladi",
+    )
+
+
+def neg_decisions_partner_logo_unsafe() -> tuple[bool, str]:
+    """A partner logo would accept a script or a plain-http address."""
+    return _decision_broken(
+        "apps/api/contests/staff_serializers.py",
+        'if not (site_path or value.startswith("https://")):',
+        "if False:",
+        "xavfli manzilni qabul qiladi",
+    )
+
+
+def neg_decisions_organizer_sets_partner() -> tuple[bool, str]:
+    """An organizer could name a partner for their own contest."""
+    return _decision_broken(
+        "apps/api/contests/organizer_views.py",
+        '            "prizes",\n        ]\n        read_only_fields',
+        '            "prizes",\n            "partner",\n        ]\n        read_only_fields',
+        "organizator `partner` ni",
+    )
+
+
+def neg_decisions_hidden_original_named() -> tuple[bool, str]:
+    """A mirror would name an original that is not public."""
+    return _decision_broken(
+        "apps/api/contests/serializers.py",
+        "if original is not None and original.is_public:",
+        "if original is not None:",
+        "yashirin asl musobaqa",
+    )
+
+
 def neg_cpuz_broken_anchor() -> tuple[bool, str]:
     """A link to a section that no heading carries."""
     return _cpuz_broken(
@@ -9439,6 +9489,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/contests/staff_serializers.py",
+    "docs/07-adr/0063-contest-partners-official-mirrors.md",
     "apps/api/contests/regional.py",
     "apps/web/src/app/(site)/contests/[slug]/print/page.tsx",
     "apps/api/olympiads/importer.py",
@@ -13911,6 +13963,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("noma'lum hudud qabul qilinsa tutilsin", neg_decisions_region_unknown_accepted),
             ("hududiy kesh qolsa tutilsin", neg_decisions_region_cache_survives_rebuild),
             ("shartlar sahifasi indekslansa tutilsin", neg_decisions_contest_print_indexed),
+            ("bazada reytingli ko'zgu tutilsin", neg_decisions_mirror_rated_in_database),
+            ("xodim reytingli ko'zgu qo'ysa tutilsin", neg_decisions_mirror_rated_by_staff),
+            ("xavfli logo manzili tutilsin", neg_decisions_partner_logo_unsafe),
+            ("organizator hamkor yozsa tutilsin", neg_decisions_organizer_sets_partner),
+            ("yashirin asl nomlansa tutilsin", neg_decisions_hidden_original_named),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

@@ -11,6 +11,8 @@ import {
   ContestCrew,
   ContestEntry,
   ContestIntegrity,
+  ContestPartner,
+  ContestStatus,
   StandingsTable,
 } from "@/features/contests";
 import { Badge } from "@/components/ui/Badge";
@@ -127,6 +129,10 @@ export default async function ContestPage({ params, searchParams }: Props) {
           {contest.is_rated && (
             <Badge color="brand">{t(locale, "contests.rated")}</Badge>
           )}
+          {contest.official_title && (
+            <Badge color="success">{t(locale, "contests.official")}</Badge>
+          )}
+          {contest.is_mirror && <Badge color="info">{t(locale, "contests.mirror")}</Badge>}
           <TimeStamp value={contest.start_at} locale={locale} tone="dual" />
           <TimeStamp value={contest.end_at} locale={locale} tone="dual" />
           {!contest.is_finished && (
@@ -137,6 +143,8 @@ export default async function ContestPage({ params, searchParams }: Props) {
           )}
         </div>
       </div>
+
+      <ContestStatus contest={contest} locale={locale} />
 
       {contest.is_finished && (
         <div className="rw-radius border rw-line rw-surface p-5 text-theme-sm rw-dim">
@@ -218,6 +226,8 @@ export default async function ContestPage({ params, searchParams }: Props) {
         started={contest.is_running || contest.is_finished}
         finished={contest.is_finished}
       />
+
+      <ContestPartner contest={contest} locale={locale} />
 
       <Card title={t(locale, "standings.title")} bodyClassName="p-0">
         {/* Contest ketayotgan bo'lsa SSE bilan jonli, aks holda statik */}

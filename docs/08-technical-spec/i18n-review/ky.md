@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3454 strings.**
+**3481 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2926,6 +2926,33 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.print.hint` | PDF fayl olish uchun chop etish oynasida «PDF sifatida saqlash» ni tanlang. | PDF файл алуу үчүн басып чыгаруу терезесинде «PDF катары сактоо» дегенди тандаңыз. |  |
 | `contest.print.count` | {count} ta masala | {count} маселе |  |
 | `contest.print.limits` | Vaqt: {time} ms · Xotira: {memory} MB | Убакыт: {time} мс · Эс: {memory} МБ |  |
+| `contests.official` | Rasmiy | Расмий |  |
+| `contests.mirror` | Ko'zgu | Күзгү |  |
+| `contests.partnerOf` | Hamkor: {name} | Өнөктөш: {name} |  |
+| `contest.official.document` | Rasmiy hujjat | Расмий документ |  |
+| `contest.mirror.of` | Bu musobaqa quyidagining ko'zgusi: | Бул мелдеш мындайдын күзгүсү: |  |
+| `contest.mirror.unrated` | Masalalar avval o'sha yerda berilgan, shuning uchun reyting hisoblanmaydi. | Маселелер адегенде ошол жерде берилген, ошондуктан рейтинг эсептелбейт. |  |
+| `contest.mirrors` | Ko'zgu musobaqalar | Күзгү мелдештер |  |
+| `contest.partner` | Hamkor | Өнөктөш |  |
+| `contest.partner.website` | Sayti | Сайты |  |
+| `contest.prizes` | Sovrinlar | Сыйлыктар |  |
+| `olympiads.mirrors` | RankWant'dagi ko'zgu musobaqalar | RankWant'тагы күзгү мелдештер |  |
+| `org.kind.school` | Maktab | Мектеп |  |
+| `org.kind.university` | Universitet | Университет |  |
+| `org.kind.center` | O'quv markazi | Окуу борбору |  |
+| `org.kind.company` | Kompaniya | Компания |  |
+| `org.kind.community` | Hamjamiyat | Коомчулук |  |
+| `org.kind.government` | Davlat tashkiloti | Мамлекеттик уюм |  |
+| `admin.section.organizations` | Tashkilotlar | Уюмдар |  |
+| `admin.label.tech.website` | Sayt (https://) | Сайты (https://) |  |
+| `admin.label.text.about` | Tavsif | Сүрөттөмө |  |
+| `admin.label.text.partner` | Hamkor (tashkilot slug'i) | Өнөктөш (уюм slug) |  |
+| `admin.label.text.officialTitle` | Rasmiy maqomi | Расмий статусу |  |
+| `admin.label.tech.officialUrl` | Rasmiy hujjat havolasi (https://) | Расмий документтин шилтемеси (https://) |  |
+| `admin.label.text.prizes` | Sovrinlar (Markdown) | Сыйлыктар (Markdown) |  |
+| `admin.label.flag.mirrorEvent` | Olimpiada ko'zgusi (tadbir slug'i) | Олимпиада күзгүсү (иш-чара slug) |  |
+| `admin.help.mirrorUnrated` | Ko'zgu musobaqa reytingli bo'lmaydi. | Күзгү мелдеш рейтингдүү болбойт. |  |
+| `admin.help.organizationLogo` | Sayt yo'li (/partners/logo.png) yoki https:// manzil. | Сайттагы жол (/partners/logo.png) же https:// дарек. |  |
 | `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Мелдеште жасалма интеллект жардамчыларын (ChatGPT, Copilot ж.б.) колдонууга тыюу салынат. Редакторго код коюу жана барактан чыгуу катталат — калыс көрөт. |  |
 | `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Мелдеш: ЖИ жардамчыларына тыюу салынган. Код коюу жана барактан чыгуу катталат. |  |
 | `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Сиз бул мелдештен четтетилдиңиз |  |

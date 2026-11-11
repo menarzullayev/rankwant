@@ -12,12 +12,13 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from contests.models import Contest, ContestProblem
+from contests.models import Contest, ContestProblem, Organization
 from contests.services import finalize_contest, rebuild_standings
 from contests.staff_serializers import (
     StaffContestProblemListSerializer,
     StaffContestProblemSerializer,
     StaffContestSerializer,
+    StaffOrganizationSerializer,
 )
 from core.openapi_docs import crud_summaries
 from core.permissions import StaffOps
@@ -41,7 +42,7 @@ class StaffContestViewSet(StaffViewSet):
     permission_classes = [StaffOps]
 
     queryset = Contest.objects.prefetch_related("problems__problem", "organizers").select_related(
-        "mirror_of"
+        "mirror_of", "mirror_of_event", "partner"
     )
     serializer_class = StaffContestSerializer
     lookup_field = "slug"
@@ -119,3 +120,17 @@ class StaffContestViewSet(StaffViewSet):
             {"affected": affected, "ratings_applied_at": contest.ratings_applied_at},
             status=status.HTTP_200_OK,
         )
+
+
+@crud_summaries(one="tashkilot", many="tashkilotlar")
+class StaffOrganizationViewSet(StaffViewSet):
+    """Partner organizations (ADR-0063). Deleting one leaves its contests
+    without a partner; the contests stay."""
+
+    permission_classes = [StaffOps]
+    queryset = Organization.objects.all()
+    serializer_class = StaffOrganizationSerializer
+    lookup_field = "slug"
+    search_fields: ClassVar[list[str]] = ["slug", "name"]
+    ordering_fields: ClassVar[list[str]] = ["pk", "name"]
+    ordering: ClassVar[list[str]] = ["name", "pk"]

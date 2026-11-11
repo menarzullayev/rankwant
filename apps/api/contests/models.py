@@ -13,6 +13,34 @@ from core.bases import CreatedModel, UpdatedModel
 from core.mixins import TimeWindowMixin
 
 
+class Organization(CreatedModel):
+    """A school, university, learning centre or company that partners a
+    contest (ADR-0063). One organization runs many contests, so it is a row
+    and not text on each contest."""
+
+    class Kind(models.TextChoices):
+        SCHOOL = "school", "Maktab"
+        UNIVERSITY = "university", "Universitet"
+        CENTER = "center", "O'quv markazi"
+        COMPANY = "company", "Kompaniya"
+        COMMUNITY = "community", "Hamjamiyat"
+        GOVERNMENT = "government", "Davlat tashkiloti"
+
+    slug = models.SlugField(unique=True, max_length=80)
+    name = models.CharField(max_length=200)
+    kind = models.CharField(max_length=20, choices=Kind.choices, default=Kind.CENTER)
+    #: A site path or an `https://` URL — an address, not an upload (ADR-0063 § 2.7).
+    logo_url = models.CharField(max_length=500, blank=True)
+    website = models.URLField(blank=True)
+    about = models.TextField(blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["name"]
+
+    def __str__(self) -> str:
+        return self.slug
+
+
 class Contest(TimeWindowMixin, CreatedModel):
     class Scoring(models.TextChoices):
         ACM = "acm", "ACM/ICPC"
@@ -36,6 +64,25 @@ class Contest(TimeWindowMixin, CreatedModel):
     mirror_of = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.SET_NULL, related_name="mirrors"
     )
+    #: An olympiad archive event this contest mirrors (ADR-0063): most
+    #: official olympiads are not RankWant contests.
+    mirror_of_event = models.ForeignKey(
+        "olympiads.Event",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="mirror_contests",
+    )
+    #: The partner organization (ADR-0063); staff set it, not organizers.
+    partner = models.ForeignKey(
+        Organization, null=True, blank=True, on_delete=models.SET_NULL, related_name="contests"
+    )
+    #: Prizes, in Markdown; the organizer of a draft may write them.
+    prizes = models.TextField(blank=True)
+    #: What the contest officially is («Respublika olimpiadasi, saralash
+    #: bosqichi») and the document that says so; staff only (ADR-0063).
+    official_title = models.CharField(max_length=200, blank=True)
+    official_url = models.URLField(blank=True)
     ratings_applied_at = models.DateTimeField(null=True, blank=True)
     #: Hakamlar — profilda «Hakam» nishoni (ADR-0018); admin paneldan.
     jury = models.ManyToManyField("core.User", blank=True, related_name="jury_contests")
@@ -77,9 +124,24 @@ class Contest(TimeWindowMixin, CreatedModel):
 
     class Meta:
         ordering: ClassVar = ["-start_at"]
+        constraints: ClassVar = [
+            # A mirror's problems were set elsewhere first: a participant may
+            # know them, so it is never rated (ADR-0063 § 2.6).
+            models.CheckConstraint(
+                condition=~(
+                    models.Q(is_rated=True)
+                    & (models.Q(mirror_of__isnull=False) | models.Q(mirror_of_event__isnull=False))
+                ),
+                name="contest_mirror_unrated",
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.slug
+
+    @property
+    def is_mirror(self) -> bool:
+        return self.mirror_of_id is not None or self.mirror_of_event_id is not None
 
     @property
     def freeze_at(self) -> datetime | None:

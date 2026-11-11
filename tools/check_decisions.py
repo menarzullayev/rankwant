@@ -3373,6 +3373,37 @@ def contest_standings_by_region_and_print() -> str | None:
     return None
 
 
+def contest_partners_official_and_mirrors() -> str | None:
+    """2026-11-11 ② (HITL; `docs/decisions/2026-11-11-community-and-contests.md`, ADR-0063).
+
+    Hamkor musobaqalar, rasmiy saralash va ko'zgu. Ko'zgu musobaqa hech
+    qachon reytingli emas — masalalar avval boshqa joyda berilgan, ya'ni
+    ishtirokchi ularni bilishi mumkin: baza ham, xodim API'si ham rad etadi.
+    Hamkor, rasmiy maqom va ko'zgu havolasi **faqat xodimniki**: organizator
+    o'z musobaqasiga universitet nomini yoki rasmiy maqomni yozib qo'ya
+    olmaydi (sovrinlar esa uniki). Logo — manzil, yuklash emas: sayt yo'li
+    yoki `https://`. Yashirin asl musobaqa ko'zgu sahifasida nomlanmaydi.
+    """
+    if not list((ROOT / "docs/07-adr").glob("0063-*.md")):
+        return "docs/07-adr: ADR-0063 yo'q (qulflangan musobaqa modeli o'zgardi)"
+    if 'name="contest_mirror_unrated"' not in read("apps/api/contests/models.py"):
+        return "contests/models.py: baza reytingli ko'zgu musobaqani rad etmaydi"
+    staff = read("apps/api/contests/staff_serializers.py")
+    if 'raise serializers.ValidationError({"is_rated": "A mirror contest is never rated"})' not in staff:
+        return "contests/staff_serializers.py: xodim API'si reytingli ko'zguni qabul qiladi"
+    if 'if not (site_path or value.startswith("https://")):' not in staff:
+        return "contests/staff_serializers.py: hamkor logosi xavfli manzilni qabul qiladi"
+    organizer = read("apps/api/contests/organizer_views.py")
+    start = organizer.index("class OrganizerContestSerializer")
+    fields = organizer[start : organizer.index("read_only_fields", start)]
+    for name in ("partner", "official_title", "official_url", "mirror_of_event"):
+        if f'"{name}"' in fields:
+            return f"contests/organizer_views.py: organizator `{name}` ni o'zi yoza oladi"
+    if "if original is not None and original.is_public:" not in read("apps/api/contests/serializers.py"):
+        return "contests/serializers.py: yashirin asl musobaqa ko'zgu sahifasida nomlanadi"
+    return None
+
+
 def cpuz_library_is_pinned_and_checked() -> str | None:
     """2026-11-11 (HITL; `docs/decisions/2026-11-11-cpuz-import.md`, ADR-0062).
 
@@ -5852,6 +5883,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("algoritm sahifasi manbani ko'rsatadi", algorithm_pages_carry_the_attribution),
     ("olimpiada arxivi shaxsiy ma'lumotni repoga olmaydi", olympiad_archive_keeps_personal_data_out),
     ("musobaqa jadvali hudud bo'yicha, shartlar chop etiladi", contest_standings_by_region_and_print),
+    ("hamkor, rasmiy saralash va ko'zgu musobaqa", contest_partners_official_and_mirrors),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3454 strings.**
+**3481 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2926,6 +2926,33 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.print.hint` | PDF fayl olish uchun chop etish oynasida «PDF sifatida saqlash» ni tanlang. | PDF fayl alıw ushın basıp shıǵarıw aynasında «PDF retinde saqlaw» dı tańlań. |  |
 | `contest.print.count` | {count} ta masala | {count} másele |  |
 | `contest.print.limits` | Vaqt: {time} ms · Xotira: {memory} MB | Waqıt: {time} ms · Yad: {memory} MB |  |
+| `contests.official` | Rasmiy | Rásmiy |  |
+| `contests.mirror` | Ko'zgu | Ayna |  |
+| `contests.partnerOf` | Hamkor: {name} | Sherik: {name} |  |
+| `contest.official.document` | Rasmiy hujjat | Rásmiy hújjet |  |
+| `contest.mirror.of` | Bu musobaqa quyidagining ko'zgusi: | Bul jarıs mınanıń aynası: |  |
+| `contest.mirror.unrated` | Masalalar avval o'sha yerda berilgan, shuning uchun reyting hisoblanmaydi. | Máseleler aldın sol jerde berilgen, sonlıqtan reyting esaplanbaydı. |  |
+| `contest.mirrors` | Ko'zgu musobaqalar | Ayna jarıslar |  |
+| `contest.partner` | Hamkor | Sherik |  |
+| `contest.partner.website` | Sayti | Saytı |  |
+| `contest.prizes` | Sovrinlar | Sıylıqlar |  |
+| `olympiads.mirrors` | RankWant'dagi ko'zgu musobaqalar | RankWant'taǵı ayna jarıslar |  |
+| `org.kind.school` | Maktab | Mektep |  |
+| `org.kind.university` | Universitet | Joqarı oqıw ornı |  |
+| `org.kind.center` | O'quv markazi | Oqıw orayı |  |
+| `org.kind.company` | Kompaniya | Kárxana |  |
+| `org.kind.community` | Hamjamiyat | Jámiyet |  |
+| `org.kind.government` | Davlat tashkiloti | Mámleketlik shólkem |  |
+| `admin.section.organizations` | Tashkilotlar | Shólkemler |  |
+| `admin.label.tech.website` | Sayt (https://) | Saytı (https://) |  |
+| `admin.label.text.about` | Tavsif | Táriyp |  |
+| `admin.label.text.partner` | Hamkor (tashkilot slug'i) | Sherik (shólkem slug) |  |
+| `admin.label.text.officialTitle` | Rasmiy maqomi | Rásmiy statusı |  |
+| `admin.label.tech.officialUrl` | Rasmiy hujjat havolasi (https://) | Rásmiy hújjet siltemesi (https://) |  |
+| `admin.label.text.prizes` | Sovrinlar (Markdown) | Sıylıqlar (Markdown) |  |
+| `admin.label.flag.mirrorEvent` | Olimpiada ko'zgusi (tadbir slug'i) | Olimpiada aynası (ilaje slug) |  |
+| `admin.help.mirrorUnrated` | Ko'zgu musobaqa reytingli bo'lmaydi. | Ayna jarıs reytingli bolmaydı. |  |
+| `admin.help.organizationLogo` | Sayt yo'li (/partners/logo.png) yoki https:// manzil. | Sayt jolı (/partners/logo.png) yamasa https:// mánzil. |  |
 | `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Jarısta jasalma intellekt járdemshilerinen (ChatGPT, Copilot hám t.b.) paydalanıwǵa tıyım salınadı. Redaktorǵa kod qoyıw hám betten shıǵıw dizimge alınadı — tóreshi kóredi. |  |
 | `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Jarıs: JI járdemshilerine tıyım salınǵan. Kod qoyıw hám betten shıǵıw dizimge alınadı. |  |
 | `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Siz bul jarıstan shetletildińiz |  |

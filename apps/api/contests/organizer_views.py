@@ -180,6 +180,9 @@ class OrganizerContestSerializer(serializers.ModelSerializer[Contest]):
             "testers",
             "problems",
             "participant_count",
+            # Prizes are the organizer's to promise; partner, official status
+            # and mirrors are set by staff (ADR-0063 § 2.5).
+            "prizes",
         ]
         read_only_fields = ["is_public", "is_rated"]
 

@@ -71,6 +71,8 @@ export type OlympiadEvent = OlympiadEventCard & {
   resources: OlympiadResource[];
   sets: { slug: string; title: string; description: string; tasks: OlympiadTaskRow[] }[];
   results: OlympiadResult[];
+  /** RankWant contests that mirror this event (ADR-0063). */
+  mirror_contests: { slug: string; title: string; start_at: string }[];
 };
 
 export type OlympiadLink = { kind: string; title: string; url: string; platform: string; is_official: boolean | null };

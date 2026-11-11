@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { getLocale } from "@/i18n/server";
-import { dateTime, t } from "@/i18n/messages";
+import { dateTime, fill, t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { api } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -59,7 +59,16 @@ export default async function ContestsPage() {
                     {c.is_rated && (
                       <Badge color="brand">{t(locale, "contests.rated")}</Badge>
                     )}
+                    {c.official_title && (
+                      <Badge color="success">{t(locale, "contests.official")}</Badge>
+                    )}
+                    {c.is_mirror && <Badge color="info">{t(locale, "contests.mirror")}</Badge>}
                   </span>
+                  {c.partner && (
+                    <span className="mt-2 block text-theme-xs rw-dim" data-partner={c.partner.slug}>
+                      {fill(t(locale, "contests.partnerOf"), { name: c.partner.name })}
+                    </span>
+                  )}
                   <span className="mt-2 block text-theme-xs rw-dim">
                     {dateTime(c.start_at, locale)}
                   </span>
