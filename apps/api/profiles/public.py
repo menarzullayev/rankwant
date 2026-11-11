@@ -162,6 +162,7 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         and (timezone.now() - seen).total_seconds() < sessions.ONLINE_WINDOW,
         "pinned": achievements.pinned(user),
         "coach": coaches(user) if visible("coach") else [],
+        "teacher": teachers(user) if visible("teacher") else [],
     }
 
 
@@ -246,8 +247,27 @@ def activity(user: User, *, before: datetime | None = None, limit: int = 30) -> 
     }
 
 
+def _person(other: User) -> dict[str, Any]:
+    return {
+        "username": other.username,
+        "display_name": other.display_name,
+        "title": titles.user_title(other),
+    }
+
+
 def coaches(user: User) -> list[dict[str, Any]]:
-    """Murabbiy — o'quvchi a'zo bo'lgan faol auditoriyaning egasi (ADR-0017)."""
+    """Coaches the user chose and who accepted (ADR-0061 § 4)."""
+    from coaching.access import coaches_of
+
+    return [_person(coach) for coach in coaches_of(user.pk)]
+
+
+def teachers(user: User) -> list[dict[str, Any]]:
+    """O'qituvchi — o'quvchi a'zo bo'lgan faol auditoriyaning egasi (ADR-0017).
+
+    Until 2026-11-11 this was called the user's "coach"; ADR-0061 gave that
+    word to a chosen coach.
+    """
     from classroom.models import ClassroomMember
 
     owners = (
@@ -261,14 +281,7 @@ def coaches(user: User) -> list[dict[str, Any]]:
         .distinct()
         .order_by("username")[:3]
     )
-    return [
-        {
-            "username": owner.username,
-            "display_name": owner.display_name,
-            "title": titles.user_title(owner),
-        }
-        for owner in owners
-    ]
+    return [_person(owner) for owner in owners]
 
 
 def roles(user: User) -> list[dict[str, str]]:

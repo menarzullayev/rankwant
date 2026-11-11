@@ -22,6 +22,8 @@ export type PrivacyField =
   | "website"
   | "online"
   | "coach"
+  /** Classroom owners — split from `coach` by ADR-0061 § 4. */
+  | "teacher"
   | "social"
   /** Profil banneri — yuklangan rasm, shuning uchun yashirilishi mumkin (ADR-0026). */
   | "title_photo"
@@ -212,6 +214,8 @@ export type Me = {
   postal_address_native: string;
   postal_consent: boolean;
   hidden_fields: PrivacyField[];
+  /** What a new coach link starts with (ADR-0061 § 4); owner-only. */
+  coach_can_view_attempts: boolean;
   ui_prefs: UiPrefs;
   notify_prefs: NotifyPrefs;
   /** `free_at` bo'sh — bepul almashtirish hozir mavjud. */

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3056 strings.**
+**3104 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -671,6 +671,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.privacy.shown` | Profilda ko'rinadi | Profilde kórinedi |  |
 | `settings.privacy.hidden` | Faqat sizga | Tek sizge |  |
 | `settings.privacy.coach` | Murabbiy | Trener |  |
+| `settings.privacy.teacher` | O'qituvchi | Muǵallim |  |
+| `settings.privacy.coachCode` | Yangi murabbiyga kodimni ko'rsatish | Jańa murabbiyge kodımdı kórsetiw |  |
+| `settings.privacy.coachCodeHint` | Yangi murabbiylik so'rovi shu qiymat bilan boshlanadi; har murabbiy uchun «Murabbiylik» sahifasida alohida o'zgartiriladi. | Jańa soraw usı mánis penen baslanadı; hár murabbiy ushın «Murabbiylik» betinde bólek ózgertiledi. |  |
 | `settings.privacy.social` | Ijtimoiy havolalar | Sociallıq siltemeler |  |
 | `settings.privacy.online` | Onlayn holat va oxirgi faollik | Onlayn halat hám sońǵı belsendilik |  |
 | `settings.privacy.activity` | Faoliyat lentasi | Iskerlik lentası |  |
@@ -1287,6 +1290,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `cert.issued` | Berilgan sana | Berilgen sáne |  |
 | `cert.holder` | Egasi | Iyesi |  |
 | `profile.coach` | Murabbiy | Trener |  |
+| `profile.teacher` | O'qituvchi | Muǵallim |  |
 | `profile.searchPeople` | Ism yoki taxallus… | At yamasa laqap… |  |
 | `profile.sortBy` | Saralash | Saralaw |  |
 | `profile.sortRating` | Contests reytingi bo'yicha | Contests reytingi boyınsha |  |
@@ -2826,6 +2830,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.classroom_join_approved.body` | O'qituvchi so'rovingizni qabul qildi: sinf topshiriqlari endi sizga ochiq. | Muǵallim sorawıńızdı qabıl etti: klass tapsırmaları endi sizge ashıq. |  |
 | `notif.msg.classroom_join_rejected.title` | So'rov rad etildi — {classroom} | Soraw biykarlandı — {classroom} |  |
 | `notif.msg.classroom_join_rejected.body` | O'qituvchi «{classroom}» sinfiga qo'shilish so'rovingizni rad etdi. | Muǵallim «{classroom}» klasına qosılıw sorawıńızdı biykarladı. |  |
+| `notif.msg.coach_requested.title` | Murabbiylik so'rovi — @{user} | Murabbiylik sorawı — @{user} |  |
+| `notif.msg.coach_requested.body` | @{user} sizdan murabbiy bo'lishingizni so'radi. | @{user} sizden murabbiyi bolıwıńızdı soradı. |  |
+| `notif.msg.coach_accepted.title` | @{user} murabbiyingiz bo'ldi | @{user} murabbiyińiz boldı |  |
+| `notif.msg.coach_accepted.body` | Endi u sizga masala tavsiya qila oladi. | Endi ol sizge másele usınıs ete aladı. |  |
+| `notif.msg.coach_declined.title` | @{user} murabbiylik so'rovini rad etdi | @{user} murabbiylik sorawın biykarladı |  |
+| `notif.msg.coach_declined.body` | Boshqa murabbiyga so'rov yuborishingiz mumkin. | Basqa murabbiyge soraw jibere alasız. |  |
+| `notif.msg.coach_recommended.title` | Yangi tavsiya — {problem} | Jańa usınıs — {problem} |  |
+| `notif.msg.coach_recommended.body` | @{user} sizga «{problem}» masalasini tavsiya qildi. | @{user} sizge «{problem}» máselesin usınıs etti. |  |
 | `admin.section.courses` | Kurslar | Kurs dizimi |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Avtorlar tekseriwge jibergen kurslar. Baha qoyıń, járiyalań yamasa sebebi menen qaytarıń. |  |
 | `admin.courses.queue` | Ko'rik navbati | Tekseriw gezegi |  |
@@ -3014,6 +3026,36 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.invite.approvalNote` | O'qituvchi so'rovingizni tasdiqlagach sinfga kirasiz. | Muǵallim sorawıńızdı tastıyıqlaǵannan keyin klasqa kiresiz. |  |
 | `classroom.invite.pending` | So'rovingiz o'qituvchida — javobni bildirishnomada ko'rasiz. | Sorawıńız muǵallimde — juwabı xabarlama menen keledi. |  |
 | `classroom.students` | {count} o'quvchi | {count} oqıwshı |  |
+| `coaching.title` | Murabbiylik | Murabbiylik baylanısları |  |
+| `coaching.intro` | O'zingiz tanlagan murabbiy sizga masala tavsiya qiladi va ruxsat bersangiz yechimlaringizni ko'radi. Murabbiy bo'lsangiz, o'quvchilaringiz ham shu yerda. | Ózińiz tańlaǵan murabbiy sizge másele usınıs etedi hám ruqsat berseńiz sheshimlerińizdi kóredi. Murabbiy bolsańız, oqıwshılarıńız da usı jerde. |  |
+| `coaching.mine` | Murabbiylarim | Murabbiylerim |  |
+| `coaching.mineHint` | Murabbiy so'rovingizni qabul qilgach, sizga masala tavsiya qila oladi. Kodni ko'rish ruxsatini har murabbiyga alohida berasiz. | Murabbiy sorawıńızdı qabıl etkennen keyin sizge másele usınıs ete aladı. Kodtı kóriw ruqsatın hár murabbiyge bólek beresiz. |  |
+| `coaching.askLabel` | Murabbiyning foydalanuvchi nomi | Murabbiydiń paydalanıwshı atı |  |
+| `coaching.ask` | So'rov yuborish | Soraw jiberiw |  |
+| `coaching.limit` | {count} / {limit} murabbiy | Murabbiyler: {count} / {limit} |  |
+| `coaching.active` | Faol | Belsendi |  |
+| `coaching.pending` | Javob kutilmoqda | Juwap kútilmekte |  |
+| `coaching.consent` | Kodimni ko'radi | Kodımdı kóredi |  |
+| `coaching.consentFor` | @{user} yechimlarim kodini ko'rsin | @{user} sheshimlerimniń kodın kórsin |  |
+| `coaching.withdraw` | So'rovni qaytarib olish | Sorawdı qaytarıp alıw |  |
+| `coaching.withdrawConfirm` | @{user} ga yuborilgan so'rov qaytarib olinsinmi? | @{user} ǵa jiberilgen soraw qaytarıp alınsın ba? |  |
+| `coaching.end` | Tugatish | Juwmaqlaw |  |
+| `coaching.endConfirm` | @{user} bilan murabbiylik tugatilsinmi? Uning tavsiyalari ro'yxatdan yo'qoladi. | @{user} menen murabbiylik juwmaqlansın ba? Onıń usınısları dizimnen ketedi. |  |
+| `coaching.endStudentConfirm` | @{user} bilan murabbiylik tugatilsinmi? | @{user} menen murabbiylik juwmaqlansın ba? |  |
+| `coaching.recommendations` | Murabbiy tavsiyalari | Murabbiy usınısları |  |
+| `coaching.recommendationsNone` | Hali tavsiya yo'q. | Házirshe usınıs joq. |  |
+| `coaching.from` | @{user} tavsiyasi | @{user} usınısı |  |
+| `coaching.solved` | Yechilgan | Sheshilgen |  |
+| `coaching.requests` | Murabbiylik so'rovlari | Murabbiylik sorawları |  |
+| `coaching.students` | O'quvchilarim | Oqıwshılarım |  |
+| `coaching.stats` | Yechgan {solved} · Skills {skills} · Seriya {streak} | Sheshkeni {solved} · Skills {skills} · Seriya {streak} |  |
+| `coaching.noConsent` | Kodni ko'rish ruxsati yo'q | Kodtı kóriw ruqsatı joq |  |
+| `coaching.recommendProblem` | Masala | Másele |  |
+| `coaching.recommendHint` | Manzil yoki raqam: a-plus-b yoki #123 | Mánzil yamasa nomer: a-plus-b yamasa #123 |  |
+| `coaching.note` | Izoh (ixtiyoriy) | Túsinik (májbúriy emes) |  |
+| `coaching.recommend` | Tavsiya qilish | Usınıs etiw |  |
+| `coaching.askThis` | Murabbiy bo'lishini so'rash | Murabbiyim bolıwın soraw |  |
+| `coaching.asked` | So'rov yuborildi. | Soraw jiberildi. |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Bul kurs tabılmadı yamasa ele járiyalanbaǵan. |  |
 | `error.quota_exceeded` | Rejangiz chegarasiga yetdingiz | Tarifińizdiń shegine jettińiz |  |
 | `error.classroom_full` | Sinf to'lgan — o'quvchilar chegarasiga yetildi | Klass tolı — oqıwshılar shegine jetti |  |
@@ -3023,6 +3065,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.request_answered` | Bu so'rovga allaqachon javob berilgan | Bul sorawǵa juwap berilgen |  |
 | `error.bad_role` | Noma'lum rol | Belgisiz rol |  |
 | `error.code_failed` | Yangi kod yaratilmadi, qayta urinib ko'ring | Jańa kod jasalmadı, qaytadan urınıp kóriń |  |
+| `error.coach_not_found` | Bunday foydalanuvchi yo'q | Bunday paydalanıwshı joq |  |
+| `error.coach_self` | O'zingizga murabbiy bo'la olmaysiz | Ózińizge murabbiy bola almaysız |  |
+| `error.coach_already` | Bu murabbiyga so'rov allaqachon yuborilgan | Bul murabbiyge soraw jiberilgen |  |
+| `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Kóbi menen 3 murabbiy bolıwı múmkin |  |
+| `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Bul baylanıs juwmaqlanǵan |  |
+| `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Másele tabılmadı yamasa ashıq emes |  |
 | `billing.plan.plus` | Plus | Plus |  |
 | `billing.plan.pro` | Pro | Pro |  |
 | `billing.plan.judge` | Judge | Judge |  |

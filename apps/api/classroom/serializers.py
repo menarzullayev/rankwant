@@ -183,20 +183,16 @@ class AssignmentCreateSerializer(serializers.Serializer[dict[str, Any]]):
         An unknown or unpublished one is refused by name: a class would
         otherwise get an assignment with a problem its students cannot open.
         """
+        from problems.lookup import public_problem
+
         slugs: list[str] = []
         missing: list[str] = []
         for item in given:
-            key = item.strip().lstrip("#")
-            query = (
-                Problem.objects.filter(code=int(key))
-                if key.isdigit()
-                else Problem.objects.filter(slug=key)
-            )
-            slug = query.filter(is_public=True).values_list("slug", flat=True).first()
-            if slug is None:
+            found = public_problem(item)
+            if found is None:
                 missing.append(item)
-            elif slug not in slugs:
-                slugs.append(slug)
+            elif found.slug not in slugs:
+                slugs.append(found.slug)
         if missing:
             # Each one by name, as written: the page lists what was not found.
             raise serializers.ValidationError({"problems": missing})

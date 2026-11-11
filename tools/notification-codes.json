@@ -9,6 +9,19 @@
     "classroom",
     "user"
   ],
+  "coach_accepted": [
+    "user"
+  ],
+  "coach_declined": [
+    "user"
+  ],
+  "coach_recommended": [
+    "problem",
+    "user"
+  ],
+  "coach_requested": [
+    "user"
+  ],
   "contest_announcement": [
     "contest",
     "text"

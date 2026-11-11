@@ -206,7 +206,10 @@ export type PublicProfile = {
   last_seen: string | null;
   online: boolean;
   pinned: PinnedAchievement[];
+  /** Coaches the user chose and who accepted (ADR-0061 § 4). */
   coach: CoachRef[];
+  /** Owners of classrooms the user sits in. */
+  teacher: CoachRef[];
 };
 
 export type CoachRef = { username: string; display_name: string; title: UserTitle | null };

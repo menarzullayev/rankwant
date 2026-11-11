@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3056 strings.**
+**3104 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -671,6 +671,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.privacy.shown` | Profilda ko'rinadi | Дар профил намоён |  |
 | `settings.privacy.hidden` | Faqat sizga | Танҳо ба шумо |  |
 | `settings.privacy.coach` | Murabbiy | Мураббӣ |  |
+| `settings.privacy.teacher` | O'qituvchi | Муаллим |  |
+| `settings.privacy.coachCode` | Yangi murabbiyga kodimni ko'rsatish | Нишон додани код ба мураббии нав |  |
+| `settings.privacy.coachCodeHint` | Yangi murabbiylik so'rovi shu qiymat bilan boshlanadi; har murabbiy uchun «Murabbiylik» sahifasida alohida o'zgartiriladi. | Дархости нав бо ҳамин қимат оғоз мешавад; барои ҳар мураббӣ дар саҳифаи «Мураббигӣ» алоҳида иваз мешавад. |  |
 | `settings.privacy.social` | Ijtimoiy havolalar | Пайвандҳои иҷтимоӣ |  |
 | `settings.privacy.online` | Onlayn holat va oxirgi faollik | Ҳолати онлайн ва фаъолияти охирин |  |
 | `settings.privacy.activity` | Faoliyat lentasi | Лентаи фаъолият |  |
@@ -1287,6 +1290,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `cert.issued` | Berilgan sana | Санаи додан |  |
 | `cert.holder` | Egasi | Соҳиб |  |
 | `profile.coach` | Murabbiy | Мураббӣ |  |
+| `profile.teacher` | O'qituvchi | Муаллим |  |
 | `profile.searchPeople` | Ism yoki taxallus… | Ном ё тахаллус… |  |
 | `profile.sortBy` | Saralash | Мураттабсозӣ |  |
 | `profile.sortRating` | Contests reytingi bo'yicha | Аз рӯи рейтинги Contests |  |
@@ -2826,6 +2830,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.classroom_join_approved.body` | O'qituvchi so'rovingizni qabul qildi: sinf topshiriqlari endi sizga ochiq. | Муаллим дархости шуморо қабул кард: супоришҳои синф акнун барои шумо кушодаанд. |  |
 | `notif.msg.classroom_join_rejected.title` | So'rov rad etildi — {classroom} | Дархост рад шуд — {classroom} |  |
 | `notif.msg.classroom_join_rejected.body` | O'qituvchi «{classroom}» sinfiga qo'shilish so'rovingizni rad etdi. | Муаллим дархости шуморо барои ҳамроҳшавӣ ба «{classroom}» рад кард. |  |
+| `notif.msg.coach_requested.title` | Murabbiylik so'rovi — @{user} | Дархости мураббигӣ — @{user} |  |
+| `notif.msg.coach_requested.body` | @{user} sizdan murabbiy bo'lishingizni so'radi. | @{user} аз шумо хоҳиш кард, ки мураббияш шавед. |  |
+| `notif.msg.coach_accepted.title` | @{user} murabbiyingiz bo'ldi | @{user} мураббии шумо шуд |  |
+| `notif.msg.coach_accepted.body` | Endi u sizga masala tavsiya qila oladi. | Акнун ӯ метавонад ба шумо масъала тавсия диҳад. |  |
+| `notif.msg.coach_declined.title` | @{user} murabbiylik so'rovini rad etdi | @{user} дархости мураббигиро рад кард |  |
+| `notif.msg.coach_declined.body` | Boshqa murabbiyga so'rov yuborishingiz mumkin. | Шумо метавонед ба мураббии дигар дархост фиристед. |  |
+| `notif.msg.coach_recommended.title` | Yangi tavsiya — {problem} | Тавсияи нав — {problem} |  |
+| `notif.msg.coach_recommended.body` | @{user} sizga «{problem}» masalasini tavsiya qildi. | @{user} ба шумо масъалаи «{problem}»-ро тавсия дод. |  |
 | `admin.section.courses` | Kurslar | Курсҳо |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Курсҳое, ки муаллифон ба санҷиш фиристодаанд. Нарх гузоред, нашр кунед ё бо сабаб баргардонед. |  |
 | `admin.courses.queue` | Ko'rik navbati | Навбати санҷиш |  |
@@ -3014,6 +3026,36 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.invite.approvalNote` | O'qituvchi so'rovingizni tasdiqlagach sinfga kirasiz. | Пас аз тасдиқи дархост аз ҷониби муаллим ба синф медароед. |  |
 | `classroom.invite.pending` | So'rovingiz o'qituvchida — javobni bildirishnomada ko'rasiz. | Дархости шумо назди муаллим аст — ҷавоб ҳамчун огоҳинома меояд. |  |
 | `classroom.students` | {count} o'quvchi | {count} хонанда |  |
+| `coaching.title` | Murabbiylik | Мураббигӣ |  |
+| `coaching.intro` | O'zingiz tanlagan murabbiy sizga masala tavsiya qiladi va ruxsat bersangiz yechimlaringizni ko'radi. Murabbiy bo'lsangiz, o'quvchilaringiz ham shu yerda. | Мураббии интихобкардаатон ба шумо масъала тавсия медиҳад ва агар иҷозат диҳед, ҳалли шуморо мебинад. Агар мураббӣ бошед, шогирдонатон ҳам дар ҳамин ҷо. |  |
+| `coaching.mine` | Murabbiylarim | Мураббиёни ман |  |
+| `coaching.mineHint` | Murabbiy so'rovingizni qabul qilgach, sizga masala tavsiya qila oladi. Kodni ko'rish ruxsatini har murabbiyga alohida berasiz. | Пас аз қабули дархост мураббӣ метавонад ба шумо масъала тавсия диҳад. Иҷозати дидани кодро ба ҳар мураббӣ алоҳида медиҳед. |  |
+| `coaching.askLabel` | Murabbiyning foydalanuvchi nomi | Номи корбарии мураббӣ |  |
+| `coaching.ask` | So'rov yuborish | Фиристодани дархост |  |
+| `coaching.limit` | {count} / {limit} murabbiy | {count} / {limit} мураббӣ |  |
+| `coaching.active` | Faol | Фаъол |  |
+| `coaching.pending` | Javob kutilmoqda | Интизори ҷавоб |  |
+| `coaching.consent` | Kodimni ko'radi | Коди маро мебинад |  |
+| `coaching.consentFor` | @{user} yechimlarim kodini ko'rsin | @{user} коди ҳалли маро бинад |  |
+| `coaching.withdraw` | So'rovni qaytarib olish | Бозпас гирифтани дархост |  |
+| `coaching.withdrawConfirm` | @{user} ga yuborilgan so'rov qaytarib olinsinmi? | Дархост ба @{user} бозпас гирифта шавад? |  |
+| `coaching.end` | Tugatish | Анҷом додан |  |
+| `coaching.endConfirm` | @{user} bilan murabbiylik tugatilsinmi? Uning tavsiyalari ro'yxatdan yo'qoladi. | Мураббигӣ бо @{user} анҷом ёбад? Тавсияҳояш аз рӯйхат меравад. |  |
+| `coaching.endStudentConfirm` | @{user} bilan murabbiylik tugatilsinmi? | Мураббигӣ бо @{user} анҷом ёбад? |  |
+| `coaching.recommendations` | Murabbiy tavsiyalari | Тавсияҳои мураббӣ |  |
+| `coaching.recommendationsNone` | Hali tavsiya yo'q. | Ҳоло тавсия нест. |  |
+| `coaching.from` | @{user} tavsiyasi | Тавсияи @{user} |  |
+| `coaching.solved` | Yechilgan | Ҳалшуда |  |
+| `coaching.requests` | Murabbiylik so'rovlari | Дархостҳои мураббигӣ |  |
+| `coaching.students` | O'quvchilarim | Шогирдони ман |  |
+| `coaching.stats` | Yechgan {solved} · Skills {skills} · Seriya {streak} | Ҳалкарда {solved} · Skills {skills} · Силсила {streak} |  |
+| `coaching.noConsent` | Kodni ko'rish ruxsati yo'q | Иҷозати дидани код нест |  |
+| `coaching.recommendProblem` | Masala | Масъала |  |
+| `coaching.recommendHint` | Manzil yoki raqam: a-plus-b yoki #123 | Суроға ё рақам: a-plus-b ё #123 |  |
+| `coaching.note` | Izoh (ixtiyoriy) | Шарҳ (ихтиёрӣ) |  |
+| `coaching.recommend` | Tavsiya qilish | Тавсия додан |  |
+| `coaching.askThis` | Murabbiy bo'lishini so'rash | Хоҳиш кардан, ки мураббӣ шавад |  |
+| `coaching.asked` | So'rov yuborildi. | Дархост фиристода шуд. |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Ин курс ёфт нашуд ё ҳоло нашр нашудааст. |  |
 | `error.quota_exceeded` | Rejangiz chegarasiga yetdingiz | Шумо ба ҳадди тарифи худ расидед |  |
 | `error.classroom_full` | Sinf to'lgan — o'quvchilar chegarasiga yetildi | Синф пур аст — ҳадди хонандагон расид |  |
@@ -3023,6 +3065,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.request_answered` | Bu so'rovga allaqachon javob berilgan | Ба ин дархост аллакай ҷавоб дода шудааст |  |
 | `error.bad_role` | Noma'lum rol | Нақши номаълум |  |
 | `error.code_failed` | Yangi kod yaratilmadi, qayta urinib ko'ring | Рамзи нав сохта нашуд, боз кӯшиш кунед |  |
+| `error.coach_not_found` | Bunday foydalanuvchi yo'q | Чунин корбар нест |  |
+| `error.coach_self` | O'zingizga murabbiy bo'la olmaysiz | Ба худ мураббӣ шуда наметавонед |  |
+| `error.coach_already` | Bu murabbiyga so'rov allaqachon yuborilgan | Ба ин мураббӣ аллакай дархост фиристода шудааст |  |
+| `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Ҳадди аксар 3 мураббӣ |  |
+| `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Ин пайванд аллакай анҷом ёфтааст |  |
+| `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Масъала ёфт нашуд ё кушода нест |  |
 | `billing.plan.plus` | Plus | Plus |  |
 | `billing.plan.pro` | Pro | Pro |  |
 | `billing.plan.judge` | Judge | Judge |  |

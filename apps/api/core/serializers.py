@@ -286,6 +286,9 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "postal_address_native",
             "postal_consent",
             "hidden_fields",
+            # The default consent a new coach link starts with (ADR-0061 § 4);
+            # owner-only, never on the public profile.
+            "coach_can_view_attempts",
             "pinned_achievements",
             "ui_prefs",
             "notify_prefs",

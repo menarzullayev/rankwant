@@ -14,6 +14,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from coaching.access import coach_may_read
 from core.models import User
 from core.openapi_docs import crud_summaries
 from core.pagination import SortableCursorPagination
@@ -83,6 +84,13 @@ def _outside_the_freeze(qs: QuerySet[Attempt], viewer: Any) -> QuerySet[Attempt]
             hidden &= ~Q(user=viewer)
         qs = qs.exclude(hidden)
     return qs
+
+
+def _coach_reads(viewer: Any, attempt: Attempt) -> bool:
+    """A coach the student allowed, outside a contest that is still running."""
+    if attempt.contest is not None and attempt.contest.end_at > timezone.now():
+        return False
+    return coach_may_read(viewer, attempt.user_id)
 
 
 @crud_summaries(one="urinish", many="urinishlar", only=("list", "retrieve", "create"))
@@ -292,6 +300,9 @@ class AttemptViewSet(
                 # yopiqlikni almashtirmaydi, ustiga nuqtali istisno qo'yadi:
                 # hack qilish uchun kodni ko'rish SHART.
                 or can_view_source(request.user, attempt)
+                # A coach the student allowed (ADR-0061 § 4) — but never while
+                # the attempt's contest is still running.
+                or _coach_reads(request.user, attempt)
             )
         ):
             data.pop("source_code", None)

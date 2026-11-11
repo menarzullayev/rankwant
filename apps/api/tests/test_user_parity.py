@@ -247,9 +247,12 @@ class TestApi:
         me = kirgan(user).get(reverse("me")).data
         public = APIClient().get(reverse("user-detail", args=[user.username])).data
 
-        dormant = {"plan", "device_fingerprint", "coach_can_view_attempts"}
+        dormant = {"plan", "device_fingerprint"}
         assert not dormant & set(me)
         assert not dormant & set(public)
+        # In use since ADR-0061 § 4: the owner sets it, nobody else sees it.
+        assert "coach_can_view_attempts" in me
+        assert "coach_can_view_attempts" not in public
         assert "shirt_size" not in public, "owner-only, like phone"
         assert "postal_address" in me
         assert "postal_address" not in public

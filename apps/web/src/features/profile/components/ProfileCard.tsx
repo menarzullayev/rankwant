@@ -18,6 +18,7 @@ import { CF_TIER_COLOR, cfTierLabelKey, isCfTier } from "@/lib/cf-tiers";
 import { gradeLabel } from "@rankwant/shared/grades";
 import { districtName, regionName } from "@rankwant/shared/regions";
 import { BrandIcon, EXTERNAL_ICONS } from "@/lib/tech-icons";
+import { AskCoachButton } from "./AskCoachButton";
 import { FollowButton } from "./FollowButton";
 import { Medal, achievementLabel } from "./Medal";
 import { ShareButton } from "./ShareButton";
@@ -76,21 +77,26 @@ export function ProfileCard({
         info.school
       ),
     ]);
-  if (profile.coach.length > 0)
+  for (const [key, people] of [
+    ["profile.coach", profile.coach],
+    ["profile.teacher", profile.teacher ?? []],
+  ] as const) {
+    if (people.length === 0) continue;
     rows.push([
-      t(locale, "profile.coach"),
-      <span key="coach" className="flex flex-wrap gap-x-2">
-        {profile.coach.map((coach) => (
+      t(locale, key),
+      <span key={key} className="flex flex-wrap gap-x-2">
+        {people.map((person) => (
           <UserName
-            key={coach.username}
-            username={coach.username}
-            name={coach.display_name}
-            title={coach.title}
+            key={person.username}
+            username={person.username}
+            name={person.display_name}
+            title={person.title}
             locale={locale}
           />
         ))}
       </span>,
     ]);
+  }
   if (info.grade) rows.push([t(locale, "settings.grade"), gradeLabel(info.grade, locale)]);
   if (info.website)
     rows.push([
@@ -257,10 +263,13 @@ export function ProfileCard({
               {t(locale, "profile.edit")}
             </ButtonLink>
           ) : (
-            <FollowButton
-              username={profile.username}
-              following={profile.is_following === true}
-            />
+            <>
+              <FollowButton
+                username={profile.username}
+                following={profile.is_following === true}
+              />
+              <AskCoachButton username={profile.username} />
+            </>
           )}
           <ShareButton username={profile.username} name={name} />
         </div>
