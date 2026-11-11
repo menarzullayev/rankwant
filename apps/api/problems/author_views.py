@@ -8,9 +8,11 @@ amalining obyekt tekshiruvi orqali (`problems/staff_views.py`).
 
 The web page for this surface is `/studio/problems` (2026-11-10). Any
 signed-in user may write drafts — the API allowed it from the start — so
-two guards were added with it: at most `MAX_DRAFTS` unpublished problems
-per author, and `review` refuses a draft that could not be published
-anyway (no statement, no sample, no hidden test).
+two guards were added with it: a cap on unpublished problems per
+author, and `review` refuses a draft that could not be published
+anyway (no statement, no sample, no hidden test). Since 2026-11-11 the cap
+is the plan's `problems` quota and counts every authored problem,
+published or not (ADR-0061 § 2, `problems/quotas.py`).
 
 Yozish PAT bilan `submit` scope'ida ishlaydi (`CanSubmit`) — ADR-0008.
 """
@@ -29,6 +31,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core import quotas
 from core.models import User
 from core.openapi_docs import crud_summaries
 from core.permissions import STAFF_GROUP_OPS, CanSubmit
@@ -36,17 +39,13 @@ from problems.models import Problem
 from problems.serializers import MineProblemSerializer
 from problems.translation_views import TranslationActions
 
-#: Unpublished problems one author may hold. Measured 2026-11-10: nobody
-#: had authored a problem yet (0 rows in `Problem.authors`), so the number
-#: is a guard against a flood, not a fit to existing use. Staff are exempt:
-#: they work in the admin panel and import in bulk.
-MAX_DRAFTS = 20
 
+class QuotaLimit(APIException):
+    """The plan's `problems` quota is used up; staff are not counted."""
 
-class DraftLimit(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
-    default_code = "draft_limit"
-    default_detail = f"At most {MAX_DRAFTS} unpublished problems per author"
+    default_code = "quota_exceeded"
+    default_detail = "Your plan's problem limit is reached"
 
 
 class ReviewNotReady(APIException):
@@ -131,9 +130,10 @@ class MineProblemViewSet(
         # Draft: nashr staff-ops qarori.
         user = self.request.user
         assert isinstance(user, User)
-        drafts = user.authored_problems.filter(is_public=False).count()
-        if not user.is_staff and drafts >= MAX_DRAFTS:
-            raise DraftLimit()
+        try:
+            quotas.enforce(user, "problems")
+        except quotas.QuotaExceeded as exc:
+            raise QuotaLimit(str(exc)) from exc
         problem = serializer.save(is_public=False)
         problem.authors.add(user)
 

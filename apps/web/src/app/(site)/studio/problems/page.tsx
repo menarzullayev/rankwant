@@ -6,8 +6,18 @@ import { getLocale } from "@/i18n/server";
 import type { Paginated } from "@/lib/api";
 import { requireUser } from "@/lib/access.server";
 import { getWithSession } from "@/lib/api.server";
+import { quotaOf, type Quotas } from "@/lib/quotas";
 
 export const dynamic = "force-dynamic";
+
+/** The plan's limit; a failed read leaves the button to the server's refusal. */
+async function readQuotas(): Promise<Quotas | null> {
+  try {
+    return await getWithSession<Quotas>("/me/quotas/");
+  } catch {
+    return null;
+  }
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: t(await getLocale(), "studio.nav.problems"), robots: { index: false } };
@@ -16,8 +26,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function StudioProblemsPage() {
   await requireUser("/studio/problems");
   const locale = await getLocale();
-  // One page holds every draft: an author has at most 20 unpublished
-  // problems (`MAX_DRAFTS`), well inside the API's page of 25.
-  const page = await getWithSession<Paginated<MineProblem>>("/problems/mine/?page_size=100");
-  return <ProblemList rows={page.results} locale={locale} />;
+  // The newest hundred: the free plan holds 20 problems in all.
+  const [page, quotas] = await Promise.all([
+    getWithSession<Paginated<MineProblem>>("/problems/mine/?page_size=100"),
+    readQuotas(),
+  ]);
+  return <ProblemList rows={page.results} quota={quotaOf(quotas, "problems")} locale={locale} />;
 }

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3001 strings.**
+**3056 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -854,8 +854,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.too_many` | Juda ko'p — avval borlarini yakunlang | Júdá kóp — aldın barlarin tamamlań |  |
 | `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Baslanıw keminde 5 minuttan keyin bolıwı kerek |  |
 | `error.wrong_question` | Bu savol hozir ochiq emas | Bul soraw házir ashıq emes |  |
-| `error.draft_limit` | Qoralamalar chegarasiga yetdingiz — avval birini yakunlang yoki o'chiring | Jobalar shegine jettińiz — aldın birewin juwmaqlań yamasa óshiriń |  |
-| `error.contest_draft_limit` | Qoralama musobaqalar chegarasiga yetdingiz — avval birini o'chiring | Joba jarıslar shegine jettińiz — aldın birewin óshiriń |  |
 | `error.contest_locked` | Nashr qilingan musobaqaning masalalarini xodim boshqaradi | Járiyalanǵan jarıstıń máselelerin xızmetkerler basqaradı |  |
 | `error.review_not_ready` | Qoralama ko'rikka tayyor emas | Joba tekseriwge tayar emes |  |
 | `error.already_public` | Masala allaqachon nashr qilingan | Másele áldeqashan járiyalanǵan |  |
@@ -1932,8 +1930,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.problems.new` | Yangi masala | Jańa másele |  |
 | `studio.problems.empty` | Hali masalangiz yo'q | Sizde ázirshe másele joq |  |
 | `studio.problems.emptyHint` | Shartni yozing, testlarni qo'shing va ko'rikka yuboring. | Shárttı jazıń, testlerdi qosıń hám tekseriwge jiberiń. |  |
-| `studio.problems.count` | {count} / {limit} qoralama | Jobalar: {count} / {limit} |  |
-| `studio.problems.full` | Qoralamalar chegarasi: {count} / {limit}. Yangisini boshlash uchun birini yakunlang yoki o'chiring. | Jobalar shegine jettińiz: {count} / {limit}. Jańasın baslaw ushın birewin juwmaqlań yamasa óshiriń. |  |
+| `studio.problems.count` | {count} / {limit} masala — rejangiz chegarasi | Tarifińizde {count} / {limit} másele |  |
+| `studio.problems.full` | Rejangizdagi masalalar chegarasi: {count} / {limit}. Nashr qilinganlari ham sanaladi. | Tariftegi máseleler shegine jettińiz: {count} / {limit}. Járiyalanǵanları da esaplanadı. |  |
 | `studio.col.problem` | Masala | Másele |  |
 | `studio.col.difficulty` | Qiyinlik | Qıyınlıq |  |
 | `studio.col.tests` | Testlar | Testler |  |
@@ -2009,7 +2007,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.contests.new` | Yangi musobaqa | Jańa jarıs |  |
 | `studio.contests.empty` | Hali musobaqangiz yo'q | Sizde ázirshe jarıs joq |  |
 | `studio.contests.emptyHint` | Vaqtini belgilang, o'z qoralama masalalaringizni qo'shing — nashrni xodim hal qiladi. | Waqtın belgileń, óz joba máselelerińizdi qosıń — járiyalawdı xızmetker sheshedi. |  |
-| `studio.contests.full` | Qoralama musobaqalar chegarasi: {count} / {limit}. Yangisi uchun birini o'chiring yoki nashrga tayyorlang. | Joba jarıslar shegine jettińiz: {count} / {limit}. Jańası ushın birewin óshiriń yamasa járiyalawǵa tayarlań. |  |
+| `studio.contests.full` | Rejangizdagi musobaqalar chegarasi: {count} / {limit}. Nashr qilinganlari ham sanaladi. | Tariftegi jarıslar shegine jettińiz: {count} / {limit}. Járiyalanǵanları da esaplanadı. |  |
+| `studio.contests.count` | {count} / {limit} musobaqa — rejangiz chegarasi | Tarifińizde {count} / {limit} jarıs |  |
 | `studio.col.contest` | Musobaqa | Jarıs |  |
 | `studio.col.start` | Boshlanish | Baslanıwı |  |
 | `studio.col.problems` | Masalalar | Máseleler |  |
@@ -2821,6 +2820,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» endi kurslar katalogında. |  |
 | `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Kurs qaytarıldı — {course} |  |
 | `notif.msg.course_returned.body` | Xodim izohi: {reason} | Xızmetker eskertpesi: {reason} |  |
+| `notif.msg.classroom_join_requested.title` | Sinfga qo'shilish so'rovi — {classroom} | Qosılıw sorawı — {classroom} |  |
+| `notif.msg.classroom_join_requested.body` | @{user} «{classroom}» sinfiga qo'shilmoqchi. | @{user} «{classroom}» klasına qosılmaqshı. |  |
+| `notif.msg.classroom_join_approved.title` | Sinfga qabul qilindingiz — {classroom} | Klasqa qabıl etildińiz — {classroom} |  |
+| `notif.msg.classroom_join_approved.body` | O'qituvchi so'rovingizni qabul qildi: sinf topshiriqlari endi sizga ochiq. | Muǵallim sorawıńızdı qabıl etti: klass tapsırmaları endi sizge ashıq. |  |
+| `notif.msg.classroom_join_rejected.title` | So'rov rad etildi — {classroom} | Soraw biykarlandı — {classroom} |  |
+| `notif.msg.classroom_join_rejected.body` | O'qituvchi «{classroom}» sinfiga qo'shilish so'rovingizni rad etdi. | Muǵallim «{classroom}» klasına qosılıw sorawıńızdı biykarladı. |  |
 | `admin.section.courses` | Kurslar | Kurs dizimi |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Avtorlar tekseriwge jibergen kurslar. Baha qoyıń, járiyalań yamasa sebebi menen qaytarıń. |  |
 | `admin.courses.queue` | Ko'rik navbati | Tekseriw gezegi |  |
@@ -2967,7 +2972,57 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.course.optional` | ixtiyoriy | ıqtıyarlı |  |
 | `classroom.course.lessonDone` | bajarilgan | orınlanǵan |  |
 | `classroom.course.lessonOpen` | bajarilmagan | orınlanbaǵan |  |
+| `classroom.joinMode` | Qo'shilish tartibi | Qosılıw tártibi |  |
+| `classroom.joinMode.approval` | Tasdiq bilan | Tastıyıqlaw menen |  |
+| `classroom.joinMode.instant` | Darhol | Dárhal |  |
+| `classroom.joinMode.hint` | «Tasdiq bilan»: kod yoki havola bilan kelgan o'quvchi siz qabul qilgandan keyin sinfga kiradi. | «Tastıyıqlaw menen»: kod yamasa siltew menen kelgen oqıwshı siz qabıl etkennen keyin klasqa kiredi. |  |
+| `classroom.pending` | So'rov yuborildi. O'qituvchi tasdiqlagach sinf ro'yxatingizda paydo bo'ladi. | Soraw jiberildi. Muǵallim tastıyıqlaǵannan keyin klass dizimińizde payda boladı. |  |
+| `classroom.joined` | Sinfga qo'shildingiz. | Klasqa qosıldıńız. |  |
+| `classroom.requests` | Qo'shilish so'rovlari | Qosılıw sorawları |  |
+| `classroom.requests.none` | Kutayotgan so'rov yo'q. | Kútip turǵan soraw joq. |  |
+| `classroom.approve` | Qabul qilish | Qabıl etiw |  |
+| `classroom.reject` | Rad etish | Biykarlaw |  |
+| `classroom.settings` | Sinf sozlamalari | Klass sazlawları |  |
+| `classroom.inviteLink` | Taklif havolasi | Mirát siltewi |  |
+| `classroom.refreshCode` | Kodni yangilash | Jańa kod |  |
+| `classroom.refreshConfirm` | Eski kod va taklif havolasi ishlamay qoladi. Yangilansinmi? | Eski kod hám mirát siltewi islemey qaladı. Jańalansın ba? |  |
+| `classroom.archive` | Sinfni arxivlash | Klasstı arxivlew |  |
+| `classroom.archiveConfirm` | Sinf ro'yxatlardan yo'qoladi, vazifalar va natijalar saqlanadi. Arxivlansinmi? | Klass dizimlerden joǵaladı, tapsırmalar hám nátiyjeler saqlanadı. Arxivlensin be? |  |
+| `classroom.leave` | Sinfdan chiqish | Klastan shıǵıw |  |
+| `classroom.leaveConfirm` | Sinfdan chiqasizmi? Qaytish uchun yana kod kerak bo'ladi. | Klastan shıǵasız ba? Qaytıw ushın jáne kod kerek boladı. |  |
+| `classroom.remove` | Chiqarish | Shıǵarıw |  |
+| `classroom.removeConfirm` | @{user} sinfdan chiqarilsinmi? | @{user} klastan shıǵarılsın ba? |  |
+| `classroom.makeAssistant` | Yordamchi qilish | Járdemshi etiw |  |
+| `classroom.makeStudent` | O'quvchi qilish | Oqıwshı etiw |  |
+| `classroom.role.owner` | O'qituvchi | Muǵallim |  |
+| `classroom.role.assistant` | Yordamchi | Járdemshi |  |
+| `classroom.role.student` | O'quvchi | Oqıwshı |  |
+| `classroom.quota` | {count} / {limit} sinf — rejangiz chegarasi | Tarifińizde {count} / {limit} klass |  |
+| `classroom.problems.give` | Masalalar berish | Máseleler beriw |  |
+| `classroom.problems.title` | Topshiriq nomi | Tapsırma atı |  |
+| `classroom.problems.list` | Masalalar | Máseleler |  |
+| `classroom.problems.hint` | Manzil yoki raqam, vergul bilan: a-plus-b, #123 | Mánzil yamasa nomer, útir menen: a-plus-b, #123 |  |
+| `classroom.problems.missing` | Topilmadi yoki ochiq emas: {items} | Tabılmadı yamasa ashıq emes: {items} |  |
+| `classroom.problems.submit` | Topshiriq berish | Tapsırma beriw |  |
+| `classroom.progress` | Kim nechta yechdi | Kim neshewin sheshti |  |
+| `classroom.invite.title` | Sinfga taklif | Klasqa mirát |  |
+| `classroom.invite.by` | O'qituvchi: @{owner} | Muǵallim: @{owner} |  |
+| `classroom.invite.join` | Qo'shilish | Qosılıw |  |
+| `classroom.invite.request` | So'rov yuborish | Soraw jiberiw |  |
+| `classroom.invite.open` | Sinfni ochish | Klasstı ashıw |  |
+| `classroom.invite.invalid` | Havola eskirgan yoki sinf arxivlangan. | Siltew eskirgen yamasa klass arxivlengen. |  |
+| `classroom.invite.approvalNote` | O'qituvchi so'rovingizni tasdiqlagach sinfga kirasiz. | Muǵallim sorawıńızdı tastıyıqlaǵannan keyin klasqa kiresiz. |  |
+| `classroom.invite.pending` | So'rovingiz o'qituvchida — javobni bildirishnomada ko'rasiz. | Sorawıńız muǵallimde — juwabı xabarlama menen keledi. |  |
+| `classroom.students` | {count} o'quvchi | {count} oqıwshı |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Bul kurs tabılmadı yamasa ele járiyalanbaǵan. |  |
+| `error.quota_exceeded` | Rejangiz chegarasiga yetdingiz | Tarifińizdiń shegine jettińiz |  |
+| `error.classroom_full` | Sinf to'lgan — o'quvchilar chegarasiga yetildi | Klass tolı — oqıwshılar shegine jetti |  |
+| `error.owner_leaves` | Egasi sinfdan chiqa olmaydi — sinfni arxivlang | Iyesi klastan shıǵa almaydı — klasstı arxivleń |  |
+| `error.not_a_member` | Bu foydalanuvchi sinfda emas | Bul paydalanıwshı klasta emes |  |
+| `error.request_not_found` | So'rov topilmadi | Soraw tabılmadı |  |
+| `error.request_answered` | Bu so'rovga allaqachon javob berilgan | Bul sorawǵa juwap berilgen |  |
+| `error.bad_role` | Noma'lum rol | Belgisiz rol |  |
+| `error.code_failed` | Yangi kod yaratilmadi, qayta urinib ko'ring | Jańa kod jasalmadı, qaytadan urınıp kóriń |  |
 | `billing.plan.plus` | Plus | Plus |  |
 | `billing.plan.pro` | Pro | Pro |  |
 | `billing.plan.judge` | Judge | Judge |  |

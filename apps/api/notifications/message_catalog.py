@@ -8,6 +8,18 @@ and `settings.kind.*` for the kind names).
 
 CATALOG: dict[str, dict[str, dict[str, str]]] = {
     "en": {
+        "classroom_join_approved": {
+            "title": "You joined {classroom}",
+            "body": "The teacher accepted your request: the class's assignments are open to you.",
+        },
+        "classroom_join_rejected": {
+            "title": "Request declined — {classroom}",
+            "body": "The teacher declined your request to join “{classroom}”.",
+        },
+        "classroom_join_requested": {
+            "title": "Request to join — {classroom}",
+            "body": "@{user} wants to join “{classroom}”.",
+        },
         "contest_announcement": {
             "title": "“{contest}”: an announcement from the jury",
             "body": "Announcement: {text}",
@@ -100,6 +112,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "es": {
+        "classroom_join_approved": {
+            "title": "Ha entrado en la clase — {classroom}",
+            "body": "El profesor aceptó su solicitud: las tareas de la clase ya están abiertas para usted.",
+        },
+        "classroom_join_rejected": {
+            "title": "Solicitud rechazada — {classroom}",
+            "body": "El profesor rechazó su solicitud para unirse a «{classroom}».",
+        },
+        "classroom_join_requested": {
+            "title": "Solicitud de ingreso — {classroom}",
+            "body": "@{user} quiere unirse a «{classroom}».",
+        },
         "contest_announcement": {
             "title": "«{contest}»: anuncio del jurado",
             "body": "Anuncio: {text}",
@@ -192,6 +216,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kaa": {
+        "classroom_join_approved": {
+            "title": "Klasqa qabıl etildińiz — {classroom}",
+            "body": "Muǵallim sorawıńızdı qabıl etti: klass tapsırmaları endi sizge ashıq.",
+        },
+        "classroom_join_rejected": {
+            "title": "Soraw biykarlandı — {classroom}",
+            "body": "Muǵallim «{classroom}» klasına qosılıw sorawıńızdı biykarladı.",
+        },
+        "classroom_join_requested": {
+            "title": "Qosılıw sorawı — {classroom}",
+            "body": "@{user} «{classroom}» klasına qosılmaqshı.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: tóreshiler daǵazası",
             "body": "Daǵaza: {text}",
@@ -284,6 +320,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kk": {
+        "classroom_join_approved": {
+            "title": "Сыныпқа қабылдандыңыз — {classroom}",
+            "body": "Мұғалім өтініміңізді қабылдады: сынып тапсырмалары енді сізге ашық.",
+        },
+        "classroom_join_rejected": {
+            "title": "Өтінім қабылданбады — {classroom}",
+            "body": "Мұғалім «{classroom}» сыныбына қосылу өтініміңізді қабылдамады.",
+        },
+        "classroom_join_requested": {
+            "title": "Қосылу өтінімі — {classroom}",
+            "body": "@{user} «{classroom}» сыныбына қосылғысы келеді.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: қазылар хабарландыруы",
             "body": "Хабарландыру: {text}",
@@ -376,6 +424,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ky": {
+        "classroom_join_approved": {
+            "title": "Класска кабыл алындыңыз — {classroom}",
+            "body": "Мугалим өтүнүчүңүздү кабыл алды: класстын тапшырмалары эми сизге ачык.",
+        },
+        "classroom_join_rejected": {
+            "title": "Өтүнүч четке кагылды — {classroom}",
+            "body": "Мугалим «{classroom}» классына кошулуу өтүнүчүңүздү четке какты.",
+        },
+        "classroom_join_requested": {
+            "title": "Кошулуу өтүнүчү — {classroom}",
+            "body": "@{user} «{classroom}» классына кошулгусу келет.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: калыстардын жарыясы",
             "body": "Жарыя: {text}",
@@ -468,6 +528,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ru": {
+        "classroom_join_approved": {
+            "title": "Вы приняты в класс — {classroom}",
+            "body": "Учитель одобрил заявку: задания класса теперь открыты вам.",
+        },
+        "classroom_join_rejected": {
+            "title": "Заявка отклонена — {classroom}",
+            "body": "Учитель отклонил вашу заявку в класс «{classroom}».",
+        },
+        "classroom_join_requested": {
+            "title": "Заявка на вступление — {classroom}",
+            "body": "@{user} хочет вступить в класс «{classroom}».",
+        },
         "contest_announcement": {
             "title": "«{contest}»: объявление жюри",
             "body": "Объявление: {text}",
@@ -560,6 +632,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tg": {
+        "classroom_join_approved": {
+            "title": "Шумо ба синф қабул шудед — {classroom}",
+            "body": "Муаллим дархости шуморо қабул кард: супоришҳои синф акнун барои шумо кушодаанд.",
+        },
+        "classroom_join_rejected": {
+            "title": "Дархост рад шуд — {classroom}",
+            "body": "Муаллим дархости шуморо барои ҳамроҳшавӣ ба «{classroom}» рад кард.",
+        },
+        "classroom_join_requested": {
+            "title": "Дархости ҳамроҳшавӣ — {classroom}",
+            "body": "@{user} мехоҳад ба синфи «{classroom}» ҳамроҳ шавад.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: эълони ҳакамон",
             "body": "Эълон: {text}",
@@ -652,6 +736,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tr": {
+        "classroom_join_approved": {
+            "title": "Sınıfa kabul edildiniz — {classroom}",
+            "body": "Öğretmen isteğinizi onayladı: sınıfın ödevleri artık size açık.",
+        },
+        "classroom_join_rejected": {
+            "title": "İstek reddedildi — {classroom}",
+            "body": "Öğretmen «{classroom}» sınıfına katılma isteğinizi reddetti.",
+        },
+        "classroom_join_requested": {
+            "title": "Katılım isteği — {classroom}",
+            "body": "@{user} «{classroom}» sınıfına katılmak istiyor.",
+        },
         "contest_announcement": {
             "title": "“{contest}”: jüri duyurusu",
             "body": "Duyuru: {text}",
@@ -744,6 +840,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "uz": {
+        "classroom_join_approved": {
+            "title": "Sinfga qabul qilindingiz — {classroom}",
+            "body": "O'qituvchi so'rovingizni qabul qildi: sinf topshiriqlari endi sizga ochiq.",
+        },
+        "classroom_join_rejected": {
+            "title": "So'rov rad etildi — {classroom}",
+            "body": "O'qituvchi «{classroom}» sinfiga qo'shilish so'rovingizni rad etdi.",
+        },
+        "classroom_join_requested": {
+            "title": "Sinfga qo'shilish so'rovi — {classroom}",
+            "body": "@{user} «{classroom}» sinfiga qo'shilmoqchi.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: hakamlar e'loni",
             "body": "E'lon: {text}",
@@ -836,6 +944,18 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "zh": {
+        "classroom_join_approved": {
+            "title": "您已被批准加入 — {classroom}",
+            "body": "教师已同意您的申请：班级作业现在对您开放。",
+        },
+        "classroom_join_rejected": {
+            "title": "申请被拒绝 — {classroom}",
+            "body": "教师拒绝了您加入“{classroom}”的申请。",
+        },
+        "classroom_join_requested": {
+            "title": "加入申请 — {classroom}",
+            "body": "@{user} 想加入“{classroom}”。",
+        },
         "contest_announcement": {
             "title": "“{contest}”：评委公告",
             "body": "公告：{text}",

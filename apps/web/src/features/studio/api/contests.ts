@@ -16,10 +16,6 @@ import {
   type Paginated,
 } from "@/lib/api/client";
 
-/** `contests.organizer_views.MAX_DRAFTS` — the rule `studio_contests_panel`
- *  keeps the two equal. */
-export const STUDIO_CONTEST_LIMIT = 5;
-
 export type ContestScoring = "acm" | "ioi";
 
 export type MineContestProblem = {

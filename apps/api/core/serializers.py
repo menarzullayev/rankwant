@@ -1092,6 +1092,18 @@ class NavBadgesSerializer(serializers.Serializer[Any]):
     badges = NavBadgeSerializer(many=True)
 
 
+class QuotaRowSerializer(serializers.Serializer[Any]):
+    key = serializers.CharField()
+    #: `null` — no limit (staff).
+    limit = serializers.IntegerField(allow_null=True)
+    used = serializers.IntegerField()
+
+
+class QuotasSerializer(serializers.Serializer[Any]):
+    plan = serializers.CharField()
+    quotas = QuotaRowSerializer(many=True)
+
+
 class NavBadgeSeenSerializer(serializers.Serializer[Any]):
     section = serializers.CharField(max_length=24)
 

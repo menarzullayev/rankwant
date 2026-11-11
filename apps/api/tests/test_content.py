@@ -76,16 +76,16 @@ class TestRoadmap:
 @pytest.mark.django_db
 class TestClassroom:
     def test_join_code_avtomatik(self, user) -> None:
-        c = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        c = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         assert len(c.join_code) > 0
 
     def test_qoshilish(self, user, other_user) -> None:
-        c = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        c = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         member = join(other_user, c.join_code)
         assert member.classroom == c
 
     def test_egasi_qoshila_olmaydi(self, user) -> None:
-        c = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        c = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         with pytest.raises(ClassroomError):
             join(user, c.join_code)
 
@@ -94,13 +94,13 @@ class TestClassroom:
             join(user, "yoq")
 
     def test_ikki_marta_qoshilmaydi(self, user, other_user) -> None:
-        c = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        c = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         join(other_user, c.join_code)
         join(other_user, c.join_code)
         assert ClassroomMember.objects.filter(classroom=c).count() == 1
 
     def test_progress(self, user, other_user, problem, hard_problem, language) -> None:
-        c = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        c = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         join(other_user, c.join_code)
         assignment = Assignment.objects.create(classroom=c, title="Uy vazifasi")
         assignment.problems.set([problem, hard_problem])
@@ -114,7 +114,7 @@ class TestClassroom:
         assert rows == [{"username": other_user.username, "solved": 1, "total": 2}]
 
     def test_bosh_vazifa_progressi(self, user, other_user) -> None:
-        c = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        c = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         join(other_user, c.join_code)
         assignment = Assignment.objects.create(classroom=c, title="Bo'sh")
         assert assignment_progress(assignment) == [
@@ -137,16 +137,16 @@ class TestClassroomApi:
         assert detail["join_code"]  # egasi kodni ko'radi
 
     def test_begona_sinf_korinmaydi(self, user, other_user) -> None:
-        Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         assert self._client(other_user).get(reverse("classroom-list")).json() == []
 
     def test_qoshilish_endpointi(self, user, other_user) -> None:
-        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         r = self._client(other_user).post(reverse("classroom-join"), {"join_code": room.join_code})
         assert r.status_code == 201
 
     def test_faqat_egasi_vazifa_beradi(self, user, other_user, problem) -> None:
-        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         join(other_user, room.join_code)
         r = self._client(other_user).post(
             reverse("classroom-assignments", args=["9a"]),
@@ -157,7 +157,7 @@ class TestClassroomApi:
         assert r.json()["error"]["code"] == "not_owner"
 
     def test_egasi_vazifa_beradi(self, user, problem) -> None:
-        Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         r = self._client(user).post(
             reverse("classroom-assignments", args=["9a"]),
             {
@@ -204,14 +204,14 @@ class TestClassroomAuthorization:
         return c
 
     def test_oquvchi_sinfni_ochira_olmaydi(self, user, other_user) -> None:
-        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         join(other_user, room.join_code)
         r = self._client(other_user).delete(reverse("classroom-detail", args=["9a"]))
         assert r.status_code == 404
         assert Classroom.objects.filter(slug="9a").exists()
 
     def test_oquvchi_sinfni_ozgartira_olmaydi(self, user, other_user) -> None:
-        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         join(other_user, room.join_code)
         r = self._client(other_user).patch(
             reverse("classroom-detail", args=["9a"]), {"name": "Meniki"}
@@ -221,27 +221,27 @@ class TestClassroomAuthorization:
         assert room.name == "9-A"
 
     def test_egasi_ozgartira_oladi(self, user) -> None:
-        Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         r = self._client(user).patch(reverse("classroom-detail", args=["9a"]), {"name": "9-B"})
         assert r.status_code == 200
 
     def test_oquvchi_join_code_ni_kormaydi(self, user, other_user) -> None:
         """Kod bilan istalgan odam sinfga qo'shila oladi."""
-        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         join(other_user, room.join_code)
         body = self._client(other_user).get(reverse("classroom-detail", args=["9a"])).json()
         assert "join_code" not in body
         assert "members" not in body
 
     def test_egasi_join_code_ni_koradi(self, user, other_user) -> None:
-        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         join(other_user, room.join_code)
         body = self._client(user).get(reverse("classroom-detail", args=["9a"])).json()
         assert body["join_code"] == room.join_code
         assert len(body["members"]) == 1
 
     def test_begona_sinfga_kira_olmaydi(self, user, other_user) -> None:
-        Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        Classroom.objects.create(name="9-A", slug="9a", owner=user, join_mode="instant")
         assert (
             self._client(other_user).get(reverse("classroom-detail", args=["9a"])).status_code
             == 404

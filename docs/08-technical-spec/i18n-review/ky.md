@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3001 strings.**
+**3056 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -854,8 +854,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.too_many` | Juda ko'p — avval borlarini yakunlang | Өтө көп — адегенде барларын аяктаңыз |  |
 | `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Башталышы жок дегенде 5 мүнөттөн кийин болушу керек |  |
 | `error.wrong_question` | Bu savol hozir ochiq emas | Бул суроо азыр ачык эмес |  |
-| `error.draft_limit` | Qoralamalar chegarasiga yetdingiz — avval birini yakunlang yoki o'chiring | Долбоор чегине жеттиңиз — адегенде бирин аяктаңыз же өчүрүңүз |  |
-| `error.contest_draft_limit` | Qoralama musobaqalar chegarasiga yetdingiz — avval birini o'chiring | Долбоор мелдештер чегине жеттиңиз — адегенде бирин өчүрүңүз |  |
 | `error.contest_locked` | Nashr qilingan musobaqaning masalalarini xodim boshqaradi | Жарыяланган мелдештин маселелерин кызматкерлер башкарат |  |
 | `error.review_not_ready` | Qoralama ko'rikka tayyor emas | Долбоор текшерүүгө даяр эмес |  |
 | `error.already_public` | Masala allaqachon nashr qilingan | Маселе буга чейин жарыяланган |  |
@@ -1932,8 +1930,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.problems.new` | Yangi masala | Жаңы маселе |  |
 | `studio.problems.empty` | Hali masalangiz yo'q | Сизде азырынча маселе жок |  |
 | `studio.problems.emptyHint` | Shartni yozing, testlarni qo'shing va ko'rikka yuboring. | Шартты жазыңыз, тесттерди кошуңуз жана текшерүүгө жөнөтүңүз. |  |
-| `studio.problems.count` | {count} / {limit} qoralama | Долбоорлор: {count} / {limit} |  |
-| `studio.problems.full` | Qoralamalar chegarasi: {count} / {limit}. Yangisini boshlash uchun birini yakunlang yoki o'chiring. | Долбоор чегине жеттиңиз: {count} / {limit}. Жаңысын баштоо үчүн бирин аяктаңыз же өчүрүңүз. |  |
+| `studio.problems.count` | {count} / {limit} masala — rejangiz chegarasi | Тарифиңизде {count} / {limit} маселе |  |
+| `studio.problems.full` | Rejangizdagi masalalar chegarasi: {count} / {limit}. Nashr qilinganlari ham sanaladi. | Тарифтеги маселелердин чегине жеттиңиз: {count} / {limit}. Жарыялангандары да эсептелет. |  |
 | `studio.col.problem` | Masala | Маселе |  |
 | `studio.col.difficulty` | Qiyinlik | Татаалдык |  |
 | `studio.col.tests` | Testlar | Тесттер |  |
@@ -2009,7 +2007,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.contests.new` | Yangi musobaqa | Жаңы мелдеш |  |
 | `studio.contests.empty` | Hali musobaqangiz yo'q | Сизде азырынча мелдеш жок |  |
 | `studio.contests.emptyHint` | Vaqtini belgilang, o'z qoralama masalalaringizni qo'shing — nashrni xodim hal qiladi. | Убактысын белгилеп, өз долбоор маселелериңизди кошуңуз — жарыялоону кызматкер чечет. |  |
-| `studio.contests.full` | Qoralama musobaqalar chegarasi: {count} / {limit}. Yangisi uchun birini o'chiring yoki nashrga tayyorlang. | Долбоор мелдештер чегине жеттиңиз: {count} / {limit}. Жаңысы үчүн бирин өчүрүңүз же жарыялоого даярдаңыз. |  |
+| `studio.contests.full` | Rejangizdagi musobaqalar chegarasi: {count} / {limit}. Nashr qilinganlari ham sanaladi. | Тарифтеги мелдештердин чегине жеттиңиз: {count} / {limit}. Жарыялангандары да эсептелет. |  |
+| `studio.contests.count` | {count} / {limit} musobaqa — rejangiz chegarasi | Тарифиңизде {count} / {limit} мелдеш |  |
 | `studio.col.contest` | Musobaqa | Мелдеш |  |
 | `studio.col.start` | Boshlanish | Башталышы |  |
 | `studio.col.problems` | Masalalar | Маселелер |  |
@@ -2821,6 +2820,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» эми курстар каталогунда. |  |
 | `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Курс кайтарылды — {course} |  |
 | `notif.msg.course_returned.body` | Xodim izohi: {reason} | Кызматкердин эскертмеси: {reason} |  |
+| `notif.msg.classroom_join_requested.title` | Sinfga qo'shilish so'rovi — {classroom} | Кошулуу өтүнүчү — {classroom} |  |
+| `notif.msg.classroom_join_requested.body` | @{user} «{classroom}» sinfiga qo'shilmoqchi. | @{user} «{classroom}» классына кошулгусу келет. |  |
+| `notif.msg.classroom_join_approved.title` | Sinfga qabul qilindingiz — {classroom} | Класска кабыл алындыңыз — {classroom} |  |
+| `notif.msg.classroom_join_approved.body` | O'qituvchi so'rovingizni qabul qildi: sinf topshiriqlari endi sizga ochiq. | Мугалим өтүнүчүңүздү кабыл алды: класстын тапшырмалары эми сизге ачык. |  |
+| `notif.msg.classroom_join_rejected.title` | So'rov rad etildi — {classroom} | Өтүнүч четке кагылды — {classroom} |  |
+| `notif.msg.classroom_join_rejected.body` | O'qituvchi «{classroom}» sinfiga qo'shilish so'rovingizni rad etdi. | Мугалим «{classroom}» классына кошулуу өтүнүчүңүздү четке какты. |  |
 | `admin.section.courses` | Kurslar | Курстар |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Авторлор текшерүүгө жөнөткөн курстар. Баа коюңуз, жарыялаңыз же себеби менен кайтарыңыз. |  |
 | `admin.courses.queue` | Ko'rik navbati | Текшерүү кезеги |  |
@@ -2967,7 +2972,57 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.course.optional` | ixtiyoriy | милдеттүү эмес |  |
 | `classroom.course.lessonDone` | bajarilgan | аткарылды |  |
 | `classroom.course.lessonOpen` | bajarilmagan | аткарыла элек |  |
+| `classroom.joinMode` | Qo'shilish tartibi | Кошулуу тартиби |  |
+| `classroom.joinMode.approval` | Tasdiq bilan | Ырастоо менен |  |
+| `classroom.joinMode.instant` | Darhol | Дароо |  |
+| `classroom.joinMode.hint` | «Tasdiq bilan»: kod yoki havola bilan kelgan o'quvchi siz qabul qilgandan keyin sinfga kiradi. | «Ырастоо менен»: код же шилтеме менен келген окуучу сиз кабыл алгандан кийин класска кирет. |  |
+| `classroom.pending` | So'rov yuborildi. O'qituvchi tasdiqlagach sinf ro'yxatingizda paydo bo'ladi. | Өтүнүч жөнөтүлдү. Мугалим ырастагандан кийин класс тизмеңизде пайда болот. |  |
+| `classroom.joined` | Sinfga qo'shildingiz. | Класска кошулдуңуз. |  |
+| `classroom.requests` | Qo'shilish so'rovlari | Кошулуу өтүнүчтөрү |  |
+| `classroom.requests.none` | Kutayotgan so'rov yo'q. | Күтүп турган өтүнүч жок. |  |
+| `classroom.approve` | Qabul qilish | Кабыл алуу |  |
+| `classroom.reject` | Rad etish | Четке кагуу |  |
+| `classroom.settings` | Sinf sozlamalari | Класстын жөндөөлөрү |  |
+| `classroom.inviteLink` | Taklif havolasi | Чакыруу шилтемеси |  |
+| `classroom.refreshCode` | Kodni yangilash | Жаңы код |  |
+| `classroom.refreshConfirm` | Eski kod va taklif havolasi ishlamay qoladi. Yangilansinmi? | Эски код жана чакыруу шилтемеси иштебей калат. Жаңыртылсынбы? |  |
+| `classroom.archive` | Sinfni arxivlash | Классты архивдөө |  |
+| `classroom.archiveConfirm` | Sinf ro'yxatlardan yo'qoladi, vazifalar va natijalar saqlanadi. Arxivlansinmi? | Класс тизмелерден жоголот, тапшырмалар жана жыйынтыктар сакталат. Архивделсинби? |  |
+| `classroom.leave` | Sinfdan chiqish | Класстан чыгуу |  |
+| `classroom.leaveConfirm` | Sinfdan chiqasizmi? Qaytish uchun yana kod kerak bo'ladi. | Класстан чыгасызбы? Кайтып келүү үчүн кайра код керек болот. |  |
+| `classroom.remove` | Chiqarish | Чыгаруу |  |
+| `classroom.removeConfirm` | @{user} sinfdan chiqarilsinmi? | @{user} класстан чыгарылсынбы? |  |
+| `classroom.makeAssistant` | Yordamchi qilish | Жардамчы кылуу |  |
+| `classroom.makeStudent` | O'quvchi qilish | Окуучу кылуу |  |
+| `classroom.role.owner` | O'qituvchi | Мугалим |  |
+| `classroom.role.assistant` | Yordamchi | Жардамчы |  |
+| `classroom.role.student` | O'quvchi | Окуучу |  |
+| `classroom.quota` | {count} / {limit} sinf — rejangiz chegarasi | Тарифиңизде {count} / {limit} класс |  |
+| `classroom.problems.give` | Masalalar berish | Маселелерди берүү |  |
+| `classroom.problems.title` | Topshiriq nomi | Тапшырманын аталышы |  |
+| `classroom.problems.list` | Masalalar | Маселелер |  |
+| `classroom.problems.hint` | Manzil yoki raqam, vergul bilan: a-plus-b, #123 | Дарек же номер, үтүр менен: a-plus-b, #123 |  |
+| `classroom.problems.missing` | Topilmadi yoki ochiq emas: {items} | Табылган жок же ачык эмес: {items} |  |
+| `classroom.problems.submit` | Topshiriq berish | Тапшырма берүү |  |
+| `classroom.progress` | Kim nechta yechdi | Ким канчасын чыгарды |  |
+| `classroom.invite.title` | Sinfga taklif | Класска чакыруу |  |
+| `classroom.invite.by` | O'qituvchi: @{owner} | Мугалим: @{owner} |  |
+| `classroom.invite.join` | Qo'shilish | Кошулуу |  |
+| `classroom.invite.request` | So'rov yuborish | Өтүнүч жөнөтүү |  |
+| `classroom.invite.open` | Sinfni ochish | Классты ачуу |  |
+| `classroom.invite.invalid` | Havola eskirgan yoki sinf arxivlangan. | Шилтеменин мөөнөтү өткөн же класс архивделген. |  |
+| `classroom.invite.approvalNote` | O'qituvchi so'rovingizni tasdiqlagach sinfga kirasiz. | Мугалим өтүнүчүңүздү ырастагандан кийин класска киресиз. |  |
+| `classroom.invite.pending` | So'rovingiz o'qituvchida — javobni bildirishnomada ko'rasiz. | Өтүнүчүңүз мугалимде — жообу билдирүү менен келет. |  |
+| `classroom.students` | {count} o'quvchi | {count} окуучу |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Бул курс табылган жок же али жарыяланган эмес. |  |
+| `error.quota_exceeded` | Rejangiz chegarasiga yetdingiz | Тарифиңиздин чегине жеттиңиз |  |
+| `error.classroom_full` | Sinf to'lgan — o'quvchilar chegarasiga yetildi | Класс толук — окуучулардын чегине жетти |  |
+| `error.owner_leaves` | Egasi sinfdan chiqa olmaydi — sinfni arxivlang | Ээси класстан чыга албайт — классты архивдеңиз |  |
+| `error.not_a_member` | Bu foydalanuvchi sinfda emas | Бул колдонуучу класста эмес |  |
+| `error.request_not_found` | So'rov topilmadi | Өтүнүч табылган жок |  |
+| `error.request_answered` | Bu so'rovga allaqachon javob berilgan | Бул өтүнүчкө жооп берилген |  |
+| `error.bad_role` | Noma'lum rol | Белгисиз роль |  |
+| `error.code_failed` | Yangi kod yaratilmadi, qayta urinib ko'ring | Жаңы код түзүлгөн жок, кайра аракет кылыңыз |  |
 | `billing.plan.plus` | Plus | Plus |  |
 | `billing.plan.pro` | Pro | Pro |  |
 | `billing.plan.judge` | Judge | Judge |  |

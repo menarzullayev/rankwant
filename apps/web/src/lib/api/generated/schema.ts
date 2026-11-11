@@ -852,6 +852,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/classrooms/{slug}/leave/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sinfdan chiqish
+         * @description PRD P2-2 — o'qituvchi sinfi.
+         */
+        post: operations["classrooms_leave_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/classrooms/{slug}/members/{username}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * A'zoning rolini o'zgartirish yoki chiqarish
+         * @description The owner makes a member an assistant (or a student again) or takes them out.
+         */
+        delete: operations["classrooms_members_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * A'zoning rolini o'zgartirish yoki chiqarish
+         * @description The owner makes a member an assistant (or a student again) or takes them out.
+         */
+        patch: operations["classrooms_members_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/classrooms/{slug}/refresh-code/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Qo'shilish kodini yangilash
+         * @description PRD P2-2 — o'qituvchi sinfi.
+         */
+        post: operations["classrooms_refresh_code_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/classrooms/{slug}/requests/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Qo'shilish so'rovlari navbati
+         * @description PRD P2-2 — o'qituvchi sinfi.
+         */
+        get: operations["classrooms_requests_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/classrooms/{slug}/requests/{id}/approve/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * So'rovni qabul qilish
+         * @description PRD P2-2 — o'qituvchi sinfi.
+         */
+        post: operations["classrooms_requests_approve_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/classrooms/{slug}/requests/{id}/reject/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * So'rovni rad etish
+         * @description PRD P2-2 — o'qituvchi sinfi.
+         */
+        post: operations["classrooms_requests_reject_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/classrooms/invite/{code}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Taklif havolasi: sinf haqida qisqa ma'lumot
+         * @description An invite link's page: whose classroom it is before joining.
+         */
+        get: operations["classrooms_invite_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/classrooms/join/": {
         parameters: {
             query?: never;
@@ -2201,6 +2345,30 @@ export interface paths {
          *     sababi — kimdir hisobga kirib olgani.
          */
         post: operations["me_password_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/quotas/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reja kvotasi: chegara va band qilingani
+         * @description How much the signed-in user may own on their plan, and how much they do.
+         *
+         *     Each kind counts everything owned, published or not (ADR-0061 § 2); a
+         *     `null` limit means none (staff). Pages read the limit from here instead
+         *     of keeping their own copy of the number.
+         */
+        get: operations["me_quotas_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -7243,11 +7411,14 @@ export interface components {
             readonly member_count: number;
             /** Format: date-time */
             readonly created_at: string;
+            join_mode?: components["schemas"]["JoinModeEnum"];
+            readonly my_role: string;
         };
         ClassroomCreate: {
             slug: string;
             name: string;
             description?: string;
+            join_mode?: components["schemas"]["JoinModeEnum"];
         };
         /**
          * @description Brauzerdan kelgan xato yozuvi (qaror 2026-09-24).
@@ -7867,8 +8038,59 @@ export interface components {
             readonly purchased_at: string;
             is_equipped?: boolean;
         };
+        /**
+         * @description What an invite link shows before joining.
+         *
+         *     The slug is no secret here: whoever holds the code may join anyway.
+         */
+        Invite: {
+            slug: string;
+            name: string;
+            owner: string;
+            join_mode: string;
+            member_count: number;
+            state: string;
+        };
         Join: {
             join_code: string;
+        };
+        /**
+         * @description * `instant` - Darhol
+         *     * `approval` - Tasdiq bilan
+         * @enum {string}
+         */
+        JoinModeEnum: "instant" | "approval";
+        JoinRequest: {
+            readonly id: number;
+            readonly username: string;
+            readonly rating_skills: number;
+            status?: components["schemas"]["JoinRequestStatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `pending` - Kutilmoqda
+         *     * `approved` - Qabul qilindi
+         *     * `rejected` - Rad etildi
+         * @enum {string}
+         */
+        JoinRequestStatusEnum: "pending" | "approved" | "rejected";
+        /**
+         * @description The classroom, as before, plus `status`: `member` — in it now (201);
+         *     `pending` — waiting for the teacher (202). `/api/v1/` only grows.
+         */
+        JoinResult: {
+            slug: string;
+            name: string;
+            description?: string;
+            readonly owner: string;
+            /** @default 0 */
+            readonly member_count: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            join_mode?: components["schemas"]["JoinModeEnum"];
+            readonly my_role: string;
+            readonly status: string;
         };
         Language: {
             code: string;
@@ -8058,6 +8280,12 @@ export interface components {
             /** Format: date-time */
             readonly date_joined: string;
         };
+        /**
+         * @description * `student` - O'quvchi
+         *     * `assistant` - Yordamchi
+         * @enum {string}
+         */
+        MemberRoleRoleEnum: "student" | "assistant";
         /**
          * @description Muallif yuzasi (ADR-0025): o'z DRAFT masalasini boshqaradi.
          *
@@ -9308,6 +9536,8 @@ export interface components {
             readonly member_count: number;
             /** Format: date-time */
             readonly created_at?: string;
+            join_mode?: components["schemas"]["JoinModeEnum"];
+            readonly my_role?: string;
         };
         PatchedMe: {
             readonly id?: number;
@@ -9382,6 +9612,9 @@ export interface components {
             readonly streak_freeze_until?: string | null;
             /** Format: date-time */
             readonly date_joined?: string;
+        };
+        PatchedMemberRole: {
+            role?: components["schemas"]["MemberRoleRoleEnum"];
         };
         /**
          * @description Muallif yuzasi (ADR-0025): o'z DRAFT masalasini boshqaradi.
@@ -10415,6 +10648,15 @@ export interface components {
             answers: {
                 [key: string]: number;
             };
+        };
+        QuotaRow: {
+            key: string;
+            limit: number | null;
+            used: number;
+        };
+        Quotas: {
+            plan: string;
+            quotas: components["schemas"]["QuotaRow"][];
         };
         /**
          * @description A row of the public Qvant top list (HITL 2026-10-05).
@@ -13264,6 +13506,197 @@ export interface operations {
             };
         };
     };
+    classrooms_leave_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    classrooms_members_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                username: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    classrooms_members_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                username: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMemberRole"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMemberRole"];
+                "multipart/form-data": components["schemas"]["PatchedMemberRole"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    classrooms_refresh_code_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    classrooms_requests_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinRequest"][];
+                };
+            };
+        };
+    };
+    classrooms_requests_approve_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinRequest"];
+                };
+            };
+        };
+    };
+    classrooms_requests_reject_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinRequest"];
+                };
+            };
+        };
+    };
+    classrooms_invite_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invite"];
+                };
+            };
+        };
+    };
     classrooms_join_create: {
         parameters: {
             query?: never;
@@ -13284,7 +13717,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Classroom"];
+                    "application/json": components["schemas"]["JoinResult"];
+                };
+            };
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinResult"];
                 };
             };
         };
@@ -15139,6 +15580,25 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    me_quotas_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Quotas"];
+                };
             };
         };
     };

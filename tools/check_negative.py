@@ -4752,12 +4752,32 @@ def neg_decisions_studio_open_to_guests() -> tuple[bool, str]:
 
 
 def neg_decisions_studio_limit_drifts() -> tuple[bool, str]:
-    """The page's draft limit stops matching the server's `MAX_DRAFTS`."""
+    """The page keeps its own copy of the problem limit instead of the plan's."""
     return _decision_broken(
-        "apps/web/src/features/studio/api/problems.ts",
-        "export const STUDIO_DRAFT_LIMIT = 20;",
-        "export const STUDIO_DRAFT_LIMIT = 25;",
-        "qoralama chegarasi server",
+        "apps/web/src/app/(site)/studio/problems/page.tsx",
+        'quotaOf(quotas, "problems")',
+        '{ key: "problems", limit: 20, used: 0 }',
+        "chegara serverdan (`/me/quotas/`) o'qilmaydi",
+    )
+
+
+def neg_decisions_problem_quota_counts_drafts_only() -> tuple[bool, str]:
+    """Only drafts count again — the plan's limit would mean nothing."""
+    return _decision_broken(
+        "apps/api/problems/quotas.py",
+        "return int(user.authored_problems.count())",
+        "return int(user.authored_problems.filter(is_public=False).count())",
+        "faqat qoralamani sanaydi",
+    )
+
+
+def neg_decisions_problem_quota_not_enforced() -> tuple[bool, str]:
+    """A new problem no longer passes the plan's quota."""
+    return _decision_broken(
+        "apps/api/problems/author_views.py",
+        '            quotas.enforce(user, "problems")\n',
+        "            pass\n",
+        "reja kvotasidan (`problems`) o'tmaydi",
     )
 
 
@@ -4782,12 +4802,72 @@ def neg_decisions_studio_author_cannot_delete_tests() -> tuple[bool, str]:
 
 
 def neg_decisions_contest_limit_drifts() -> tuple[bool, str]:
-    """The page's contest draft limit stops matching the server's."""
+    """A new contest no longer passes the plan's quota."""
     return _decision_broken(
-        "apps/web/src/features/studio/api/contests.ts",
-        "export const STUDIO_CONTEST_LIMIT = 5;",
-        "export const STUDIO_CONTEST_LIMIT = 6;",
-        "musobaqa qoralamasi chegarasi",
+        "apps/api/contests/organizer_views.py",
+        '            quotas.enforce(user, "contests")\n',
+        "            pass\n",
+        "reja kvotasidan (`contests`) o'tmaydi",
+    )
+
+
+def neg_decisions_classroom_free_limit() -> tuple[bool, str]:
+    """The free plan's classroom count drifts from the owner's 3."""
+    return _decision_broken(
+        "apps/api/core/quotas.py",
+        '    "classrooms": 3,\n',
+        '    "classrooms": 5,\n',
+        "bepul rejada `classrooms` 3 emas",
+    )
+
+
+def neg_decisions_classroom_existing_turn_approval() -> tuple[bool, str]:
+    """The migration would put classrooms that exist behind approval."""
+    return _decision_broken(
+        "apps/api/classroom/migrations/0003_join_requests.py",
+        '                default="instant",\n',
+        '                default="approval",\n',
+        "mavjud sinflar «darhol» rejimida qolmaydi",
+    )
+
+
+def neg_decisions_classroom_new_is_instant() -> tuple[bool, str]:
+    """A new classroom would start letting anyone with the code in."""
+    return _decision_broken(
+        "apps/api/classroom/models.py",
+        "choices=JoinMode.choices, default=JoinMode.APPROVAL",
+        "choices=JoinMode.choices, default=JoinMode.INSTANT",
+        "yangi sinf «tasdiq bilan» boshlanmaydi",
+    )
+
+
+def neg_decisions_classroom_skips_request() -> tuple[bool, str]:
+    """A classroom that asks for approval lets the student straight in."""
+    return _decision_broken(
+        "apps/api/classroom/services.py",
+        "    if classroom.join_mode == Classroom.JoinMode.INSTANT:\n",
+        "    if True:\n",
+        "o'quvchi so'rovsiz kiradi",
+    )
+
+
+def neg_decisions_classroom_deleted() -> tuple[bool, str]:
+    """Deleting a classroom drops it instead of archiving."""
+    return _decision_broken(
+        "apps/api/classroom/views.py",
+        "        instance.is_active = False\n        instance.save(update_fields=[\"is_active\"])\n",
+        "        instance.delete()\n",
+        "sinf arxivlanmaydi",
+    )
+
+
+def neg_decisions_classroom_assistant_sees_code() -> tuple[bool, str]:
+    """An assistant would get the join code."""
+    return _decision_broken(
+        "apps/api/classroom/serializers.py",
+        'fields = [*ClassroomSerializer.Meta.fields, "members", "pending_count"]',
+        'fields = [*ClassroomSerializer.Meta.fields, "members", "pending_count", "join_code"]',
+        "yordamchi qo'shilish kodini ko'radi",
     )
 
 
@@ -8661,6 +8741,15 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/studio/components/StudioNav.tsx",
     "apps/api/problems/author_views.py",
     "apps/web/src/features/studio/api/problems.ts",
+    "apps/api/problems/quotas.py",
+    "apps/api/contests/quotas.py",
+    "apps/api/core/quotas.py",
+    "apps/api/classroom/models.py",
+    "apps/api/classroom/serializers.py",
+    "apps/api/classroom/migrations/0003_join_requests.py",
+    "tools/notification-codes.json",
+    "apps/web/src/app/(site)/studio/problems/page.tsx",
+    "apps/web/src/app/(site)/studio/contests/page.tsx",
     "apps/web/src/lib/access.ts",
     "packages/shared/src/grades.ts",
     "apps/web/src/app/(auth)/onboarding/page.tsx",
@@ -12971,9 +13060,17 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy sirni tekshirmasa tutilsin", neg_decisions_deploy_skips_secret_check),
             ("studio mehmonga ochilsa tutilsin", neg_decisions_studio_open_to_guests),
             ("studio chegarasi ajralsa tutilsin", neg_decisions_studio_limit_drifts),
+            ("kvota faqat qoralamani sanasa tutilsin", neg_decisions_problem_quota_counts_drafts_only),
+            ("masala kvotasi tekshirilmasa tutilsin", neg_decisions_problem_quota_not_enforced),
             ("ko'rik so'rovi ikki marta yuborilsa tutilsin", neg_decisions_studio_review_rings_twice),
             ("muallif testni o'chira olmasa tutilsin", neg_decisions_studio_author_cannot_delete_tests),
             ("musobaqa chegarasi ajralsa tutilsin", neg_decisions_contest_limit_drifts),
+            ("bepul sinf chegarasi o'zgarsa tutilsin", neg_decisions_classroom_free_limit),
+            ("mavjud sinflar tasdiqqa o'tsa tutilsin", neg_decisions_classroom_existing_turn_approval),
+            ("yangi sinf darhol rejimda bo'lsa tutilsin", neg_decisions_classroom_new_is_instant),
+            ("so'rovsiz kirilsa tutilsin", neg_decisions_classroom_skips_request),
+            ("sinf o'chirilsa tutilsin", neg_decisions_classroom_deleted),
+            ("yordamchi kodni ko'rsa tutilsin", neg_decisions_classroom_assistant_sees_code),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

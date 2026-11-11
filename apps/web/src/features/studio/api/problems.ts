@@ -13,10 +13,6 @@ import {
   type Paginated,
 } from "@/lib/api/client";
 
-/** `problems.author_views.MAX_DRAFTS` — the rule `studio_problems_panel`
- *  keeps the two equal. */
-export const STUDIO_DRAFT_LIMIT = 20;
-
 export const DIFFICULTY_MIN = 800;
 export const DIFFICULTY_MAX = 3500;
 export const DIFFICULTY_STEP = 100;

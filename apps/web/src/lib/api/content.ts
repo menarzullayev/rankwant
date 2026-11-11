@@ -132,23 +132,51 @@ export type QuizResult = {
   }[];
 };
 
+export type ClassroomJoinMode = "instant" | "approval";
+/** The reader's place in the classroom; `""` — none (ADR-0061 § 3). */
+export type ClassroomRole = "owner" | "assistant" | "student" | "";
 export type Classroom = {
   slug: string;
   name: string;
   description: string;
   owner: string;
+  /** Students only: assistants are not seats. */
   member_count: number;
   created_at: string;
+  join_mode: ClassroomJoinMode;
+  my_role: ClassroomRole;
 };
+export type ClassroomMember = {
+  username: string;
+  role: "assistant" | "student";
+  rating_skills: number;
+  joined_at: string;
+};
+/** The owner gets the code; the owner and assistants get the members. */
 export type ClassroomDetail = Classroom & {
   join_code?: string;
   is_active?: boolean;
-  members?: {
-    username: string;
-    role: string;
-    rating_skills: number;
-    joined_at: string;
-  }[];
+  members?: ClassroomMember[];
+  pending_count?: number;
+};
+export type ClassroomJoinRequest = {
+  id: number;
+  username: string;
+  rating_skills: number;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+};
+/** The classroom plus `status`: `member` — in it now (201); `pending` —
+ *  waiting for the teacher (202). */
+export type ClassroomJoinResult = Classroom & { status: "member" | "pending" };
+/** What an invite link shows before joining. */
+export type ClassroomInvite = {
+  slug: string;
+  name: string;
+  owner: string;
+  join_mode: ClassroomJoinMode;
+  member_count: number;
+  state: "member" | "pending" | "owner" | "";
 };
 export type Assignment = {
   id: number;

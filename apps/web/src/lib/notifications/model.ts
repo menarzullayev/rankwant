@@ -96,6 +96,10 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   contest_announcement: { body: true },
   // Disqualified by the jury (ADR-0055, part 4).
   contest_disqualified: { body: true },
+  // Classroom join requests and their answer (ADR-0061, part 3).
+  classroom_join_requested: { body: true },
+  classroom_join_approved: { body: true },
+  classroom_join_rejected: { body: true },
 };
 
 /** The words of a notification in the language it is being read in.
@@ -159,6 +163,9 @@ export function notificationHref(row: Notification): string | null {
     case "studio_course":
       // A course sent back: the author's editor, where the reason applies.
       return `/studio/courses/${id}`;
+    case "classroom":
+      // A join request (the teacher's queue) or an accepted one.
+      return `/classroom/${id}`;
     default:
       return null;
   }

@@ -9,7 +9,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { fill, t, type Locale } from "@/i18n/messages";
 
-import { STUDIO_CONTEST_LIMIT, type MineContest } from "../api/contests";
+import { quotaFull, type Quota } from "@/lib/quotas";
+
+import { type MineContest } from "../api/contests";
 
 export function ContestStatus({ contest, locale }: { contest: MineContest; locale: Locale }) {
   return contest.is_public ? (
@@ -19,10 +21,18 @@ export function ContestStatus({ contest, locale }: { contest: MineContest; local
   );
 }
 
-/** The organizer's contests. Rendered on the server, like the problem list. */
-export function ContestList({ rows, locale }: { rows: MineContest[]; locale: Locale }) {
-  const drafts = rows.filter((row) => !row.is_public).length;
-  const full = drafts >= STUDIO_CONTEST_LIMIT;
+/** The organizer's contests. Rendered on the server, like the problem list;
+ *  the plan's quota counts published contests too (ADR-0061 § 2). */
+export function ContestList({
+  rows,
+  quota,
+  locale,
+}: {
+  rows: MineContest[];
+  quota: Quota;
+  locale: Locale;
+}) {
+  const full = quotaFull(quota);
 
   return (
     <div className="space-y-4">
@@ -77,12 +87,14 @@ export function ContestList({ rows, locale }: { rows: MineContest[]; locale: Loc
               ))}
             </TBody>
           </Table>
-          <p className="text-theme-xs rw-faint">
-            {fill(t(locale, full ? "studio.contests.full" : "studio.problems.count"), {
-              count: drafts,
-              limit: STUDIO_CONTEST_LIMIT,
-            })}
-          </p>
+          {quota.limit !== null && (
+            <p className="text-theme-xs rw-faint">
+              {fill(t(locale, full ? "studio.contests.full" : "studio.contests.count"), {
+                count: quota.used,
+                limit: quota.limit,
+              })}
+            </p>
+          )}
         </>
       )}
     </div>

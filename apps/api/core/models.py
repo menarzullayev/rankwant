@@ -816,3 +816,30 @@ class SiteAppearance(UpdatedModel):
     def load(cls) -> SiteAppearance:
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
+
+
+class PlanQuota(models.Model):
+    """What one plan lets an author own (ADR-0061 § 2).
+
+    One row per `User.Plan` value, edited in the Django admin. Everything
+    owned counts — published and drafts alike; staff are outside quotas; an
+    expired plan counts as free. Nothing owned is ever taken away: past the
+    limit only a new one is refused. Each app counts its own rows and asks
+    `core.quotas` for the limit, so `core` never imports another app's models.
+    """
+
+    plan = models.CharField(max_length=16, choices=User.Plan.choices, unique=True)
+    problems = models.PositiveIntegerField()
+    contests = models.PositiveIntegerField()
+    quizzes = models.PositiveIntegerField()
+    classrooms = models.PositiveIntegerField()
+    #: Students in one classroom, by the classroom owner's plan.
+    class_members = models.PositiveIntegerField()
+    #: Test data the author's problems hold, in MB.
+    storage_mb = models.PositiveIntegerField()
+
+    class Meta:
+        verbose_name = "Plan quota"
+
+    def __str__(self) -> str:
+        return self.plan

@@ -1,4 +1,14 @@
 {
+  "classroom_join_approved": [
+    "classroom"
+  ],
+  "classroom_join_rejected": [
+    "classroom"
+  ],
+  "classroom_join_requested": [
+    "classroom",
+    "user"
+  ],
   "contest_announcement": [
     "contest",
     "text"
