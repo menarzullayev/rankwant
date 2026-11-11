@@ -21,7 +21,7 @@ from django.db import transaction
 from django.db.models import F, Model
 from django.utils import timezone
 
-from community.models import Comment, Kind, Report, Target, Vote
+from community.models import Comment, Entry, Kind, Report, Target, Vote
 from core.models import User
 from core.permissions import STAFF_GROUP_CONTENT, has_staff_group
 
@@ -100,6 +100,10 @@ def place_of(comment: Comment) -> Place | None:
 
         problem = public_problem_by_id(comment.target_id)
         return problem_place(problem.slug) if problem is not None else None
+    if comment.target_type == Target.ENTRY:
+        from community.blog import entry_place
+
+        return entry_place(str(comment.target_id))
     return None
 
 
@@ -273,8 +277,8 @@ def remove(user: User, comment_id: int) -> Comment:
 
 # --- votes -------------------------------------------------------------------
 
-#: What can be voted on and reported: kind → model. Blog entries join here.
-VOTABLE: dict[str, type[Model]] = {Kind.COMMENT: Comment}
+#: What can be voted on and reported: kind → model.
+VOTABLE: dict[str, type[Model]] = {Kind.COMMENT: Comment, Kind.ENTRY: Entry}
 
 
 def _votable(kind: str, object_id: int) -> Any:

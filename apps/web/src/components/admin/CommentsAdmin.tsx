@@ -7,7 +7,7 @@ import { useState } from "react";
 import { CrudPage, type ColumnDef } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { errorText, t } from "@/i18n/messages";
+import { errorText, t, type MessageKey } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -33,9 +33,17 @@ type StaffComment = {
   [key: string]: unknown;
 };
 
-const PATH = "/staff/community/comments/";
+const COMMENTS = "/staff/community/comments/";
 
-function HiddenToggle({ row, reload }: { row: StaffComment; reload?: () => void }) {
+function HiddenToggle({
+  row,
+  path,
+  reload,
+}: {
+  row: StaffComment;
+  path: string;
+  reload?: () => void;
+}) {
   const locale = useLocale();
   const [hidden, setHidden] = useState(row.is_hidden);
   const [error, setError] = useState("");
@@ -44,7 +52,7 @@ function HiddenToggle({ row, reload }: { row: StaffComment; reload?: () => void 
     setError("");
     try {
       const updated = await staff.action<StaffComment>(
-        `${PATH}${row.id}/${hidden ? "unhide" : "hide"}/`,
+        `${path}${row.id}/${hidden ? "unhide" : "hide"}/`,
       );
       setHidden(updated.is_hidden);
       reload?.();
@@ -85,10 +93,11 @@ function Reasons({ row }: { row: StaffComment }) {
   );
 }
 
-const COLUMNS: ColumnDef<StaffComment>[] = [
+function columns(path: string, bodyLabel: MessageKey): ColumnDef<StaffComment>[] {
+  return [
   {
     key: "body",
-    labelKey: "admin.label.text.comment",
+    labelKey: bodyLabel,
     render: (row) =>
       row.link ? (
         <Link href={row.link as Route} className="line-clamp-2 max-w-md rw-link-hover" title={row.body}>
@@ -105,7 +114,9 @@ const COLUMNS: ColumnDef<StaffComment>[] = [
   {
     key: "is_hidden",
     labelKey: "admin.label.text.status",
-    render: (row, reload) => <HiddenToggle key={`${row.id}-${row.is_hidden}`} row={row} reload={reload} />,
+    render: (row, reload) => (
+      <HiddenToggle key={`${row.id}-${row.is_hidden}`} row={row} path={path} reload={reload} />
+    ),
   },
   {
     key: "created_at",
@@ -113,19 +124,30 @@ const COLUMNS: ColumnDef<StaffComment>[] = [
     render: (row) => row.created_at.slice(0, 10),
   },
 ];
+}
 
-export function CommentsAdmin() {
+/** One moderation list: comments (`/admin/comments`) or blog entries
+ *  (`/admin/entries`) — the same shape from the API. */
+export function CommentsAdmin({
+  path = COMMENTS,
+  titleKey = "admin.title.comments",
+  bodyLabel = "admin.label.text.comment",
+}: {
+  path?: string;
+  titleKey?: MessageKey;
+  bodyLabel?: MessageKey;
+}) {
   const locale = useLocale();
   return (
     <CrudPage<StaffComment>
-      title={t(locale, "admin.title.comments")}
-      path={PATH}
+      title={t(locale, titleKey)}
+      path={path}
       idField="id"
-      columns={COLUMNS}
+      columns={columns(path, bodyLabel)}
       fields={[]}
       searchable
       ordering="-report_count"
-      // A comment is someone else's words: staff hide it, they do not edit it.
+      // Someone else's words: staff hide them, they do not edit them.
       canCreate={false}
       readOnly
     />

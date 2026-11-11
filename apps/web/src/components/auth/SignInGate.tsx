@@ -27,7 +27,8 @@ export type GateReason =
   | "vote"
   | "favourite"
   | "report"
-  | "comment";
+  | "comment"
+  | "blog";
 
 const BODY: Partial<Record<GateReason, MessageKey>> = {
   solve: "gate.solve.body",

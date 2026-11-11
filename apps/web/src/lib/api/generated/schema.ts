@@ -677,6 +677,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/blogs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Bloglar lentasi
+         * @description Member blogs (decision 2026-11-11 ④): read by anyone, written by members.
+         */
+        get: operations["blogs_list"];
+        put?: never;
+        /**
+         * Blog posti yozish
+         * @description Member blogs (decision 2026-11-11 ④): read by anyone, written by members.
+         */
+        post: operations["blogs_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/blogs/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Blog posti
+         * @description Member blogs (decision 2026-11-11 ④): read by anyone, written by members.
+         */
+        get: operations["blogs_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * Own entry: delete
+         * @description Member blogs (decision 2026-11-11 ④): read by anyone, written by members.
+         */
+        delete: operations["blogs_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * Own entry: edit
+         * @description Member blogs (decision 2026-11-11 ④): read by anyone, written by members.
+         */
+        patch: operations["blogs_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/blogs/{id}/report/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post ustidan shikoyat
+         * @description Member blogs (decision 2026-11-11 ④): read by anyone, written by members.
+         */
+        post: operations["blogs_report_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/blogs/{id}/vote/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Postga ovoz: 1, -1 yoki 0
+         * @description Member blogs (decision 2026-11-11 ④): read by anyone, written by members.
+         */
+        post: operations["blogs_vote_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/blogs/tags/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Popular tags of the last 90 days
+         * @description Member blogs (decision 2026-11-11 ④): read by anyone, written by members.
+         */
+        get: operations["blogs_tags_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/calendar/": {
         parameters: {
             query?: never;
@@ -1840,6 +1952,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/discussions/entry/{ref}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Muhokama: mavzular sahifasi
+         * @description One discussion: a problem's (`kind=problem`) or a blog entry's.
+         */
+        get: operations["discussions_entry_retrieve"];
+        put?: never;
+        /**
+         * Muhokamaga izoh yozish
+         * @description One discussion: a problem's (`kind=problem`) or a blog entry's.
+         */
+        post: operations["discussions_entry_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/discussions/problem/{ref}/": {
         parameters: {
             query?: never;
@@ -1847,10 +1983,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Masala muhokamasi: mavzular sahifasi */
+        /**
+         * Muhokama: mavzular sahifasi
+         * @description One discussion: a problem's (`kind=problem`) or a blog entry's.
+         */
         get: operations["discussions_problem_retrieve"];
         put?: never;
-        /** Masala muhokamasiga izoh yozish */
+        /**
+         * Muhokamaga izoh yozish
+         * @description One discussion: a problem's (`kind=problem`) or a blog entry's.
+         */
         post: operations["discussions_problem_create"];
         delete?: never;
         options?: never;
@@ -4500,6 +4642,81 @@ export interface paths {
          * @description Moderation after the fact: hidden by reports or by staff, never deleted.
          */
         post: operations["staff_community_comments_unhide_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/community/entries/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Blog moderation: hidden by reports or by staff, never deleted. */
+        get: operations["staff_community_entries_list"];
+        put?: never;
+        /** @description Blog moderation: hidden by reports or by staff, never deleted. */
+        post: operations["staff_community_entries_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/community/entries/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Blog moderation: hidden by reports or by staff, never deleted. */
+        get: operations["staff_community_entries_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/community/entries/{id}/hide/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hide an entry (reports accepted)
+         * @description Blog moderation: hidden by reports or by staff, never deleted.
+         */
+        post: operations["staff_community_entries_hide_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/community/entries/{id}/unhide/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bring an entry back (reports rejected)
+         * @description Blog moderation: hidden by reports or by staff, never deleted.
+         */
+        post: operations["staff_community_entries_unhide_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -8445,6 +8662,55 @@ export interface components {
          * @enum {string}
          */
         EnrollmentSourceEnum: "free" | "qvant" | "purchase" | "plan" | "classroom" | "staff";
+        /** @description An entry in the feed; the body comes only on its own page. */
+        Entry: {
+            readonly id: number;
+            readonly title: string;
+            readonly author: components["schemas"]["CommentAuthor"] | null;
+            readonly tags: string[];
+            /** @description The opening of the text without Markdown marks or code. */
+            readonly excerpt: string;
+            readonly score: number;
+            readonly my_vote: number;
+            readonly mine: boolean;
+            readonly view_count: number;
+            /** @default 0 */
+            readonly comment_count: number;
+            readonly reading_minutes: number;
+            readonly is_hidden: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly edited_at: string | null;
+        };
+        /** @description An entry in the feed; the body comes only on its own page. */
+        EntryDetail: {
+            readonly id: number;
+            readonly title: string;
+            readonly author: components["schemas"]["CommentAuthor"] | null;
+            readonly tags: string[];
+            /** @description The opening of the text without Markdown marks or code. */
+            readonly excerpt: string;
+            readonly score: number;
+            readonly my_vote: number;
+            readonly mine: boolean;
+            readonly view_count: number;
+            /** @default 0 */
+            readonly comment_count: number;
+            readonly reading_minutes: number;
+            readonly is_hidden: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly edited_at: string | null;
+            /** @description Markdown */
+            readonly body: string;
+        };
+        EntryWrite: {
+            title: string;
+            body: string;
+            tags?: string[];
+        };
         ExternalIn: {
             kind: components["schemas"]["ExternalProfileKindEnum"];
             handle: string;
@@ -9348,6 +9614,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Duel"][];
         };
+        PaginatedEntryList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Entry"][];
+        };
         PaginatedFollowerList: {
             /** @example 123 */
             count: number;
@@ -9762,6 +10043,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["StaffDuel"][];
         };
+        PaginatedStaffEntryList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffEntry"][];
+        };
         PaginatedStaffHackathonList: {
             /** @example 123 */
             count: number;
@@ -10152,6 +10448,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["SystemUpdate"][];
         };
+        PaginatedTagCountList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["TagCount"][];
+        };
         PaginatedTopicList: {
             /** @example 123 */
             count: number;
@@ -10319,6 +10630,11 @@ export interface components {
         };
         PatchedEditComment: {
             body?: string;
+        };
+        PatchedEntryWrite: {
+            title?: string;
+            body?: string;
+            tags?: string[];
         };
         PatchedFolder: {
             readonly id?: number;
@@ -12152,6 +12468,20 @@ export interface components {
             /** @default false */
             force: boolean;
         };
+        /** @description An entry in the moderation list, in the same shape as a comment. */
+        StaffEntry: {
+            readonly id: number;
+            readonly link: string;
+            readonly author: string;
+            readonly body: string;
+            readonly score: number;
+            readonly report_count: number;
+            readonly reasons: string[];
+            readonly is_hidden: boolean;
+            readonly is_deleted: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         /**
          * @description The test generator: one line of parameters in, one test input out
          *     (ADR-0061 § 6).
@@ -12908,6 +13238,10 @@ export interface components {
             is_machine?: boolean;
             /** Format: date-time */
             readonly updated_at: string;
+        };
+        TagCount: {
+            tag: string;
+            count: number;
         };
         /**
          * @description * `course` - course
@@ -14134,6 +14468,207 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BillingOverview"];
+                };
+            };
+        };
+    };
+    blogs_list: {
+        parameters: {
+            query?: {
+                author?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                tab?: "following" | "new" | "top";
+                tag?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedEntryList"];
+                };
+            };
+        };
+    };
+    blogs_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntryWrite"];
+                "application/x-www-form-urlencoded": components["schemas"]["EntryWrite"];
+                "multipart/form-data": components["schemas"]["EntryWrite"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryDetail"];
+                };
+            };
+        };
+    };
+    blogs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryDetail"];
+                };
+            };
+        };
+    };
+    blogs_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    blogs_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedEntryWrite"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedEntryWrite"];
+                "multipart/form-data": components["schemas"]["PatchedEntryWrite"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryDetail"];
+                };
+            };
+        };
+    };
+    blogs_report_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommunityReport"];
+                "application/x-www-form-urlencoded": components["schemas"]["CommunityReport"];
+                "multipart/form-data": components["schemas"]["CommunityReport"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    blogs_vote_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommunityVote"];
+                "application/x-www-form-urlencoded": components["schemas"]["CommunityVote"];
+                "multipart/form-data": components["schemas"]["CommunityVote"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityVoteResult"];
+                };
+            };
+        };
+    };
+    blogs_tags_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedTagCountList"];
                 };
             };
         };
@@ -15845,6 +16380,56 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CustomRun"];
+                };
+            };
+        };
+    };
+    discussions_entry_retrieve: {
+        parameters: {
+            query?: {
+                before?: number;
+            };
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThreadPage"];
+                };
+            };
+        };
+    };
+    discussions_entry_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostComment"];
+                "application/x-www-form-urlencoded": components["schemas"]["PostComment"];
+                "multipart/form-data": components["schemas"]["PostComment"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"];
                 };
             };
         };
@@ -19898,6 +20483,125 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffComment"];
+                };
+            };
+        };
+    };
+    staff_community_entries_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffEntryList"];
+                };
+            };
+        };
+    };
+    staff_community_entries_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["StaffEntry"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffEntry"];
+                "multipart/form-data": components["schemas"]["StaffEntry"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffEntry"];
+                };
+            };
+        };
+    };
+    staff_community_entries_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this entry. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffEntry"];
+                };
+            };
+        };
+    };
+    staff_community_entries_hide_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this entry. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffEntry"];
+                };
+            };
+        };
+    };
+    staff_community_entries_unhide_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this entry. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffEntry"];
                 };
             };
         };

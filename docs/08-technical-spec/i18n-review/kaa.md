@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3260 strings.**
+**3307 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -223,8 +223,40 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `leaderboard.activity` | Activity | Activity |  |
 | `leaderboard.streak` | Streak | Streak |  |
 | `nav.blog` | Yangiliklar | Jańalıqlar |  |
+| `nav.blogs` | Bloglar | Blog jazbaları |  |
 | `nav.notifications` | Bildirishnomalar | Xabarlamalar |  |
 | `blog.title` | Yangiliklar | Jańalıqlar |  |
+| `blogs.title` | Bloglar | Blog jazbaları |  |
+| `blogs.description` | Tajriba, yechimlar va fikrlar — a'zolar yozadi | Tájiriybe, sheshimler hám pikirler — aǵzalar jazadı |  |
+| `blogs.write` | Yozish | Jazıw |  |
+| `blogs.tabsLabel` | Bloglar bo'limlari | Blog bólimleri |  |
+| `blogs.tab.new` | Yangi | Jańa |  |
+| `blogs.tab.top` | Mashhur (7 kun) | Ataqlı (7 kún) |  |
+| `blogs.tab.following` | Kuzatayotganlarim | Baqlap atırǵanlarım |  |
+| `blogs.clearFilter` | Filtrni tozalash | Filtrdi tazalaw |  |
+| `blogs.empty` | Hali post yo'q | Ele post joq |  |
+| `blogs.emptyFollowing` | Kuzatayotganlaringiz hali hech narsa yozmagan | Siz baqlap atırǵanlar ele hesh nárse jazbaǵan |  |
+| `blogs.emptyHint` | Birinchi bo'lib yozing yoki boshqa bo'limni oching. | Birinshi bolıp jazıń yamasa basqa bólimdi ashıń. |  |
+| `blogs.unit` | post | jazba |  |
+| `blogs.popularTags` | Ommabop teglar | Ataqlı tegler |  |
+| `blogs.score` | Ovozlar | Dawıslar |  |
+| `blogs.reading` | {count} daqiqa o'qish | {count} minut oqıw |  |
+| `blogs.comments` | {count} izoh | {count} pikir |  |
+| `blogs.views` | {count} ko'rish | {count} kóriw |  |
+| `blogs.newTitle` | Yangi post | Jańa post |  |
+| `blogs.editTitle` | Postni tahrirlash | Posttı ózgertiw |  |
+| `blogs.deleteConfirm` | Post o'chirilsinmi? Uni qaytarib bo'lmaydi. | Post óshirilsinbe? Onı qaytarıp bolmaydı. |  |
+| `blogs.form.title` | Sarlavha | Ataması |  |
+| `blogs.form.body` | Matn | Tekst |  |
+| `blogs.form.bodyHint` | Markdown, $formula$ va ```kod``` ishlaydi | Markdown, $formula$ hám ```kod``` isleydi |  |
+| `blogs.form.preview` | Ko'rish | Kóriw |  |
+| `blogs.form.write` | Yozish | Jazıw |  |
+| `blogs.form.empty` | Ko'rish uchun matn yo'q | Kóriw ushın tekst joq |  |
+| `blogs.form.count` | {count} / {max} belgi | {count} / {max} belgiden |  |
+| `blogs.form.tags` | Teglar | Tegler |  |
+| `blogs.form.tagsHint` | Vergul bilan: dp, graf, olimpiada (ko'pi bilan 5) | Útir menen: dp, graf, olimpiada (kóbi menen 5) |  |
+| `blogs.form.save` | Saqlash | Saqlaw |  |
+| `blogs.form.publish` | E'lon qilish | Járiyalaw |  |
 | `notif.title` | Bildirishnomalar | Xabarlamalar |  |
 | `notif.unread` | O'qilmagan | Oqılmaǵan |  |
 | `recommend.title` | Sizga tavsiya | Sizge usınıs |  |
@@ -375,6 +407,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.shop` | Do'kon | Dúkan |  |
 | `nav.about` | Qanday ishlaydi | Qalay isleydi |  |
 | `nav.team` | Jamoa | Komanda |  |
+| `nav.hint.blogs` | A'zolarning postlari va muhokamalari | Aǵzalardıń postları hám talqılawları |  |
 | `nav.hint.problems` | Arxiv, filtr va tavsiyalar | Arxiv, filtr hám usınıslar |  |
 | `nav.hint.attempts` | Barcha yuborilgan yechimlar | Barlıq jiberilgen sheshimler |  |
 | `nav.hint.quizzes` | Qisqa nazariy testlar | Qısqa teoriyalıq testler |  |
@@ -1477,6 +1510,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `discussion.count` | {count} ta izoh | {count} pikir |  |
 | `discussion.placeholder` | Savol yoki fikr… Markdown, $formula$ va ```kod``` ishlaydi | Soraw yamasa pikir… Markdown, $formula$ hám ```kod``` isleydi |  |
 | `discussion.limits` | {count} / {max} · kod bloki masalani yechmaganlarga yopiq ko'rinadi | {count} / {max} · kod bloki máseleni sheshpegenlerge jasırın |  |
+| `discussion.limitsPlain` | {count} / {max} belgi | {count} / {max} belgiden |  |
 | `discussion.send` | Yuborish | Jiberiw |  |
 | `discussion.reply` | Javob berish | Juwap beriw |  |
 | `discussion.edit` | Tahrirlash | Ózgertiw |  |
@@ -1700,6 +1734,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.platformRoadmap` | Yo'l xaritasi | Jol kartası |  |
 | `admin.section.roadmapComments` | Reja izohlari | Karta pikirleri |  |
 | `admin.section.comments` | Izohlar | Pikirler |  |
+| `admin.section.entries` | Blog postlari | Blog postları |  |
 | `admin.section.quests` | Questlar | Kvestler |  |
 | `admin.section.shop` | Do'kon | Dúkan |  |
 | `admin.section.users` | Foydalanuvchilar | Paydalanıwshılar |  |
@@ -1971,6 +2006,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.next` | Keyingi sahifa | Keyingi bet |  |
 | `admin.title.roadmapComments` | Yo'l xaritasi izohlari | Jol kartası túsindirmeleri |  |
 | `admin.title.comments` | Muhokama izohlari | Talqılaw pikirleri |  |
+| `admin.title.entries` | Blog postlari | Blog postları |  |
 | `admin.title.tournaments` | Chempionatlar | Chempionatlar |  |
 | `admin.title.broadcast` | Umumiy e'lon | Ulıwma xabarlama |  |
 | `admin.title.page` | Admin | Administrator |  |
@@ -2723,6 +2759,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `gate.favourite.title` | Sevimlilarga qo'shish uchun tizimga kiring | Súyiklilerge qosıw ushın sistemaǵa kiriń |  |
 | `gate.report.title` | Xato haqida xabar berish uchun tizimga kiring | Qáte haqqında xabar beriw ushın sistemaǵa kiriń |  |
 | `gate.comment.title` | Izoh yozish uchun tizimga kiring | Pikir jazıw ushın sistemaǵa kiriń |  |
+| `gate.blog.title` | Post yozish uchun tizimga kiring | Post jazıw ushın sistemaǵa kiriń |  |
 | `gate.returnNote` | Kirgach shu sahifaga qaytasiz. | Kirgennen keyin usı betke qaytasız. |  |
 | `session.expiredTitle` | Sessiya tugadi. | Sessiya tamamlandı. |  |
 | `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Qayta kiriń — usı betke qaytasız, jazǵan kodıńız saqlanǵan. |  |
@@ -2912,6 +2949,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.comment_reply.body` | @{user} «{title}» dagi izohingizga javob yozdi. | @{user} «{title}» degi pikirińizge juwap jazdı. |  |
 | `notif.msg.comment_mention.title` | @{user} sizni eslatdi — {title} | @{user} sizdi esletti — {title} |  |
 | `notif.msg.comment_mention.body` | @{user} «{title}» muhokamasida sizni eslatdi. | @{user} «{title}» talqılawında sizdi esletti. |  |
+| `notif.msg.blog_entry.title` | @{user} yangi post yozdi | @{user} jańa post jazdı |  |
+| `notif.msg.blog_entry.body` | @{user} «{title}» nomli yangi post yozdi. | @{user} «{title}» atlı jańa post jazdı. |  |
 | `admin.section.courses` | Kurslar | Kurs dizimi |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Avtorlar tekseriwge jibergen kurslar. Baha qoyıń, járiyalań yamasa sebebi menen qaytarıń. |  |
 | `admin.courses.queue` | Ko'rik navbati | Tekseriw gezegi |  |
@@ -3215,6 +3254,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.report_self` | O'zingiz ustingizdan shikoyat qila olmaysiz | Ózińiz ústińizden shaǵım ete almaysız |  |
 | `error.report_already` | Siz allaqachon shikoyat qilgansiz | Siz álleqashan shaǵım etkensiz |  |
 | `error.discussion_closed` | Bu yerda muhokama yopiq | Bul jerde talqılaw jabıq |  |
+| `error.entry_tag` | Teg — harf, raqam va chiziqcha, ko'pi bilan 24 belgi | Teg — hárip, san hám sızıqsha, kóbi menen 24 belgi |  |
+| `error.entry_tags_many` | Ko'pi bilan 5 ta teg | Kóbi menen 5 teg |  |
+| `error.entry_title` | Sarlavha 3–200 belgi bo'lsin | Ataması 3–200 belgi bolsın |  |
+| `error.entry_body` | Matn 10–20000 belgi bo'lsin | Tekst 10–20000 belgi bolsın |  |
+| `error.entry_daily_limit` | Bugungi postlar chegarasiga yetdingiz — ertaga davom eting | Búgingi postlar sheklewine jettińiz — erteń dawam etiń |  |
+| `error.entry_not_found` | Post topilmadi | Post tabılmadı |  |
+| `error.entry_not_yours` | Bu sizning postingiz emas | Bul sizdiń postıńız emes |  |
+| `error.entry_hidden` | Post moderatsiya tomonidan yashirilgan | Post moderaciya tárepinen jasırılǵan |  |
 | `error.generation_empty` | Kamida bitta qator yozing | Keminde bir qatar jazıń |  |
 | `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Bir júrgiziwde kóbi menen 100 test |  |
 | `error.generation_line_long` | Qator 1000 belgidan uzun | Qatar 1000 belgiden uzın |  |

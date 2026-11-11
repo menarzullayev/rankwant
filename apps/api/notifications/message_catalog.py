@@ -8,6 +8,10 @@ and `settings.kind.*` for the kind names).
 
 CATALOG: dict[str, dict[str, dict[str, str]]] = {
     "en": {
+        "blog_entry": {
+            "title": "@{user} wrote a new entry",
+            "body": "@{user} published «{title}».",
+        },
         "classroom_join_approved": {
             "title": "You joined {classroom}",
             "body": "The teacher accepted your request: the class's assignments are open to you.",
@@ -136,6 +140,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "es": {
+        "blog_entry": {
+            "title": "@{user} publicó una entrada",
+            "body": "@{user} publicó «{title}».",
+        },
         "classroom_join_approved": {
             "title": "Ha entrado en la clase — {classroom}",
             "body": "El profesor aceptó su solicitud: las tareas de la clase ya están abiertas para usted.",
@@ -264,6 +272,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kaa": {
+        "blog_entry": {
+            "title": "@{user} jańa post jazdı",
+            "body": "@{user} «{title}» atlı jańa post jazdı.",
+        },
         "classroom_join_approved": {
             "title": "Klasqa qabıl etildińiz — {classroom}",
             "body": "Muǵallim sorawıńızdı qabıl etti: klass tapsırmaları endi sizge ashıq.",
@@ -392,6 +404,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kk": {
+        "blog_entry": {
+            "title": "@{user} жаңа жазба жазды",
+            "body": "@{user} «{title}» жазбасын жариялады.",
+        },
         "classroom_join_approved": {
             "title": "Сыныпқа қабылдандыңыз — {classroom}",
             "body": "Мұғалім өтініміңізді қабылдады: сынып тапсырмалары енді сізге ашық.",
@@ -520,6 +536,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ky": {
+        "blog_entry": {
+            "title": "@{user} жаңы жазуу жазды",
+            "body": "@{user} «{title}» жазуусун жарыялады.",
+        },
         "classroom_join_approved": {
             "title": "Класска кабыл алындыңыз — {classroom}",
             "body": "Мугалим өтүнүчүңүздү кабыл алды: класстын тапшырмалары эми сизге ачык.",
@@ -648,6 +668,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ru": {
+        "blog_entry": {
+            "title": "@{user} опубликовал(а) запись",
+            "body": "@{user} опубликовал(а) «{title}».",
+        },
         "classroom_join_approved": {
             "title": "Вы приняты в класс — {classroom}",
             "body": "Учитель одобрил заявку: задания класса теперь открыты вам.",
@@ -776,6 +800,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tg": {
+        "blog_entry": {
+            "title": "@{user} навиштаи нав навишт",
+            "body": "@{user} «{title}»-ро нашр кард.",
+        },
         "classroom_join_approved": {
             "title": "Шумо ба синф қабул шудед — {classroom}",
             "body": "Муаллим дархости шуморо қабул кард: супоришҳои синф акнун барои шумо кушодаанд.",
@@ -904,6 +932,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tr": {
+        "blog_entry": {
+            "title": "@{user} yeni bir yazı yazdı",
+            "body": "@{user}, «{title}» yazısını yayınladı.",
+        },
         "classroom_join_approved": {
             "title": "Sınıfa kabul edildiniz — {classroom}",
             "body": "Öğretmen isteğinizi onayladı: sınıfın ödevleri artık size açık.",
@@ -1032,6 +1064,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "uz": {
+        "blog_entry": {
+            "title": "@{user} yangi post yozdi",
+            "body": "@{user} «{title}» nomli yangi post yozdi.",
+        },
         "classroom_join_approved": {
             "title": "Sinfga qabul qilindingiz — {classroom}",
             "body": "O'qituvchi so'rovingizni qabul qildi: sinf topshiriqlari endi sizga ochiq.",
@@ -1160,6 +1196,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "zh": {
+        "blog_entry": {
+            "title": "@{user} 发布了新文章",
+            "body": "@{user} 发布了《{title}》。",
+        },
         "classroom_join_approved": {
             "title": "您已被批准加入 — {classroom}",
             "body": "教师已同意您的申请：班级作业现在对您开放。",

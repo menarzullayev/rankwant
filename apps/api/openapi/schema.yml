@@ -954,6 +954,278 @@ paths:
               schema:
                 $ref: '#/components/schemas/BillingOverview'
           description: ''
+  /api/v1/blogs/:
+    get:
+      operationId: blogs_list
+      description: 'Member blogs (decision 2026-11-11 ④): read by anyone, written
+        by members.'
+      summary: Bloglar lentasi
+      parameters:
+      - in: query
+        name: author
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: tab
+        schema:
+          type: string
+          enum:
+          - following
+          - new
+          - top
+      - in: query
+        name: tag
+        schema:
+          type: string
+      tags:
+      - blogs
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEntryList'
+          description: ''
+    post:
+      operationId: blogs_create
+      description: 'Member blogs (decision 2026-11-11 ④): read by anyone, written
+        by members.'
+      summary: Blog posti yozish
+      tags:
+      - blogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntryWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntryWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntryWrite'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryDetail'
+          description: ''
+  /api/v1/blogs/{id}/:
+    get:
+      operationId: blogs_retrieve
+      description: 'Member blogs (decision 2026-11-11 ④): read by anyone, written
+        by members.'
+      summary: Blog posti
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - blogs
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryDetail'
+          description: ''
+    patch:
+      operationId: blogs_partial_update
+      description: 'Member blogs (decision 2026-11-11 ④): read by anyone, written
+        by members.'
+      summary: 'Own entry: edit'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - blogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEntryWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEntryWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEntryWrite'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryDetail'
+          description: ''
+    delete:
+      operationId: blogs_destroy
+      description: 'Member blogs (decision 2026-11-11 ④): read by anyone, written
+        by members.'
+      summary: 'Own entry: delete'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - blogs
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/blogs/{id}/report/:
+    post:
+      operationId: blogs_report_create
+      description: 'Member blogs (decision 2026-11-11 ④): read by anyone, written
+        by members.'
+      summary: Post ustidan shikoyat
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - blogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunityReport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommunityReport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommunityReport'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          description: No response body
+  /api/v1/blogs/{id}/vote/:
+    post:
+      operationId: blogs_vote_create
+      description: 'Member blogs (decision 2026-11-11 ④): read by anyone, written
+        by members.'
+      summary: 'Postga ovoz: 1, -1 yoki 0'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - blogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunityVote'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommunityVote'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommunityVote'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityVoteResult'
+          description: ''
+  /api/v1/blogs/tags/:
+    get:
+      operationId: blogs_tags_list
+      description: 'Member blogs (decision 2026-11-11 ④): read by anyone, written
+        by members.'
+      summary: Popular tags of the last 90 days
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - blogs
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTagCountList'
+          description: ''
   /api/v1/calendar/:
     get:
       operationId: calendar_retrieve
@@ -3089,10 +3361,73 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomRun'
           description: ''
+  /api/v1/discussions/entry/{ref}/:
+    get:
+      operationId: discussions_entry_retrieve
+      description: 'One discussion: a problem''s (`kind=problem`) or a blog entry''s.'
+      summary: 'Muhokama: mavzular sahifasi'
+      parameters:
+      - in: query
+        name: before
+        schema:
+          type: integer
+      - in: path
+        name: ref
+        schema:
+          type: string
+        required: true
+      tags:
+      - discussions
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadPage'
+          description: ''
+    post:
+      operationId: discussions_entry_create
+      description: 'One discussion: a problem''s (`kind=problem`) or a blog entry''s.'
+      summary: Muhokamaga izoh yozish
+      parameters:
+      - in: path
+        name: ref
+        schema:
+          type: string
+        required: true
+      tags:
+      - discussions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PostComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PostComment'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
   /api/v1/discussions/problem/{ref}/:
     get:
       operationId: discussions_problem_retrieve
-      summary: 'Masala muhokamasi: mavzular sahifasi'
+      description: 'One discussion: a problem''s (`kind=problem`) or a blog entry''s.'
+      summary: 'Muhokama: mavzular sahifasi'
       parameters:
       - in: query
         name: before
@@ -3118,7 +3453,8 @@ paths:
           description: ''
     post:
       operationId: discussions_problem_create
-      summary: Masala muhokamasiga izoh yozish
+      description: 'One discussion: a problem''s (`kind=problem`) or a blog entry''s.'
+      summary: Muhokamaga izoh yozish
       parameters:
       - in: path
         name: ref
@@ -7997,6 +8333,144 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StaffComment'
+          description: ''
+  /api/v1/staff/community/entries/:
+    get:
+      operationId: staff_community_entries_list
+      description: 'Blog moderation: hidden by reports or by staff, never deleted.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffEntryList'
+          description: ''
+    post:
+      operationId: staff_community_entries_create
+      description: 'Blog moderation: hidden by reports or by staff, never deleted.'
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffEntry'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffEntry'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffEntry'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffEntry'
+          description: ''
+  /api/v1/staff/community/entries/{id}/:
+    get:
+      operationId: staff_community_entries_retrieve
+      description: 'Blog moderation: hidden by reports or by staff, never deleted.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this entry.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffEntry'
+          description: ''
+  /api/v1/staff/community/entries/{id}/hide/:
+    post:
+      operationId: staff_community_entries_hide_create
+      description: 'Blog moderation: hidden by reports or by staff, never deleted.'
+      summary: Hide an entry (reports accepted)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this entry.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffEntry'
+          description: ''
+  /api/v1/staff/community/entries/{id}/unhide/:
+    post:
+      operationId: staff_community_entries_unhide_create
+      description: 'Blog moderation: hidden by reports or by staff, never deleted.'
+      summary: Bring an entry back (reports rejected)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this entry.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffEntry'
           description: ''
   /api/v1/staff/contests/:
     get:
@@ -18375,6 +18849,169 @@ components:
         * `plan` - Plan
         * `classroom` - Classroom
         * `staff` - Staff grant
+    Entry:
+      type: object
+      description: An entry in the feed; the body comes only on its own page.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/CommentAuthor'
+          readOnly: true
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        excerpt:
+          type: string
+          description: The opening of the text without Markdown marks or code.
+          readOnly: true
+        score:
+          type: integer
+          readOnly: true
+        my_vote:
+          type: integer
+          readOnly: true
+        mine:
+          type: boolean
+          readOnly: true
+        view_count:
+          type: integer
+          readOnly: true
+        comment_count:
+          type: integer
+          readOnly: true
+          default: 0
+        reading_minutes:
+          type: integer
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        edited_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - author
+      - comment_count
+      - created_at
+      - edited_at
+      - excerpt
+      - id
+      - is_hidden
+      - mine
+      - my_vote
+      - reading_minutes
+      - score
+      - tags
+      - title
+      - view_count
+    EntryDetail:
+      type: object
+      description: An entry in the feed; the body comes only on its own page.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/CommentAuthor'
+          readOnly: true
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        excerpt:
+          type: string
+          description: The opening of the text without Markdown marks or code.
+          readOnly: true
+        score:
+          type: integer
+          readOnly: true
+        my_vote:
+          type: integer
+          readOnly: true
+        mine:
+          type: boolean
+          readOnly: true
+        view_count:
+          type: integer
+          readOnly: true
+        comment_count:
+          type: integer
+          readOnly: true
+          default: 0
+        reading_minutes:
+          type: integer
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        edited_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        body:
+          type: string
+          readOnly: true
+          description: Markdown
+      required:
+      - author
+      - body
+      - comment_count
+      - created_at
+      - edited_at
+      - excerpt
+      - id
+      - is_hidden
+      - mine
+      - my_vote
+      - reading_minutes
+      - score
+      - tags
+      - title
+      - view_count
+    EntryWrite:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          maxLength: 20000
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          maxItems: 10
+      required:
+      - body
+      - title
     ExternalIn:
       type: object
       properties:
@@ -20410,6 +21047,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Duel'
+    PaginatedEntryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entry'
     PaginatedFollowerList:
       type: object
       required:
@@ -21042,6 +21702,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffDuel'
+    PaginatedStaffEntryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffEntry'
     PaginatedStaffHackathonList:
       type: object
       required:
@@ -21640,6 +22323,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SystemUpdate'
+    PaginatedTagCountList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagCount'
     PaginatedTopicList:
       type: object
       required:
@@ -21947,6 +22653,21 @@ components:
         body:
           type: string
           maxLength: 2000
+    PatchedEntryWrite:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          maxLength: 20000
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          maxItems: 10
     PatchedFolder:
       type: object
       properties:
@@ -26346,6 +27067,54 @@ components:
         force:
           type: boolean
           default: false
+    StaffEntry:
+      type: object
+      description: An entry in the moderation list, in the same shape as a comment.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        link:
+          type: string
+          readOnly: true
+        author:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        score:
+          type: integer
+          readOnly: true
+        report_count:
+          type: integer
+          readOnly: true
+        reasons:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+        is_deleted:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - body
+      - created_at
+      - id
+      - is_deleted
+      - is_hidden
+      - link
+      - reasons
+      - report_count
+      - score
     StaffGenerator:
       type: object
       description: |-
@@ -28285,6 +29054,16 @@ components:
       - locale
       - title
       - updated_at
+    TagCount:
+      type: object
+      properties:
+        tag:
+          type: string
+        count:
+          type: integer
+      required:
+      - count
+      - tag
     TargetEnum:
       enum:
       - course

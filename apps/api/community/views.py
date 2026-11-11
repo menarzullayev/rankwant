@@ -22,26 +22,34 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from community import services
-from community.models import Comment, Kind, Report, Target
+from community import blog, services
+from community.models import Comment, Entry, Kind, Report, Target, Vote
 from community.serializers import (
     CommentSerializer,
     CommunityReportSerializer,
     CommunityVoteResultSerializer,
     CommunityVoteSerializer,
     EditCommentSerializer,
+    EntryDetailSerializer,
+    EntrySerializer,
+    EntryWriteSerializer,
     PostCommentSerializer,
     StaffCommentSerializer,
+    StaffEntrySerializer,
+    TagCountSerializer,
     ThreadPageSerializer,
 )
 from community.services import CommunityError, Place
 from core.models import User
+from core.pagination import StandardPagination
 from core.staff import StaffViewSet
 
 #: Errors that mean "no such thing" or "not yours", not a bad request.
 _STATUS = {
     "comment_not_found": status.HTTP_404_NOT_FOUND,
     "comment_not_yours": status.HTTP_403_FORBIDDEN,
+    "entry_not_found": status.HTTP_404_NOT_FOUND,
+    "entry_not_yours": status.HTTP_403_FORBIDDEN,
 }
 
 
@@ -89,17 +97,27 @@ def _one(place: Place, comment: Comment, request: Request) -> dict[str, Any]:
     return dict(CommentSerializer(comment, context=context).data)
 
 
-class ProblemDiscussionView(APIView):
+class DiscussionView(APIView):
+    """One discussion: a problem's (`kind=problem`) or a blog entry's."""
+
+    #: Set per route in `urls.py`.
+    kind = Target.PROBLEM
+
     def get_permissions(self) -> list[Any]:
         return [IsAuthenticated()] if self.request.method == "POST" else [AllowAny()]
 
+    def _place(self, ref: str) -> Place | None:
+        if self.kind == Target.ENTRY:
+            return blog.entry_place(ref)
+        return services.problem_place(ref)
+
     @extend_schema(
-        summary="Masala muhokamasi: mavzular sahifasi",
+        summary="Muhokama: mavzular sahifasi",
         parameters=[OpenApiParameter("before", int, required=False)],
         responses=ThreadPageSerializer,
     )
     def get(self, request: Request, ref: str) -> Response:
-        place = services.problem_place(ref)
+        place = self._place(ref)
         if place is None:
             return _closed()
         raw = request.query_params.get("before", "")
@@ -107,12 +125,12 @@ class ProblemDiscussionView(APIView):
         return Response(_page(place, request, before))
 
     @extend_schema(
-        summary="Masala muhokamasiga izoh yozish",
+        summary="Muhokamaga izoh yozish",
         request=PostCommentSerializer,
         responses={201: CommentSerializer},
     )
     def post(self, request: Request, ref: str) -> Response:
-        place = services.problem_place(ref)
+        place = self._place(ref)
         if place is None:
             return _closed()
         body = PostCommentSerializer(data=request.data)
@@ -251,6 +269,213 @@ class StaffCommentViewSet(StaffViewSet):
         return self._moderate(request, True)
 
     @extend_schema(summary="Izohni qaytarish (shikoyatlar rad)", request=None)
+    @action(detail=True, methods=["post"])
+    def unhide(self, request: Request, pk: str | None = None) -> Response:
+        return self._moderate(request, False)
+
+
+def _address(request: Request) -> str:
+    return str(request.META.get("REMOTE_ADDR", ""))
+
+
+class EntryViewSet(viewsets.GenericViewSet):  # type: ignore[type-arg]
+    """Member blogs (decision 2026-11-11 ④): read by anyone, written by members."""
+
+    serializer_class = EntrySerializer
+    pagination_class = StandardPagination
+    queryset = Entry.objects.none()
+    lookup_value_regex = r"\d+"
+
+    def get_permissions(self) -> list[Any]:
+        if self.action in ("list", "retrieve", "tags"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def _context(self, request: Request, rows: list[Entry]) -> dict[str, Any]:
+        votes: dict[int, int] = {}
+        if request.user.is_authenticated and rows:
+            votes = dict(
+                Vote.objects.filter(
+                    user=request.user, kind=Kind.ENTRY, object_id__in=[r.pk for r in rows]
+                ).values_list("object_id", "value")
+            )
+        viewer = request.user.pk if request.user.is_authenticated else None
+        return {"votes": votes, "viewer_id": viewer, "request": request}
+
+    @extend_schema(
+        summary="Bloglar lentasi",
+        parameters=[
+            OpenApiParameter("tab", str, enum=list(blog.TABS), required=False),
+            OpenApiParameter("tag", str, required=False),
+            OpenApiParameter("author", str, required=False),
+        ],
+    )
+    def list(self, request: Request) -> Response:
+        params = request.query_params
+        tab = params.get("tab", "new")
+        rows = blog.feed(
+            request.user,
+            tab if tab in blog.TABS else "new",
+            tag=params.get("tag", ""),
+            author=params.get("author", ""),
+        )
+        page = self.paginate_queryset(rows) or []
+        data = EntrySerializer(page, many=True, context=self._context(request, page)).data
+        return self.get_paginated_response(data)
+
+    @extend_schema(summary="Blog posti", responses=EntryDetailSerializer)
+    def retrieve(self, request: Request, pk: str) -> Response:
+        entry = (
+            blog.with_comment_count(blog.readable(request.user))
+            .select_related("author")
+            .filter(pk=int(pk))
+            .first()
+        )
+        if entry is None:
+            return Response(
+                {"error": {"code": "entry_not_found", "message": "Not found", "details": {}}},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        blog.count_view(entry, request.user, _address(request))
+        return Response(EntryDetailSerializer(entry, context=self._context(request, [entry])).data)
+
+    @extend_schema(
+        summary="Blog posti yozish",
+        request=EntryWriteSerializer,
+        responses={201: EntryDetailSerializer},
+    )
+    def create(self, request: Request) -> Response:
+        body = EntryWriteSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        try:
+            entry = blog.create(
+                _user(request),
+                body.validated_data["title"],
+                body.validated_data["body"],
+                body.validated_data["tags"],
+            )
+        except CommunityError as exc:
+            return _failed(exc)
+        return Response(
+            EntryDetailSerializer(entry, context=self._context(request, [])).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        summary="Own entry: edit",
+        request=EntryWriteSerializer,
+        responses=EntryDetailSerializer,
+    )
+    def partial_update(self, request: Request, pk: str) -> Response:
+        body = EntryWriteSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        try:
+            entry = blog.edit(
+                _user(request),
+                int(pk),
+                body.validated_data["title"],
+                body.validated_data["body"],
+                body.validated_data["tags"],
+            )
+        except CommunityError as exc:
+            return _failed(exc)
+        return Response(EntryDetailSerializer(entry, context=self._context(request, [entry])).data)
+
+    @extend_schema(summary="Own entry: delete", request=None, responses={204: None})
+    def destroy(self, request: Request, pk: str) -> Response:
+        try:
+            blog.remove(_user(request), int(pk))
+        except CommunityError as exc:
+            return _failed(exc)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(
+        summary="Postga ovoz: 1, -1 yoki 0",
+        request=CommunityVoteSerializer,
+        responses=CommunityVoteResultSerializer,
+    )
+    @action(detail=True, methods=["post"])
+    def vote(self, request: Request, pk: str) -> Response:
+        body = CommunityVoteSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        try:
+            score, mine = services.vote(
+                _user(request), Kind.ENTRY, int(pk), int(body.validated_data["value"])
+            )
+        except CommunityError as exc:
+            return _failed(exc)
+        return Response({"score": score, "my_vote": mine})
+
+    @extend_schema(
+        summary="Post ustidan shikoyat", request=CommunityReportSerializer, responses={201: None}
+    )
+    @action(detail=True, methods=["post"])
+    def report(self, request: Request, pk: str) -> Response:
+        body = CommunityReportSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        try:
+            services.report(
+                _user(request),
+                Kind.ENTRY,
+                int(pk),
+                body.validated_data["reason"],
+                body.validated_data.get("note", ""),
+            )
+        except CommunityError as exc:
+            return _failed(exc)
+        return Response(status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        summary="Popular tags of the last 90 days", responses=TagCountSerializer(many=True)
+    )
+    @action(detail=False, methods=["get"])
+    def tags(self, request: Request) -> Response:
+        return Response([{"tag": tag, "count": n} for tag, n in blog.popular_tags()])
+
+
+class StaffEntryViewSet(StaffViewSet):
+    """Blog moderation: hidden by reports or by staff, never deleted."""
+
+    queryset = Entry.objects.select_related("author")
+    serializer_class = StaffEntrySerializer
+    http_method_names = ["get", "post", "head", "options"]
+    search_fields: ClassVar[list[str]] = ["title", "body", "author__username"]
+    ordering_fields: ClassVar[list[str]] = ["pk", "created_at", "report_count"]
+
+    def get_queryset(self) -> QuerySet[Entry]:
+        rows = super().get_queryset()
+        if self.request.query_params.get("reported") == "1":
+            rows = rows.filter(report_count__gt=0)
+        return rows
+
+    def get_serializer_context(self) -> dict[str, Any]:
+        context = dict(super().get_serializer_context())
+        page = getattr(self, "_page_rows", None)
+        if page:
+            reasons: dict[int, list[str]] = {}
+            for object_id, reason in Report.objects.filter(
+                kind=Kind.ENTRY, object_id__in=[row.pk for row in page], status=Report.Status.OPEN
+            ).values_list("object_id", "reason"):
+                reasons.setdefault(object_id, []).append(reason)
+            context["reasons"] = reasons
+        return context
+
+    def paginate_queryset(self, queryset: Any) -> Any:
+        page = super().paginate_queryset(queryset)
+        self._page_rows = page
+        return page
+
+    def _moderate(self, request: Request, hide: bool) -> Response:
+        entry = services.moderate(_user(request), Kind.ENTRY, int(self.kwargs["pk"]), hide=hide)
+        self._page_rows = [entry]
+        return Response(self.get_serializer(entry).data)
+
+    @extend_schema(summary="Hide an entry (reports accepted)", request=None)
+    @action(detail=True, methods=["post"])
+    def hide(self, request: Request, pk: str | None = None) -> Response:
+        return self._moderate(request, True)
+
+    @extend_schema(summary="Bring an entry back (reports rejected)", request=None)
     @action(detail=True, methods=["post"])
     def unhide(self, request: Request, pk: str | None = None) -> Response:
         return self._moderate(request, False)

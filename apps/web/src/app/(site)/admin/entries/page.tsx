@@ -1,0 +1,22 @@
+import type { Metadata } from "next";
+
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
+
+import { CommentsAdmin } from "@/components/admin/CommentsAdmin";
+
+export const dynamic = "force-dynamic";
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: `${t(locale, "admin.title")} · ${t(locale, "admin.section.entries")}` };
+}
+
+export default function AdminEntriesPage() {
+  return (
+    <CommentsAdmin
+      path="/staff/community/entries/"
+      titleKey="admin.title.entries"
+      bodyLabel="admin.label.text.title"
+    />
+  );
+}

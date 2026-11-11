@@ -1280,19 +1280,19 @@
    Now the height the screen has to spare is handed out in order: first
    between sections, then under the titles, then to the rows. `--rw-nav-spare`
    is that height - the viewport minus the menu at its tightest
-   (45.125rem: the 4rem bar, five titles, twenty-one 24 px rows, 10 px
+   (46.625rem: the 4rem bar, five titles, twenty-two 24 px rows, 10 px
    between sections, 3 px of slack). Each step takes its share and the
    next starts where it stopped, so the menu fills the panel and never
    passes it. In rem: a larger text size compacts sooner.
    A touch screen keeps the tall rows - the drawer scrolls instead. */
 @media (min-width: 1024px) and (pointer: fine) {
   .rw-sidenav-list {
-    --rw-nav-spare: calc(100vh - 45.125rem);
+    --rw-nav-spare: calc(100vh - 46.625rem);
     --rw-nav-sep: calc(
       0.625rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem) +
-        clamp(0rem, (var(--rw-nav-spare) - 7.6875rem) / 4, 0.25rem)
+        clamp(0rem, (var(--rw-nav-spare) - 7.9375rem) / 4, 0.25rem)
     );
-    padding-bottom: clamp(0.125rem, var(--rw-nav-spare) - 23.8125rem, 1.5rem);
+    padding-bottom: clamp(0.125rem, var(--rw-nav-spare) - 24.8125rem, 1.5rem);
   }
   .rw-sidenav-list > div:has(> p) {
     margin-bottom: calc(var(--rw-nav-sep) / 2);
@@ -1307,22 +1307,22 @@
   .rw-sidenav-list > div > p {
     margin-bottom: calc(
       0.1875rem + clamp(0rem, (var(--rw-nav-spare) - 1.5rem) / 5, 0.1875rem) +
-        clamp(0rem, (var(--rw-nav-spare) - 8.6875rem) / 5, 0.125rem)
+        clamp(0rem, (var(--rw-nav-spare) - 8.9375rem) / 5, 0.125rem)
     );
   }
   .rw-sidenav-list ul {
-    gap: clamp(0rem, (var(--rw-nav-spare) - 19.8125rem) / 16, 0.25rem);
+    gap: clamp(0rem, (var(--rw-nav-spare) - 20.5625rem) / 17, 0.25rem);
   }
   .rw-sidenav-list .menu-item {
     padding-block: calc(
-      0.125rem + clamp(0rem, (var(--rw-nav-spare) - 2.4375rem) / 42, 0.125rem) +
-        clamp(0rem, (var(--rw-nav-spare) - 9.3125rem) / 42, 0.25rem)
+      0.125rem + clamp(0rem, (var(--rw-nav-spare) - 2.4375rem) / 44, 0.125rem) +
+        clamp(0rem, (var(--rw-nav-spare) - 9.5625rem) / 44, 0.25rem)
     );
   }
 }
 /* While the rows are compact a hairline marks where a section ends;
    comfortable rows (from about 955 px of height) do not need it. */
-@media (min-width: 1024px) and (max-height: 59.6875rem) and (pointer: fine) {
+@media (min-width: 1024px) and (max-height: 61.6875rem) and (pointer: fine) {
   .rw-sidenav-list > div:has(> p) + div:has(> p) {
     border-top-color: color-mix(in srgb, var(--rw-divider) 30%, transparent);
   }
