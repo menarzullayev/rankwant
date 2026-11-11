@@ -1,8 +1,8 @@
-# Lowest Common Ancestor - $O(\sqrt{N})$ and $O(\log N)$ with $O(N)$ preprocessing
+# Lowest Common Ancestor - $O(\sqrt{N})$ and $O(\log N)$ with $O(N)$ preprocessing {#lowest-common-ancestor-osqrtn-and-olog-n-with-on-preprocessing}
 
 Given a tree $G$. Given queries of the form $(v_1, v_2)$, for each query you need to find the lowest common ancestor (or least common ancestor), i.e. a vertex $v$ that lies on the path from the root to $v_1$ and the path from the root to $v_2$, and the vertex should be the lowest. In other words, the desired vertex $v$ is the most bottom ancestor of $v_1$ and $v_2$. It is obvious that their lowest common ancestor lies on a shortest path from $v_1$ and $v_2$. Also, if $v_1$ is the ancestor of $v_2$, $v_1$ is their lowest common ancestor.
 
-### The Idea of the Algorithm
+### The Idea of the Algorithm {#the-idea-of-the-algorithm}
 
 Before answering the queries, we need to **preprocess** the tree.
 We make a [DFS](/algorithms/graph/depth-first-search) traversal starting at the root and we build a list $\text{euler}$ which stores the order of the vertices that we visit (a vertex is added to the list when we first visit it, and after the return of the DFS traversals to its children).
@@ -46,7 +46,7 @@ Using a [Segment Tree](/algorithms/data-structures/segment-tree) you can answer 
 
 Since there will almost never be any update to the stored values, a [Sparse Table](/algorithms/data-structures/sparse-table) might be a better choice, allowing $O(1)$ query answering with $O(N\log N)$ build time.
 
-### Implementation
+### Implementation {#implementation}
 
 In the following implementation of the LCA algorithm a Segment Tree is used.
 
@@ -117,7 +117,7 @@ struct LCA {
 
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
  - [SPOJ: LCA](http://www.spoj.com/problems/LCA/)
  - [SPOJ: DISQUERY](http://www.spoj.com/problems/DISQUERY/)
  - [TIMUS: 1471. Distance in the Tree](http://acm.timus.ru/problem.aspx?space=1&num=1471)

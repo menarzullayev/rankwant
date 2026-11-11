@@ -1,4 +1,4 @@
-# Floyd's Linked List Cycle Finding Algorithm
+# Floyd's Linked List Cycle Finding Algorithm {#floyds-linked-list-cycle-finding-algorithm}
 
 Given a linked list where the starting point of that linked list is denoted by **head**, and there may or may not be a cycle present. For instance:
 
@@ -6,14 +6,14 @@ Given a linked list where the starting point of that linked list is denoted by *
 
 Here we need to find out the point **C**, i.e the starting point of the cycle.
 
-## Proposed algorithm
+## Proposed algorithm {#proposed-algorithm}
 The algorithm is called **Floyd’s Cycle Algorithm or Tortoise And Hare algorithm**.
 In order to figure out the starting point of the cycle, we need to figure out if a cycle even exists.
 This involves two steps:
 1. Figure out the presence of the cycle.
 2. Find out the starting point of the cycle.
 
-### Step 1: Presence of the cycle
+### Step 1: Presence of the cycle {#step-1-presence-of-the-cycle}
 1. Take two pointers $slow$ and $fast$.
 2. Both of them will point to head of the linked list initially.
 3. $slow$ will move one step at a time.
@@ -25,7 +25,7 @@ This involves two steps:
   ![](/algorithms-media/others/tortoise_hare_cycle_found.png)
 
 Now, that we have figured out if there is a cycle present in the linked list, for the next step we need to find out the starting point of cycle, i.e., **C**.
-### Step 2: Starting point of the cycle
+### Step 2: Starting point of the cycle {#step-2-starting-point-of-the-cycle}
 1. Reset the $slow$ pointer to the **head** of the linked list.
 2. Move both pointers one step at a time.
 3. The point they will meet at will be the starting point of the cycle.
@@ -59,9 +59,9 @@ while(slow!=fast){
 return slow; // the starting point of the cycle.
 ```
 
-## Why does it work
+## Why does it work {#why-does-it-work}
 
-### Step 1: Presence of the cycle
+### Step 1: Presence of the cycle {#step-1-presence-of-the-cycle}
 Since the pointer $fast$ is moving with twice as speed as $slow$, we can say that at any point of time, $fast$ would have covered twice as much distance as $slow$.
 We can also deduce that the difference between the distance covered by both of these pointers is increasing by $1$. 
 ```
@@ -72,7 +72,7 @@ diff: 0 --> 1 --> 2 --> 3 --> 4 (difference between distance covered by both poi
 Let $L$ denote the length of the cycle, and $a$ represent the number of steps required for the slow pointer to reach the entry of cycle. There exists a positive integer $k$ ($k > 0$) such that $k \cdot L \geq a$.
 When the slow pointer has moved $k \cdot L$ steps, and the fast pointer has covered $2 \cdot k \cdot L$ steps, both pointers find themselves within the cycle. At this point, there is a separation of $k \cdot L$ between them. Given that the cycle's length remains $L$, this signifies that they meet at the same point within the cycle, resulting in their encounter.
 
-### Step 2: Starting point of the cycle
+### Step 2: Starting point of the cycle {#step-2-starting-point-of-the-cycle}
 
 Let's try to calculate the distance covered by both of the pointers till the point they meet within the cycle.
 
@@ -103,7 +103,7 @@ This basically means that $a$ steps is same as doing some number of full loops i
 Since the fast pointer already is $b$ steps ahead of the entry of cycle, if fast pointer moves another $a$ steps it will end up at the entry of the cycle.
 And since we let the slow pointer start at the start of the linked list, after $a$ steps it will also end up at the cycle entry. So, if they both move $a$ step they both will meet the entry of cycle.
 
-# Problems:
+# Problems: {#problems}
 - [Linked List Cycle (EASY)](https://leetcode.com/problems/linked-list-cycle/)
 - [Happy Number (Easy)](https://leetcode.com/problems/happy-number/)
 - [Find the Duplicate Number (Medium)](https://leetcode.com/problems/find-the-duplicate-number/)

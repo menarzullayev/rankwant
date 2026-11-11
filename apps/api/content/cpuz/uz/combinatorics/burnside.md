@@ -1,12 +1,12 @@
-# Burnside lemmasi va Pólya sanash teoremasi
+# Burnside lemmasi va Pólya sanash teoremasi {#burnsides-lemma-polya-enumeration-theorem}
 
-## Burnside lemmasi
+## Burnside lemmasi {#burnsides-lemma}
 
 **Burnside lemmasi** 1897-yilda Burnside tomonidan ifodalangan va isbotlangan. Biroq tarixan uni 1887-yilda Frobenius, undan ham oldin — 1845-yilda Cauchy kashf qilgan. Shu sababli u ba’zan **Cauchy–Frobenius lemmasi** deb ham ataladi.
 
 Burnside lemmasi ichki simmetriyaga asoslanib, to‘plamdagi ekvivalentlik sinflari sonini hisoblash imkonini beradi.
 
-### Obyektlar va tasvirlar
+### Obyektlar va tasvirlar {#objects-and-representations}
 
 Obyektlar soni bilan ularning tasvirlari sonini aniq farqlash kerak.
 
@@ -16,7 +16,7 @@ Bizning vazifamiz obyektlar sonini yoki xuddi shu ma’noda ekvivalentlik sinfla
 
 Quyidagi misol obyekt bilan tasvir o‘rtasidagi farqni aniqroq ko‘rsatadi.
 
-### Misol: ikkilik daraxtlarni bo‘yash
+### Misol: ikkilik daraxtlarni bo‘yash {#example-coloring-of-binary-trees}
 
 Quyidagi masala berilgan bo‘lsin.
 
@@ -36,7 +36,7 @@ f_1(2)=1 & f_2(2)=0\\
 f_1(3)=0 & f_2(3)=1
 \end{array}$$
 
-### Invariant permutatsiyalar
+### Invariant permutatsiyalar {#invariant-permutations}
 
 Nega $f_1$ va $f_2$ funksiyalar bir ekvivalentlik sinfiga tegishli?
 
@@ -60,7 +60,7 @@ Invariant permutatsiyalar **guruh** hosil qilishi qiyin emas: ikkita invariant p
 
 Invariant permutatsiyalar guruhini $G$ bilan belgilaymiz.
 
-### Lemma ta’rifi
+### Lemma ta’rifi {#the-statement-of-the-lemma}
 
 Lemmani ifodalash uchun algebradan yana bitta ta’rif kerak.
 
@@ -78,7 +78,7 @@ $$|\text{Classes}|=\frac1{|G|}\sum_{\pi\in G}I(\pi)$$
 
 Burnside lemmasining o‘zi amaliyotda har doim ham juda qulay emas, chunki $I(\pi)$ qiymatini tez topish yo‘li darhol ko‘rinmasligi mumkin. Shunga qaramay, u ekvivalentlik sinflarini hisoblash g‘oyasining matematik mohiyatini eng ravshan ko‘rsatadi.
 
-### Burnside lemmasining isboti
+### Burnside lemmasining isboti {#proof-of-burnsides-lemma}
 
 Bu yerda berilgan isbot amaliy qo‘llanishlar uchun muhim emas, shuning uchun birinchi o‘qishda uni tashlab ketish mumkin.
 
@@ -118,7 +118,7 @@ $$|\text{Classes}|\cdot|G|=\sum_fJ(f)$$
 
 Bu talab qilingan tenglikdir.
 
-## Pólya sanash teoremasi
+## Pólya sanash teoremasi {#polya-enumeration-theorem}
 
 Pólya sanash teoremasi Burnside lemmasining umumlashmasi bo‘lib, ekvivalentlik sinflari sonini topish uchun qulayroq vosita ham beradi.
 
@@ -132,7 +132,7 @@ $$|\text{Classes}|=\frac1{|G|}\sum_{\pi\in G}k^{C(\pi)}$$
 
 Bu yerda $k$ — tasvirning har bir elementi qabul qilishi mumkin bo‘lgan qiymatlar soni. Ikkilik daraxtni bo‘yash misolida $k=2$.
 
-### Asoslash
+### Asoslash {#evidence}
 
 Bu formula Burnside lemmasining bevosita natijasidir. Uni olish uchun lemmada qatnashadigan $I(\pi)$ uchun aniq ifodani topish kifoya.
 
@@ -144,7 +144,7 @@ Shuning uchun $\pi$ ning har bir sikli uchun $k$ ta mumkin qiymatdan bittasini t
 
 $$I(\pi)=k^{C(\pi)}$$
 
-## Qo‘llanish: marjonlarni bo‘yash
+## Qo‘llanish: marjonlarni bo‘yash {#application-coloring-necklaces}
 
 “Marjon” masalasi klassik kombinatorik masalalardan biridir.
 
@@ -186,7 +186,7 @@ Bu qiymat uchun aniq ifoda topamiz. Har qanday shunday $i$ son $i=dj$, $\gcd(j, 
 
 $$\frac1n\sum_{d ~|~ n}\phi\left(\frac nd\right)k^d$$
 
-## Qo‘llanish: torusni bo‘yash
+## Qo‘llanish: torusni bo‘yash {#application-coloring-a-torus}
 
 Ekvivalentlik sinflari soni uchun har doim ham aniq formula chiqarib bo‘lmaydi. Ko‘p masalalarda guruhdagi permutatsiyalar soni qo‘lda hisoblash uchun juda katta bo‘ladi va ularning sikllar sonini analitik topib bo‘lmaydi.
 
@@ -261,7 +261,7 @@ int solve(int n, int m) {
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [CSES — Counting Necklaces](https://cses.fi/problemset/task/2209)
 - [CSES — Counting Grids](https://cses.fi/problemset/task/2210)

@@ -1,4 +1,4 @@
-# Chiziqli taqqoslama
+# Chiziqli taqqoslama {#linear-congruence-equation}
 
 Bu tenglama quyidagi ko‘rinishga ega:
 
@@ -8,7 +8,7 @@ bunda $a$, $b$ va $n$ berilgan butun sonlar, $x$ esa noma’lum butun son.
 
 $[0,n-1]$ oraliqdagi $x$ qiymatini topish talab qilinadi (ravshanki, butun sonlar o‘qida bir-biridan $n \cdot k$ ga farq qiladigan cheksiz ko‘p yechim bo‘lishi mumkin; bunda $k$ ixtiyoriy butun son). Agar yechim yagona bo‘lmasa, barcha yechimlarni qanday olishni ham ko‘rib chiqamiz.
 
-## Teskari elementni topish orqali yechish
+## Teskari elementni topish orqali yechish {#solution-by-finding-the-inverse-element}
 
 Avval $a$ va $n$ **o‘zaro tub** bo‘lgan ($\gcd(a,n)=1$) soddaroq holatni ko‘rib chiqamiz.
 Bu holda $a$ ning [teskari elementini](/algorithms/algebra/module-inverse) topib, tenglamaning ikkala tomonini unga ko‘paytirish orqali **yagona** yechimni olamiz:
@@ -36,7 +36,7 @@ $$x_i \equiv (x^\prime + i\cdot n^\prime) \pmod n \quad \text{for } i = 0 \ldots
 
 Xulosa qilib, chiziqli taqqoslamaning **yechimlari soni** yoki $g = \gcd(a,n)$ ga, yoki nolga teng.
 
-## Kengaytirilgan Evklid algoritmi yordamida yechish
+## Kengaytirilgan Evklid algoritmi yordamida yechish {#solution-with-the-extended-euclidean-algorithm}
 
 Chiziqli taqqoslamani quyidagi Diofant tenglamasiga aylantirib yozish mumkin:
 

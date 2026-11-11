@@ -1,4 +1,4 @@
-# Minimum spanning tree - Prim's algorithm
+# Minimum spanning tree - Prim's algorithm {#minimum-spanning-tree-prims-algorithm}
 
 Given a weighted, undirected graph $G$ with $n$ vertices and $m$ edges.
 You want to find a spanning tree of this graph which connects all vertices and has the least weight (i.e. the sum of weights of edges is minimal).
@@ -17,13 +17,13 @@ For instance in the following problem:
 there are $n$ cities and for each pair of cities we are given the cost to build a road between them (or we know that is physically impossible to build a road between them).
 We have to build roads, such that we can get from each city to every other city, and the cost for building all roads is minimal.
 
-## Prim's Algorithm
+## Prim's Algorithm {#prims-algorithm}
 
 This algorithm was originally discovered by the Czech mathematician Vojtěch Jarník in 1930.
 However this algorithm is mostly known as Prim's algorithm after the American mathematician Robert Clay Prim, who rediscovered and republished it in 1957.
 Additionally Edsger Dijkstra published this algorithm in 1959.
 
-### Algorithm description
+### Algorithm description {#algorithm-description}
 
 Here we describe the algorithm in its simplest form.
 The minimum spanning tree is built gradually by adding edges one at a time.
@@ -37,7 +37,7 @@ The process is repeated until the spanning tree contains all vertices (or equiva
 In the end the constructed spanning tree will be minimal.
 If the graph was originally not connected, then there doesn't exist a spanning tree, so the number of selected edges will be less than $n - 1$.
 
-### Proof
+### Proof {#proof}
 
 Let the graph $G$ be connected, i.e. the answer exists.
 We denote by $T$ the resulting graph found by Prim's algorithm, and by $S$ the minimum spanning tree.
@@ -61,12 +61,12 @@ And $e$ has to have the same weight as $f$.
 
 Thus all the edges we pick in Prim's algorithm have the same weights as the edges of any minimum spanning tree, which means that Prim's algorithm really generates a minimum spanning tree.
 
-## Implementation
+## Implementation {#implementation}
 
 The complexity of the algorithm depends on how we search for the next minimal edge among the appropriate edges.
 There are multiple approaches leading to different complexities and different implementations.
 
-### Trivial implementations: $O(n m)$ and $O(n^2 + m \log n)$
+### Trivial implementations: $O(n m)$ and $O(n^2 + m \log n)$ {#trivial-implementations-on-m-and-on2-m-log-n}
 
 If we search the edge by iterating over all possible edges, then it takes $O(m)$ time to find the edge with the minimal weight.
 The total complexity will be $O(n m)$.
@@ -79,7 +79,7 @@ This give a complexity of $O(n^2 + m)$, and for sorting the edges an additional 
 
 Below we consider two slightly different algorithms, one for dense and one for sparse graphs, both with a better complexity.
 
-### Dense graphs: $O(n^2)$
+### Dense graphs: $O(n^2)$ {#dense-graphs-on2}
 
 We approach this problem from a different angle:
 for every not yet selected vertex we will store the minimum edge to an already selected vertex.
@@ -142,7 +142,7 @@ The adjacency matrix `adj[][]` of size $n \times n$ stores the weights of the ed
 The algorithm uses two arrays: the flag `selected[]`, which indicates which vertices we already have selected, and the array `min_e[]` which stores the edge with minimal weight to a selected vertex for each not-yet-selected vertex (it stores the weight and the end vertex).
 The algorithm does $n$ steps, in each iteration the vertex with the smallest edge weight is selected, and the `min_e[]` of all other vertices gets updated.
 
-### Sparse graphs: $O(m \log n)$
+### Sparse graphs: $O(m \log n)$ {#sparse-graphs-om-log-n}
 
 In the above described algorithm it is possible to interpret the operations of finding the minimum and modifying some values as set operations.
 These two classical operations are supported by many data structure, for example by `set` in C++ (which are implemented via red-black trees).

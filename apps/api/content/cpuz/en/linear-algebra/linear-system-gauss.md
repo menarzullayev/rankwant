@@ -1,4 +1,4 @@
-# Gauss method for solving system of linear equations
+# Gauss method for solving system of linear equations {#gauss-method-for-solving-system-of-linear-equations}
 
 Given a system of $n$ linear algebraic equations (SLAE) with $m$ unknowns. You are asked to solve the system: to determine if it has no solution, exactly one solution or infinite number of solutions. And in case it has at least one solution, find any of them.
 
@@ -28,11 +28,11 @@ a_{21} x_1 + a_{22} x_2 + &\dots + a_{2m} x_m \equiv b_2 \pmod p \\
 a_{n1} x_1 + a_{n2} x_2 + &\dots + a_{nm} x_m \equiv b_n \pmod p
 \end{align}$$
 
-## Gauss
+## Gauss {#gauss}
 
 Strictly speaking, the method described below should be called "Gauss-Jordan", or Gauss-Jordan elimination, because it is a variation of the Gauss method, described by Jordan in 1887.
 
-## Overview
+## Overview {#overview}
 
 The algorithm is a `sequential elimination` of the variables in each equation, until each equation will have only one remaining variable. If $n = m$, you can think of it as transforming the matrix $A$ to identity matrix, and solve the equation in this obvious case, where solution is unique and is equal to coefficient $b_i$.
 
@@ -49,7 +49,7 @@ Similarly, we perform the second step of the algorithm, where we consider the se
 
 We continue this process for all columns of matrix $A$. If $n = m$, then $A$ will become identity matrix.
 
-## Search for the pivoting element
+## Search for the pivoting element {#search-for-the-pivoting-element}
 
 The described scheme left out many details. At the $i$th step, if $a_{ii}$ is zero, we cannot apply directly the described method. Instead, we must first `select a pivoting row`: find one row of the matrix where the $i$th column is non-zero, and then swap the two rows.
 
@@ -57,7 +57,7 @@ Note that, here we swap rows but not columns. This is because if you swap column
 
 In many implementations, when $a_{ii} \neq 0$, you can see people still swap the $i$th row with some pivoting row, using some heuristics such as choosing the pivoting row with maximum absolute value of $a_{ji}$. This heuristic is used to reduce the value range of the matrix in later steps. Without this heuristic, even for matrices of size about $20$, the error will be too big and can cause overflow for floating points data types of C++.
 
-## Degenerate cases
+## Degenerate cases {#degenerate-cases}
 
 In the case where $m = n$ and the system is non-degenerate (i.e. it has non-zero determinant, and has unique solution), the algorithm described above will transform $A$ into identity matrix.
 
@@ -67,7 +67,7 @@ So, some of the variables in the process can be found to be independent. When th
 
 In general, if you find at least one independent variable, it can take any arbitrary value, while the other (dependent) variables are expressed through it.  This means that when we work in the field of real numbers, the system potentially has infinitely many solutions. But you should remember that when there are independent variables, SLAE can have no solution at all. This happens when the remaining untreated equations have at least one non-zero constant term. You can check this by assigning zeros to all independent variables, calculate other variables, and then plug in to the original SLAE to check if they satisfy it.
 
-## Implementation
+## Implementation {#implementation}
 
 Following is an implementation of Gauss-Jordan. Choosing the pivot row is done with heuristic: choosing maximum value in the current column.
 
@@ -130,7 +130,7 @@ Implementation notes:
 * In this implementation, the current $i$th line is not divided by $a_{ii}$ as described above, so in the end the matrix is not identity matrix (though apparently dividing the $i$th line can help reducing errors).
 * After finding a solution, it is inserted back into the matrix - to check whether the system has at least one solution or not. If the test solution is successful, then the function returns 1 or $\inf$, depending on whether there is at least one independent variable.
 
-## Complexity
+## Complexity {#complexity}
 
 Now we should estimate the complexity of this algorithm. The algorithm consists of $m$ phases, in each phase:
 
@@ -142,7 +142,7 @@ In case $n = m$, the complexity is simply $O(n^3)$.
 
 Note that when the SLAE is not on real numbers, but is in the modulo two, then the system can be solved much faster, which is described below.
 
-## Acceleration of the algorithm
+## Acceleration of the algorithm {#acceleration-of-the-algorithm}
 
 The previous implementation can be sped up by two times, by dividing the algorithm into two phases: forward and reverse:
 
@@ -151,7 +151,7 @@ The previous implementation can be sped up by two times, by dividing the algorit
 
 Reverse phase only takes $O(nm)$, which is much faster than forward phase. In forward phase, we reduce the number of operations by half, thus reducing the running time of the implementation.
 
-## Solving modular SLAE
+## Solving modular SLAE {#solving-modular-slae}
 
 For solving SLAE in some modulus, we can still use the described algorithm. However, in case the modulus is equal to 2, we can perform Gauss-Jordan elimination much more effectively using bitwise operations and C++ bitset data types:
 
@@ -179,7 +179,7 @@ int gauss (vector < bitset<N> > a, int n, int m, bitset<N> & ans) {
 
 Since we use bit compress, the implementation is not only shorter, but also 32 times faster.
 
-## A little note about different heuristics of choosing pivoting row
+## A little note about different heuristics of choosing pivoting row {#a-little-note-about-different-heuristics-of-choosing-pivoting-row}
 
 There is no general rule for what heuristics to use.
 
@@ -189,7 +189,7 @@ Though, you should note that both heuristics is dependent on how much the origin
 
 Implicit pivoting compares elements as if both lines were normalized, so that the maximum element would be unity. To implement this technique, one need to maintain maximum in each row (or maintain each line so that maximum is unity, but this can lead to increase in the accumulated error).
 
-## Improve the solution
+## Improve the solution {#improve-the-solution}
 
 Despite various heuristics, Gauss-Jordan algorithm can still lead to large errors in special matrices even of size $50 - 100$.
 
@@ -197,7 +197,7 @@ Therefore, the resulting Gauss-Jordan solution must sometimes be improved by app
 
 Thus, the solution turns into two-step: First, Gauss-Jordan algorithm is applied, and then a numerical method taking initial solution as solution in the first step.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [Spoj - Xor Maximization](http://www.spoj.com/problems/XMAX/)
 * [Codechef - Knight Moving](https://www.codechef.com/SEP12/problems/KNGHTMOV)
 * [Lightoj - Graph Coloring](http://lightoj.com/volume_showproblem.php?problem=1279)

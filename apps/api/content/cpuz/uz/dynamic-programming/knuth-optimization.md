@@ -1,8 +1,8 @@
-# Knuth optimallashtirishi
+# Knuth optimallashtirishi {#knuths-optimization}
 
 Knuth–Yao tezlashtirishi deb ham ataladigan Knuth optimallashtirishi oraliqlar bo‘yicha dinamik dasturlashning maxsus holati bo‘lib, yechim vaqt murakkabligini chiziqli koeffitsiyentga yaxshilaydi: standart oraliq DPdagi $O(n^3)$ dan $O(n^2)$ gacha.
 
-## Shartlar
+## Shartlar {#conditions}
 
 Tezlashtirish quyidagi ko‘rinishdagi o‘tishlarga qo‘llanadi:
 
@@ -20,11 +20,11 @@ $C$ xarajat funksiyasi barcha $a \leq b \leq c \leq d$ uchun quyidagi shartlarni
 
 Bu natija quyida isbotlanadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 DP holatlarini shunday tartibda qayta ishlaymizki, $dp(i, j)$ dan oldin $dp(i, j-1)$ va $dp(i+1, j)$, ular bilan birga esa $opt(i, j-1)$ va $opt(i+1, j)$ hisoblangan bo‘lsin. Shunda $opt(i, j)$ ni hisoblashda $k$ ning $i$ dan $j-1$ gacha bo‘lgan barcha qiymatlarini emas, faqat $opt(i, j-1)$ dan $opt(i+1, j)$ gacha bo‘lganlarini tekshirish kifoya. $(i,j)$ juftliklarini shu tartibda ko‘rish uchun ichma-ich sikllarda $i$ ni maksimal qiymatdan minimal qiymatgacha, $j$ ni esa $i+1$ dan maksimal qiymatgacha yuritish yetarli.
 
-### Umumiy implementatsiya
+### Umumiy implementatsiya {#generic-implementation}
 
 Implementatsiya masalaga qarab o‘zgarsa-da, quyida ancha umumiy misol keltirilgan. Kod tuzilishi oraliq DP kodiga deyarli aynan o‘xshaydi.
 
@@ -62,7 +62,7 @@ int solve() {
 }
 ```
 
-### Murakkablik
+### Murakkablik {#complexity}
 
 Algoritm murakkabligini quyidagi yig‘indi orqali baholash mumkin:
 
@@ -79,13 +79,13 @@ $$
 
 sifatida baholash mumkin. Oddiy oraliq DP ishlatilganda esa baho $O(n^3)$ bo‘lardi.
 
-### Amaliyotda
+### Amaliyotda {#on-practice}
 
 Knuth optimallashtirishining eng ko‘p uchraydigan qo‘llanishi yuqoridagi o‘tishga ega oraliq DPdir. Asosiy qiyinchilik — xarajat funksiyasi berilgan shartlarni qanoatlantirishini isbotlash. Eng sodda holatda $C(i,j)$ xarajat funksiyasi qandaydir massivning $S[i, i+1, ..., j]$ qism massivi elementlari yig‘indisidan iborat bo‘ladi (massiv masalaga bog‘liq). Ba’zan xarajat funksiyasi murakkabroq ham bo‘lishi mumkin.
 
 Shuni yodda tutingki, DP o‘tishi va xarajat funksiyasiga qo‘yilgan shartlardan ham muhimroq narsa — optimal bo‘linish nuqtasi haqidagi tengsizlikdir. Ayrim masalalarda, masalan optimal ikkilik qidiruv daraxti masalasida — bu optimallashtirish dastlab aynan shu masala uchun yaratilgan — o‘tish va xarajat funksiyalari kamroq ravshan bo‘lishi mumkin. Shunga qaramay, $opt(i, j-1) \leq opt(i, j) \leq opt(i+1, j)$ ekanini isbotlashning o‘zi optimallashtirishdan foydalanish uchun yetarli.
 
-### To‘g‘rilik isboti
+### To‘g‘rilik isboti {#proof-of-correctness}
 
 Algoritmning $C(i,j)$ ga qo‘yilgan shartlar nuqtayi nazaridan to‘g‘riligini isbotlash uchun berilgan shartlar bajarilganda
 
@@ -179,14 +179,14 @@ Shu bilan tengsizlikning birinchi qismi, ya’ni $opt(i,j-1)\leq opt(i,j)$ isbot
 
 Shu bilan isbot yakunlandi.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [UVA - Cutting Sticks](https://onlinejudge.org/external/100/10003.pdf)
 - [UVA - Prefix Codes](https://onlinejudge.org/external/120/12057.pdf)
 - [SPOJ - Breaking String](https://www.spoj.com/problems/BRKSTRNG/)
 - [UVA - Optimal Binary Search Tree](https://onlinejudge.org/external/103/10304.pdf)
 
-## Manbalar
+## Manbalar {#references}
 
 - [Geeksforgeeks maqolasi](https://www.geeksforgeeks.org/knuths-optimization-in-dynamic-programming/)
 - [DP tezlashtirishlari haqidagi hujjat](https://home.cse.ust.hk/~golin/COMP572/Notes/DP_speedup.pdf)

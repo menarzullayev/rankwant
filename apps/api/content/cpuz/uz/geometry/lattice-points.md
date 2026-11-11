@@ -1,4 +1,4 @@
-# Panjaraviy bo‘lmagan ko‘pburchak ichidagi panjara nuqtalari
+# Panjaraviy bo‘lmagan ko‘pburchak ichidagi panjara nuqtalari {#lattice-points-inside-non-lattice-polygon}
 
 Panjaraviy ko‘pburchaklar uchun ko‘pburchak ichidagi panjara nuqtalarini sanash uchun Pick formulasi mavjud.
 Uchlari ixtiyoriy bo‘lgan ko‘pburchaklar-chi?
@@ -56,7 +56,7 @@ Ikki holat mavjud:
 
     Ko‘rib turganingizdek, yangi koordinatalar sistemasida chiziqli funksiyaning koeffitsiyenti $\tfrac 1 k$ bo‘ladi va uning nol nuqtasi $\lfloor k\cdot n + b \rfloor-(k\cdot n+b)$ nuqtada joylashadi; bu yuqoridagi formulani to‘g‘ri qiladi.
 
-## Murakkablik tahlili
+## Murakkablik tahlili {#complexity-analysis}
 
 Biz ko‘pi bilan $\dfrac{(k(n-1)+2b)n}{2}$ ta nuqtani sanashimiz kerak.
 Ularning ichidan birinchi qadamdayoq $\dfrac{\lfloor k \rfloor (n-1)+2\lfloor b \rfloor}{2}$ tasini sanaymiz.
@@ -64,7 +64,7 @@ $b$ ni juda kichik deb hisoblash mumkin, chunki uni avvalo $1$ dan kichik qilib 
 Bu holda barcha nuqtalarning taxminan $\dfrac{\lfloor k \rfloor}{k} \geq \dfrac 1 2$ qismini sanaymiz, deyish mumkin.
 Shunday qilib, $O(\log n)$ qadamda tugatamiz.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida $0 \leq x < n$ va $0 < y \leq \lfloor k x+b\rfloor$ shartlarni qanoatlantiruvchi butun $(x;y)$ nuqtalar sonini hisoblaydigan sodda funksiya keltirilgan:
 

@@ -1,6 +1,6 @@
-# Suffikslar massivi
+# Suffikslar massivi {#suffix-array}
 
-## Ta’rif
+## Ta’rif {#definition}
 
 Uzunligi $n$ bo‘lgan $s$ satr berilgan bo‘lsin. $s$ satrning $i$-suffiksi deb $s[i \ldots n-1]$ ostsatriga aytiladi.
 
@@ -30,13 +30,13 @@ Demak, $s$ uchun suffikslar massivi $(2,~3,~0,~4,~1)$ bo‘ladi.
 
 Ma’lumotlar tuzilmasi sifatida suffikslar massivi ma’lumotlarni siqish, bioinformatika va umuman satrlar hamda satr qidiruvi bilan ishlaydigan sohalarda keng qo‘llanadi.
 
-## Qurish
+## Qurish {#construction}
 
-### $O(n^2\log n)$ usul
+### $O(n^2\log n)$ usul {#on2-log-n-approach}
 
 Bu eng sodda usuldir. Barcha suffikslarni hosil qilamiz, ularning dastlabki indekslarini saqlagan holda quicksort yoki mergesort yordamida saralaymiz. Saralash $O(n\log n)$ ta taqqoslash bajaradi, ikki satrni taqqoslash esa qo‘shimcha $O(n)$ vaqt oladi. Shuning uchun yakuniy murakkablik $O(n^2\log n)$ bo‘ladi.
 
-### $O(n\log n)$ usul
+### $O(n\log n)$ usul {#on-log-n-approach}
 
 Qat’iy aytganda, quyidagi algoritm suffikslarni emas, satrning siklik siljishlarini saralaydi. Biroq undan suffikslarni saralash algoritmini juda oson olish mumkin: satr oxiriga undagi barcha belgilardan kichik bo‘lgan ixtiyoriy belgi qo‘shish kifoya. Odatda \$ belgisi ishlatiladi. Shunda saralangan siklik siljishlar tartibi saralangan suffikslar tartibiga teng bo‘ladi. Buni $dabbb$ satri misolida ko‘rish mumkin:
 
@@ -172,19 +172,19 @@ vector<int> suffix_array_construction(string s) {
 }
 ```
 
-## Qo‘llanishlar
+## Qo‘llanishlar {#applications}
 
-### Eng kichik siklik siljishni topish
+### Eng kichik siklik siljishni topish {#finding-the-smallest-cyclic-shift}
 
 Yuqoridagi algoritm satr oxiriga belgi qo‘shmasdan barcha siklik siljishlarni saralaydi. Shuning uchun $p[0]$ eng kichik siklik siljishning boshlanish pozitsiyasini beradi.
 
-### Satr ichidan ostsatrni topish
+### Satr ichidan ostsatrni topish {#finding-a-substring-in-a-string}
 
 Matn $t$ oldindan ma’lum, qidiriladigan $s$ satr esa so‘rov vaqtida beriladigan holatni ko‘raylik. $t$ uchun suffikslar massivini $O(|t|\log|t|)$ vaqtda quramiz. $s$ ning har qanday uchrashi $t$ ning biror suffiksining prefiksi bo‘lishi kerak. Suffikslar saralanganligi uchun $p$ massivida $s$ bo‘yicha binary search bajarish mumkin.
 
 Binary search davomida joriy suffiksni $s$ bilan taqqoslash $O(|s|)$ vaqt oladi, demak qidiruv murakkabligi $O(|s|\log|t|)$ bo‘ladi. Agar $s$ matnda bir necha marta uchrasa, bu uchrashlarning barchasi $p$ da ketma-ket joylashadi. Ikkinchi binary search bilan uchrashlar sonini, so‘ng ularning barcha pozitsiyalarini topish mumkin.
 
-### Bir satrning ikkita ostsatrini taqqoslash
+### Bir satrning ikkita ostsatrini taqqoslash {#comparing-two-substrings-of-a-string}
 
 Berilgan $s$ satrning bir xil uzunlikdagi ikkita ostsatrini $O(1)$ vaqtda, ya’ni birinchisi ikkinchisidan kichikmi-yo‘qmi, taqqoslashni istaymiz.
 
@@ -216,7 +216,7 @@ int compare(int i, int j, int l, int k) {
 }
 ```
 
-### Qo‘shimcha xotira bilan ikkita suffiksning eng uzun umumiy prefiksi
+### Qo‘shimcha xotira bilan ikkita suffiksning eng uzun umumiy prefiksi {#longest-common-prefix-of-two-substrings-with-additional-memory}
 
 Berilgan $s$ satrda $i$ va $j$ pozitsiyalardan boshlanuvchi ikkita ixtiyoriy suffiksning eng uzun umumiy prefiksini — LCP ni hisoblashni istaymiz.
 
@@ -242,7 +242,7 @@ int lcp(int i, int j) {
 
 Bu yerda `log_n` — $n$ ning ikkilik logarifmi pastga yaxlitlangan qiymatiga teng konstanta.
 
-### Qo‘shimcha xotirasiz ikkita suffiksning eng uzun umumiy prefiksi
+### Qo‘shimcha xotirasiz ikkita suffiksning eng uzun umumiy prefiksi {#longest-common-prefix-of-two-substrings-without-additional-memory}
 
 Vazifa avvalgi bo‘limdagidek: $s$ satrning ikkita suffiksi uchun LCP ni hisoblash kerak.
 
@@ -289,7 +289,7 @@ vector<int> lcp_construction(string const& s, vector<int> const& p) {
 
 Har iteratsiyada $k$ ko‘pi bilan bir marta kamayadi (`rank[i]==n-1` holatida u to‘g‘ridan-to‘g‘ri nolga tushiriladi), demak jami $O(n)$ marta kamayadi. Ikki satr LCP si ko‘pi bilan $n-1$ bo‘lgani sababli $k$ jami faqat $O(n)$ marta oshadi. Shuning uchun algoritm $O(n)$ vaqtda ishlaydi.
 
-### Turli ostsatrlar soni
+### Turli ostsatrlar soni {#number-of-different-substrings}
 
 $s$ satr uchun suffikslar massivi va LCP massivini oldindan hisoblaymiz. Shu ma’lumot yordamida satrdagi turli ostsatrlar sonini topish mumkin.
 
@@ -302,7 +302,7 @@ $$\sum_{i=0}^{n-1}(n-p[i])-\sum_{i=0}^{n-2}\text{lcp}[i]
 
 natijani olamiz.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [UVA 760 - DNA Sequencing](https://onlinejudge.org/external/7/760.html)
 * [UVA 1223 - Editor](https://onlinejudge.org/external/12/1223.html)

@@ -1,4 +1,4 @@
-# Ildiz topish uchun Newton usuli
+# Ildiz topish uchun Newton usuli {#newtons-method-for-finding-roots}
 
 Bu iteratsion usulni Isaac Newton taxminan 1664-yilda ixtiro qilgan. Biroq usul ba’zan Raphson usuli deb ham ataladi: Raphson xuddi shu algoritmni Newtondan bir necha yil keyin ixtiro qilgan, ammo uning maqolasi ancha oldin nashr etilgan.
 
@@ -8,7 +8,7 @@ $$f(x) = 0$$
 
 Tenglamani yechish kerak. Aniqrog‘i, uning ildizlaridan birini topish kerak (ildiz mavjud deb faraz qilinadi). $f(x)$ funksiya $[a, b]$ oraliqda uzluksiz va differensiallanuvchi deb faraz qilinadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Algoritmning kirish parametrlari faqat $f(x)$ funksiyadan emas, balki boshlang‘ich yaqinlashuvdan, ya’ni algoritm boshlanadigan biror $x_0$ dan ham iborat.
 
@@ -34,7 +34,7 @@ Agar $f(x)$ funksiya “yaxshi” (silliq) bo‘lsa va $x_i$ ildizga yetarlicha 
 
 Yaqinlashish tezligi kvadratik: shartli aytganda, bu taqribiy $x_i$ qiymatdagi to‘g‘ri raqamlar soni har bir iteratsiyada ikki baravar ortishini bildiradi.
 
-## Kvadrat ildizni hisoblashda qo‘llash
+## Kvadrat ildizni hisoblashda qo‘llash {#application-for-calculating-the-square-root}
 
 Newton usulini kvadrat ildizni hisoblash misolida ko‘ramiz.
 
@@ -94,6 +94,6 @@ public static BigInteger isqrtNewton(BigInteger n) {
 
 Masalan, bu kod $n = 10^{1000}$ uchun $60$ millisekundda bajariladi, boshlang‘ich yaqinlashuvni yaxshilab tanlashni olib tashlasak (shunchaki $1$ dan boshlasak), taxminan $120$ millisekund ketadi.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [UVa 10428 - The Roots](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=16&page=show_problem&problem=1369)

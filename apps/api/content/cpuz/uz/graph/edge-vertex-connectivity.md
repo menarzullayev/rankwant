@@ -1,11 +1,11 @@
-# Qirra bog‘liqligi / tugun bog‘liqligi
+# Qirra bog‘liqligi / tugun bog‘liqligi {#edge-connectivity-vertex-connectivity}
 
-## Ta’rif
+## Ta’rif {#definition}
 
 $n$ ta tugun va $m$ ta qirrali yo‘naltirilmagan $G$ graf berilgan.
 Qirra bog‘liqligi ham, tugun bog‘liqligi ham grafni tavsiflaydigan xususiyatlardir.
 
-### Qirra bog‘liqligi
+### Qirra bog‘liqligi {#edge-connectivity}
 
 $G$ grafning **qirra bog‘liqligi** $\lambda$ — $G$ graf uzilib qolishi uchun olib tashlash kerak bo‘lgan qirralarning eng kichik soni.
 
@@ -14,7 +14,7 @@ Agar $G$ grafdan $S$ dagi barcha qirralarni olib tashlagach, $s$ va $t$ tugunlar
 
 Grafning qirra bog‘liqligi barcha mumkin bo‘lgan $(s,t)$ juftlari orasida ikki $s$ va $t$ tugunni ajratadigan shunday to‘plamning minimal hajmiga tengligi ravshan.
 
-### Tugun bog‘liqligi
+### Tugun bog‘liqligi {#vertex-connectivity}
 
 $G$ grafning **tugun bog‘liqligi** $\kappa$ — $G$ graf uzilib qolishi uchun olib tashlash kerak bo‘lgan tugunlarning eng kichik soni.
 Masalan, avvaldan uzilgan grafning tugun bog‘liqligi $0$, ajratuvchi tuguni bor bog‘langan grafniki esa $1$.
@@ -24,9 +24,9 @@ Agar $G$ grafdan $T$ dagi barcha tugunlarni olib tashlagach, $s$ va $t$ tugunlar
 
 Grafning tugun bog‘liqligi barcha mumkin bo‘lgan $(s,t)$ juftlari orasida ikki $s$ va $t$ tugunni ajratadigan shunday to‘plamning minimal hajmiga tengligi ravshan.
 
-## Xossalar
+## Xossalar {#properties}
 
-### Whitney tengsizliklari
+### Whitney tengsizliklari {#the-whitney-inequalities}
 
 **Whitney tengsizliklari** (1932) qirra bog‘liqligi $\lambda$, tugun bog‘liqligi $\kappa$ va grafdagi istalgan tugunning minimal darajasi $\delta$ orasidagi bog‘lanishni beradi:
 
@@ -43,13 +43,13 @@ graf $2(\delta+1)$ ta tugundan iborat bo‘ladi; dastlabki $\delta+1$ ta tugun c
 Bundan tashqari, ikki clique’ni $\lambda$ ta qirra bilan shunday bog‘laymizki, bunda birinchi clique’da $\lambda$ ta turli tugun, ikkinchi clique’da esa faqat $\kappa$ ta tugun ishlatiladi.
 Hosil bo‘lgan graf uchala xususiyatga ham ega bo‘ladi.
 
-### Ford–Fulkerson teoremasi
+### Ford–Fulkerson teoremasi {#the-ford-fulkerson-theorem}
 
 **Ford–Fulkerson teoremasi** ikki tugunni bog‘laydigan qirra bo‘yicha kesishmaydigan yo‘llarning eng katta soni shu tugunlarni ajratadigan qirralarning eng kichik soniga tengligini anglatadi.
 
-## Qiymatlarni hisoblash
+## Qiymatlarni hisoblash {#computing-the-values}
 
-### Maksimal oqim yordamida qirra bog‘liqligi
+### Maksimal oqim yordamida qirra bog‘liqligi {#edge-connectivity-using-maximum-flow}
 
 Bu usul Ford–Fulkerson teoremasiga asoslanadi.
 
@@ -61,14 +61,14 @@ Shunda maksimal oqim kesishmaydigan yo‘llar soniga teng.
 Ammo bu bahoda yashirin ko‘paytuvchi borligini qayd etish kerak, chunki maksimal oqim algoritmi barcha manba va qabul qiluvchilar uchun sekin ishlaydigan graf yaratish amalda deyarli mumkin emas.
 Ayniqsa, tasodifiy graflarda algoritm ancha tez ishlaydi.
 
-### Qirra bog‘liqligi uchun maxsus algoritm
+### Qirra bog‘liqligi uchun maxsus algoritm {#special-algorithm-for-edge-connectivity}
 
 Qirra bog‘liqligini topish masalasi **global minimal kesim**ni topish masalasiga teng.
 
 Bu masala uchun maxsus algoritmlar ishlab chiqilgan.
 Ulardan biri $O(V^3)$ yoki $O(VE+V^2\log V)$ vaqtda ishlaydigan [Stoer–Wagner algoritmi](/algorithms/graph/stoer-wagner-mincut).
 
-### Tugun bog‘liqligi
+### Tugun bog‘liqligi {#vertex-connectivity}
 
 Yana barcha $s$ va $t$ tugunlar juftlari bo‘yicha yuramiz va har bir juft uchun $s$ va $t$ ni ajratadigan tugunlarning minimal sonini topamiz.
 

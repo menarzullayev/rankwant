@@ -1,16 +1,16 @@
-# Grafning ikki bo‘lakli ekanini tekshirish
+# Grafning ikki bo‘lakli ekanini tekshirish {#check-whether-a-graph-is-bipartite}
 
 Ikki bo‘lakli graf — tugunlarini ikkita kesishmaydigan to‘plamga shunday ajratish mumkin bo‘lgan grafki, har bir qirra turli to‘plamlardagi ikkita tugunni bog‘laydi (ya’ni bir to‘plamdagi tugunlarni bog‘laydigan qirralar yo‘q). Bu to‘plamlar odatda tomonlar deb ataladi.
 
 Sizga yo‘naltirilmagan graf berilgan. Uning ikki bo‘lakli ekanini tekshiring va agar shunday bo‘lsa, tomonlarini chiqaring.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Graf ikki bo‘lakli bo‘lishi uchun uning barcha sikllari juft uzunlikka ega bo‘lishi zarur va yetarli, deb tasdiqlaydigan teorema mavjud. Ammo amalda ta’rifning boshqa ifodasidan foydalanish qulayroq: graf ikki bo‘lakli bo‘lishi uchun uni ikki rangga bo‘yash mumkin bo‘lishi zarur va yetarli.
 
 Hali tashrif buyurilmagan har bir tugundan boshlab [kenglik bo‘yicha qidiruvlar](/algorithms/graph/breadth-first-search) ketma-ketligini bajaramiz. Har bir qidiruvda boshlang‘ich tugunni 1-tomonga biriktiramiz. Biror tomonga biriktirilgan tugunning hali tashrif buyurilmagan qo‘shnisiga har safar borganda uni ikkinchi tomonga biriktiramiz. Biror tomonga biriktirilgan tugunning allaqachon tashrif buyurilgan qo‘shnisiga o‘tmoqchi bo‘lsak, u boshqa tomonga biriktirilganini tekshiramiz; agar u o‘sha tomonga biriktirilgan bo‘lsa, graf ikki bo‘lakli emas degan xulosaga kelamiz. Barcha tugunlarga tashrif buyurib, ularni tomonlarga muvaffaqiyatli biriktirsak, graf ikki bo‘lakli ekanini bilamiz va uning ajratilishini qurib bo‘lgan bo‘lamiz.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 int n;
@@ -39,7 +39,7 @@ for (int st = 0; st < n; ++st) {
 cout << (is_bipartite ? "YES" : "NO") << endl;
 ```
 
-### Mashq masalalari:
+### Mashq masalalari: {#practice-problems}
 
 - [SPOJ - BUGLIFE](http://www.spoj.com/problems/BUGLIFE/)
 - [Codeforces - Graph Without Long Directed Paths](https://codeforces.com/contest/1144/problem/F)

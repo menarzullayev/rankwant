@@ -1,4 +1,4 @@
-# Finding bridges in a graph in $O(N+M)$
+# Finding bridges in a graph in $O(N+M)$ {#finding-bridges-in-a-graph-in-onm}
 
 We are given an undirected graph. A bridge is defined as an edge which, when removed, makes the graph disconnected (or more precisely, increases the number of connected components in the graph). The task is to find all bridges in the given graph.
 
@@ -8,7 +8,7 @@ The algorithm described here is based on [depth first search](/algorithms/graph/
 
 Note that there is also the article [Finding Bridges Online](/algorithms/graph/bridge-searching-online) - unlike the offline algorithm described here, the online algorithm is able to maintain the list of all bridges in a changing graph (assuming that the only type of change is addition of new edges).
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Pick an arbitrary vertex of the graph $root$ and run [depth first search](/algorithms/graph/depth-first-search) from it. Note the following fact (which is easy to prove):
 
@@ -30,7 +30,7 @@ Now, there is a back edge from vertex $v$ or one of its descendants to one of it
 
 Thus, the current edge $(v, to)$ in the DFS tree is a bridge if and only if $\mathtt{low}[to] > \mathtt{tin}[v]$.
 
-## Implementation
+## Implementation {#implementation}
 
 The implementation needs to distinguish three cases: when we go down the edge in DFS tree, when we find a back edge to an ancestor of the vertex and when we return to a parent of the vertex. These are the cases:
 
@@ -89,7 +89,7 @@ Function `IS_BRIDGE(a, b)` is some function that will process the fact that edge
 
 Note that this implementation malfunctions if the graph has multiple edges, since it ignores them. Of course, multiple edges will never be a part of the answer, so `IS_BRIDGE` can check additionally that the reported bridge is not a multiple edge. Alternatively it's possible to pass to `dfs` the index of the edge used to enter the vertex instead of the parent vertex (and store the indices of all vertices).
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [UVA #796 "Critical Links"](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=737) [difficulty: low]
 - [UVA #610 "Street Directions"](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=551) [difficulty: medium]

@@ -1,6 +1,6 @@
-# Josephus masalasi
+# Josephus masalasi {#josephus-problem}
 
-## Masala sharti
+## Masala sharti {#statement}
 
 $n$ va $k$ natural sonlari berilgan. $1$ dan $n$ gacha bo‘lgan barcha sonlar aylana bo‘ylab yozilgan. Avval birinchi sondan boshlab $k$-son sanaladi va o‘chiriladi. So‘ng keyingi sondan boshlab yana $k$ ta son sanaladi va $k$-son o‘chiriladi. Jarayon bitta son qolguncha davom etadi. Oxirgi qolgan sonni topish talab etiladi.
 
@@ -8,7 +8,7 @@ Bu masalani I asrda **Flavius Josephus** taklif qilgan, garchi uning dastlabki k
 
 Jarayonni to‘g‘ridan-to‘g‘ri modellashtirish bilan masalani $O(n^2)$ vaqtda yechish mumkin. [Segment daraxti](/algorithms/data-structures/segment-tree) yordamida bu vaqtni $O(n \log n)$ gacha yaxshilash mumkin. Ammo bundan ham tezroq yechim izlaymiz.
 
-## $O(n)$ yechimni modellashtirish
+## $O(n)$ yechimni modellashtirish {#modeling-a-on-solution}
 
 $J_{n,k}$ masala javobini oldingi kichik masalalar javobi orqali ifodalovchi qonuniyatni topishga harakat qilamiz.
 
@@ -40,7 +40,7 @@ $$J_{n,k} = (J_{n-1,k} + k) \bmod n$$
 
 Shunday qilib, Josephus masalasini $O(n)$ amal bilan yechadigan usul topildi.
 
-## Amalga oshirish
+## Amalga oshirish {#implementation}
 
 1 dan raqamlash uchun sodda **rekursiv yechim**:
 
@@ -63,7 +63,7 @@ int josephus(int n, int k) {
 
 Bu formulani tahliliy ravishda ham chiqarish mumkin. Yana pozitsiyalarni 0 dan raqamlaymiz. Birinchi son o‘chirilgach, $n-1$ ta son qoladi. Jarayonni davom ettirganda, dastlabki indeksi $k \bmod n$ bo‘lgan sondan boshlaymiz. Qolgan aylana 0 dan boshlanganida uning javobi $J_{n-1,k}$ bo‘lar edi; aslida $k$ dan boshlaganimiz uchun $J_{n,k} = (J_{n-1,k} + k) \bmod n$ bo‘ladi.
 
-## $O(k \log n)$ yechimni modellashtirish
+## $O(k \log n)$ yechimni modellashtirish {#modeling-a-ok-log-n-solution}
 
 $k$ nisbatan kichik bo‘lsa, yuqoridagi $O(n)$ rekursiv yechimdan tezroq usul topish mumkin. $k$ soni $n$ dan ancha kichik bo‘lsa, bitta bosqichda $\lfloor \frac{n}{k} \rfloor$ ta sonni alohida aylanib chiqmasdan o‘chirish mumkin.
 
@@ -108,7 +108,7 @@ $$x \approx k \ln n.$$
 
 Demak, algoritmning haqiqiy murakkabligi $O(k \log n)$.
 
-## $k = 2$ uchun tahliliy yechim
+## $k = 2$ uchun tahliliy yechim {#analytical-solution-for-k-2}
 
 Josephus Flavius taklif qilgan ayni shu xususiy holat ancha oson yechiladi.
 
@@ -124,6 +124,6 @@ Bu rekurrent bog‘lanishni kodda bevosita ishlatish mumkin. Qonuniyatni boshqa 
 
 $$J_{n,2} = 1 + 2\left(n-2^{\lfloor \log_2 n \rfloor}\right)$$
 
-## $k > 2$ uchun tahliliy yechim
+## $k > 2$ uchun tahliliy yechim {#analytical-solution-for-k-2}
 
 Masala sodda ko‘rinsa va u haqda ko‘plab maqolalar yozilgan bo‘lsa ham, $k > 2$ uchun Josephus masalasining sodda tahliliy ifodasi hozirgacha topilmagan. Kichik $k$ lar uchun ayrim formulalar chiqarilgan, ammo ko‘rinishidan, amalda ularning barchasini qo‘llash qiyin. Masalan, Halbeisen va Hungerbuhlerning “The Josephus Problem”, shuningdek Odlyzko va Wilfning “Functional iteration and the Josephus problem” ishlariga qarang.

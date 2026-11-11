@@ -1,8 +1,8 @@
-# Dijkstra on sparse graphs
+# Dijkstra on sparse graphs {#dijkstra-on-sparse-graphs}
 
 For the statement of the problem, the algorithm with implementation and proof can be found on the article [Dijkstra's algorithm](/algorithms/graph/dijkstra).
 
-## Algorithm
+## Algorithm {#algorithm}
 
 We recall in the derivation of the complexity of Dijkstra's algorithm we used two factors:
 the time of finding the unmarked vertex with the smallest distance $d[v]$, and the time of the relaxation, i.e. the time of changing the values $d[\text{to}]$.
@@ -33,9 +33,9 @@ Therefore `priority_queue` has a smaller hidden constant, but also has a drawbac
 it doesn't support the operation of removing an element.
 Because of this we need to do a "workaround", that actually leads to a slightly worse factor $\log m$ instead of $\log n$ (although in terms of complexity they are identical).
 
-## Implementation
+## Implementation {#implementation}
 
-### set
+### set {#set}
 
 Let us start with the container `set`.
 Since we need to store vertices ordered by their values $d[]$, it is convenient to store actual pairs: the distance and the index of the vertex.
@@ -78,7 +78,7 @@ It kinda acts like a queue.
 The main loops executes until there are no more vertices in the set/queue.
 A vertex with the smallest distance gets extracted, and for each successful relaxation we first remove the old pair, and then after the relaxation add the new pair into the queue.
 
-### priority_queue
+### priority_queue {#priority_queue}
 
 The main difference to the implementation with `set` is that in many languages, including C++, we cannot remove elements from the `priority_queue` (although heaps can support that operation in theory).
 Therefore we have to use a workaround:
@@ -131,7 +131,7 @@ In practice the `priority_queue` version is a little bit faster than the version
 
 Interestingly, a [2007 technical report](https://www3.cs.stonybrook.edu/~rezaul/papers/TR-07-54.pdf) concluded the variant of the algorithm not using decrease-key operations ran faster than the decrease-key variant, with a greater performance gap for sparse graphs.
 
-### Getting rid of pairs
+### Getting rid of pairs {#getting-rid-of-pairs}
 
 You can improve the performance a little bit more if you don't store pairs in the containers, but only the vertex indices.
 In this case we must overload the comparison operator:

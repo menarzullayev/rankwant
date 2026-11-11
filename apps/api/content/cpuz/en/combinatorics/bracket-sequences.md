@@ -1,4 +1,4 @@
-# Balanced bracket sequences
+# Balanced bracket sequences {#balanced-bracket-sequences}
 
 A **balanced bracket sequence** is a string consisting of only brackets, such that this sequence, when inserted certain numbers and mathematical operations, gives a valid mathematical expression.
 Formally you can define balanced bracket sequence with:
@@ -14,7 +14,7 @@ Of course you can define other bracket sequences also with multiple bracket type
 In this article we discuss some classic problems involving balanced bracket sequences (for simplicity we will only call them sequences): validation, number of sequences, finding the lexicographical next sequence, generating all sequences of a certain size, finding the index of sequence, and generating the $k$-th sequences.
 We will also discuss two variations for the problems, the simpler version when only one type of brackets is allowed, and the harder case when there are multiple types.
 
-## Balance validation
+## Balance validation {#balance-validation}
 
 We want to check if a given string is balanced or not.
 
@@ -34,9 +34,9 @@ If both conditions are fulfilled, then we remove the opening bracket from the st
 If at any time one of the conditions is not fulfilled, or at the end the stack is not empty, then the string is not balanced.
 Otherwise it is.
 
-## Number of balanced sequences
+## Number of balanced sequences {#number-of-balanced-sequences}
 
-### Formula
+### Formula {#formula}
 
 The number of balanced bracket sequences with only one bracket type can be calculated using the [Catalan numbers](/algorithms/combinatorics/catalan-numbers).
 The number of balanced bracket sequences of length $2n$ ($n$ pairs of brackets) is:
@@ -47,7 +47,7 @@ If we allow $k$ types of brackets, then each pair can be of any of the $k$ types
 
 $$\frac{1}{n+1} \binom{2n}{n} k^n$$
 
-### Dynamic programming
+### Dynamic programming {#dynamic-programming}
 
 On the other hand these numbers can be computed using **dynamic programming**.
 Let $d[n]$ be the number of regular bracket sequences with $n$ pairs of bracket.
@@ -61,7 +61,7 @@ $$d[n] = \sum_{i=0}^{n-1} d[i] \cdot d[n-1-i]$$
 
 The initial value for this recurrence is $d[0] = 1$.
 
-## Finding the lexicographical next balanced sequence
+## Finding the lexicographical next balanced sequence {#finding-the-lexicographical-next-balanced-sequence}
 
 Here we only consider the case with one valid bracket type.
 
@@ -103,7 +103,7 @@ bool next_balanced_sequence(string & s) {
 
 This function computes in $O(n)$ time the next balanced bracket sequence, and returns false if there is no next one.
 
-## Finding all balanced sequences
+## Finding all balanced sequences {#finding-all-balanced-sequences}
 
 Sometimes it is required to find and output all balanced bracket sequences of a specific length $n$.
 
@@ -114,7 +114,7 @@ However, if the length of the sequence is not very long (e.g. $n$ smaller than $
 Also they can be generated using the ideas we used for counting all sequences with dynamic programming.
 We will discuss the ideas in the next two sections.
 
-## Sequence index
+## Sequence index {#sequence-index}
 
 Given a balanced bracket sequence with $n$ pairs of brackets.
 We have to find its index in the lexicographically ordered list of all balanced sequences with $n$ bracket pairs.
@@ -152,7 +152,7 @@ Now we consider how the answer will change if we have $k$ types of brackets.
 We have $2n - i - 1$ undefined positions, of which $\text{ndepth}$ are already predetermined because of the opening brackets.
 But all the other brackets ($(2n - i - 1 - \text{ndepth})/2$ pairs) can be of any type, therefore we multiply the number by such a power of $k$.
 
-## Finding the $k$-th sequence
+## Finding the $k$-th sequence {#finding-the-k-th-sequence}
 
 Let $n$ be the number of bracket pairs in the sequence.
 We have to find the $k$-th balanced sequence in lexicographically sorted list of all balanced sequences for a given $k$.

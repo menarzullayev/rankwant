@@ -1,10 +1,10 @@
-# Nuqta qavariq ko‘pburchakka tegishli ekanini $O(\log N)$ da tekshirish
+# Nuqta qavariq ko‘pburchakka tegishli ekanini $O(\log N)$ da tekshirish {#check-if-point-belongs-to-the-convex-polygon-in-olog-n}
 
 Quyidagi masalani ko‘rib chiqamiz: butun koordinatali uchlarga ega qavariq ko‘pburchak va ko‘plab so‘rovlar berilgan.
 Har bir so‘rov — bitta nuqta; uning ko‘pburchak ichida yoki chegarasida yotishi yoki yotmasligini aniqlash kerak.
 Ko‘pburchak soat miliga teskari yo‘nalishda tartiblangan deb faraz qilamiz. Har bir so‘rovga $O(\log n)$ da onlayn javob beramiz.
 
-## Algoritm
+## Algoritm {#algorithm}
 Eng kichik x-koordinatali nuqtani tanlaymiz. Bunday nuqtalar bir nechta bo‘lsa, eng kichik y-koordinatalisini olamiz. Uni $p_0$ deb belgilaymiz.
 Endi ko‘pburchakning qolgan barcha $p_1,\dots,p_n$ nuqtalari tanlangan nuqtadan olingan qutb burchagi bo‘yicha tartiblangan (chunki ko‘pburchak soat miliga teskari yo‘nalishda tartiblangan).
 
@@ -34,7 +34,7 @@ Bu $p_0, p_i, p_{i+1}$ uchburchakning yuzi $p_0, p_i, p$ uchburchak, $p_0, p, p_
 Agar $p$ tashqarida bo‘lsa, bu uchta uchburchak yuzlarining yig‘indisi uchburchak yuzidan katta bo‘ladi.
 Agar ichkarida bo‘lsa, ular teng bo‘ladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 `prepare` funksiyasi leksikografik jihatdan eng kichik nuqta (eng kichik x qiymatli, x teng bo‘lsa eng kichik y qiymatli) $p_0$ bo‘lishini ta’minlaydi va $p_i - p_0$ vektorlarni hisoblaydi.
 Keyin `pointInConvexPolygon` funksiyasi so‘rov natijasini hisoblaydi.
@@ -113,7 +113,7 @@ bool pointInConvexPolygon(pt point) {
 }
 ```
 
-## Masalalar
+## Masalalar {#problems}
 * [SGU253 Theodore Roosevelt](https://codeforces.com/problemsets/acmsguru/problem/99999/253)
 * [Codeforces 55E Very simple problem](https://codeforces.com/contest/55/problem/E)
 * [Codeforces 166B Polygons](https://codeforces.com/problemset/problem/166/B)

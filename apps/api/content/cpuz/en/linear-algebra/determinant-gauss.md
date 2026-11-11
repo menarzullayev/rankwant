@@ -1,8 +1,8 @@
-# Calculating the determinant of a matrix by Gauss
+# Calculating the determinant of a matrix by Gauss {#calculating-the-determinant-of-a-matrix-by-gauss}
 
 Problem: Given a matrix $A$ of size $N \times N$. Compute its determinant.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 We use the ideas of [Gauss method for solving systems of linear equations](/algorithms/linear-algebra/linear-system-gauss)
 
@@ -12,7 +12,7 @@ After applying Gauss on the matrix, we receive a diagonal matrix, whose determin
 
 It should be noted that if at some point, we do not find non-zero cell in current column, the algorithm should stop and returns 0.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 const double EPS = 1E-9;
@@ -44,5 +44,5 @@ for (int i=0; i<n; ++i) {
 cout << det;
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [Codeforces - Wizards and Bets](http://codeforces.com/contest/167/problem/E)

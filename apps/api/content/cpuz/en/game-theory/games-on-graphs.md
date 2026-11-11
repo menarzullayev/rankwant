@@ -1,4 +1,4 @@
-# Games on arbitrary graphs
+# Games on arbitrary graphs {#games-on-arbitrary-graphs}
 
 Let a game be played by two players on an arbitrary graph $G$.
 I.e. the current state of the game is a certain vertex.
@@ -11,7 +11,7 @@ It is our task to determine, given an initial state, who will win the game if bo
 We will solve this problem very efficiently.
 We will find the solution for all possible starting vertices of the graph in linear time with respect to the number of edges: $O(m)$.
 
-## Description of the algorithm
+## Description of the algorithm {#description-of-the-algorithm}
 
 We will call a vertex a winning vertex, if the player starting at this state will win the game, if they play optimally (regardless of what turns the other player makes).
 Similarly, we will call a vertex a losing vertex, if the player starting at this vertex will lose the game, if the opponent plays optimally.
@@ -43,7 +43,7 @@ Otherwise we don't know yet, if this vertex is a winning or losing vertex, and t
 In total we visit every winning and every losing vertex exactly once (undefined vertices are not visited), and we go over each edge also at most one time.
 Hence the complexity is $O(m)$.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is the implementation of such a DFS.
 We assume that the variable `adj_rev` stores the adjacency list for the graph in **reversed** form, i.e. instead of storing the edge $(i, j)$ of the graph, we store $(j, i)$.
@@ -73,7 +73,7 @@ void dfs(int v) {
 }
 ```
 
-## Example: "Policeman and thief"
+## Example: "Policeman and thief" {#example-policeman-and-thief}
 
 Here is a concrete example of such a game.
 

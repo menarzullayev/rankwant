@@ -1,6 +1,6 @@
-# Hungarian algorithm for solving the assignment problem
+# Hungarian algorithm for solving the assignment problem {#hungarian-algorithm-for-solving-the-assignment-problem}
 
-## Statement of the assignment problem
+## Statement of the assignment problem {#statement-of-the-assignment-problem}
 
 There are several standard formulations of the assignment problem (all of which are essentially equivalent). Here are some of them:
 
@@ -16,9 +16,9 @@ It is important to note that all the above scenarios are "**square**" problems, 
 
 We also note that by analogy with the search for a **minimum** solution, one can also pose the problem of finding a **maximum** solution. However, these two problems are equivalent to each other: it is enough to multiply all the weights by $-1$.
 
-## Hungarian algorithm
+## Hungarian algorithm {#hungarian-algorithm}
 
-### Historical reference
+### Historical reference {#historical-reference}
 
 The algorithm was developed and published by Harold **Kuhn** in 1955. Kuhn himself gave it the name "Hungarian" because it was based on the earlier work by Hungarian mathematicians Dénes Kőnig and Jenő Egerváry. 
 In 1957, James **Munkres** showed that this algorithm runs in (strictly) polynomial time, independently from the cost. 
@@ -27,7 +27,7 @@ However, it was recently discovered in 2006 that the same algorithm was invented
 
 It is also worth noting that Kuhn's original algorithm had an asymptotic complexity of $\mathcal{O}(n^4)$, and only later Jack **Edmonds** and Richard **Karp** (and independently **Tomizawa**) showed how to improve it to an asymptotic complexity of $\mathcal{O}(n^3)$.
 
-### The $\mathcal{O}(n^4)$ algorithm
+### The $\mathcal{O}(n^4)$ algorithm {#the-mathcalon4-algorithm}
 
 To avoid ambiguity, we note right away that we are mainly concerned with the assignment problem in a matrix formulation (i.e., given a matrix $A$, you need to select $n$ cells from it that are in different rows and columns). We index arrays starting with $1$, i.e., for example, a matrix $A$ has indices $A[1 \dots n][1 \dots n]$.
 
@@ -124,7 +124,7 @@ If we talk about the complexity of the algorithm, then it is $\mathcal{O}(n^4)$:
 
 We will not give the implementation for the $\mathcal{O}(n^4)$ algorithm here, since it will turn out to be no shorter than the implementation for the $\mathcal{O}(n^3)$ one, described below.
 
-### The $\mathcal{O}(n^3)$ algorithm
+### The $\mathcal{O}(n^3)$ algorithm {#the-mathcalon3-algorithm}
 
 Now let's learn how to implement the same algorithm in $\mathcal{O}(n^3)$ (for rectangular problems $n \times m$, $\mathcal{O}(n^2m)$).
 
@@ -166,7 +166,7 @@ Thus, the algorithm takes the following form: in the outer loop, we consider mat
 
 The resulting complexity is $\mathcal{O}(n^3)$ or, if the problem is rectangular, $\mathcal{O}(n^2m)$.
 
-## Implementation of the Hungarian algorithm
+## Implementation of the Hungarian algorithm {#implementation-of-the-hungarian-algorithm}
 
 The implementation below was developed by **Andrey Lopatin** several years ago. It is distinguished by amazing conciseness: the entire algorithm consists of **30 lines of code**.
 
@@ -231,7 +231,7 @@ The cost of the matching can simply be taken as the potential of the zero column
 int cost = -v[0];
 ```
 
-## Connection to the Successive Shortest Path Algorithm
+## Connection to the Successive Shortest Path Algorithm {#connection-to-the-successive-shortest-path-algorithm}
 
 The Hungarian algorithm can be seen as the [Successive Shortest Path Algorithm](/algorithms/graph/min-cost-flow), adapted for the assignment problem. Without going into the details, let's provide an intuition regarding the connection between them.
 
@@ -251,7 +251,7 @@ In step 4, all the $h(v)$ are updated: every time we modify the flow network, we
 
 To deepen the understanding of potentials, refer to this [article](https://codeforces.com/blog/entry/105658).
 
-## Task examples
+## Task examples {#task-examples}
 
 Here are a few examples related to the assignment problem, from very trivial to less obvious tasks:
 
@@ -287,7 +287,7 @@ Here are a few examples related to the assignment problem, from very trivial to 
     >
     > This task is also called the **dual problem** of the assignment problem: minimizing the total cost of the assignment is equivalent to maximizing the sum of the potentials.
 
-## Literature
+## Literature {#literature}
 
 - [Ravindra Ahuja, Thomas Magnanti, James Orlin. Network Flows [1993]](https://books.google.it/books/about/Network_Flows.html?id=rFuLngEACAAJ&redir_esc=y)
 
@@ -295,7 +295,7 @@ Here are a few examples related to the assignment problem, from very trivial to 
 
 - [James Munkres. Algorithms for Assignment and Transportation Problems [1957]](https://www.jstor.org/stable/2098689)
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [UVA - Crime Wave - The Sequel](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1687)
 

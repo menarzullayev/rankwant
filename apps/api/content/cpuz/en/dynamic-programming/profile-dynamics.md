@@ -1,4 +1,4 @@
-# Dynamic Programming on Broken Profile. Problem "Parquet"
+# Dynamic Programming on Broken Profile. Problem "Parquet" {#dynamic-programming-on-broken-profile-problem-parquet}
 
 Common problems solved using DP on broken profile include:
 
@@ -7,7 +7,7 @@ Common problems solved using DP on broken profile include:
 - finding a partial fill with minimum number of unfilled space (or cells, in case of grid)
 - finding a partial fill with the minimum number of figures, such that no more figures can be added
 
-## Problem "Parquet"
+## Problem "Parquet" {#problem-parquet}
 
 **Problem description.** Given a grid of size $N \times M$. Find number of ways to fill the grid with figures of size $2 \times 1$ (no cell should be left unfilled, and figures should not overlap each other).
 
@@ -19,7 +19,7 @@ Clearly, the answer to the problem will be $dp[N, 0]$.
 
 We will be building the DP state by iterating over each $i = 1, \cdots N$ and each $mask = 0, \ldots 2^M - 1$, and for each $mask$ we will be only transitioning forward, that is, we will be _adding_ figures to the current grid.
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 int n, m;
@@ -60,7 +60,7 @@ int main()
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [UVA 10359 - Tiling](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1300)
 - [UVA 10918 - Tri Tiling](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1859)
@@ -76,7 +76,7 @@ int main()
 - [Timus 1519 - Formula 1](https://acm.timus.ru/problem.aspx?space=1&num=1519)
 - [Codeforces Parquet](https://codeforces.com/problemset/problem/26/C)
 
-## References
+## References {#references}
 
 - [Blog by EvilBunny](https://web.archive.org/web/20180712171735/https://blog.evilbuggy.com/2018/05/broken-profile-dynamic-programming.html)
 - [TopCoder Recipe by "syg96"](https://apps.topcoder.com/forums/?module=Thread&start=0&threadID=697369)

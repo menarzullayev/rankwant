@@ -1,4 +1,4 @@
-# Flows with demands
+# Flows with demands {#flows-with-demands}
 
 In a normal flow network the flow of an edge is only limited by the capacity $c(e)$ from above and by 0 from below.
 In this article we will discuss flow networks, where we additionally require the flow of each edge to have a certain amount, i.e. we bound the flow from below by a **demand** function $d(e)$:
@@ -16,7 +16,7 @@ We will consider two problems:
 1. finding an arbitrary flow that satisfies all constraints
 2. finding a minimal flow that satisfies all constraints
 
-## Finding an arbitrary flow
+## Finding an arbitrary flow {#finding-an-arbitrary-flow}
 
 We make the following changes in the network.
 We add a new source $s'$ and a new sink $t'$, a new edge from the source $s'$ to every other vertex, a new edge for every vertex to the sink $t'$, and one edge from $t$ to $s$.
@@ -42,7 +42,7 @@ By these actions we simulate the fact that this edge is saturated - from $v$ the
 A flow with the value $d(e)$, that originally flowed along the path $s - \dots - u - v - \dots t$ can now take the new path $s' - v - \dots - t - s - \dots - u - t'$.
 The only thing that got simplified in the definition of the new network, is that if procedure created multiple edges between the same pair of vertices, then they are combined to one single edge with the summed capacity.
 
-## Minimal flow
+## Minimal flow {#minimal-flow}
 
 Note that along the edge $(t, s)$ (from the old sink to the old source) with the capacity $\infty$ flows the entire flow of the corresponding old network.
 I.e. the capacity of this edge effects the flow value of the old network.

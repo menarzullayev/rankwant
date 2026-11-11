@@ -1,4 +1,4 @@
-# Disjoint Set Union
+# Disjoint Set Union {#disjoint-set-union}
 
 This article discusses the data structure **Disjoint Set Union** or **DSU**.
 Often it is also called **Union Find** because of its two main operations.
@@ -23,7 +23,7 @@ As described in more detail later, the data structure allows you to do each of t
 
 Also in one of the subsections an alternative structure of a DSU is explained, which achieves a slower average complexity of $O(\log n)$, but can be more powerful than the regular DSU structure.
 
-## Build an efficient data structure
+## Build an efficient data structure {#build-an-efficient-data-structure}
 
 We will store the sets in the form of **trees**: each tree will correspond to one set.
 And the root of the tree will be the representative/leader of the set.
@@ -39,7 +39,7 @@ And in the last step, we combine the set containing the element 1 and the set co
 
 For the implementation this means that we will have to maintain an array `parent` that stores a reference to its immediate ancestor in the tree.
 
-### Naive implementation
+### Naive implementation {#naive-implementation}
 
 We can already write the first implementation of the Disjoint Set Union data structure.
 It will be pretty inefficient at first, but later we can improve it using two optimizations, so that it will take nearly constant time for each function call.
@@ -82,7 +82,7 @@ In that case each call `find_set(v)` can take $O(n)$ time.
 This is far away from the complexity that we want to have (nearly constant time).
 Therefore we will consider two optimizations that will allow to significantly accelerate the work.
 
-### Path compression optimization
+### Path compression optimization {#path-compression-optimization}
 
 This optimization is designed for speeding up `find_set`.
 
@@ -110,7 +110,7 @@ first find the representative of the set (root vertex), and then in the process 
 This simple modification of the operation already achieves the time complexity $O(\log n)$ per call on average (here without proof).
 There is a second modification, that will make it even faster.
 
-### Union by size / rank
+### Union by size / rank {#union-by-size-rank}
 In this optimization we will change the `union_set` operation.
 To be precise, we will change which tree gets attached to the other one.
 In the naive implementation the second tree always got attached to the first one.
@@ -165,7 +165,7 @@ void union_sets(int a, int b) {
 ```
 Both optimizations are equivalent in terms of time and space complexity. So in practice you can use any of them.
 
-### Time complexity
+### Time complexity {#time-complexity}
 
 As mentioned before, if we combine both optimizations - path compression with union by size / rank - we will reach nearly constant time queries.
 It turns out, that the final amortized time complexity is $O(\alpha(n))$, where $\alpha(n)$ is the inverse Ackermann function, which grows very slowly.
@@ -179,7 +179,7 @@ We will also not present a proof for this time complexity, since it is quite lon
 
 Also, it's worth mentioning that DSU with union by size / rank, but without path compression works in $O(\log n)$ time per query.
 
-### Linking by index / coin-flip linking
+### Linking by index / coin-flip linking {#linking-by-index-coin-flip-linking}
 
 Both union by rank and union by size require that you store additional data for each set, and maintain these values during each union operation.
 There exist also a randomized algorithm, that simplifies the union operation a little bit: linking by index.
@@ -225,11 +225,11 @@ void union_sets(int a, int b) {
 }
 ```
 
-## Applications and various improvements
+## Applications and various improvements {#applications-and-various-improvements}
 
 In this section we consider several applications of the data structure, both the trivial uses and some improvements to the data structure.
 
-### Connected components in a graph
+### Connected components in a graph {#connected-components-in-a-graph}
 
 This is one of the obvious applications of DSU.
 
@@ -242,7 +242,7 @@ Here we can directly apply the data structure, and get a solution that handles a
 This application is quite important, because nearly the same problem appears in [Kruskal's algorithm for finding a minimum spanning tree](/algorithms/graph/mst-kruskal).
 Using DSU we can [improve](/algorithms/graph/mst-kruskal-with-dsu) the $O(m \log n + n^2)$ complexity to $O(m \log n)$.
 
-### Search for connected components in an image
+### Search for connected components in an image {#search-for-connected-components-in-an-image}
 
 One of the applications of DSU is the following task:
 there is an image of $n \times m$ pixels.
@@ -256,7 +256,7 @@ The resulting trees in the DSU are the desired connected components.
 The problem can also be solved by [DFS](/algorithms/graph/depth-first-search) or [BFS](/algorithms/graph/breadth-first-search), but the method described here has an advantage:
 it can process the matrix row by row (i.e. to process a row we only need the previous and the current row, and only need a DSU built for the elements of one row) in $O(\min(n, m))$ memory.
 
-### Store additional information for each set
+### Store additional information for each set {#store-additional-information-for-each-set}
 
 DSU allows you to easily store additional information in the sets.
 
@@ -265,7 +265,7 @@ storing the sizes was already described in the Union by size section (the inform
 
 In the same way - by storing it at the representative nodes - you can also store any other information about the sets.
 
-### Compress jumps along a segment / Painting subarrays offline
+### Compress jumps along a segment / Painting subarrays offline {#compress-jumps-along-a-segment-painting-subarrays-offline}
 
 One common application of the DSU is the following:
 There is a set of vertices, and each vertex has an outgoing edge to another vertex.
@@ -312,7 +312,7 @@ There is an optimization:
 We can use union by rank / size, if we store the next unpainted cell in an additional array `end[]`.
 Then we can merge two sets into one according to their heuristics, and we obtain the solution in $O(\alpha(n))$.
 
-### Support distances up to representative
+### Support distances up to representative {#support-distances-up-to-representative}
 
 Sometimes in specific applications of the DSU you need to maintain the distance between a vertex and the representative of its set (i.e. the path length in the tree from the current node to the root of the tree).
 
@@ -351,7 +351,7 @@ void union_sets(int a, int b) {
 }
 ```
 
-### Support the parity of the path length / Checking bipartiteness online
+### Support the parity of the path length / Checking bipartiteness online {#support-the-parity-of-the-path-length-checking-bipartiteness-online}
 
 In the same way as computing the path length to the leader, it is possible to maintain the parity of the length of the path before it.
 Why is this application in a separate paragraph?
@@ -465,12 +465,12 @@ Nowadays this algorithm is known as Arpa's trick.
 It is named after AmirReza Poorakhavan, who independently discovered and popularized this technique.
 Although this algorithm existed already before his discovery.
 
-### Offline LCA (lowest common ancestor in a tree) in $O(\alpha(n))$ on average
+### Offline LCA (lowest common ancestor in a tree) in $O(\alpha(n))$ on average {#offline-lca-lowest-common-ancestor-in-a-tree-in-oalphan-on-average}
 
 The algorithm for finding the LCA is discussed in the article [Lowest Common Ancestor - Tarjan's off-line algorithm](/algorithms/graph/lca-tarjan).
 This algorithm compares favorable with other algorithms for finding the LCA due to its simplicity (especially compared to an optimal algorithm like the one from [Farach-Colton and Bender](/algorithms/graph/lca-farachcoltonbender)).
 
-### Storing the DSU explicitly in a set list / Applications of this idea when merging various data structures
+### Storing the DSU explicitly in a set list / Applications of this idea when merging various data structures {#storing-the-dsu-explicitly-in-a-set-list-applications-of-this-idea-when-merging-various-data-structures}
 
 One of the alternative ways of storing the DSU is the preservation of each set in the form of an **explicitly stored list of its elements**.
 At the same time each element also stores the reference to the representative of his set.
@@ -538,7 +538,7 @@ To efficiently combine multiple sets we just apply the above-described recipe:
 we merge the sets by simply adding smaller ones to larger.
 In the end we get a $O(n \log^2 n)$ solution, because one number will only added to a set at most $O(\log n)$ times.
 
-### Storing the DSU by maintaining a clear tree structure / Online bridge finding in $O(\alpha(n))$ on average
+### Storing the DSU by maintaining a clear tree structure / Online bridge finding in $O(\alpha(n))$ on average {#storing-the-dsu-by-maintaining-a-clear-tree-structure-online-bridge-finding-in-oalphan-on-average}
 
 One of the most powerful applications of DSU is that it allows you to store both as **compressed and uncompressed trees**.
 The compressed form can be used for merging of trees and for the verification if two vertices are in the same tree, and the uncompressed form can be used - for example - to search for paths between two given vertices, or other traversals of the tree structure.
@@ -557,7 +557,7 @@ However in reality it isn't so bad, we can just re-root the smaller of the two t
 
 More details (including proof of the time complexity) can be found in the article [Finding Bridges Online](/algorithms/graph/bridge-searching-online).
 
-## Historical retrospective
+## Historical retrospective {#historical-retrospective}
 
 The data structure DSU has been known for a long time.
 
@@ -572,7 +572,7 @@ Later in 1985 he, along with Leeuwen, published multiple complexity analyses for
 
 Finally in 1989 Fredman and Sachs proved that in the adopted model of computation **any** algorithm for the disjoint set union problem has to work in at least $O(\alpha(n))$ time on average (Fredman, Saks, "The cell probe complexity of dynamic data structures").
 
-## Problems
+## Problems {#problems}
 
 * [TIMUS - Anansi's Cobweb](http://acm.timus.ru/problem.aspx?space=1&num=1671)
 * [Codeforces - Roads not only in Berland](http://codeforces.com/contest/25/problem/D)

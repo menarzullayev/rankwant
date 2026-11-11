@@ -1,8 +1,8 @@
-# Eng katta yoki eng kichik yig‘indili ostkesmani topish
+# Eng katta yoki eng kichik yig‘indili ostkesmani topish {#search-the-subarray-with-the-maximumminimum-sum}
 
 Bu yerda eng katta yig‘indili ostkesmani topish masalasi va uning ayrim ko‘rinishlari, jumladan masalani onlayn yechish algoritmi ko‘rib chiqiladi.
 
-## Masala sharti
+## Masala sharti {#problem-statement}
 
 $a[1 \ldots n]$ sonlar massivi berilgan. Yig‘indisi eng katta bo‘lgan $a[l \ldots r]$ ostkesmani topish talab etiladi:
 
@@ -12,11 +12,11 @@ Masalan, $a[]$ massividagi barcha sonlar nomanfiy bo‘lsa, javob massivning o�
 
 **Eng kichik** yig‘indili ostkesmani topish masalasi aslida xuddi shu masala: barcha sonlarning ishorasini almashtirish kifoya.
 
-## 1-algoritm
+## 1-algoritm {#algorithm-1}
 
 Avval deyarli ravshan bo‘lgan algoritmni ko‘ramiz. Keyinroq o‘ylab topish biroz qiyinroq, ammo kodi yanada qisqaroq boshqa algoritm beriladi.
 
-### Algoritm tavsifi
+### Algoritm tavsifi {#algorithm-description}
 
 Algoritm juda sodda.
 
@@ -30,7 +30,7 @@ Shundan yechim darhol kelib chiqadi: $s[]$ dagi joriy minimum va uning o‘rnini
 
 Algoritm $O(n)$ vaqtda ishlaydi va asimptotik jihatdan optimal.
 
-### Amalga oshirish
+### Amalga oshirish {#implementation}
 
 Kodda $s[]$ prefiks yig‘indilari massivini alohida saqlash ham shart emas — uning faqat joriy elementi kerak bo‘ladi.
 
@@ -67,11 +67,11 @@ for (int r = 0; r < n; ++r) {
 }
 ```
 
-## 2-algoritm
+## 2-algoritm {#algorithm-2}
 
 Endi boshqa algoritmni ko‘ramiz. Uni tushunish biroz qiyinroq, ammo u yuqoridagi usuldan nafisroq va kodi ham qisqaroq. Bu algoritmni Jay Kadane 1984-yilda taklif qilgan.
 
-### Algoritm tavsifi
+### Algoritm tavsifi {#algorithm-description}
 
 Massiv bo‘ylab yurib, joriy qisman yig‘indini $s$ o‘zgaruvchida to‘playmiz. Agar biror paytda $s$ manfiy bo‘lsa, $s=0$ deb olamiz. Algoritm davomida $s$ olgan barcha qiymatlarning maksimumi masala javobi bo‘ladi.
 
@@ -83,7 +83,7 @@ Ixtiyoriy $[l,r]$ kesmani olaylik va $l$ “kritik” o‘rin bo‘lmasin, ya’
 
 Shunday qilib, javobni faqat $s<0$ bo‘lgan o‘rinlardan keyin darhol boshlanuvchi kesmalar orasidan qidirish yetarli. Bu algoritmning to‘g‘riligini isbotlaydi.
 
-### Amalga oshirish
+### Amalga oshirish {#implementation}
 
 1-algoritmdagi kabi, avval faqat sonli javobni topadigan soddalashtirilgan kod:
 
@@ -116,13 +116,13 @@ for (int r = 0; r < n; ++r) {
 }
 ```
 
-## Bog‘liq masalalar
+## Bog‘liq masalalar {#related-tasks}
 
-### Cheklovli eng katta yoki eng kichik yig‘indili ostkesma
+### Cheklovli eng katta yoki eng kichik yig‘indili ostkesma {#finding-the-maximumminimum-subarray-with-constraints}
 
 Masala shartida kerakli $[l,r]$ kesmaga qo‘shimcha cheklovlar qo‘yilsa, masalan, uning $r-l+1$ uzunligi ma’lum oraliqda bo‘lishi talab etilsa, yuqoridagi algoritmni odatda oson umumlashtirish mumkin. Masala baribir $s[]$ massivida qo‘shimcha cheklovlarga mos minimum topishga keladi.
 
-### Ikki o‘lchamli holat: eng katta yoki eng kichik yig‘indili ostmatritsa
+### Ikki o‘lchamli holat: eng katta yoki eng kichik yig‘indili ostmatritsa {#two-dimensional-case-of-the-problem-search-for-maximumminimum-submatrix}
 
 Bu masala tabiiy ravishda yuqori o‘lchamlarga umumlashadi. Masalan, ikki o‘lchamda berilgan matritsadan elementlari yig‘indisi eng katta bo‘lgan $[l_1 \ldots r_1, l_2 \ldots r_2]$ ostmatritsani topish kerak.
 
@@ -132,7 +132,7 @@ Bu masala uchun **tezroq** algoritmlar ma’lum, ammo ular $O(n^3)$ dan uncha te
 
 Chan algoritmi va bu sohadagi ko‘plab boshqa natijalar aslida **tez matritsa ko‘paytirish**ni tasvirlaydi; bunda oddiy qo‘shish o‘rniga minimum, oddiy ko‘paytirish o‘rniga qo‘shish ishlatiladi. Eng katta yig‘indili ostmatritsa masalasini barcha tugun juftlari orasidagi eng qisqa yo‘llarga, uni esa shunday matritsa ko‘paytirishga keltirish mumkin.
 
-### Eng katta yoki eng kichik o‘rtacha qiymatli ostkesma
+### Eng katta yoki eng kichik o‘rtacha qiymatli ostkesma {#search-for-a-subarray-with-a-maximumminimum-average}
 
 Bu masalada o‘rtacha qiymati eng katta bo‘lgan $a[l,r]$ kesma izlanadi:
 
@@ -148,7 +148,7 @@ Har bir $a[]$ elementidan $x$ ni ayiramiz. Shunda qismmasala yangi massivda musb
 
 Natijada $O(T(n) \log W)$ murakkablikdagi yechim olinadi. Bu yerda $W$ — talab etilgan aniqlik, $T(n)$ esa uzunligi $n$ bo‘lgan massiv uchun qismmasalani yechish vaqti; u qo‘shimcha cheklovlarga qarab o‘zgaradi.
 
-### Onlayn masalani yechish
+### Onlayn masalani yechish {#solving-the-online-problem}
 
 Masala sharti quyidagicha: $n$ ta sonli massiv va $L$ soni beriladi. Har bir $(l,r)$ so‘roviga javoban $[l,r]$ oralig‘idan uzunligi kamida $L$ va arifmetik o‘rtachasi imkon qadar katta bo‘lgan ostkesmani topish kerak.
 

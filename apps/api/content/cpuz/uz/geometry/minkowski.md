@@ -1,6 +1,6 @@
-# Qavariq ko‘pburchaklarning Minkowski yig‘indisi
+# Qavariq ko‘pburchaklarning Minkowski yig‘indisi {#minkowski-sum-of-convex-polygons}
 
-## Ta’rif
+## Ta’rif {#definition}
 
 Tekislikdagi nuqtalarning ikkita $A$ va $B$ to‘plamini ko‘rib chiqaylik. Minkowski yig‘indisi $A + B$ quyidagicha aniqlanadi: $\{a + b| a \in A, b \in B\}$.
 Bu yerda $A$ va $B$ to‘plamlar ichki qismlari bilan birga olingan $P$ va $Q$ qavariq ko‘pburchaklardan iborat bo‘lgan holni ko‘rib chiqamiz.
@@ -8,7 +8,7 @@ Maqola davomida ko‘pburchaklarni uchlarining tartiblangan ketma-ketligi bilan 
 $P_i$ kabi belgilar ma’noga ega bo‘ladi.
 Ma’lum bo‘lishicha, $P$ va $Q$ qavariq ko‘pburchaklarning yig‘indisi ko‘pi bilan $|P| + |Q|$ ta uchga ega qavariq ko‘pburchak bo‘ladi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Bu yerda ko‘pburchaklar siklik tartibda raqamlangan deb hisoblaymiz, ya’ni $P_{|P|} = P_0,\ Q_{|Q|} = Q_0$ va hokazo.
 
@@ -31,13 +31,13 @@ $i < |P|$ yoki $j < |Q|$ bo‘lguncha quyidagi qadamlarni takrorlaymiz.
 
 3. Burchagi kichikroq bo‘lgan ko‘rsatkichni bittaga oshiramiz (burchaklar teng bo‘lsa, ikkalasini oshiramiz).
 
-## Vizualizatsiya
+## Vizualizatsiya {#visualization}
 
 Quyida nima sodir bo‘layotganini tushunishga yordam beradigan yaxshi vizualizatsiya keltirilgan.
 
 ![Visual](/algorithms-media/geometry/minkowski.gif)
 
-## Ikki ko‘pburchak orasidagi masofa
+## Ikki ko‘pburchak orasidagi masofa {#distance-between-two-polygons}
 
 Minkowski yig‘indisining eng keng tarqalgan qo‘llanishlaridan biri — ikkita qavariq ko‘pburchak orasidagi masofani hisoblash (yoki shunchaki ularning kesishishini tekshirish).
 $P$ va $Q$ qavariq ko‘pburchaklar orasidagi masofa $\min\limits_{a \in P, b \in Q} ||a - b||$ sifatida aniqlanadi. Shuni ta’kidlash mumkinki,
@@ -50,7 +50,7 @@ Agar $(0, 0)$ ko‘pburchak ichida yoki chegarasida bo‘lsa, masofa $0$ ga teng
 Minkowski yig‘indisini
 chiziqli vaqtda hisoblash mumkin bo‘lgani uchun ikkita qavariq ko‘pburchak orasidagi masofani topishning chiziqli vaqtli algoritmini olamiz.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida butun koordinatali nuqtalarga ega ko‘pburchaklar uchun Minkowski yig‘indisining implementatsiyasi keltirilgan. E’tibor bering, bu holda barcha hisob-kitoblarni butun sonlarda bajarish mumkin, chunki
 qutbiy burchaklarni hisoblab, to‘g‘ridan-to‘g‘ri solishtirish o‘rniga ikki vektor vektor ko‘paytmasining ishorasiga qarash mumkin.
@@ -103,7 +103,7 @@ vector<pt> minkowski(vector<pt> P, vector<pt> Q){
 
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
 * [Codeforces 87E Mogohu-Rea Idol](https://codeforces.com/problemset/problem/87/E)
 * [Codeforces 1195F Geometers Anonymous Club](https://codeforces.com/contest/1195/problem/F)

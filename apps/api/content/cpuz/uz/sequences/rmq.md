@@ -1,11 +1,11 @@
-# RMQ — oraliqdagi eng kichik element
+# RMQ — oraliqdagi eng kichik element {#range-minimum-query}
 
 $A[1..N]$ massiv berilgan.
 Siz $(L, R)$ ko‘rinishidagi so‘rovlarga javob berishingiz kerak: $A$ massivning $L$ va $R$ pozitsiyalari orasidagi (chegaralar ham kiradi) eng kichik elementini topish.
 
 RMQ masalalarda bevosita uchrashi yoki boshqa vazifalarda qo‘llanishi mumkin, masalan, [eng yaqin umumiy ajdod](/algorithms/graph/lca) masalasida.
 
-## Yechim
+## Yechim {#solution}
 
 RMQ masalasini yechish uchun ishlatish mumkin bo‘lgan ko‘plab yondashuvlar va ma’lumotlar tuzilmalari mavjud.
 
@@ -30,7 +30,7 @@ Quyida esa faqat statik massivlar bilan ishlaydigan yondashuvlar keltirilgan, ya
 
 Izoh: oldindan ishlov berish — berilgan massiv uchun mos ma’lumotlar tuzilmasini qurish orqali uni dastlabki qayta ishlashdir.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ — Range Minimum Query](http://www.spoj.com/problems/RMQSQ/)
 - [CodeChef — Chef and Array](https://www.codechef.com/problems/FRMQ)

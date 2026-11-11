@@ -1,4 +1,4 @@
-# Floyd-Warshall Algorithm
+# Floyd-Warshall Algorithm {#floyd-warshall-algorithm}
 
 Given a directed or an undirected weighted graph $G$ with $n$ vertices.
 The task is to find the length of the shortest path $d_{ij}$ between each pair of vertices $i$ and $j$.
@@ -15,7 +15,7 @@ The graph has a negative cycle if at the end of the algorithm, the distance from
 This algorithm has been simultaneously published in articles by Robert Floyd and Stephen Warshall in 1962.
 However, in 1959, Bernard Roy published essentially the same algorithm, but its publication went unnoticed.
 
-## Description of the algorithm
+## Description of the algorithm {#description-of-the-algorithm}
 
 The key idea of the algorithm is to partition the process of finding the shortest path between any two vertices to several incremental phases.
 
@@ -58,7 +58,7 @@ In fact at any $k$-th phase we are at most improving the distance of any path in
 
 The time complexity of this algorithm is obviously $O(n^3)$.
 
-## Implementation
+## Implementation {#implementation}
 
 Let $d[][]$ is a 2D array of size $n \times n$, which is filled according to the $0$-th phase as explained earlier.
 Also we will set $d[i][i] = 0$ for any $i$ at the $0$-th phase.
@@ -93,7 +93,7 @@ for (int k = 0; k < n; ++k) {
 }
 ```
 
-## Retrieving the sequence of vertices in the shortest path
+## Retrieving the sequence of vertices in the shortest path {#retrieving-the-sequence-of-vertices-in-the-shortest-path}
 
 It is easy to maintain additional information with which it will be possible to retrieve the shortest path between any two given vertices in the form of a sequence of vertices.
 
@@ -102,7 +102,7 @@ It is clear that the number of the phase is nothing more than a vertex in the mi
 Now we just need to find the shortest path between vertices $i$ and $p[i][j]$, and between $p[i][j]$ and $j$.
 This leads to a simple recursive reconstruction algorithm of the shortest path.
 
-## The case of real weights
+## The case of real weights {#the-case-of-real-weights}
 
 If the weights of the edges are not integer but real, it is necessary to take the errors, which occur when working with float types, into account.
 
@@ -116,7 +116,7 @@ if (d[i][k] + d[k][j] < d[i][j] - EPS)
     d[i][j] = d[i][k] + d[k][j]; 
 ```
 
-## The case of negative cycles
+## The case of negative cycles {#the-case-of-negative-cycles}
 
 Formally the Floyd-Warshall algorithm does not apply to graphs containing negative weight cycle(s).
 But for all pairs of vertices $i$ and $j$ for which there doesn't exist a path starting at $i$, visiting a negative cycle, and end at $j$,  the algorithm will still work correctly.
@@ -133,7 +133,7 @@ Therefore integer overflow must be handled by limiting the minimal distance by s
 
 To learn more about finding negative cycles in a graph, see the separate article [Finding a negative cycle in the graph](/algorithms/graph/finding-negative-cycle-in-graph).
 
-## Practice Problems
+## Practice Problems {#practice-problems}
  - [UVA: Page Hopping](https://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=762)
  - [SPOJ: Possible Friends](http://www.spoj.com/problems/SOCIALNE/)
  - [CODEFORCES: Greg and Graph](http://codeforces.com/problemset/problem/295/B)

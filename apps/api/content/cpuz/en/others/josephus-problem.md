@@ -1,6 +1,6 @@
-# Josephus Problem
+# Josephus Problem {#josephus-problem}
 
-## Statement
+## Statement {#statement}
 
 We are given the natural numbers $n$ and $k$.
 All natural numbers from $1$ to $n$ are written in a circle. 
@@ -15,7 +15,7 @@ This problem can be solved by modeling the procedure.
 Brute force modeling will work $O(n^{2})$. Using a [Segment Tree](/algorithms/data-structures/segment-tree), we can improve it to $O(n \log n)$.
 We want something better though.
 
-## Modeling a $O(n)$ solution
+## Modeling a $O(n)$ solution {#modeling-a-on-solution}
 
 We will try to find a pattern expressing the answer for the problem $J_{n, k}$ through the solution of the previous problems.
 
@@ -47,7 +47,7 @@ $$J_{n,k} = (J_{n-1,k} + k) \bmod n$$
 
 So, we found a solution to the problem of Josephus, working in $O(n)$ operations.
 
-## Implementation
+## Implementation {#implementation}
 
 Simple **recursive implementation** (in 1-indexing)
 
@@ -74,7 +74,7 @@ After we delete the first number, we have $n-1$ numbers left.
 When we repeat the procedure, we will start with the number that had originally the index $k \bmod n$.
 $J_{n-1, k}$ would be the answer for the remaining circle, if we start counting at $0$, but because we actually start with $k$ we have $J_{n, k} = (J_{n-1,k} + k) \ \bmod n$.
 
-## Modeling a $O(k \log n)$ solution
+## Modeling a $O(k \log n)$ solution {#modeling-a-ok-log-n-solution}
 
 For relatively small $k$ we can come up with a better solution than the above recursive solution in $O(n)$.
 If $k$ is a lot smaller than $n$, then we can delete multiple numbers ($\lfloor \frac{n}{k} \rfloor$) in one run without looping over.
@@ -122,7 +122,7 @@ $$x \approx k \ln n$$
 
 Thus, the complexity of the algorithm is actually $O (k \log n)$.
 
-## Analytical solution for $k = 2$
+## Analytical solution for $k = 2$ {#analytical-solution-for-k-2}
 
 In this particular case (in which this task was set by Josephus Flavius) the problem is solved much easier.
 
@@ -138,6 +138,6 @@ We can use this recurrent dependency directly in our implementation. This patter
 
 $$J_{n, 2} = 1 + 2 \left(n-2^{\lfloor \log_2 n \rfloor} \right)$$
 
-## Analytical solution for $k > 2$
+## Analytical solution for $k > 2$ {#analytical-solution-for-k-2}
 
 Despite the simple form of the problem and a large number of articles on this and related problems, a simple analytical representation of the solution of Josephus' problem has not yet been found. For small $k$, some formulas are derived, but apparently they are all difficult to apply in practice (for example, see Halbeisen, Hungerbuhler "The Josephus Problem" and Odlyzko, Wilf "Functional iteration and the Josephus problem").

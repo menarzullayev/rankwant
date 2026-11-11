@@ -1,4 +1,4 @@
-# Randomized Heap
+# Randomized Heap {#randomized-heap}
 
 A randomized heap is a heap that, through using randomization, allows to perform all operations in expected logarithmic time.
 
@@ -17,7 +17,7 @@ The default operations of a heap are:
 
 A randomized heap can perform all these operations in expected $O(\log n)$ time with a very simple implementation.
 
-## Data structure
+## Data structure {#data-structure}
 
 We can immediately describe the structure of the binary heap:
 
@@ -32,7 +32,7 @@ struct Tree {
 In the vertex we store a value.
 In addition we have pointers to the left and right children, which point to null if the corresponding child doesn't exist.
 
-## Operations
+## Operations {#operations}
 
 It is not difficult to see, that all operations can be reduced to a single one: **merging** two heaps into one.
 Indeed, adding a new value to the heap is equivalent to merging the heap with a heap consisting of a single vertex with that value. 
@@ -74,13 +74,13 @@ Here first we check if one of the heaps is empty, then we don't need to perform 
 Otherwise we make the heap `t1` the one with the smaller value (by swapping `t1` and `t2` if necessary).
 We want to merge the left child of `t1` with `t2`, therefore we randomly swap the children of `t1`, and then perform the merge.
 
-## Complexity
+## Complexity {#complexity}
 
 We introduce the random variable $h(T)$ which will denote the **length of the random path** from the root to the leaf (the length in the number of edges).
 It is clear that the algorithm `merge` performs $O(h(T_1) + h(T_2))$ steps.
 Therefore to understand the complexity of the operations, we must look into the random variable $h(T)$.
 
-### Expected value
+### Expected value {#expected-value}
 
 We assume that the expectation $h(T)$ can be estimated from above by the logarithm of the number of vertices in the heap:
 
@@ -98,7 +98,7 @@ $$\begin{align}
 &\le \log \frac{2\left((n_L + 1) + (n_R + 1)\right)}{2} = \log(n_L + n_R + 2) = \log(n+1)
 \end{align}$$
 
-### Exceeding the expected value
+### Exceeding the expected value {#exceeding-the-expected-value}
 
 Of course we are still not happy.
 The expected value of $h(T)$ doesn't say anything about the worst case.
@@ -116,7 +116,7 @@ Therefore we get:
 
 $${\cal P}(h(T) > (c+1) \log n) = \sum_{p \in P} 2^{-|p|} < \sum_{p \in P} 2^{-(c+1) \log n} = |P| n^{-(c+1)} \le n^{-c}$$
 
-### Complexity of the algorithm
+### Complexity of the algorithm {#complexity-of-the-algorithm}
 
 Thus the algorithm `merge`, and hence all other operations expressed with it, can be performed in $O(\log n)$ on average.
 

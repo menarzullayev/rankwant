@@ -1,4 +1,4 @@
-# Muvozanatlangan qavslar ketma-ketliklari
+# Muvozanatlangan qavslar ketma-ketliklari {#balanced-bracket-sequences}
 
 **Muvozanatlangan qavslar ketma-ketligi** — faqat qavslardan iborat shunday satrki, unga mos sonlar va matematik amallarni qo‘shish orqali to‘g‘ri matematik ifoda hosil qilish mumkin.
 
@@ -23,7 +23,7 @@ Ushbu maqolada muvozanatlangan qavslar ketma-ketliklariga oid bir nechta klassik
 
 Har bir masalaning faqat bitta turdagi qavsga ruxsat berilgan sodda ko‘rinishi va bir nechta turdagi qavsga ruxsat berilgan murakkabroq ko‘rinishini muhokama qilamiz.
 
-## Muvozanatni tekshirish
+## Muvozanatni tekshirish {#balance-validation}
 
 Berilgan satr muvozanatlangan yoki yo‘qligini tekshirmoqchimiz.
 
@@ -35,9 +35,9 @@ Bir nechta qavs turi qatnashsa, algoritmni o‘zgartirish kerak. $\text{depth}$ 
 
 Joriy belgi ochuvchi qavs bo‘lsa, uni stekka qo‘shamiz. Yopuvchi qavs bo‘lsa, stek bo‘sh emasligini va stekning yuqori elementi joriy yopuvchi qavs bilan bir turda ekanini tekshiramiz. Ikkala shart bajarilsa, ochuvchi qavsni stekdan olib tashlaymiz. Istalgan paytda shartlardan biri bajarilmasa yoki satr oxirida stek bo‘sh bo‘lmasa, satr muvozanatlangan emas. Aks holda u muvozanatlangan.
 
-## Muvozanatlangan ketma-ketliklar soni
+## Muvozanatlangan ketma-ketliklar soni {#number-of-balanced-sequences}
 
-### Formula
+### Formula {#formula}
 
 Faqat bitta turdagi qavsdan foydalanilganda muvozanatlangan qavslar ketma-ketliklari sonini [Catalan sonlari](/algorithms/combinatorics/catalan-numbers) yordamida hisoblash mumkin. Uzunligi $2n$ bo‘lgan, ya’ni $n$ juft qavsli muvozanatlangan ketma-ketliklar soni:
 
@@ -47,7 +47,7 @@ Agar $k$ turdagi qavsga ruxsat berilsa, har bir juft boshqa juftlardan mustaqil 
 
 $$\frac{1}{n+1} \binom{2n}{n} k^n$$
 
-### Dinamik dasturlash
+### Dinamik dasturlash {#dynamic-programming}
 
 Bu sonlarni **dinamik dasturlash** yordamida ham hisoblash mumkin.
 
@@ -59,7 +59,7 @@ $$d[n] = \sum_{i=0}^{n-1} d[i] \cdot d[n-1-i]$$
 
 Bu rekurrent munosabatning boshlang‘ich qiymati $d[0]=1$.
 
-## Leksikografik tartibdagi keyingi muvozanatlangan ketma-ketlikni topish
+## Leksikografik tartibdagi keyingi muvozanatlangan ketma-ketlikni topish {#finding-the-lexicographical-next-balanced-sequence}
 
 Bu bo‘limda faqat bitta turdagi qavsga ruxsat berilgan holatni ko‘rib chiqamiz.
 
@@ -98,7 +98,7 @@ bool next_balanced_sequence(string & s) {
 
 Bu funksiya keyingi muvozanatlangan qavslar ketma-ketligini $O(n)$ vaqtda hisoblaydi. Keyingi ketma-ketlik mavjud bo‘lmasa, `false` qaytaradi.
 
-## Barcha muvozanatlangan ketma-ketliklarni topish
+## Barcha muvozanatlangan ketma-ketliklarni topish {#finding-all-balanced-sequences}
 
 Ba’zan berilgan uzunlikdagi barcha muvozanatlangan qavslar ketma-ketliklarini topish va chiqarish talab qilinadi.
 
@@ -108,7 +108,7 @@ Agar ketma-ketlik uzunligi juda katta bo‘lmasa (masalan, $n$ soni $12$ dan kic
 
 Ularni, shuningdek, barcha ketma-ketliklarni dinamik dasturlash bilan sanashda qo‘llagan g‘oyalar yordamida ham hosil qilish mumkin. Bu g‘oyalarni keyingi ikki bo‘limda ko‘rib chiqamiz.
 
-## Ketma-ketlik indeksi
+## Ketma-ketlik indeksi {#sequence-index}
 
 $n$ juft qavsli muvozanatlangan qavslar ketma-ketligi berilgan. Uning $n$ juft qavsli barcha muvozanatlangan ketma-ketliklar leksikografik ro‘yxatidagi indeksini topish kerak.
 
@@ -140,7 +140,7 @@ Bu formula quyidagicha keltirib chiqariladi. Avval bir nechta qavs turi borligin
 
 Hali aniqlanmagan $2n-i-1$ ta o‘rin bor. Ularning $\text{ndepth}$ tasi ochuvchi qavslar sababli oldindan belgilangan. Lekin qolgan barcha qavslar ($(2n-i-1-\text{ndepth})/2$ juft) istalgan turga tegishli bo‘lishi mumkin, shu sababli sonni $k$ ning tegishli darajasiga ko‘paytiramiz.
 
-## $k$-ketma-ketlikni topish
+## $k$-ketma-ketlikni topish {#finding-the-k-th-sequence}
 
 $n$ — ketma-ketlikdagi qavs juftlari soni bo‘lsin. Barcha muvozanatlangan ketma-ketliklarning leksikografik tartiblangan ro‘yxatidagi $k$-ketma-ketlikni topish kerak.
 

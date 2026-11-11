@@ -1,4 +1,4 @@
-# Calculating the determinant using Kraut method in $O(N^3)$
+# Calculating the determinant using Kraut method in $O(N^3)$ {#calculating-the-determinant-using-kraut-method-in-on3}
 
 In this article, we'll describe how to find the determinant of the matrix using Kraut method, which works in $O(N^3)$.
 
@@ -18,7 +18,7 @@ Let $A$ be the matrix and $N$ - its size. We will find the elements of the matri
  
         $$L_{ij} = \frac{1}{U_{jj}} \left(A_{ij} - \sum_{k=1}^{j-1} L_{ik} \cdot U_{kj} \right).$$
 
-## Implementation
+## Implementation {#implementation}
 
 ```java
 static BigInteger det (BigDecimal a [][], int n) {

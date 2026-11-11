@@ -1,4 +1,4 @@
-# Minimal ostov daraxt — Prim algoritmi
+# Minimal ostov daraxt — Prim algoritmi {#minimum-spanning-tree-prims-algorithm}
 
 Bizga $n$ ta tugun va $m$ ta qirraga ega og‘irlikli yo‘naltirilmagan $G$ grafi berilgan.
 
@@ -23,7 +23,7 @@ $n$ ta shahar mavjud va har bir shaharlar jufti uchun ular orasida yo‘l qurish
 
 Har bir shahardan boshqa istalgan shaharga borish mumkin bo‘ladigan va barcha yo‘llarni qurish narxi minimal bo‘ladigan tarzda yo‘llar qurishimiz kerak.
 
-## Prim algoritmi
+## Prim algoritmi {#prims-algorithm}
 
 Ushbu algoritmni dastlab chex matematigi Vojtěch Jarník 1930-yilda kashf etgan.
 
@@ -31,7 +31,7 @@ Biroq algoritm, asosan, uni 1957-yilda qayta kashf etib, qayta chop etgan amerik
 
 Bundan tashqari, Edsger Dijkstra ham bu algoritmni 1959-yilda chop etgan.
 
-### Algoritm tavsifi
+### Algoritm tavsifi {#algorithm-description}
 
 Bu yerda algoritmning eng sodda ko‘rinishini tavsiflaymiz.
 
@@ -53,7 +53,7 @@ Oxirida qurilgan ostov daraxt minimal bo‘ladi.
 
 Agar dastlabki graf bog‘lanmagan bo‘lsa, ostov daraxt mavjud emas; demak, tanlangan qirralar soni $n - 1$ dan kichik bo‘ladi.
 
-### Isbot
+### Isbot {#proof}
 
 $G$ graf bog‘langan, ya’ni javob mavjud bo‘lsin.
 
@@ -87,13 +87,13 @@ Bundan tashqari, $e$ va $f$ bir xil og‘irlikka ega bo‘lishi kerak.
 
 Shunday qilib, Prim algoritmida tanlangan barcha qirralarning og‘irliklari istalgan minimal ostov daraxt qirralarining og‘irliklariga mos keladi; demak, Prim algoritmi haqiqatan ham minimal ostov daraxt hosil qiladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Algoritmning murakkabligi mos qirralar orasidan keyingi minimal qirrani qanday qidirishimizga bog‘liq.
 
 Turli murakkablik va implementatsiyalarga olib keluvchi bir nechta yondashuv mavjud.
 
-### Sodda implementatsiyalar: $O(n m)$ va $O(n^2 + m \log n)$
+### Sodda implementatsiyalar: $O(n m)$ va $O(n^2 + m \log n)$ {#trivial-implementations-on-m-and-on2-m-log-n}
 
 Qirrani barcha mumkin bo‘lgan qirralarni ko‘rib chiqish orqali qidirsak, eng kichik og‘irlikli qirrani topish $O(m)$ vaqt oladi.
 
@@ -111,7 +111,7 @@ Bu $O(n^2 + m)$ murakkablikni beradi; qirralarni saralash uchun qo‘shimcha $O(
 
 Quyida biroz farqli ikkita algoritmni ko‘rib chiqamiz: biri zich, ikkinchisi siyrak graflar uchun; ikkalasining ham murakkabligi yaxshiroq.
 
-### Zich graflar: $O(n^2)$
+### Zich graflar: $O(n^2)$ {#dense-graphs-on2}
 
 Masalaga boshqa tomondan yondashamiz:
 
@@ -180,7 +180,7 @@ Algoritm ikkita massivdan foydalanadi: qaysi tugunlar allaqachon tanlanganini ko
 
 Algoritm $n$ ta qadam bajaradi; har bir iteratsiyada qirra og‘irligi eng kichik bo‘lgan tugun tanlanadi va qolgan barcha tugunlarning `min_e[]` qiymatlari yangilanadi.
 
-### Siyrak graflar: $O(m \log n)$
+### Siyrak graflar: $O(m \log n)$ {#sparse-graphs-om-log-n}
 
 Yuqorida tavsiflangan algoritmda minimumni topish va ayrim qiymatlarni o‘zgartirish amallarini to‘plam amallari sifatida talqin qilish mumkin.
 

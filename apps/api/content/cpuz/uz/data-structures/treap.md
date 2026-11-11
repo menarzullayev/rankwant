@@ -1,4 +1,4 @@
-# Treap (Cartesian tree)
+# Treap (Cartesian tree) {#treap-cartesian-tree}
 
 Treap — ikkilik daraxt va ikkilik uyum xususiyatlarini birlashtiruvchi ma’lumotlar tuzilmasi. Uning nomi ham aynan `tree + heap` birikmasidan kelib chiqqan.
 
@@ -10,13 +10,13 @@ Treapni ko‘pincha «Cartesian tree» deb ham atashadi, chunki uni Dekart tekis
 
 Treap Raimund Seidel va Cecilia Aragon tomonidan 1989-yilda taklif qilingan.
 
-## Bunday tashkil etishning afzalliklari
+## Bunday tashkil etishning afzalliklari {#advantages-of-such-data-organisation}
 
 Ushbu implementatsiyada $X$ qiymatlari kalitlar va bir vaqtning o‘zida treapda saqlanadigan qiymatlar hisoblanadi; $Y$ qiymatlari esa **prioritetlar** deyiladi. Prioritetlar bo‘lmaganda treap oddiy $X$ bo‘yicha ikkilik qidiruv daraxti bo‘lar edi. Bitta $X$ qiymatlar to‘plamiga ko‘plab turli daraxtlar mos kelishi, ularning ayrimlari degeneratsiyalashgan — masalan, bog‘langan ro‘yxat shaklida — bo‘lishi mumkin. Bunday daraxtlarda asosiy amallar $O(N)$ vaqt talab qiladi.
 
 Boshqa tomondan, prioritetlar o‘zaro turli bo‘lsa, quriladigan daraxtni **yagona** tarzda aniqlaydi; bu daraxtga qiymatlar qaysi tartibda qo‘shilganiga bog‘liq emas. Tegishli teorema bilan buni isbotlash mumkin. Agar prioritetlar **tasodifiy tanlansa**, o‘rtacha holatda degeneratsiyalashmagan daraxt olinadi va asosiy amallarning $O(\log N)$ murakkabligi ta’minlanadi. Shu sababli ushbu tuzilma **randomized binary search tree** deb ham ataladi.
 
-## Amallar
+## Amallar {#operations}
 
 Treap quyidagi amallarni qo‘llab-quvvatlaydi:
 
@@ -29,13 +29,13 @@ Treap quyidagi amallarni qo‘llab-quvvatlaydi:
 
 Bundan tashqari, treap ikkilik qidiruv daraxti bo‘lgani sababli $K$-eng katta elementni topish yoki element indeksini aniqlash kabi boshqa amallarni ham bajarishi mumkin.
 
-## Implementatsiya tavsifi
+## Implementatsiya tavsifi {#implementation-description}
 
 Implementatsiya nuqtayi nazaridan har bir tugunda $X$, $Y$ va chap ($L$) hamda o‘ng ($R$) farzandlarga ko‘rsatkichlar saqlanadi.
 
 Barcha kerakli amallarni atigi ikkita yordamchi amal — Split va Merge — orqali implementatsiya qilamiz.
 
-### Split
+### Split {#split}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/6/69/Treap_split.svg)
 
@@ -50,7 +50,7 @@ Demak, split algoritmi:
 2. uning farzandlaridan biri uchun rekursiv `split` chaqiradi;
 3. rekursiv natijadan foydalanib yakuniy javobni quradi.
 
-### Merge
+### Merge {#merge}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/a/a8/Treap_merge.svg)
 
@@ -58,7 +58,7 @@ Demak, split algoritmi:
 
 Buning uchun ildizidagi $Y$ prioriteti kattaroq bo‘lgan daraxtni yangi ildiz sifatida tanlaymiz. Keyin boshqa daraxtni tanlangan ildizning tegishli ost-daraxti bilan rekursiv ravishda `Merge` qilamiz.
 
-### Insert
+### Insert {#insert}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/3/35/Treap_insert.svg)
 
@@ -66,7 +66,7 @@ Endi **Insert $(X,Y)$** implementatsiyasi tabiiy. Avval daraxt bo‘ylab oddiy $
 
 Muqobil usulda boshlang‘ich treapni $X$ bo‘yicha ajratib, yangi tugun bilan ikki marta `merge` bajarish mumkin; rasmda shu variant ko‘rsatilgan.
 
-### Erase
+### Erase {#erase}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/6/62/Treap_erase.svg)
 
@@ -74,17 +74,17 @@ Muqobil usulda boshlang‘ich treapni $X$ bo‘yicha ajratib, yangi tugun bilan 
 
 Muqobil ravishda, $X$ ni o‘z ichiga olgan ost-daraxtni ikkita split orqali ajratib, qolgan treaplarni birlashtirish mumkin.
 
-### Build
+### Build {#build}
 
 **Build** amalini $N$ marta **Insert** chaqirish orqali $O(N\log N)$ murakkablikda implementatsiya qilish mumkin.
 
-### Union
+### Union {#union}
 
 **Union $(T_1,T_2)$** amalining nazariy murakkabligi $O(M\log(N/M))$, amalda esa u odatda juda yaxshi, ehtimol kichik yashirin o‘zgarmas bilan ishlaydi. Umumiylikni yo‘qotmasdan $T_1\to Y>T_2\to Y$, ya’ni $T_1$ ildizi natija ildizi bo‘ladi, deb faraz qilaylik. Natijani olish uchun $T_1\to L$, $T_1\to R$ va $T_2$ daraxtlarini $T_1$ ildizining farzandlari bo‘la oladigan ikkita daraxtga birlashtirish kerak.
 
 Buning uchun **Split $(T_2,T_1\to X)$** ni chaqirib, $T_2$ ni $L$ va $R$ qismlarga ajratamiz. Keyin ularni $T_1$ farzandlari bilan rekursiv birlashtiramiz: **Union $(T_1\to L,L)$** va **Union $(T_1\to R,R)$**. Natijada javobning chap va o‘ng ost-daraxtlari hosil bo‘ladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 struct item {
@@ -167,7 +167,7 @@ pitem unite (pitem l, pitem r) {
 }
 ```
 
-## Ost-daraxt o‘lchamlarini saqlash
+## Ost-daraxt o‘lchamlarini saqlash {#maintaining-the-sizes-of-subtrees}
 
 Treap imkoniyatlarini kengaytirish uchun ko‘pincha har bir tugun ost-daraxtidagi tugunlar sonini `item` tuzilmasining `int cnt` maydonida saqlash kerak bo‘ladi. Masalan, daraxtdagi $K$-eng katta elementni yoki saralangan ro‘yxatdagi element indeksini $O(\log N)$ vaqtda topish mumkin. Bu amallarning implementatsiyasi oddiy ikkilik qidiruv daraxtidagi bilan bir xil.
 
@@ -184,7 +184,7 @@ void upd_cnt (pitem t) {
 }
 ```
 
-## Offline rejimda treapni $O(N)$ da qurish
+## Offline rejimda treapni $O(N)$ da qurish {#building-a-treap-in-o-n-in-offline-mode}
 
 Saralangan kalitlar ro‘yxati berilganda treapni kalitlarni bittadan qo‘shishning $O(N\log N)$ vaqtidan tezroq qurish mumkin. Kalitlar saralanganligi sababli muvozanatlangan ikkilik qidiruv daraxtini chiziqli vaqtda oson quramiz. $Y$ heap qiymatlarini tasodifiy boshlang‘ich qiymatlar bilan to‘ldiramiz, keyin ularni $X$ kalitlardan mustaqil ravishda heapify qilib, [uyumni $O(N)$ da quramiz](https://en.wikipedia.org/wiki/Binary_heap#Building_a_heap).
 
@@ -263,7 +263,7 @@ pitem build(int *x, int *y, int n) {
 }
 ```
 
-## Implicit Treap
+## Implicit Treap {#implicit-treaps}
 
 Implicit treap — oddiy treapning sodda, ammo juda kuchli modifikatsiyasi. Uni quyidagi amallarni online rejimda $O(\log N)$ vaqtda bajaradigan massiv sifatida qarash mumkin:
 
@@ -383,11 +383,11 @@ void output (pitem t) {
 }
 ```
 
-## Adabiyot
+## Adabiyot {#literature}
 
 - [Blelloch, Reid-Miller — “Fast Set Operations Using Treaps”](https://www.cs.cmu.edu/~scandal/papers/treaps-spaa98.pdf)
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [SPOJ — Ada and Aphids](http://www.spoj.com/problems/ADAAPHID/)
 - [SPOJ — Ada and Harvest](http://www.spoj.com/problems/ADACROP/)

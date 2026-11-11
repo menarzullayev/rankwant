@@ -1,6 +1,6 @@
-# Tayinlash masalasini yechish uchun Hungarian algoritmi
+# Tayinlash masalasini yechish uchun Hungarian algoritmi {#hungarian-algorithm-for-solving-the-assignment-problem}
 
-## Tayinlash masalasining bayoni
+## Tayinlash masalasining bayoni {#statement-of-the-assignment-problem}
 
 Tayinlash masalasining bir nechta standart ta’rifi mavjud (ularning barchasi mohiyatan o‘zaro teng kuchli). Ulardan ayrimlari:
 
@@ -12,9 +12,9 @@ Tayinlash masalasining bir nechta standart ta’rifi mavjud (ularning barchasi m
 Yuqoridagi barcha holatlar “**kvadrat**” masalalar ekanini, ya’ni ikkala o‘lcham ham doim $n$ ga tengligini qayd etish muhim. Amalda $n$ va $m$ teng bo‘lmagan hamda $\min(n,m)$ ta element tanlash kerak bo‘lgan shunga o‘xshash “**to‘g‘ri to‘rtburchak**” ta’riflar ham ko‘p uchraydi. Ammo satr yoki ustunlarni mos ravishda nol yoki cheksiz qiymatlar bilan qo‘shish orqali “to‘g‘ri to‘rtburchak” masalani har doim “kvadrat” masalaga aylantirish mumkinligini ko‘rish mumkin.
 Shuningdek, **minimal** yechimni qidirishga o‘xshash ravishda **maksimal** yechimni topish masalasini ham qo‘yish mumkin. Ammo bu ikki masala o‘zaro teng kuchli: barcha vaznlarni $-1$ ga ko‘paytirish kifoya.
 
-## Hungarian algoritmi
+## Hungarian algoritmi {#hungarian-algorithm}
 
-### Tarixiy ma’lumot
+### Tarixiy ma’lumot {#historical-reference}
 
 Algoritm 1955-yilda Harold **Kuhn** tomonidan ishlab chiqilgan va e’lon qilingan. Kuhnning o‘zi unga “Hungarian” nomini bergan, chunki u vengriyalik matematiklar Dénes Kőnig va Jenő Egerváryning avvalgi ishlariga asoslangan edi. 
 1957-yilda James **Munkres** bu algoritm narxlardan mustaqil ravishda (qat’iy) polinomial vaqtda ishlashini ko‘rsatdi. 
@@ -22,7 +22,7 @@ Shuning uchun adabiyotlarda bu algoritm nafaqat “Hungarian”, balki “Kuhn�
 Biroq 2006-yilda xuddi shu algoritmni **Kuhndan bir asr oldin** nemis matematigi Carl Gustav **Jacobi** ixtiro qilgani aniqlandi. Uning 1890-yilda vafotidan keyin nashr etilgan _Ixtiyoriy oddiy differensial tenglamalar sistemasining tartibini tadqiq qilish haqida_ asarida boshqa natijalar qatori tayinlash masalasini yechadigan polinomial algoritm ham bor edi. Afsuski, nashr lotin tilida bo‘lgani sababli matematiklar orasida e’tiborsiz qolgan.
 Kuhnning dastlabki algoritmi $\mathcal{O}(n^4)$ asimptotik murakkablikka ega bo‘lganini, faqat keyinroq Jack **Edmonds** va Richard **Karp** (hamda ulardan mustaqil ravishda **Tomizawa**) uni $\mathcal{O}(n^3)$ asimptotik murakkablikka qanday yaxshilashni ko‘rsatganini ham qayd etish kerak.
 
-### $\mathcal{O}(n^4)$ algoritm
+### $\mathcal{O}(n^4)$ algoritm {#the-mathcalon4-algorithm}
 
 Noaniqlik bo‘lmasligi uchun, biz asosan tayinlash masalasining matritsa ko‘rinishi bilan ishlashimizni darhol qayd etamiz (ya’ni $A$ matritsa berilgan va undan turli satr hamda ustunlarda yotadigan $n$ ta katak tanlash kerak). Massivlarni $1$ dan boshlab indekslaymiz; masalan, $A$ matritsaning indekslari $A[1\dots n][1\dots n]$.
 Shuningdek, $A$ matritsadagi barcha sonlar **manfiy emas** deb faraz qilamiz (agar bunday bo‘lmasa, barcha sonlarga biror o‘zgarmas qiymat qo‘shib, matritsani har doim manfiy bo‘lmagan qilish mumkin).
@@ -107,7 +107,7 @@ Demak, ertami-kechmi mukammal $M^*$ juftlashtirishga mos potensial topiladi va $
 Algoritm murakkabligi $\mathcal{O}(n^4)$: jami juftlashtirish ko‘pi bilan $n$ marta oshadi; har bir oshishdan oldin ko‘pi bilan $n$ marta potensial qayta hisoblanadi va har bir qayta hisoblash $\mathcal{O}(n^2)$ vaqtda bajariladi.
 Bu yerda $\mathcal{O}(n^4)$ algoritm implementatsiyasini keltirmaymiz, chunki u quyida tasvirlanadigan $\mathcal{O}(n^3)$ algoritm implementatsiyasidan qisqaroq bo‘lmaydi.
 
-### $\mathcal{O}(n^3)$ algoritm
+### $\mathcal{O}(n^3)$ algoritm {#the-mathcalon3-algorithm}
 
 Endi xuddi shu algoritmni $\mathcal{O}(n^3)$ vaqtda (to‘g‘ri to‘rtburchak $n\times m$ masalalar uchun $\mathcal{O}(n^2m)$ vaqtda) implementatsiya qilishni o‘rganamiz.
 
@@ -142,7 +142,7 @@ Bulardan kerakli murakkablikka erishishga imkon beradigan quyidagi **asosiy g‘
 Shunday qilib, algoritm quyidagi ko‘rinishga ega: tashqi siklda matritsa satrlarini bittadan ko‘ramiz. Har bir satr $\mathcal{O}(n^2)$ vaqtda qayta ishlanadi, chunki faqat $\mathcal{O}(n)$ marta potensial qayta hisoblanishi mumkin (har biri $\mathcal{O}(n)$ vaqtda), $minv$ massivi esa $\mathcal{O}(n^2)$ vaqtda saqlanadi; Kuhn algoritmi ham $\mathcal{O}(n^2)$ vaqtda ishlaydi (u $\mathcal{O}(n)$ ta iteratsiya ko‘rinishida bo‘lib, har biri yangi ustunga tashrif buyuradi).
 Natijaviy murakkablik $\mathcal{O}(n^3)$ yoki masala to‘g‘ri to‘rtburchak bo‘lsa $\mathcal{O}(n^2m)$.
 
-## Hungarian algoritmining implementatsiyasi
+## Hungarian algoritmining implementatsiyasi {#implementation-of-the-hungarian-algorithm}
 
 Quyidagi implementatsiya bir necha yil oldin **Andrey Lopatin** tomonidan ishlab chiqilgan. U hayratlanarli darajada ixcham: butun algoritm **30 qator kod**dan iborat.
 Implementatsiya $n\leq m$ bo‘lgan $A[1\dots n][1\dots m]$ to‘g‘ri to‘rtburchak matritsa uchun yechim topadi. Qulaylik va kod ixchamligi uchun matritsa indekslari $1$ dan boshlanadi: implementatsiya soxta nolinchi satr va nolinchi ustun kiritadi, bu ko‘p sikllarni qo‘shimcha tekshiruvlarsiz umumiy ko‘rinishda yozish imkonini beradi.
@@ -204,7 +204,7 @@ Bir vaqtning o‘zida bir nechta $u[i]$ va $v[j]$ qiymatlari o‘zgarishi mumkin
 int cost = -v[0];
 ```
 
-## Ketma-ket eng qisqa yo‘llar algoritmi bilan bog‘lanish
+## Ketma-ket eng qisqa yo‘llar algoritmi bilan bog‘lanish {#connection-to-the-successive-shortest-path-algorithm}
 
 Hungarian algoritmini tayinlash masalasiga moslashtirilgan [ketma-ket eng qisqa yo‘llar algoritmi](/algorithms/graph/min-cost-flow) sifatida ko‘rish mumkin. Tafsilotlarga kirmasdan, ular orasidagi bog‘lanish uchun intuitiv tushuntirish beramiz.
 
@@ -224,7 +224,7 @@ Hungarian algoritmida ham shu hodisa yuz beradi: qattiq qirralardan (ya’ni $A[
 
 Potensiallarni chuqurroq tushunish uchun ushbu [maqola](https://codeforces.com/blog/entry/105658)ga qarang.
 
-## Masala misollari
+## Masala misollari {#task-examples}
 
 Quyida tayinlash masalasiga bog‘liq, juda sodda masalalardan unchalik ravshan bo‘lmaganlarigacha bir nechta misol keltirilgan:
 
@@ -254,13 +254,13 @@ Quyida tayinlash masalasiga bog‘liq, juda sodda masalalardan unchalik ravshan 
     >
     > Bu masala tayinlash masalasining **dual masalasi** deb ham ataladi: tayinlashning umumiy narxini minimallashtirish potensiallar yig‘indisini maksimallashtirishga teng kuchli.
 
-## Adabiyotlar
+## Adabiyotlar {#literature}
 
 - [Ravindra Ahuja, Thomas Magnanti, James Orlin. Network Flows [1993]](https://books.google.it/books/about/Network_Flows.html?id=rFuLngEACAAJ&redir_esc=y)
 - [Harold Kuhn. The Hungarian Method for the Assignment Problem [1955]](https://link.springer.com/chapter/10.1007/978-3-540-68279-0_2)
 - [James Munkres. Algorithms for Assignment and Transportation Problems [1957]](https://www.jstor.org/stable/2098689)
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [UVA - Crime Wave - The Sequel](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1687)
 - [UVA - Warehouse](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1829)

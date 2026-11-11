@@ -1,4 +1,4 @@
-# String Hashing
+# String Hashing {#string-hashing}
 
 Hashing algorithms are helpful in solving a lot of problems.
 
@@ -29,7 +29,7 @@ Using hashing will not be 100% deterministically correct, because two complete d
 However, in a wide majority of tasks, this can be safely ignored as the probability of the hashes of two different strings colliding is still very small.
 And we will discuss some techniques in this article how to keep the probability of collisions very low.
 
-## Calculation of the hash of a string
+## Calculation of the hash of a string {#calculation-of-the-hash-of-a-string}
 
 The good and widely used way to define the hash of a string $s$ of length $n$ is
 
@@ -75,9 +75,9 @@ long long compute_hash(string const& s) {
 
 Precomputing the powers of $p$ might give a performance boost.
 
-## Example tasks
+## Example tasks {#example-tasks}
 
-### Search for duplicate strings in an array of strings
+### Search for duplicate strings in an array of strings {#search-for-duplicate-strings-in-an-array-of-strings}
 
 Problem: Given a list of $n$ strings $s_i$, each no longer than $m$ characters, find all the duplicate strings and divide them into groups.
 
@@ -105,7 +105,7 @@ vector<vector<int>> group_identical_strings(vector<string> const& s) {
 }
 ```
 
-### Fast hash calculation of substrings of given string
+### Fast hash calculation of substrings of given string {#fast-hash-calculation-of-substrings-of-given-string}
 
 Problem: Given a string $s$ and indices $i$ and $j$, find the hash of the substring $s [i \dots j]$.
 
@@ -131,7 +131,7 @@ Suppose we have two hashes of two substrings, one multiplied by $p^i$ and the ot
 If $i < j$ then we multiply the first hash by $p^{j-i}$, otherwise, we multiply the second hash by $p^{i-j}$.
 By doing this, we get both the hashes multiplied by the same power of $p$ (which is the maximum of $i$ and $j$) and now these hashes can be compared easily with no need for any division.
 
-## Applications of Hashing
+## Applications of Hashing {#applications-of-hashing}
 
 Here are some typical applications of Hashing:
 
@@ -139,7 +139,7 @@ Here are some typical applications of Hashing:
 * Calculating the number of different substrings of a string in $O(n^2)$ (see below)
 * Calculating the number of palindromic substrings in a string.
 
-### Determine the number of different substrings in a string
+### Determine the number of different substrings in a string {#determine-the-number-of-different-substrings-in-a-string}
 
 Problem: Given a string $s$ of length $n$, consisting only of lowercase English letters, find the number of different substrings in this string.
 
@@ -182,7 +182,7 @@ int count_unique_substrings(string const& s) {
 Notice, that $O(n^2)$ is not the best possible time complexity for this problem.
 A solution with $O(n \log n)$ is described in the article about [Suffix Arrays](/algorithms/string/suffix-array), and it's even possible to compute it in $O(n)$ using a [Suffix Tree](/algorithms/string/suffix-tree-ukkonen) or a [Suffix Automaton](/algorithms/string/suffix-automaton).
 
-## Improve no-collision probability
+## Improve no-collision probability {#improve-no-collision-probability}
 
 Quite often the above mentioned polynomial hash is good enough, and no collisions will happen during tests.
 Remember, the probability that collision happens is only $\approx \frac{1}{m}$.
@@ -198,7 +198,7 @@ We can just compute two different hashes for each string (by using two different
 If $m$ is about $10^9$ for each of the two hash functions than this is more or less equivalent as having one hash function with $m \approx 10^{18}$.
 When comparing $10^6$ strings with each other, the probability that at least one collision happens is now reduced to $\approx 10^{-6}$.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [Good Substrings - Codeforces](https://codeforces.com/contest/271/problem/D)
 * [A Needle in the Haystack - SPOJ](http://www.spoj.com/problems/NHAY/)
 * [String Hashing - Kattis](https://open.kattis.com/problems/hashing)

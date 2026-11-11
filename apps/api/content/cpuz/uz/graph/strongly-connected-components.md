@@ -1,6 +1,6 @@
-# Kuchli bog‘langan komponentlar va kondensatsiya grafi
+# Kuchli bog‘langan komponentlar va kondensatsiya grafi {#strongly-connected-components-and-the-condensation-graph}
 
-## Ta’riflar
+## Ta’riflar {#definitions}
 
 $G=(V,E)$ — tugunlari $V$ va qirralari $E\subseteq V\times V$ bo‘lgan yo‘naltirilgan graf bo‘lsin. $G$ dagi tugunlar sonini $n=|V|$, qirralar sonini esa $m=|E|$ bilan belgilaymiz. Ushbu maqoladagi barcha ta’riflarni multigraflarga kengaytirish oson, ammo bu yerda bunga alohida e’tibor qaratmaymiz.
 
@@ -30,9 +30,9 @@ Kondensatsiya grafning eng muhim xossasi — uning **siklsiz** bo‘lishidir. Ta
 
 Keyingi bo‘limdagi algoritmlar berilgan grafning barcha kuchli bog‘langan komponentlarini topadi. Shundan so‘ng kondensatsiya grafini qurish mumkin.
 
-## Kosaraju algoritmi
+## Kosaraju algoritmi {#kosarajus-algorithm}
 
-### Algoritm tavsifi
+### Algoritm tavsifi {#description-of-the-algorithm}
 
 Bu algoritm taxminan 1980-yilda Kosaraju va Sharir tomonidan bir-biridan mustaqil taklif qilingan. U [chuqurlik bo‘yicha qidiruvning](/algorithms/graph/depth-first-search) ikki seriyasiga asoslanadi va $O(n+m)$ vaqtda ishlaydi.
 
@@ -81,7 +81,7 @@ Algoritm $O(n+m)$ vaqtda ishlaydi, chunki DFS ikki marta bajariladi. Kondensatsi
 
 Bu yerda [topologik tartiblash](/algorithms/graph/topological-sort)ni ham eslatish o‘rinli. Birinchi qadamda tugunlar chiqish vaqtining o‘sish tartibida topiladi. Agar $G$ siklsiz bo‘lsa, bu $G$ ning teskari topologik tartibiga mos keladi. Ikkinchi qadamda komponentlar chiqish vaqtining kamayish tartibida topiladi; ya’ni kondensatsiya graf tugunlari uning topologik tartibiga mos tartibda olinadi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 vector<bool> visited; // keeps track of which vertices are already visited
@@ -145,9 +145,9 @@ void strongly_connected_components(vector<vector<int>> const& adj,
 
 `dfs` funksiyasi algoritmning birinchi va ikkinchi qadamida ham ishlatiladi. Birinchi qadamda unga $G$ ning qo‘shnilik ro‘yxati uzatiladi va ketma-ket chaqiruvlarning barchasiga bir xil `order` chiqish vektori beriladi; natijada tugunlarning chiqish vaqtining o‘sish tartibidagi ro‘yxati olinadi. Ikkinchi qadamda $G^T$ ning qo‘shnilik ro‘yxati uzatiladi va har bir chaqiruvga bo‘sh `component` chiqish vektori beriladi; har safar aynan bitta kuchli bog‘langan komponent olinadi.
 
-## Tarjanning kuchli bog‘langan komponentlar algoritmi
+## Tarjanning kuchli bog‘langan komponentlar algoritmi {#tarjans-strongly-connected-components-algorithm}
 
-### Algoritm tavsifi
+### Algoritm tavsifi {#description-of-the-algorithm}
 
 Bu algoritmni Tarjan 1972-yilda taklif qilgan. U DFS chaqiruvlari ketma-ketligini bajaradi va DFS tuzilmasiga xos ma’lumotlardan kuchli bog‘langan komponentlarni aniqlash uchun foydalanadi. Ishlash vaqti $O(n+m)$.
 
@@ -242,7 +242,7 @@ Endi algoritmni amalga oshirish mumkin. DFS chaqiruvlari ketma-ketligining murak
 
 Qo‘shimcha ravishda, ildizlar teskari topologik tartibda topiladi. Algoritmda tugun ildiz bo‘lishi uchun uning ost-daraxtidan tashqaridagi hali biriktirilmagan tugunlarga qirra yo‘q. Demak yetib boriladigan boshqa komponentlarning barchasi yo ost-daraxtda joylashgan va ularning ildizlari allaqachon topilgan, yo tashqaridagi avval biriktirilgan tugunlarga ulanadi va ularning ildizlari ham oldin topilgan. Shuning uchun yetib boriladigan barcha komponentlar avval topilgan bo‘lib, ildizlar kondensatsiya grafning to‘g‘ri teskari topologik tartibida kiritiladi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 vector<int> st;    // - stack holding the unclaimed vertices
@@ -338,19 +338,19 @@ for (auto u : adj[v]) {
 
 $t_{low}$ ma’lumotni ildizga uzatish uchun ishlatiladi. `t_low[v] = min(t_low[v], t_in[u])` bajarilganda $u$ va $v$ bitta kuchli bog‘langan komponentga tegishli ekanini bilamiz. Agar $t_{low}[u]$ qiymat $u$ ning ildizigacha uzatilishi mumkin bo‘lsa, ildiz bir xil bo‘lgani sababli u $v$ orqali ham uzatilishi mumkin. $t_{low}[u]\le t_{in}[u]$ bo‘lgani uchun bu hech qanday ziddiyat keltirib chiqarmaydi, faqat $v$ ildizi uchun chegarani yaxshilaydi.
 
-## Kondensatsiya grafini qurish
+## Kondensatsiya grafini qurish {#building-the-condensation-graph}
 
 Kondensatsiya grafning qo‘shnilik ro‘yxatini qurishda har bir komponentning tugunlar ro‘yxatidagi birinchi tugunni uning **ildizi** sifatida tanlaymiz; bu ixtiyoriy tanlov. Ildiz tugun butun komponentni ifodalaydi. Har bir `v` tugun uchun `roots[v]` qiymat `v` tegishli bo‘lgan kuchli bog‘langan komponentning ildiz tugunini ko‘rsatadi.
 
 Endi kondensatsiya grafning tugunlari `components` da, qo‘shnilik ro‘yxati esa `adj_cond` da berilgan; `adj_cond` faqat komponentlarning ildiz tugunlaridan foydalanadi. $G$ da biror $a\in C$ dan biror $b\in C'$ ga qirra mavjud bo‘lgan har bir holat uchun, $C\neq C'$ bo‘lsa, $G^\text{SCC}$ da $C$ dan $C'$ ga qirra hosil qilamiz. Shu sababli ushbu implementatsiyada kondensatsiya grafning ikki komponenti orasida parallel qirralar paydo bo‘lishi mumkin.
 
-## Adabiyotlar
+## Adabiyotlar {#literature}
 
 * Thomas Cormen, Charles Leiserson, Ronald Rivest, Clifford Stein. *Introduction to Algorithms* [2005].
 * M. Sharir. *A strong-connectivity algorithm and its applications in data-flow analysis* [1979].
 * Robert Tarjan. *Depth-first search and linear graph algorithms* [1972].
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [SPOJ - Good Travels](http://www.spoj.com/problems/GOODA/)
 * [SPOJ - Lego](http://www.spoj.com/problems/LEGO/)

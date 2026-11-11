@@ -1,4 +1,4 @@
-# Linear Sieve
+# Linear Sieve {#linear-sieve}
 
 Given a number $n$, find all prime numbers in a segment $[2;n]$.
 
@@ -14,7 +14,7 @@ Thus, it makes sense to use the described algorithm only until for numbers of or
 
 The algorithm is due to Paul Pritchard. It is a variant of Algorithm 3.3 in (Pritchard, 1987: see references in the end of the article).
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Our goal is to calculate **minimum prime factor** $lp [i]$ for every number $i$ in the segment $[2; n]$.
 
@@ -37,7 +37,7 @@ We'll set a new value $lp [x_j] = p_j$ for all numbers of this form.
 
 The proof of correctness of this algorithm and its runtime can be found after the implementation.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 const int N = 10000000;
@@ -58,7 +58,7 @@ for (int i=2; i <= N; ++i) {
 }
 ```
 
-## Correctness Proof
+## Correctness Proof {#correctness-proof}
 
 We need to prove that the algorithm sets all values $lp []$ correctly, and that every value will be set exactly once. Hence, the algorithm will have linear runtime, since all the remaining actions of the algorithm, obviously, work for $O (n)$.
 
@@ -74,7 +74,7 @@ Now, let's compare this with the actions of our algorithm: in fact, for every $x
 
 Hence, the algorithm will go through every composite number exactly once, setting the correct values $lp []$ there. Q.E.D.
 
-## Runtime and Memory
+## Runtime and Memory {#runtime-and-memory}
 
 Although the running time of $O(n)$ is better than $O(n \log \log n)$ of the classic sieve of Eratosthenes, the difference between them is not so big.
 In practice the linear sieve runs about as fast as a typical implementation of the sieve of Eratosthenes.
@@ -87,6 +87,6 @@ However, its redeeming quality is that this algorithm calculates an array $lp []
 
 Knowing the factorizations of all numbers is very useful for some tasks, and this algorithm is one of the few which allow to find them in linear time.
 
-## References
+## References {#references}
 
 - Paul Pritchard, **Linear Prime-Number Sieves: a Family Tree**, Science of Computer Programming, vol. 9 (1987), pp.17-35.

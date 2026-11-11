@@ -1,16 +1,16 @@
-# The Inclusion-Exclusion Principle
+# The Inclusion-Exclusion Principle {#the-inclusion-exclusion-principle}
 
 The inclusion-exclusion principle is an important combinatorial way to compute the size of a set or the probability of complex events. It relates the sizes of individual sets with their union.
 
-## Statement
+## Statement {#statement}
 
-### The verbal formula
+### The verbal formula {#the-verbal-formula}
 
 The inclusion-exclusion principle can be expressed as follows:
 
 To compute the size of a union of multiple sets, it is necessary to sum the sizes of these sets **separately**, and then subtract the sizes of all **pairwise** intersections of the sets, then add back the size of the intersections of **triples** of the sets, subtract the size of **quadruples** of the sets, and so on, up to the intersection of **all** sets.
 
-### The formulation in terms of sets
+### The formulation in terms of sets {#the-formulation-in-terms-of-sets}
 
 The above definition can be expressed mathematically as follows:
 
@@ -20,7 +20,7 @@ And in a more compact way:
 
 $$\left|\bigcup_{i=1}^n A_i \right| = \sum_{\emptyset \neq J\subseteq \{1,2,\ldots ,n\}} (-1)^{|J|-1}{\Biggl |}\bigcap_{j\in J}A_{j}{\Biggr |}$$
 
-### The formulation using Venn diagrams
+### The formulation using Venn diagrams {#the-formulation-using-venn-diagrams}
 
 Let the diagram show three sets $A$, $B$ and $C$:
 
@@ -32,7 +32,7 @@ $$S(A \cup B \cup C) = S(A) + S(B) + S(C) - S(A \cap B) - S(A \cap C) - S(B \cap
 
 It can also be generalized for an association of $n$ sets.
 
-### The formulation in terms of probability theory
+### The formulation in terms of probability theory {#the-formulation-in-terms-of-probability-theory}
 
 If $A_i$ $(i = 1,2...n)$ are events and ${\cal P}(A_i)$ the probability of an event from $A_i$ to occur, then the probability of their union (i.e. the probability that at least one of the events occur) is equal to:
 
@@ -45,7 +45,7 @@ And in a more compact way:
 
 $${\cal P} \left(\bigcup_{i=1}^n A_i \right) = \sum_{\emptyset \neq J\subseteq \{1,2,\ldots ,n\}} (-1)^{|J|-1}\ {\cal P}{\Biggl (}\bigcap_{j\in J}A_{j}{\Biggr )}$$
 
-## Proof
+## Proof {#proof}
 
 For the proof it is convenient to use the mathematical formulation in terms of set theory:
 
@@ -72,7 +72,7 @@ $$ (1 - x)^k = \binom{k}{0} - \binom{k}{1} \cdot x + \binom{k}{2} \cdot x^2 - \b
 
 When $x = 1$, $(1 - x)^k$ looks a lot like $T$. However, the expression has an additional $\binom{k}{0} = 1$, and it is multiplied by $-1$. That leads us to $(1 - 1)^k = 1 - T$. Therefore $T = 1 - (1 - 1)^k = 1$, what was required to prove. The element is counted only once.
 
-## Generalization for calculating number of elements in exactly $r$ sets
+## Generalization for calculating number of elements in exactly $r$ sets {#generalization-for-calculating-number-of-elements-in-exactly-r-sets}
 
 Inclusion-exclusion principle can be rewritten to calculate number of elements which are present in zero sets:
 
@@ -88,7 +88,7 @@ $$\left|\bigcap_{i \in B} A_i \cap \bigcap_{j \not \in B} \overline{A_j}\right|=
 
 The sets on the left side do not intersect for different $B$, thus we can sum them up directly. Also one should note that any set $X$ will always have coefficient $(-1)^{m-r}$ if it occurs and it will occur for exactly $\dbinom{m}{r}$ sets $B$. 
 
-## Usage when solving problems
+## Usage when solving problems {#usage-when-solving-problems}
 
 The inclusion-exclusion principle is hard to understand without studying its applications.
 
@@ -96,7 +96,7 @@ First, we will look at three simplest tasks "at paper", illustrating application
 
 Tasks asking to "find the **number** of ways" are worth of note, as they sometimes lead to polynomial solutions, not necessarily exponential.
 
-### A simple task on permutations
+### A simple task on permutations {#a-simple-task-on-permutations}
 
 Task: count how many permutations of numbers from $0$ to $9$ exist such that the first element is greater than $1$ and the last one is less than $8$.
 
@@ -112,7 +112,7 @@ $$ 2 \cdot 9! + 2 \cdot 9! - 2 \cdot 2 \cdot 8! $$
 
 The only thing left is to subtract this number from the total of $10!$ to get the number of "good" permutations.
 
-### A simple task on (0, 1, 2) sequences
+### A simple task on (0, 1, 2) sequences {#a-simple-task-on-0-1-2-sequences}
 
 Task: count how many sequences of length $n$ exist consisting only of numbers $0,1,2$ such that each number occurs **at least once**.
 
@@ -131,7 +131,7 @@ As we solved the inverse problem, we subtract it from the total of $3^n$ sequenc
 
 $$3^n - (3 \cdot 2^n - 3 \cdot 1 + 0)$$
 
-### Number of upper-bound integer sums {: #number-of-upper-bound-integer-sums }
+### Number of upper-bound integer sums {#number-of-upper-bound-integer-sums}
 
 Consider the following equation:
 
@@ -170,7 +170,7 @@ As above, we treat binomial coefficients with negative upper index as zero.
 
 Note this problem could also be solved with dynamic programming or generating functions. The inclusion-exclusion answer is computed in $O(d)$ time (assuming math operations like binomial coefficient are constant time), while a simple DP approach would take $O(ds)$ time. 
 
-### The number of relative primes in a given interval
+### The number of relative primes in a given interval {#the-number-of-relative-primes-in-a-given-interval}
 
 Task: given two numbers $n$ and $r$, count the number of integers in the interval $[1;r]$ that are relatively prime to n (their greatest common divisor is $1$).
 
@@ -223,7 +223,7 @@ int solve (int n, int r) {
 
 Asymptotics of the solution is $O (\sqrt{n})$.
 
-### The number of integers in a given interval which are multiple of at least one of the given numbers
+### The number of integers in a given interval which are multiple of at least one of the given numbers {#the-number-of-integers-in-a-given-interval-which-are-multiple-of-at-least-one-of-the-given-numbers}
 
 Given $n$ numbers $a_i$ and number $r$. You want to count the number of integers in the interval $[1; r]$ that are multiple of at least one of the $a_i$.
 
@@ -231,7 +231,7 @@ The solution algorithm is almost identical to the one for previous task — cons
 
 So we will now iterate over all $2^n$ subsets of integers $a_i$ with $O(n \log r)$ operations to find their least common multiple, adding or subtracting the number of multiples of it in the interval. Asymptotics is $O (2^n\cdot n\cdot \log r)$.
 
-### The number of strings that satisfy a given pattern
+### The number of strings that satisfy a given pattern {#the-number-of-strings-that-satisfy-a-given-pattern}
 
 Consider $n$ patterns of strings of the same length, consisting only of letters ($a...z$) or question marks. You're also given a number $k$. A string matches a pattern if it has the same length as the pattern, and at each position, either the corresponding characters are equal or the character in the pattern is a question mark. The task is to count the number of strings that match exactly $k$ of the patterns (first problem) and at least $k$ of the patterns (second problem).
 
@@ -277,7 +277,7 @@ Thus, for this task, we also obtained a solution with the asymptotics $O(2^k \cd
 
 $$ ans = \sum_{Y ~ : ~ |Y| \ge k} (-1)^{|Y|-k} \cdot \binom{|Y|-1}{|Y|-k} \cdot f(Y) $$
 
-### The number of ways of going from a cell to another
+### The number of ways of going from a cell to another {#the-number-of-ways-of-going-from-a-cell-to-another}
 
 There is a field $n \times m$, and $k$ of its cells are impassable walls. A robot is initially at the cell $(1,1)$ (bottom left). The robot can only move right or up, and eventually it needs to get into the cell $(n,m)$, avoiding all obstacles. You need to count the number of ways he can do it.
 
@@ -305,7 +305,7 @@ When considering an obstacle $t$ between $0$ and $i$ ($0 < t < i$), on which we 
 
 We can compute $d[i]$ in $O(k)$ for $O(k)$ obstacles, so this solution has complexity $O(k^2)$.
 
-### The number of coprime quadruples
+### The number of coprime quadruples {#the-number-of-coprime-quadruples}
 
 You're given $n$ numbers: $a_1, a_2, \ldots, a_n$. You are required to count the number of ways to choose four numbers so that their combined greatest common divisor is equal to one.
 
@@ -321,7 +321,7 @@ To calculate the function $f(d)$, you just have to count the number of multiples
 
 Thus, using the formula of inclusions-exclusions we sum the number of groups of four divisible by a prime number, then subtract the number of quadruples which are divisible by the product of two primes, add quadruples divisible by three primes, etc.
 
-### The number of harmonic triplets
+### The number of harmonic triplets {#the-number-of-harmonic-triplets}
 
 You are given a number $n \le 10^6$. You are required to count the number of triples $2 \le a < b < c \le n$ that satisfy one of the following conditions:
 
@@ -386,7 +386,7 @@ long long solve() {
 
 The asymptotics of our solution is $O(n \log n)$, as for almost every number up to $n$ we make $n/i$ iterations on the nested loop.
 
-### The number of permutations without fixed points (derangements)
+### The number of permutations without fixed points (derangements) {#the-number-of-permutations-without-fixed-points-derangements}
 
 Prove that the number of permutations of length $n$ without fixed points (i.e. no number $i$ is in position $i$ - also called a derangement) is equal to the following number:
 
@@ -427,7 +427,7 @@ $$ n! \left( 1 - \frac{1}{1!} + \frac{1}{2!} - \frac{1}{3!} + \cdots \pm \frac{1
 
 It is worth noting that a similar problem can be solved this way: when you need the fixed points were not among the $m$ first elements of permutations (and not among all, as we just solved). The formula obtained is as the given above accurate formula, but it will go up to the sum of $k$, instead of $n$.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 A list of tasks that can be solved using the principle of inclusions-exclusions:
 

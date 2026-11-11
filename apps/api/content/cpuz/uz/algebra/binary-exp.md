@@ -1,4 +1,4 @@
-# Ikkilik darajaga oshirish
+# Ikkilik darajaga oshirish {#binary-exponentiation}
 
 Ikkilik darajaga oshirish (kvadratlash orqali darajaga oshirish deb ham ataladi) — $n$ manfiy bo‘lmagan butun son bo‘lganda $a^n$ ni sodda usul talab qiladigan $O(n)$ ta ko‘paytirish o‘rniga atigi $O(\log n)$ ta ko‘paytirish yordamida hisoblash imkonini beradigan usuldir.
 
@@ -8,7 +8,7 @@ $$(X \cdot Y) \cdot Z = X \cdot (Y \cdot Z)$$
 
 Buning eng yaqqol misollari modul bo‘yicha ko‘paytirish, matritsalarni ko‘paytirish va quyida ko‘rib chiqiladigan boshqa masalalardir.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 $a$ ni $n$-darajaga oshirish sodda usulda $a$ ni o‘ziga $n-1$ marta ko‘paytirish ko‘rinishida ifodalanadi:
 $a^{n} = a \cdot a \cdot \ldots \cdot a$. Biroq katta $a$ yoki $n$ uchun bu yondashuv amaliy emas.
@@ -45,7 +45,7 @@ $$a^n = \begin{cases}
 \left(a^{\frac{n - 1}{2}}\right)^2 \cdot a &\text{agar } n > 0 \text{ va } n \text{ toq bo‘lsa}\\
 \end{cases}$$
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Avval rekursiv formulani to‘g‘ridan-to‘g‘ri kodga ko‘chiradigan rekursiv yondashuv:
 
@@ -78,9 +78,9 @@ long long binpow(long long a, long long b) {
 }
 ```
 
-## Qo‘llanishlar
+## Qo‘llanishlar {#applications}
 
-### Katta darajalarni biror son modulida samarali hisoblash
+### Katta darajalarni biror son modulida samarali hisoblash {#effective-computation-of-large-exponents-modulo-a-number}
 
 **Masala:**
 $x^n \bmod m$ ni hisoblang.
@@ -108,7 +108,7 @@ Katta $b >> m$ uchun bu algoritmni tezlashtirish mumkin.
 Agar $m$ musbat va $\gcd(x, m) = 1$ bo‘lsa, tub $m$ uchun $x^n \equiv x^{n \bmod (m-1)} \pmod{m}$, murakkab $m$ uchun esa $x^n \equiv x^{n \bmod{\phi(m)}} \pmod{m}$ bo‘ladi.
 Bu bevosita Fermatning kichik teoremasi va Eyler teoremasidan kelib chiqadi; batafsil ma’lumot uchun [Modul bo‘yicha teskari elementlar](/algorithms/algebra/module-inverse#fermat-euler) haqidagi maqolaga qarang.
 
-### Fibonacci sonlarini samarali hisoblash
+### Fibonacci sonlarini samarali hisoblash {#effective-computation-of-fibonacci-numbers}
 
 **Masala:** $n$-Fibonacci soni $F_n$ ni hisoblang.
 
@@ -120,7 +120,7 @@ $F_i$ va $F_{i+1}$ dan $F_{i+1}$ va $F_{i+2}$ ga o‘tish.
 Masalan, bu almashtirishni $F_0$ va $F_1$ juftligiga qo‘llasak, u $F_1$ va $F_2$ juftligiga aylanadi.
 Shunday qilib, ushbu almashtirish matritsasini $n$-darajaga oshirib, $F_n$ ni $O(\log n)$ vaqt murakkabligida topishimiz mumkin.
 
-### Permutatsiyani $k$ marta qo‘llash
+### Permutatsiyani $k$ marta qo‘llash {#applying-a-permutation-k-times}
 
 **Masala:** Uzunligi $n$ bo‘lgan ketma-ketlik berilgan. Unga berilgan permutatsiyani $k$ marta qo‘llang.
 
@@ -148,7 +148,7 @@ vector<int> permute(vector<int> sequence, vector<int> permutation, long long k) 
 
 **Eslatma:** Bu masalani permutatsiya grafini qurib, har bir siklni alohida ko‘rib chiqish orqali chiziqli vaqtda yanada samarali yechish mumkin. Bunda har bir sikl uchun $k$ ni sikl uzunligi bo‘yicha modulga keltirib, shu siklga kiruvchi har bir sonning yakuniy o‘rnini topish mumkin.
 
-### Nuqtalar to‘plamiga geometrik amallar to‘plamini tez qo‘llash
+### Nuqtalar to‘plamiga geometrik amallar to‘plamini tez qo‘llash {#fast-application-of-a-set-of-geometric-operations-to-a-set-of-points}
 
 **Masala:** $n$ ta $p_i$ nuqta berilgan; ularning har biriga $m$ ta almashtirishni qo‘llang. Har bir almashtirish siljitish, masshtablash yoki berilgan o‘q atrofida berilgan burchakka aylantirish bo‘lishi mumkin. Bundan tashqari, berilgan almashtirishlar ro‘yxatini $k$ marta qo‘llaydigan `loop` amali ham mavjud (`loop` amallari ichma-ich joylashishi mumkin). Barcha almashtirishlarni $O(n \cdot length)$ dan tezroq qo‘llashingiz kerak, bu yerda $length$ — `loop` amallari yoyib yozilgandan keyin qo‘llanadigan almashtirishlarning umumiy soni.
 
@@ -210,7 +210,7 @@ $$\begin{pmatrix}
 
 Endi har bir almashtirish matritsa sifatida ifodalangach, almashtirishlar ketma-ketligi ushbu matritsalar ko‘paytmasi bilan, $k$ marta takrorlanadigan `loop` esa matritsaning $k$-darajasi bilan ifodalanadi (uni ikkilik darajaga oshirish orqali $O(\log{k})$ vaqtda hisoblash mumkin). Shu yo‘l bilan barcha almashtirishlarni ifodalovchi matritsa avval $O(m \log{k})$ vaqtda hisoblanadi, keyin u $n$ ta nuqtaning har biriga jami $O(n)$ vaqtda qo‘llanadi; umumiy murakkablik $O(n + m \log{k})$ bo‘ladi.
 
-### Grafdagi uzunligi $k$ bo‘lgan yo‘llar soni
+### Grafdagi uzunligi $k$ bo‘lgan yo‘llar soni {#number-of-paths-of-length-k-in-a-graph}
 
 **Masala:** $n$ ta uchli yo‘naltirilgan vaznsiz graf berilgan. Istalgan $u$ uchdan istalgan boshqa $v$ uchga uzunligi $k$ bo‘lgan yo‘llar sonini toping.
 
@@ -221,7 +221,7 @@ Ikki matritsani odatiy ko‘paytirish amali o‘rniga o‘zgartirilgan amal ishl
 ko‘paytirish o‘rniga ikki qiymat qo‘shiladi, yig‘indi o‘rniga esa minimum olinadi.
 Ya’ni: $result_{ij} = \min\limits_{1\ \leq\ k\ \leq\ n}(a_{ik} + b_{kj})$.
 
-### Ikkilik darajaga oshirish varianti: ikki sonni $m$ modul bo‘yicha ko‘paytirish
+### Ikkilik darajaga oshirish varianti: ikki sonni $m$ modul bo‘yicha ko‘paytirish {#variation-of-binary-exponentiation-multiplying-two-numbers-modulo-m}
 
 **Masala:** Ikki $a$ va $b$ sonni $m$ modul bo‘yicha ko‘paytiring. $a$ va $b$ ichki ma’lumot turlariga sig‘adi, biroq ularning ko‘paytmasi 64 bitli butun songa sig‘maydi. Maqsad katta sonlar arifmetikasidan foydalanmasdan $a \cdot b \pmod m$ ni hisoblashdir.
 
@@ -236,7 +236,7 @@ $$a \cdot b = \begin{cases}
 **Eslatma:** Bu masalani suzuvchi nuqtali amallar yordamida boshqacha usulda ham yechish mumkin. Avval suzuvchi nuqtali sonlar yordamida $\frac{a \cdot b}{m}$ ifodani hisoblab, uni ishorasiz butun $q$ ga o‘tkazing. So‘ng ishorasiz butun sonlar arifmetikasi yordamida $a \cdot b$ dan $q \cdot m$ ni ayirib, javobni topish uchun uni $m$ modul bo‘yicha oling. Bu yechim unchalik ishonchli ko‘rinmaydi, ammo juda tez va implementatsiyasi juda oson.
 Qo‘shimcha ma’lumot uchun [bu yerga](https://cs.stackexchange.com/questions/77016/modular-multiplication) qarang.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [UVa 1230 - MODEX](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=3671)
 * [UVa 374 - Big Mod](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=310)

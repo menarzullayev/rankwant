@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3360 strings.**
+**3403 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2409,6 +2409,49 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `hackathon.projectName` | Loyiha nomi | Номи лоиҳа |  |
 | `hackathon.entriesAfterDeadline` | Loyihalar muddat tugagach ochiladi | Лоиҳаҳо баъди анҷоми муҳлат кушода мешаванд |  |
 | `algorithms.intro` | Qisqa ma'lumotnoma: g'oya, murakkablik, kod, mashq masalalari. | Дастури мухтасар: ғоя, мураккабӣ, код ва масъалаҳои машқ. |  |
+| `algorithms.category.algebra` | Algebra va sonlar nazariyasi | Алгебра ва назарияи ададҳо |  |
+| `algorithms.category.dataStructures` | Ma'lumotlar tuzilmalari | Сохторҳои додаҳо |  |
+| `algorithms.category.dynamicProgramming` | Dinamik dasturlash | Барномасозии динамикӣ |  |
+| `algorithms.category.string` | Satrlar | Сатрҳо |  |
+| `algorithms.category.linearAlgebra` | Chiziqli algebra | Алгебраи хаттӣ |  |
+| `algorithms.category.combinatorics` | Kombinatorika | Комбинаторика |  |
+| `algorithms.category.numMethods` | Sonli usullar | Усулҳои ададӣ |  |
+| `algorithms.category.geometry` | Geometriya | Геометрия |  |
+| `algorithms.category.graph` | Graflar | Графҳо |  |
+| `algorithms.category.sequences` | Ketma-ketliklar | Пайдарпайиҳо |  |
+| `algorithms.category.gameTheory` | O'yinlar nazariyasi | Назарияи бозиҳо |  |
+| `algorithms.category.schedules` | Jadval tuzish | Ҷадвалбандӣ |  |
+| `algorithms.category.others` | Boshqalar | Дигарҳо |  |
+| `algorithms.level.beginner` | Boshlang'ich | Ибтидоӣ |  |
+| `algorithms.level.intermediate` | O'rta | Миёна |  |
+| `algorithms.level.advanced` | Yuqori | Олӣ |  |
+| `algorithms.level.all` | Barcha darajalar | Ҳамаи сатҳҳо |  |
+| `algorithms.count` | {count} ta maqola | Мақолаҳо: {count} |  |
+| `algorithms.levelFilter` | Daraja bo'yicha saralash | Филтр аз рӯи сатҳ |  |
+| `algorithms.sections` | Bo'limlar | Бахшҳо |  |
+| `algorithms.breadcrumbs` | Navigatsiya yo'li | Роҳи навигатсия |  |
+| `algorithms.idea` | G'oya | Ғоя |  |
+| `algorithms.complexity` | Murakkablik | Мураккабӣ |  |
+| `algorithms.uses` | Qo'llanishi | Истифода |  |
+| `algorithms.practiceHere` | Shu saytda mashq | Машқ дар сайт |  |
+| `algorithms.practiceElsewhere` | Boshqa saytlarda | Дар сайтҳои дигар |  |
+| `algorithms.via.pick` | Tanlangan | Интихобшуда |  |
+| `algorithms.via.source` | Ayni masala | Ҳамон масъала |  |
+| `algorithms.via.topic` | Mavzu bo'yicha | Аз рӯи мавзӯъ |  |
+| `algorithms.aiMark` | AI tarjimasi · AI ko'rigi | Тарҷумаи ЗИ · Санҷиши ЗИ |  |
+| `algorithms.source.title` | Manba va litsenziya | Манбаъ ва иҷозатнома |  |
+| `algorithms.source.original` | Asl maqola: | Мақолаи аслӣ: |  |
+| `algorithms.source.authors` | Mualliflar: cp-algorithms loyihasiga hissa qo'shganlar. O'zbekcha tarjima: CP.UZ. | Муаллифон: саҳмгузорони лоиҳаи cp-algorithms. Тарҷумаи ӯзбекӣ: CP.UZ. |  |
+| `algorithms.source.ai` | Matn sun'iy intellekt yordamida tarjima qilingan va sun'iy intellekt tomonidan texnik va til jihatdan ko'rib chiqilgan; inson ko'rigidan hali o'tmagan. | Матн бо ёрии зеҳни сунъӣ тарҷума ва аз ҷониби зеҳни сунъӣ аз ҷиҳати техникӣ ва забонӣ санҷида шудааст; ҳанӯз аз санҷиши инсон нагузаштааст. |  |
+| `algorithms.source.englishOriginal` | Bu cp-algorithms loyihasidagi asl inglizcha matn. | Ин матни аслии англисии лоиҳаи cp-algorithms аст. |  |
+| `algorithms.source.changed` | RankWant matnni o'zgartirgan: {count} ta tuzatish qayd etilgan. | RankWant матнро тағйир дод: {count} ислоҳ сабт шудааст. |  |
+| `algorithms.source.changedMarkup` | RankWant faqat belgilashni o'zgartirgan: havolalar, sarlavha belgilari va formula chegaralari shu sayt uchun moslangan. | RankWant танҳо нишонагузориро тағйир дод: истинодҳо, нишонаҳои сарлавҳа ва маҳдудкунандаҳои формула ба ин сайт мутобиқ карда шуданд. |  |
+| `algorithms.source.license` | Litsenziya: | Иҷозатнома: |  |
+| `algorithms.notFound` | Algoritm topilmadi | Алгоритм ёфт нашуд |  |
+| `algorithms.glossary.title` | Atamalar lug'ati | Луғати истилоҳот |  |
+| `algorithms.glossary.intro` | Algoritmlar kutubxonasidagi atamalar: o'zbekcha nomi, inglizchasi va qisqa izohi. | Истилоҳоти китобхонаи алгоритмҳо: номи ӯзбекӣ, англисӣ ва шарҳи кӯтоҳ. |  |
+| `algorithms.glossary.letters` | Harflar | Ҳарфҳо |  |
+| `algorithms.glossary.aliases` | Boshqa nomlari: | Номҳои дигар: |  |
 | `arena.intro` | Jonli raund: hamma bir vaqtda, har savolga bir necha soniya, standings jonli. | Раунди зинда: ҳама дар як вақт, ба ҳар савол чанд сония, ҷадвал зинда. |  |
 | `classroom.intro` | O'qituvchi sinf yaratadi, o'quvchilar kod bilan qo'shiladi, uy vazifasi va progress bir joyda. | Муаллим синф месозад, хонандагон бо код ҳамроҳ мешаванд, вазифаи хонагӣ ва пешрафт дар як ҷо. |  |
 | `duels.intro` | Chaqiriq tashlang, kimdir qabul qiladi, belgilangan vaqtda bir xil masalalarni yechasiz. G'olib Challenges reytingida Elo oladi. | Даъват фиристед, касе қабул мекунад, дар вақти муайян ҳамон масъалаҳоро ҳал мекунед. Ғолиб дар рейтинги Challenges Elo мегирад. |  |

@@ -1,8 +1,8 @@
-# Divide and Conquer yordamida DP optimallashtirishi
+# Divide and Conquer yordamida DP optimallashtirishi {#divide-and-conquer-dp}
 
 Bo‘lib yechish (Divide and Conquer) — dinamik dasturlash uchun optimallashtirish usuli.
 
-### Dastlabki shartlar
+### Dastlabki shartlar {#preconditions}
 
 Ayrim dinamik dasturlash masalalarida quyidagi ko‘rinishdagi rekurrent formula uchraydi:
 
@@ -28,7 +28,7 @@ $$
 
 Shunday qilib, bitta Divide and Conquer hisobining murakkabligi $O(n\log n)$, butun DP hisobining murakkabligi esa $O(mn\log n)$ bo‘ladi.
 
-## Umumiy implementatsiya
+## Umumiy implementatsiya {#generic-implementation}
 
 Implementatsiya masalaga qarab farqlansa-da, quyidagi andoza ko‘p holatlarda ishlaydi.
 `compute` funksiyasi $i-1$-qatorning `dp_before` holatlari berilganda $i$-qatorning `dp_cur` holatlarini hisoblaydi.
@@ -75,13 +75,13 @@ long long solve() {
 }
 ```
 
-### E’tibor berish kerak bo‘lgan jihatlar
+### E’tibor berish kerak bo‘lgan jihatlar {#things-to-look-out-for}
 
 Divide and Conquer DP masalalaridagi eng katta qiyinchilik — $opt$ ning monotonligini isbotlash. Bu xossa o‘rinli bo‘ladigan muhim maxsus holatlardan biri narx funksiyasi to‘rtburchak tengsizlikni qanoatlantirishidir, ya’ni barcha $a\leq b\leq c\leq d$ uchun $C(a,c)+C(b,d)\leq C(a,d)+C(b,c)$.
 
 Ko‘p Divide and Conquer DP masalalarini Convex Hull Trick yordamida ham yechish mumkin va aksincha. Har ikkala usulni bilish va tushunish foydalidir.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [AtCoder - Yakiniku Restaurants](https://atcoder.jp/contests/arc067/tasks/arc067_d)
 - [CodeForces - Ciel and Gondolas](https://codeforces.com/contest/321/problem/E) (Kiritish-chiqarishda ehtiyot bo‘ling.)
@@ -102,7 +102,7 @@ Ko‘p Divide and Conquer DP masalalarini Convex Hull Trick yordamida ham yechis
 - [UVA - Arranging Heaps](https://onlinejudge.org/external/125/12524.pdf)
 - [UVA - Naming Babies](https://onlinejudge.org/external/125/12594.pdf)
 
-## Manbalar
+## Manbalar {#references}
 
 - [Michael Levinning Quora javobi](https://www.quora.com/What-is-divide-and-conquer-optimization-in-dynamic-programming)
 - [“Sothe” the Algorithm Wolf video darsi](https://www.youtube.com/watch?v=wLXEWuDWnzI)

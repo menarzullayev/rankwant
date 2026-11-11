@@ -1,4 +1,4 @@
-# Topologik saralash
+# Topologik saralash {#topological-sorting}
 
 Sizga $n$ ta tugun va $m$ ta qirrali yo‘naltirilgan graf berilgan.
 Har bir qirra kichikroq indeksli tugundan kattaroq indeksli tugunga yo‘naladigan qilib tugunlarning **tartibini** topishingiz kerak.
@@ -22,7 +22,7 @@ Ushbu maqolada tasvirlangan algoritm har bir yo‘naltirilgan siklsiz grafda kam
 
 Topologik saralash uchraydigan odatiy masalalardan biri quyidagicha. Qiymatlari noma’lum $n$ ta o‘zgaruvchi bor. Ayrim o‘zgaruvchilar uchun ulardan biri boshqasidan kichikligini bilamiz. Bu cheklovlar qarama-qarshi emasligini tekshirish va agar qarama-qarshi bo‘lmasa, o‘zgaruvchilarni o‘sish tartibida chiqarish kerak (bir nechta javob bo‘lsa, istalganini chiqaring). Bu aynan $n$ tugunli grafning topologik tartibini topish masalasi ekanini payqash oson.
 
-## Algoritm
+## Algoritm {#the-algorithm}
 
 Bu masalani yechish uchun [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search)dan foydalanamiz.
 
@@ -43,7 +43,7 @@ Bu tushuntirishlarni DFS algoritmining chiqish vaqtlari orqali ham ifodalash mum
 $v$ tugunning chiqish vaqti — $\text{dfs}(v)$ chaqiruvi tugagan vaqt (vaqtlarni $0$ dan $n-1$ gacha raqamlash mumkin).
 Istalgan $v$ tugunning chiqish vaqti undan erishish mumkin bo‘lgan istalgan tugunning chiqish vaqtidan doim katta ekanini tushunish oson (chunki ularga $\text{dfs}(v)$ chaqirilishidan oldin yoki uning davomida tashrif buyurilgan). Demak, kerakli topologik tartib tugunlarni chiqish vaqtlari kamayish tartibida joylashtirish orqali olinadi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyidagi implementatsiya graf siklsiz, ya’ni kerakli topologik tartib mavjud deb faraz qiladi. Zarur bo‘lsa, [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) maqolasida tasvirlanganidek, graf siklsiz ekanini oson tekshirish mumkin.
 
@@ -78,7 +78,7 @@ void topological_sort() {
 Yechimning asosiy funksiyasi `topological_sort` bo‘lib, u DFS o‘zgaruvchilarini boshlang‘ich holatga keltiradi, DFS ni ishga tushiradi va javobni `ans` vektorida oladi. Graf siklsiz bo‘lmaganida ham `topological_sort` natijasi ma’lum ma’noda mazmunli bo‘lishini qayd etish kerak: agar $u$ tugunga $v$ dan erishish mumkin bo‘lsa-yu, aksincha erishish mumkin bo‘lmasa, natijaviy massivda $v$ doim oldin keladi.
 Berilgan implementatsiyaning bu xossasi siklli yo‘naltirilgan grafda kuchli bog‘langan komponentlar va ularning topologik tartibini ajratish uchun [Kosaraju algoritmi](/algorithms/graph/strongly-connected-components)da ishlatiladi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ TOPOSORT - Topological Sorting [qiyinlik: oson]](http://www.spoj.com/problems/TOPOSORT/)
 - [UVA 10305 - Ordering Tasks [qiyinlik: oson]](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1246)

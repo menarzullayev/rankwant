@@ -1,8 +1,8 @@
-# Ikki aylananing kesishmasi
+# Ikki aylananing kesishmasi {#circle-circle-intersection}
 
 Tekislikda ikkita aylana berilgan, ularning har biri markazining koordinatalari va radiusi bilan tavsiflanadi. Ularning kesishish nuqtalarini toping (mumkin bo‘lgan holatlar: bitta yoki ikkita nuqta, kesishmaslik yoki aylanalarning ustma-ust tushishi).
 
-## Yechim
+## Yechim {#solution}
 
 Bu masalani [aylana va to‘g‘ri chiziq kesishmasi masalasi](/algorithms/geometry/circle-line-intersection)ga keltiramiz.
 
@@ -32,7 +32,7 @@ Bu masalani [tegishli maqolada](/algorithms/geometry/circle-line-intersection) b
 
 Alohida ko‘rib chiqishimiz kerak bo‘lgan yagona maxsus holat — aylanalarning markazlari ustma-ust tushishi. Bu holda $x_2=y_2=0$ bo‘ladi va to‘g‘ri chiziq tenglamasi $C = r_1^2-r_2^2 = 0$ ko‘rinishini oladi. Agar aylanalarning radiuslari bir xil bo‘lsa, kesishish nuqtalari cheksiz ko‘p; agar farq qilsa, kesishish yo‘q.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [RadarFinder](https://community.topcoder.com/stat?c=problem_statement&pm=7766)
 - [Runaway to a shadow - Codeforces Round #357](http://codeforces.com/problemset/problem/681/E)

@@ -1,14 +1,14 @@
-# Sqrt Decomposition
+# Sqrt Decomposition {#sqrt-decomposition}
 
 Sqrt Decomposition is a method (or a data structure) that allows you to perform some common operations (finding sum of the elements of the sub-array, finding the minimal/maximal element, etc.) in $O(\sqrt n)$ operations, which is much faster than $O(n)$ for the trivial algorithm.
 
 First we describe the data structure for one of the simplest applications of this idea, then show how to generalize it to solve some other problems, and finally look at a slightly different use of this idea: splitting the input requests into sqrt blocks.
 
-## Sqrt-decomposition based data structure
+## Sqrt-decomposition based data structure {#sqrt-decomposition-based-data-structure}
 
 Given an array $a[0 \dots n-1]$, implement a data structure that allows to find the sum of the elements $a[l \dots r]$ for arbitrary $l$ and $r$ in $O(\sqrt n)$ operations.
 
-### Description
+### Description {#description}
 
 The basic idea of sqrt decomposition is preprocessing. We'll divide the array $a$ into blocks of length approximately $\sqrt n$, and for each block $i$ we'll precalculate the sum of elements in it $b[i]$.
 
@@ -37,7 +37,7 @@ _Note: When $k = p$, i.e. $l$ and $r$ belong to the same block, the formula can'
 
 This approach allows us to significantly reduce the number of operations. Indeed, the size of each "tail" does not exceed the block length $s$, and the number of blocks in the sum does not exceed $s$. Since we have chosen $s \approx \sqrt n$, the total number of operations required to find the sum of elements on the interval $[l, r]$ is $O(\sqrt n)$.
 
-### Implementation
+### Implementation {#implementation}
 
 Let's start with the simplest implementation:
 
@@ -88,7 +88,7 @@ else {
 }
 ```
 
-## Other problems
+## Other problems {#other-problems}
 
 So far we were discussing the problem of finding the sum of elements of a continuous subarray. This problem can be extended to allow to **update individual array elements**. If an element $a[i]$ changes, it's sufficient to update the value of $b[k]$ for the block to which this element belongs ($k = i / s$) in one operation:
 
@@ -106,7 +106,7 @@ Finally, those two classes of problems can be combined if the task requires doin
 
 There exist other problems which can be solved using sqrt decomposition, for example, a problem about maintaining a set of numbers which would allow adding/deleting numbers, checking whether a number belongs to the set and finding $k$-th largest number. To solve it one has to store numbers in increasing order, split into several blocks with $\sqrt{n}$ numbers in each. Every time a number is added/deleted, the blocks have to be rebalanced by moving numbers between beginnings and ends of adjacent blocks.
 
-## Mo's algorithm
+## Mo's algorithm {#mos-algorithm}
 
 A similar idea, based on sqrt decomposition, can be used to answer range queries ($Q$) offline in $O((N+Q)\sqrt{N})$.
 This might sound like a lot worse than the methods in the previous section, since this is a slightly worse complexity than we had earlier and cannot update values between two queries.
@@ -129,7 +129,7 @@ This way, we only need to add or remove a single element once at a time, which s
 
 Since we change the order of answering the queries, this is only possible when we are allowed to answer the queries in offline mode.
 
-### Implementation
+### Implementation {#implementation}
 
 In Mo's algorithm we use two functions for adding an index and for removing an index from the range which we are currently maintaining.
 
@@ -192,7 +192,7 @@ The `add` method removes the current number from the second BST, increases the c
 `remove` does the same thing, it only decreases the count.
 And `get_answer` just looks at second tree and returns the best value in $O(1)$.
 
-### Complexity
+### Complexity {#complexity}
 
 Sorting all queries will take $O(Q \log Q)$.
 
@@ -211,7 +211,7 @@ Therefore we have an additional $O(S Q)$ calls of `add(cur_l)` and `remove(cur_l
 For $S \approx \sqrt{N}$ this gives $O((N + Q) \sqrt{N})$ operations in total.
 Thus the complexity is $O((N+Q)F\sqrt{N})$ where $O(F)$  is the complexity of `add` and `remove` function.
 
-### Tips for improving runtime
+### Tips for improving runtime {#tips-for-improving-runtime}
 
 * Block size of precisely $\sqrt{N}$ doesn't always offer the best runtime.  For example, if $\sqrt{N}=750$ then it may happen that block size of $700$ or $800$ may run better.
 More importantly, don't compute the block size at runtime - make it `const`. Division by constants is well optimized by compilers.
@@ -227,7 +227,7 @@ bool cmp(pair<int, int> p, pair<int, int> q) {
 
 You can read about even faster sorting approach [here](https://codeforces.com/blog/entry/61203).
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Codeforces - Kuriyama Mirai's Stones](https://codeforces.com/problemset/problem/433/B)
 * [Codeforces - Another Problem about Beautiful Pairs](https://codeforces.com/contest/2197/problem/D)

@@ -1,4 +1,4 @@
-# D´Esopo–Pape algoritmi
+# D´Esopo–Pape algoritmi {#d-esopo-pape-algorithm}
 
 Bizga vaznlari $w_i$ bo‘lgan, $n$ ta tugun va $m$ ta qirraga ega graf hamda boshlang‘ich $v_0$ tugun berilgan.
 
@@ -8,7 +8,7 @@ D´Esopo–Pape algoritmi ko‘p hollarda [Dijkstra algoritmi](/algorithms/graph
 
 Ammo manfiy sikllar mavjud bo‘lganda ishlamaydi.
 
-## Tavsif
+## Tavsif {#description}
 
 $d$ massivida eng qisqa yo‘llar uzunliklari saqlansin, ya’ni $d_i$ — $v_0$ tugundan $i$ tugungacha joriy eng qisqa yo‘l uzunligi.
 
@@ -46,7 +46,7 @@ Joriy qirraning ikkinchi uchi $v$, vazni esa $w$ bo‘lsin.
 
 Albatta, $d$ massividagi har bir yangilanish bilan $p$ massividagi mos elementni ham yangilashimiz kerak.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Har bir tugun ayni vaqtda qaysi to‘plamda ekanini saqlash uchun $m$ massividan foydalanamiz.
 
@@ -88,7 +88,7 @@ void shortest_paths(int v0, vector<int>& d, vector<int>& p) {
 }
 ```
 
-## Murakkablik
+## Murakkablik {#complexity}
 
 Algoritm odatda juda tez ishlaydi — aksariyat hollarda hatto Dijkstra algoritmidan ham tezroq.
 

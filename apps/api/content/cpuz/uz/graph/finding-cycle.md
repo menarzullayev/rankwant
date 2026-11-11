@@ -1,16 +1,16 @@
-# Grafning siklsizligini tekshirish va siklni $O(M)$ vaqtda topish
+# Grafning siklsizligini tekshirish va siklni $O(M)$ vaqtda topish {#checking-a-graph-for-acyclicity-and-finding-a-cycle-in-om}
 
 Ilmoqlar va parallel qirralarsiz yo‘naltirilgan yoki yo‘naltirilmagan grafni ko‘rib chiqamiz. Graf siklsiz yoki yo‘qligini tekshirish, siklsiz bo‘lmasa esa istalgan siklni topishimiz kerak.
 
 Bu masalani [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) yordamida $O(M)$ vaqtda yechish mumkin, bu yerda $M$ — qirralar soni.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Grafda ketma-ket DFS ishga tushiramiz. Dastlab barcha tugunlar oq (0) rangda. Har bir tashrif buyurilmagan (oq) tugundan DFS boshlaymiz, unga kirishda kulrang (1), undan chiqishda esa qora (2) rang beramiz. DFS kulrang tugunga o‘tsa, sikl topilgan bo‘ladi (graf yo‘naltirilmagan bo‘lsa, ota tugunga olib boruvchi qirra hisobga olinmaydi).
 
 Siklning o‘zini `parent` massivi yordamida tiklash mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida yo‘naltirilgan graf uchun implementatsiya keltirilgan.
 
@@ -122,7 +122,7 @@ void find_cycle() {
 }
 ```
 
-### Amaliy masalalar:
+### Amaliy masalalar: {#practice-problems}
 
 - [AtCoder : Reachability in Functional Graph](https://atcoder.jp/contests/abc357/tasks/abc357_e)
 - [CSES : Round Trip](https://cses.fi/problemset/task/1669)

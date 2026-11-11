@@ -1,4 +1,4 @@
-# Z-funksiya va uni hisoblash
+# Z-funksiya va uni hisoblash {#z-function-and-its-calculation}
 
 Uzunligi $n$ bo‘lgan $s$ satr berilgan bo‘lsin. Bu satrning **Z-funksiyasi** uzunligi $n$ bo‘lgan massiv bo‘lib, uning $i$-elementi $i$ pozitsiyadan boshlab $s$ ning dastlabki belgilariga mos keladigan eng ko‘p belgilar soniga teng.
 
@@ -10,7 +10,7 @@ Z-funksiyaning birinchi elementi $z[0]$ odatda bir qiymatli aniqlanmaydi. Bu maq
 
 Maqolada Z-funksiyani $O(n)$ vaqtda hisoblaydigan algoritm va uning turli qo‘llanishlari bayon qilinadi.
 
-## Misollar
+## Misollar {#examples}
 
 Turli satrlar uchun Z-funksiya qiymatlari:
 
@@ -18,7 +18,7 @@ Turli satrlar uchun Z-funksiya qiymatlari:
 * `aaabaab` — $[0, 2, 1, 0, 2, 1, 0]$;
 * `abacaba` — $[0, 0, 1, 0, 3, 0, 1]$.
 
-## Sodda algoritm
+## Sodda algoritm {#trivial-algorithm}
 
 Formal ta’rifni quyidagi oddiy $O(n^2)$ implementatsiya bilan ifodalash mumkin.
 
@@ -39,7 +39,7 @@ Har bir $i$ pozitsiya bo‘yicha yuramiz va $z[i] = 0$ dan boshlab, mos kelmaydi
 
 Bu, albatta, samarali implementatsiya emas. Endi samarali usulni quramiz.
 
-## Z-funksiyani hisoblashning samarali algoritmi
+## Z-funksiyani hisoblashning samarali algoritmi {#efficient-algorithm-to-compute-the-z-function}
 
 Samarali algoritm olish uchun $z[i]$ qiymatlarni $i = 1$ dan $n-1$ gacha ketma-ket hisoblaymiz, ammo har bir yangi qiymatni topishda ilgari hisoblangan ma’lumotlardan imkon qadar ko‘p foydalanamiz.
 
@@ -77,7 +77,7 @@ Shunday qilib, algoritm ikki holatga bo‘linadi va ular faqat $z[i]$ ning **bos
 
 Algoritm juda sodda chiqadi. Har iteratsiyada sodda algoritm ishga tushirilishiga qaramay, sezilarli yutuqqa erishdik: hosil bo‘lgan algoritm chiziqli vaqtda ishlaydi. Quyida buni isbotlaymiz.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Implementatsiya ancha ixcham:
 
@@ -102,7 +102,7 @@ vector<int> z_function(string s) {
 }
 ```
 
-### Implementatsiyaga izohlar
+### Implementatsiyaga izohlar {#comments-on-this-implementation}
 
 Butun yechim uzunligi $n$ bo‘lgan massivni — $s$ ning Z-funksiyasini — qaytaradigan funksiya ko‘rinishida berilgan.
 
@@ -114,7 +114,7 @@ Keyin sodda algoritm $z[i]$ ni imkon qadar oshirishga urinadi.
 
 Oxirida zarur bo‘lsa, ya’ni $i + z[i] > r$ bo‘lsa, eng o‘ng mos kesma $[l,r)$ yangilanadi.
 
-## Algoritmning asimptotikasi
+## Algoritmning asimptotikasi {#asymptotic-behavior-of-the-algorithm}
 
 Yuqoridagi algoritm satr uzunligiga nisbatan chiziqli, ya’ni $O(n)$ vaqtda ishlashini isbotlaymiz.
 
@@ -156,13 +156,13 @@ Shunday qilib, ichki siklning har bir iteratsiyasi $r$ ko‘rsatkichni o‘ngga 
 
 Algoritmning qolgan qismi ravshanki $O(n)$ vaqtda ishlaydi; demak, Z-funksiyani hisoblash algoritmining umumiy vaqti chiziqli.
 
-## Qo‘llanishlar
+## Qo‘llanishlar {#applications}
 
 Endi Z-funksiyaning ayrim masalalardagi qo‘llanishlarini ko‘rib chiqamiz.
 
 Bu qo‘llanishlar [prefiks funksiyasi](/algorithms/string/prefix-function) qo‘llanishlariga juda o‘xshaydi.
 
-### Qism satrni qidirish
+### Qism satrni qidirish {#search-the-substring}
 
 Chalkashmaslik uchun $t$ ni **matn satri**, $p$ ni esa **andoza** deb ataymiz. Masala: $p$ andozaning $t$ matn ichidagi barcha uchrashishlarini topish.
 
@@ -172,7 +172,7 @@ $s$ uchun Z-funksiyani hisoblaymiz. Keyin $[0;\;\operatorname{length}(t)-1]$ ora
 
 Ishlash vaqti ham, xotira sarfi ham $O(\operatorname{length}(t)+\operatorname{length}(p))$.
 
-### Satrdagi turli qism satrlar soni
+### Satrdagi turli qism satrlar soni {#number-of-distinct-substrings-in-a-string}
 
 Uzunligi $n$ bo‘lgan $s$ satr berilgan. Undagi turli qism satrlar sonini sanash kerak.
 
@@ -188,7 +188,7 @@ Natijada uzunligi $n$ bo‘lgan satr uchun yechimning umumiy vaqti $O(n^2)$.
 
 Ayni usul bilan satr boshiga belgi qo‘shilganda yoki satr oxiri yoxud boshidan belgi o‘chirilganda ham turli qism satrlar sonini $O(n)$ vaqtda qayta hisoblash mumkin.
 
-### Satrni siqish
+### Satrni siqish {#string-compression}
 
 Uzunligi $n$ bo‘lgan $s$ satr berilgan. Uning eng qisqa “siqilgan” ifodasini, ya’ni $s$ bir yoki bir nechta $t$ nusxalarining ketma-ket birikmasi bo‘ladigan eng qisqa $t$ satrni topish kerak.
 
@@ -196,7 +196,7 @@ Yechim: $s$ ning Z-funksiyasini hisoblang, $n$ ni bo‘ladigan barcha $i$ lar bo
 
 Bu faktning isboti [prefiks funksiyasi](/algorithms/string/prefix-function) yordamidagi yechim isboti bilan bir xil.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [CSES - Finding Borders](https://cses.fi/problemset/task/1732)
 * [eolymp - Blocks of string](https://www.eolymp.com/en/problems/1309)

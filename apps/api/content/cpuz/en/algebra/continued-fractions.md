@@ -1,11 +1,11 @@
 <!--?title Continued fractions -->
-# Continued fractions
+# Continued fractions {#continued-fractions}
 
 **Continued fraction** is a representation of a real number as a specific convergent sequence of rational numbers. They are useful in competitive programming because they are easy to compute and can be efficiently used to find the best possible rational approximation of the underlying real number (among all numbers whose denominator doesn't exceed a given value).
 
 Besides that, continued fractions are closely related to Euclidean algorithm which makes them useful in a bunch of number-theoretical problems.
 
-## Continued fraction representation
+## Continued fraction representation {#continued-fraction-representation}
 
 > **Definition**
 >
@@ -90,7 +90,7 @@ The sequence $a_0, a_1, \dots$ is well-defined unless $s_k=a_k$ which only happe
 
 Thus the continued fraction representation is uniquely defined for any irrational number $r$.
 
-### Implementation
+### Implementation {#implementation}
 
 In the code snippets we will mostly assume finite continued fractions.
 
@@ -136,7 +136,7 @@ def fraction(p, q):
     return a
 ```
 
-## Key results
+## Key results {#key-results}
 
 To provide some motivation for further study of continued fraction, we give some key facts now.
 
@@ -192,7 +192,7 @@ The last fact allows to find the best rational approximations of $r$ by checking
 
 Below you will find the further explanation and a bit of intuition and interpretation for these facts.
 
-## Convergents
+## Convergents {#convergents}
 
 Let's take a closer look at the convergents that were defined earlier. For $r=[a_0, a_1, a_2, \dots]$, its convergents are
 
@@ -265,7 +265,7 @@ For consistency, two additional convergents $r_{-1} = \frac{1}{0}$ and $r_{-2} =
 >
 > $$P_k(a_0, \dots, a_k) = a_k P_{k-1}(a_0, \dots, a_{k-1}) + P_{k-2}(a_0, \dots, a_{k-2}).$$
 
-### Implementation
+### Implementation {#implementation}
 
 We will compute the convergents as a pair of sequences $p_{-2}, p_{-1}, p_0, p_1, \dots, p_k$ and $q_{-2}, q_{-1}, q_0, q_1, \dots, q_k$:
 
@@ -295,11 +295,11 @@ def convergents(a):
     return p, q
 ```
 
-## Trees of continued fractions
+## Trees of continued fractions {#trees-of-continued-fractions}
 
 There are two major ways to unite all possible continued fractions into useful tree structures.
 
-### Stern-Brocot tree
+### Stern-Brocot tree {#stern-brocot-tree}
 
 [The Stern-Brocot tree](/algorithms/others/stern-brocot-tree-farey-sequences) is a binary search tree that contains all distinct positive rational numbers.
 
@@ -457,7 +457,7 @@ It is worth noting that the Stern-Brocot tree is, in fact, a [treap](/algorithms
 > ```
 >
 
-### Calkin-Wilf tree
+### Calkin-Wilf tree {#calkin-wilf-tree}
 
 A somewhat simpler way to organize continued fractions in a binary tree is the [Calkin-Wilf tree](https://en.wikipedia.org/wiki/Calkin–Wilf_tree).
 
@@ -489,7 +489,7 @@ Correspondingly, children of $\frac{p}{q} = [a_0; a_1, \dots, a_k]$ are
 Noteworthy, if we enumerate vertices of the Calkin-Wilf tree in the breadth-first search order (that is, the root has a number $1$, and the children of the vertex $v$ have indices $2v$ and $2v+1$ correspondingly), the index of the rational number in the Calkin-Wilf tree would be the same as in the Stern-Brocot tree.
 
 Thus, numbers on the same levels of the Stern-Brocot tree and the Calkin-Wilf tree are the same, but their ordering differs through the [bit-reversal permutation](https://en.wikipedia.org/wiki/Bit-reversal_permutation).
-## Convergence
+## Convergence {#convergence}
 
 For the number $r$ and its $k$-th convergent $r_k=\frac{p_k}{q_k}$ the following formula stands:
 
@@ -586,7 +586,7 @@ $$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
 > ```
 >
 
-## Linear fractional transformations
+## Linear fractional transformations {#linear-fractional-transformations}
 
 Another important concept for continued fractions are the so-called [linear fractional transformations](https://en.wikipedia.org/wiki/Linear_fractional_transformation).
 
@@ -783,7 +783,7 @@ One can further prove (and it was first done by Lagrange) that for arbitrary qua
 > ```
 >
 
-## Geometric interpretation
+## Geometric interpretation {#geometric-interpretation}
 
 Let $\vec r_k = (q_k;p_k)$ for the convergent $r_k = \frac{p_k}{q_k}$. Then, the following recurrence holds:
 
@@ -855,7 +855,7 @@ This, in turn, means that $\vec r_k$ with odd coefficients form a convex hull of
 >
 > These polygons are also known as **Klein polygons**, named after Felix Klein who first suggested this geometric interpretation to the continued fractions.
 
-## Problem examples
+## Problem examples {#problem-examples}
 
 Now that the most important facts and concepts were introduced, it is time to delve into specific problem examples.
 
@@ -1182,7 +1182,7 @@ Now that the most important facts and concepts were introduced, it is time to de
 > ```
 >
 
-## Practice problems
+## Practice problems {#practice-problems}
 
 * [UVa OJ - Continued Fractions](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=775)
 * [ProjectEuler+ #64: Odd period square roots](https://www.hackerrank.com/contests/projecteuler/challenges/euler064/problem)

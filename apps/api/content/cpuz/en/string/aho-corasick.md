@@ -1,4 +1,4 @@
-# Aho-Corasick algorithm
+# Aho-Corasick algorithm {#aho-corasick-algorithm}
 
 The Aho-Corasick algorithm allows us to quickly search for multiple patterns in a text.
 The set of pattern strings is also called a _dictionary_.
@@ -7,7 +7,7 @@ The algorithm constructs a finite state automaton based on a trie in $O(m k)$ ti
 
 The algorithm was proposed by Alfred Aho and Margaret Corasick in 1975.
 
-## Construction of the trie
+## Construction of the trie {#construction-of-the-trie}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/e/e2/Trie.svg)
  
@@ -74,7 +74,7 @@ and since every vertex stores $k$ links, it will use $O(m k)$ memory.
 It is possible to decrease the memory consumption to $O(m)$ by using a map instead of an array in each vertex.
 However, this will increase the time complexity to $O(m \log k)$.
 
-## Construction of an automaton
+## Construction of an automaton {#construction-of-an-automaton}
 
 Suppose we have built a trie for the given set of strings.
 Now let's look at it from a different side.
@@ -184,7 +184,7 @@ the total time for finding all suffix links and transitions will be linear.
 
 For an illustration of the concept refer to slide number 103 of the [Stanford slides](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Slides02.pdf).
 
-### BFS-based construction
+### BFS-based construction {#bfs-based-construction}
 
 Instead of computing transitions and suffix links with recursive calls to `go` and `get_link`, it is possible to compute them bottom-up starting from the root.
 (In fact, when the dictionary consists of only one string, we obtain the familiar Knuth-Morris-Pratt algorithm.)
@@ -201,9 +201,9 @@ Assume that at the moment we stand in a vertex $v$ and consider a character $c$.
 
 In this way, we spend $O(1)$ time per each pair of a vertex and a character, making the running time $O(nk)$. The major overhead here is that we copy a lot of transitions from $u$ in the first case, while the transitions of the second case form the trie and sum up to $n$ over all vertices. To avoid the copying of $go[u][c]$, we may use a persistent array data structure, using which we initially copy $go[u]$ into $go[v]$ and then only update values for characters in which the transition would differ. This leads to the $O(n \log k)$ algorithm.
 
-## Applications
+## Applications {#applications}
 
-### Find all strings from a given set in a text
+### Find all strings from a given set in a text {#find-all-strings-from-a-given-set-in-a-text}
 
 We are given a set of strings and a text.
 We have to print all occurrences of all strings from the set in the given text in $O(\text{len} + \text{ans})$, where $\text{len}$ is the length of the text and $\text{ans}$ is the size of the answer.
@@ -230,7 +230,7 @@ If you only want to count the occurrences and not find the indices themselves, y
 This can be calculated in $O(n)$ time in total.
 Thus we can sum up all matches in $O(\text{len})$.
 
-### Finding the lexicographically smallest string of a given length that doesn't match any given strings
+### Finding the lexicographically smallest string of a given length that doesn't match any given strings {#finding-the-lexicographically-smallest-string-of-a-given-length-that-doesnt-match-any-given-strings}
 
 A set of strings and a length $L$ is given.
 We have to find a string of length $L$, which does not contain any of the strings, and derive the lexicographically smallest of such strings.
@@ -242,7 +242,7 @@ On the other hand we can enter all other vertices.
 Thus we delete all "bad" vertices from the machine, and in the remaining graph of the automaton we find the lexicographically smallest path of length $L$.
 This task can be solved in $O(L)$ for example by [depth first search](/algorithms/graph/depth-first-search).
 
-### Finding the shortest string containing all given strings
+### Finding the shortest string containing all given strings {#finding-the-shortest-string-containing-all-given-strings}
 
 Here we use the same ideas.
 For each vertex we store a mask that denotes the strings which match at this state.
@@ -251,13 +251,13 @@ initially being in the state $(v = \text{root},~ \text{mask} = 0)$, we want to r
 When we transition from one state to another using a letter, we update the mask accordingly.
 By running a [breadth first search](/algorithms/graph/breadth-first-search) we can find a path to the state $(v,~ \text{mask} = 2^n - 1)$ with the smallest length.
 
-### Finding the lexicographically smallest string of length $L$ containing $k$ strings
+### Finding the lexicographically smallest string of length $L$ containing $k$ strings {#finding-the-lexicographically-smallest-string-of-length-l-containing-k-strings}
 
 As in the previous problem, we calculate for each vertex the number of matches that correspond to it (that is the number of marked vertices reachable using suffix links).
 We reformulate the problem: the current state is determined by a triple of numbers $(v,~ \text{len},~ \text{cnt})$, and we want to reach from the state $(\text{root},~ 0,~ 0)$ the state $(v,~ L,~ k)$, where $v$ can be any vertex.
 Thus we can find such a path  using depth first search (and if the search looks at the edges in their natural order, then the found path will automatically be the lexicographically smallest).
 
-## Problems
+## Problems {#problems}
 
 - [UVA #11590 - Prefix Lookup](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2637)
 - [UVA #11171 - SMS](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2112)
@@ -266,5 +266,5 @@ Thus we can find such a path  using depth first search (and if the search looks 
 - [Codeforces - Frequency of String](http://codeforces.com/problemset/problem/963/D)
 - [CodeChef - TWOSTRS](https://www.codechef.com/MAY20A/problems/TWOSTRS)
 
-## References
+## References {#references}
 - [Stanford's CS166 - Aho-Corasick Automata](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Slides02.pdf) ([Condensed](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Small02.pdf))

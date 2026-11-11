@@ -1,4 +1,4 @@
-# Satrda andozani qidirish uchun Rabin–Karp algoritmi
+# Satrda andozani qidirish uchun Rabin–Karp algoritmi {#rabin-karp-algorithm-for-string-matching}
 
 Bu algoritm xeshlash tushunchasiga asoslanadi. Shu sababli satrlarni xeshlash bilan tanish bo‘lmasangiz, avval [satrlarni xeshlash](/algorithms/string/string-hashing) maqolasini o‘qing.
  
@@ -12,7 +12,7 @@ Endi hisoblangan xeshlar yordamida uzunligi $|s|$ bo‘lgan istalgan qism satrni
 Shuning uchun uzunligi $|s|$ bo‘lgan har bir qism satrni andoza bilan taqqoslaymiz. Bunga jami $O(|t|)$ vaqt ketadi.
 Demak, algoritmning yakuniy murakkabligi $O(|t| + |s|)$: andoza xeshini hisoblash uchun $O(|s|)$ va uzunligi $|s|$ bo‘lgan barcha qism satrlarni andoza bilan taqqoslash uchun $O(|t|)$ vaqt kerak bo‘ladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 ```cpp
 vector<int> rabin_karp(string const& s, string const& t) {
     const int p = 31; 
@@ -41,7 +41,7 @@ vector<int> rabin_karp(string const& s, string const& t) {
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [SPOJ - Pattern Find](http://www.spoj.com/problems/NAJPF/)
 * [Codeforces - Good Substrings](http://codeforces.com/problemset/problem/271/D)

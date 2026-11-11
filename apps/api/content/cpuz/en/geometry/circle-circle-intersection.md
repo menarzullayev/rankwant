@@ -1,8 +1,8 @@
-# Circle-Circle Intersection
+# Circle-Circle Intersection {#circle-circle-intersection}
 
 You are given two circles on a 2D plane, each one described as coordinates of its center and its radius. Find the points of their intersection (possible cases: one or two points, no intersection or circles coincide).
 
-## Solution
+## Solution {#solution}
 
 Let's reduce this problem to the [circle-line intersection problem](/algorithms/geometry/circle-line-intersection).
 
@@ -32,7 +32,7 @@ And this problem can be solved as described in the [corresponding article](/algo
 
 The only degenerate case we need to consider separately is when the centers of the circles coincide. In this case $x_2=y_2=0$, and the line equation will be $C = r_1^2-r_2^2 = 0$. If the radii of the circles are the same, there are infinitely many intersection points, if they differ, there are no intersections.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [RadarFinder](https://community.topcoder.com/stat?c=problem_statement&pm=7766)
 - [Runaway to a shadow - Codeforces Round #357](http://codeforces.com/problemset/problem/681/E)

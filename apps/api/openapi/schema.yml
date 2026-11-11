@@ -279,6 +279,10 @@ paths:
       summary: maqolalar ro'yxati
       parameters:
       - in: query
+        name: category
+        schema:
+          type: string
+      - in: query
         name: kind
         schema:
           type: string
@@ -288,6 +292,18 @@ paths:
         description: |-
           * `article` - Maqola
           * `algorithm` - Algoritm
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - advanced
+          - beginner
+          - intermediate
+        description: |-
+          * `beginner` - Boshlang'ich
+          * `intermediate` - O'rta
+          * `advanced` - Yuqori
       - in: query
         name: locale
         schema:
@@ -354,6 +370,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ArticleDetail'
+          description: ''
+  /api/v1/articles/library/:
+    get:
+      operationId: articles_library_list
+      description: |-
+        The whole algorithms library in one answer (ADR-0062 § 5.3).
+
+        163 lines, so the catalogue groups and filters them without paging.
+        The reader's language gives the titles: the originals' in English.
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - algorithm
+          - article
+        description: |-
+          * `article` - Maqola
+          * `algorithm` - Algoritm
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - advanced
+          - beginner
+          - intermediate
+        description: |-
+          * `beginner` - Boshlang'ich
+          * `intermediate` - O'rta
+          * `advanced` - Yuqori
+      - in: query
+        name: locale
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: topics__slug
+        schema:
+          type: string
+      tags:
+      - articles
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LibraryEntry'
           description: ''
   /api/v1/attempts/:
     get:
@@ -16777,6 +16857,25 @@ components:
           type: string
           format: date-time
           nullable: true
+        category:
+          oneOf:
+          - type: string
+            maxLength: 40
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        subcategory:
+          type: string
+          maxLength: 120
+        level:
+          oneOf:
+          - $ref: '#/components/schemas/Level154Enum'
+          - $ref: '#/components/schemas/BlankEnum'
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         body:
           type: string
           description: Markdown + LaTeX
@@ -16788,11 +16887,46 @@ components:
           items:
             $ref: '#/components/schemas/LinkedProblem'
           readOnly: true
+        idea:
+          type: string
+        complexity:
+          type: string
+          maxLength: 300
+        uses:
+          type: string
+        external_links:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalLink'
+          readOnly: true
+        attribution:
+          allOf:
+          - $ref: '#/components/schemas/ArticleSource'
+          nullable: true
+          readOnly: true
+        review:
+          allOf:
+          - $ref: '#/components/schemas/ArticleReviewSummary'
+          nullable: true
+          readOnly: true
+        practice_here:
+          type: array
+          items:
+            $ref: '#/components/schemas/PracticeProblem'
+          readOnly: true
+        original:
+          type: boolean
+          readOnly: true
       required:
+      - attribution
       - author
       - body
+      - external_links
+      - original
+      - practice_here
       - problem_count
       - problems
+      - review
       - slug
       - title
       - topics
@@ -16845,11 +16979,65 @@ components:
           type: string
           format: date-time
           nullable: true
+        category:
+          oneOf:
+          - type: string
+            maxLength: 40
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        subcategory:
+          type: string
+          maxLength: 120
+        level:
+          oneOf:
+          - $ref: '#/components/schemas/Level154Enum'
+          - $ref: '#/components/schemas/BlankEnum'
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
       required:
       - problem_count
       - slug
       - title
       - topics
+    ArticleReviewSummary:
+      type: object
+      description: 'What the review did: the state and the number of logged changes.'
+      properties:
+        state:
+          type: string
+        changes:
+          type: integer
+      required:
+      - changes
+      - state
+    ArticleSource:
+      type: object
+      description: The original an imported article is adapted from (CC BY-SA attribution).
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        commit:
+          type: string
+        license:
+          type: string
+        translator:
+          type: string
+        import_commit:
+          type: string
+      required:
+      - commit
+      - import_commit
+      - license
+      - title
+      - translator
+      - url
     Ask:
       type: object
       properties:
@@ -19158,6 +19346,25 @@ components:
       required:
       - handle
       - kind
+    ExternalLink:
+      type: object
+      properties:
+        platform:
+          type: string
+          maxLength: 80
+        title:
+          type: string
+          maxLength: 300
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+        note:
+          type: string
+          maxLength: 300
+      required:
+      - title
+      - url
     ExternalOut:
       type: object
       properties:
@@ -20137,6 +20344,16 @@ components:
       - provider
       - ref
       - seconds
+    Level154Enum:
+      enum:
+      - beginner
+      - intermediate
+      - advanced
+      type: string
+      description: |-
+        * `beginner` - Boshlang'ich
+        * `intermediate` - O'rta
+        * `advanced` - Yuqori
     LevelEnum:
       enum:
       - debug
@@ -20149,6 +20366,50 @@ components:
         * `info` - info
         * `warn` - warn
         * `error` - error
+    LibraryEntry:
+      type: object
+      description: One line of the algorithms catalogue (ADR-0062 § 5.3).
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        locale:
+          type: string
+          maxLength: 2
+        summary:
+          type: string
+          maxLength: 300
+        category:
+          oneOf:
+          - type: string
+            maxLength: 40
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        subcategory:
+          type: string
+          maxLength: 120
+        level:
+          oneOf:
+          - $ref: '#/components/schemas/Level154Enum'
+          - $ref: '#/components/schemas/BlankEnum'
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        reading_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - slug
+      - title
     LinkedProblem:
       type: object
       properties:
@@ -24728,6 +24989,26 @@ components:
       - author
       - slug
       - title
+    PracticeProblem:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        code:
+          type: integer
+          nullable: true
+        difficulty:
+          type: integer
+        via:
+          $ref: '#/components/schemas/ViaEnum'
+      required:
+      - code
+      - difficulty
+      - slug
+      - title
+      - via
     Presence:
       type: object
       description: '`/presence/` — who was here today.'
@@ -30183,6 +30464,16 @@ components:
         * `TESTING_ABORTED` - Tekshiruv bekor qilindi
         * `RATE_LIMITED` - Submit limiti
         * `DENIAL_OF_JUDGEMENT` - Infra nosozligi
+    ViaEnum:
+      enum:
+      - pick
+      - source
+      - topic
+      type: string
+      description: |-
+        * `pick` - pick
+        * `source` - source
+        * `topic` - topic
     VideoPart:
       type: object
       properties:

@@ -1,4 +1,4 @@
-# Newton's method for finding roots 
+# Newton's method for finding roots {#newtons-method-for-finding-roots}
 
 This is an iterative method invented by Isaac Newton around 1664. However, this method is also sometimes called the Raphson method, since Raphson invented the same algorithm a few years after Newton, but his article was published much earlier.
 
@@ -8,7 +8,7 @@ $$f(x) = 0$$
 
 We want to solve the equation. More precisely, we want to find one of its roots (it is assumed that the root exists). It is assumed that $f(x)$ is continuous and differentiable on an interval $[a, b]$.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 The input parameters of the algorithm consist of not only the function $f(x)$ but also the initial approximation - some $x_0$, with which the algorithm starts.
 
@@ -34,7 +34,7 @@ It is intuitively clear that if the function $f(x)$ is "good" (smooth), and $x_i
 
 The rate of convergence is quadratic, which, conditionally speaking, means that the number of exact digits in the approximate value $x_i$ doubles with each iteration.
 
-## Application for calculating the square root
+## Application for calculating the square root {#application-for-calculating-the-square-root}
 
 Let's use the calculation of square root as an example of Newton's method.
 
@@ -94,5 +94,5 @@ public static BigInteger isqrtNewton(BigInteger n) {
 
 For example, this code is executed in $60$ milliseconds for $n = 10^{1000}$, and if we remove the improved selection of the initial approximation (just starting with $1$), then it will be executed in about $120$ milliseconds.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 - [UVa 10428 - The Roots](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=16&page=show_problem&problem=1369)

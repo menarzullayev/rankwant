@@ -1,4 +1,4 @@
-# Garner's algorithm
+# Garner's algorithm {#garners-algorithm}
 
 A consequence of the [Chinese Remainder Theorem](/algorithms/algebra/chinese-remainder-theorem) is, that we can represent big numbers using an array of small integers.
 For example, let $p$ be the product of the first $1000$ primes. $p$ has around $3000$ digits.
@@ -9,7 +9,7 @@ One way is discussed in the article about the Chinese Remainder Theorem.
 
 In this article we discuss an alternative, Garner's Algorithm, which can also be used for this purpose.
 
-## Mixed Radix Representation
+## Mixed Radix Representation {#mixed-radix-representation}
 
 We can represent the number $a$ in the **mixed radix** representation:
 
@@ -22,7 +22,7 @@ In general the string of digits $d_1 d_2 d_3 \dots d_n$ represents the number $d
 
 In a mixed radix system, we don't have one radix any more. The base varies from position to position.
 
-## Garner's algorithm
+## Garner's algorithm {#garners-algorithm}
 
 Garner's algorithm computes the digits $x_1, \ldots, x_k$.
 Notice, that the digits are relatively small.
@@ -75,7 +75,7 @@ $$a = x_1 + x_2 \cdot p_1 + x_3 \cdot p_1 \cdot p_2 + \ldots + x_k \cdot p_1 \cd
 
 It is worth noting that in practice, we almost probably need to compute the answer $a$ using [Arbitrary-Precision Arithmetic](/algorithms/algebra/big-integer), but the digits $x_i$ (because they are small) can usually be calculated using built-in types, and therefore Garner's algorithm is very efficient.
 
-## Implementation of Garner's Algorithm
+## Implementation of Garner's Algorithm {#implementation-of-garners-algorithm}
 
 It is convenient to implement this algorithm using Java, because it has built-in support for large numbers through the `BigInteger` class.
 

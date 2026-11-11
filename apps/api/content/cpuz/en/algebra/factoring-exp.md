@@ -1,4 +1,4 @@
-# Binary Exponentiation by Factoring
+# Binary Exponentiation by Factoring {#binary-exponentiation-by-factoring}
 
 Consider a problem of computing $ax^y \pmod{2^d}$, given integers $a$, $x$, $y$ and $d \geq 3$, where $x$ is odd.
 
@@ -40,7 +40,7 @@ uint32_t mbin_power_odd_32(uint32_t rem, uint32_t base, uint32_t exp) {
 }
 ```
 
-## Computing 4L(x) from x
+## Computing 4L(x) from x {#computing-4lx-from-x}
 
 Let $x$ be an odd number such that $x \equiv 1 \pmod 4$. It can be represented as 
 
@@ -98,7 +98,7 @@ uint32_t mbin_log_32(uint32_t r, uint32_t x) {
 
 Note that $4L(x) = -4L(x^{-1})$, so instead of adding $4L(2^n+1)$, we subtract it from $r$, which initially equates to $0$.
 
-## Computing x from 4L(x)
+## Computing x from 4L(x) {#computing-x-from-4lx}
 
 Note that for $k \geq 1$ it holds that
 
@@ -139,7 +139,7 @@ uint32_t mbin_exp_32(uint32_t r, uint32_t x) {
 }
 ```
 
-## Further optimizations
+## Further optimizations {#further-optimizations}
 
 It is possible to halve the number of iterations if you note that $4L(2^{d-1}+1)=2^{d-1}$ and that for $2k \geq d$ it holds that
 
@@ -181,7 +181,7 @@ uint32_t mbin_exp_32(uint32_t r, uint32_t x) {
 }
 ```
 
-## Computing logarithm table
+## Computing logarithm table {#computing-logarithm-table}
 
 To compute log-table, one could modify the [Pohlig–Hellman algorithm](https://en.wikipedia.org/wiki/Pohlig–Hellman_algorithm) for the case when modulo is a power of $2$.
 
@@ -207,6 +207,6 @@ $$
 
 Now, squaring both sides $d-k-1$ times we can obtain the next bit of $x$, eventually recovering all its bits.
 
-## References
+## References {#references}
 
 * [M30, Hans Petter Selasky, 2009](https://ia601602.us.archive.org/29/items/B-001-001-251/B-001-001-251.pdf#page=640)

@@ -1,10 +1,10 @@
-# Basic Geometry
+# Basic Geometry {#basic-geometry}
 
 In this article we will consider basic operations on points in Euclidean space which maintains the foundation of the whole analytical geometry.
 We will consider for each point $\mathbf r$ the vector $\vec{\mathbf r}$ directed from $\mathbf 0$ to $\mathbf r$.
 Later we will not distinguish between $\mathbf r$ and $\vec{\mathbf r}$ and use the term **point** as a synonym for **vector**.
 
-## Linear operations
+## Linear operations {#linear-operations}
 
 Both 2D and 3D points maintain linear space, which means that for them sum of points and multiplication of point by some number are defined. Here are those basic implementations for 2D:
 
@@ -100,9 +100,9 @@ point3d operator*(ftype a, point3d b) {
 
 Here `ftype` is some type used for coordinates, usually `int`, `double` or `long long`.
 
-## Dot product
+## Dot product {#dot-product}
 
-### Definition
+### Definition {#definition}
 The dot (or scalar) product $\mathbf a \cdot \mathbf b$ for vectors $\mathbf a$ and $\mathbf b$ can be defined in two identical ways.
 Geometrically it is product of the length of the first vector by the length of the projection of the second vector onto the first one.
 As you may see from the image below this projection is nothing but $|\mathbf a| \cos \theta$ where $\theta$ is the angle between $\mathbf a$ and $\mathbf b$. Thus $\mathbf a\cdot  \mathbf b = |\mathbf a| \cos \theta \cdot |\mathbf b|$.
@@ -144,7 +144,7 @@ ftype dot(point3d a, point3d b) {
 
 When solving problems one should use algebraic definition to calculate dot products, but keep in mind geometric definition and properties to use it.
 
-### Properties
+### Properties {#properties}
 
 We can define many geometrical properties via the dot product.
 For example 
@@ -182,9 +182,9 @@ In 2D these vectors will form a line, in 3D they will form a plane.
 Note that this result allows us to define a line in 2D as $\mathbf r\cdot \mathbf n=C$ or $(\mathbf r - \mathbf r_0)\cdot \mathbf n=0$ where $\mathbf n$ is vector orthogonal to the line and $\mathbf r_0$ is any vector already present on the line and $C = \mathbf r_0\cdot \mathbf n$.
 In the same manner a plane can be defined in 3D.
 
-## Cross product
+## Cross product {#cross-product}
 
-### Definition
+### Definition {#definition}
 
 Assume you have three vectors $\mathbf a$, $\mathbf b$ and $\mathbf c$ in 3D space joined in a parallelepiped as in the picture below:
 
@@ -256,7 +256,7 @@ ftype cross(point2d a, point2d b) {
 }
 ```
 
-### Properties
+### Properties {#properties}
 
 As for the cross product, it equals to the zero vector iff the vectors $\mathbf a$ and $\mathbf b$ are collinear (they form a common line, i.e. they are parallel).
 The same thing holds for the triple product, it is equal to zero iff the vectors $\mathbf a$, $\mathbf b$ and $\mathbf c$ are coplanar (they form a common plane).
@@ -270,9 +270,9 @@ In 2D the pseudo-scalar product also may be used to check the orientation betwee
 And, of course, it can be used to calculate areas of polygons, which is described in a different article.
 A triple product can be used for the same purpose in 3D space.
 
-## Exercises
+## Exercises {#exercises}
 
-### Line intersection
+### Line intersection {#line-intersection}
 
 There are many possible ways to define a line in 2D and you shouldn't hesitate to combine them.
 For example we have two lines and we want to find their intersection points.
@@ -289,7 +289,7 @@ point2d intersect(point2d a1, point2d d1, point2d a2, point2d d2) {
 }
 ```
 
-### Planes intersection
+### Planes intersection {#planes-intersection}
 
 However sometimes it might be hard to use some geometric insights.
 For example, you're given three planes defined by initial points $\mathbf a_i$ and directions $\mathbf d_i$ and you want to find their intersection point.

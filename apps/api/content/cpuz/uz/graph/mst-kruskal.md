@@ -1,4 +1,4 @@
-# Minimal ostov daraxt — Kruskal algoritmi
+# Minimal ostov daraxt — Kruskal algoritmi {#minimum-spanning-tree-kruskals-algorithm}
 
 Bizga vaznli yo‘naltirilmagan graf berilgan.
 
@@ -12,14 +12,14 @@ Chapdagi rasmda vaznli yo‘naltirilmagan graf, o‘ngdagi rasmda esa unga mos m
 
 Ushbu maqolada minimal ostov daraxtlarga oid bir nechta muhim xossalar ko‘rib chiqiladi, so‘ng minimal ostov daraxtni topish uchun Kruskal algoritmining eng sodda implementatsiyasi beriladi.
 
-## Minimal ostov daraxt xossalari
+## Minimal ostov daraxt xossalari {#properties-of-the-minimum-spanning-tree}
 
 * Grafdagi barcha qirralarning vaznlari turlicha bo‘lsa, uning minimal ostov daraxti yagona bo‘ladi. Aks holda bir nechta minimal ostov daraxt mavjud bo‘lishi mumkin. (Muayyan algoritmlar odatda mumkin bo‘lgan minimal ostov daraxtlardan bittasini chiqaradi.)
 * Minimal ostov daraxt qirralar vaznlari ko‘paytmasi eng kichik bo‘lgan daraxt hamdir. (Buni barcha qirralar vaznlarini ularning logarifmlariga almashtirish orqali oson isbotlash mumkin.)
 * Grafning minimal ostov daraxtidagi eng katta qirra vazni shu grafning barcha mumkin bo‘lgan ostov daraxtlari orasida eng kichik mumkin bo‘lgan qiymatdir. (Bu Kruskal algoritmining to‘g‘riligidan kelib chiqadi.)
 * Grafning maksimal ostov daraxtini (qirralar vaznlari yig‘indisi maksimal bo‘lgan ostov daraxtni) minimal ostov daraxtga o‘xshash usulda topish mumkin: barcha qirralar vaznlarining ishorasini teskarisiga almashtirib, minimal ostov daraxt algoritmlaridan birini qo‘llash kifoya.
 
-## Kruskal algoritmi
+## Kruskal algoritmi {#kruskals-algorithm}
 
 Bu algoritm Joseph Bernard Kruskal, Jr. tomonidan 1956-yilda tavsiflangan.
 
@@ -27,7 +27,7 @@ Kruskal algoritmi dastlab boshlang‘ich grafning barcha tugunlarini bir-biridan
 
 Keyin birlashtirish jarayoni boshlanadi: qirralarni saralangan tartibda boshidan oxirigacha olamiz va joriy tanlangan qirraning uchlari turli qismdaraxtlarga tegishli bo‘lsa, bu qismdaraxtlarni birlashtirib, qirrani javobga qo‘shamiz. Barcha qirralar ko‘rib chiqilgach, barcha tugunlar bitta qismdaraxtga tegishli bo‘ladi va javobni olamiz.
 
-## Eng sodda implementatsiya
+## Eng sodda implementatsiya {#the-simplest-implementation}
 
 Quyidagi kod yuqorida tavsiflangan algoritmni bevosita implementatsiya qiladi va $O(M \log M + N^2)$ vaqt murakkabligiga ega.
 
@@ -73,7 +73,7 @@ for (Edge e : edges) {
 }
 ```
 
-## To‘g‘rilik isboti
+## To‘g‘rilik isboti {#proof-of-correctness}
 
 Nima uchun Kruskal algoritmi to‘g‘ri natija beradi?
 
@@ -117,11 +117,11 @@ Tasdiq isbotlandi.
 
 Bu esa barcha qirralar ko‘rib chiqilgach, natijaviy qirralar to‘plami bog‘langan bo‘lishini va biror minimal ostov daraxt ichida yotishini anglatadi; demak, uning o‘zi ham minimal ostov daraxt bo‘lishi shart.
 
-## Yaxshilangan implementatsiya
+## Yaxshilangan implementatsiya {#improved-implementation}
 
 Kruskal algoritmining taxminan $O(M \log N)$ vaqt murakkabligidagi tezroq implementatsiyasini yozish uchun [**kesishmaydigan to‘plamlar birlashmasi** (DSU)](/algorithms/data-structures/disjoint-set-union) ma’lumotlar tuzilmasidan foydalanishimiz mumkin. [Ushbu maqolada](/algorithms/graph/mst-kruskal-with-dsu) bu yondashuv batafsil bayon qilingan.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [SPOJ - Koicost](http://www.spoj.com/problems/KOICOST/)
 * [SPOJ - MaryBMW](http://www.spoj.com/problems/MARYBMW/)

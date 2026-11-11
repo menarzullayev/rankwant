@@ -1,6 +1,6 @@
-# Prefix function. Knuth–Morris–Pratt algorithm
+# Prefix function. Knuth–Morris–Pratt algorithm {#prefix-function-knuthmorrispratt-algorithm}
 
-## Prefix function definition
+## Prefix function definition {#prefix-function-definition}
 
 You are given a string $s$ of length $n$.
 The **prefix function** for this string is defined as an array $\pi$ of length $n$, where $\pi[i]$ is the length of the longest proper prefix of the substring $s[0 \dots i]$ which is also a suffix of this substring.
@@ -13,7 +13,7 @@ $$\pi[i] = \max_ {k = 0 \dots i} \{k : s[0 \dots k-1] = s[i-(k-1) \dots i] \}$$
 
 For example, prefix function of string "abcabcd" is $[0, 0, 0, 1, 2, 3, 0]$, and prefix function of string "aabaaab" is $[0, 1, 0, 1, 2, 2, 3]$.
 
-## Trivial Algorithm
+## Trivial Algorithm {#trivial-algorithm}
 
 An algorithm which follows the definition of prefix function exactly is the following:
 
@@ -31,12 +31,12 @@ vector<int> prefix_function(string s) {
 
 It is easy to see that its complexity is $O(n^3)$, which has room for improvement.
 
-## Efficient Algorithm
+## Efficient Algorithm {#efficient-algorithm}
 
 This algorithm was proposed by Knuth and Pratt and independently from them by Morris in 1977. 
 It was used as the main function of a substring search algorithm.
 
-### First optimization
+### First optimization {#first-optimization}
 
 The first important observation is, that the values of the prefix function can only increase by at most one.
 
@@ -54,7 +54,7 @@ This fact already allows us to reduce the complexity of the algorithm to $O(n^2)
 In total the function can grow at most $n$ steps, and therefore also only can decrease a total of $n$ steps.
 This means we only have to perform $O(n)$ string comparisons, and reach the complexity $O(n^2)$.
 
-### Second optimization
+### Second optimization {#second-optimization}
 
 Let's go further, we want to get rid of the string comparisons.
 To accomplish this, we have to use all the information computed in the previous steps.
@@ -85,7 +85,7 @@ $$\overbrace{\underbrace{s_0 ~ s_1}_k ~ s_2 ~ s_3}^j ~ \dots ~ \overbrace{s_{i-3
 
 The illustration shows, that this has to be the value of $\pi[j-1]$, which we already calculated earlier.
 
-### Final algorithm
+### Final algorithm {#final-algorithm}
 
 So we finally can build an algorithm that doesn't perform any string comparisons and only performs $O(n)$ actions.
 
@@ -97,7 +97,7 @@ Here is the final procedure:
 If they are equal then we assign $\pi[i] = j + 1$, otherwise we reduce $j$ to $\pi[j-1]$ and repeat this step.
 - If we have reached the length $j = 0$ and still don't have a match, then we assign $\pi[i] = 0$ and go to the next index $i + 1$.
 
-### Implementation
+### Implementation {#implementation}
 
 The implementation ends up being surprisingly short and expressive.
 
@@ -120,9 +120,9 @@ vector<int> prefix_function(string s) {
 This is an **online** algorithm, i.e. it processes the data as it arrives - for example, you can read the string characters one by one and process them immediately, finding the value of prefix function for each next character.
 The algorithm still requires storing the string itself and the previously calculated values of prefix function, but if we know beforehand the maximum value $M$ the prefix function can take on the string, we can store only $M+1$ first characters of the string and the same number of values of the prefix function.
 
-## Applications
+## Applications {#applications}
 
-### Search for a substring in a string. The Knuth-Morris-Pratt algorithm
+### Search for a substring in a string. The Knuth-Morris-Pratt algorithm {#search-for-a-substring-in-a-string-the-knuth-morris-pratt-algorithm}
 
 The task is the classical application of the prefix function.
 
@@ -147,7 +147,7 @@ We can read one character at a time of the string $t$ and calculate the current 
 
 Thus the Knuth-Morris-Pratt algorithm solves the problem in $O(n + m)$ time and $O(n)$ memory.
 
-### Counting the number of occurrences of each prefix
+### Counting the number of occurrences of each prefix {#counting-the-number-of-occurrences-of-each-prefix}
 
 Here we discuss two problems at once.
 Given a string $s$ of length $n$.
@@ -183,7 +183,7 @@ we create the string $s + \# + t$ and compute its prefix function.
 The only differences to the first task is, that we are only interested in the prefix values that relate to the string $t$, i.e. $\pi[i]$ for $i \ge n + 1$.
 With those values we can perform the exact same computations as in the first task.
 
-### The number of different substring in a string
+### The number of different substring in a string {#the-number-of-different-substring-in-a-string}
 
 Given a string $s$ of length $n$.
 We want to compute the number of different substrings appearing in it.
@@ -206,7 +206,7 @@ So for each character appended we can compute the number of new substrings in $O
 
 It is worth noting, that we can also compute the number of different substrings by appending the characters at the beginning, or by deleting characters from the beginning or the end.
 
-### Compressing a string
+### Compressing a string {#compressing-a-string}
 
 Given a string $s$ of length $n$.
 We want to find the shortest "compressed" representation of the string, i.e. we want to find a string $t$ of smallest length such that $s$ can be represented as a concatenation of one or more copies of $t$.
@@ -245,7 +245,7 @@ $$s_0 ~ s_1 ~ s_2 ~ \underbrace{\overbrace{s_3 ~ s_4 ~ s_5 ~ s_6}^p ~ s_7}_{\pi[
 
 $$s_4 = s_3, ~ s_5 = s_4, ~ s_6 = s_5, ~ s_7 = s_6 ~ \Rightarrow ~ s_0 = s_1 = s_2 = s_3$$
 
-### Building an automaton according to the prefix function
+### Building an automaton according to the prefix function {#building-an-automaton-according-to-the-prefix-function}
 
 Let's return to the concatenation to the two strings through a separator, i.e. for the strings $s$ and $t$ we compute the prefix function for the string $s + \# + t$.
 Obviously, since $\#$ is a separator, the value of the prefix function will never exceed $|s|$.
@@ -366,7 +366,7 @@ We have to find the number of times the string $s$ appears in each of the string
 
 The problem can be solved in the same way by constructing the automaton of the prefix function, and then we calculate the transitions in for each pattern by using the previous results.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [UVA # 455 "Periodic Strings"](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=396)
 * [UVA # 11022 "String Factoring"](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1963)

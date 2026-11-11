@@ -1,8 +1,8 @@
-# Arbitrary-Precision Arithmetic
+# Arbitrary-Precision Arithmetic {#arbitrary-precision-arithmetic}
 
 Arbitrary-Precision arithmetic, also known as "bignum" or simply "long arithmetic" is a set of data structures and algorithms which allows to process much greater numbers than can be fit in standard data types. Here are several types of arbitrary-precision arithmetic.
 
-## Classical Integer Long Arithmetic
+## Classical Integer Long Arithmetic {#classical-integer-long-arithmetic}
 
 The main idea is that the number is stored as an array of its "digits" in some base. Several most frequently used bases are decimal, powers of decimal ($10^4$ or $10^9$) and binary.
 
@@ -10,7 +10,7 @@ Operations on numbers in this form are performed using "school" algorithms of co
 
 Here we describe long arithmetic for only non-negative integers. To extend the algorithms to handle negative integers one has to introduce and maintain additional "negative number" flag or use two's complement integer representation.
 
-### Data Structure
+### Data Structure {#data-structure}
 
 We'll store numbers as a `vector<int>`, in which each element is a single "digit" of the number.
 
@@ -26,7 +26,7 @@ const int base = 1000*1000*1000;
 
 Digits will be stored in order from least to most significant. All operations will be implemented so that after each of them the result doesn't have any leading zeros, as long as operands didn't have any leading zeros either. All operations which might result in a number with leading zeros should be followed by code which removes them. Note that in this representation there are two valid notations for number zero: an empty vector, and a vector with a single zero digit.
 
-### Output
+### Output {#output}
 
 Printing the long integer is the easiest operation. First we print the last element of the vector (or 0 if the vector is empty), followed by the rest of the elements padded with leading zeros if necessary so that they are exactly 9 digits long.
 
@@ -38,7 +38,7 @@ for (int i=(int)a.size()-2; i>=0; --i)
 
 Note that we cast `a.size()` to integer to avoid unsigned integer underflow if vector contains less than 2 elements.
 
-### Input
+### Input {#input}
 
 To read a long integer, read its notation into a `string` and then convert it to "digits":
 
@@ -66,7 +66,7 @@ while (a.size() > 1 && a.back() == 0)
 	a.pop_back();
 ```
 
-### Addition
+### Addition {#addition}
 
 Increment long integer $a$ by $b$ and store result in $a$:
 
@@ -81,7 +81,7 @@ for (size_t i=0; i<max(a.size(),b.size()) || carry; ++i) {
 }
 ```
 
-### Subtraction
+### Subtraction {#subtraction}
 
 Decrement long integer $a$ by $b$ ($a \ge b$) and store result in $a$:
 
@@ -98,7 +98,7 @@ while (a.size() > 1 && a.back() == 0)
 
 Note that after performing subtraction we remove leading zeros to keep up with the premise that our long integers don't have leading zeros.
 
-### Multiplication by short integer
+### Multiplication by short integer {#multiplication-by-short-integer}
 
 Multiply long integer $a$ by short integer $b$ ($b < base$) and store result in $a$:
 
@@ -117,7 +117,7 @@ while (a.size() > 1 && a.back() == 0)
 
 Additional optimization: If runtime is extremely important, you can try to replace two divisions with one by finding only integer result of division (variable `carry`) and then use it to find modulo using multiplication. This usually makes the code faster, though not dramatically.
 
-### Multiplication by long integer
+### Multiplication by long integer {#multiplication-by-long-integer}
 
 Multiply long integers $a$ and $b$ and store result in $c$:
 
@@ -133,7 +133,7 @@ while (c.size() > 1 && c.back() == 0)
 	c.pop_back();
 ```
 
-### Division by short integer
+### Division by short integer {#division-by-short-integer}
 
 Divide long integer $a$ by short integer $b$ ($b < base$), store integer result in $a$ and remainder in `carry`:
 
@@ -148,7 +148,7 @@ while (a.size() > 1 && a.back() == 0)
 	a.pop_back();
 ```
 
-## Long Integer Arithmetic for Factorization Representation
+## Long Integer Arithmetic for Factorization Representation {#long-integer-arithmetic-for-factorization-representation}
 
 The idea is to store the integer as its factorization, i.e. the powers of primes which divide it.
 
@@ -156,7 +156,7 @@ This approach is very easy to implement, and allows to do multiplication and div
 
 This method is often used for calculations modulo non-prime number M; in this case a number is stored as powers of divisors of M which divide the number, plus the remainder modulo M.
 
-## Long Integer Arithmetic in prime modulos (Garner Algorithm)
+## Long Integer Arithmetic in prime modulos (Garner Algorithm) {#long-integer-arithmetic-in-prime-modulos-garner-algorithm}
 
 The idea is to choose a set of prime numbers (typically they are small enough to fit into standard integer data type) and to store an integer as a vector of remainders from division of the integer by each of those primes.
 
@@ -166,15 +166,15 @@ This method allows to save memory compared to the classical approach (though the
 
 The tradeoff is that converting the integer back to normal form is rather laborious and requires implementing classical arbitrary-precision arithmetic with multiplication. Besides, this method doesn't support division.
 
-## Fractional Arbitrary-Precision Arithmetic
+## Fractional Arbitrary-Precision Arithmetic {#fractional-arbitrary-precision-arithmetic}
 
 Fractions occur in programming competitions less frequently than integers, and long arithmetic is much trickier to implement for fractions, so programming competitions feature only a small subset of fractional long arithmetic.
 
-### Arithmetic in Irreducible Fractions
+### Arithmetic in Irreducible Fractions {#arithmetic-in-irreducible-fractions}
 
 A number is represented as an irreducible fraction $\frac{a}{b}$, where $a$ and $b$ are integers. All operations on fractions can be represented as operations on integer numerators and denominators of these fractions. Usually this requires using classical arbitrary-precision arithmetic for storing numerator and denominator, but sometimes a built-in 64-bit integer data type suffices.
 
-### Storing Floating Point Position as Separate Type
+### Storing Floating Point Position as Separate Type {#storing-floating-point-position-as-separate-type}
 
 Sometimes a problem requires handling very small or very large numbers without allowing overflow or underflow. Built-in double data type uses 8-10 bytes and allows values of the exponent in $[-308; 308]$ range, which sometimes might be insufficient.
 
@@ -184,7 +184,7 @@ When two such numbers are multiplied or divided, their exponents should be added
 
 As a final note, the exponent base doesn't have to equal 10. Based on the internal representation of floating-point numbers, it makes most sense to use 2 as the exponent base.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [UVA - How Many Fibs?](https://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1124)
 * [UVA - Product](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1047)

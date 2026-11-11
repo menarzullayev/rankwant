@@ -1,4 +1,4 @@
-# Fibonacci Numbers
+# Fibonacci Numbers {#fibonacci-numbers}
 
 The Fibonacci sequence is defined as follows:
 
@@ -8,7 +8,7 @@ The first elements of the sequence ([OEIS A000045](http://oeis.org/A000045)) are
 
 $$0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...$$
 
-## Properties
+## Properties {#properties}
 
 Fibonacci numbers possess a lot of interesting properties. Here are a few of them:
 
@@ -36,7 +36,7 @@ $$GCD(F_m, F_n) = F_{GCD(m, n)}$$
 
 * Fibonacci numbers are the worst possible inputs for Euclidean algorithm (see Lame's theorem in [Euclidean algorithm](/algorithms/algebra/euclid-algorithm))
 
-## Fibonacci Coding
+## Fibonacci Coding {#fibonacci-coding}
 
 We can use the sequence to encode positive integers into binary code words. According to Zeckendorf's theorem, any natural number $n$ can be uniquely represented as a sum of Fibonacci numbers:
 
@@ -70,9 +70,9 @@ The encoding of an integer $n$ can be done with a simple greedy algorithm:
 
 To decode a code word, first remove the final $1$. Then, if the $i$-th bit is set (indexing from 0 from the leftmost to the rightmost bit), sum $F_{i+2}$ to the number.
 
-## Formulas for the $n^{\text{th}}$ Fibonacci number
+## Formulas for the $n^{\text{th}}$ Fibonacci number {#formulas-for-the-ntextth-fibonacci-number}
 
-### Closed-form expression
+### Closed-form expression {#closed-form-expression}
 
 There is a formula known as "Binet's formula", even though it was already known by Moivre:
 
@@ -88,7 +88,7 @@ where the square brackets denote rounding to the nearest integer.
 
 As these two formulas would require very high accuracy when working with fractional numbers, they are of little use in practical calculations.
 
-### Fibonacci in linear time
+### Fibonacci in linear time {#fibonacci-in-linear-time}
 
 The $n$-th Fibonacci number can be easily found in $O(n)$ by computing the numbers one by one up to $n$. However, there are also faster ways, as we will see.
 
@@ -109,7 +109,7 @@ int fib(int n) {
 
 In this way, we obtain a linear solution, $O(n)$ time, saving all the values prior to $n$ in the sequence.
 
-### Matrix form
+### Matrix form {#matrix-form}
 
 To go from $(F_n, F_{n-1})$ to $(F_{n+1}, F_n)$, we can express the linear recurrence as a 2x2 matrix multiplication:
 
@@ -209,7 +209,7 @@ long long fib(int n) {
 }
 ```
 
-### Fast Doubling Method
+### Fast Doubling Method {#fast-doubling-method}
 
 By expanding the above matrix expression for $n = 2\cdot k$
 
@@ -256,7 +256,7 @@ pair<int, int> fib (int n) {
 ```
 The above code returns $F_n$ and $F_{n+1}$ as a pair.
 
-## Periodicity modulo p
+## Periodicity modulo p {#periodicity-modulo-p}
 
 Consider the Fibonacci sequence modulo $p$. We will prove the sequence is periodic.
 
@@ -268,7 +268,7 @@ There can only be $p$ different remainders modulo $p$, and at most $p^2$ differe
 
 We now choose two pairs of identical remainders with the smallest indices in the sequence. Let the pairs be $(F_a,\ F_{a + 1})$ and $(F_b,\ F_{b + 1})$. We will prove that $a = 0$. If this was false, there would be two previous pairs $(F_{a-1},\ F_a)$ and $(F_{b-1},\ F_b)$, which, by the property of Fibonacci numbers, would also be equal. However, this contradicts the fact that we had chosen pairs with the smallest indices, completing our proof that there is no pre-period (i.e the numbers are periodic starting from $F_0$).
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ - Euclid Algorithm Revisited](http://www.spoj.com/problems/MAIN74/)
 * [SPOJ - Fibonacci Sum](http://www.spoj.com/problems/FIBOSUM/)

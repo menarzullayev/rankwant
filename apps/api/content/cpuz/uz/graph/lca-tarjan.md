@@ -1,4 +1,4 @@
-# Eng yaqin umumiy ajdod — Tarjanning offlayn algoritmi
+# Eng yaqin umumiy ajdod — Tarjanning offlayn algoritmi {#lowest-common-ancestor-tarjans-off-line-algorithm}
 
 Bizda $n$ ta tugunli $G$ daraxti va $(u, v)$ ko‘rinishidagi $m$ ta so‘rov bor.
 
@@ -10,7 +10,7 @@ Ushbu maqolada masalani offlayn tarzda yechamiz, ya’ni barcha so‘rovlar oldi
 
 Quyidagi algoritm barcha $m$ ta so‘rovga jami $O(n + m)$ vaqtda, ya’ni $m$ yetarlicha katta bo‘lganda har bir so‘rovga $O(1)$ dan javob berish imkonini beradi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Algoritm uni 1979-yilda kashf etgan Robert Tarjan nomi bilan atalgan; Tarjan ushbu algoritmda keng qo‘llanadigan [kesishmaydigan to‘plamlar birlashmasi](/algorithms/data-structures/disjoint-set-union) ma’lumotlar tuzilmasiga ham ko‘plab hissa qo‘shgan.
 
@@ -68,7 +68,7 @@ Uchinchidan, har bir so‘rov uchun `find_set` chaqiriladi, bu $O(m)$ beradi.
 
 Shunday qilib, umumiy vaqt murakkabligi $O(n + m)$; $m$ yetarlicha katta bo‘lganda bu bitta so‘rovga $O(1)$ vaqtga mos keladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida ushbu algoritm implementatsiyasi keltirilgan.
 

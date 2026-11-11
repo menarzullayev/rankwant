@@ -1,4 +1,4 @@
-# Qavariq qobiqni qurish
+# Qavariq qobiqni qurish {#convex-hull-construction}
 
 Ushbu maqolada berilgan nuqtalar to‘plamining qavariq qobig‘ini qurish masalasi ko‘rib chiqiladi.
 
@@ -10,7 +10,7 @@ Biz 1972-yilda Graham tomonidan e’lon qilingan **Graham scan** algoritmini ham
 $\mathcal{O}(N \log N)$ bo‘lib, ular asimptotik jihatdan optimal (asimptotik jihatdan yaxshiroq algoritm
 yo‘qligi isbotlangan), parallel yoki onlayn ishlov berish ishtirok etadigan ayrim masalalar bundan mustasno.
 
-## Graham scan algoritmi
+## Graham scan algoritmi {#grahams-scan-algorithm}
 Algoritm avval eng pastdagi $P_0$ nuqtani topadi. Agar Y koordinatasi bir xil bo‘lgan bir nechta nuqta bo‘lsa,
 X koordinatasi kichigi olinadi. Bu
 bosqich $\mathcal{O}(N)$ vaqt oladi.
@@ -34,7 +34,7 @@ kollinear nuqtalarni chiqarish mumkin bo‘ladi; aks holda algoritm shu
 chiziqdagi eng yaqin nuqtani oladi va to‘xtaydi. Bu qadamni algoritmning kollinear bo‘lmagan
 versiyasiga kiritmaslik kerak, aks holda eng kichik qavariq qobiqni olib bo‘lmaydi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 struct pt {
@@ -88,7 +88,7 @@ void convex_hull(vector<pt>& a, bool include_collinear = false) {
 }
 ```
 
-## Monotone chain algoritmi
+## Monotone chain algoritmi {#monotone-chain-algorithm}
 Algoritm avval eng chapdagi va eng o‘ngdagi A va B nuqtalarni topadi. Bunday nuqtalar bir nechta bo‘lsa,
 chapdagilar orasidan eng pasti (eng kichik Y koordinatali) A sifatida, o‘ngdagilar orasidan eng yuqorisi (eng katta Y koordinatali)
 B sifatida olinadi. A va B ikkalasi ham qavariq qobiqqa tegishli ekani ravshan: ular eng uzoqda joylashgan va berilgan nuqtalardan
@@ -123,7 +123,7 @@ Biroq bu barcha kirish nuqtalari bitta to‘g‘ri chiziqda yotadigan degenerati
 Buni hal qilish uchun yuqori qobiq barcha nuqtalarni o‘z ichiga olganini tekshiramiz va agar shunday bo‘lsa, nuqtalarni teskari tartibda qaytaramiz, chunki
 bu holatda Graham implementatsiyasi ham shuni qaytaradi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 struct pt {
@@ -182,7 +182,7 @@ void convex_hull(vector<pt>& a, bool include_collinear = false) {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Kattis - Convex Hull](https://open.kattis.com/problems/convexhull)
 * [Kattis - Keep the Parade Safe](https://open.kattis.com/problems/parade)

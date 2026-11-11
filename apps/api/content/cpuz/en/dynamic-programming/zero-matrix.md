@@ -1,12 +1,12 @@
-# Finding the largest zero submatrix
+# Finding the largest zero submatrix {#finding-the-largest-zero-submatrix}
 
 You are given a matrix with `n` rows and `m` columns. Find the largest submatrix consisting of only zeros (a submatrix is a rectangular area of the matrix).
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Elements of the matrix will be `a[i][j]`, where `i = 0...n - 1`, `j = 0... m - 1`. For simplicity, we will consider all non-zero elements equal to 1.
 
-### Step 1: Auxiliary dynamic
+### Step 1: Auxiliary dynamic {#step-1-auxiliary-dynamic}
 
 First, we calculate the following auxiliary matrix: `d[i][j]`, nearest row that has a 1 above `a[i][j]`. Formally speaking, `d[i][j]` is the largest row number (from `0` to `i - 1`), in which there is a element equal to `1` in the `j`-th column. 
 While iterating from top-left to bottom-right, when we stand in row `i`, we know the values from the previous row, so, it is enough to update just the elements with value `1`. We can save the values in a simple array `d[i]`, `i = 1...m - 1`, because in the further algorithm we will process the matrix one row at a time and only need the values of the current row.
@@ -22,7 +22,7 @@ for (int i = 0; i < n; ++i) {
 }
 ```
 
-### Step 2: Problem solving
+### Step 2: Problem solving {#step-2-problem-solving}
 
 We can solve the problem in $O(n m^2)$ iterating through rows, considering every possible left and right columns for a submatrix. The bottom of the rectangle will be the current row, and using `d[i][j]` we can find the top row. However, it is possible to go further and significantly improve the complexity of the solution.
 
@@ -46,7 +46,7 @@ It is clear that since there are exactly `m` pieces added to the stack on each l
 
 It should also be noted that this algorithm consumes $O(m)$ memory (not counting the input data - the matrix `a[][]`).
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 int zero_matrix(vector<vector<int>> a) {

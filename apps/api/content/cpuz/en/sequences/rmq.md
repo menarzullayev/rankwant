@@ -1,11 +1,11 @@
-# Range Minimum Query
+# Range Minimum Query {#range-minimum-query}
 
 You are given an array $A[1..N]$.
 You have to answer incoming queries of the form $(L, R)$, which ask to find the minimum element in array $A$ between positions $L$ and $R$ inclusive.
 
 RMQ can appear in problems directly or can be applied in some other tasks, e.g. the [Lowest Common Ancestor](/algorithms/graph/lca) problem.
 
-## Solution
+## Solution {#solution}
 
 There are lots of possible approaches and data structures that you can use to solve the RMQ task.
 
@@ -30,7 +30,7 @@ And here are the approaches that only work on static arrays, i.e. it is not poss
 
 Note: Preprocessing is the preliminary processing of the given array by building the corresponding data structure for it.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 - [SPOJ: Range Minimum Query](http://www.spoj.com/problems/RMQSQ/)
 - [CODECHEF: Chef And Array](https://www.codechef.com/problems/FRMQ)
 - [Codeforces:  Array Partition](https://codeforces.com/contest/1454/problem/F)

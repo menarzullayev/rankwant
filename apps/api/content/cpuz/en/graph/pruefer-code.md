@@ -1,4 +1,4 @@
-# Prüfer code
+# Prüfer code {#prufer-code}
 
 In this article we will look at the so-called **Prüfer code** (or Prüfer sequence), which is a way of encoding a labeled tree into a sequence of numbers in a unique way.
 
@@ -7,7 +7,7 @@ Also we show the solution to the problem of counting the number of ways of addin
 
 **Note**, we will not consider trees consisting of a single vertex - this is a special case in which multiple statements clash.
 
-## Prüfer code
+## Prüfer code {#prufer-code}
 
 The Prüfer code is a way of encoding a labeled tree with $n$ vertices using a sequence of $n - 2$ integers in the interval $[0; n-1]$.
 This encoding also acts as a **bijection** between all spanning trees of a complete graph and the numerical sequences.
@@ -16,7 +16,7 @@ Although using the Prüfer code for storing and operating on tree is impractical
 
 The inventor - Heinz Prüfer - proposed this code in 1918 as a proof for Cayley's formula.
 
-### Building the Prüfer code for a given tree
+### Building the Prüfer code for a given tree {#building-the-prufer-code-for-a-given-tree}
 
 The Prüfer code is constructed as follows.
 We will repeat the following procedure $n - 2$ times:
@@ -65,7 +65,7 @@ vector<int> pruefer_code() {
 However the construction can also be implemented in linear time.
 Such an approach is described in the next section.
 
-### Building the Prüfer code for a given tree in linear time
+### Building the Prüfer code for a given tree in linear time {#building-the-prufer-code-for-a-given-tree-in-linear-time}
 
 The essence of the algorithm is to use a **moving pointer**, which will always point to the current leaf vertex that we want to remove.
 
@@ -144,7 +144,7 @@ We will either assign the current leaf vertex with `next`, if this one is also a
 
 It can be easily seen, that this code has the complexity $O(n)$.
 
-### Some properties of the Prüfer code
+### Some properties of the Prüfer code {#some-properties-of-the-prufer-code}
 
 - After constructing the Prüfer code two vertices will remain.
   One of them is the highest vertex $n-1$, but nothing else can be said about the other one.
@@ -152,7 +152,7 @@ It can be easily seen, that this code has the complexity $O(n)$.
   This can be easily checked, since the degree will get smaller every time we record its label in the code, and we remove it once the degree is $1$.
   For the two remaining vertices this fact is also true.
 
-### Restoring the tree using the Prüfer code
+### Restoring the tree using the Prüfer code {#restoring-the-tree-using-the-prufer-code}
 
 To restore the tree it suffice to only focus on the property discussed in the last section.
 We already know the degree of all the vertices in the desired tree.
@@ -201,7 +201,7 @@ vector<pair<int, int>> pruefer_decode(vector<int> const& code) {
 }
 ```
 
-### Restoring the tree using the Prüfer code in linear time
+### Restoring the tree using the Prüfer code in linear time {#restoring-the-tree-using-the-prufer-code-in-linear-time}
 
 To obtain the tree in linear time we can apply the same technique used to obtain the Prüfer code in linear time.
 
@@ -238,7 +238,7 @@ vector<pair<int, int>> pruefer_decode(vector<int> const& code) {
 }
 ```
 
-### Bijection between trees and Prüfer codes
+### Bijection between trees and Prüfer codes {#bijection-between-trees-and-prufer-codes}
 
 For each tree there exists a Prüfer code corresponding to it.
 And for each Prüfer code we can restore the original tree.
@@ -247,7 +247,7 @@ It follows that also every Prüfer code (i.e. a sequence of $n-2$ numbers in the
 
 Therefore all trees and all Prüfer codes form a bijection (a **one-to-one correspondence**).
 
-## Cayley's formula
+## Cayley's formula {#cayleys-formula}
 
 Cayley's formula states that the **number of spanning trees in a complete labeled graph** with $n$ vertices is equal to:
 
@@ -260,7 +260,7 @@ In fact any Prüfer code with $n-2$ numbers from the interval $[0; n-1]$ corresp
 So we have $n^{n-2}$ different such Prüfer codes.
 Since each such tree is a spanning tree of a complete graph with $n$ vertices, the number of such spanning trees is also $n^{n-2}$.
 
-## Number of ways to make a graph connected
+## Number of ways to make a graph connected {#number-of-ways-to-make-a-graph-connected}
 
 The concept of Prüfer codes are even more powerful.
 It allows to create a lot more general formulas than Cayley's formula.
@@ -313,7 +313,7 @@ $$s_1 \cdot s_2 \cdots s_k \cdot (s_1 + s_2 + \dots + s_k)^{k-2} = s_1 \cdot s_2
 
 By accident this formula also holds for $k = 1$.
 
-## Practice problems
+## Practice problems {#practice-problems}
 
 - [UVA #10843 - Anne's game](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=20&page=show_problem&problem=1784)
 - [Timus #1069 - Prufer Code](http://acm.timus.ru/problem.aspx?space=1&num=1069)

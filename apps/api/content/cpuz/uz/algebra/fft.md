@@ -1,4 +1,4 @@
-# Tez Fourier almashtirishi
+# Tez Fourier almashtirishi {#fast-fourier-transform}
 
 Ushbu maqolada uzunligi $n$ bo‘lgan ikkita ko‘phadni $O(n \log n)$ vaqtda ko‘paytirish imkonini beradigan algoritmni ko‘rib chiqamiz. Bu $O(n^2)$ vaqt sarflaydigan sodda ko‘paytirishdan yaxshiroq.
 Shubhasiz, ikkita uzun sonni ko‘paytirishni ham ko‘phadlarni ko‘paytirishga keltirish mumkin. Demak, ikkita uzun sonni ham $O(n \log n)$ vaqtda ko‘paytirish mumkin (bunda $n$ — sonlardagi raqamlar soni).
@@ -11,7 +11,7 @@ U kichik koeffitsiyentli $10^5$ o‘lchamli ko‘phadlarni yoki uzunligi $10^6$ 
 Masalan, 1971-yilda Schönhage va Strassen halqa tuzilmalarida FFT ni rekursiv qo‘llaydigan va $O(n \log n \log \log n)$ vaqtda ishlaydigan ixtiyoriy katta sonlarni ko‘paytirish variantini ishlab chiqdi.
 Yaqinda esa (2019-yilda) Harvey va van der Hoeven haqiqiy $O(n \log n)$ vaqtda ishlaydigan algoritmni e’lon qildi.
 
-## Diskret Fourier almashtirishi
+## Diskret Fourier almashtirishi {#discrete-fourier-transform}
 
 Darajasi $n - 1$ bo‘lgan ko‘phad berilgan bo‘lsin:
 
@@ -37,7 +37,7 @@ $$\text{InverseDFT}(y_0, y_1, \dots, y_{n-1}) = (a_0, a_1, \dots, a_{n-1})$$
 
 Shunday qilib, to‘g‘ri DFT ko‘phadning $n$-darajali birlik ildizlaridagi qiymatlarini hisoblasa, teskari DFT shu qiymatlar yordamida ko‘phad koeffitsiyentlarini tiklaydi.
 
-### DFT qo‘llanilishi: ko‘phadlarni tez ko‘paytirish
+### DFT qo‘llanilishi: ko‘phadlarni tez ko‘paytirish {#application-of-the-dft-fast-multiplication-of-polynomials}
 
 $A$ va $B$ ko‘phadlar berilgan bo‘lsin.
 Ularning har biri uchun DFT ni hisoblaymiz: $\text{DFT}(A)$ va $\text{DFT}(B)$.
@@ -65,7 +65,7 @@ Buni qiymati $0$ bo‘lgan koeffitsiyentlarni qo‘shish orqali ta’minlash mum
 Bundan tashqari, ikkita ko‘phad ko‘paytmasining darajasi $2 (n - 1)$ bo‘lgani uchun har bir ko‘phadning darajasini ikki baravar oshirishimiz kerak (yana $0$ lar bilan to‘ldirib).
 $n$ ta qiymatli vektordan $2n - 1$ ta koeffitsiyentli kerakli ko‘phadni tiklab bo‘lmaydi.
 
-### Tez Fourier almashtirishi
+### Tez Fourier almashtirishi {#fast-fourier-transform}
 
 **Tez Fourier almashtirishi** DFT ni $O(n \log n)$ vaqtda hisoblash imkonini beradigan usuldir.
 FFT ning asosiy g‘oyasi «bo‘lib yechish» usulini qo‘llashdir.
@@ -120,7 +120,7 @@ y_{k+n/2} &= y_k^0 - w_n^k y_k^1, &\quad k = 0 \dots \frac{n}{2} - 1.
 
 Shu tariqa DFT ni $O(n \log n)$ vaqtda hisoblashni o‘rgandik.
 
-### Teskari FFT
+### Teskari FFT {#inverse-fft}
 
 Darajasi $n - 1$ bo‘lgan $A$ ko‘phadning $x = w_n^k$ nuqtalardagi qiymatlari — $(y_0, y_1, \dots y_{n-1})$ vektori — berilgan bo‘lsin.
 Ko‘phadning $(a_0, a_1, \dots, a_{n-1})$ koeffitsiyentlarini tiklamoqchimiz.
@@ -187,7 +187,7 @@ $$y_k = \sum_{j=0}^{n-1} a_j w_n^{k j}.$$
 Bu masalalar deyarli bir xil ekanini ko‘ramiz. Shuning uchun $a_k$ koeffitsiyentlarni to‘g‘ri FFT dagi «bo‘lib yechish» algoritmi bilan topish mumkin; faqat $w_n^k$ o‘rniga $w_n^{-k}$ ishlatamiz va oxirida hosil bo‘lgan koeffitsiyentlarni $n$ ga bo‘lamiz.
 Demak, teskari DFT ni hisoblash to‘g‘ri DFT ni hisoblash bilan deyarli bir xil va uni ham $O(n \log n)$ vaqtda bajarish mumkin.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Bu yerda FFT va teskari FFT ning sodda rekursiv **implementatsiyasini** bitta funksiyada keltiramiz, chunki to‘g‘ri va teskari FFT o‘rtasidagi farq juda kichik.
 Kompleks sonlarni saqlash uchun C++ STL dagi `complex` turidan foydalanamiz.
@@ -271,7 +271,7 @@ Keyin bajarishimiz kerak bo‘lgan yagona ish — sonni normallashtirish:
 
 Ikki son ko‘paytmasining uzunligi hech qachon ularning uzunliklari yig‘indisidan oshmagani uchun, vektor o‘lchami barcha ko‘chirish amallarini bajarishga yetarli.
 
-### Yaxshilangan implementatsiya: joyida hisoblash
+### Yaxshilangan implementatsiya: joyida hisoblash {#improved-implementation-in-place-computation}
 
 Samaradorlikni oshirish uchun rekursiv implementatsiyadan iterativ implementatsiyaga o‘tamiz.
 Yuqoridagi rekursiv implementatsiyada $a$ vektorni aniq ravishda ikkita vektorga ajratdik: juft o‘rinlardagi elementlar bir vaqtinchalik vektorga, toq o‘rinlardagi elementlar esa boshqasiga joylashtirildi.
@@ -417,7 +417,7 @@ Bu ayniqsa barcha chaqiruvlarda $n$ o‘lcham bir xil bo‘lganda foydali.
 Ammo hatto atigi uchta chaqiruv bo‘lganda ham (ikkita ko‘phadni ko‘paytirish uchun aynan shuncha chaqiruv kerak) ta’siri seziladi.
 Shuningdek, barcha birlik ildizlari va ularning darajalarini oldindan hisoblash mumkin.
 
-## Sonlar nazariyasidagi almashtirish
+## Sonlar nazariyasidagi almashtirish {#number-theoretic-transform}
 
 Endi maqsadni biroz o‘zgartiramiz.
 Hali ham ikkita ko‘phadni $O(n \log n)$ vaqtda ko‘paytirmoqchimiz, ammo bu safar koeffitsiyentlarni biror tub $p$ son bo‘yicha modulda hisoblashni istaymiz.
@@ -499,7 +499,7 @@ Bu yerda `inverse` funksiyasi modul bo‘yicha teskari elementni hisoblaydi ([Mo
 `mod`, `root`, `root_pw` konstantalari modul va ildizni belgilaydi, `root_1` esa `root` ning `mod` bo‘yicha teskari elementidir.
 Amalda bu implementatsiya kompleks sonlardan foydalanuvchi implementatsiyadan sekinroq (modul amallari juda ko‘p bo‘lgani sababli), ammo kamroq xotira ishlatishi va yaxlitlash xatolarining yo‘qligi kabi afzalliklarga ega.
 
-## Ixtiyoriy modul bilan ko‘paytirish
+## Ixtiyoriy modul bilan ko‘paytirish {#multiplication-with-arbitrary-modulus}
 
 Bu yerda oldingi bo‘limdagi maqsadga erishmoqchimiz:
 ikkita $A(x)$ va $B(x)$ ko‘phadni ko‘paytirib, koeffitsiyentlarni biror $M$ son bo‘yicha modulda hisoblash.
@@ -523,11 +523,11 @@ $$A(x) \cdot B(x) = A_1(x) \cdot B_1(x) + \left(A_1(x) \cdot B_2(x) + A_2(x) \cd
 $A_1(x)$, $A_2(x)$, $B_1(x)$ va $B_2(x)$ ko‘phadlarning koeffitsiyentlari $\sqrt M$ dan kichik bo‘ladi, shuning uchun paydo bo‘ladigan barcha ko‘paytmalarning koeffitsiyentlari $M \cdot n$ dan kichik bo‘ladi; odatda bu sonlar standart suzuvchi nuqtali turlar bilan ishlash uchun yetarlicha kichik.
 Demak, bu yondashuvda kichikroq koeffitsiyentli ko‘phadlar ko‘paytmalari oddiy FFT va teskari FFT orqali hisoblanadi, so‘ng asl ko‘paytma $O(n)$ vaqtda modul bo‘yicha qo‘shish va ko‘paytirish yordamida tiklanadi.
 
-## Qo‘llanishlar
+## Qo‘llanishlar {#applications}
 
 DFT bir qarashda ko‘phadlarni ko‘paytirishga umuman aloqasi yo‘qdek tuyuladigan juda ko‘p masalalarda ishlatilishi mumkin.
 
-### Barcha mumkin bo‘lgan yig‘indilar
+### Barcha mumkin bo‘lgan yig‘indilar {#all-possible-sums}
 
 Bizga ikkita $a[]$ va $b[]$ massiv berilgan.
 Barcha mumkin bo‘lgan $a[i] + b[j]$ yig‘indilarni va har bir yig‘indi necha marta hosil bo‘lishini topish kerak.
@@ -541,7 +541,7 @@ Misolimizda:
 
 $$(1 x^1 + 1 x^2 + 1 x^3) (1 x^2 + 1 x^4) = 1 x^3 + 1 x^4 + 2 x^5 + 1 x^6 + 1 x^7$$
 
-### Barcha mumkin bo‘lgan skalyar ko‘paytmalar
+### Barcha mumkin bo‘lgan skalyar ko‘paytmalar {#all-possible-scalar-products}
 
 Bizga uzunligi $n$ bo‘lgan ikkita $a[]$ va $b[]$ massiv berilgan.
 $a$ ning $b$ ning har bir siklik siljishi bilan skalyar ko‘paytmasini hisoblash kerak.
@@ -561,7 +561,7 @@ Bu yig‘indi $a$ vektori bilan $b$ ning $(k - (n - 1))$-siklik chapga siljishin
 Demak, shu koeffitsiyentlar masala javobidir va ularni hamon $O(n \log n)$ vaqtda oldik.
 $c[2n-1]$ koeffitsiyent ham $n$-siklik siljishni beradi, ammo bu $0$-siklik siljishning o‘zi, shuning uchun uni javobda alohida ko‘rib chiqish shart emas.
 
-### Ikki tasma
+### Ikki tasma {#two-stripes}
 
 Bizga qiymatlari $0$ va $1$ dan iborat ikkita Boolean tasma (siklik massiv) $a$ va $b$ berilgan.
 Birinchi tasmani ikkinchisiga shunday biriktirishning barcha usullarini topish kerakki, hech bir o‘rinda birinchi tasmaning $1$ qiymati ikkinchi tasmaning $1$ qiymati yoniga tushmasin.
@@ -569,7 +569,7 @@ Birinchi tasmani ikkinchisiga shunday biriktirishning barcha usullarini topish k
 Bu masala aslida oldingi masaladan deyarli farq qilmaydi.
 Ikki tasmani biriktirish ikkinchi massivni siklik siljitishga teng; ikki massivning skalyar ko‘paytmasi $0$ bo‘lsa, tasmalarni biriktirish mumkin.
 
-### Satrda namuna qidirish
+### Satrda namuna qidirish {#string-matching}
 
 Bizga kichik lotin harflaridan iborat ikkita satr: matn $T$ va namuna $P$ berilgan.
 Namunani matnda uchraydigan barcha o‘rinlarni hisoblash kerak.
@@ -608,7 +608,7 @@ c_{m-1+i} &= \sum_{j = 0}^{m-1}  \left(\cos(\alpha_{i+j}) + i \sin(\alpha_{i+j})
 
 Moslik bo‘lmasa, kamida bitta belgi farq qiladi; natijada ko‘paytmalardan kamida bittasi $a_{i+j} \cdot b_{m-1-j}$ birga teng bo‘lmaydi va $c_{m-1+i} \ne m$ kelib chiqadi.
 
-### Joker belgili satrda namuna qidirish
+### Joker belgili satrda namuna qidirish {#string-matching-with-wildcards}
 
 Bu oldingi masalaning kengaytmasidir.
 Bu safar namuna istalgan harfga mos keladigan `*` joker belgisini o‘z ichiga olishi mumkin.
@@ -616,7 +616,7 @@ Masalan, $a*c$ namunasi $abccaacc$ matnida aynan uch o‘rinda: $0$, $4$ va $5$ 
 Xuddi shu ko‘phadlarni tuzamiz, faqat $P[m-i-1] = *$ bo‘lsa, $b_i = 0$ deb olamiz.
 $P$ dagi joker belgilar soni $x$ bo‘lsa, $c_{m-1+i} = m - x$ bo‘lgan taqdirdagina $P$ namunasi $T$ matnining $i$ indeksida uchraydi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ - POLYMUL](http://www.spoj.com/problems/POLYMUL/)
 - [SPOJ - MAXMATCH](http://www.spoj.com/problems/MAXMATCH/)

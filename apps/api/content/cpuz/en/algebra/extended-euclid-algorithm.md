@@ -1,4 +1,4 @@
-# Extended Euclidean Algorithm
+# Extended Euclidean Algorithm {#extended-euclidean-algorithm}
 
 While the [Euclidean algorithm](/algorithms/algebra/euclid-algorithm) calculates only the greatest common divisor (GCD) of two non-negative integers $a$ and $b$, the extended version also finds a way to represent GCD in terms of $a$ and $b$, i.e. coefficients $x$ and $y$ for which:
 
@@ -9,7 +9,7 @@ It's important to note that by [Bézout's identity](https://en.wikipedia.org/wik
 A more general form of that problem is discussed in the article about [Linear Diophantine Equations](/algorithms/algebra/linear-diophantine-equation).
 It will build upon this algorithm.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 We will denote the GCD of $a$ and $b$ with $g$ in this section.
 
@@ -47,7 +47,7 @@ x = y_1 \\
 y = x_1 - y_1 \cdot \left\lfloor \frac{a}{b} \right\rfloor
 \end{cases} $$
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 int gcd(int a, int b, int& x, int& y) {
@@ -68,7 +68,7 @@ The recursive function above returns the GCD and the values of coefficients to `
 
 This implementation of extended Euclidean algorithm produces correct results for negative integers as well.
 
-## Iterative version
+## Iterative version {#iterative-version}
 
 It's also possible to write the Extended Euclidean algorithm in an iterative way.
 Because it avoids recursion, the code will run a little bit faster than the recursive one.
@@ -121,7 +121,7 @@ Which means that we have found the required coefficients.
 You can even optimize the code more, and remove the variable $a_1$ and $b_1$ from the code, and just reuse $a$ and $b$.
 However if you do so, you lose the ability to argue about the invariants.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [UVA - 10104 - Euclid Problem](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1045)
 * [GYM - (J) Once Upon A Time](http://codeforces.com/gym/100963)

@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Markdown } from "@/components/ui/Markdown";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import type { Metadata, Route } from "next";
+import { notFound, permanentRedirect } from "next/navigation";
+import { algorithmPath } from "@/features/algorithms";
 import { api, ApiError } from "@/lib/api";
 import { getLocale } from "@/i18n/server";
 import { inReaderAlphabet } from "@/i18n/alphabet";
@@ -38,6 +39,10 @@ export default async function ArticlePage({ params }: Props) {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
     throw error;
+  }
+  // The algorithms library has its own address (ADR-0062).
+  if (article.attribution && article.category) {
+    permanentRedirect(algorithmPath(article.category, article.slug) as Route);
   }
 
   return (

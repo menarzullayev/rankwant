@@ -1,4 +1,4 @@
-# Fast Fourier transform
+# Fast Fourier transform {#fast-fourier-transform}
 
 In this article we will discuss an algorithm that allows us to multiply two polynomials of length $n$ in $O(n \log n)$ time, which is better than the trivial multiplication which takes $O(n^2)$ time.
 Obviously also multiplying two long numbers can be reduced to multiplying polynomials, so also two long numbers can be multiplied in $O(n \log n)$ time (where $n$ is the number of digits in the numbers).
@@ -13,7 +13,7 @@ It can easily handle polynomials of size $10^5$ with small coefficients, or mult
 E.g. in 1971 Schönhage and Strasser developed a variation for multiplying arbitrary large numbers that applies the FFT recursively in rings structures running in $O(n \log n \log \log n)$.
 And recently (in 2019) Harvey and van der Hoeven published an algorithm that runs in true $O(n \log n)$.
 
-## Discrete Fourier transform
+## Discrete Fourier transform {#discrete-fourier-transform}
 
 Let there be a polynomial of degree $n - 1$:
 
@@ -41,7 +41,7 @@ $$\text{InverseDFT}(y_0, y_1, \dots, y_{n-1}) = (a_0, a_1, \dots, a_{n-1})$$
 
 Thus, if a direct DFT computes the values of the polynomial at the points at the $n$-th roots, the inverse DFT can restore the coefficients of the polynomial using those values.
 
-### Application of the DFT: fast multiplication of polynomials
+### Application of the DFT: fast multiplication of polynomials {#application-of-the-dft-fast-multiplication-of-polynomials}
 
 Let there be two polynomials $A$ and $B$.
 We compute the DFT for each of them: $\text{DFT}(A)$ and $\text{DFT}(B)$.
@@ -70,7 +70,7 @@ We can accomplish this by adding coefficients with the value $0$.
 And also, since the result of the product of two polynomials is a polynomial of degree $2 (n - 1)$, we have to double the degrees of each polynomial (again by padding $0$s).
 From a vector with $n$ values we cannot reconstruct the desired polynomial with $2n - 1$ coefficients.
 
-### Fast Fourier Transform
+### Fast Fourier Transform {#fast-fourier-transform}
 
 The **fast Fourier transform** is a method that allows computing the DFT in $O(n \log n)$ time.
 The basic idea of the FFT is to apply divide and conquer.
@@ -126,7 +126,7 @@ y_{k+n/2} &= y_k^0 - w_n^k y_k^1, &\quad k = 0 \dots \frac{n}{2} - 1.
 
 Thus we learned how to compute the DFT in $O(n \log n)$ time.
 
-### Inverse FFT
+### Inverse FFT {#inverse-fft}
 
 Let the vector $(y_0, y_1, \dots y_{n-1})$ - the values of polynomial $A$ of degree $n - 1$ in the points $x = w_n^k$ - be given.
 We want to restore the coefficients $(a_0, a_1, \dots, a_{n-1})$ of the polynomial.
@@ -195,7 +195,7 @@ we notice that these problems are almost the same, so the coefficients $a_k$ can
 
 Thus the computation of the inverse DFT is almost the same as the calculation of the direct DFT, and it also can be performed in $O(n \log n)$ time.
 
-### Implementation
+### Implementation {#implementation}
 
 Here we present a simple recursive **implementation of the FFT** and the inverse FFT, both in one function, since the difference between the forward and the inverse FFT are so minimal.
 To store the complex numbers we use the complex type in the C++ STL.
@@ -281,7 +281,7 @@ The only thing we have to do afterwards, is to normalize the number:
 
 Since the length of the product of two numbers never exceed the total length of both numbers, the size of the vector is enough to perform all carry operations.
 
-### Improved implementation: in-place computation
+### Improved implementation: in-place computation {#improved-implementation-in-place-computation}
 
 To increase the efficiency we will switch from the recursive implementation to an iterative one.
 In the above recursive implementation we explicitly separated the vector $a$ into two vectors - the element on the even positions got assigned to one temporary vector, and the elements on odd positions to another.
@@ -430,7 +430,7 @@ This is especially useful when the size $n$ is the same for all calls.
 But even when we only have three calls (which are necessary for multiplying two polynomials), the effect is noticeable.
 Also we can precompute all roots of unity and their powers.
 
-## Number theoretic transform
+## Number theoretic transform {#number-theoretic-transform}
 
 Now we switch the objective a little bit.
 We still want to multiply two polynomials in $O(n \log n)$ time, but this time we want to compute the coefficients modulo some prime number $p$.
@@ -520,7 +520,7 @@ The constants `mod`, `root`, `root_pw` determine the module and the root, and `r
 
 In practice this implementation is slower than the implementation using complex numbers (due to the huge number of modulo operations), but it has some advantages such as less memory usage and no rounding errors.
 
-## Multiplication with arbitrary modulus
+## Multiplication with arbitrary modulus {#multiplication-with-arbitrary-modulus}
 
 Here we want to achieve the same goal as in previous section.
 Multiplying two polynomial $A(x)$ and $B(x)$, and computing the coefficients modulo some number $M$.
@@ -546,11 +546,11 @@ The polynomials $A_1(x)$, $A_2(x)$, $B_1(x)$ and $B_2(x)$ contain only coefficie
 
 This approach therefore requires computing the products of polynomials with smaller coefficients (by using the normal FFT and inverse FFT), and then the original product can be restored using modular addition and multiplication in $O(n)$ time.
 
-## Applications
+## Applications {#applications}
 
 DFT can be used in a huge variety of other problems, which at the first glance have nothing to do with multiplying polynomials.
 
-### All possible sums
+### All possible sums {#all-possible-sums}
 
 We are given two arrays $a[]$ and $b[]$.
 We have to find all possible sums $a[i] + b[j]$, and for each sum count how often it appears.
@@ -566,7 +566,7 @@ To demonstrate this on the example:
 
 $$(1 x^1 + 1 x^2 + 1 x^3) (1 x^2 + 1 x^4) = 1 x^3 + 1 x^4 + 2 x^5 + 1 x^6 + 1 x^7$$
 
-### All possible scalar products
+### All possible scalar products {#all-possible-scalar-products}
 
 We are given two arrays $a[]$ and $b[]$ of length $n$.
 We have to compute the products of $a$ with every cyclic shift of $b$.
@@ -586,7 +586,7 @@ It is easy to see that this sum is just the scalar product of the vector $a$ wit
 Thus these coefficients are the answer to the problem, and we were still able to obtain it in $O(n \log n)$ time.
 Note here that $c[2n-1]$ also gives us the $n$-th cyclic shift but that is the same as the $0$-th cyclic shift so we don't need to consider that separately into our answer.
 
-### Two stripes
+### Two stripes {#two-stripes}
 
 We are given two Boolean stripes (cyclic arrays of values $0$ and $1$) $a$ and $b$.
 We want to find all ways to attach the first stripe to the second one, such that at no position we have a $1$ of the first stripe next to a $1$ of the second stripe.
@@ -594,7 +594,7 @@ We want to find all ways to attach the first stripe to the second one, such that
 The problem doesn't actually differ much from the previous problem.
 Attaching two stripes just means that we perform a cyclic shift on the second array, and we can attach the two stripes, if scalar product of the two arrays is $0$.
 
-### String matching
+### String matching {#string-matching}
 
 We are given two strings, a text $T$ and a pattern $P$, consisting of lowercase letters.
 We have to compute all the occurrences of the pattern in the text.
@@ -633,7 +633,7 @@ c_{m-1+i} &= \sum_{j = 0}^{m-1}  \left(\cos(\alpha_{i+j}) + i \sin(\alpha_{i+j})
 
 If there isn't a match, then at least a character is different, which leads that one of the products $a_{i+1} \cdot b_{m-1-j}$ is not equal to $1$, which leads to the coefficient $c_{m-1+i} \ne m$.
 
-### String matching with wildcards
+### String matching with wildcards {#string-matching-with-wildcards}
 
 This is an extension of the previous problem.
 This time we allow that the pattern contains the wildcard character $\*$, which can match every possible letter.
@@ -642,7 +642,7 @@ E.g. the pattern $a*c$ appears in the text $abccaacc$ at exactly three positions
 We create the exact same polynomials, except that we set $b_i = 0$ if $P[m-i-1] = *$.
 If $x$ is the number of wildcards in $P$, then we will have a match of $P$ in $T$ at index $i$ if $c_{m-1+i} = m - x$.
 
-## Practice problems
+## Practice problems {#practice-problems}
 
 - [SPOJ - POLYMUL](http://www.spoj.com/problems/POLYMUL/)
 - [SPOJ - MAXMATCH](http://www.spoj.com/problems/MAXMATCH/)

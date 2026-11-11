@@ -1,4 +1,4 @@
-# Eyler yo‘lini $O(M)$ vaqtda topish
+# Eyler yo‘lini $O(M)$ vaqtda topish {#finding-the-eulerian-path-in-om}
 
 Eyler yo‘li — grafning barcha qirralaridan aynan bir marta o‘tadigan yo‘l.
 
@@ -6,7 +6,7 @@ Eyler sikli — sikl bo‘lgan Eyler yo‘lidir.
 
 Masala — **ilmoqlari bo‘lishi mumkin bo‘lgan yo‘naltirilmagan multigrafda** Eyler yo‘lini topish.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Avval Eyler yo‘li mavjud yoki yo‘qligini tekshirishimiz mumkin.
 
@@ -52,7 +52,7 @@ until St is empty
 
 Algoritmning bu ikki ko‘rinishi ekvivalentligini tekshirish oson. Biroq ikkinchi ko‘rinish aniq tezroq va kodi ancha samarali bo‘ladi.
 
-## Domino masalasi
+## Domino masalasi {#the-domino-problem}
 
 Bu yerda klassik Eyler sikli masalasini — Domino masalasini keltiramiz.
 
@@ -60,7 +60,7 @@ $N$ ta domino mavjud; ma’lumki, har bir dominoning ikki uchida bittadan son yo
 
 Masalani boshqacha ifodalaymiz. Dominolarning yarmlarida yozilgan sonlar graf tugunlari, dominolar esa graf qirralari bo‘lsin (raqamlari $(a,b)$ bo‘lgan har bir domino $(a,b)$ va $(b,a)$ qirralarni ifodalaydi). U holda masalamiz shu grafda Eyler yo‘lini topish masalasiga keltiriladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyidagi dastur grafda Eyler siklini yoki yo‘lini qidirib topadi va chiqaradi; agar mavjud bo‘lmasa, $-1$ chiqaradi.
 
@@ -161,7 +161,7 @@ int main() {
 }
 ```
 
-### Amaliy masalalar:
+### Amaliy masalalar: {#practice-problems}
 
 - [CSES : Mail Delivery](https://cses.fi/problemset/task/1691)
 - [CSES : Teleporters Path](https://cses.fi/problemset/task/1693)

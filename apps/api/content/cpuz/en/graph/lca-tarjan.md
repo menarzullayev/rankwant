@@ -1,4 +1,4 @@
-# Lowest Common Ancestor - Tarjan's off-line algorithm
+# Lowest Common Ancestor - Tarjan's off-line algorithm {#lowest-common-ancestor-tarjans-off-line-algorithm}
 
 We have a tree $G$ with $n$ nodes and we have $m$ queries of the form $(u, v)$.
 For each query $(u, v)$ we want to find the lowest common ancestor of the vertices $u$ and $v$, i.e. the node that is an ancestor of both $u$ and $v$ and has the greatest depth in the tree.
@@ -7,7 +7,7 @@ The node $v$ is also an ancestor of $v$, so the LCA can also be one of the two n
 In this article we will solve the problem off-line, i.e. we assume that all queries are known in advance, and we therefore answer the queries in any order we like.
 The following algorithm allows to answer all $m$ queries in $O(n + m)$ total time, i.e. for sufficiently large $m$ in $O(1)$ for each query.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 The algorithm is named after Robert Tarjan, who discovered it in 1979 and also made many other contributions to the [Disjoint Set Union](/algorithms/data-structures/disjoint-set-union) data structure, which will be heavily used in this algorithm.
 
@@ -45,7 +45,7 @@ Secondly  we have the function calls of `union_sets` which happen $n$ times, res
 And thirdly we have the calls of `find_set` for every query, which gives $O(m)$.
 So in total the time complexity is $O(n + m)$, which means that for sufficiently large $m$ this corresponds to $O(1)$ for answering one query.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is an implementation of this algorithm.
 The implementation of DSU has been not included, as it can be used without any modifications.

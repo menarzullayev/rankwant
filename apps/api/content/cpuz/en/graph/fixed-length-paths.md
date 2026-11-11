@@ -1,9 +1,9 @@
-# Number of paths of fixed length / Shortest paths of fixed length
+# Number of paths of fixed length / Shortest paths of fixed length {#number-of-paths-of-fixed-length-shortest-paths-of-fixed-length}
 
 The following article describes solutions to these two problems built on the same idea:
 reduce the problem to the construction of matrix and compute the solution with the usual matrix multiplication or with a modified multiplication.
 
-## Number of paths of a fixed length
+## Number of paths of a fixed length {#number-of-paths-of-a-fixed-length}
 
 We are given a directed, unweighted graph $G$ with $n$ vertices and we are given an integer $k$.
 The task is the following:
@@ -37,7 +37,7 @@ $$C_k = \underbrace{G \cdot G \cdots G}_{k \text{ times}} = G^k$$
 It remains to note that the matrix products can be raised to a high power efficiently using [Binary exponentiation](/algorithms/algebra/binary-exp).
 This gives a solution with $O(n^3 \log k)$ complexity.
 
-## Shortest paths of a fixed length
+## Shortest paths of a fixed length {#shortest-paths-of-a-fixed-length}
 
 We are given a directed weighted graph $G$ with $n$ vertices and an integer $k$.
 For each pair of vertices $(i, j)$ we have to find the length of the shortest path between $i$ and $j$ that consists of exactly $k$ edges.
@@ -72,7 +72,7 @@ $$L_k = \underbrace{G \odot \ldots \odot G}_{k~\text{times}} = G^{\odot k}$$
 It remains to note that we also can compute this exponentiation efficiently with [Binary exponentiation](/algorithms/algebra/binary-exp), because the modified multiplication is obviously associative.
 So also this solution has $O(n^3 \log k)$ complexity.
 
-## Generalization of the problems for paths with length up to $k$
+## Generalization of the problems for paths with length up to $k$ {#generalization-of-the-problems-for-paths-with-length-up-to-k}
 
 The above solutions solve the problems for a fixed $k$.
 However the solutions can be adapted for solving problems for which the paths are allowed to contain no more than $k$ edges.

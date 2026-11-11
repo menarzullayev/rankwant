@@ -1,4 +1,4 @@
-# 15 Puzzle o‘yini: yechim mavjudligini aniqlash
+# 15 Puzzle o‘yini: yechim mavjudligini aniqlash {#15-puzzle-game-existence-of-the-solution}
 
 Bu o‘yin $4 \times 4$ katakli taxtada o‘ynaladi. Unda 1 dan 15 gacha raqamlangan 15 ta tosh bor, bitta katak esa bo‘sh qoladi va 0 bilan belgilanadi. Har safar toshlardan birini bo‘sh katakka surib, taxtani quyidagi holatga keltirish kerak:
 
@@ -6,7 +6,7 @@ $$\begin{matrix} 1 & 2 & 3 & 4 \\ 5 & 6 & 7 & 8 \\ 9 & 10 & 11 & 12 \\ 13 & 14 &
 
 “15 Puzzle” o‘yinini 1880-yilda Noyes Chapman yaratgan.
 
-## Yechim mavjudligi
+## Yechim mavjudligi {#existence-of-the-solution}
 
 Quyidagi masalani ko‘ramiz: taxtaning biror holati berilganida, uni maqsad holatiga olib boruvchi yurishlar ketma-ketligi mavjudligini aniqlash kerak.
 
@@ -26,7 +26,7 @@ Bo‘sh element joylashgan satr indeksini $K$ deylik. Bizning raqamlashimizda $K
 
 U holda **yechim faqat va faqat $N + K$ juft bo‘lganda mavjud**.
 
-## Amalga oshirish
+## Amalga oshirish {#implementation}
 
 Yuqoridagi algoritmni quyidagi dastur kodi bilan ifodalash mumkin:
 
@@ -48,7 +48,7 @@ for (int i=0; i<16; ++i)
 puts ((inv & 1) ? "No Solution" : "Solution Exists");
 ```
 
-## Isbot
+## Isbot {#proof}
 
 1879-yilda Johnson $N + K$ toq bo‘lsa, yechim mavjud emasligini isbotlagan. O‘sha yili Story $N + K$ juft bo‘lgan barcha holatlarda yechim borligini isbotlagan.
 
@@ -56,6 +56,6 @@ Biroq bu isbotlarning barchasi ancha murakkab edi.
 
 1999-yilda Archer ancha sodda isbot taklif qilgan; uning maqolasini [bu yerdan](http://www.cs.cmu.edu/afs/cs/academic/class/15859-f01/www/notes/15-puzzle.pdf) yuklab olish mumkin.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Hackerrank — N-puzzle](https://www.hackerrank.com/challenges/n-puzzle)

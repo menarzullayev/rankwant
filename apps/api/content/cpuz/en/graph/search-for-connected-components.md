@@ -1,8 +1,8 @@
-# Search for connected components in a graph
+# Search for connected components in a graph {#search-for-connected-components-in-a-graph}
 
 Given an undirected graph $G$ with $n$ nodes and $m$ edges. We are required to find in it all the connected components, i.e, several groups of vertices such that within a group each vertex can be reached from another and no path exists between different groups.
 
-## An algorithm for solving the problem
+## An algorithm for solving the problem {#an-algorithm-for-solving-the-problem}
 
 * To solve the problem, we can use Depth First Search or Breadth First Search.
 
@@ -10,7 +10,7 @@ Given an undirected graph $G$ with $n$ nodes and $m$ edges. We are required to f
 
 * The total asymptotic running time of this algorithm is $O(n + m)$ : In fact, this algorithm will not run on the same vertex twice, which means that each edge will be seen exactly two times (at one end and at the other end).
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 int n;
@@ -48,7 +48,7 @@ void find_comps() {
 
 * Vector `comp` contains a list of nodes in the current connected component.
 
-## Iterative implementation of the code 
+## Iterative implementation of the code {#iterative-implementation-of-the-code}
 
 Deeply recursive functions are in general bad.
 Every single recursive call will require a little bit of memory in the stack, and per default programs only have a limited amount of stack space.
@@ -95,7 +95,7 @@ void find_comps() {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
  - [SPOJ: CT23E](http://www.spoj.com/problems/CT23E/)
  - [CODECHEF: GERALD07](https://www.codechef.com/MARCH14/problems/GERALD07)
  - [CSES : Building Roads](https://cses.fi/problemset/task/1666)

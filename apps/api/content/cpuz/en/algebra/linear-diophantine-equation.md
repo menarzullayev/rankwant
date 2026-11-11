@@ -1,4 +1,4 @@
-# Linear Diophantine Equation
+# Linear Diophantine Equation {#linear-diophantine-equation}
 
 A Linear Diophantine Equation (in two variables) is an equation of the general form:
 
@@ -13,11 +13,11 @@ In this article, we consider several classical problems on these equations:
 * finding the number of solutions and the solutions themselves in a given interval
 * finding a solution with minimum value of $x + y$
 
-## The degenerate case
+## The degenerate case {#the-degenerate-case}
 
 A degenerate case that needs to be taken care of is when $a = b = 0$. It is easy to see that we either have no solutions or infinitely many solutions, depending on whether $c = 0$ or not. In the rest of this article, we will ignore this case.
 
-## Analytic solution
+## Analytic solution {#analytic-solution}
 
 When $a \neq 0$ and $b \neq 0$, the equation $ax+by=c$ can be equivalently treated as either of the following:
 
@@ -43,7 +43,7 @@ x \equiv (c/g)(a/g)^{-1}\pmod{b/g},\\
 y = \frac{c-ax}{b}.
 \end{cases}$$
 
-## Algorithmic solution
+## Algorithmic solution {#algorithmic-solution}
 
 **Bézout's lemma** (also called Bézout's identity) is a useful result that can be used to understand the following solution. 
 
@@ -99,7 +99,7 @@ bool find_any_solution(int a, int b, int c, int &x0, int &y0, int &g) {
 }
 ```
 
-## Getting all solutions
+## Getting all solutions {#getting-all-solutions}
 
 From one solution $(x_0, y_0)$, we can obtain all the solutions of the given equation.
 
@@ -121,7 +121,7 @@ are solutions of the given Diophantine equation.
 
 Since the equation is linear, all solutions lie on the same line, and by the definition of $g$ this is the set of all possible solutions of the given Diophantine equation.
 
-## Finding the number of solutions and the solutions in a given interval
+## Finding the number of solutions and the solutions in a given interval {#finding-the-number-of-solutions-and-the-solutions-in-a-given-interval}
 
 From previous section, it should be clear that if we don't impose any restrictions on the solutions, there would be infinite number of them. So in this section, we add some restrictions on the interval of $x$ and $y$, and we will try to count and enumerate all the solutions.
 
@@ -195,7 +195,7 @@ int find_all_solutions(int a, int b, int c, int minx, int maxx, int miny, int ma
 
 Once we have $l_x$ and $r_x$, it is also simple to enumerate through all the solutions. Just need to iterate through $x = l_x + k \cdot \frac{b}{g}$ for all $k \ge 0$ until $x = r_x$, and find the corresponding $y$ values using the equation $a x + b y = c$.
 
-## Find the solution with minimum value of $x + y$
+## Find the solution with minimum value of $x + y$ {#find-the-solution-with-minimum-value-of-x-y}
 
 Here, $x$ and $y$ also need to be given some restriction, otherwise, the answer may become negative infinity.
 
@@ -213,7 +213,7 @@ $$x' + y' = x + y + k \cdot \left(\frac{b}{g} - \frac{a}{g}\right) = x + y + k \
 
 If $a < b$, we need to select smallest possible value of $k$. If $a > b$, we need to select the largest possible value of $k$. If $a = b$, all solution will have the same sum $x + y$.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Spoj - Crucial Equation](http://www.spoj.com/problems/CEQU/)
 * [SGU 106](http://codeforces.com/problemsets/acmsguru/problem/99999/106)

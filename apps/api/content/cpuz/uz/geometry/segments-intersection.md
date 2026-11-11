@@ -1,9 +1,9 @@
-# Ikki kesma kesishmasini topish
+# Ikki kesma kesishmasini topish {#finding-intersection-of-two-segments}
 
 Sizga ikkita AB va CD kesma berilgan, ular uchlari juftlari bilan ifodalangan. Agar kesmaning uchlari bir xil bo‘lsa, u bitta nuqtadan iborat bo‘lishi mumkin.
 Bu kesmalarning kesishmasini topish kerak. Kesishma bo‘sh (kesmalar kesishmasa), bitta nuqta yoki kesma (berilgan kesmalar ustma-ust tushsa) bo‘lishi mumkin.
 
-## Yechim
+## Yechim {#solution}
 
 Kesmalarning kesishish nuqtasini [to‘g‘ri chiziqlar kesishmasini](/algorithms/geometry/lines-intersection) topishdagi kabi topish mumkin:
 kesmalarning uchlaridan to‘g‘ri chiziq tenglamalarini tiklaymiz va ularning parallel yoki parallel emasligini tekshiramiz.
@@ -23,7 +23,7 @@ Agar ikkala kesma ham bitta nuqta bo‘lsa, bu nuqtalar bir xil bo‘lishi shart
 Algoritm boshida chegaraviy to‘g‘ri to‘rtburchak (bounding box) tekshiruvini qo‘shamiz: u kesmalar bitta to‘g‘ri chiziqda yotgan holat uchun zarur,
 va (yengil tekshiruv bo‘lgani uchun) algoritmga tasodifiy testlarda o‘rtacha tezroq ishlash imkonini beradi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida to‘g‘ri chiziqlar va kesmalarni qayta ishlashning barcha yordamchi funksiyalarini o‘z ichiga olgan implementatsiya keltirilgan.
 

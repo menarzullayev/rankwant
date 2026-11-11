@@ -1,4 +1,4 @@
-# Faktorlash orqali ikkilik darajaga oshirish
+# Faktorlash orqali ikkilik darajaga oshirish {#binary-exponentiation-by-factoring}
 
 $a$, $x$, $y$ butun sonlari va $d \geq 3$ berilgan, $x$ toq bo‘lganda $ax^y \pmod{2^d}$ ni hisoblash masalasini ko‘rib chiqamiz.
 
@@ -37,7 +37,7 @@ uint32_t mbin_power_odd_32(uint32_t rem, uint32_t base, uint32_t exp) {
     return (mbin_exp_32(rem, mbin_log_32(0, base) * exp));
 }
 ```
-## $x$ dan $4L(x)$ ni hisoblash
+## $x$ dan $4L(x)$ ni hisoblash {#computing-4lx-from-x}
 
 $x \equiv 1 \pmod 4$ bo‘lgan toq $x$ sonini olaylik. Uni
 
@@ -90,7 +90,7 @@ uint32_t mbin_log_32(uint32_t r, uint32_t x) {
 ```
 
 $4L(x) = -4L(x^{-1})$ ekaniga e’tibor bering. Shu sababli $4L(2^n+1)$ ni qo‘shish o‘rniga, uni dastlab $0$ ga teng bo‘lgan $r$ dan ayiramiz.
-## $4L(x)$ dan $x$ ni hisoblash
+## $4L(x)$ dan $x$ ni hisoblash {#computing-x-from-4lx}
 
 $k \geq 1$ uchun
 
@@ -130,7 +130,7 @@ uint32_t mbin_exp_32(uint32_t r, uint32_t x) {
     return r;
 }
 ```
-## Qo‘shimcha optimallashtirishlar
+## Qo‘shimcha optimallashtirishlar {#further-optimizations}
 
 $4L(2^{d-1}+1)=2^{d-1}$ ekaniga va $2k \geq d$ bo‘lganda
 
@@ -170,7 +170,7 @@ uint32_t mbin_exp_32(uint32_t r, uint32_t x) {
     return r;
 }
 ```
-## Logarifmlar jadvalini hisoblash
+## Logarifmlar jadvalini hisoblash {#computing-logarithm-table}
 
 Logarifmlar jadvalini hisoblash uchun [Pohlig–Hellman algoritmini](https://en.wikipedia.org/wiki/Pohlig–Hellman_algorithm) modul $2$ ning darajasi bo‘lgan holga moslashtirish mumkin.
 
@@ -199,6 +199,6 @@ $$
 ni olamiz.
 
 Endi ikkala tomonni $d-k-1$ marta kvadratga oshirib, $x$ ning keyingi bitini olish mumkin; shu tarzda oxir-oqibat uning barcha bitlari tiklanadi.
-## Manbalar
+## Manbalar {#references}
 
 * [M30, Hans Petter Selasky, 2009](https://ia601602.us.archive.org/29/items/B-001-001-251/B-001-001-251.pdf#page=640)

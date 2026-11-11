@@ -1,9 +1,9 @@
-# Strong Orientation
+# Strong Orientation {#strong-orientation}
 
 A **strong orientation** of an undirected graph is an assignment of a direction to each edge that makes it a [strongly connected graph](/algorithms/graph/strongly-connected-components).
 That is, after the *orientation* we should be able to visit any vertex from any vertex by following the directed edges.
 
-## Solution
+## Solution {#solution}
 
 Of course, this cannot be done to *every* graph.
 Consider a [bridge](/algorithms/graph/bridge-searching) in a graph.
@@ -23,7 +23,7 @@ all other edges from the descendant to the ancestor in the DFS tree.
 
 The result that bridgeless connected graphs are exactly the graphs that have strong orientations is called **Robbins' theorem**.
 
-## Problem extension
+## Problem extension {#problem-extension}
 
 Let's consider the problem of finding a graph orientation so that the number of SCCs is minimal.
 
@@ -36,7 +36,7 @@ We end up with some number of bridgeless components
 We were only allowed to orient edges, not remove them, but it turns out we can orient the bridges arbitrarily.
 Of course, the easiest way to orient them is to run the algorithm described above without modifications on each original connected component.
 
-### Implementation
+### Implementation {#implementation}
 
 Here, the input is *n* — the number of vertices, *m* — the number of edges, then *m* lines describing the edges.
 
@@ -106,6 +106,6 @@ int main() {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [26th Polish OI - Osiedla](https://szkopul.edu.pl/problemset/problem/nldsb4EW1YuZykBlf4lcZL1Y/site/)

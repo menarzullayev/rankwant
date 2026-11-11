@@ -1,4 +1,4 @@
-# Catalan sonlari
+# Catalan sonlari {#catalan-numbers}
 
 Catalan sonlari — ko‘pincha rekursiv aniqlangan obyektlarni o‘z ichiga oladigan ko‘plab kombinatorik masalalarda foydali bo‘lgan sonlar ketma-ketligi.
 
@@ -8,7 +8,7 @@ Noldan boshlab dastlabki Catalan sonlari $C_n$:
 
 $1, 1, 2, 5, 14, 42, 132, 429, 1430, \ldots$
 
-### Ayrim kombinatorik masalalardagi qo‘llanishlar
+### Ayrim kombinatorik masalalardagi qo‘llanishlar {#application-in-some-combinatorial-problems}
 
 Catalan soni $C_n$ quyidagilarning javobidir:
 
@@ -23,11 +23,11 @@ Catalan soni $C_n$ quyidagilarning javobidir:
 - $n$ elementli to‘plamning [kesishmaydigan bo‘linishlari](https://en.wikipedia.org/wiki/Noncrossing_partition) soni.
 - $1\ldots n$ zinapoyani $n$ ta to‘g‘ri to‘rtburchak bilan qoplash usullari soni. Zinapoya $n$ ta ustundan iborat bo‘lib, $i$-ustunning balandligi $i$ ga teng.
 
-## Hisoblash
+## Hisoblash {#calculations}
 
 Catalan sonlari uchun ikkita formula mavjud: **rekurrent** va **analitik**. Yuqorida sanalgan masalalarning barchasi ekvivalent, ya’ni bir xil javobga ega deb qaraladi. Shu sababli quyidagi formulalarni isbotlashda isbot eng qulay bo‘lgan masalani tanlaymiz.
 
-### Rekurrent formula
+### Rekurrent formula {#recursive-formula}
 
 $$C_0 = C_1 = 1$$
 
@@ -41,7 +41,7 @@ Buni boshqacha ham tasavvur qilish mumkin. Ta’rifga ko‘ra, $C_n$ to‘g‘ri
 
 `( ) ( ( ) )` ketma-ketligini `( )` va `( ( ) )` qismlariga ajratish mumkin, ammo `( ) (` va `( ) )` qismlariga ajratib bo‘lmaydi. Yana barcha mumkin bo‘lgan $k$ lar bo‘yicha yig‘ib, $C_n$ uchun rekurrent munosabatni olamiz.
 
-#### C++ implementatsiyasi
+#### C++ implementatsiyasi {#c-implementation}
 
 ```cpp
 const int MOD = ....
@@ -61,7 +61,7 @@ void init() {
 }
 ```
 
-### Analitik formula
+### Analitik formula {#analytical-formula}
 
 $$C_n = \frac{1}{n + 1} {\binom{2n}{n}}$$
 
@@ -77,12 +77,12 @@ $(n-1)\times(n+1)$ panjaradagi monoton yo‘llar soni $\binom{2n}{n-1}$ ga teng.
 
 $$C_n = \binom{2n}{n} - \binom{2n}{n-1} = \frac{1}{n + 1} \binom{2n}{n} , {n} \geq 0$$
 
-## Manbalar
+## Manbalar {#reference}
 
 - [Catalan Number by Tom Davis](http://www.geometer.org/mathcircles/catalan.pdf)
 - [Catalan Numbers and Catalan Convolution](https://codeforces.com/blog/entry/87585)
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [CodeChef — PANSTACK](https://www.codechef.com/APRIL12/problems/PANSTACK/)
 - [SPOJ — Skyline](http://www.spoj.com/problems/SKYLINE/)

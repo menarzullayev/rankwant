@@ -1,6 +1,6 @@
-# Modul bo‘yicha multiplikativ teskari element
+# Modul bo‘yicha multiplikativ teskari element {#modular-multiplicative-inverse}
 
-## Ta’rif
+## Ta’rif {#definition}
 
 $a$ butun sonining [modul bo‘yicha multiplikativ teskari elementi](http://en.wikipedia.org/wiki/Modular_multiplicative_inverse) — $a\cdot x$ ko‘paytma biror $m$ modul bo‘yicha $1$ ga taqqoslanadigan $x$ butun sonidir.
 Formal yozuvda shunday $x$ butun sonni topmoqchimizki,
@@ -13,7 +13,7 @@ $m$ modul bo‘yicha barcha mumkin bo‘lgan qiymatlarni tekshirib, yuqoridagi t
 Modul teskari element faqat va faqat $a$ hamda $m$ o‘zaro tub bo‘lganda (ya’ni $\gcd(a,m)=1$ bo‘lganda) mavjudligini isbotlash mumkin.
 Ushbu maqolada teskari element mavjud bo‘lgan holatda uni topishning ikki usuli va barcha sonlarning modul teskari elementlarini chiziqli vaqtda topish usulini ko‘rsatamiz.
 
-## Kengaytirilgan Evklid algoritmi yordamida modul teskari elementni topish
+## Kengaytirilgan Evklid algoritmi yordamida modul teskari elementni topish {#finding-the-modular-inverse-using-extended-euclidean-algorithm}
 
 Quyidagi tenglamani ko‘rib chiqamiz ($x$ va $y$ noma’lum):
 
@@ -45,7 +45,7 @@ else {
 `x` ni qanday o‘zgartirayotganimizga e’tibor bering.
 Kengaytirilgan Evklid algoritmi qaytargan `x` manfiy bo‘lishi mumkin, shuning uchun `x % m` ham manfiy chiqishi ehtimoli bor; uni musbat qilish uchun avval `m` ni qo‘shish kerak.
 
-## Ikkilik darajaga oshirish yordamida modul teskari elementni topish
+## Ikkilik darajaga oshirish yordamida modul teskari elementni topish {#fermat-euler}
 
 Modul teskari elementni topishning yana bir usuli Eyler teoremasidan foydalanadi. Bu teorema $a$ va $m$ o‘zaro tub bo‘lganda quyidagi taqqoslama bajarilishini aytadi:
 
@@ -66,7 +66,7 @@ Yuqoridagi tenglamalarning ikkala tomonini $a^{-1}$ ga ko‘paytirsak:
 Bu natijalardan foydalanib, $O(\log m)$ vaqtda ishlaydigan [ikkilik darajaga oshirish algoritmi](/algorithms/algebra/binary-exp) yordamida modul teskari elementni oson topish mumkin.
 Bu usul oldingi paragrafdagi usuldan tushunish osonroq bo‘lsa-da, $m$ tub bo‘lmagan holda Eylerning phi-funksiyasini hisoblash kerak; bu esa $m$ ni faktorizatsiya qilishni talab qiladi va juda qiyin bo‘lishi mumkin. Agar $m$ ning tub ko‘paytuvchilarga ajratilishi ma’lum bo‘lsa, ushbu usulning murakkabligi $O(\log m)$.
 
-## Evklid bo‘linishi yordamida tub modullar uchun modul teskari elementni topish
+## Evklid bo‘linishi yordamida tub modullar uchun modul teskari elementni topish {#finding-the-modular-inverse-using-euclidean-division}
 
 $m>a$ bo‘lgan tub modul berilgan bo‘lsin (yoki bir qadamda modul olib $a$ ni kichraytirishimiz mumkin). [Evklid bo‘linishi](https://en.wikipedia.org/wiki/Euclidean_division)ga ko‘ra:
 
@@ -105,7 +105,7 @@ for(int a = 2; a < m; ++a)
     inv[a] = m - (long long)(m/a) * inv[m%a] % m;
 ```
 
-## Sonlar massivi uchun $m$ modul bo‘yicha teskari elementlarni topish
+## Sonlar massivi uchun $m$ modul bo‘yicha teskari elementlarni topish {#finding-the-modular-inverse-for-array-of-numbers-modulo-m}
 
 Bizga massiv berilgan va undagi barcha sonlarning modul teskari elementini topmoqchimiz deb faraz qilaylik (ularning barchasi invertirlanuvchi).
 Har bir son uchun teskari elementni alohida hisoblash o‘rniga, kasrni o‘zidan tashqari prefiks ko‘paytma va o‘zidan tashqari suffiks ko‘paytma bilan kengaytirishimiz mumkin; natijada faqat bitta teskari elementni hisoblash yetadi:
@@ -141,7 +141,7 @@ std::vector<int> invs(const std::vector<int> &a, int m) {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [UVa 11904 - One Unit Machine](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=3055)
 * [Hackerrank - Longest Increasing Subsequence Arrays](https://www.hackerrank.com/contests/world-codesprint-5/challenges/longest-increasing-subsequence-arrays)

@@ -1,4 +1,4 @@
-# Fenwick Tree
+# Fenwick Tree {#fenwick-tree}
 
 Let $f$ be some group operation (a binary associative function over a set with an identity element and inverse elements) and $A$ be an array of integers of length $N$.
 Denote $f$'s infix notation as $*$; that is, $f(x,y) = x*y$ for arbitrary integers $x,y$.
@@ -17,9 +17,9 @@ For example, using addition over the set of integers as the group operation, i.e
 The Fenwick tree is also called a **Binary Indexed Tree** (BIT).
 It was first described in a paper titled "A new data structure for cumulative frequency tables" (Peter M. Fenwick, 1994).
 
-## Description
+## Description {#description}
 
-### Overview
+### Overview {#overview}
 
 For the sake of simplicity, we will assume that function $f$ is defined as $f(x,y) = x + y$ over the integers.
 
@@ -74,7 +74,7 @@ We could also take the function $g(i) = 0$.
 This would correspond to prefix sum arrays (in which case, finding the sum of the range $[0, i]$ will only take constant time; however, updates are slow).
 The clever part of the algorithm for Fenwick trees is how it uses a special definition of the function $g$ which can handle both operations in $O(\log N)$ time.
 
-### Definition of $g(i)$
+### Definition of $g(i)$ {#definition-of-gi}
 
 The computation of $g(i)$ is defined using the following simple operation:
 we replace all trailing $1$ bits in the binary representation of $i$ with $0$ bits.
@@ -124,9 +124,9 @@ The nodes of the tree show the ranges they cover.
 
   ![Binary Indexed Tree](/algorithms-media/data-structures/binary_indexed_tree.png)
 
-## Implementation
+## Implementation {#implementation}
 
-### Finding sum in one-dimensional array
+### Finding sum in one-dimensional array {#finding-sum-in-one-dimensional-array}
 
 Here we present an implementation of the Fenwick tree for sum queries and single updates.
 
@@ -169,7 +169,7 @@ struct FenwickTree {
 };
 ```
 
-### Linear construction
+### Linear construction {#linear-construction}
 
 The above implementation requires $O(N \log N)$ time.
 It's possible to improve that to $O(N)$ time.
@@ -187,7 +187,7 @@ FenwickTree(vector<int> const &a) : FenwickTree(a.size()){
 }
 ```
 
-### Finding minimum of $[0, r]$ in one-dimensional array
+### Finding minimum of $[0, r]$ in one-dimensional array {#finding-minimum-of-0-r-in-one-dimensional-array}
 
 It is obvious that there is no easy way of finding minimum of range $[l, r]$ using Fenwick tree, as Fenwick tree can only answer queries of type $[0, r]$.
 Additionally, each time a value is `update`'d, the new value has to be smaller than the current value.
@@ -228,7 +228,7 @@ The paper [Efficient Range Minimum Queries using Binary Indexed Trees](http://io
 However with that approach you need to maintain a second binary indexed tree over the data, with a slightly different structure, since one tree is not enough to store the values of all elements in the array.
 The implementation is also a lot harder compared to the normal implementation for sums.
 
-### Finding sum in two-dimensional array
+### Finding sum in two-dimensional array {#finding-sum-in-two-dimensional-array}
 
 As claimed before, it is very easy to implement Fenwick Tree for multidimensional array.
 
@@ -255,7 +255,7 @@ struct FenwickTree2D {
 };
 ```
 
-### One-based indexing approach
+### One-based indexing approach {#one-based-indexing-approach}
 
 For this approach we change the requirements and definition for $T[]$ and $g()$ a little bit.
 We want $T[i]$ to store the sum of $[g(i)+1; i]$.
@@ -329,7 +329,7 @@ struct FenwickTreeOneBasedIndexing {
 };
 ```
 
-## Range operations
+## Range operations {#range-operations}
 
 A Fenwick tree can support the following range operations:
 
@@ -337,11 +337,11 @@ A Fenwick tree can support the following range operations:
 2. Range Update and Point Query
 3. Range Update and Range Query
 
-### 1. Point Update and Range Query
+### 1. Point Update and Range Query {#1-point-update-and-range-query}
 
 This is just the ordinary Fenwick tree as explained above.
 
-### 2. Range Update and Point Query
+### 2. Range Update and Point Query {#2-range-update-and-point-query}
 
 Using simple tricks we can also do the reverse operations: increasing ranges and querying for single values.
 
@@ -378,7 +378,7 @@ int point_query(int idx) {
 
 Note: of course it is also possible to increase a single point $A[i]$ with `range_add(i, i, val)`.
 
-### 3. Range Update and Range Query
+### 3. Range Update and Range Query {#3-range-update-and-range-query}
 
 To support both range updates and range queries we will use two BITs namely $B_1[]$ and $B_2[]$, initialized with zeros.
 
@@ -448,7 +448,7 @@ def range_sum(l, r):
     return prefix_sum(r) - prefix_sum(l-1)
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [UVA 12086 - Potentiometers](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=3238)
 * [LOJ 1112 - Curious Robin Hood](http://www.lightoj.com/volume_showproblem.php?problem=1112)
@@ -487,7 +487,7 @@ def range_sum(l, r):
 * [CSES - Forest Queries II](https://cses.fi/problemset/task/1739/)
 * [Latin American Regionals 2017 - Fundraising](http://matcomgrader.com/problem/9346/fundraising/)
 
-## Other sources
+## Other sources {#other-sources}
 
 * [Fenwick tree on Wikipedia](http://en.wikipedia.org/wiki/Fenwick_tree)
 * [Binary indexed trees tutorial on TopCoder](https://www.topcoder.com/community/data-science/data-science-tutorials/binary-indexed-trees/)

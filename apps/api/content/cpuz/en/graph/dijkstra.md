@@ -1,10 +1,10 @@
-# Dijkstra Algorithm
+# Dijkstra Algorithm {#dijkstra-algorithm}
 
 You are given a directed or undirected weighted graph with $n$ vertices and $m$ edges. The weights of all edges are non-negative. You are also given a starting vertex $s$. This article discusses finding the lengths of the shortest paths from a starting vertex $s$ to all other vertices, and output the shortest paths themselves.
 
 This problem is also called **single-source shortest paths problem**.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Here is an algorithm described by the Dutch computer scientist Edsger W. Dijkstra in 1959.
 
@@ -30,7 +30,7 @@ After all such edges are considered, the current iteration ends. Finally, after 
 
 Note that if some vertices are unreachable from the starting vertex $s$, the values $d[v]$ for them will remain infinite. Obviously, the last few iterations of the algorithm will choose those vertices, but no useful work will be done for them. Therefore, the algorithm can be stopped as soon as the selected vertex has infinite distance to it.
 
-### Restoring Shortest Paths 
+### Restoring Shortest Paths {#restoring-shortest-paths}
 
 Usually one needs to know not only the lengths of shortest paths but also the shortest paths themselves. Let's see how to maintain sufficient information to restore the shortest path from $s$ to any vertex. We'll maintain an array of predecessors $p[]$ in which for each vertex $v \ne s$, $p[v]$ is the penultimate vertex in the shortest path from $s$ to $v$. Here we use the fact that if we take the shortest path to some vertex $v$ and remove $v$ from this path, we'll get a path ending in at vertex $p[v]$, and this path will be the shortest for the vertex $p[v]$. This array of predecessors can be used to restore the shortest path to any vertex: starting with $v$, repeatedly take the predecessor of the current vertex until we reach the starting vertex $s$ to get the required shortest path with vertices listed in reverse order. So, the shortest path $P$ to the vertex $v$ is equal to:
 
@@ -40,7 +40,7 @@ Building this array of predecessors is very simple: for each successful relaxati
 
 $$p[\text{to}] = v$$
 
-## Proof
+## Proof {#proof}
 
 The main assertion on which Dijkstra's algorithm correctness is based is the following:
 
@@ -68,7 +68,7 @@ $$d[v] = l[v]$$
 
 Q.E.D.
 
-## Implementation
+## Implementation {#implementation}
 
 Dijkstra's algorithm performs $n$ iterations. On each iteration it selects an unmarked vertex $v$ with the lowest value $d[v]$, marks it and checks all the edges $(v, \text{to})$ attempting to improve the value $d[\text{to}]$.
 
@@ -140,12 +140,12 @@ vector<int> restore_path(int s, int t, vector<int> const& p) {
 }
 ```
 
-## References
+## References {#references}
 
 * Edsger Dijkstra. A note on two problems in connexion with graphs [1959]
 * Thomas Cormen, Charles Leiserson, Ronald Rivest, Clifford Stein. Introduction to Algorithms [2005]
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [Timus - Ivan's Car](http://acm.timus.ru/problem.aspx?space=1&num=1930) [Difficulty:Medium]
 * [Timus - Sightseeing Trip](http://acm.timus.ru/problem.aspx?space=1&num=1004)
 * [SPOJ - SHPATH](http://www.spoj.com/problems/SHPATH/) [Difficulty:Easy]

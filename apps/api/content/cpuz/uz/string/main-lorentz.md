@@ -1,4 +1,4 @@
-# Takrorlanishlarni topish
+# Takrorlanishlarni topish {#finding-repetitions}
 
 Uzunligi $n$ bo‘lgan $s$ satr berilgan.
 
@@ -8,7 +8,7 @@ Masala — berilgan $s$ satrdagi barcha takrorlanishlarni topish. Uning soddalas
 
 Bu yerda tasvirlanadigan algoritm Main va Lorentz tomonidan 1982-yilda e’lon qilingan.
 
-## Misol
+## Misol {#example}
 
 Quyidagi satrdagi takrorlanishlarni ko‘rib chiqamiz:
 
@@ -29,7 +29,7 @@ Bu yerda faqat ikkita takrorlanish bor:
 * $s[0\dots 5]=abaaba$
 * $s[2\dots 3]=aa$
 
-## Takrorlanishlar soni
+## Takrorlanishlar soni {#number-of-repetitions}
 
 Umumiy holda uzunligi $n$ bo‘lgan satrda $O(n^2)$ tagacha takrorlanish bo‘lishi mumkin. Eng sodda misol — bir xil harf $n$ marta yozilgan satr: bu holda juft uzunlikdagi istalgan qism satr takrorlanishdir. Umuman, davri qisqa bo‘lgan har qanday davriy satr juda ko‘p takrorlanishni o‘z ichiga oladi.
 
@@ -53,7 +53,7 @@ $$
 
 “kuchli” davriydir. $f_i$ Fibonacci satridagi takrorlanishlar soni, hatto Crochemore uchliklari bilan siqilgan ko‘rinishda ham, $O(f_n\log f_n)$ bo‘ladi. Primitiv takrorlanishlar soni ham $O(f_n\log f_n)$.
 
-## Main–Lorentz algoritmi
+## Main–Lorentz algoritmi {#main-lorentz-algorithm}
 
 Main–Lorentz algoritmining asosiy g‘oyasi — **bo‘lib yechish** usuli.
 
@@ -61,7 +61,7 @@ Algoritm boshlang‘ich satrni ikki yarmiga bo‘ladi va ikki rekursiv chaqiruv 
 
 Bo‘lib yechish algoritmlarining murakkabligi yaxshi o‘rganilgan. [Master teoremasi](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms))ga ko‘ra, kesib o‘tuvchi takrorlanishlarni $O(n)$ vaqtda topa olsak, umumiy algoritm $O(n\log n)$ vaqtda ishlaydi.
 
-### Kesib o‘tuvchi takrorlanishlarni qidirish
+### Kesib o‘tuvchi takrorlanishlarni qidirish {#search-for-crossing-repetitions}
 
 Demak, satrning $u$ deb ataladigan birinchi yarmida boshlanib, $v$ deb ataladigan ikkinchi yarmida tugaydigan barcha takrorlanishlarni topmoqchimiz:
 
@@ -87,7 +87,7 @@ Vertikal chiziq satrning ikki yarmini ajratadi. Bu yerda $cntr=1$ pozitsiya qayd
 
 $cntr$ pozitsiyani qayd etishimiz bilan mumkin bo‘lgan takrorlanishlar uzunligi ham aniqlanishi ravshan: $l=|u|-cntr$. Bu takrorlanishlarni qanday topishni bilganimizdan so‘ng, $cntr$ ning $0$ dan $|u|-1$ gacha bo‘lgan barcha qiymatlarini ko‘rib chiqamiz va uzunligi mos ravishda $l=|u|,\ |u|-1,\ \dots,\ 1$ bo‘lgan barcha chap kesib o‘tuvchi takrorlanishlarni topamiz.
 
-### Chap kesib o‘tuvchi takrorlanishlar mezoni
+### Chap kesib o‘tuvchi takrorlanishlar mezoni {#criterion-for-left-crossing-repetitions}
 
 Qayd etilgan $cntr$ uchun barcha shunday takrorlanishlarni qanday topamiz? Bu pozitsiyada bir nechta takrorlanish bo‘lishi mumkinligini unutmaslik kerak.
 
@@ -138,7 +138,7 @@ Endi faqat har bir $cntr$ pozitsiya uchun $k_1$ va $k_2$ qiymatlarini tez hisobl
 
 Bu barcha chap kesib o‘tuvchi takrorlanishlarni topish uchun yetarli.
 
-### O‘ng kesib o‘tuvchi takrorlanishlar
+### O‘ng kesib o‘tuvchi takrorlanishlar {#right-crossing-repetitions}
 
 O‘ng kesib o‘tuvchi takrorlanishlarni hisoblashda ham xuddi shunday yo‘l tutamiz: $cntr$ markazni $u$ satrining oxirgi belgisiga mos keladigan belgi sifatida aniqlaymiz.
 
@@ -148,7 +148,7 @@ Shunday qilib, $k_1$ va $k_2$ qiymatlarini $\overline{u}+\#+\overline{v}$ hamda 
 
 Shundan so‘ng barcha $cntr$ pozitsiyalarini ko‘rib chiqib, chap kesib o‘tuvchi takrorlanishlar uchun ishlatilgan mezonning o‘zidan foydalanamiz.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Main–Lorentz algoritmining quyidagi implementatsiyasi barcha takrorlanishlarni $O(n\log n)$ vaqtda to‘rtta sondan iborat o‘ziga xos $(cntr,l,k_1,k_2)$ kortejlar ko‘rinishida topadi. Agar satrdagi takrorlanishlar sonini yoki faqat eng uzun takrorlanishni topmoqchi bo‘lsangiz, shu axborotning o‘zi yetarli va ishlash vaqti $O(n\log n)$ bo‘lib qoladi.
 

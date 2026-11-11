@@ -1,4 +1,4 @@
-# Faktorial $p$ modul bo‘yicha
+# Faktorial $p$ modul bo‘yicha {#factorial-modulo-p}
 
 Ba’zi hollarda suratida ham, maxrajida ham faktoriallar qatnashadigan murakkab formulalarni biror tub $p$ modul bo‘yicha ko‘rib chiqish kerak bo‘ladi; masalan, binomial koeffitsiyentlar formulasida shunday holat uchraydi.
 Biz $p$ nisbatan kichik bo‘lgan holatni ko‘rib chiqamiz.
@@ -13,7 +13,7 @@ Masalan, $7!_{\%p} \equiv 1 \cdot 2 \cdot \underbrace{1}_{3} \cdot 4 \cdot 5 \un
 
 Ushbu o‘zgartirilgan faktorialni samarali hisoblashni o‘rganish turli kombinatorik formulalarning qiymatini tez topish imkonini beradi (masalan, [binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients)).
 
-## Algoritm
+## Algoritm {#algorithm}
 Bu o‘zgartirilgan faktorialni oshkora yozamiz.
 
 $$\begin{aligned}
@@ -53,7 +53,7 @@ Rekursiya chuqurligi $O(\log_p n)$, demak algoritmning umumiy asimptotikasi $O(p
 
 E’tibor bering, agar $0!,~1!,~2!,~\dots,~(p-1)!$ faktoriallarini $p$ modul bo‘yicha oldindan hisoblasak, murakkablik shunchaki $O(\log_p n)$ bo‘ladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Bu dumli rekursiya holati bo‘lgani uchun rekursiyaga ehtiyoj yo‘q va uni iteratsiya bilan oson amalga oshirish mumkin.
 Quyidagi implementatsiyada $0!,~1!,~2!,~\dots,~(p-1)!$ ni oldindan hisoblaymiz; shu sababli ishlash vaqti $O(p+\log_p n)$.
@@ -79,7 +79,7 @@ int factmod(int n, int p) {
 
 Muqobil ravishda, xotira cheklangan bo‘lib, barcha faktoriallarni saqlash imkoni bo‘lmasa, faqat kerakli faktoriallarni eslab qolish, ularni saralash va so‘ng $0!,~1!,~2!,~\dots,~(p-1)!$ ni oshkora saqlamasdan bitta siklda hisoblab chiqish mumkin.
 
-## $p$ ning karraliligi
+## $p$ ning karraliligi {#multiplicity-of-p}
 
 Binomial koeffitsiyentni $p$ modul bo‘yicha hisoblamoqchi bo‘lsak, qo‘shimcha ravishda $n!$ dagi $p$ ning karraliligini, ya’ni $n!$ ning tub ko‘paytuvchilarga ajratilishida $p$ necha marta qatnashishini yoki *o‘zgartirilgan* faktorialni hisoblashda $p$ ni necha marta o‘chirganimizni bilishimiz kerak.
 

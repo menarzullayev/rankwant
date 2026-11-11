@@ -1,10 +1,10 @@
-# Finding articulation points in a graph in $O(N+M)$
+# Finding articulation points in a graph in $O(N+M)$ {#finding-articulation-points-in-a-graph-in-onm}
 
 We are given an undirected graph. An articulation point (or cut vertex) is defined as a vertex which, when removed along with associated edges, makes the graph disconnected (or more precisely, increases the number of connected components in the graph). The task is to find all articulation points in the given graph.
 
 The algorithm described here is based on [depth first search](/algorithms/graph/depth-first-search) and has $O(N+M)$ complexity, where $N$ is the number of vertices and $M$ is the number of edges in the graph.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Pick an arbitrary vertex of the graph $root$ and run [depth first search](/algorithms/graph/depth-first-search) from it. Note the following fact (which is easy to prove):
 
@@ -24,7 +24,7 @@ Now, there is a back edge from vertex $v$ or one of its descendants to one of it
 
 Thus, the vertex $v$ in the DFS tree is an articulation point if and only if $low[to] \geq tin[v]$.
 
-## Implementation
+## Implementation {#implementation}
 
 The implementation needs to distinguish three cases: when we go down the edge in DFS tree, when we find a back edge to an ancestor of the vertex and when we return to a parent of the vertex. These are the cases:
 
@@ -78,7 +78,7 @@ Main function is `find_cutpoints`; it performs necessary initialization and star
 
 Function `IS_CUTPOINT(a)` is some function that will process the fact that vertex $a$ is an articulation point, for example, print it (Caution that this can be called multiple times for a vertex).
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [UVA #10199 "Tourist Guide"](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=13&page=show_problem&problem=1140) [difficulty: low]
 - [UVA #315 "Network"](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=5&page=show_problem&problem=251) [difficulty: low]

@@ -1,4 +1,4 @@
-# Eng yaqin umumiy ajdod — ikkilik ko‘tarilish
+# Eng yaqin umumiy ajdod — ikkilik ko‘tarilish {#lowest-common-ancestor-binary-lifting}
 
 $G$ daraxt bo‘lsin.
 
@@ -10,7 +10,7 @@ Xususan, `u` tugun `v` ning ajdodi bo‘lsa, `u` ularning eng yaqin umumiy ajdod
 
 Ushbu maqolada tavsiflanadigan algoritm daraxtga oldindan ishlov berish uchun $O(N \log N)$, keyin har bir LCA so‘rovi uchun $O(\log N)$ vaqt talab qiladi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Har bir tugun uchun undan bir pog‘ona yuqoridagi, ikki pog‘ona yuqoridagi, to‘rt pog‘ona yuqoridagi va hokazo ajdodlarni oldindan hisoblaymiz.
 
@@ -52,7 +52,7 @@ Demak, LCA so‘roviga javob berishda `i` `ceil(log(N))` dan `0` gacha ko‘rib 
 
 Natijada har bir so‘rovga $O(\log N)$ vaqtda javob berish mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 int n, l;
@@ -104,7 +104,7 @@ void preprocess(int root) {
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [LeetCode - Kth Ancestor of a Tree Node](https://leetcode.com/problems/kth-ancestor-of-a-tree-node)
 * [Codechef - Longest Good Segment](https://www.codechef.com/problems/LGSEG)

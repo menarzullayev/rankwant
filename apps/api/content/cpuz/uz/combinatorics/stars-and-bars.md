@@ -1,8 +1,8 @@
-# Yulduzlar va ajratgichlar usuli
+# Yulduzlar va ajratgichlar usuli {#stars-and-bars}
 
 Yulduzlar va ajratgichlar (*stars and bars*) — ayrim kombinatorik masalalarni yechish uchun ishlatiladigan matematik usul. U bir xil obyektlarni guruhlarga ajratish usullari sonini hisoblash kerak bo‘lgan hollarda qo‘llanadi.
 
-## Teorema
+## Teorema {#theorem}
 
 $n$ ta bir xil obyektni belgilangan $k$ ta qutiga joylashtirish usullari soni
 
@@ -17,7 +17,7 @@ Har bir taqsimotni $n$ ta yulduz va $k-1$ ta ajratgich yordamida ifodalash mumki
 Demak, $n$ ta bir xil obyektni belgilangan $k$ ta qutiga taqsimlash usullari soni $n$ ta yulduz va $k-1$ ta ajratgich permutatsiyalari soniga teng.
 [Binomial koeffitsiyent](/algorithms/combinatorics/binomial-coefficients) bizga kerakli formulani beradi.
 
-## Manfiy bo‘lmagan butun sonlar yig‘indilari soni
+## Manfiy bo‘lmagan butun sonlar yig‘indilari soni {#number-of-non-negative-integer-sums}
 
 Bu masala teoremaning bevosita qo‘llanishidir.
 
@@ -33,7 +33,7 @@ Masalan, $n=4$, $k=3$ uchun $1+3+0=4$ yechimni $\bigstar | \bigstar \bigstar \bi
 Bu aynan yulduzlar va ajratgichlar teoremasi ekani oson ko‘rinadi.
 Shuning uchun javob $\binom{n + k - 1}{n}$ ga teng.
 
-## Musbat butun sonlar yig‘indilari soni
+## Musbat butun sonlar yig‘indilari soni {#number-of-positive-integer-sums}
 
 Ikkinchi teorema musbat butun sonlar uchun qulay talqin beradi. Quyidagi tenglamaning yechimlarini ko‘rib chiqamiz:
 
@@ -44,7 +44,7 @@ bunda $x_i \ge 1$.
 $n$ ta yulduzni ko‘rib chiqishimiz mumkin, ammo bu safar yulduzlar orasiga ko‘pi bilan *bitta ajratgich* qo‘yish mumkin, chunki ikki yulduz orasidagi ikkita ajratgich $x_i=0$ ni, ya’ni bo‘sh qutini anglatgan bo‘lardi.
 Yulduzlar orasida $n-1$ ta bo‘shliq bor va ulardan $k-1$ tasiga ajratgich qo‘yish kerak. Demak, javob $\binom{n-1}{k-1}$ ga teng.
 
-## Quyi chegarali butun sonlar yig‘indilari soni
+## Quyi chegarali butun sonlar yig‘indilari soni {#number-of-lower-bound-integer-sums}
 
 Bu natijani turli quyi chegaralarga ega butun sonlar yig‘indilariga ham osongina umumlashtirish mumkin.
 Ya’ni quyidagi tenglamaning yechimlari sonini hisoblamoqchimiz:
@@ -62,12 +62,12 @@ $$\Leftrightarrow ~ ~ x_1' + x_2' + \dots + x_k' = n - a_1 - a_2 - \dots - a_k$$
 bunda $x_i' \ge 0$.
 Shunday qilib, masalani $x_i' \ge 0$ bo‘lgan soddaroq holatga keltirdik va yana yulduzlar va ajratgichlar teoremasini qo‘llashimiz mumkin.
 
-## Yuqori chegarali butun sonlar yig‘indilari soni
+## Yuqori chegarali butun sonlar yig‘indilari soni {#number-of-upper-bound-integer-sums}
 
 [Kiritish–chiqarish prinsipi](/algorithms/combinatorics/inclusion-exclusion) yordamida butun sonlarga yuqori chegaralar ham qo‘yish mumkin.
 Tegishli maqoladagi [Yuqori chegarali butun sonlar yig‘indilari soni](/algorithms/combinatorics/inclusion-exclusion#number-of-upper-bound-integer-sums) bo‘limiga qarang.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [Codeforces - Array](https://codeforces.com/contest/57/problem/C)
 * [Codeforces - Kyoya and Coloured Balls](https://codeforces.com/problemset/problem/553/A)

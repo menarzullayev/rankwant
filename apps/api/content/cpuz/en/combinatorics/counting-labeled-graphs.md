@@ -1,6 +1,6 @@
-# Counting labeled graphs
+# Counting labeled graphs {#counting-labeled-graphs}
 
-## Labeled graphs
+## Labeled graphs {#labeled-graphs}
 
 Let the number of vertices in a graph be $n$.
 We have to compute the number $G_n$ of labeled graphs with $n$ vertices (labeled means that the vertices are marked with the numbers from $1$ to $n$).
@@ -14,7 +14,7 @@ Since any labeled graph is uniquely determined by its edges, the number of label
 
 $$G_n = 2^{\frac{n(n-1)}{2}}$$
 
-## Connected labeled graphs
+## Connected labeled graphs {#connected-labeled-graphs}
 
 Here, we additionally impose the restriction that the graph has to be connected.
 
@@ -35,7 +35,7 @@ And finally the number of connected graphs is:
 
 $$C_n = G_n - \frac{1}{n} \sum_{k=1}^{n-1} k \binom{n}{k} C_k G_{n-k}$$
 
-## Labeled graphs with $k$ connected components
+## Labeled graphs with $k$ connected components {#labeled-graphs-with-k-connected-components}
 
 Based on the formula from the previous section, we will learn how to count the number of labeled graphs with $n$ vertices and $k$ connected components.
 

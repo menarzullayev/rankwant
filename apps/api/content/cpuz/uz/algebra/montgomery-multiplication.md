@@ -1,4 +1,4 @@
-# Montgomery ko‘paytirishi
+# Montgomery ko‘paytirishi {#montgomery-multiplication}
 
 Sonlar nazariyasidagi ko‘plab algoritmlar, masalan [tublikni tekshirish](/algorithms/algebra/primality-tests) yoki [butun sonlarni faktorizatsiya qilish](/algorithms/algebra/factorization), shuningdek RSA kabi kriptografik algoritmlar katta son modulida juda ko‘p amal bajarishni talab qiladi.
 $x y \bmod n$ kabi ko‘paytmani odatiy algoritmlar bilan hisoblash ancha sekin, chunki ko‘paytmadan $n$ ni necha marta ayirish kerakligini bilish uchun bo‘lish amali bajariladi.
@@ -6,7 +6,7 @@ Bo‘lish esa, ayniqsa katta sonlarda, juda qimmat amal.
 **Montgomery (modul) ko‘paytirishi** bunday ko‘paytmalarni tezroq hisoblash imkonini beradigan usuldir.
 Ko‘paytmani bo‘lib, undan $n$ ni bir necha marta ayirish o‘rniga, u quyi bitlarni bekor qilish uchun $n$ ning karralilarini qo‘shadi va so‘ng quyi bitlarni shunchaki tashlab yuboradi.
 
-## Montgomery ifodasi
+## Montgomery ifodasi {#montgomery-representation}
 
 Biroq Montgomery ko‘paytirishi tekin kelmaydi.
 Algoritm faqat **Montgomery fazosi**da ishlaydi.
@@ -43,7 +43,7 @@ ni beradi. Shuning uchun Montgomery fazosidagi ko‘paytirish quyidagicha aniqla
 
 $$\bar{x} * \bar{y} := \bar{x} \cdot \bar{y} \cdot r^{-1} \bmod n.$$
 
-## Montgomery reduksiyasi
+## Montgomery reduksiyasi {#montgomery-reduction}
 
 Montgomery fazosidagi ikki sonni ko‘paytirish $x\cdot r^{-1}\bmod n$ ni samarali hisoblashni talab qiladi.
 Bu amal **Montgomery reduksiyasi** deb ataladi va **REDC** algoritmi nomi bilan ham tanilgan.
@@ -83,7 +83,7 @@ Ko‘rib turganimizdek, Montgomery reduksiyasini og‘ir modul amallarisiz bajar
 $r$ ni $2$ ning darajasi qilib tanlasak, algoritmdagi modul va bo‘lish amallarini bitmaska hamda siljitishlar bilan hisoblash mumkin.
 Montgomery reduksiyasining ikkinchi qo‘llanishi sonni Montgomery fazosidan oddiy fazoga qaytarishdir.
 
-## Tez teskari element hiylasi
+## Tez teskari element hiylasi {#fast-inverse-trick}
 
 $n^{\prime}:=n^{-1}\bmod r$ teskari elementni samarali hisoblash uchun Newton usulidan ilhomlangan quyidagi hiyladan foydalanish mumkin:
 
@@ -101,7 +101,7 @@ a \cdot x \cdot (2 - a \cdot x) &= 2 \cdot a \cdot x - (a \cdot x)^2 \\
 
 Demak, $a$ ning $2^1$ modul bo‘yicha teskari elementi sifatida $x=1$ dan boshlashimiz, hiylani bir necha marta qo‘llashimiz va har iteratsiyada $x$ ning to‘g‘ri bitlari sonini ikki baravar oshirishimiz mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 GCC kompilyatori `__int128` va `__uint128` turlari orqali 128 bitli butun sonlarni qo‘llab-quvvatlagani sababli, uchala son ham 64 bitli butun son bo‘lsa, $x \cdot y \bmod n$ ni hali ham samarali hisoblash mumkin:
 
@@ -164,7 +164,7 @@ struct Montgomery {
 };
 ```
 
-## Tez o‘tkazish
+## Tez o‘tkazish {#fast-transformation}
 
 Sonni Montgomery fazosiga o‘tkazishning hozirgi usuli ancha sekin.
 Tezroq usullar mavjud.

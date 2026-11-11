@@ -1,10 +1,10 @@
-# $K$-tartibli statistikani $O(N)$ vaqtda topish
+# $K$-tartibli statistikani $O(N)$ vaqtda topish {#kth-order-statistic-in-on}
 
 Hajmi $N$ bo‘lgan $A$ massiv va $K$ soni berilgan. Vazifa massivdagi $K$-eng katta sonni, ya’ni $K$-tartibli statistikani topishdan iborat.
 
 Asosiy g‘oya tez saralash algoritmidagi bo‘lish usulidan foydalanishdir. Algoritmning o‘zi sodda; tez saralashdan farqli ravishda, uning o‘rtacha $O(N)$ vaqtda ishlashini isbotlash qiyinroq.
 
-## Amalga oshirish (rekursiyasiz)
+## Amalga oshirish (rekursiyasiz) {#implementation-not-recursive}
 
 ```cpp
 template <class T>
@@ -60,13 +60,13 @@ T order_statistics (std::vector<T> a, unsigned n, unsigned k)
 }
 ```
 
-## Izohlar
+## Izohlar {#notes}
 
 * Yuqoridagi tasodifiylashtirilgan algoritm [Quickselect](https://en.wikipedia.org/wiki/Quickselect) deb ataladi. U ishonchli ishlashi uchun chaqirishdan oldin $A$ massivini tasodifiy aralashtirish yoki tayanch sifatida tasodifiy element tanlash kerak. Masalani chiziqli vaqtda yechadigan deterministik algoritmlar ham bor; masalan, [medianalar medianasi](https://en.wikipedia.org/wiki/Median_of_medians).
 * C++ tilidagi [std::nth_element](https://en.cppreference.com/w/cpp/algorithm/nth_element) shu vazifani bajaradi, ammo GCC amalga oshirishining eng yomon holatdagi vaqti $O(n \log n)$ bo‘ladi.
 * $K$ ta eng kichik elementni topish masalasini $K$-elementni topishga chiziqli qo‘shimcha ish bilan keltirish mumkin: ular aynan $K$-elementdan kichik elementlardir.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [Leetcode: Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description/)
 - [CODECHEF: Median](https://www.codechef.com/problems/CD1IT1)

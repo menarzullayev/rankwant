@@ -1,10 +1,10 @@
-# $K$th order statistic in $O(N)$
+# $K$th order statistic in $O(N)$ {#kth-order-statistic-in-on}
 
 Given an array $A$ of size $N$ and a number $K$. The problem is to find $K$-th largest number in the array, i.e., $K$-th order statistic.
 
 The basic idea - to use the idea of quick sort algorithm. Actually, the algorithm is simple, it is more difficult to prove that it runs in an average of $O(N)$, in contrast to the quick sort.
 
-## Implementation (not recursive)
+## Implementation (not recursive) {#implementation-not-recursive}
 
 ```cpp
 template <class T>
@@ -60,11 +60,11 @@ T order_statistics (std::vector<T> a, unsigned n, unsigned k)
 }
 ```
 
-## Notes
+## Notes {#notes}
 * The randomized algorithm above is named [quickselect](https://en.wikipedia.org/wiki/Quickselect). You should do random shuffle on $A$ before calling it or use a random element as a barrier for it to run properly. There are also deterministic algorithms that solve the specified problem in linear time, such as [median of medians](https://en.wikipedia.org/wiki/Median_of_medians).
 * [std::nth_element](https://en.cppreference.com/w/cpp/algorithm/nth_element) solves this in C++ but gcc's implementation runs in worst case $O(n \log n )$ time.
 * Finding $K$ smallest elements can be reduced to finding $K$-th element with a linear overhead, as they're exactly the elements that are smaller than $K$-th.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 - [Leetcode: Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description/)
 - [CODECHEF: Median](https://www.codechef.com/problems/CD1IT1)

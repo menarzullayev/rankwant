@@ -1,4 +1,4 @@
-# Grafdagi ko‘priklarni $O(N+M)$ vaqtda topish
+# Grafdagi ko‘priklarni $O(N+M)$ vaqtda topish {#finding-bridges-in-a-graph-in-onm}
 
 Bizga yo‘naltirilmagan graf berilgan. Olib tashlanganda graf uzilib qoladigan, aniqroq aytganda grafdagi bog‘langan komponentlar sonini oshiradigan qirra **ko‘prik** deb ataladi. Vazifa berilgan grafdagi barcha ko‘priklarni topishdan iborat.
 
@@ -8,7 +8,7 @@ Bu yerda tavsiflanadigan algoritm [chuqurlik bo‘yicha qidiruvga](/algorithms/g
 
 [Ko‘priklarni onlayn topish](/algorithms/graph/bridge-searching-online) haqida alohida maqola ham mavjud. Bu yerda bayon qilinadigan offline algoritmdan farqli ravishda, onlayn algoritm o‘zgarib turadigan grafda barcha ko‘priklar ro‘yxatini saqlab boradi; bunda grafga faqat yangi qirralar qo‘shiladi deb faraz qilinadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Grafning ixtiyoriy `root` tugunini tanlab, undan [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) boshlaymiz. Quyidagi, isbotlash oson bo‘lgan faktga e’tibor bering:
 
@@ -32,7 +32,7 @@ $v$ tugundan yoki uning biror avlodidan $v$ ning biror ajdodiga orqa qirra mavju
 
 Demak DFS daraxtidagi joriy $(v,to)$ qirra ko‘prik bo‘lishi uchun va faqat shundagina $\mathtt{low}[to] > \mathtt{tin}[v]$ bo‘lishi kerak.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Implementatsiya uchta holatni farqlashi kerak: DFS daraxtidagi qirra bo‘ylab pastga tushish, tugunning ajdodiga qaytuvchi orqa qirrani topish va tugunning otasiga qaytish. Bu holatlar quyidagicha:
 
@@ -90,7 +90,7 @@ Asosiy funksiya `find_bridges` bo‘lib, u zarur boshlang‘ich qiymatlarni o‘
 
 Shuni yodda tuting: graf parallel qirralarga ega bo‘lsa, bu implementatsiya noto‘g‘ri ishlaydi, chunki u ularni e’tiborsiz qoldiradi. Albatta parallel qirra hech qachon javobning bir qismi bo‘lmaydi, shuning uchun `IS_BRIDGE` xabar qilingan qirra parallel qirra emasligini qo‘shimcha tekshirishi mumkin. Boshqa yo‘l — `dfs` funksiyasiga ota tugun o‘rniga tugunga kirishda ishlatilgan qirraning indeksini uzatish (va barcha tugunlarning indekslarini saqlash).
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [UVA #796 "Critical Links"](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=737) [qiyinlik: oson]
 - [UVA #610 "Street Directions"](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=551) [qiyinlik: o‘rta]

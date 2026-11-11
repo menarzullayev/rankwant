@@ -1,4 +1,4 @@
-# Sqrt Tree
+# Sqrt Tree {#sqrt-tree}
 
 $n$ ta elementdan iborat $a$ massivi va assotsiativlik xususiyatini qanoatlantiruvchi $\circ$ amali berilgan: istalgan $x$, $y$, $z$ uchun $(x \circ y) \circ z = x \circ (y \circ z)$ o‘rinli.
 
@@ -8,9 +8,9 @@ Shuningdek, bizda $q(l, r)$ so‘rovlari bor. Har bir so‘rov uchun $a_l \circ 
 
 Sqrt Tree bunday so‘rovlarga $O(1)$ vaqtda javob beradi; oldindan hisoblash vaqti $O(n \cdot \log \log n)$, xotira sarfi ham $O(n \cdot \log \log n)$.
 
-## Tavsif
+## Tavsif {#description}
 
-### Sqrt dekompozitsiyani qurish
+### Sqrt dekompozitsiyani qurish {#building-sqrt-decomposition}
 
 Avval [sqrt dekompozitsiya](/algorithms/data-structures/sqrt-decomposition) quramiz. Massivni har biri $\sqrt n$ o‘lchamli $\sqrt n$ ta blokka ajratamiz. Har bir blok uchun quyidagilarni hisoblaymiz:
 
@@ -53,7 +53,7 @@ Endi ayrim so‘rovlarga shu massivlar yordamida javob bera olamiz. Agar so‘ro
 
 Biroq bitta blok ichiga to‘liq sig‘adigan so‘rovlarni bu uch massiv yordamida qayta ishlay olmaymiz. Demak, yana bir g‘oya kerak.
 
-### Daraxt qurish
+### Daraxt qurish {#making-a-tree}
 
 Faqat bitta blok ichiga sig‘adigan so‘rovlarga javob bera olmayapmiz. **Har bir blok uchun yuqoridagi tuzilmaning o‘zini yana qursak-chi?** Ha, buni qilish mumkin. Buni rekursiv ravishda, blok o‘lchami 1 yoki 2 bo‘lguncha davom ettirish mumkin. Bunday bloklar javobini $O(1)$ vaqtda bevosita hisoblash oson.
 
@@ -65,7 +65,7 @@ Endi so‘rovga $O(\log\log n)$ vaqtda javob bera olamiz. Daraxt bo‘ylab uzunl
 
 Shunday qilib, bir so‘rov uchun $O(\log\log n)$ ga erishdik. Bundan ham tezroq qilish mumkinmi?
 
-### So‘rov murakkabligini optimallashtirish
+### So‘rov murakkabligini optimallashtirish {#optimizing-the-query-complexity}
 
 Eng tabiiy optimallashtirishlardan biri kerakli daraxt tugunini ikkilik qidiruv yordamida topishdir. Bu bir so‘rov murakkabligini $O(\log\log\log n)$ gacha tushiradi. Ammo bundan ham tezroq yo‘l bor.
 
@@ -95,15 +95,15 @@ Tafsilotlar quyidagi kodda ko‘rsatilgan.
 
 Natijada har bir so‘rovga $O(1)$ vaqtda javob bera olamiz.
 
-## Elementlarni yangilash
+## Elementlarni yangilash {#updating-elements}
 
 Sqrt Tree elementlarni yangilashni ham qo‘llab-quvvatlaydi. Bitta element yangilanishlari ham, butun kesma yangilanishlari ham mumkin.
 
-### Bitta elementni yangilash
+### Bitta elementni yangilash {#updating-a-single-element}
 
 $a_x=val$ o‘zlashtirishini bajaradigan $\text{update}(x,val)$ so‘rovini ko‘rib chiqamiz. Uni yetarlicha tez bajarish kerak.
 
-#### Sodda yondashuv
+#### Sodda yondashuv {#naive-approach}
 
 Avval bitta element o‘zgarganda daraxtda nimalar o‘zgarishini ko‘ramiz. Uzunligi $l$ bo‘lgan tugun va uning $\text{prefixOp}$, $\text{suffixOp}$, $\text{between}$ massivlarini olaylik. $\text{prefixOp}$ va $\text{suffixOp}$ dan faqat $O(\sqrt l)$ ta element — o‘zgargan element joylashgan blok ichidagilar — o‘zgaradi. $\text{between}$ da esa $O(l)$ ta element o‘zgaradi. Demak, tugunda jami $O(l)$ ta qiymat yangilanadi.
 
@@ -111,7 +111,7 @@ Har bir $x$ element har bir qatlamda aynan bitta tugunda qatnashadi. Ildiz — 0
 
 Bu juda sekin. Uni tezlashtirish mumkin.
 
-#### Sqrt Tree ichidagi Sqrt Tree
+#### Sqrt Tree ichidagi Sqrt Tree {#an-sqrt-tree-inside-the-sqrt-tree}
 
 Yangilashdagi asosiy to‘siq ildiz tugunning $\text{between}$ massivini qayta qurishdir. Uni butunlay olib tashlaymiz. Ildizning $\text{between}$ massivi o‘rniga boshqa bir Sqrt Tree saqlaymiz va uni $\text{index}$ deb ataymiz. U $\text{between}$ bilan bir xil vazifani — bloklar kesmalari so‘rovlariga javob berishni — bajaradi. Daraxtning qolgan tugunlarida $\text{index}$ yo‘q; ular odatiy $\text{between}$ massivlarini saqlaydi.
 
@@ -127,7 +127,7 @@ So‘rov murakkabligi hamon $O(1)$ bo‘lib qoladi: so‘rovda $\text{index}$ da
 
 Demak, bitta elementni yangilashning umumiy murakkabligi $O(\sqrt n)$.
 
-### Kesmani yangilash
+### Kesmani yangilash {#updating-a-segment}
 
 Sqrt Tree kesmadagi barcha elementlarga bitta qiymat o‘zlashtirish kabi amallarni ham bajara oladi. $\text{massUpdate}(x,l,r)$ barcha $l\le i\le r$ uchun $a_i=x$ degani.
 
@@ -135,7 +135,7 @@ Buning ikki yondashuvi bor. Birinchisi $\text{massUpdate}$ ni $O(\sqrt{n}\cdot \
 
 Segment daraxtlaridagidek kechiktirib tarqatish (lazy propagation) ishlatamiz: ayrim tugunlarni _lazy_ deb belgilaymiz va ularni faqat zarur bo‘lganda push qilamiz. Segment daraxtlaridan farqli jihati shuki, tugunni push qilish qimmat va uni so‘rov paytida bajarib bo‘lmaydi. 0-qatlamdagi tugunni push qilish $O(\sqrt n)$ vaqt oladi. Shuning uchun so‘rov ichida tugunlarni push qilmaymiz; faqat joriy tugun yoki uning ota tuguni lazy ekanini tekshirib, javobni hisoblashda bu holatni hisobga olamiz.
 
-#### Birinchi yondashuv
+#### Birinchi yondashuv {#first-approach}
 
 Bu yondashuvda faqat 1-qatlamdagi, uzunligi $O(\sqrt n)$ bo‘lgan tugunlar lazy bo‘lishi mumkin. Bunday tugun push qilinganda, o‘zi bilan birga butun ost-daraxti $O(\sqrt{n}\cdot \log \log n)$ vaqtda yangilanadi. $\text{massUpdate}$ quyidagicha bajariladi:
 
@@ -152,7 +152,7 @@ Lazy propagation so‘rovlarga quyidagicha ta’sir qiladi:
 
 So‘rov murakkabligi $O(1)$ bo‘lib qoladi.
 
-#### Ikkinchi yondashuv
+#### Ikkinchi yondashuv {#second-approach}
 
 Bu yondashuvda ildizdan tashqari har bir tugun lazy bo‘lishi mumkin; hatto $\text{index}$ ichidagi tugunlar ham. So‘rov paytida barcha ota tugunlardagi lazy teglarni tekshirishga to‘g‘ri keladi, shuning uchun so‘rov murakkabligi $O(\log\log n)$ bo‘ladi.
 
@@ -166,7 +166,7 @@ Buning evaziga $\text{massUpdate}$ tezlashadi:
 
 Rekursiv chaqiruvda prefix yoki suffix $\text{massUpdate}$ bajariladi. Prefix va suffix yangilanishlarida ko‘pi bilan bitta farzand qisman qamrab olinadi. Demak, 1-qatlamda bitta tugun, 2-qatlamda ikkita tugun va har bir chuqurroq qatlamda ko‘pi bilan ikkita tugun ko‘riladi. Vaqt murakkabligi $O(\sqrt{n} + \sqrt{\sqrt{n}} + \dots) = O(\sqrt{n})$. Bu yerdagi yondashuv segment daraxtidagi oraliq yangilanishiga o‘xshaydi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyidagi Sqrt Tree implementatsiyasi $O(n \cdot \log \log n)$ vaqtda quriladi, so‘rovlarga $O(1)$ da javob beradi va bitta elementni $O(\sqrt n)$ da yangilaydi.
 
@@ -327,6 +327,6 @@ public:
 
 ~~~~~
 
-## Masalalar
+## Masalalar {#problems}
 
 [CodeChef — SEGPROD](https://www.codechef.com/NOV17/problems/SEGPROD)

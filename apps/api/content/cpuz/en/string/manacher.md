@@ -1,10 +1,10 @@
-# Manacher's Algorithm - Finding all sub-palindromes in $O(N)$
+# Manacher's Algorithm - Finding all sub-palindromes in $O(N)$ {#manachers-algorithm-finding-all-sub-palindromes-in-on}
 
-## Statement
+## Statement {#statement}
 
 Given string $s$ with length $n$. Find all the pairs $(i, j)$ such that substring $s[i\dots j]$ is a palindrome. String $t$ is a palindrome when $t = t_{rev}$ ($t_{rev}$ is a reversed string for $t$).
 
-## More precise statement
+## More precise statement {#more-precise-statement}
 
 In the worst case string might have up to $O(n^2)$ palindromic substrings, and at the first glance it seems that there is no linear algorithm for this problem.
 
@@ -24,7 +24,7 @@ $$c\ \overbrace{b\ a\ \underbrace{a}_{s_3}\ b}^{d_{even}[3]=2} d$$
 
 It's a surprising fact that there is an algorithm, which is simple enough, that calculates these "palindromity arrays" $d_{odd}[]$ and $d_{even}[]$ in linear time. The algorithm is described in this article.
 
-## Solution
+## Solution {#solution}
 
 In general, this problem has many solutions: with [String Hashing](/algorithms/string/string-hashing) it can be solved in $O(n\cdot \log n)$, and with [Suffix Trees](/algorithms/string/suffix-tree-ukkonen) and fast LCA this problem can be solved in $O(n)$.
 
@@ -32,7 +32,7 @@ But the method described here is **sufficiently** simpler and has less hidden co
 
 Another modern way to solve this problem and to deal with palindromes in general is through the so-called palindromic tree, or eertree.
 
-## Trivial algorithm
+## Trivial algorithm {#trivial-algorithm}
 
 To avoid ambiguities in the further description we denote what "trivial algorithm" is.
 
@@ -58,7 +58,7 @@ vector<int> manacher_odd_trivial(string s) {
 
 Terminal characters `$` and `^` were used to avoid dealing with ends of the string separately.
 
-## Manacher's algorithm
+## Manacher's algorithm {#manachers-algorithm}
 
 We describe the algorithm to find all the sub-palindromes with odd length, i. e. to calculate $d_{odd}[]$.
 
@@ -114,7 +114,7 @@ So, we want to calculate $d_{odd}[i]$ for the next $i$, and all the previous val
 
 Again, we should not forget to update the values $(l, r)$ after calculating each $d_{odd}[i]$.
 
-## Complexity of Manacher's algorithm
+## Complexity of Manacher's algorithm {#complexity-of-manachers-algorithm}
 
 At the first glance it's not obvious that this algorithm has linear time complexity, because we often run the naive algorithm while searching the answer for a particular position.
 
@@ -124,7 +124,7 @@ We can notice that every iteration of trivial algorithm increases $r$ by one. Al
 
 Other parts of Manacher's algorithm work obviously in linear time. Thus, we get $O(n)$ time complexity.
 
-## Implementation of Manacher's algorithm
+## Implementation of Manacher's algorithm {#implementation-of-manachers-algorithm}
 
 For calculating $d_{odd}[]$, we get the following code. Things to note:
 
@@ -155,7 +155,7 @@ vector<int> manacher_odd(string s) {
 }
 ```
 
-## Working with parities
+## Working with parities {#working-with-parities}
 
 Although it is possible to implement Manacher's algorithm for odd and even lengths separately, the implementation of the version for even lengths is often deemed more difficult, as it is less natural and easily leads to off-by-one errors.
 
@@ -186,7 +186,7 @@ vector<int> manacher(string s) {
 
 For simplicity, splitting the array into $d_{odd}$ and $d_{even}$ as well as their explicit calculation is omitted.
 
-## Problems
+## Problems {#problems}
 
 - [Library Checker - Enumerate Palindromes](https://judge.yosupo.jp/problem/enumerate_palindromes)
 - [Longest Palindrome](https://cses.fi/problemset/task/1111)

@@ -1,14 +1,14 @@
-# Kesmalar birlashmasining uzunligi
+# Kesmalar birlashmasining uzunligi {#length-of-the-union-of-segments}
 
 To‘g‘ri chiziqda $n$ ta kesma berilgan, ularning har biri $(a_{i1}, a_{i2})$ koordinatalar jufti bilan beriladi. Ularning birlashmasi uzunligini topish kerak.
 
 Quyidagi algoritmni 1977-yilda Klee taklif qilgan. U $O(n\log n)$ vaqtda ishlaydi va asimptotik jihatdan optimal ekani isbotlangan.
 
-## Yechim
+## Yechim {#solution}
 
 Barcha kesmalarning uchlarini qiymatlari bo‘yicha saralab, $x$ massivida saqlaymiz. Bundan tashqari, har bir uch kesmaning chap uchi yoki o‘ng uchi ekanini ham eslab qolamiz. Endi massiv bo‘ylab yurib, hozir ochiq turgan kesmalar sonini $c$ hisoblagichda saqlaymiz. Joriy element chap uch bo‘lsa, hisoblagichni oshiramiz, aks holda kamaytiramiz. Javobni hisoblash uchun yangi koordinataga kelganimizda va hozir kamida bitta kesma ochiq bo‘lsa, oxirgi ikki $x$ qiymati orasidagi $x_i - x_{i-1}$ uzunlikni qo‘shamiz.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 int length_union(const vector<pair<int, int>> &a) {

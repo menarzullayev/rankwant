@@ -1,11 +1,11 @@
-# Integer factorization
+# Integer factorization {#integer-factorization}
 
 In this article we list several algorithms for the factorization of integers, each of which can be either fast or varying levels of slow depending on their input.
 
 Notice, if the number that you want to factorize is actually a prime number, most of the algorithms will run very slowly. This is especially true for Fermat's, Pollard's p-1 and Pollard's rho factorization algorithms.
 Therefore, it makes the most sense to perform a probabilistic (or a fast deterministic) [primality test](/algorithms/algebra/primality-tests) before trying to factorize the number.
 
-## Trial division
+## Trial division {#trial-division}
 
 This is the most basic algorithm to find a prime factorization.
 
@@ -33,7 +33,7 @@ vector<long long> trial_division1(long long n) {
 }
 ```
 
-### Wheel factorization
+### Wheel factorization {#wheel-factorization}
 
 This is an optimization of the trial division.
 Once we know that the number is not divisible by 2, we don't need to check other even numbers.
@@ -97,7 +97,7 @@ vector<long long> trial_division3(long long n) {
 
 If we continue exending this method to include even more primes, better percentages can be reached, but the skip lists will become larger. 
 
-### Precomputed primes
+### Precomputed primes {#precomputed-primes}
 
 Extending the wheel factorization method indefinitely, we will only be left with prime numbers to check. 
 A good way of checking this is to precompute all prime numbers with the [Sieve of Eratosthenes](/algorithms/algebra/sieve-of-eratosthenes) until $\sqrt{n}$, and test them individually.
@@ -121,7 +121,7 @@ vector<long long> trial_division4(long long n) {
 }
 ```
 
-## Fermat's factorization method
+## Fermat's factorization method {#fermats-factorization-method}
 
 We can write an odd composite number $n = p \cdot q$ as the difference of two squares $n = a^2 - b^2$:
 
@@ -151,7 +151,7 @@ In practice though, this method is rarely used. Once factors become further apar
 However, there are still a large number of optimization options regarding this approach.
 By looking at the squares $a^2$ modulo a fixed small number, it can be observed that certain values $a$ don't have to be viewed, since they cannot produce a square number $a^2 - n$.
 
-## Pollard's $p - 1$ method
+## Pollard's $p - 1$ method {#pollards-p-1-method}
 
 It is very likely that a number $n$ has at least one prime factor $p$ such that $p - 1$ is $\mathrm{B}$**-powersmooth** for small $\mathrm{B}$. An integer $m$ is said to be $\mathrm{B}$-powersmooth if every prime power dividing $m$ is at most $\mathrm{B}$. Formally, let $\mathrm{B} \geqslant 1$ and let $m$ be any positive integer. Suppose the prime factorization of $m$ is $m = \prod {q_i}^{e_i}$, where each $q_i$ is a prime and $e_i \geqslant 1$. Then $m$ is $\mathrm{B}$-powersmooth if, for all $i$, ${q_i}^{e_i} \leqslant \mathrm{B}$. 
 E.g. the prime factorization of $4817191$ is $1303 \cdot 3697$.
@@ -223,7 +223,7 @@ A consequence of this is that there is a possibility of the algorithm being unab
 
 The complexity is $O(B \log B \log^2 n)$ per iteration.
 
-## Pollard's rho algorithm
+## Pollard's rho algorithm {#pollards-rho-algorithm}
 
 Pollard's Rho Algorithm is yet another factorization algorithm from John Pollard.
 
@@ -254,7 +254,7 @@ In this case we haven't found a proper factor, so we must repeat the algorithm w
 
 To find the cycle, we can use any common cycle detection algorithm.
 
-### Floyd's cycle-finding algorithm
+### Floyd's cycle-finding algorithm {#floyds-cycle-finding-algorithm}
 
 This algorithm finds a cycle by using two pointers moving over the sequence at differing speeds.
 During each iteration, the first pointer will advance one element over, while the second pointer advances to every other element. 
@@ -278,7 +278,7 @@ function floyd(f, x0):
     return true
 ```
 
-### Implementation
+### Implementation {#implementation}
 
 First, here is an implementation using the **Floyd's cycle-finding algorithm**.
 The algorithm generally runs in $O(\sqrt[4]{n} \log(n))$ time.
@@ -348,7 +348,7 @@ E.g. the choice $x_0 = c = 1$ will not factor $25 = 5 \cdot 5$.
 The algorithm will return $25$.
 However, the choice $x_0 = 1$, $c = 2$ will factor it.
 
-### Brent's algorithm
+### Brent's algorithm {#brents-algorithm}
 
 Brent implements a similar method to Floyd, using two pointers.
 The difference being that instead of advancing the pointers by one and two places respectively, they are advanced by powers of two. 
@@ -371,7 +371,7 @@ function floyd(f, x0):
 
 Brent's algorithm also runs in linear time, but is generally faster than Floyd's, since it uses less evaluations of the function $f$.
 
-### Implementation
+### Implementation {#implementation}
 
 The straightforward implementation of Brent's algorithm can be sped up by omitting the terms $x_l - x_k$ if $k < \frac{3 \cdot l}{2}$.
 In addition, instead of performing the $\gcd$ computation at every step, we multiply the terms and only actually check $\gcd$ every few steps and backtrack if overshot.
@@ -413,7 +413,7 @@ long long brent(long long n, long long x0=2, long long c=1) {
 
 The combination of a trial division for small prime numbers together with Brent's version of Pollard's rho algorithm makes a very powerful factorization algorithm.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [SPOJ - FACT0](https://www.spoj.com/problems/FACT0/)
 - [SPOJ - FACT1](https://www.spoj.com/problems/FACT1/)

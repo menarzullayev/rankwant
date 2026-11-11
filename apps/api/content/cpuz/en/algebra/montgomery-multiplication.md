@@ -1,4 +1,4 @@
-# Montgomery Multiplication
+# Montgomery Multiplication {#montgomery-multiplication}
 
 Many algorithms in number theory, like [prime testing](/algorithms/algebra/primality-tests) or [integer factorization](/algorithms/algebra/factorization), and in cryptography, like RSA, require lots of operations modulo a large number.
 A multiplications like $x y \bmod{n}$ is quite slow to compute with the typical algorithms, since it requires a division to know how many times $n$ has to be subtracted from the product.
@@ -7,7 +7,7 @@ And division is a really expensive operation, especially with big numbers.
 The **Montgomery (modular) multiplication** is a method that allows computing such multiplications faster.
 Instead of dividing the product and subtracting $n$ multiple times, it adds multiples of $n$ to cancel out the lower bits and then just discards the lower bits.
 
-## Montgomery representation
+## Montgomery representation {#montgomery-representation}
 
 However the Montgomery multiplication doesn't come for free.
 The algorithm works only in the **Montgomery space**.
@@ -47,7 +47,7 @@ Therefore the multiplication in the Montgomery space is defined as:
 
 $$\bar{x} * \bar{y} := \bar{x} \cdot \bar{y} \cdot r^{-1} \bmod n.$$
 
-## Montgomery reduction
+## Montgomery reduction {#montgomery-reduction}
 
 The multiplication of two numbers in the Montgomery space requires an efficient computation of $x \cdot r^{-1} \bmod n$.
 This operation is called the **Montgomery reduction**, and is also known as the algorithm **REDC**.
@@ -88,7 +88,7 @@ If we choose $r$ as a power of $2$, the modulo operations and divisions in the a
 
 A second application of the Montgomery reduction is to transfer a number back from the Montgomery space into the normal space.
 
-## Fast inverse trick
+## Fast inverse trick {#fast-inverse-trick}
 
 For computing the inverse $n^{\prime} := n^{-1} \bmod r$ efficiently, we can use the following trick (which is inspired from the Newton's method):
 
@@ -107,7 +107,7 @@ a \cdot x \cdot (2 - a \cdot x) &= 2 \cdot a \cdot x - (a \cdot x)^2 \\
 
 This means we can start with $x = 1$ as the inverse of $a$ modulo $2^1$, apply the trick a few times and in each iteration we double the number of correct bits of $x$.
 
-## Implementation
+## Implementation {#implementation}
 
 Using the GCC compiler we can compute $x \cdot y \bmod n$ still efficiently, when all three numbers are 64 bit integer, since the compiler supports 128 bit integer with the types `__int128` and `__uint128`.
 
@@ -174,7 +174,7 @@ struct Montgomery {
 };
 ```
 
-## Fast transformation
+## Fast transformation {#fast-transformation}
 
 The current method of transforming a number into Montgomery space is pretty slow.
 There are faster ways.

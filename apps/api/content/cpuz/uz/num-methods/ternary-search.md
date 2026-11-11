@@ -1,4 +1,4 @@
-# Uchlik qidiruv
+# Uchlik qidiruv {#ternary-search}
 
 Bizga $[l, r]$ oraliqda **unimodal** bo‘lgan $f(x)$ funksiya berilgan. Unimodal funksiya deganda funksiyaning ikki xatti-harakatidan biri tushuniladi:
 
@@ -11,7 +11,7 @@ Ikkinchi holat birinchisiga to‘liq simmetrik.
 
 Vazifa — $f(x)$ funksiyaning $[l, r]$ oraliqdagi maksimumini topish.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Shu oraliqdagi ixtiyoriy 2 ta $m_1$ va $m_2$ nuqtani ko‘rib chiqamiz: $l < m_1 < m_2 < r$. Funksiyani $m_1$ va $m_2$ nuqtalarda hisoblaymiz, ya’ni $f(m_1)$ va $f(m_2)$ qiymatlarini topamiz. Endi uch variantdan biri chiqadi:
 
@@ -37,7 +37,7 @@ $$m_2 = r - \frac{(r - l)}{3}$$
 
 Agar $m_1$ va $m_2$ bir-biriga yaqinroq tanlansa, yaqinlashish tezligi biroz oshadi.
 
-### Ishlash vaqtini tahlil qilish
+### Ishlash vaqtini tahlil qilish {#run-time-analysis}
 
 $$T(n) = T({2n}/{3}) + O(1) = \Theta(\log n)$$
 
@@ -45,13 +45,13 @@ Buni quyidagicha tasavvur qilish mumkin: funksiyani $m_1$ va $m_2$ nuqtalarda hi
 
 [Master teoremasini](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms)) qo‘llab, kerakli murakkablik bahosini olamiz.
 
-### Butun argumentli holat
+### Butun argumentli holat {#the-case-of-the-integer-arguments}
 
 Agar $f(x)$ butun parametr qabul qilsa, $[l, r]$ oraliq diskret bo‘ladi. $m_1$ va $m_2$ nuqtalarni tanlashga hech qanday cheklov qo‘ymaganimiz uchun algoritmning to‘g‘riligiga ta’sir qilmaydi. $m_1$ va $m_2$ ni baribir $[l, r]$ ni taxminan teng 3 qismga bo‘ladigan qilib tanlash mumkin.
 
 Farq algoritmning to‘xtash shartida yuzaga keladi. Uchlik qidiruv $(r - l) < 3$ bo‘lganda to‘xtashi kerak, chunki bu holda $m_1$ va $m_2$ ni bir-biridan hamda $l$ va $r$ dan farqli qilib tanlab bo‘lmaydi, bu esa cheksiz siklga olib kelishi mumkin. $(r - l) < 3$ bo‘lgach, $f(x)$ ning maksimal qiymatini beradigan nuqtani topish uchun nomzod nuqtalarning qolgan to‘plamini $(l, l + 1, \ldots, r)$ tekshirish kerak.
 
-### Oltin kesim bo‘yicha qidiruv
+### Oltin kesim bo‘yicha qidiruv {#golden-section-search}
 
 Ba’zi hollarda $f(x)$ ni hisoblash ancha sekin bo‘lishi mumkin, lekin aniqlik muammolari tufayli iteratsiyalar sonini kamaytirib bo‘lmaydi. Yaxshiyamki, $f(x)$ ni har bir iteratsiyada (birinchisidan tashqari) faqat bir marta hisoblash mumkin.
 
@@ -65,7 +65,7 @@ $\varphi^2 - \varphi - 1 = 0$
 
 Bu mashhur oltin kesim tenglamasi. Uni yechsak, $\frac{1 \pm \sqrt{5}}{2}$ chiqadi. $\varphi$ musbat bo‘lishi kerakligi uchun $\varphi = \frac{1 + \sqrt{5}}{2}$ ni olamiz. Xuddi shu mulohazani $r = m_2$ deb o‘rnatib, $m_2'$ ning $m_1$ bilan ustma-ust tushishini istagan holatga qo‘llasak, $\varphi$ ning aynan shu qiymati chiqadi. Demak, $m_1 = l + \frac{r - l}{1 + \varphi}$ va $m_2 = r - \frac{r - l}{1 + \varphi}$ ni tanlasak, har iteratsiyada oldingi iteratsiyada hisoblangan $f(x)$ qiymatlaridan birini qayta ishlatish mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 double ternary_search(double l, double r) {
@@ -88,7 +88,7 @@ Bu yerdagi `eps` aslida mutlaq xato (funksiyani noaniq hisoblashdan kelib chiqad
 
 `r - l > eps` mezoni o‘rniga to‘xtash mezoni sifatida iteratsiyalarning o‘zgarmas sonini tanlash mumkin. Iteratsiyalar soni kerakli aniqlikni ta’minlaydigan qilib tanlanishi kerak. Odatda ko‘pchilik dasturlash musobaqalarida xato chegarasi ${10}^{-6}$ bo‘ladi, shuning uchun 200 - 300 iteratsiya yetarli. Bundan tashqari, iteratsiyalar soni $l$ va $r$ qiymatlariga bog‘liq emas, shuning uchun iteratsiyalar soni kerakli nisbiy xatoga mos keladi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [Codeforces - New Bakery](https://codeforces.com/problemset/problem/1978/B)
 - [Codechef - Race time](https://www.codechef.com/problems/AMCS03)

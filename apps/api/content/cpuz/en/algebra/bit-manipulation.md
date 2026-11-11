@@ -1,6 +1,6 @@
-# Bit manipulation
+# Bit manipulation {#bit-manipulation}
 
-## Binary number
+## Binary number {#binary-number}
 
 A **binary number** is a number expressed in the base-2 numeral system or binary numeral system, it is a method of mathematical expression which uses only two symbols: typically "0" (zero) and "1" (one).
 
@@ -35,11 +35,11 @@ CPUs are very fast manipulating those bits with specific operations.
 For some problems we can take these binary number representations to our advantage, and speed up the execution time.
 And for some problems (typically in combinatorics or dynamic programming) where we want to track which objects we already picked from a given set of objects, we can just use an large enough integer where each digit represents an object and depending on if we pick or drop the object we set or clear the digit.
 
-## Bit operators
+## Bit operators {#bit-operators}
 
 All those introduced operators are instant (same speed as an addition) on a CPU for fixed-length integers.
 
-### Bitwise operators
+### Bitwise operators {#bitwise-operators}
 
 -   $\&$ : The bitwise AND operator compares each bit of its first operand with the corresponding bit of its second operand. 
     If both bits are 1, the corresponding result bit is set to 1. Otherwise, the corresponding result bit is set to 0.
@@ -81,7 +81,7 @@ n         = 01011000
 ~n        = 10100111
 ```
 
-### Shift operators
+### Shift operators {#shift-operators}
 
 There are two operators for shifting bits.
 
@@ -98,9 +98,9 @@ There are two operators for shifting bits.
 
     Notice however that for a fixed-length integer that means dropping the most left digits, and if you shift too much you end up with the number $0$.
 
-## Useful tricks
+## Useful tricks {#useful-tricks}
 
-### Set/flip/clear a bit
+### Set/flip/clear a bit {#setflipclear-a-bit}
 
 Using bitwise shifts and some basic bitwise operations we can easily set, flip or clear a bit.
 $1 \ll x$ is a number with only the $x$-th bit set, while $\sim(1 \ll x)$ is a number with all bits set except the $x$-th bit.
@@ -109,7 +109,7 @@ $1 \ll x$ is a number with only the $x$-th bit set, while $\sim(1 \ll x)$ is a n
 - $n ~\wedge~ (1 \ll x)$ flips the $x$-th bit in the number $n$
 - $n ~\&~ \sim(1 \ll x)$ clears the $x$-th bit in the number $n$
 
-### Check if a bit is set
+### Check if a bit is set {#check-if-a-bit-is-set}
 
 The value of the $x$-th bit can be checked by shifting the number $x$ positions to the right, so that the $x$-th bit is at the unit place, after which we can extract it by performing a bitwise & with 1.
 
@@ -119,7 +119,7 @@ bool is_set(unsigned int number, int x) {
 }
 ```
 
-### Check if the number is divisible by a power of 2
+### Check if the number is divisible by a power of 2 {#check-if-the-number-is-divisible-by-a-power-of-2}
 
 Using the and operation, we can check if a number $n$ is even because $n ~\&~ 1 = 0$ if $n$ is even, and $n ~\&~ 1 = 1$ if $n$ is odd.
 More generally, $n$ is divisible by $2^{k}$ exactly when $n ~\&~ (2^{k} − 1) = 0$.
@@ -135,7 +135,7 @@ We can calculate $2^{k}$ by left shifting 1 by $k$ positions.
 The trick works, because $2^k - 1$ is a number that consists of exactly $k$ ones.
 And a number that is divisible by $2^k$ must have zero digits in those places.
 
-### Check if an integer is a power of 2
+### Check if an integer is a power of 2 {#check-if-an-integer-is-a-power-of-2}
 
 A power of two is a number that has only a single bit in it (e.g. $32 = 0010~0000_2$), while the predecessor of that number has that digit not set and all the digits after it set ($31 = 0001~1111_2$).
 So the bitwise AND of a number with it's predecessor will always be 0, as they don't have any common digits set.
@@ -147,7 +147,7 @@ bool isPowerOfTwo(unsigned int n) {
 }
 ```
 
-### Clear the right-most set bit
+### Clear the right-most set bit {#clear-the-right-most-set-bit}
 
 The expression $n ~\&~ (n-1)$ can be used to turn off the rightmost set bit of a number $n$.
 This works because the expression $n-1$ flips all bits after the rightmost set bit of $n$, including the rightmost set bit.
@@ -162,7 +162,7 @@ n-1       = 00110011
 n & (n-1) = 00110000
 ```
 
-### Brian Kernighan's algorithm
+### Brian Kernighan's algorithm {#brian-kernighans-algorithm}
 
 We can count the number of bits set with the above expression.
 
@@ -181,7 +181,7 @@ int countSetBits(int n)
 }
 ```
 
-### Count set bits upto $n$
+### Count set bits upto $n$ {#count-set-bits-upto-n}
 To count the number of set bits of all numbers upto the number $n$ (inclusive), we can run the Brian Kernighan's algorithm on all numbers upto $n$. But this will result in a "Time Limit Exceeded" in contest submissions. 
 
 We can use the fact that for numbers upto $2^x$ (i.e. from $1$ to $2^x - 1$) there are $x \cdot 2^{x-1}$ set bits. This can be visualised as follows.
@@ -219,7 +219,7 @@ int countSetBits(int n) {
 }
 ```
 
-### Additional tricks
+### Additional tricks {#additional-tricks}
 
 - $n ~\&~ (n + 1)$ clears all trailing ones: $0011~0111_2 \rightarrow 0011~0000_2$.
 - $n ~|~ (n + 1)$ sets the last cleared bit: $0011~0101_2 \rightarrow 0011~0111_2$.
@@ -227,7 +227,7 @@ int countSetBits(int n) {
 
 Many more can be found in the book [Hacker's Delight](https://en.wikipedia.org/wiki/Hacker%27s_Delight).
 
-### Language and compiler support
+### Language and compiler support {#language-and-compiler-support}
 
 C++ supports some of those operations since C++20 via the [bit](https://en.cppreference.com/w/cpp/header/bit) standard library:
 
@@ -248,7 +248,7 @@ E.g. GCC defines a list at [Built-in Functions Provided by GCC](https://gcc.gnu.
 
 _Note that some of the operations (both the C++20 functions and the Compiler Built-in ones) might be quite slow in GCC if you don't enable a specific compiler target with `#pragma GCC target("popcnt")`._
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Codeforces - Raising Bacteria](https://codeforces.com/problemset/problem/579/A)
 * [Codeforces - Fedor and New Game](https://codeforces.com/problemset/problem/467/B)

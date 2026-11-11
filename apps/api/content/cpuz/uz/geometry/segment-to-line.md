@@ -1,10 +1,10 @@
-# Kesma uchun to‘g‘ri chiziq tenglamasini topish
+# Kesma uchun to‘g‘ri chiziq tenglamasini topish {#finding-the-equation-of-a-line-for-a-segment}
 
 Masala: kesma uchlarining koordinatalari berilgan; shu kesma orqali o‘tuvchi to‘g‘ri chiziqni qurish kerak.
 
 Kesma aynimagan (degenerat emas), ya’ni uzunligi noldan katta deb faraz qilamiz (aks holda, albatta, u orqali cheksiz ko‘p turli to‘g‘ri chiziqlar o‘tadi).
 
-### Ikki o‘lchamli holat
+### Ikki o‘lchamli holat {#two-dimensional-case}
 
 Berilgan kesma $PQ$ bo‘lsin, ya’ni uning uchlarining $P_x , P_y , Q_x , Q_y$ koordinatalari ma’lum.
 
@@ -24,7 +24,7 @@ B &= Q_x - P_x, \\
 C &= - A P_x - B P_y.
 \end{align}$$
 
-### Butun sonli holat
+### Butun sonli holat {#integer-case}
 
 To‘g‘ri chiziqni qurishning bu usulining muhim afzalligi shundaki, uchlarning koordinatalari butun bo‘lsa, hosil bo‘ladigan koeffitsiyentlar ham **butun** bo‘ladi. Ayrim hollarda bu geometrik amallarni haqiqiy sonlarga umuman murojaat qilmasdan bajarishga imkon beradi.
 
@@ -32,7 +32,7 @@ Biroq kichik kamchilik ham bor: bir xil to‘g‘ri chiziq uchun turli koeffitsi
 Buning oldini olish va shu bilan birga butun koeffitsiyentlardan chiqib ketmaslik uchun ko‘pincha **normallashtirish** deb ataladigan quyidagi usulni qo‘llash mumkin. $| A | , | B | , | C |$ sonlarining [eng katta umumiy bo‘luvchisi](/algorithms/algebra/euclid-algorithm) topiladi, uchala koeffitsiyent unga bo‘linadi, so‘ng ishora normallashtiriladi: agar $A <0$ yoki $A = 0, B <0$ bo‘lsa, uchala koeffitsiyent $-1$ ga ko‘paytiriladi.
 Natijada bir xil to‘g‘ri chiziqlar uchun bir xil koeffitsiyentlar uchliklari hosil bo‘ladi, bu esa to‘g‘ri chiziqlarning tengligini tekshirishni osonlashtiradi.
 
-### Haqiqiy sonli holat
+### Haqiqiy sonli holat {#real-case}
 
 Haqiqiy sonlar bilan ishlaganda doimo xatoliklarni hisobga olish kerak.
 
@@ -49,7 +49,7 @@ Shunday qilib, $A$ va $B$ koeffitsiyentlar tartibi kirish koordinatalari tartibi
 Nihoyat, to‘g‘ri chiziqlarni **taqqoslash** haqida: aslida bunday normallashtirishdan keyin bir xil to‘g‘ri chiziq uchun koeffitsiyentlarning faqat ikkita uchligi — $-1$ ga ko‘paytirish aniqligida — hosil bo‘lishi mumkin.
 Shunga ko‘ra, ishorani hisobga olib qo‘shimcha normallashtirishni bajarsak (agar $A < -\varepsilon$ yoki $| A | < \varepsilon$, $B <- \varepsilon$ bo‘lsa, $-1$ ga ko‘paytiramiz), hosil bo‘lgan koeffitsiyentlar yagona bo‘ladi.
 
-### Uch o‘lchamli va ko‘p o‘lchamli holat
+### Uch o‘lchamli va ko‘p o‘lchamli holat {#three-dimensional-and-multidimensional-case}
 
 Uch o‘lchamli holatdayoq to‘g‘ri chiziqni tasvirlaydigan **oddiy tenglama yo‘q** (uni ikki tekislikning kesishmasi, ya’ni ikkita tenglamalar sistemasi sifatida berish mumkin, ammo bu noqulay usul).
 

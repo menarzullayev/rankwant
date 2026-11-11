@@ -1,8 +1,8 @@
-# Bo‘luvchilar soni / bo‘luvchilar yig‘indisi
+# Bo‘luvchilar soni / bo‘luvchilar yig‘indisi {#number-of-divisors-sum-of-divisors}
 
 Ushbu maqolada berilgan $n$ sonining bo‘luvchilari soni $d(n)$ va bo‘luvchilari yig‘indisi $\sigma(n)$ ni qanday hisoblashni ko‘rib chiqamiz.
 
-## Bo‘luvchilar soni
+## Bo‘luvchilar soni {#number-of-divisors}
 
 $d$ bo‘luvchining tub ko‘paytuvchilarga ajratilishi $n$ ning tub ko‘paytuvchilarga ajratilishining qismi bo‘lishi kerakligi ravshan. Masalan, $6 = 2 \cdot 3$ soni $60 = 2^2 \cdot 3 \cdot 5$ ning bo‘luvchisi.
 Demak, $n$ ning tub ko‘paytuvchilarga ajratilishidagi barcha turli qism to‘plamlarni topish kifoya.
@@ -53,7 +53,7 @@ long long numberOfDivisors(long long num) {
 }
 ```
 
-## Bo‘luvchilar yig‘indisi
+## Bo‘luvchilar yig‘indisi {#sum-of-divisors}
 
 Oldingi bo‘limdagi mulohazaning o‘zidan foydalanish mumkin.
 
@@ -99,7 +99,7 @@ long long SumOfDivisors(long long num) {
 }
 ```
 
-## Multiplikativ funksiyalar
+## Multiplikativ funksiyalar {#multiplicative-functions}
 
 Multiplikativ funksiya — o‘zaro tub $a$ va $b$ uchun
 
@@ -112,7 +112,7 @@ $d(n)$ ham, $\sigma(n)$ ham multiplikativ funksiyalardir.
 Multiplikativ funksiyalar sonlar nazariyasidagi masalalarda juda foydali bo‘lishi mumkin bo‘lgan ko‘plab qiziqarli xossalarga ega.
 Masalan, ikkita multiplikativ funksiyaning Dirichlet konvolyutsiyasi ham multiplikativ bo‘ladi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ — COMDIV](https://www.spoj.com/problems/COMDIV/)
 - [SPOJ — DIVSUM](https://www.spoj.com/problems/DIVSUM/)

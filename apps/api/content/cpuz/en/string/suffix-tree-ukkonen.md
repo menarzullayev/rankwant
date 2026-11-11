@@ -1,4 +1,4 @@
-# Suffix Tree. Ukkonen's Algorithm
+# Suffix Tree. Ukkonen's Algorithm {#suffix-tree-ukkonens-algorithm}
 
 *This article is a stub and doesn't contain any descriptions. For a description of the algorithm, refer to other sources, such as [Algorithms on Strings, Trees, and Sequences](https://www.cs.cmu.edu/afs/cs/project/pscico-guyb/realworld/www/slidesF06/cmuonly/gusfield.pdf) by Dan Gusfield.*
 
@@ -105,7 +105,7 @@ void build_tree() {
 }
 ```
 
-## Compressed Implementation
+## Compressed Implementation {#compressed-implementation}
 
 This compressed implementation was proposed by [freopen](http://codeforces.com/profile/freopen).
 
@@ -213,6 +213,6 @@ void build() {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [UVA 10679 - I Love Strings!!!](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1620)

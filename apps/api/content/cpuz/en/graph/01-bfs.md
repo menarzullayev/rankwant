@@ -1,4 +1,4 @@
-# 0-1 BFS
+# 0-1 BFS {#0-1-bfs}
 
 It is well-known, that you can find the shortest paths between a single source and all other vertices in $O(|E|)$ using [Breadth First Search](/algorithms/graph/breadth-first-search) in an **unweighted graph**, i.e. the distance is the minimal number of edges that you need to traverse from the source to another vertex.
 We can interpret such a graph also as a weighted graph, where every edge has the weight $1$.
@@ -7,7 +7,7 @@ If not all edges in graph have the same weight, then we need a more general algo
 However if the weights are more constrained, we can often do better.
 In this article we demonstrate how we can use BFS to solve the SSSP (single-source shortest path) problem in $O(|E|)$, if the weight of each edge is either $0$ or $1$.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 We can develop the algorithm by closely studying Dijkstra's algorithm and thinking about the consequences that our special graph implies.
 The general form of Dijkstra's algorithm is (here a `set` is used for the priority queue):
@@ -70,14 +70,14 @@ while (!q.empty()) {
 }
 ```
 
-## Dial's algorithm
+## Dial's algorithm {#dials-algorithm}
 
 We can extend this even further if we allow the weights of the edges to be even bigger.
 If every edge in the graph has a weight $\le k$, then the distances of vertices in the queue will differ by at most $k$ from the distance of $v$ to the source.
 So we can keep $k + 1$ buckets for the vertices in the queue, and whenever the bucket corresponding to the smallest distance gets empty, we make a cyclic shift to get the bucket with the next higher distance.
 This extension is called **Dial's algorithm**.
 
-## Practice problems
+## Practice problems {#practice-problems}
 
 - [Labyrinth](https://codeforces.com/contest/1063/problem/B)
 - [KATHTHI](http://www.spoj.com/problems/KATHTHI/)

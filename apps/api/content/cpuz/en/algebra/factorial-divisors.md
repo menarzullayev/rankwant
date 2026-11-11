@@ -1,8 +1,8 @@
-# Finding Power of Factorial Divisor
+# Finding Power of Factorial Divisor {#finding-power-of-factorial-divisor}
 
 You are given two numbers $n$ and $k$. Find the largest integer $x$ such that $k^x$ divides $n!$.
 
-## Prime $k$
+## Prime $k$ {#prime-k}
 
 Let's first consider the case of prime $k$. The explicit expression for factorial
 
@@ -21,7 +21,7 @@ $$\Bigl\lfloor\dfrac{n}{k}\Bigr\rfloor + \Bigl\lfloor\dfrac{n}{k^2}\Bigr\rfloor 
 This result is also known as [Legendre's formula](https://en.wikipedia.org/wiki/Legendre%27s_formula).
 The sum is of course finite, since only approximately the first $\log_k n$ elements are not zeros. Thus, the runtime of this algorithm is $O(\log_k n)$.
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 
@@ -36,7 +36,7 @@ int fact_pow (int n, int k) {
 
 ```
 
-## Composite $k$
+## Composite $k$ {#composite-k}
 
 The same idea can't be applied directly. Instead we can factor $k$, representing it as $k = k_1^{p_1} \cdot \ldots \cdot k_m^{p_m}$. For each $k_i$, we find the number of times it is present in $n!$ using the algorithm described above - let's call this value $a_i$. The answer for composite $k$ will be
 

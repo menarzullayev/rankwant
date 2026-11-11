@@ -1,10 +1,10 @@
-# Diskret ildiz
+# Diskret ildiz {#discrete-root}
 
 Diskret ildizni topish masalasi quyidagicha ta’riflanadi. Tub $n$ hamda ikkita $a$ va $k$ butun son berilgan bo‘lsin. Quyidagi tenglikni qanoatlantiradigan barcha $x$ larni topish kerak:
 
 $x^k \equiv a \pmod n$
 
-## Algoritm
+## Algoritm {#the-algorithm}
 
 Masalani [diskret logarifm masalasi](/algorithms/algebra/discrete-log)ga keltirib yechamiz.
 
@@ -28,7 +28,7 @@ Endi faqat bitta noma’lum $y$ qoldi va bu diskret logarifm masalasidir. Yechim
 
 Bitta $y_0$ yechim topilgach, diskret ildiz masalasining yechimlaridan biri $x_0=g^{y_0}\pmod n$ bo‘ladi.
 
-## Ma’lum bitta yechimdan barcha yechimlarni topish
+## Ma’lum bitta yechimdan barcha yechimlarni topish {#finding-all-solutions-from-one-known-solution}
 
 Berilgan masalani to‘liq yechish uchun yechimlardan biri $x_0=g^{y_0}\pmod n$ ma’lum bo‘lganda barcha yechimlarni topishimiz kerak.
 
@@ -46,7 +46,7 @@ $x = g^{y_0 + i \frac {\phi (n)}{gcd(k, \phi (n))}} \pmod n \forall i \in Z$.
 
 ni olamiz. Bu diskret ildiz masalasining barcha yechimlari uchun yakuniy formula.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida primitiv ildiz va diskret logarifmni topish, so‘ng barcha yechimlarni topib chiqarish protseduralari bilan birga to‘liq implementatsiya keltirilgan.
 
@@ -136,6 +136,6 @@ int main() {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Codeforces - Lunar New Year and a Recursive Sequence](https://codeforces.com/contest/1106/problem/F)

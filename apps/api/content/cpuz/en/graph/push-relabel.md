@@ -1,4 +1,4 @@
-# Maximum flow - Push-relabel algorithm
+# Maximum flow - Push-relabel algorithm {#maximum-flow-push-relabel-algorithm}
 
 The push-relabel algorithm (or also known as preflow-push algorithm) is an algorithm for computing the maximum flow of a flow network.
 The exact definition of the problem that we want to solve can be found in the article [Maximum flow - Ford-Fulkerson and Edmonds-Karp](/algorithms/graph/edmonds-karp).
@@ -6,7 +6,7 @@ The exact definition of the problem that we want to solve can be found in the ar
 In this article we will consider solving the problem by pushing a preflow through the network, which will run in $O(V^4)$, or more precisely in $O(V^2 E)$, time.
 The algorithm was designed by Andrew Goldberg and Robert Tarjan in 1985.
 
-## Definitions
+## Definitions {#definitions}
 
 During the algorithm we will have to handle a **preflow** - i.e. a function $f$ that is similar to the flow function, but does not necessarily satisfies the flow conservation constraint.
 For it only the constraints
@@ -51,7 +51,7 @@ And because we also have a valid labeling, there doesn't exists a path between $
 If we compare the Ford-Fulkerson algorithm with the push-relabel algorithm it seems like the algorithms are the duals of each other.
 The Ford-Fulkerson algorithm keeps a valid flow at all time and improves it until there doesn't exists an augmenting path any more, while in the push-relabel algorithm there doesn't exists an augmenting path at any time, and we will improve the preflow until it is a valid flow.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 First we have to initialize the graph with a valid preflow and labeling function.
 
@@ -76,7 +76,7 @@ We initialize a valid preflow and a valid labeling.
 While we can perform push or relabel operations, we perform them.
 Afterwards the preflow is actually a flow and we return it.
 
-## Complexity
+## Complexity {#complexity}
 
 It is easy to show, that the maximal label of a vertex is $2|V| - 1$.
 At this point all remaining excess can and will be pushed back to the source.
@@ -85,7 +85,7 @@ This gives at most $O(V^2)$ relabel operations.
 It can also be showed, that there will be at most $O(V E)$ saturating pushes (a push where the total capacity of the edge is used) and at most $O(V^2 E)$ non-saturating pushes (a push where the capacity of an edge is not fully used) performed.
 If we pick a data structure that allows us to find the next vertex with excess in $O(1)$ time, then the total complexity of the algorithm is $O(V^2 E)$.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 const int inf = 1000000000;

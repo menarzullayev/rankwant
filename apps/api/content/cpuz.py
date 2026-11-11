@@ -29,13 +29,38 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
+from content.cpuz_topics import topics_for
 from content.models import Article, ArticleExternalLink, ArticleReview, ArticleTranslation
+from problems.lookup import topic_ids
 
 SNAPSHOT = Path(__file__).resolve().parent / "cpuz"
 IMPORT_ACTOR = "cpuz-import"
 #: The library's three levels on our 800–3500 difficulty scale, so the
 #: imported articles sort among our own ones.
 LEVEL_DIFFICULTY = {"beginner": 1000, "intermediate": 1600, "advanced": 2200}
+
+
+def glossary(root: Path = SNAPSHOT) -> list[dict[str, Any]]:
+    """The library's glossary (ADR-0062 § 3): English term, Uzbek term, aliases, note.
+
+    Read from the snapshot; `slug` is the English term's, for `#anchor` links.
+    """
+    rows = json.loads((root / "glossary.json").read_text(encoding="utf-8"))
+    out = []
+    for row in rows:
+        slug = "-".join(
+            "".join(ch if ch.isalnum() else " " for ch in row["source"].lower()).split()
+        )
+        out.append(
+            {
+                "slug": slug,
+                "term": row["uzbek"],
+                "english": row["source"],
+                "aliases": list(row.get("aliases") or []),
+                "note": row.get("note") or "",
+            }
+        )
+    return sorted(out, key=lambda r: r["term"].lower())
 
 
 def sha256(text: str) -> str:
@@ -185,6 +210,9 @@ def import_library(*, publish: bool = False, root: Path = SNAPSHOT) -> Report:
                 report.updated.append(entry["id"])
             else:
                 report.unchanged.append(entry["id"])
+        if not article.topics.exists():
+            # Our topics, once: an editor's later choice is kept.
+            article.topics.set(topic_ids(topics_for(entry["id"], entry["category"])))
         _translation(article, entry, root)
         _links(article, entry)
         _log(article, data, entry["id"], now, imported=entry["id"] not in report.unchanged)

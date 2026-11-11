@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3360 strings.**
+**3403 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2409,6 +2409,49 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `hackathon.projectName` | Loyiha nomi | Долбоордун аталышы |  |
 | `hackathon.entriesAfterDeadline` | Loyihalar muddat tugagach ochiladi | Долбоорлор мөөнөт бүткөндөн кийин ачылат |  |
 | `algorithms.intro` | Qisqa ma'lumotnoma: g'oya, murakkablik, kod, mashq masalalari. | Кыскача маалымдама: идея, татаалдык, код жана машыгуу маселелери. |  |
+| `algorithms.category.algebra` | Algebra va sonlar nazariyasi | Алгебра жана сандар теориясы |  |
+| `algorithms.category.dataStructures` | Ma'lumotlar tuzilmalari | Маалымат түзүлүштөрү |  |
+| `algorithms.category.dynamicProgramming` | Dinamik dasturlash | Динамикалык программалоо |  |
+| `algorithms.category.string` | Satrlar | Саптар |  |
+| `algorithms.category.linearAlgebra` | Chiziqli algebra | Сызыктуу алгебра |  |
+| `algorithms.category.combinatorics` | Kombinatorika | Комбинаторика |  |
+| `algorithms.category.numMethods` | Sonli usullar | Сандык ыкмалар |  |
+| `algorithms.category.geometry` | Geometriya | Геометрия |  |
+| `algorithms.category.graph` | Graflar | Графтар |  |
+| `algorithms.category.sequences` | Ketma-ketliklar | Ырааттуулуктар |  |
+| `algorithms.category.gameTheory` | O'yinlar nazariyasi | Оюндар теориясы |  |
+| `algorithms.category.schedules` | Jadval tuzish | Жадыбалдар |  |
+| `algorithms.category.others` | Boshqalar | Башкалар |  |
+| `algorithms.level.beginner` | Boshlang'ich | Баштапкы |  |
+| `algorithms.level.intermediate` | O'rta | Орто |  |
+| `algorithms.level.advanced` | Yuqori | Жогорку |  |
+| `algorithms.level.all` | Barcha darajalar | Бардык деңгээлдер |  |
+| `algorithms.count` | {count} ta maqola | Макалалар: {count} |  |
+| `algorithms.levelFilter` | Daraja bo'yicha saralash | Деңгээл боюнча чыпкалоо |  |
+| `algorithms.sections` | Bo'limlar | Бөлүмдөр |  |
+| `algorithms.breadcrumbs` | Navigatsiya yo'li | Навигация жолу |  |
+| `algorithms.idea` | G'oya | Идея |  |
+| `algorithms.complexity` | Murakkablik | Татаалдык |  |
+| `algorithms.uses` | Qo'llanishi | Колдонулушу |  |
+| `algorithms.practiceHere` | Shu saytda mashq | Сайттагы көнүгүү |  |
+| `algorithms.practiceElsewhere` | Boshqa saytlarda | Башка сайттарда |  |
+| `algorithms.via.pick` | Tanlangan | Тандалган |  |
+| `algorithms.via.source` | Ayni masala | Ошол эле маселе |  |
+| `algorithms.via.topic` | Mavzu bo'yicha | Тема боюнча |  |
+| `algorithms.aiMark` | AI tarjimasi · AI ko'rigi | ЖИ котормосу · ЖИ текшерүүсү |  |
+| `algorithms.source.title` | Manba va litsenziya | Булак жана лицензия |  |
+| `algorithms.source.original` | Asl maqola: | Түп нуска макала: |  |
+| `algorithms.source.authors` | Mualliflar: cp-algorithms loyihasiga hissa qo'shganlar. O'zbekcha tarjima: CP.UZ. | Авторлор: cp-algorithms долбооруна салым кошкондор. Өзбекче котормо: CP.UZ. |  |
+| `algorithms.source.ai` | Matn sun'iy intellekt yordamida tarjima qilingan va sun'iy intellekt tomonidan texnik va til jihatdan ko'rib chiqilgan; inson ko'rigidan hali o'tmagan. | Текст жасалма интеллекттин жардамы менен которулуп, жасалма интеллект тарабынан техникалык жана тилдик жактан текшерилген; адам текшерүүсүнөн али өтө элек. |  |
+| `algorithms.source.englishOriginal` | Bu cp-algorithms loyihasidagi asl inglizcha matn. | Бул cp-algorithms долбоорундагы түп нуска англисче текст. |  |
+| `algorithms.source.changed` | RankWant matnni o'zgartirgan: {count} ta tuzatish qayd etilgan. | RankWant текстти өзгөрттү: {count} оңдоо катталды. |  |
+| `algorithms.source.changedMarkup` | RankWant faqat belgilashni o'zgartirgan: havolalar, sarlavha belgilari va formula chegaralari shu sayt uchun moslangan. | RankWant белгилөөнү гана өзгөрттү: шилтемелер, аталыш белгилери жана формула чектегичтери ушул сайтка ылайыкталды. |  |
+| `algorithms.source.license` | Litsenziya: | Лицензия: |  |
+| `algorithms.notFound` | Algoritm topilmadi | Алгоритм табылган жок |  |
+| `algorithms.glossary.title` | Atamalar lug'ati | Терминдер сөздүгү |  |
+| `algorithms.glossary.intro` | Algoritmlar kutubxonasidagi atamalar: o'zbekcha nomi, inglizchasi va qisqa izohi. | Алгоритмдер китепканасындагы терминдер: өзбекче аталышы, англисчеси жана кыска түшүндүрмөсү. |  |
+| `algorithms.glossary.letters` | Harflar | Тамгалар |  |
+| `algorithms.glossary.aliases` | Boshqa nomlari: | Башка аталыштары: |  |
 | `arena.intro` | Jonli raund: hamma bir vaqtda, har savolga bir necha soniya, standings jonli. | Түз раунд: баары бир убакта, ар бир суроого бир нече секунд, таблица түз эфирде. |  |
 | `classroom.intro` | O'qituvchi sinf yaratadi, o'quvchilar kod bilan qo'shiladi, uy vazifasi va progress bir joyda. | Мугалим класс түзөт, окуучулар код менен кошулат, үй тапшырмасы жана прогресс бир жерде. |  |
 | `duels.intro` | Chaqiriq tashlang, kimdir qabul qiladi, belgilangan vaqtda bir xil masalalarni yechasiz. G'olib Challenges reytingida Elo oladi. | Чакырык таштаңыз, бирөө кабыл алат, белгиленген убакта бирдей маселелерди чыгарасыз. Жеңүүчү Challenges рейтингинде Elo алат. |  |

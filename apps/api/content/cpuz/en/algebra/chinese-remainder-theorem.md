@@ -1,8 +1,8 @@
-# Chinese Remainder Theorem
+# Chinese Remainder Theorem {#chinese-remainder-theorem}
 
 The Chinese Remainder Theorem (which will be referred to as CRT in the rest of this article) was discovered by Chinese mathematician Sun Zi.
 
-## Formulation
+## Formulation {#formulation}
 
 Let $m = m_1 \cdot m_2 \cdots m_k$, where $m_i$ are pairwise coprime. In addition to $m_i$, we are also given a system of congruences
 
@@ -26,7 +26,7 @@ $$\left\{\begin{array}{rcl}
 has the solution $23$ modulo $105$, because $23 \bmod{3} = 2$, $23 \bmod{5} = 3$, and $23 \bmod{7} = 2$.
 We can write down every solution as $23 + 105\cdot k$ for $k \in \mathbb{Z}$.
 
-### Corollary
+### Corollary {#corollary}
 
 A consequence of the CRT is that the equation
 
@@ -42,7 +42,7 @@ $$\left\{\begin{array}{rcl}
 
 (As above, assume that $m = m_1 m_2 \cdots m_k$ and $m_i$ are pairwise coprime).
 
-## Solution for Two Moduli
+## Solution for Two Moduli {#solution-for-two-moduli}
 
 Consider a system of two equations for coprime $m_1, m_2$:
 
@@ -82,15 +82,15 @@ Lets assume that you have two different solutions $x$ and $y$.
 Because $x \equiv a_i \pmod{m_i}$ and $y \equiv a_i \pmod{m_i}$, it follows that $x − y \equiv 0 \pmod{m_i}$ and therefore $x − y \equiv 0 \pmod{m_1 m_2}$ or equivalently $x \equiv y \pmod{m_1 m_2}$.
 So $x$ and $y$ are actually the same solution.
 
-## Solution for General Case
+## Solution for General Case {#solution-for-general-case}
 
-### Inductive Solution
+### Inductive Solution {#inductive-solution}
 
 As $m_1 m_2$ is coprime to $m_3$, we can inductively repeatedly apply the solution for two moduli for any number of moduli.
 First you compute $b_2 := a \pmod{m_1 m_2}$ using the first two congruences,
 then you can compute $b_3 := a \pmod{m_1 m_2 m_3}$ using the congruences $a \equiv b_2 \pmod{m_1 m_2}$ and $a \equiv a_3 \pmod {m_3}$, etc.
 
-### Direct Construction
+### Direct Construction {#direct-construction}
 
 A direct construction similar to Lagrange interpolation is possible.
 
@@ -109,7 +109,7 @@ a & \equiv & \sum_{j=1}^k a_j M_j N_j & \pmod{m_i} \\
   & \equiv & a_i                      & \pmod{m_i}
 \end{array}$$
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 struct Congruence {
@@ -133,7 +133,7 @@ long long chinese_remainder_theorem(vector<Congruence> const& congruences) {
 }
 ```
 
-## Solution for not coprime moduli
+## Solution for not coprime moduli {#solution-for-not-coprime-moduli}
 
 As mentioned, the algorithm above only works for coprime moduli $m_1, m_2, \dots m_k$.
 
@@ -200,7 +200,7 @@ $$\left\{\begin{align}
 
 It has the solution $53 \pmod{60}$, and indeed $53 \bmod{10} = 3$ and $53 \bmod{12} = 5$.
 
-## Garner's Algorithm
+## Garner's Algorithm {#garners-algorithm}
 
 Another consequence of the CRT is that we can represent big numbers using an array of small integers.
 
@@ -216,7 +216,7 @@ $$a = x_1 + x_2 m_1 + x_3 m_1 m_2 + \ldots + x_k m_1 \cdots m_{k-1} \text{ with 
 Garner's algorithm, which is discussed in the dedicated article [Garner's algorithm](/algorithms/algebra/garners-algorithm), computes the coefficients $x_i$.
 And with those coefficients you can restore the full number.
 
-## Practice Problems:
+## Practice Problems: {#practice-problems}
 
 * [Google Code Jam - Golf Gophers](https://github.com/google/coding-competitions-archive/blob/main/codejam/2019/round_1a/golf_gophers/statement.pdf)
 * [Hackerrank - Number of sequences](https://www.hackerrank.com/contests/w22/challenges/number-of-sequences)

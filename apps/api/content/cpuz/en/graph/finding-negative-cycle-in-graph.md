@@ -1,4 +1,4 @@
-# Finding a negative cycle in the graph
+# Finding a negative cycle in the graph {#finding-a-negative-cycle-in-the-graph}
 
 You are given a directed weighted graph $G$ with $N$ vertices and $M$ edges. Find any cycle of negative weight in it, if such a cycle exists.
 
@@ -6,7 +6,7 @@ In another formulation of the problem you have to find all pairs of vertices whi
 
 It is convenient to use different algorithms to solve these two variations of the problem, so we'll discuss both of them here.
 
-## Using Bellman-Ford algorithm
+## Using Bellman-Ford algorithm {#using-bellman-ford-algorithm}
 
 Bellman-Ford algorithm allows you to check whether there exists a cycle of negative weight in the graph, and if it does, find one of these cycles.
 
@@ -18,7 +18,7 @@ For this we need to put all the distance  $d[i]$  to zero and not infinity �
 
 Do $N$ iterations of Bellman-Ford algorithm. If there were no changes on the last iteration, there is no cycle of negative weight in the graph. Otherwise take a vertex the distance to which has changed, and go from it via its ancestors until a cycle is found. This cycle will be the desired cycle of negative weight.
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 struct Edge {
@@ -67,7 +67,7 @@ void solve() {
 }
 ```
 
-## Using Floyd-Warshall algorithm
+## Using Floyd-Warshall algorithm {#using-floyd-warshall-algorithm}
 
 The Floyd-Warshall algorithm allows to solve the second variation of the problem - finding all pairs of vertices $(i, j)$ which don't have a shortest path between them (i.e. a path of arbitrarily small weight exists).
 
@@ -83,7 +83,7 @@ $(i, j)$ doesn't have a shortest path, if one of the intermediate vertices $t$ h
 Then the path from $i$ to $j$ can have arbitrarily small weight.
 We will denote this with `-INF`.
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 for (int i = 0; i < n; ++i) {
@@ -96,7 +96,7 @@ for (int i = 0; i < n; ++i) {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [UVA: Wormholes](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=499)
 - [SPOJ: Alice in Amsterdam, I mean Wonderland](http://www.spoj.com/problems/UCV2013B/)

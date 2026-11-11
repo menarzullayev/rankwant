@@ -1,4 +1,4 @@
-# Minimal narxli oqim — ketma-ket eng qisqa yo‘llar algoritmi
+# Minimal narxli oqim — ketma-ket eng qisqa yo‘llar algoritmi {#minimum-cost-flow-successive-shortest-path-algorithm}
 
 $n$ ta tugun va $m$ ta qirradan iborat $G$ tarmoq berilgan.
 Har bir qirra uchun (umuman olganda yo‘naltirilgan qirralar, ammo quyida ko‘ring) sig‘im — manfiy bo‘lmagan butun son — va shu qirra bo‘ylab oqimning har bir birligi uchun narx — biror butun son — berilgan.
@@ -13,11 +13,11 @@ Bu **minimal narxli maksimal oqim masalasi** deb ataladi.
 
 Har ikkala masalani ketma-ket eng qisqa yo‘llar algoritmi yordamida samarali yechish mumkin.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Bu algoritm maksimal oqimni hisoblaydigan [Edmonds–Karp](/algorithms/graph/edmonds-karp) algoritmiga juda o‘xshaydi.
 
-### Eng sodda holat
+### Eng sodda holat {#simplest-case}
 
 Avval faqat eng sodda holatni ko‘ramiz: graf yo‘naltirilgan va istalgan tugunlar jufti orasida ko‘pi bilan bitta qirra bor (masalan, grafda $(i, j)$ qirra bo‘lsa, $(j, i)$ qirra ayni paytda mavjud bo‘la olmaydi).
 
@@ -44,7 +44,7 @@ Agar biror paytda oqim $K$ qiymatiga yetsa, algoritmni to‘xtatamiz (algoritmni
 Agar $K$ ni cheksizlikka tenglasak, algoritm minimal narxli maksimal oqimni topishini ko‘rish qiyin emas.
 Demak, masalaning har ikkala variantini bir xil algoritm bilan yechish mumkin.
 
-### Yo‘naltirilmagan graflar / multigraflar
+### Yo‘naltirilmagan graflar / multigraflar {#undirected-graphs-multigraphs}
 
 Yo‘naltirilmagan graf yoki multigraf holati konseptual jihatdan yuqoridagi algoritmdan farq qilmaydi.
 Algoritm bu graflarda ham ishlaydi.
@@ -62,7 +62,7 @@ Parallel qirralar mavjud bo‘lgani uchun har bir qirra uchun uning teskari qirr
 
 Yo‘naltirilmagan graflar yoki multigraflarda boshqa to‘siq yo‘q.
 
-### Murakkablik
+### Murakkablik {#complexity}
 
 Bu yerdagi algoritm umumiy holda kirish hajmiga nisbatan eksponensialdir. Aniqrog‘i, eng yomon holatda har bir iteratsiyada atigi $1$ birlik oqim surishi va hajmi $F$ bo‘lgan minimal narxli oqimni topish uchun $O(F)$ ta iteratsiya bajarishi mumkin. Shunda umumiy ishlash vaqti $O(F \cdot T)$ bo‘ladi, bu yerda $T$ — manbadan qabul qiluvchigacha eng qisqa yo‘lni topish uchun kerak bo‘ladigan vaqt.
 
@@ -71,7 +71,7 @@ Buning uchun [Bellman–Ford](/algorithms/graph/bellman-ford) algoritmi ishlatil
 
 O‘zgartirilgan Dijkstra algoritmi [Johnson algoritmi](https://en.wikipedia.org/wiki/Johnson%27s_algorithm)dagi potensiallardan foydalanadi. Ushbu algoritm va Dinic algoritmi g‘oyalarini birlashtirib, iteratsiyalar sonini $F$ dan $\min(F, nC)$ gacha kamaytirish mumkin, bu yerda $C$ — qirralar orasidagi maksimal narx. Potensiallar va ularning Dinic algoritmi bilan birlashtirilishi haqida [bu yerda](https://codeforces.com/blog/entry/105658) batafsil o‘qishingiz mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida eng sodda holat uchun eng qisqa yo‘llarni topishda [SPFA algoritmi](/algorithms/graph/bellman-ford)dan foydalanadigan implementatsiya berilgan.
 
@@ -156,7 +156,7 @@ int min_cost_flow(int N, vector<Edge> edges, int K, int s, int t) {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [CSES - Task Assignment](https://cses.fi/problemset/task/2129)
 * [CSES - Grid Puzzle II](https://cses.fi/problemset/task/2131)

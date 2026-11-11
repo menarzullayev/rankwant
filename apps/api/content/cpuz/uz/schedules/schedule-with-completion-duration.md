@@ -1,8 +1,8 @@
-# Deadline va davomiyliklar berilganda ishlarning optimal jadvali
+# Deadline va davomiyliklar berilganda ishlarning optimal jadvali {#optimal-schedule-of-jobs-given-their-deadlines-and-durations}
 
 Bizga ishlar to‘plami berilgan va har bir ishning tugash muddati hamda davomiyligi ma’lum bo‘lsin. Ish boshlanganidan keyin uni yakunlamasdan turib to‘xtatib bo‘lmaydi. Eng ko‘p ishni bajarishga imkon beradigan jadval tuzish talab etiladi.
 
-## Yechim
+## Yechim {#solving}
 
 Yechim **ochko‘z algoritm**ga asoslanadi. Barcha ishlarni tugash muddati bo‘yicha saralaymiz va ularni kamayish tartibida ko‘rib chiqamiz. Shuningdek, ishlarni asta-sekin qo‘shib, davomiyligi eng kichik bo‘lganini chiqarib olish uchun $q$ navbatini tuzamiz; buning uchun, masalan, `set` yoki `priority_queue` ishlatish mumkin. Dastlab $q$ bo‘sh.
 
@@ -10,7 +10,7 @@ Faraz qilaylik, $i$-ishni ko‘rib chiqyapmiz. Avval uni $q$ ga qo‘shamiz. $i$
 
 Algoritm yakunida optimal yechimlardan biri olinadi. Uning ishlash vaqti $O(n \log n)$.
 
-## Amalga oshirish
+## Amalga oshirish {#implementation}
 
 Quyidagi funksiya tugash muddati, davomiyligi va indeksi saqlangan ishlar vektorini qabul qilib, optimal jadvalda ishlatilgan barcha ishlar indekslarini qaytaradi. Jadvalning o‘zini vaqt tartibida yozish kerak bo‘lsa, tanlangan ishlarni yana tugash muddati bo‘yicha saralash zarur.
 

@@ -1,6 +1,6 @@
-# Prefiks funksiyasi. Knuth–Morris–Pratt algoritmi
+# Prefiks funksiyasi. Knuth–Morris–Pratt algoritmi {#prefix-function-knuthmorrispratt-algorithm}
 
-## Prefiks funksiyasining ta’rifi
+## Prefiks funksiyasining ta’rifi {#prefix-function-definition}
 
 Uzunligi $n$ bo‘lgan $s$ satr berilgan.
 Bu satrning **prefiks funksiyasi** uzunligi $n$ bo‘lgan $\pi$ massiv sifatida aniqlanadi: $\pi[i]$ — $s[0 \dots i]$ qism satrining ayni paytda shu qism satrning suffiksi ham bo‘lgan eng uzun xos prefiksi uzunligi.
@@ -13,7 +13,7 @@ $$\pi[i] = \max_ {k = 0 \dots i} \{k : s[0 \dots k-1] = s[i-(k-1) \dots i] \}$$
 
 Masalan, `abcabcd` satrining prefiks funksiyasi $[0, 0, 0, 1, 2, 3, 0]$, `aabaaab` satriniki esa $[0, 1, 0, 1, 2, 2, 3]$ ga teng.
 
-## Sodda algoritm
+## Sodda algoritm {#trivial-algorithm}
 
 Prefiks funksiya ta’rifini bevosita takrorlaydigan algoritm quyidagicha:
 
@@ -31,12 +31,12 @@ vector<int> prefix_function(string s) {
 
 Uning murakkabligi $O(n^3)$ ekanini ko‘rish oson; demak, uni yaxshilash uchun ancha imkon bor.
 
-## Samarali algoritm
+## Samarali algoritm {#efficient-algorithm}
 
 Bu algoritm 1977-yilda Knuth va Pratt, ulardan mustaqil ravishda esa Morris tomonidan taklif qilingan.
 U qism satr qidirish algoritmining asosiy funksiyasi sifatida ishlatilgan.
 
-### Birinchi optimallashtirish
+### Birinchi optimallashtirish {#first-optimization}
 
 Birinchi muhim kuzatuv: prefiks funksiya qiymati keyingi pozitsiyada ko‘pi bilan bittaga oshishi mumkin.
 
@@ -54,7 +54,7 @@ Bu faktning o‘ziyoq algoritm murakkabligini $O(n^2)$ gacha tushiradi, chunki b
 Butun jarayonda funksiya jami ko‘pi bilan $n$ marta o‘sadi, shuning uchun jami kamayishlar soni ham ko‘pi bilan $n$ bo‘ladi.
 Demak, atigi $O(n)$ ta satr taqqoslash bajariladi va umumiy murakkablik $O(n^2)$ bo‘ladi.
 
-### Ikkinchi optimallashtirish
+### Ikkinchi optimallashtirish {#second-optimization}
 
 Endi satrlarni taqqoslash amallaridan ham voz kechamiz.
 Buning uchun oldingi qadamlarda hisoblangan barcha ma’lumotlardan foydalanish kerak.
@@ -84,7 +84,7 @@ $$\overbrace{\underbrace{s_0 ~ s_1}_k ~ s_2 ~ s_3}^j ~ \dots ~ \overbrace{s_{i-3
 
 Tasvirdan bu qiymat ilgari hisoblangan $\pi[j-1]$ bo‘lishi ko‘rinadi.
 
-### Yakuniy algoritm
+### Yakuniy algoritm {#final-algorithm}
 
 Endi satrlarni umuman taqqoslamaydigan va atigi $O(n)$ ta amal bajaradigan algoritmni tuzish mumkin.
 
@@ -96,7 +96,7 @@ Yakuniy tartib quyidagicha:
 Ular teng bo‘lsa, $\pi[i] = j + 1$ deb olamiz; aks holda $j$ ni $\pi[j-1]$ ga kamaytirib, shu qadamni takrorlaymiz.
 - $j = 0$ ga yetib, baribir moslik topilmasa, $\pi[i] = 0$ deb olib, keyingi $i + 1$ indeksga o‘tamiz.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Implementatsiya hayratlanarli darajada qisqa va ifodali chiqadi.
 
@@ -119,9 +119,9 @@ vector<int> prefix_function(string s) {
 Bu **onlayn** algoritm: ma’lumot kelishi bilan qayta ishlanadi. Masalan, satr belgilarini birma-bir o‘qib, har bir yangi belgi uchun prefiks funksiya qiymatini darhol topish mumkin.
 Algoritm baribir satrning o‘zini va ilgari hisoblangan prefiks funksiya qiymatlarini saqlashni talab qiladi. Ammo prefiks funksiyaning satrda olishi mumkin bo‘lgan maksimal qiymat $M$ oldindan ma’lum bo‘lsa, satrning faqat dastlabki $M+1$ ta belgisini va shuncha prefiks funksiya qiymatini saqlash yetarli.
 
-## Qo‘llanishlar
+## Qo‘llanishlar {#applications}
 
-### Satr ichida qism satr qidirish. Knuth–Morris–Pratt algoritmi
+### Satr ichida qism satr qidirish. Knuth–Morris–Pratt algoritmi {#search-for-a-substring-in-a-string-the-knuth-morris-pratt-algorithm}
 
 Bu prefiks funksiyaning klassik qo‘llanishidir.
 
@@ -146,7 +146,7 @@ $t$ satr belgilarini birma-bir o‘qib, joriy prefiks funksiya qiymatini hisobla
 
 Shunday qilib, Knuth–Morris–Pratt algoritmi masalani $O(n + m)$ vaqt va $O(n)$ xotirada yechadi.
 
-### Har bir prefiksning uchrashishlari sonini hisoblash
+### Har bir prefiksning uchrashishlari sonini hisoblash {#counting-the-number-of-occurrences-of-each-prefix}
 
 Bu yerda birdaniga ikkita masalani ko‘rib chiqamiz.
 Uzunligi $n$ bo‘lgan $s$ satr berilgan.
@@ -180,7 +180,7 @@ Knuth–Morris–Pratt usulini qo‘llab, $s + \# + t$ satrni tuzamiz va uning p
 Birinchi masaladan yagona farq: biz faqat $t$ satrga tegishli, ya’ni $i \ge n + 1$ bo‘lgan $\pi[i]$ qiymatlariga qiziqamiz.
 Shu qiymatlar bilan birinchi masaladagi hisoblashlarni aynan takrorlaymiz.
 
-### Satrdagi turli qism satrlar soni
+### Satrdagi turli qism satrlar soni {#the-number-of-different-substring-in-a-string}
 
 Uzunligi $n$ bo‘lgan $s$ satr berilgan.
 Unda uchraydigan turli qism satrlar sonini hisoblash kerak.
@@ -203,7 +203,7 @@ Har bir qo‘shilgan belgi uchun yangi qism satrlar sonini $O(n)$ vaqtda topamiz
 
 Turli qism satrlar sonini belgilarni satr boshiga qo‘shib, yoki satr boshi yoxud oxiridan belgilarni o‘chirib ham hisoblash mumkinligini qayd etish foydali.
 
-### Satrni siqish
+### Satrni siqish {#compressing-a-string}
 
 Uzunligi $n$ bo‘lgan $s$ satr berilgan.
 Satrning eng qisqa “siqilgan” ko‘rinishini topmoqchimiz: shunday eng qisqa $t$ satr kerakki, $s$ ni $t$ ning bir yoki bir nechta nusxasi ketma-ket yozilishi sifatida ifodalash mumkin bo‘lsin.
@@ -241,7 +241,7 @@ $$s_0 ~ s_1 ~ s_2 ~ \underbrace{\overbrace{s_3 ~ s_4 ~ s_5 ~ s_6}^p ~ s_7}_{\pi[
 
 $$s_4 = s_3, ~ s_5 = s_4, ~ s_6 = s_5, ~ s_7 = s_6 ~ \Rightarrow ~ s_0 = s_1 = s_2 = s_3$$
 
-### Prefiks funksiya bo‘yicha avtomat qurish
+### Prefiks funksiya bo‘yicha avtomat qurish {#building-an-automaton-according-to-the-prefix-function}
 
 Ikki satrni ajratgich orqali ulashga qaytamiz: $s$ va $t$ satrlar uchun $s + \# + t$ satrning prefiks funksiyasini hisoblaymiz.
 $\#$ ajratgich bo‘lgani uchun prefiks funksiya qiymati hech qachon $|s|$ dan oshmaydi.
@@ -361,7 +361,7 @@ Har bir satrda $s$ necha marta uchrashishini topish kerak.
 
 Masala prefiks funksiya avtomatini qurib, keyin har bir andoza uchun o‘tishlarni oldingi natijalardan foydalanib hisoblash orqali aynan shu usulda yechiladi.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [UVA # 455 "Periodic Strings"](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=396)
 * [UVA # 11022 "String Factoring"](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1963)

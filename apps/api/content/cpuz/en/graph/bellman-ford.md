@@ -1,4 +1,4 @@
-# Bellman-Ford Algorithm
+# Bellman-Ford Algorithm {#bellman-ford-algorithm}
 
 **Single source shortest path with negative weight edges**
 
@@ -8,7 +8,7 @@ Unlike the Dijkstra algorithm, this algorithm can also be applied to graphs cont
 
 The algorithm bears the name of two American scientists: Richard Bellman and Lester Ford. Ford actually invented this algorithm in 1956 during the study of another mathematical problem, which eventually reduced to a subproblem of finding the shortest paths in the graph, and Ford gave an outline of the algorithm to solve this problem. Bellman in 1958 published an article devoted specifically to the problem of finding the shortest path, and in this article he clearly formulated the algorithm in the form in which it is known to us now.
 
-## Description of the algorithm
+## Description of the algorithm {#description-of-the-algorithm}
 
 Let us assume that the graph contains no negative weight cycle. The case of presence of a negative weight cycle will be discussed below in a separate section.
 
@@ -18,11 +18,11 @@ The algorithm consists of several phases. Each phase scans through all edges of 
 
 It is claimed that $n-1$ phases of the algorithm are sufficient to correctly calculate the lengths of all shortest paths in the graph (again, we believe that the cycles of negative weight do not exist). For unreachable vertices the distance $d[ ]$ will remain equal to infinity $\infty$.
 
-## Implementation
+## Implementation {#implementation}
 
 Unlike many other graph algorithms, for Bellman-Ford algorithm, it is more convenient to represent the graph using a single list of all edges (instead of $n$ lists of edges - edges from each vertex). We start the implementation with a structure $\rm edge$ for representing the edges. The input to the algorithm are numbers $n$, $m$, list $e$ of edges and the starting vertex $v$. All the vertices are numbered $0$ to $n - 1$.
 
-### The simplest implementation
+### The simplest implementation {#the-simplest-implementation}
 
 The constant $\rm INF$ denotes the number "infinity" — it should be selected in such a way that it is greater than all possible path lengths.
 
@@ -49,7 +49,7 @@ void solve()
 
 The check `if (d[e.a] < INF)` is needed only if the graph contains negative weight edges: no such verification would result in relaxation from the vertices to which paths have not yet found, and incorrect distance, of the type $\infty - 1$, $\infty - 2$ etc. would appear.
 
-### A better implementation
+### A better implementation {#a-better-implementation}
 
 This algorithm can be somewhat speeded up: often we already get the answer in a few phases and no useful work is done in remaining phases, just a waste visiting all edges. So, let's keep the flag, to tell whether something changed in the current phase or not, and if any phase, nothing changed, the algorithm can be stopped. (This optimization does not improve the asymptotic behavior, i.e., some graphs will still need all $n-1$ phases, but significantly accelerates the behavior of the algorithm "on an average", i.e., on random graphs.)
 
@@ -77,7 +77,7 @@ void solve()
 }
 ```
 
-### Retrieving Path
+### Retrieving Path {#retrieving-path}
 
 Let us now consider how to modify the algorithm so that it not only finds the length of shortest paths, but also allows to reconstruct the shortest paths.
 
@@ -124,7 +124,7 @@ void solve()
 
 Here starting from the vertex $t$, we go through the predecessors till we reach starting vertex with no predecessor, and store all the vertices in the path in the list $\rm path$. This list is a shortest path from $v$ to $t$, but in reverse order, so we call $\rm reverse()$ function over $\rm path$ and then output the path.
 
-## The proof of the algorithm
+## The proof of the algorithm {#the-proof-of-the-algorithm}
 
 First, note that for all unreachable vertices $u$ the algorithm will work correctly, the label $d[u]$ will remain equal to infinity (because the algorithm Bellman-Ford will find some way to all reachable vertices from the start vertex $v$, and relaxation for all other  remaining vertices will never happen).
 
@@ -137,7 +137,7 @@ Consider an arbitrary vertex $a$ to which there is a path from the starting vert
 
 The last thing to notice is that any shortest path cannot have more than $n - 1$ edges. Therefore, the algorithm sufficiently goes up to the $(n-1)_{th}$ phase. After that, it is guaranteed that no relaxation will improve the distance to some vertex.
 
-## The case of a negative cycle
+## The case of a negative cycle {#the-case-of-a-negative-cycle}
 
 Everywhere above we considered that there is no negative cycle in the graph (precisely, we are interested in a negative cycle that is reachable from the starting vertex $v$, and, for an unreachable cycles nothing in the above algorithm changes). In the presence of a negative cycle(s), there are further complications associated with the fact that distances to all vertices in this cycle, as well as the distances to the vertices reachable from this cycle is not defined — they should be equal to minus infinity $(- \infty)$.
 
@@ -147,7 +147,7 @@ Hence we obtain the **criterion for presence of a cycle of negative weights reac
 
 Moreover, if such a cycle is found, the Bellman-Ford algorithm can be modified so that it retrieves this cycle as a sequence of vertices contained in it. For this, it is sufficient to remember the last vertex $x$ for which there was a relaxation in $n_{th}$ phase. This vertex will either lie on a negative weight cycle, or is reachable from it. To get the vertices that are guaranteed to lie on a negative cycle, starting from the vertex $x$, pass through to the predecessors $n$ times. In this way, we will get to the vertex $y$, which is guaranteed to lie on a negative cycle. We have to go from this vertex, through the predecessors, until we get back to the same vertex $y$ (and it will happen, because relaxation in a negative weight cycle occur in a circular manner).
 
-### Implementation:
+### Implementation: {#implementation}
 
 ```cpp
 void solve()
@@ -199,7 +199,7 @@ The above implementation looks for a negative cycle reachable from some starting
 
 For more on this topic — see separate article, [Finding a negative cycle in the graph](/algorithms/graph/finding-negative-cycle-in-graph).
 
-## Shortest Path Faster Algorithm (SPFA)
+## Shortest Path Faster Algorithm (SPFA) {#shortest-path-faster-algorithm-spfa}
 
 SPFA is a improvement of the Bellman-Ford algorithm which takes advantage of the fact that not all attempts at relaxation will work.
 The main idea is to create a queue containing only the vertices that were relaxed but that still could further relax their neighbors.
@@ -250,7 +250,7 @@ bool spfa(int s, vector<int>& d) {
 }
 ```
 
-## Related problems in online judges
+## Related problems in online judges {#related-problems-in-online-judges}
 
 A list of tasks that can be solved using the Bellman-Ford algorithm:
 

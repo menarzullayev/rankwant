@@ -1,9 +1,9 @@
-# To‘g‘ri chiziqlarning kesishish nuqtasi
+# To‘g‘ri chiziqlarning kesishish nuqtasi {#intersection-point-of-lines}
 
 Ikkita to‘g‘ri chiziq $a_1 x + b_1 y + c_1 = 0$ va $a_2 x + b_2 y + c_2 = 0$ tenglamalari bilan berilgan.
 Chiziqlarning kesishish nuqtasini topish yoki ularning parallel ekanini aniqlash kerak.
 
-## Yechim
+## Yechim {#solution}
 
 Agar ikkita to‘g‘ri chiziq parallel bo‘lmasa, ular kesishadi.
 Kesishish nuqtasini topish uchun quyidagi chiziqli tenglamalar sistemasini yechish kerak:
@@ -30,7 +30,7 @@ $$\begin{vmatrix}a_1 & c_1 \cr a_2 & c_2\end{vmatrix}, \begin{vmatrix}b_1 & c_1 
 
 Shuni ta’kidlaymizki, kesishish nuqtasini hisoblashning boshqa usuli [Geometriya asoslari](/algorithms/geometry/basic-geometry) maqolasida bayon etilgan.
 
-## Dastur kodi
+## Dastur kodi {#implementation}
 
 ```cpp
 struct pt {

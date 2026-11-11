@@ -1,4 +1,4 @@
-# Binomial Coefficients
+# Binomial Coefficients {#binomial-coefficients}
 
 Binomial coefficients $\binom n k$ are the number of ways to select a set of $k$ elements from $n$ different elements without taking into account the order of arrangement of these elements (i.e., the number of unordered sets).
 
@@ -8,7 +8,7 @@ $$ (a+b)^n = \binom n 0 a^n + \binom n 1 a^{n-1} b + \binom n 2 a^{n-2} b^2 + \c
 
 It is believed that this formula, as well as the triangle which allows efficient calculation of the coefficients, was discovered by Blaise Pascal in the 17th century. Nevertheless, it was known to the Chinese mathematician Yang Hui, who lived in the 13th century. Perhaps it was discovered by a Persian scholar Omar Khayyam. Moreover, Indian mathematician Pingala, who lived  earlier in the 3rd. BC, got similar results. The merit of the Newton is that he generalized this formula for exponents that are not natural.
 
-## Calculation
+## Calculation {#calculation}
 
 **Analytic formula** for the calculation:
 
@@ -24,7 +24,7 @@ It is easy to deduce this using the analytic formula.
 
 Note that for $n \lt k$ the value of $\binom n k$ is assumed to be zero.
 
-## Properties
+## Properties {#properties}
 
 Binomial coefficients have many different properties. Here are the simplest of them:
 
@@ -60,9 +60,9 @@ Binomial coefficients have many different properties. Here are the simplest of t
 
     $$ \binom n 0 + \binom {n-1} 1 + \cdots + \binom {n-k} k + \cdots + \binom 0 n = F_{n+1} $$
 
-## Calculation
+## Calculation {#calculation}
 
-### Straightforward calculation using analytical formula
+### Straightforward calculation using analytical formula {#straightforward-calculation-using-analytical-formula}
 
 The first, straightforward formula is very easy to code, but this method is likely to overflow even for relatively small values of $n$ and $k$ (even if the answer completely fit into some datatype, the calculation of the intermediate factorials can lead to overflow). Therefore, this method often can only be used with [long arithmetic](/algorithms/algebra/big-integer):
 
@@ -77,7 +77,7 @@ int C(int n, int k) {
 }
 ```
 
-### Improved implementation
+### Improved implementation {#improved-implementation}
 
 Note that in the above implementation numerator and denominator have the same number of factors ($k$), each of which is greater than or equal to 1. Therefore, we can replace our fraction with a product $k$ fractions, each of which is real-valued. However, on each step after multiplying current answer by each of the next fractions the answer will still be integer (this follows from the property of factoring in). 
 
@@ -94,7 +94,7 @@ int C(int n, int k) {
 
 Here we carefully cast the floating point number to an integer, taking into account that due to the accumulated errors, it may be slightly less than the true value (for example, $2.99999$ instead of $3$).
 
-### Pascal's Triangle
+### Pascal's Triangle {#pascals-triangle}
 
 By using the recurrence relation we can construct a table of binomial coefficients (Pascal's triangle) and take the result from it. The advantage of this method is that intermediate results never exceed the answer and calculating each new table element requires only one addition. The flaw is slow execution for large $n$ and $k$ if you just need a single value and not the whole table (because in order to calculate $\binom n k$ you will need to build a table of all $\binom i j, 1 \le i \le n, 1 \le j \le n$, or at least to $1 \le j \le \min (i, 2k)$). The time complexity can be considered to be $\mathcal{O}(n^2)$.
 
@@ -113,19 +113,19 @@ for (int n = 1; n <= maxn; ++n) {
 
 If the entire table of values is not necessary, storing only two last rows of it is sufficient (current $n$-th row and the previous $n-1$-th).
 
-### Calculation in $O(1)$
+### Calculation in $O(1)$ {#calculation-in-o1}
 
 Finally, in some situations it is beneficial to precompute all the factorials in order to produce any necessary binomial coefficient with only two divisions later. This can be advantageous when using [long arithmetic](/algorithms/algebra/big-integer), when the memory does not allow precomputation of the whole Pascal's triangle.
 
-## Computing binomial coefficients modulo $m$
+## Computing binomial coefficients modulo $m$ {#computing-binomial-coefficients-modulo-m}
 
 Quite often you come across the problem of computing binomial coefficients modulo some $m$.
 
-### Binomial coefficient for small $n$
+### Binomial coefficient for small $n$ {#binomial-coefficient-for-small-n}
 
 The previously discussed approach of Pascal's triangle can be used to calculate all values of $\binom{n}{k} \bmod m$ for reasonably small $n$, since it requires time complexity $\mathcal{O}(n^2)$. This approach can handle any modulo, since only addition operations are used.
 
-### Binomial coefficient modulo large prime
+### Binomial coefficient modulo large prime {#binomial-coefficient-modulo-large-prime}
 
 The formula for the binomial coefficients is
 
@@ -152,7 +152,7 @@ long long binomial_coefficient(int n, int k) {
 }
 ```
 
-We even can compute the binomial coefficient in $O(1)$ time if we precompute the inverses of all factorials in $O(\text{MAXN} \log m)$ using the regular method for computing the inverse, or even in $O(\text{MAXN})$ time using the congruence $(x!)^{-1} \equiv ((x-1)!)^{-1} \cdot x^{-1}$ and the method for [computing all inverses](/algorithms/algebra/module-inverse#mod-inv-all-num) in $O(n)$.
+We even can compute the binomial coefficient in $O(1)$ time if we precompute the inverses of all factorials in $O(\text{MAXN} \log m)$ using the regular method for computing the inverse, or even in $O(\text{MAXN})$ time using the congruence $(x!)^{-1} \equiv ((x-1)!)^{-1} \cdot x^{-1}$ and the method for [computing all inverses](/algorithms/algebra/module-inverse#finding-the-modular-inverse-using-euclidean-division) in $O(n)$.
 
 ```cpp
 long long binomial_coefficient(int n, int k) {
@@ -183,7 +183,7 @@ Or precompute all inverses and all powers of $p$, and then compute the binomial 
 
 Notice, if $c(n) - c(k) - c(n-k) \ge b$, than $p^b ~|~ p^{c(n) - c(k) - c(n-k)}$, and the binomial coefficient is $0$.
 
-### Binomial coefficient modulo an arbitrary number
+### Binomial coefficient modulo an arbitrary number {#binomial-coefficient-modulo-an-arbitrary-number}
 
 Now we compute the binomial coefficient modulo some arbitrary modulus $m$.
 
@@ -192,7 +192,7 @@ We can compute the binomial coefficient modulo $p_i^{e_i}$ for every $i$.
 This gives us $h$ different congruences.
 Since all moduli $p_i^{e_i}$ are coprime, we can apply the [Chinese Remainder Theorem](/algorithms/algebra/chinese-remainder-theorem) to compute the binomial coefficient modulo the product of the moduli, which is the desired binomial coefficient modulo $m$.
 
-### Binomial coefficient for large $n$ and small modulo
+### Binomial coefficient for large $n$ and small modulo {#binomial-coefficient-for-large-n-and-small-modulo}
 
 When $n$ is too large, the $\mathcal{O}(n)$ algorithms discussed above become impractical. However, if the modulo $m$ is small there are still ways to calculate $\binom{n}{k} \bmod m$.
 
@@ -205,7 +205,7 @@ When $m$ is not prime but square-free, the prime factors of $m$ can be obtained 
 
 When $m$ is not square-free, a [generalization of Lucas's theorem for prime powers](https://web.archive.org/web/20170202003812/http://www.dms.umontreal.ca/~andrew/PDF/BinCoeff.pdf) can be applied instead of Lucas's theorem.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [Codechef - Number of ways](https://www.codechef.com/LTIME24/problems/NWAYS/)
 * [Codeforces - Curious Array](http://codeforces.com/problemset/problem/407/C)
 * [LightOj - Necklaces](http://www.lightoj.com/volume_showproblem.php?problem=1419)
@@ -224,7 +224,7 @@ When $m$ is not square-free, a [generalization of Lucas's theorem for prime powe
 * [CodeChef - Long Sandwich](https://www.codechef.com/MAY17/problems/SANDWICH/)
 * [Codeforces - Placing Jinas](https://codeforces.com/problemset/problem/1696/E)
 
-## References
+## References {#references}
 * [Blog fishi.devtail.io](https://fishi.devtail.io/weblog/2015/06/25/computing-large-binomial-coefficients-modulo-prime-non-prime/)
 * [Question on Mathematics StackExchange](https://math.stackexchange.com/questions/95491/n-choose-k-bmod-m-using-chinese-remainder-theorem)
 * [Question on CodeChef Discuss](https://discuss.codechef.com/questions/98129/your-approach-to-solve-sandwich)

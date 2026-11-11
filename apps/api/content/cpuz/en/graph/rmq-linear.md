@@ -1,4 +1,4 @@
-# Solve RMQ (Range Minimum Query) by finding LCA (Lowest Common Ancestor)
+# Solve RMQ (Range Minimum Query) by finding LCA (Lowest Common Ancestor) {#solve-rmq-range-minimum-query-by-finding-lca-lowest-common-ancestor}
 
 Given an array `A[0..N-1]`.
 For each query of the form `[L, R]` we want to find the minimum in the array `A` starting from position `L` and ending with position `R`.
@@ -8,7 +8,7 @@ Here is a description of an asymptotically optimal solution.
 It stands apart from other solutions for the RMQ problem, since it is very different from them:
 it reduces the RMQ problem to the LCA problem, and then uses the [Farach-Colton and Bender algorithm](/algorithms/graph/lca-farachcoltonbender), which reduces the LCA problem back to a specialized RMQ problem and solves that.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 We construct a **Cartesian tree** from the array `A`.
 A Cartesian tree of an array `A` is a binary tree with the min-heap property (the value of parent node has to be smaller or equal than the value of its children) such that the in-order traversal of the tree visits the nodes in the same order as they are in the array `A`.
@@ -33,7 +33,7 @@ In the first query the LCA of the nodes `A[1]` and `A[3]` is the node correspond
 
 Such a tree can be built in $O(N)$ time and the Farach-Colton and Benders algorithm can preprocess the tree in $O(N)$ and find the LCA in $O(1)$.
 
-## Construction of a Cartesian tree
+## Construction of a Cartesian tree {#construction-of-a-cartesian-tree}
 
 We will build the Cartesian tree by adding the elements one after another.
 In each step we maintain a valid Cartesian tree of all the processed elements.

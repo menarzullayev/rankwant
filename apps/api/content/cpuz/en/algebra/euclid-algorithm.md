@@ -1,4 +1,4 @@
-# Euclidean algorithm for computing the greatest common divisor
+# Euclidean algorithm for computing the greatest common divisor {#euclidean-algorithm-for-computing-the-greatest-common-divisor}
 
 Given two non-negative integers $a$ and $b$, we have to find their **GCD** (greatest common divisor), i.e. the largest number which is a divisor of both $a$ and $b$.
 It's commonly denoted by $\gcd(a, b)$. Mathematically it is defined as:
@@ -13,7 +13,7 @@ The Euclidean algorithm, discussed below, allows to find the greatest common div
 
 The algorithm was first described in Euclid's "Elements" (circa 300 BC), but it is possible that the algorithm has even earlier origins.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Originally, the Euclidean algorithm was formulated as follows: subtract the smaller number from the larger one until one of the numbers is zero. Indeed, if $g$ divides $a$ and $b$, it also divides $a-b$. On the other hand, if $g$ divides $a-b$ and $b$, then it also divides $a = b + (a-b)$, which means that the sets of the common divisors of $\{a, b\}$ and $\{b,a-b\}$ coincide.
 
@@ -21,7 +21,7 @@ Note that $a$ remains the larger number until $b$ is subtracted from it at least
 
 $$\gcd(a, b) = \begin{cases}a,&\text{if }b = 0 \\ \gcd(b, a \bmod b),&\text{otherwise.}\end{cases}$$
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 int gcd (int a, int b) {
@@ -54,7 +54,7 @@ int gcd (int a, int b) {
 
 Note that since C++17, `gcd` is implemented as a [standard function](https://en.cppreference.com/w/cpp/numeric/gcd) in C++.
 
-## Time Complexity
+## Time Complexity {#time-complexity}
 
 The running time of the algorithm is estimated by Lamé's theorem, which establishes a surprising connection between the Euclidean algorithm and the Fibonacci sequence:
 
@@ -66,7 +66,7 @@ Given that Fibonacci numbers grow exponentially, we get that the Euclidean algor
 
 Another way to estimate the complexity is to notice that $a \bmod b$ for the case $a \geq b$ is at least $2$ times smaller than $a$, so the larger number is reduced at least in half on each iteration of the algorithm. Applying this reasoning to the case when we compute the GCD of the set of numbers $a_1,\dots,a_n \leq C$, this also allows us to estimate the total runtime as $O(n + \log C)$, rather than $O(n \log C)$, since every non-trivial iteration of the algorithm reduces the current GCD candidate by at least a factor of $2$.
 
-## Least common multiple
+## Least common multiple {#least-common-multiple}
 
 Calculating the least common multiple (commonly denoted **LCM**) can be reduced to calculating the GCD with the following simple formula:
 
@@ -82,7 +82,7 @@ int lcm (int a, int b) {
 }
 ```
 
-## Binary GCD
+## Binary GCD {#binary-gcd}
 
 The Binary GCD algorithm is an optimization to the normal Euclidean algorithm.
 
@@ -117,7 +117,7 @@ int gcd(int a, int b) {
 Notice, that such an optimization is usually not necessary, and most programming languages already have a GCD function in their standard libraries.
 E.g. C++17 has such a function `std::gcd` in the `numeric` header.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [CSAcademy - Greatest Common Divisor](https://csacademy.com/contest/archive/task/gcd/)
 - [Codeforces 1916B - Two Divisors](https://codeforces.com/contest/1916/problem/B)

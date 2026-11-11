@@ -1,6 +1,6 @@
-# Manhattan masofasi
+# Manhattan masofasi {#manhattan-distance}
 
-## Ta’rif
+## Ta’rif {#definition}
 
 Tekislikdagi $p$ va $q$ nuqtalar uchun ular orasidagi masofani $x$ va $y$ koordinatalari ayirmalari modullarining yig‘indisi sifatida aniqlash mumkin:
 
@@ -14,7 +14,7 @@ Bu rasmda bir qora nuqtadan ikkinchisiga boradigan eng qisqa yo‘llardan ba’z
 
 Bu masofa bilan bog‘liq bir nechta qiziqarli usul va algoritmlar bor, ulardan ayrimlarini shu yerda ko‘rsatamiz.
 
-## Manhattan masofasida eng uzoq nuqtalar jufti
+## Manhattan masofasida eng uzoq nuqtalar jufti {#farthest-pair-of-points-in-manhattan-distance}
 
 $n$ ta $P$ nuqta berilgan. Bir-biridan eng uzoq bo‘lgan $p,q$ nuqtalar juftini, ya’ni $|x_p - x_q| + |y_p - y_q|$ ni maksimal qiladigan juftni topmoqchimiz.
 
@@ -51,7 +51,7 @@ for (int msk = 0; msk < (1 << d); msk++) {
 }
 ```
 
-## Nuqtalarni burish va Chebyshev masofasi
+## Nuqtalarni burish va Chebyshev masofasi {#rotating-the-points-and-chebyshev-distance}
 
 Barcha $m, n \in \mathbb{R}$ uchun quyidagi tenglik yaxshi ma’lum:
 
@@ -75,7 +75,7 @@ Almashtirishni tasavvur qilishga yordam beradigan rasm:
 
   ![Chebyshev almashtirishi](/algorithms-media/geometry/chebyshev-transformation.png)
 
-## Manhattan minimal ostov daraxti
+## Manhattan minimal ostov daraxti {#manhattan-minimum-spanning-tree}
 
 Manhattan MST masalasi quyidagicha: tekislikda bir nechta nuqta berilgan, barcha nuqtalarni bog‘laydigan va og‘irliklarining umumiy yig‘indisi minimal bo‘lgan qirralarni topish kerak. Ikki nuqtani bog‘lovchi qirraning og‘irligi ularning Manhattan masofasiga teng. Soddalik uchun barcha nuqtalar turli joylarda joylashgan deb faraz qilamiz.
 Bu yerda MST ni $O(n \log{n})$ da topish usulini ko‘rsatamiz: har bir nuqta uchun uning har bir oktantdagi eng yaqin qo‘shnisi topiladi (oktantlar quyidagi rasmda ko‘rsatilgan). Bu bizga $O(n)$ ta nomzod qirra beradi va quyida ko‘rsatamizki, ular MST ni o‘z ichiga olishi kafolatlanadi. Yakuniy qadam — biror standart MST algoritmini, masalan, [kesishmaydigan to‘plamlar birlashmasidan foydalanuvchi Kruskal algoritmini](https://cp-algorithms.com/graph/mst_kruskal_with_dsu.html) qo‘llash.
@@ -92,7 +92,7 @@ Avval nima uchun har bir oktantdagi faqat eng yaqin qo‘shnini ko‘rib chiqish
 
 Demak, asosiy savol — $n$ ta nuqtaning har biri uchun har bir oktantdagi eng yaqin qo‘shnini qanday topish.
 
-## Har bir oktantdagi eng yaqin qo‘shni $O(n \log n)$ da
+## Har bir oktantdagi eng yaqin qo‘shni $O(n \log n)$ da {#nearest-neighbor-in-each-octant-in-on-log-n}
 
 Soddalik uchun shimol-shimoli-sharqiy oktantga ($R_1$, yuqoridagi rasmga qarang) e’tibor qaratamiz. Boshqa barcha yo‘nalishlar kirish nuqtalarini burib, xuddi shu algoritm bilan topiladi.
 
@@ -163,7 +163,7 @@ vector<tuple<long long, int, int>> manhattan_mst_edges(vector<point> ps) {
 }
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
 - [AtCoder Beginner Contest 178E - Dist Max](https://atcoder.jp/contests/abc178/tasks/abc178_e)
 - [CodeForces 1093G - Multidimensional Queries](https://codeforces.com/contest/1093/problem/G)

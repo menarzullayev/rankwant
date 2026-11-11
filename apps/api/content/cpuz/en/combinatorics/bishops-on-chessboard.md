@@ -1,8 +1,8 @@
-# Placing Bishops on a Chessboard
+# Placing Bishops on a Chessboard {#placing-bishops-on-a-chessboard}
 
 Find the number of ways to place $K$ bishops on an $N \times N$ chessboard so that no two bishops attack each other.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 This problem can be solved using dynamic programming.
 
@@ -43,7 +43,7 @@ The bishops placed on black and white diagonals never attack each other, so the 
 The index of the last black diagonal is `2N-1`, the last white one is `2N-2`.
 For each `i` we add `D[2N-1][i] * D[2N-2][K-i]` to the answer.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 int bishop_placements(int N, int K)

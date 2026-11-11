@@ -158,6 +158,29 @@ def compare(uz: str, en: str) -> list[str]:
     return problems
 
 
+def broken_anchors(root: Path, articles: list[dict[str, str]]) -> list[str]:
+    """Every `#section` link inside the library reaches a heading's `{#id}`.
+
+    The originals link to sections across articles; a translated heading
+    without the original's id leaves the link at the top of the page.
+    """
+    found = []
+    for lang in ("uz", "en"):
+        ids: dict[str, set[str]] = {}
+        texts: dict[str, str] = {}
+        for a in articles:
+            page = f"/algorithms/{a['category']}/{a['slug']}"
+            path = root / lang / a["category"] / f"{a['slug']}.md"
+            texts[page] = path.read_text(encoding="utf-8") if path.exists() else ""
+            ids[page] = set(re.findall(r"\{#([\w-]+)\}", texts[page]))
+        for here, text in texts.items():
+            for page, anchor in re.findall(r"\]\((/algorithms/[\w-]+/[\w-]+)?#([\w-]+)\)", text):
+                target = page or here
+                if target in ids and anchor not in ids[target]:
+                    found.append(f"{lang} {here}: #{anchor} havolasi {target} da sarlavha topmaydi")
+    return found
+
+
 def main(argv: list[str]) -> int:
     root = Path(argv[argv.index("--root") + 1]) if "--root" in argv else SNAPSHOT
     try:
@@ -198,6 +221,7 @@ def main(argv: list[str]) -> int:
             failures.append(
                 f"{article['id']}: ruxsat ro'yxatida, lekin farq yo'q — yozuvni olib tashlang"
             )
+    failures += broken_anchors(root, data["articles"])
     unknown = sorted(set(allow) - {a["id"] for a in data["articles"]})
     if unknown:
         failures.append(f"ruxsat ro'yxatida noma'lum maqolalar: {unknown[:3]}")

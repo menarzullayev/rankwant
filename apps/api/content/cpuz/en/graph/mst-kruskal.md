@@ -1,4 +1,4 @@
-# Minimum spanning tree - Kruskal's algorithm
+# Minimum spanning tree - Kruskal's algorithm {#minimum-spanning-tree-kruskals-algorithm}
 
 Given a weighted undirected graph.
 We want to find a subtree of this graph which connects all vertices (i.e. it is a spanning tree) and has the least weight (i.e. the sum of weights of all the edges is minimum) of all possible spanning trees.
@@ -10,7 +10,7 @@ In the left image you can see a weighted undirected graph, and in the right imag
 
 This article will discuss few important facts associated with minimum spanning trees, and then will give the simplest implementation of Kruskal's algorithm for finding minimum spanning tree.
 
-## Properties of the minimum spanning tree
+## Properties of the minimum spanning tree {#properties-of-the-minimum-spanning-tree}
 
 * A minimum spanning tree of a graph is unique, if the weight of all the edges are distinct. Otherwise, there may be multiple minimum spanning trees.
   (Specific algorithms typically output one of the possible minimum spanning trees).
@@ -20,13 +20,13 @@ This article will discuss few important facts associated with minimum spanning t
   (This follows from the validity of Kruskal's algorithm).
 * The maximum spanning tree (spanning tree with the sum of weights of edges being maximum) of a graph can be obtained similarly to that of the minimum spanning tree, by changing the signs of the weights of all the edges to their opposite and then applying any of the minimum spanning tree algorithm.
 
-## Kruskal's algorithm
+## Kruskal's algorithm {#kruskals-algorithm}
 
 This algorithm was described by Joseph Bernard Kruskal, Jr. in 1956.
 
 Kruskal's algorithm initially places all the nodes of the original graph isolated from each other, to form a forest of single node trees, and then gradually merges these trees, combining at each iteration any two of all the trees with some edge of the original graph. Before the execution of the algorithm, all edges are sorted by weight (in non-decreasing order). Then begins the process of unification: pick all edges from the first to the last (in sorted order), and if the ends of the currently picked edge belong to different subtrees, these subtrees are combined, and the edge is added to the answer. After iterating through all the edges, all the vertices will belong to the same sub-tree, and we will get the answer.
 
-## The simplest implementation
+## The simplest implementation {#the-simplest-implementation}
 
 The following code directly implements the algorithm described above, and is having $O(M \log M + N^2)$ time complexity.
 Sorting edges requires $O(M \log N)$ (which is the same as $O(M \log M)$) operations.
@@ -68,7 +68,7 @@ for (Edge e : edges) {
 }
 ```
 
-## Proof of correctness
+## Proof of correctness {#proof-of-correctness}
 
 Why does Kruskal's algorithm give us the correct result?
 
@@ -101,11 +101,11 @@ So also here the proposal is still fulfilled after the step.
 This proves the proposal.
 Which means that after iterating over all edges the resulting edge set will be connected, and will be contained in a MST, which means that it has to be a MST already.
 
-## Improved implementation
+## Improved implementation {#improved-implementation}
 
 We can use the [**Disjoint Set Union** (DSU)](/algorithms/data-structures/disjoint-set-union) data structure to write a faster implementation of the Kruskal's algorithm with the time complexity of about $O(M \log N)$. [This article](/algorithms/graph/mst-kruskal-with-dsu) details such an approach.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ - Koicost](http://www.spoj.com/problems/KOICOST/)
 * [SPOJ - MaryBMW](http://www.spoj.com/problems/MARYBMW/)

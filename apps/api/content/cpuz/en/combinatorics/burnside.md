@@ -1,13 +1,13 @@
-# Burnside's lemma / Pólya enumeration theorem
+# Burnside's lemma / Pólya enumeration theorem {#burnsides-lemma-polya-enumeration-theorem}
 
-## Burnside's lemma
+## Burnside's lemma {#burnsides-lemma}
 
 **Burnside's lemma** was formulated and proven by **Burnside** in 1897, but historically it was already discovered in 1887 by **Frobenius**, and even earlier in 1845 by **Cauchy**.
 Therefore it is also sometimes named the **Cauchy-Frobenius lemma**.
 
 Burnside's lemma allows us to count the number of equivalence classes in sets, based on internal symmetry.
 
-### Objects and representations
+### Objects and representations {#objects-and-representations}
 
 We have to clearly distinguish between the number of objects and the number of representations.
 
@@ -16,7 +16,7 @@ Consequently the set of all representations is divided into equivalence classes.
 Our task is to compute the number of objects, or equivalently, the number of equivalence classes.
 The following example will make the difference between object and representation clearer.
 
-### Example: coloring of binary trees
+### Example: coloring of binary trees {#example-coloring-of-binary-trees}
 
 Suppose we have the following problem.
 We have to count the number of ways to color a rooted binary tree with $n$ vertices with two colors, where at each vertex we do not distinguish between the left and the right children.
@@ -38,7 +38,7 @@ f_1(2) = 1 & f_2(2) = 0\\
 f_1(3) = 0 & f_2(3) = 1
 \end{array}$$
 
-### Invariant permutations
+### Invariant permutations {#invariant-permutations}
 
 Why do these two function $f_1$ and $f_2$ belong to the same equivalence class?
 Intuitively this is understandable - we can rearrange the children of vertex $1$, the vertices $2$ and $3$, and after such a transformation of the function $f_1$ it will coincide with $f_2$.
@@ -58,7 +58,7 @@ However in most cases it is sufficient to manually find several "basic" permutat
 It is not difficult to understand that invariant permutations form a **group**, since the product (composition) of invariant permutations is again an invariant permutation.
 We denote the **group of invariant permutations** by $G$.
 
-### The statement of the lemma
+### The statement of the lemma {#the-statement-of-the-lemma}
 
 For the formulation of the lemma we need one more definition from algebra.
 A **fixed point** $f$ for a permutation $\pi$ is an element that is invariant under this permutation: $f \equiv f \pi$.
@@ -72,7 +72,7 @@ $$|\text{Classes}| = \frac{1}{|G|} \sum_{\pi \in G} I(\pi)$$
 
 Although Burnside's lemma itself is not so convenient to use in practice (it is unclear how to quickly look for the value $I(\pi)$, it most clearly reveals the mathematical essence on which the idea of calculating equivalence classes is based.
 
-### Proof of Burnside's lemma
+### Proof of Burnside's lemma {#proof-of-burnsides-lemma}
 
 The proof of Burnside's lemma described here is not important for the practical applications, so it can be skipped on the first reading.
 
@@ -111,7 +111,7 @@ Thus if we arbitrarily take one column from each equivalence class, and sum the 
 
 $$|\text{Classes}| \cdot |G| = \sum_{f} J(f)$$
 
-## Pólya enumeration theorem
+## Pólya enumeration theorem {#polya-enumeration-theorem}
 
 The Pólya enumeration theorem is a generalization of Burnside's lemma, and it also provides a more convenient tool for finding the number of equivalence classes.
 It should be noted that this theorem was already discovered before Pólya by Redfield in 1927, but his publication went unnoticed by mathematicians.
@@ -127,7 +127,7 @@ $$|\text{Classes}| = \frac{1}{|G|} \sum_{\pi \in G} k^{C(\pi)}$$
 
 $k$ is the number of values that each representation element can take, in the case of the coloring of a binary tree this would be $k = 2$.
 
-### Evidence
+### Evidence {#evidence}
 
 This formula is a direct consequence of Burnside's lemma.
 To get it, we just need to find an explicit expression for $I(\pi)$, which appears in the lemma.
@@ -141,7 +141,7 @@ Thus for each permutation cycle $\pi$ we can choose one value (among $k$ possibl
 
 $$I(\pi) = k^{C(\pi)}$$
 
-## Application: Coloring necklaces
+## Application: Coloring necklaces {#application-coloring-necklaces}
 
 The problem "Necklace" is one of the classical combinatorial problems.
 The task is to count the number of different necklaces from $n$ beads, each of which can be painted in one of the $k$ colors.
@@ -183,7 +183,7 @@ So we can count the number of $j$ with this behavior.
 
 $$\frac{1}{n} \sum_{d ~|~ n} \phi\left(\frac{n}{d}\right) k^d$$
 
-## Application: Coloring a torus
+## Application: Coloring a torus {#application-coloring-a-torus}
 
 Quite often we cannot obtain an explicit formula for the number of equivalence classes.
 In many problems the number of permutations in a group can be too large for manual calculations and it is not possible to compute analytically the number of cycles in them.
@@ -260,7 +260,7 @@ int solve(int n, int m) {
     return sum / s.size();
 }
 ```
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [CSES - Counting Necklaces](https://cses.fi/problemset/task/2209)
 * [CSES - Counting Grids](https://cses.fi/problemset/task/2210)
 * [Codeforces - Buildings](https://codeforces.com/gym/101873/problem/B)

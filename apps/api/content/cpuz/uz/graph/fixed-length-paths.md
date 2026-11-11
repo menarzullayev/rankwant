@@ -1,9 +1,9 @@
-# Belgilangan uzunlikdagi yo‘llar soni va eng qisqa yo‘llar
+# Belgilangan uzunlikdagi yo‘llar soni va eng qisqa yo‘llar {#number-of-paths-of-fixed-length-shortest-paths-of-fixed-length}
 
 Quyidagi maqolada bitta g‘oyaga asoslangan ikki masalaning yechimi tavsiflanadi:
 masalani matritsa tuzishga keltirish va yechimni odatiy matritsa ko‘paytmasi yoki o‘zgartirilgan ko‘paytma yordamida hisoblash.
 
-## Belgilangan uzunlikdagi yo‘llar soni
+## Belgilangan uzunlikdagi yo‘llar soni {#number-of-paths-of-a-fixed-length}
 
 Bizga $n$ ta tugunga ega yo‘naltirilgan og‘irliksiz $G$ grafi va $k$ butun soni berilgan.
 Vazifa quyidagicha:
@@ -37,7 +37,7 @@ $$C_k = \underbrace{G \cdot G \cdots G}_{k \text{ marta}} = G^k$$
 Matritsa ko‘paytmasidan hosil bo‘lgan darajani [ikkilik darajaga oshirish](/algorithms/algebra/binary-exp) yordamida katta daraja uchun ham samarali hisoblash mumkinligini qayd etish qoladi.
 Bu $O(n^3 \log k)$ murakkablikdagi yechimni beradi.
 
-## Belgilangan uzunlikdagi eng qisqa yo‘llar
+## Belgilangan uzunlikdagi eng qisqa yo‘llar {#shortest-paths-of-a-fixed-length}
 
 Bizga $n$ ta tugunga ega yo‘naltirilgan og‘irlikli $G$ grafi va $k$ butun soni berilgan.
 Har bir $(i, j)$ tugunlar jufti uchun aynan $k$ ta qirradan iborat bo‘lgan $i$ dan $j$ gacha eng qisqa yo‘l uzunligini topishimiz kerak.
@@ -72,7 +72,7 @@ $$L_k = \underbrace{G \odot \ldots \odot G}_{k~\text{marta}} = G^{\odot k}$$
 O‘zgartirilgan ko‘paytma, ravshanki, assotsiativ bo‘lgani uchun, bu darajaga oshirishni ham [ikkilik darajaga oshirish](/algorithms/algebra/binary-exp) yordamida samarali hisoblash mumkin.
 Shunday qilib, bu yechim ham $O(n^3 \log k)$ murakkablikka ega.
 
-## Masalalarni uzunligi ko‘pi bilan $k$ bo‘lgan yo‘llar uchun umumlashtirish
+## Masalalarni uzunligi ko‘pi bilan $k$ bo‘lgan yo‘llar uchun umumlashtirish {#generalization-of-the-problems-for-paths-with-length-up-to-k}
 
 Yuqoridagi yechimlar belgilangan $k$ uchun masalalarni yechadi.
 Biroq yechimlarni yo‘llarda ko‘pi bilan $k$ ta qirra bo‘lishiga ruxsat etilgan masalalar uchun ham moslashtirish mumkin.

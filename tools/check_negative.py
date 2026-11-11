@@ -5295,7 +5295,7 @@ def neg_cpuz_formula_invented() -> tuple[bool, str]:
 
 def neg_cpuz_raw_html() -> tuple[bool, str]:
     """A tag left in prose would be printed as text by the renderer."""
-    return _cpuz_broken(_CPUZ_CLEAN, "# Ikkilik darajaga oshirish", "# Ikkilik darajaga oshirish\n\n<center>x</center>", "raw HTML in prose")
+    return _cpuz_broken(_CPUZ_CLEAN, "# Ikkilik darajaga oshirish {#binary-exponentiation}", "# Ikkilik darajaga oshirish {#binary-exponentiation}\n\n<center>x</center>", "raw HTML in prose")
 
 
 def neg_cpuz_accepted_without_reason() -> tuple[bool, str]:
@@ -5327,7 +5327,7 @@ def neg_cpuz_mkdocs_leftover() -> tuple[bool, str]:
     """An mkdocs heading attribute would be printed as text."""
     return _cpuz_broken(
         _CPUZ_CLEAN,
-        "# Ikkilik darajaga oshirish",
+        "# Ikkilik darajaga oshirish {#binary-exponentiation}",
         '# Ikkilik darajaga oshirish\n\n## Algoritm { data-toc-label="Algoritm" }',
         "mkdocs leftovers",
     )
@@ -5337,9 +5337,69 @@ def neg_cpuz_bracket_display_math() -> tuple[bool, str]:
     """A `\\[ … \\]` formula is left for a renderer that reads only dollars."""
     return _cpuz_broken(
         _CPUZ_CLEAN,
-        "# Ikkilik darajaga oshirish",
-        "# Ikkilik darajaga oshirish\n\n\\[ a^n \\]",
+        "# Ikkilik darajaga oshirish {#binary-exponentiation}",
+        "# Ikkilik darajaga oshirish {#binary-exponentiation}\n\n\\[ a^n \\]",
         "display math",
+    )
+
+
+def neg_decisions_algorithm_page_without_source() -> tuple[bool, str]:
+    """The article page would drop the CC BY-SA attribution."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/algorithms/[category]/[slug]/page.tsx",
+        "<SourceNote",
+        "<NoteSource",
+        "manba bloki yoki sarlavha langarlari yo'q",
+    )
+
+
+def neg_decisions_algorithm_licence_link_dropped() -> tuple[bool, str]:
+    """The attribution would lose the licence link."""
+    return _decision_broken(
+        "apps/web/src/features/algorithms/components/SourceNote.tsx",
+        "href={LICENCE_URL}",
+        'href="#"',
+        "CC BY-SA manbasi to'liq ko'rsatilmaydi",
+    )
+
+
+def neg_decisions_alphabet_converts_anchors() -> tuple[bool, str]:
+    """The alphabet converter would rewrite heading ids."""
+    return _decision_broken(
+        "packages/shared/src/alphabet.ts",
+        '    "\\\\{#[\\\\w-]+\\\\}",' + "\n",
+        "",
+        "o'giruvchidan himoyalanmagan",
+    )
+
+
+def neg_decisions_learn_keeps_library_article() -> tuple[bool, str]:
+    """`/learn/<slug>` would show an imported article at a second address."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/learn/[slug]/page.tsx",
+        "permanentRedirect(algorithmPath(",
+        "void (",
+        "kanonik manzilga yo'naltirilmaydi",
+    )
+
+
+def neg_decisions_algorithm_terms_unlinked() -> tuple[bool, str]:
+    """The article would stop linking its terms to the glossary."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/algorithms/[category]/[slug]/page.tsx",
+        "const body = linkTerms(text, glossary",
+        "const body = String(text, glossary",
+        "atamalar lug'atga bog'lanmaydi",
+    )
+
+
+def neg_cpuz_broken_anchor() -> tuple[bool, str]:
+    """A link to a section that no heading carries."""
+    return _cpuz_broken(
+        _CPUZ_CLEAN,
+        "/algorithms/algebra/module-inverse#fermat-euler)",
+        "/algorithms/algebra/module-inverse#no-such-section)",
+        "sarlavha topmaydi",
     )
 
 
@@ -9289,6 +9349,13 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/web/src/app/(site)/algorithms/glossary/page.tsx",
+    "apps/web/src/app/(site)/algorithms/[category]/[slug]/page.tsx",
+    "apps/web/src/features/algorithms/components/SourceNote.tsx",
+    "packages/shared/src/alphabet.ts",
+    "apps/api/core/alphabet.py",
+    "apps/web/src/app/(site)/learn/[slug]/page.tsx",
+    "tools/check_cpuz.py",
     "apps/web/src/features/problems/components/ProblemSolveTimer.tsx",
     "apps/web/src/features/problems/components/ProblemTabs.tsx",
     "apps/api/content/cpuz.py",
@@ -13273,6 +13340,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("eskirgan ruxsat yozuvi tutilsin", neg_cpuz_stale_row),
             ("buzuq snapshot yashil bo'lmasin", neg_cpuz_unreadable_is_not_green),
             ("mkdocs qoldig'i tutilsin", neg_cpuz_mkdocs_leftover),
+            ("buzuq langar havolasi tutilsin", neg_cpuz_broken_anchor),
             ("\\[ formulasi tutilsin", neg_cpuz_bracket_display_math),
         ],
     ),
@@ -13733,6 +13801,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("import tahrirni bossa tutilsin", neg_decisions_cpuz_overwrites_edits),
             ("ko'riksiz nashr tutilsin", neg_decisions_cpuz_publishes_unreviewed),
             ("seed eski maqolani qaytarsa tutilsin", neg_decisions_cpuz_seed_brings_back_binary_search),
+            ("algoritm sahifasi manbasiz qolsa tutilsin", neg_decisions_algorithm_page_without_source),
+            ("litsenziya havolasi tushsa tutilsin", neg_decisions_algorithm_licence_link_dropped),
+            ("alifbo langarni o'zgartirsa tutilsin", neg_decisions_alphabet_converts_anchors),
+            ("/learn ikkinchi manzil bo'lsa tutilsin", neg_decisions_learn_keeps_library_article),
+            ("lug'at havolalari tushsa tutilsin", neg_decisions_algorithm_terms_unlinked),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

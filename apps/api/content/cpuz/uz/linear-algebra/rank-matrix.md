@@ -1,4 +1,4 @@
-# Matritsa rangini topish
+# Matritsa rangini topish {#finding-the-rank-of-a-matrix}
 
 **Matritsa rangi** — matritsaning chiziqli mustaqil satrlari (yoki ustunlari) ning eng katta soni. Rang faqat kvadrat matritsalar uchun emas, istalgan matritsa uchun aniqlanadi.
 
@@ -7,16 +7,16 @@ Matritsa rangini yana matritsadagi noldan farqli har qanday minorning eng katta 
 Matritsa to‘g‘ri to‘rtburchak va $N \times M$ o‘lchamli bo‘lsin.
 E’tibor bering: agar matritsa kvadrat bo‘lsa va determinanti noldan farqli bo‘lsa, rang $N$ ($=M$) ga teng; aks holda u kichikroq bo‘ladi. Umuman olganda, matritsa rangi $\min (N, M)$ dan oshmaydi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Rangni [Gauss eliminatsiyasi](/algorithms/linear-algebra/linear-system-gauss) yordamida topish mumkin. Biz sistemani yechishda yoki determinantni topishda bajariladigan amallarning o‘zini bajaramiz. Lekin $i$-ustunda hali tanlanmagan satrlar orasida noldan farqli elementi bor satr bo‘lmasa, bu qadamni o‘tkazib yuboramiz.
 Aks holda, agar $i$-qadamda $i$-ustunda noldan farqli elementi bor satr topilgan bo‘lsa, bu satrni tanlangan deb belgilaymiz, rangni bittaga oshiramiz (boshida rang $0$ ga teng) va bu satrni qolgan satrlardan ayirishning odatiy amallarini bajaramiz.
 
-## Murakkablik
+## Murakkablik {#complexity}
 
 Bu algoritm $\mathcal{O}(n^3)$ vaqtda ishlaydi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 const double EPS = 1E-9;
@@ -51,6 +51,6 @@ int compute_rank(vector<vector<double>> A) {
 }
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
  * [TIMUS1041 Nikifor](http://acm.timus.ru/problem.aspx?space=1&num=1041)

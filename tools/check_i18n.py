@@ -141,6 +141,10 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
     "kaa": {
+        # Algorithm library sections (ADR-0062): Karakalpak writes these
+        # three mathematical terms exactly as Uzbek does.
+        "algorithms.category.combinatorics", "algorithms.category.geometry",
+        "algorithms.category.graph",
         # Courses (ADR-0056): «Kurslar» and «Test» are written the same in kaa.
         "nav.courses", "course.lesson.kind.quiz", "studio.courses.col.course",
         # Education levels: loanwords written the same in uz and kaa.

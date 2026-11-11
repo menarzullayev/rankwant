@@ -1,6 +1,6 @@
-# Sprague–Grundy teoremasi. Nim
+# Sprague–Grundy teoremasi. Nim {#sprague-grundy-theorem-nim}
 
-## Kirish
+## Kirish {#introduction}
 
 Ushbu teorema ikki o‘yinchili **xolis** — inglizcha *impartial* — o‘yinlarni tavsiflaydi. Bunday o‘yinlarda mavjud yurishlar va yutish yoki yutqazish faqat o‘yin holatiga bog‘liq.
 Boshqacha aytganda, ikki o‘yinchi orasidagi yagona farq — ulardan biri birinchi yurish qiladi.
@@ -23,7 +23,7 @@ Vazifamiz — berilgan o‘yin holatlarini tasniflash.
 
 Bunday o‘yinlar nazariyasi 1935-yilda Roland Sprague va 1939-yilda Patrick Michael Grundy tomonidan bir-biridan mustaqil ravishda ishlab chiqilgan.
 
-## Nim
+## Nim {#nim}
 
 Bu o‘yin yuqorida sanab o‘tilgan cheklovlarga mos keladi.
 Bundan tashqari, mukammal axborotli istalgan ikki o‘yinchili xolis o‘yinni Nim o‘yiniga keltirish mumkin.
@@ -34,7 +34,7 @@ Uning kelib chiqishi ehtimol Xitoyga borib taqaladi; hech bo‘lmaganda *Jianshi
 Yevropadagi eng qadimgi ma’lumotlar XVI asrga tegishli.
 O‘yinga nomni Charles Bouton bergan; u 1901-yilda o‘yinning to‘liq tahlilini e’lon qilgan.
 
-### O‘yin tavsifi
+### O‘yin tavsifi {#game-description}
 
 Bir nechta tosh uyumi mavjud, har bir uyumda ma’lum sondagi tosh bor.
 Bir yurishda o‘yinchi istalgan bitta uyumdan musbat sondagi toshni olib tashlashi mumkin.
@@ -43,7 +43,7 @@ Yurish qila olmaydigan o‘yinchi yutqazadi; bu barcha uyumlar bo‘sh bo‘lgan
 O‘yin holati musbat butun sonlarning multito‘plami bilan bir qiymatli tasvirlanadi.
 Yurish tanlangan sonni qat’iy kamaytirishdan iborat; agar son nolga aylansa, u to‘plamdan olib tashlanadi.
 
-### Yechim
+### Yechim {#the-solution}
 
 Charles L. Bouton yechimi quyidagicha:
 
@@ -92,7 +92,7 @@ Agar $s\neq0$ bo‘lsa, $t=0$ bo‘lgan holatga olib boruvchi yurish mavjudligin
 Nimning istalgan holatini XOR-yig‘indi o‘zgarmaydigan boshqa ekvivalent holat bilan almashtirish mumkin.
 Bundan tashqari, bir nechta uyumli Nimni o‘lchami $s$ bo‘lgan bitta uyum bilan almashtirish mumkin.
 
-### Misère o‘yini
+### Misère o‘yini {#misere-game}
 
 **Misère o‘yini**da maqsad teskaridir: oxirgi toshni olib tashlagan o‘yinchi yutqazadi.
 Ma’lum bo‘lishicha, misère Nimni deyarli oddiy Nim kabi optimal o‘ynash mumkin.
@@ -103,11 +103,11 @@ Oddiy o‘yinda yurishdan keyin bittadan toshi bor uyumlar soni juft bo‘lishin
 Misère o‘yinida esa bittadan toshi bor uyumlar soni toq bo‘ladigan yurishni tanlaymiz.
 Bu strategiya ishlaydi, chunki strategiya almashtiriladigan holat o‘yin davomida albatta paydo bo‘ladi va bu holat yutuvchi: unda bittadan ortiq toshi bor aynan bitta uyum mavjud, shuning uchun Nim-yig‘indi nol emas.
 
-## Xolis o‘yinlar va Nimning ekvivalentligi — Sprague–Grundy teoremasi
+## Xolis o‘yinlar va Nimning ekvivalentligi — Sprague–Grundy teoremasi {#the-equivalence-of-impartial-games-and-nim-sprague-grundy-theorem}
 
 Endi istalgan xolis o‘yinning har bir holati uchun unga mos Nim holatini qanday topishni o‘rganamiz.
 
-### Uyumni kattalashtirishga ruxsat berilgan Nim haqidagi lemma
+### Uyumni kattalashtirishga ruxsat berilgan Nim haqidagi lemma {#lemma-about-nim-with-increases}
 
 Nimning quyidagi modifikatsiyasini ko‘rib chiqamiz: tanlangan uyumga **tosh qo‘shishga** ham ruxsat beriladi.
 Qachon va qanday kattalashtirishga ruxsat berilishi haqidagi aniq qoidalar **biz uchun muhim emas**, biroq qoidalar o‘yinning **siklsiz** bo‘lib qolishini ta’minlashi kerak. Keyingi bo‘limlarda misol o‘yinlar ko‘riladi.
@@ -120,7 +120,7 @@ Boshqacha aytganda, kattalashtirishlar foydasiz va yutuvchi strategiyada ulardan
 O‘yinchi bir uyumga tosh qo‘shdi, deb faraz qilaylik. Raqibi uning yurishini oddiygina bekor qilishi — uyumdagi toshlar sonini avvalgi qiymatgacha kamaytirishi — mumkin.
 O‘yin siklsiz bo‘lgani uchun ertami-kechmi joriy o‘yinchi kattalashtirish yurishidan foydalana olmaydi va odatiy Nim yurishini qilishga majbur bo‘ladi.
 
-### Sprague–Grundy teoremasi
+### Sprague–Grundy teoremasi {#sprague-grundy-theorem}
 
 Ikki o‘yinchili xolis o‘yinning $v$ holatini va undan bevosita erishish mumkin bo‘lgan $v_i$ holatlarni ko‘rib chiqamiz; bu yerda $i \in \{ 1, 2, \dots, k \} , k \ge 0$.
 $v$ holatiga o‘lchami $x$ bo‘lgan bitta uyumli, unga to‘liq ekvivalent Nim o‘yinini mos qo‘yish mumkin.
@@ -150,7 +150,7 @@ Bu $v$ holati **uyumni kattalashtirishga ruxsat berilgan, o‘lchami $p$ bo‘lg
 Bunday o‘yinda $p$ dan kichik har qanday o‘lchamdagi uyumga o‘tishlar va ehtimol $p$ dan katta o‘lchamdagi uyumlarga o‘tishlar mavjud.
 Demak, $p$ haqiqatan ham joriy holatning kerakli Grundy qiymatidir.
 
-## Teoremani qo‘llash
+## Teoremani qo‘llash {#application-of-the-theorem}
 
 Nihoyat, istalgan ikki o‘yinchili xolis o‘yin uchun yutish yoki yutqazishni aniqlaydigan algoritmni tavsiflaymiz.
 
@@ -170,7 +170,7 @@ Avvalgi bo‘limdan farqli ravishda, bu yerda o‘tishlar birlashtirilgan o‘yi
 Ularni uyum o‘lchamlari mustaqil o‘yinlarning Grundy qiymatlariga teng bo‘lgan Nim sifatida qaraymiz.
 Bouton teoremasiga ko‘ra, oddiy Nimdagidek ularning XOR-yig‘indisini olish mumkin.
 
-## Grundy qiymatlaridagi qonuniyatlar
+## Grundy qiymatlaridagi qonuniyatlar {#patterns-in-grundy-values}
 
 Aniq masalalarni Grundy qiymatlari yordamida yechishda qiymatlar jadvalini tuzib, undagi **qonuniyatlarni izlash** ko‘pincha foydali.
 
@@ -179,9 +179,9 @@ Kuzatilgan qonuniyat aksariyat hollarda to‘g‘ri bo‘ladi va istalsa induksi
 
 Biroq Grundy qiymatlarida bunday muntazamlik **har doim ham** mavjud emas. Hatto juda sodda ayrim o‘yinlar uchun ham bu qonuniyatlar mavjud yoki mavjud emasligini aniqlash ochiq masala bo‘lib qolmoqda; masalan, “Grundy o‘yini”.
 
-## O‘yinlarga misollar
+## O‘yinlarga misollar {#example-games}
 
-### Xochlar o‘yini
+### Xochlar o‘yini {#crosses-crosses}
 
 **Qoidalar.**
 O‘lchami $1\times n$ bo‘lgan katakli tasmani ko‘rib chiqamiz. Bir yurishda o‘yinchi bitta xoch qo‘yishi kerak, ammo ikkita xochni yonma-yon — qo‘shni kataklarga — qo‘yish taqiqlanadi. Odatdagidek, qonuniy yurishi qolmagan o‘yinchi yutqazadi.
@@ -200,7 +200,7 @@ Shu tariqa $O(n^2)$ yechimga ega bo‘ldik.
 
 Aslida $g(n)$ qiymati $n=52$ dan boshlab uzunligi 34 bo‘lgan davrga ega.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [KATTIS S-Nim](https://open.kattis.com/problems/snim)
 - [CodeForces - Marbles (2018-2019 ACM-ICPC Brazil Subregional)](https://codeforces.com/gym/101908/problem/B)

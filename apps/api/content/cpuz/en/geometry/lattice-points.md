@@ -1,4 +1,4 @@
-# Lattice points inside non-lattice polygon
+# Lattice points inside non-lattice polygon {#lattice-points-inside-non-lattice-polygon}
 
 For lattice polygons there is Pick's formula to enumerate the lattice points inside the polygon.
 What about polygons with arbitrary vertices?
@@ -52,7 +52,7 @@ We have two cases:
 
     As you see, in new reference system linear function will have coefficient $\tfrac 1 k$ and its zero will be in the point $\lfloor k\cdot n + b \rfloor-(k\cdot n+b)$ which makes formula above correct.
 
-## Complexity analysis
+## Complexity analysis {#complexity-analysis}
 
 We have to count at most $\dfrac{(k(n-1)+2b)n}{2}$ points.
 Among them we will count $\dfrac{\lfloor k \rfloor (n-1)+2\lfloor b \rfloor}{2}$ on the very first step.
@@ -60,7 +60,7 @@ We may consider that $b$ is negligibly small because we can start with making it
 In that case we cay say that we count about $\dfrac{\lfloor k \rfloor}{k} \geq \dfrac 1 2$  of all points.
 Thus we will finish in $O(\log n)$ steps.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is simple function which calculates number of integer points $(x;y)$ such for $0 \leq x < n$ and $0 < y \leq \lfloor k x+b\rfloor$:
 

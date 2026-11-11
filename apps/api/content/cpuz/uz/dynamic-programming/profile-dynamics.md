@@ -1,4 +1,4 @@
-# Buzilgan profil bo‘yicha DP. “Parket” masalasi
+# Buzilgan profil bo‘yicha DP. “Parket” masalasi {#dynamic-programming-on-broken-profile-problem-parquet}
 
 Buzilgan profil bo‘yicha DP yordamida odatda quyidagi turdagi masalalar yechiladi:
 
@@ -7,7 +7,7 @@ Buzilgan profil bo‘yicha DP yordamida odatda quyidagi turdagi masalalar yechil
 - eng kam sondagi joy yoki katak qoplanmay qoladigan qisman qoplashni topish;
 - boshqa hech qanday shakl qo‘shib bo‘lmaydigan, shu bilan birga eng kam sondagi shakllardan iborat qisman qoplashni topish.
 
-## “Parket” masalasi
+## “Parket” masalasi {#problem-parquet}
 
 **Masala sharti.** O‘lchami $N \times M$ bo‘lgan panjara berilgan. Uni $2 \times 1$ o‘lchamli shakllar bilan qoplash usullari sonini toping. Hech bir katak qoplanmay qolmasligi va shakllar o‘zaro ustma-ust tushmasligi kerak.
 
@@ -18,7 +18,7 @@ Masalaning javobi, ravshanki, $dp[N, 0]$ bo‘ladi.
 
 DP holatlarini $i = 1, \cdots N$ va $mask = 0, \ldots 2^M - 1$ bo‘yicha iteratsiya qilib quramiz. Har bir $mask$ uchun faqat oldinga o‘tishlar qilamiz, ya’ni joriy panjaraga shakllar _qo‘shamiz_.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 int n, m;
@@ -58,7 +58,7 @@ int main()
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [UVA 10359 - Tiling](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1300)
 - [UVA 10918 - Tri Tiling](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1859)
@@ -74,7 +74,7 @@ int main()
 - [Timus 1519 - Formula 1](https://acm.timus.ru/problem.aspx?space=1&num=1519)
 - [Codeforces Parquet](https://codeforces.com/problemset/problem/26/C)
 
-## Manbalar
+## Manbalar {#references}
 
 - [EvilBunny blogi](https://web.archive.org/web/20180712171735/https://blog.evilbuggy.com/2018/05/broken-profile-dynamic-programming.html)
 - [“syg96” muallifligidagi TopCoder retsepti](https://apps.topcoder.com/forums/?module=Thread&start=0&threadID=697369)

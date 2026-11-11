@@ -1,8 +1,8 @@
-# Binary search
+# Binary search {#binary-search}
 
 **Binary search** is a method that allows for quicker search of something by splitting the search interval into two. Its most common application is searching values in sorted arrays, however the splitting idea is crucial in many other typical tasks.
 
-## Search in sorted arrays
+## Search in sorted arrays {#search-in-sorted-arrays}
 
 The most typical problem that leads to the binary search is as follows. You're given a sorted array $A_0 \leq A_1 \leq \dots \leq A_{n-1}$, check if $k$ is present within the sequence. The simplest solution would be to check every element one by one and compare it with $k$ (a so-called linear search). This approach works in $O(n)$, but doesn't utilize the fact that the array is sorted.
 
@@ -31,13 +31,13 @@ Taking $\log_2$ on both sides, we get $h \approx \log_2(R-L) \in O(\log n)$.
 
 Logarithmic number of steps is drastically better than that of linear search. For example, for $n \approx 2^{20} \approx 10^6$ you'd need to make approximately a million operations for linear search, but only around $20$ operations with the binary search.
 
-### Lower bound and upper bound
+### Lower bound and upper bound {#lower-bound-and-upper-bound}
 
 It is often convenient to find the position of the first element that is greater or equal than $k$ (called the lower bound of $k$ in the array) or the position of the first element that is greater than $k$ (called the upper bound of $k$) rather than the exact position of the element.
 
 Together, lower and upper bounds produce a possibly empty half-interval of the array elements that are equal to $k$. To check whether $k$ is present in the array it's enough to find its lower bound and check if the corresponding element equates to $k$.
 
-### Implementation
+### Implementation {#implementation}
 
 The explanation above provides a rough description of the algorithm. For the implementation details, we'd need to be more precise.
 
@@ -66,7 +66,7 @@ During the execution of the algorithm, we never evaluate neither $A_L$ nor $A_R$
 
 **Note.** Calculating `m` as `m = (r + l) / 2` can lead to overflow if `l` and `r` are two positive integers, and this error lived about 9 years in JDK as described in the [blogpost](https://ai.googleblog.com/2006/06/extra-extra-read-all-about-it-nearly.html). Some alternative approaches include e.g. writing `m = l + (r - l) / 2` which always works for positive integer `l` and `r`, but might still overflow if `l` is a negative number. If you use C++20, it offers an alternative solution in the form of `m = std::midpoint(l, r)` which always works correctly.
 
-## Search on arbitrary predicate
+## Search on arbitrary predicate {#search-on-arbitrary-predicate}
 
 Let $f : \{0,1,\dots, n-1\} \to \{0, 1\}$ be a boolean function defined on $0,1,\dots,n-1$ such that it is monotonously increasing, that is
 
@@ -93,7 +93,7 @@ while (r - l > 1) {
 }
 ```
 
-### Binary search on the answer
+### Binary search on the answer {#binary-search-on-the-answer}
 
 Such situation often occurs when we're asked to compute some value, but we're only capable of checking whether this value is at least $i$. For example, you're given an array $a_1,\dots,a_n$ and you're asked to find the maximum floored average sum
 
@@ -115,7 +115,7 @@ $$
 
 so now we need to check whether there is a subarray of a new array $a_i - \lambda$ of length at least $x+1$ with non-negative sum, which is doable with some prefix sums.
 
-## Continuous search
+## Continuous search {#continuous-search}
 
 Let $f : \mathbb R \to \mathbb R$ be a real-valued function that is continuous on a segment $[L, R]$.
 
@@ -125,13 +125,13 @@ The value $x$ could be approximated up to $\pm\delta$ in $O\left(\log \frac{R-L}
 
 For example, let $f(x)=x^3 + ax^2 + bx + c$. Then $f(L) \to -\infty$ and $f(R) \to +\infty$ with $L \to -\infty$ and $R \to +\infty$. Which means that it is always possible to find sufficiently small $L$ and sufficiently large $R$ such that $f(L) < 0$ and $f(R) > 0$. Then, it is possible to find with binary search arbitrarily small interval containing $x$ such that $f(x)=0$.
 
-## Search with powers of 2
+## Search with powers of 2 {#search-with-powers-of-2}
 
 Another noteworthy way to do binary search is, instead of maintaining an active segment, to maintain the current pointer $i$ and the current power $k$. The pointer starts at $i=L$ and then on each iteration one tests the predicate at point $i+2^k$. If the predicate is still $0$, the pointer is advanced from $i$ to $i+2^k$, otherwise it stays the same, then the power $k$ is decreased by $1$.
 
 This paradigm is widely used in tasks around trees, such as finding lowest common ancestor of two vertices or finding an ancestor of a specific vertex that has a certain height. It could also be adapted to e.g. find the $k$-th non-zero element in a Fenwick tree.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [LeetCode -  Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 * [LeetCode -  Search Insert Position](https://leetcode.com/problems/search-insert-position/)

@@ -1,10 +1,10 @@
-# Manacher algoritmi — barcha palindrom ostsatrlarni $O(N)$ da topish
+# Manacher algoritmi — barcha palindrom ostsatrlarni $O(N)$ da topish {#manachers-algorithm-finding-all-sub-palindromes-in-on}
 
-## Masala bayoni
+## Masala bayoni {#statement}
 
 Uzunligi $n$ bo‘lgan $s$ satri berilgan. $s[i\dots j]$ ostsatri palindrom bo‘ladigan barcha $(i, j)$ juftliklarni toping. $t = t_{rev}$ bo‘lsa, $t$ satri palindrom deyiladi (bu yerda $t_{rev}$ — $t$ satrining teskarisi).
 
-## Aniqroq masala bayoni
+## Aniqroq masala bayoni {#more-precise-statement}
 
 Eng yomon holatda satrda $O(n^2)$ tagacha palindrom ostsatr bo‘lishi mumkin va bir qarashda bu masala uchun chiziqli algoritm mavjud emasdek ko‘rinadi.
 
@@ -24,7 +24,7 @@ $$c\ \overbrace{b\ a\ \underbrace{a}_{s_3}\ b}^{d_{even}[3]=2} d$$
 
 Ajablanarlisi shundaki, ushbu “palindromlik massivlari” — $d_{odd}[]$ va $d_{even}[]$ ni chiziqli vaqtda hisoblaydigan yetarlicha sodda algoritm mavjud. Ushbu maqolada shu algoritm tasvirlanadi.
 
-## Yechim
+## Yechim {#solution}
 
 Umuman olganda, bu masalaning ko‘plab yechimlari bor: [satrlarni xeshlash](/algorithms/string/string-hashing) yordamida uni $O(n\cdot \log n)$ vaqtda, [suffiks daraxtlari](/algorithms/string/suffix-tree-ukkonen) va tezkor LCA yordamida esa $O(n)$ vaqtda yechish mumkin.
 
@@ -32,7 +32,7 @@ Ammo bu yerda tasvirlangan usul **ancha** sodda hamda vaqt va xotira murakkablig
 
 Bu masalani va umuman palindromlar bilan bog‘liq masalalarni yechishning yana bir zamonaviy usuli palindrom daraxti yoki eertree deb ataladigan tuzilmadan foydalanishdir.
 
-## Sodda algoritm
+## Sodda algoritm {#trivial-algorithm}
 
 Keyingi izohda noaniqlik bo‘lmasligi uchun “sodda algoritm” deganda nimani nazarda tutishimizni belgilaymiz.
 
@@ -58,7 +58,7 @@ vector<int> manacher_odd_trivial(string s) {
 
 Satr chetlarini alohida qayta ishlamaslik uchun `$` va `^` terminal belgilaridan foydalanildi.
 
-## Manacher algoritmi
+## Manacher algoritmi {#manachers-algorithm}
 
 Barcha toq uzunlikdagi palindrom ostsatrlarni topish, ya’ni $d_{odd}[]$ ni hisoblash algoritmini tasvirlaymiz.
 
@@ -114,7 +114,7 @@ Endi navbatdagi $i$ uchun $d_{odd}[i]$ ni hisoblamoqchimiz va $d_{odd}[]$ ning b
 
 Yana bir bor: har bir $d_{odd}[i]$ ni hisoblagandan keyin $(l, r)$ qiymatlarini yangilashni unutmaslik kerak.
 
-## Manacher algoritmining murakkabligi
+## Manacher algoritmining murakkabligi {#complexity-of-manachers-algorithm}
 
 Bir qarashda bu algoritmning vaqt murakkabligi chiziqli ekani aniq emas, chunki muayyan pozitsiya uchun javobni qidirishda sodda algoritmni tez-tez ishga tushiramiz.
 
@@ -124,7 +124,7 @@ Sodda algoritmning har bir iteratsiyasi $r$ ni bittaga oshirishini ko‘rish mum
 
 Manacher algoritmining qolgan qismlari ham ravshanki chiziqli vaqtda ishlaydi. Shunday qilib, vaqt murakkabligi $O(n)$ bo‘ladi.
 
-## Manacher algoritmi implementatsiyasi
+## Manacher algoritmi implementatsiyasi {#implementation-of-manachers-algorithm}
 
 $d_{odd}[]$ ni hisoblash uchun quyidagi kodni olamiz. E’tibor berish kerak bo‘lgan jihatlar:
 
@@ -155,7 +155,7 @@ vector<int> manacher_odd(string s) {
 }
 ```
 
-## Juft-toqlik bilan ishlash
+## Juft-toqlik bilan ishlash {#working-with-parities}
 
 Manacher algoritmini toq va juft uzunliklar uchun alohida implementatsiya qilish mumkin bo‘lsa-da, juft uzunliklar uchun variant ko‘pincha murakkabroq deb hisoblanadi: u kamroq tabiiy va off-by-one xatolariga oson olib keladi.
 
@@ -186,7 +186,7 @@ vector<int> manacher(string s) {
 
 Soddalik uchun massivni $d_{odd}$ va $d_{even}$ ga ajratish hamda ularni bevosita hisoblash keltirilmagan.
 
-## Masalalar
+## Masalalar {#problems}
 
 - [Library Checker - Enumerate Palindromes](https://judge.yosupo.jp/problem/enumerate_palindromes)
 - [Longest Palindrome](https://cses.fi/problemset/task/1111)

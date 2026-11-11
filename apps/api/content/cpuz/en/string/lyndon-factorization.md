@@ -1,6 +1,6 @@
-# Lyndon factorization
+# Lyndon factorization {#lyndon-factorization}
 
-## Lyndon factorization
+## Lyndon factorization {#lyndon-factorization}
 
 First let us define the notion of the Lyndon factorization.
 
@@ -13,7 +13,7 @@ The **Lyndon factorization** of the string $s$ is a factorization $s = w_1 w_2 \
 
 It can be shown, that for any string such a factorization exists and that it is unique.
 
-## Duval algorithm
+## Duval algorithm {#duval-algorithm}
 
 The Duval algorithm constructs the Lyndon factorization in $O(n)$ time using $O(1)$ additional memory.
 
@@ -42,7 +42,7 @@ There can be three different cases:
   The simple string will have the length $j - k$.
   In the next iteration we start again with the remaining $s_2$.
 
-### Implementation
+### Implementation {#implementation}
 
 Here we present the implementation of the Duval algorithm, which will return the desired Lyndon factorization of a given string $s$.
 
@@ -69,7 +69,7 @@ vector<string> duval(string const& s) {
 }
 ```
 
-### Complexity
+### Complexity {#complexity}
 
 Let us estimate the running time of this algorithm.
 
@@ -82,7 +82,7 @@ It's easy to see that the simple words that we identify in each iteration of the
 Therefore also the sum of the remainders will be smaller than $n$, which means that we only perform at most $O(n)$ iterations of the first inner while loop.
 In fact the total number of character comparisons will not exceed $4n - 3$.
 
-## Finding the smallest cyclic shift
+## Finding the smallest cyclic shift {#finding-the-smallest-cyclic-shift}
 
 Let there be a string $s$.
 We construct the Lyndon factorization for the string $s + s$ (in $O(n)$ time).
@@ -116,6 +116,6 @@ string min_cyclic_string(string s) {
 }
 ```
 
-## Problems
+## Problems {#problems}
 
 - [UVA #719 - Glass Beads](https://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=660)

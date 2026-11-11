@@ -1,4 +1,4 @@
-# Kesishmaydigan to‘plamlar birlashmasi (DSU)
+# Kesishmaydigan to‘plamlar birlashmasi (DSU) {#disjoint-set-union}
 
 Ushbu maqolada **Disjoint Set Union**, qisqacha **DSU** — kesishmaydigan to‘plamlar birlashmasi ma’lumotlar tuzilmasi ko‘rib chiqiladi. Ikki asosiy amali sababli u ko‘pincha **Union-Find** deb ham ataladi.
 
@@ -18,7 +18,7 @@ Quyida batafsil ko‘rsatilganidek, ushbu tuzilma har bir asosiy amalni o‘rtac
 
 Maqolaning keyingi bo‘limlaridan birida DSUning muqobil ko‘rinishi ham tushuntiriladi. U sekinroq — o‘rtacha $O(\log n)$ — murakkablikka ega, ammo ayrim vazifalarda odatiy DSUdan kuchliroq bo‘lishi mumkin.
 
-## Samarali ma’lumotlar tuzilmasini qurish
+## Samarali ma’lumotlar tuzilmasini qurish {#build-an-efficient-data-structure}
 
 To‘plamlarni **daraxtlar** ko‘rinishida saqlaymiz: har bir daraxt bitta to‘plamga mos keladi, daraxt ildizi esa shu to‘plamning vakili yoki lideri bo‘ladi.
 
@@ -30,7 +30,7 @@ Dastlab har bir element alohida to‘plam bo‘lgani uchun har bir tugun o‘zin
 
 Implementatsiyada har bir tugunning daraxtdagi bevosita ajdodiga ko‘rsatkichni saqlaydigan `parent` massivi kerak bo‘ladi.
 
-### Sodda implementatsiya
+### Sodda implementatsiya {#naive-implementation}
 
 DSUning birinchi implementatsiyasini yozishimiz mumkin. Dastlab u ancha samarasiz bo‘ladi, lekin keyin ikkita optimallashtirish yordamida har bir funksiya chaqiruvini deyarli o‘zgarmas vaqtga tushiramiz.
 
@@ -65,7 +65,7 @@ Biroq bu implementatsiya samarasiz. Daraxtlar uzun zanjirlarga aylanib qoladigan
 
 Shuning uchun tuzilmani sezilarli tezlashtiradigan ikkita optimallashtirishni ko‘rib chiqamiz.
 
-### Yo‘lni siqish optimallashtirishi
+### Yo‘lni siqish optimallashtirishi {#path-compression-optimization}
 
 Bu optimallashtirish `find_set` amalini tezlashtiradi.
 
@@ -89,7 +89,7 @@ Avval to‘plam vakili, ya’ni ildiz topiladi. So‘ng rekursiya stacki qaytayo
 
 Amaldagi shu kichik o‘zgarishning o‘zi har bir chaqiruv uchun o‘rtacha $O(\log n)$ murakkablik beradi; bu yerda isbot keltirilmaydi. Ikkinchi optimallashtirish bilan yanada tezroq natijaga erishamiz.
 
-### O‘lcham yoki rang bo‘yicha birlashtirish
+### O‘lcham yoki rang bo‘yicha birlashtirish {#union-by-size-rank}
 
 Bu optimallashtirishda `union_set` (`union_sets`) amalini, aniqrog‘i qaysi daraxt ikkinchisiga ulanishini o‘zgartiramiz. Sodda implementatsiyada ikkinchi daraxt doimo birinchisiga ulanardi va bu uzunligi $O(n)$ bo‘lgan zanjirlarga olib kelishi mumkin edi.
 
@@ -143,7 +143,7 @@ void union_sets(int a, int b) {
 
 Ikki optimallashtirish vaqt va xotira murakkabligi bo‘yicha ekvivalent. Amaliyotda istalgan birini ishlatish mumkin.
 
-### Vaqt murakkabligi
+### Vaqt murakkabligi {#time-complexity}
 
 Yo‘lni siqish bilan o‘lcham yoki rang bo‘yicha birlashtirishni birga qo‘llasak, so‘rovlar deyarli o‘zgarmas vaqtda bajariladi.
 
@@ -155,7 +155,7 @@ Bu murakkablikning to‘liq isboti uzun va murakkab bo‘lgani uchun maqolada ke
 
 Yo‘lni siqishsiz, faqat o‘lcham yoki rang bo‘yicha birlashtirish ishlatilgan DSU har bir so‘rovni $O(\log n)$ vaqtda bajarishini ham qayd etish kerak.
 
-### Indeks bo‘yicha ulash va tanga tashlab ulash
+### Indeks bo‘yicha ulash va tanga tashlab ulash {#linking-by-index-coin-flip-linking}
 
 Rang va o‘lcham bo‘yicha birlashtirish har bir to‘plam uchun qo‘shimcha ma’lumot saqlashni hamda har bir birlashtirishda uni yangilashni talab qiladi.
 
@@ -194,11 +194,11 @@ void union_sets(int a, int b) {
 }
 ```
 
-## Qo‘llanishlar va turli yaxshilashlar
+## Qo‘llanishlar va turli yaxshilashlar {#applications-and-various-improvements}
 
 Ushbu bo‘limda DSUning sodda qo‘llanishlari hamda tuzilmaning ayrim kengaytirilgan ko‘rinishlari ko‘rib chiqiladi.
 
-### Grafdagi bog‘langan komponentlar
+### Grafdagi bog‘langan komponentlar {#connected-components-in-a-graph}
 
 Bu DSUning eng tabiiy qo‘llanishlaridan biridir.
 
@@ -208,7 +208,7 @@ DSUni bevosita qo‘llab, tugun yoki qirra qo‘shish hamda so‘rovga javob ber
 
 Bu qo‘llanish muhim, chunki deyarli ayni masala minimum ostov daraxtni topuvchi [Kruskal algoritmida](/algorithms/graph/mst-kruskal) uchraydi. DSU yordamida uning $O(m\log n+n^2)$ murakkabligini [yaxshilab](/algorithms/graph/mst-kruskal-with-dsu), $O(m\log n)$ ga tushirish mumkin.
 
-### Rasmdagi bog‘langan komponentlarni topish
+### Rasmdagi bog‘langan komponentlarni topish {#search-for-connected-components-in-an-image}
 
 $n\times m$ pikselli rasm berilgan bo‘lsin. Dastlab barcha piksellar oq, keyin ayrim piksellar qora rangga bo‘yaladi. Yakuniy rasmdagi har bir oq bog‘langan komponent o‘lchamini aniqlash talab qilinadi.
 
@@ -216,13 +216,13 @@ Barcha oq piksellarni ko‘rib chiqamiz. Har bir katak uchun to‘rtta qo‘shni
 
 Masalani [DFS](/algorithms/graph/depth-first-search) yoki [BFS](/algorithms/graph/breadth-first-search) bilan ham yechish mumkin. Biroq DSU usulining afzalligi shundaki, matritsani qatorma-qator qayta ishlash mumkin: joriy qatorni qayta ishlash uchun faqat oldingi va joriy qator hamda bitta qator elementlari uchun qurilgan DSU kerak. Natijada xotira $O(\min(n,m))$ bo‘ladi.
 
-### Har bir to‘plam uchun qo‘shimcha ma’lumot saqlash
+### Har bir to‘plam uchun qo‘shimcha ma’lumot saqlash {#store-additional-information-for-each-set}
 
 DSU to‘plamlarda qo‘shimcha ma’lumot saqlashni osonlashtiradi. Eng sodda misol — to‘plam o‘lchami; u yuqoridagi o‘lcham bo‘yicha birlashtirish bo‘limida joriy vakilda saqlangan edi.
 
 Xuddi shu usulda, ya’ni axborotni vakil tugunlarda saqlash orqali to‘plam haqidagi boshqa istalgan ma’lumotni ham yuritish mumkin.
 
-### Kesma bo‘ylab sakrashlarni siqish va ostmassivlarni offline bo‘yash
+### Kesma bo‘ylab sakrashlarni siqish va ostmassivlarni offline bo‘yash {#compress-jumps-along-a-segment-painting-subarrays-offline}
 
 DSUning keng tarqalgan qo‘llanishlaridan biri quyidagicha. Har bir tugundan boshqa bir tugunga chiqish qirrasi bor. Berilgan boshlang‘ich tugundan qirralar bo‘ylab yurilganda yetib boriladigan oxirgi nuqtani DSU yordamida deyarli o‘zgarmas vaqtda topish mumkin.
 
@@ -252,7 +252,7 @@ for (int i = m-1; i >= 0; i--) {
 
 Yana bir optimallashtirish mavjud. Keyingi bo‘yalmagan katakni qo‘shimcha `end[]` massivida saqlasak, rang yoki o‘lcham bo‘yicha birlashtirishni ham qo‘llash mumkin. Shunda ikki to‘plam evristika bo‘yicha birlashtiriladi va yechim $O(\alpha(n))$ murakkablikka ega bo‘ladi.
 
-### Vakilgacha bo‘lgan masofani saqlash
+### Vakilgacha bo‘lgan masofani saqlash {#support-distances-up-to-representative}
 
 Ayrim DSU qo‘llanishlarida tugun bilan uning to‘plam vakili orasidagi masofani, ya’ni joriy tugundan daraxt ildizigacha bo‘lgan yo‘l uzunligini saqlash kerak.
 
@@ -288,7 +288,7 @@ void union_sets(int a, int b) {
 }
 ```
 
-### Yo‘l uzunligi paritetini saqlash va online ikki bo‘laklilikni tekshirish
+### Yo‘l uzunligi paritetini saqlash va online ikki bo‘laklilikni tekshirish {#support-the-parity-of-the-path-length-checking-bipartiteness-online}
 
 Vakilgacha bo‘lgan masofani saqlashga o‘xshab, yo‘l uzunligining paritetini ham yuritish mumkin.
 
@@ -388,13 +388,13 @@ for (int i = 0; i < n; i++) {
 
 Hozir bu algoritm Arpa usuli nomi bilan tanilgan. U ushbu texnikani mustaqil ravishda topgan va ommalashtirgan AmirReza Poorakhavan sharafiga nomlangan, garchi algoritm undan oldin ham mavjud bo‘lgan bo‘lsa-da.
 
-### Offline LCAni o‘rtacha $O(\alpha(n))$ da topish
+### Offline LCAni o‘rtacha $O(\alpha(n))$ da topish {#offline-lca-lowest-common-ancestor-in-a-tree-in-oalphan-on-average}
 
 Daraxtdagi eng quyi umumiy ajdodni topish algoritmi [Eng quyi umumiy ajdod — Tarjanning offline algoritmi](/algorithms/graph/lca-tarjan) maqolasida tushuntirilgan.
 
 Bu algoritm soddaligi sababli boshqa LCA algoritmlari bilan yaxshi raqobat qiladi, ayniqsa [Farach-Colton va Bender](/algorithms/graph/lca-farachcoltonbender) kabi optimal algoritmga nisbatan implementatsiyasi ancha sodda.
 
-### DSUni elementlar ro‘yxatlari bilan ochiq saqlash va tuzilmalarni birlashtirish
+### DSUni elementlar ro‘yxatlari bilan ochiq saqlash va tuzilmalarni birlashtirish {#storing-the-dsu-explicitly-in-a-set-list-applications-of-this-idea-when-merging-various-data-structures}
 
 DSUni saqlashning muqobil usullaridan biri — har bir to‘plamni uning elementlari **ochiq ro‘yxati** sifatida saqlash. Shu bilan birga har bir element o‘z to‘plamining vakiliga ko‘rsatkichni ham saqlaydi.
 
@@ -443,7 +443,7 @@ Masalan, daraxt berilgan bo‘lsin va har bir bargga son yozilgan; bir xil son b
 
 [DFS](/algorithms/graph/depth-first-search) funksiyasi har bir ost-daraxtdagi sonlar to‘plamiga ko‘rsatkich qaytarsin. Joriy tugun barg bo‘lmasa, uning barcha farzandlari uchun DFS chaqirib, qaytgan to‘plamlarni birlashtiramiz. Natijaviy to‘plam o‘lchami joriy tugun javobidir. To‘plamlarni samarali birlashtirish uchun kichiklarini kattalariga qo‘shamiz. Har bir son to‘plamga ko‘pi bilan $O(\log n)$ marta qo‘shilgani uchun, natijada $O(n\log^2 n)$ murakkablikdagi yechim hosil bo‘ladi.
 
-### DSUni aniq daraxt tuzilmasi bilan saqlash va online ko‘priklarni topish
+### DSUni aniq daraxt tuzilmasi bilan saqlash va online ko‘priklarni topish {#storing-the-dsu-by-maintaining-a-clear-tree-structure-online-bridge-finding-in-oalphan-on-average}
 
 DSUning eng kuchli qo‘llanishlaridan biri daraxtlarni bir vaqtning o‘zida **siqilgan va siqilmagan** ko‘rinishda saqlash imkonidir.
 
@@ -457,7 +457,7 @@ Birinchi qarashda qayta ildizlash juda qimmatdek ko‘rinadi: $v$ tugunda ildizl
 
 Aslida vaziyat unchalik yomon emas. Oldingi bo‘limlardagi kabi ikki daraxtning kichigini qayta ildizlasak, o‘rtacha $O(\log n)$ vaqtga erishamiz. Murakkablik isboti bilan birga batafsil tushuntirish [Ko‘priklarni online topish](/algorithms/graph/bridge-searching-online) maqolasida berilgan.
 
-## Tarixiy ma’lumot
+## Tarixiy ma’lumot {#historical-retrospective}
 
 DSU ma’lumotlar tuzilmasi anchadan beri ma’lum.
 
@@ -471,7 +471,7 @@ $O(\alpha(n))$ bahosi ilk bor 1975-yilda Tarjan tomonidan “Efficiency of a Goo
 
 Nihoyat, 1989-yilda Fredman va Saks qabul qilingan hisoblash modelida kesishmaydigan to‘plamlarni birlashtirish masalasining **har qanday** algoritmi o‘rtacha kamida $O(\alpha(n))$ vaqt ishlashi kerakligini isbotlagan (“The cell probe complexity of dynamic data structures”).
 
-## Masalalar
+## Masalalar {#problems}
 
 - [TIMUS — Anansi's Cobweb](http://acm.timus.ru/problem.aspx?space=1&num=1671)
 - [Codeforces — Roads not only in Berland](http://codeforces.com/contest/25/problem/D)

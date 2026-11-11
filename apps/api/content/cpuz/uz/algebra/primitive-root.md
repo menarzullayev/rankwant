@@ -1,6 +1,6 @@
-# Primitiv ildiz
+# Primitiv ildiz {#primitive-root}
 
-## Ta’rif
+## Ta’rif {#definition}
 
 Modul arifmetikasida $g$ soni, agar $n$ bilan o‘zaro tub bo‘lgan har bir son $n$ modul bo‘yicha $g$ ning biror darajasiga teng qoldiq bersa, «$n$ modul bo‘yicha primitiv ildiz» deb ataladi. Matematik tarzda, $g$ soni «$n$ modul bo‘yicha primitiv ildiz» bo‘lishi uchun faqat va faqat $\gcd(a,n)=1$ bo‘lgan har qanday $a$ butun son uchun quyidagi tenglikni qanoatlantiradigan $k$ butun son mavjud bo‘lishi kerak:
 
@@ -10,7 +10,7 @@ $k$ soni $a$ ning $g$ asos bo‘yicha $n$ moduldagi `indeksi` yoki `diskret loga
 
 Xususan, $n$ tub son bo‘lgan holatda primitiv ildizning darajalari $1$ dan $n-1$ gacha bo‘lgan barcha sonlarni aylanib chiqadi.
 
-## Mavjudlik
+## Mavjudlik {#existence}
 
 $n$ modul bo‘yicha primitiv ildiz faqat va faqat quyidagi hollarda mavjud:
 
@@ -20,13 +20,13 @@ $n$ modul bo‘yicha primitiv ildiz faqat va faqat quyidagi hollarda mavjud:
 
 Bu teoremani Gauss 1801-yilda isbotlagan.
 
-## Eyler funksiyasi bilan bog‘liqligi
+## Eyler funksiyasi bilan bog‘liqligi {#relation-with-the-euler-function}
 
 $g$ soni $n$ modul bo‘yicha primitiv ildiz bo‘lsin. U holda $g^k \equiv 1 \pmod n$ tenglik bajariladigan eng kichik $k$ soni $\phi(n)$ ga tengligini ko‘rsatish mumkin. Bundan tashqari, teskarisi ham to‘g‘ri; ushbu maqolada aynan shu faktdan primitiv ildizni topishda foydalanamiz.
 
 Bundan tashqari, agar $n$ modul bo‘yicha primitiv ildizlar mavjud bo‘lsa, ularning soni $\phi(\phi(n))$ ga teng.
 
-## Primitiv ildizni topish algoritmi
+## Primitiv ildizni topish algoritmi {#algorithm-for-finding-a-primitive-root}
 
 Sodda algoritm $[1,n-1]$ oraliqdagi barcha sonlarni ko‘rib chiqadi. So‘ng ularning har biri primitiv ildiz ekanini tekshirish uchun barcha darajalarini hisoblab, ularning hammasi turlicha yoki yo‘qligini tekshiradi. Bu algoritm $O(g \cdot n)$ murakkablikka ega bo‘lib, juda sekin ishlaydi. Ushbu bo‘limda bir nechta mashhur teoremalardan foydalanuvchi tezroq algoritmni taklif qilamiz.
 
@@ -52,7 +52,7 @@ Endi primitiv ildizni topish uchun to‘liq algoritmga egamiz:
 
 Shoup (1990, 1992) [umumlashgan Riemann gipotezasi](http://en.wikipedia.org/wiki/Generalized_Riemann_hypothesis) to‘g‘ri deb faraz qilinganda $g$ soni $O(\log^6 p)$ ekanini isbotlagan.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyidagi kod `p` moduli tub son deb faraz qiladi. U istalgan `p` qiymati uchun ishlashi uchun $\phi(p)$ ni hisoblashni ham qo‘shishimiz kerak.
 

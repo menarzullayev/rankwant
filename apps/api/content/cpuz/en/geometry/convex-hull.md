@@ -1,4 +1,4 @@
-# Convex Hull construction
+# Convex Hull construction {#convex-hull-construction}
 
 In this article we will discuss the problem of constructing a convex hull from a set of points.
 
@@ -11,7 +11,7 @@ are $\mathcal{O}(N \log N)$, and are asymptotically optimal (as it is proven tha
 is no algorithm asymptotically better), with the exception of a few problems where
 parallel or online processing is involved.
 
-## Graham's scan Algorithm
+## Graham's scan Algorithm {#grahams-scan-algorithm}
 The algorithm first finds the bottom-most point $P_0$. If there are multiple points
 with the same Y coordinate, the one with the smaller X coordinate is considered. This
 step takes $\mathcal{O}(N)$ time.
@@ -36,7 +36,7 @@ collinear points, otherwise the algorithm would get the nearest point in this
 line and bail. This step shouldn't be included in the non-collinear version
 of the algorithm, otherwise you wouldn't get the smallest convex hull.
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 struct pt {
@@ -90,7 +90,7 @@ void convex_hull(vector<pt>& a, bool include_collinear = false) {
 }
 ```
 
-## Monotone chain Algorithm
+## Monotone chain Algorithm {#monotone-chain-algorithm}
 The algorithm first finds the leftmost and rightmost points A and B. In the event multiple such points exist,
 the lowest among the left (lowest Y-coordinate) is taken as A, and the highest among the right (highest Y-coordinate)
 is taken as B. Clearly, A and B must both belong to the convex hull as they are the farthest away and they cannot be contained
@@ -125,7 +125,7 @@ However, this allows for a degenerate case where all the input points are collin
 To solve this, we check whether the upper hull contains all the points, and if it does, we just return the points in reverse, as that
 is what Graham's implementation would return in this case.
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 struct pt {
@@ -184,7 +184,7 @@ void convex_hull(vector<pt>& a, bool include_collinear = false) {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Kattis - Convex Hull](https://open.kattis.com/problems/convexhull)
 * [Kattis - Keep the Parade Safe](https://open.kattis.com/problems/parade)

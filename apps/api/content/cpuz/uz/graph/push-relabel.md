@@ -1,4 +1,4 @@
-# Maksimal oqim — push–relabel algoritmi
+# Maksimal oqim — push–relabel algoritmi {#maximum-flow-push-relabel-algorithm}
 
 Push–relabel algoritmi (preflow–push algoritmi nomi bilan ham tanilgan) oqim tarmog‘idagi maksimal oqimni hisoblash algoritmidir.
 Yechmoqchi bo‘lgan masalaning aniq ta’rifini [Maksimal oqim — Ford–Fulkerson va Edmonds–Karp](/algorithms/graph/edmonds-karp) maqolasidan topish mumkin.
@@ -6,7 +6,7 @@ Yechmoqchi bo‘lgan masalaning aniq ta’rifini [Maksimal oqim — Ford–Fulke
 Ushbu maqolada masalani tarmoq bo‘ylab dastlabki oqimni (`preflow`) surish orqali yechishni ko‘rib chiqamiz; bu $O(V^4)$, aniqrog‘i $O(V^2 E)$ vaqtda ishlaydi.
 Algoritm Andrew Goldberg va Robert Tarjan tomonidan 1985-yilda ishlab chiqilgan.
 
-## Ta’riflar
+## Ta’riflar {#definitions}
 
 Algoritm davomida **dastlabki oqim** (`preflow`) bilan ishlashimiz kerak bo‘ladi — bu oqim funksiyasiga o‘xshash $f$ funksiya, ammo u oqim saqlanishi cheklovini bajarishi shart emas.
 U uchun faqat quyidagi cheklovlar
@@ -51,7 +51,7 @@ Yaroqli belgilash ham mavjud bo‘lgani sababli qoldiq grafda $s$ bilan $t$ oras
 Ford–Fulkerson algoritmini push–relabel algoritmi bilan solishtirsak, ular bir-birining duali kabi ko‘rinadi.
 Ford–Fulkerson algoritmi har doim yaroqli oqimni saqlab, oshiruvchi yo‘l qolmaguncha uni yaxshilaydi; push–relabel algoritmida esa hech qachon oshiruvchi yo‘l mavjud bo‘lmaydi va dastlabki oqim yaroqli oqimga aylanguncha uni yaxshilaymiz.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Avval graf uchun yaroqli dastlabki oqim va belgilash funksiyasini boshlang‘ich holatga keltirishimiz kerak.
 
@@ -76,7 +76,7 @@ Yaroqli dastlabki oqim va yaroqli belgilashni boshlang‘ich holatga keltiramiz.
 `push` yoki `relabel` amallaridan birini bajarish mumkin ekan, uni bajaramiz.
 Shundan keyin dastlabki oqim haqiqiy oqimga aylanadi va uni qaytaramiz.
 
-## Murakkablik
+## Murakkablik {#complexity}
 
 Tugun belgisining maksimal qiymati $2|V| - 1$ ekanini oson ko‘rsatish mumkin.
 Bu paytda qolgan barcha ortiqcha oqim manbaga qaytarilishi mumkin va qaytariladi.
@@ -85,7 +85,7 @@ Bu ko‘pi bilan $O(V^2)$ ta `relabel` amalini beradi.
 Shuningdek, ko‘pi bilan $O(V E)$ ta to‘yintiruvchi surish (qirraning butun sig‘imi ishlatiladigan `push`) va ko‘pi bilan $O(V^2 E)$ ta to‘yintirmaydigan surish (qirraning sig‘imi to‘liq ishlatilmaydigan `push`) bajarilishini ko‘rsatish mumkin.
 Keyingi ortiqcha oqimli tugunni $O(1)$ vaqtda topishga imkon beradigan ma’lumotlar tuzilmasini tanlasak, algoritmning umumiy murakkabligi $O(V^2 E)$ bo‘ladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 const int inf = 1000000000;

@@ -1,4 +1,4 @@
-# Fibonacci sonlari
+# Fibonacci sonlari {#fibonacci-numbers}
 
 Fibonacci ketma-ketligi quyidagicha aniqlanadi:
 
@@ -8,7 +8,7 @@ Ketma-ketlikning dastlabki elementlari ([OEIS A000045](http://oeis.org/A000045))
 
 $$0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...$$
 
-## Xossalari
+## Xossalari {#properties}
 
 Fibonacci sonlari ko‘plab qiziqarli xossalarga ega. Ulardan ba’zilari:
 
@@ -36,7 +36,7 @@ $$GCD(F_m, F_n) = F_{GCD(m, n)}$$
 
 * Fibonacci sonlari Evklid algoritmi uchun mumkin bo‘lgan eng yomon kirishlardir ([Evklid algoritmi](/algorithms/algebra/euclid-algorithm) maqolasidagi Lamé teoremasiga qarang).
 
-## Fibonacci kodlash
+## Fibonacci kodlash {#fibonacci-coding}
 
 Ketma-ketlikdan musbat butun sonlarni ikkilik kod so‘zlari bilan kodlash uchun foydalanish mumkin. Zeckendorf teoremasiga ko‘ra, istalgan natural $n$ soni Fibonacci sonlari yig‘indisi ko‘rinishida yagona tarzda ifodalanadi:
 
@@ -68,9 +68,9 @@ $n$ butun sonini oddiy ochko‘z algoritm yordamida kodlash mumkin:
 
 Kod so‘zini dekodlash uchun avval oxirgi $1$ ni olib tashlang. So‘ng, agar $i$-bit o‘rnatilgan bo‘lsa (o‘rinlar chapdagi eng birinchi bitdan o‘ngdagi eng oxirgi bitga qarab 0 dan raqamlanadi), songa $F_{i+2}$ ni qo‘shing.
 
-## $n$-Fibonacci sonini topish formulalari
+## $n$-Fibonacci sonini topish formulalari {#formulas-for-the-ntextth-fibonacci-number}
 
-### Yopiq ko‘rinishdagi ifoda
+### Yopiq ko‘rinishdagi ifoda {#closed-form-expression}
 
 “Binet formulasi” deb ataladigan formula mavjud, garchi u Binetdan avval Moivrga ham ma’lum bo‘lgan bo‘lsa-da:
 
@@ -84,7 +84,7 @@ $$F_n = \left[\frac{\left(\frac{1 + \sqrt{5}}{2}\right)^n}{\sqrt{5}}\right]$$
 bu yerda kvadrat qavslar eng yaqin butun songa yaxlitlashni bildiradi.
 Kasr sonlar bilan ishlaganda bu ikki formula juda yuqori aniqlikni talab qilgani sababli, amaliy hisoblashlarda ularning foydasi kam.
 
-### Fibonacci sonini chiziqli vaqtda hisoblash
+### Fibonacci sonini chiziqli vaqtda hisoblash {#fibonacci-in-linear-time}
 
 $n$-Fibonacci sonini $n$ gacha bo‘lgan sonlarni birma-bir hisoblab, $O(n)$ vaqtda oson topish mumkin. Biroq, quyida ko‘rganimizdek, bundan tezroq usullar ham mavjud.
 
@@ -105,7 +105,7 @@ int fib(int n) {
 
 Shu tarzda $O(n)$ vaqt ishlaydigan chiziqli yechimga ega bo‘lamiz; bunda ketma-ketlikdagi $n$ dan oldingi barcha qiymatlar saqlab boriladi.
 
-### Matritsaviy ko‘rinish
+### Matritsaviy ko‘rinish {#matrix-form}
 
 $(F_n, F_{n-1})$ juftligidan $(F_{n+1}, F_n)$ juftligiga o‘tishni chiziqli rekurrentlikning $2\times 2$ matritsaga ko‘paytmasi ko‘rinishida ifodalash mumkin:
 
@@ -204,7 +204,7 @@ long long fib(int n) {
 }
 ```
 
-### Tez ikkilantirish usuli
+### Tez ikkilantirish usuli {#fast-doubling-method}
 
 Yuqoridagi matritsaviy ifodani $n = 2\cdot k$ uchun yoyib,
 
@@ -252,7 +252,7 @@ pair<int, int> fib (int n) {
 
 Yuqoridagi kod juftlik sifatida $F_n$ va $F_{n+1}$ ni qaytaradi.
 
-## $p$ modul bo‘yicha davriylik
+## $p$ modul bo‘yicha davriylik {#periodicity-modulo-p}
 
 Fibonacci ketma-ketligini $p$ modul bo‘yicha qaraylik. Ketma-ketlik davriy ekanini isbotlaymiz.
 
@@ -266,7 +266,7 @@ Endi ketma-ketlikda indekslari eng kichik bo‘lgan ikkita bir xil qoldiq juftli
 
 Biroq bu indekslari eng kichik bo‘lgan juftliklarni tanlaganimizga zid. Shu bilan predavriylik yo‘qligi (ya’ni sonlar $F_0$ dan boshlab davriy ekani) isbotlanadi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [SPOJ — Evklid algoritmiga qaytish](http://www.spoj.com/problems/MAIN74/)
 * [SPOJ — Fibonacci yig‘indisi](http://www.spoj.com/problems/FIBOSUM/)

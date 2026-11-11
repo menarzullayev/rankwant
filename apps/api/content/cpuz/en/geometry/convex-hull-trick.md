@@ -1,4 +1,4 @@
-# Convex hull trick and Li Chao tree
+# Convex hull trick and Li Chao tree {#convex-hull-trick-and-li-chao-tree}
 
 Consider the following problem. There are $n$ cities. You want to travel from city $1$ to city $n$ by car. To do this you have to buy some gasoline. It is known that a liter of gasoline costs $cost_k$ in the $k^{th}$ city. Initially your fuel tank is empty and you spend one liter of gasoline per kilometer. Cities are located on the same line in ascending order with $k^{th}$ city having coordinate $x_k$. Also you have to pay $toll_k$ to enter $k^{th}$ city. Your task is to make the trip with minimum possible cost. It's obvious that the solution can be calculated via dynamic programming:
 
@@ -6,7 +6,7 @@ $$dp_i = toll_i+\min\limits_{j<i}(cost_j \cdot (x_i - x_j)+dp_j)$$
 
 Naive approach will give you $O(n^2)$ complexity which can be improved to $O(n \log n)$ or $O(n \log [C \varepsilon^{-1}])$ where $C$ is largest possible $|x_i|$ and $\varepsilon$ is precision with which $x_i$ is considered ($\varepsilon = 1$ for integers which is usually the case). To do this one should note that the problem can be reduced to adding linear functions $k \cdot x + b$ to the set and finding minimum value of the functions in some particular point $x$. There are two main approaches one can use here.
 
-## Convex hull trick
+## Convex hull trick {#convex-hull-trick}
 
 The idea of this approach is to maintain a lower convex hull of linear functions.
 Actually it would be a bit more convenient to consider them not as linear functions, but as points $(k;b)$ on the plane such that we will have to find the point which has the least dot product with a given point $(x;1)$, that is, for this point $kx+b$ is minimized which is the same as initial problem.
@@ -77,7 +77,7 @@ int get(ftype x) {
 }
 ```
 
-## Li Chao tree
+## Li Chao tree {#li-chao-tree}
 
 Assume you're given a set of functions such that each two can intersect at most once. Let's keep in each vertex of a segment tree some function in such way, that if we go from root to the leaf it will be guaranteed that one of the functions we met on the path will be the one giving the minimum value in that leaf. Let's see how to construct it.
 
@@ -141,7 +141,7 @@ ftype get(int x, int v = 1, int l = 0, int r = maxn) {
 }
 ```
 
-## Problems
+## Problems {#problems}
 
 * [Codebreaker - TROUBLES](https://codeforces.com/gym/103536/problem/B) (simple application of Convex Hull Trick after a couple of observations)
 * [CS Academy - Squared Ends](https://csacademy.com/contest/archive/task/squared-ends)

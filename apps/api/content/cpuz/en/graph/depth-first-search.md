@@ -1,4 +1,4 @@
-# Depth First Search
+# Depth First Search {#depth-first-search}
 
 Depth First Search is one of the main graph algorithms.
 
@@ -7,7 +7,7 @@ Depth First Search will also find the shortest paths in a tree (because there on
 
 The algorithm works in $O(m + n)$ time where $n$ is the number of vertices and $m$ is the number of edges.
 
-## Description of the algorithm
+## Description of the algorithm {#description-of-the-algorithm}
 
 The idea behind DFS is to go as deep into the graph as possible, and backtrack once you are at a vertex without any unvisited adjacent vertices.
 
@@ -18,7 +18,7 @@ This way we visit all vertices that are reachable from the starting vertex.
 
 For more details check out the implementation.
 
-## Applications of Depth First Search
+## Applications of Depth First Search {#applications-of-depth-first-search}
 
   * Find any path in the graph from source vertex $u$ to all vertices.
   
@@ -49,7 +49,7 @@ For more details check out the implementation.
   
     First convert the given graph into a directed graph by running a series of depth first searches and making each edge directed as we go through it, in the direction we went. Second, find the strongly connected components in this directed graph. Bridges are the edges whose ends belong to different strongly connected components.
 
-## Classification of edges of a graph
+## Classification of edges of a graph {#classification-of-edges-of-a-graph}
 
 We can classify the edges of a graph, $G$, using the entry and exit time of the end nodes $u$ and $v$ of the edges $(u,v)$.
 These classifications are often used for problems like [finding bridges](/algorithms/graph/bridge-searching) and [finding articulation points](/algorithms/graph/cutpoints).
@@ -78,7 +78,7 @@ Suppose $(u,v)$ is an arbitrary edge of $G$ and without loss of generality, $u$ 
 
 Since there are only two ways to process the edge $(u,v)$, with the two cases and their resulting classifications outlined above, performing a DFS upon $G$ will therefore classify every encountered edge as either a tree edge or back edge, i.e., forward and cross edges only exist in directed graphs. This completes the proof.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 vector<vector<int>> adj; // graph represented as an adjacency list
@@ -120,7 +120,7 @@ void dfs(int v) {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ: ABCPATH](http://www.spoj.com/problems/ABCPATH/)
 * [SPOJ: EAGLE1](http://www.spoj.com/problems/EAGLE1/)

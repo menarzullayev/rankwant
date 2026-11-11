@@ -11,10 +11,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from content.cpuz import glossary as cpuz_glossary
 from content.models import Article, Roadmap
 from content.serializers import (
     ArticleDetailSerializer,
     ArticleListSerializer,
+    GlossaryEntrySerializer,
+    LibraryEntrySerializer,
     RoadmapDetailSerializer,
     RoadmapListSerializer,
     RoadmapSectionPageSerializer,
@@ -38,18 +41,48 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet[Article]):
     permission_classes = [AllowAny]
     lookup_field = "slug"
     pagination_class = StandardPagination
-    filterset_fields = ["locale", "topics__slug", "kind"]
+    filterset_fields = ["locale", "topics__slug", "kind", "category", "level"]
     ordering_fields = ["difficulty", "published_at"]
     # `pk` — tiebreaker: bir xil `difficulty` li maqolalar tartibi aks holda
     # SQL ixtiyoriga qoladi va sahifalash beqaror bo'ladi.
     ordering = ["difficulty", "pk"]
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
-        return (
-            Article.objects.filter(is_published=True)
-            .prefetch_related("topics", "problem_links__problem")
-            .annotate(problem_count=Count("problem_links"))
+        query = Article.objects.filter(is_published=True).prefetch_related(
+            "topics", "problem_links__problem"
         )
+        if self.action == "retrieve":
+            query = query.prefetch_related("external_links", "translations", "reviews")
+        return query.annotate(problem_count=Count("problem_links"))
+
+    @extend_schema(responses={200: GlossaryEntrySerializer(many=True)})
+    @action(detail=False, methods=["get"], pagination_class=None)
+    def glossary(self, request: Request) -> Response:
+        """The algorithms library's glossary (ADR-0062 § 3), from the snapshot."""
+        return Response(GlossaryEntrySerializer(cpuz_glossary(), many=True).data)
+
+    @extend_schema(responses={200: LibraryEntrySerializer(many=True)})
+    @action(detail=False, methods=["get"], pagination_class=None)
+    def library(self, request: Request) -> Response:
+        """The whole algorithms library in one answer (ADR-0062 § 5.3).
+
+        163 lines, so the catalogue groups and filters them without paging.
+        The reader's language gives the titles: the originals' in English.
+        """
+        locale = reader_locale({"request": request})
+        rows = (
+            Article.objects.filter(is_published=True)
+            .exclude(source_ref="")
+            .order_by("category", "order", "pk")
+            .prefetch_related("translations")
+        )
+        data = LibraryEntrySerializer(rows, many=True).data
+        for row, article in zip(data, rows, strict=True):
+            title = next((t.title for t in article.translations.all() if t.locale == locale), None)
+            if title and locale != article.locale:
+                row["title"] = title
+                row["locale"] = locale
+        return Response(data)
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return ArticleDetailSerializer if self.action == "retrieve" else ArticleListSerializer

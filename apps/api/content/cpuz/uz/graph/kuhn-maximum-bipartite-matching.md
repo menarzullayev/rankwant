@@ -1,12 +1,12 @@
-# Ikki bo‘lakli grafda eng katta juftlashtirish uchun Kuhn algoritmi
+# Ikki bo‘lakli grafda eng katta juftlashtirish uchun Kuhn algoritmi {#kuhns-algorithm-for-maximum-bipartite-matching}
 
-## Masala
+## Masala {#problem}
 
 $n$ ta tugun va $m$ ta qirrali ikki bo‘lakli $G$ graf berilgan. Eng katta juftlashtirishni toping, ya’ni tanlangan qirralarning hech biri boshqa tanlangan qirra bilan umumiy tugunga ega bo‘lmaydigan qilib imkon qadar ko‘p qirra tanlang.
 
-## Algoritm tavsifi
+## Algoritm tavsifi {#algorithm-description}
 
-### Kerakli ta’riflar
+### Kerakli ta’riflar {#required-definitions}
 
 * **Juftlashtirish** (matching) $M$ — grafning juft-jufti bilan qo‘shni bo‘lmagan qirralari to‘plami (boshqacha aytganda, $M$ to‘plamidagi ko‘pi bilan bitta qirra grafning istalgan tuguniga tutashishi kerak).
 Juftlashtirishning **quvvati** — undagi qirralar soni.
@@ -25,15 +25,15 @@ Juftlashtirishdagi biror qirraga tutash barcha tugunlar (ya’ni $M$ hosil qilga
 * $A$ va $B$ to‘plamlarning $A \oplus B$ bilan belgilanuvchi **simmetrik ayirmasi** (**diz’yunkt birlashma** deb ham ataladi) — $A$ yoki $B$ ning aynan bittasiga tegishli, ammo ikkalasiga bir paytda tegishli bo‘lmagan barcha elementlar to‘plami.
 Ya’ni $A \oplus B = (A-B) \cup (B-A) = (A \cup B) - (A \cap B)$.
 
-### Berge lemmasi
+### Berge lemmasi {#berges-lemma}
 
 Bu lemma 1957-yilda fransuz matematigi **Claude Berge** tomonidan isbotlangan, garchi uni 1891-yilda daniyalik matematik **Julius Petersen** va 1931-yilda vengriyalik matematik **Dénes Kőnig** avvalroq kuzatgan bo‘lsalar ham.
 
-#### Bayon
+#### Bayon {#formulation}
 
 $M$ juftlashtirish eng katta $\Leftrightarrow$ $M$ juftlashtirishga nisbatan oshiruvchi yo‘l mavjud emas.
 
-#### Isbot
+#### Isbot {#proof}
 
 Ikki tomonlama implikatsiyaning har ikki tomoni qarama-qarshilik orqali isbotlanadi.
 
@@ -57,7 +57,7 @@ Ikki tomonlama implikatsiyaning har ikki tomoni qarama-qarshilik orqali isbotlan
 
     $M'$ ning quvvati $M$ nikidan katta bo‘lgani sababli $Q$ da $M'$ dan olingan qirralar $M$ dan olingan qirralardan ko‘proq. Dirixle prinsipiga ko‘ra, kamida bitta bog‘langan komponent $M'$ dan $M$ ga qaraganda ko‘proq qirra olgan yo‘l bo‘ladi. Har bir bunday yo‘l almashinuvchi bo‘lgani uchun uning boshlang‘ich va oxirgi tugunlari $M$ tomonidan to‘yintirilmagan bo‘ladi; demak, u $M$ uchun oshiruvchi yo‘l. Bu farazga zid. &ensp; $\blacksquare$
 
-### Kuhn algoritmi
+### Kuhn algoritmi {#kuhns-algorithm}
 
 Kuhn algoritmi Berge lemmasining bevosita qo‘llanishidir. Uning mohiyati quyidagicha:
 avval bo‘sh juftlashtirish olamiz. Keyin algoritm oshiruvchi yo‘l topa olar ekan, juftlashtirishni shu yo‘l bo‘ylab almashtirib yangilaymiz va oshiruvchi yo‘l qidirishni takrorlaymiz. Bunday yo‘lni topish imkonsiz bo‘lishi bilan jarayonni to‘xtatamiz — joriy juftlashtirish eng katta bo‘ladi.
@@ -72,16 +72,16 @@ Shunday qilib, $v$ tugundan ishga tushirilgan qidiruv yo oshiruvchi yo‘l topib
 
 $v=1\ldots n_1$ tugunlarning barchasi ko‘rib chiqilgach, joriy juftlashtirish eng katta bo‘ladi.
 
-### Ishlash vaqti
+### Ishlash vaqti {#running-time}
 
 Kuhn algoritmini butun grafda $n$ ta chuqurlik/kenglik bo‘yicha qidiruv ishga tushirishlar ketma-ketligi sifatida tasavvur qilish mumkin. Shuning uchun butun algoritm $O(nm)$ vaqtda, eng yomon holatda esa $O(n^3)$ vaqtda ishlaydi.
 Biroq bu bahoni biroz yaxshilash mumkin. Ma’lum bo‘lishicha, Kuhn algoritmida grafning qaysi qismi birinchi, qaysi qismi ikkinchi sifatida tanlanishi muhim.
 Haqiqatan, yuqoridagi implementatsiyada chuqurlik/kenglik bo‘yicha qidiruv faqat birinchi qism tugunlaridan boshlanadi, shuning uchun butun algoritm $O(n_1m)$ vaqtda ishlaydi; bu yerda $n_1$ — birinchi qismdagi tugunlar soni. Eng yomon holatda bu $O(n_1^2n_2)$ ga teng ($n_2$ — ikkinchi qismdagi tugunlar soni).
 Bu birinchi qismda ikkinchisiga qaraganda kamroq tugun bo‘lishi foydaliroq ekanini ko‘rsatadi. Juda nomutanosib graflarda ($n_1$ va $n_2$ juda farqli bo‘lganda) bu ishlash vaqtlarida sezilarli farq beradi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
-### Standart implementatsiya
+### Standart implementatsiya {#standard-implementation}
 
 Yuqoridagi algoritmning chuqurlik bo‘yicha qidiruvga asoslangan va oshkora ikki qismga ajratilgan ikki bo‘lakli grafni qabul qiladigan implementatsiyasini keltiramiz.
 Bu implementatsiya juda ixcham va ehtimol uni shu ko‘rinishda yodda saqlash kerak.
@@ -126,7 +126,7 @@ int main() {
 
 Kuhn algoritmini ikki bo‘lakli ekani ma’lum, ammo qismlarga oshkora ajratilishi berilmagan graflarda ishlaydigan qilib oson implementatsiya qilish mumkinligini yana bir bor qayd etamiz. Bu holda qulay ikki qismga ajratishdan voz kechib, barcha ma’lumotni grafning barcha tugunlari uchun saqlash kerak. Buning uchun $g$ ro‘yxatlar massivi endi faqat birinchi qism tugunlari uchun emas, grafning barcha tugunlari uchun beriladi (albatta, ikkala qism tugunlari endi umumiy $1$ dan $n$ gacha raqamlashda bo‘ladi). $\rm mt$ va $\rm used$ massivlari ham ikkala qism tugunlari uchun aniqlanadi va shunga mos holatda saqlanishi kerak.
 
-### Yaxshilangan implementatsiya
+### Yaxshilangan implementatsiya {#improved-implementation}
 
 Algoritmni quyidagicha o‘zgartiramiz. Algoritmning asosiy siklidan oldin biror sodda algoritm (oddiy **evristik algoritm**) yordamida **ixtiyoriy juftlashtirish** topamiz va shundan keyingina bu juftlashtirishni yaxshilaydigan $\texttt{try\_kuhn}()$ chaqiruvlari siklini bajaramiz. Natijada tasodifiy graflarda algoritm sezilarli tezroq ishlaydi, chunki ko‘pchilik graflarda evristika bilan yetarlicha katta juftlashtirishni oson topish, keyin esa odatiy Kuhn algoritmi bilan uni eng kattasigacha yaxshilash mumkin. Shu tariqa evristika yordamida joriy juftlashtirishga allaqachon kiritilgan tugunlardan chuqurlik bo‘yicha qidiruv boshlash xarajatini tejaymiz.
 Masalan, birinchi qismdagi barcha tugunlar bo‘yicha yurib, har biri uchun juftlashtirishga qo‘shish mumkin bo‘lgan ixtiyoriy qirrani topib, uni qo‘shish mumkin.
@@ -163,13 +163,13 @@ int main() {
 
 **Yana bir yaxshi evristika** quyidagicha. Har bir qadamda eng kichik darajali (ammo yakkalanmagan) tugunni topadi, undan ixtiyoriy qirrani tanlab juftlashtirishga qo‘shadi, keyin shu ikki tugunni ularga tutash barcha qirralar bilan birga grafdan olib tashlaydi. Bunday ochko‘z usul tasodifiy graflarda juda yaxshi ishlaydi; ko‘p hollarda hatto eng katta juftlashtirishni ham quradi (ammo unga qarshi test mavjud va unda u eng katta juftlashtirishdan ancha kichik juftlashtirish topadi).
 
-## Eslatmalar
+## Eslatmalar {#notes}
 
 * Kuhn algoritmi **Hungarian algoritmi**da, **Kuhn–Munkres algoritmi** deb ham ataladigan algoritmda qism dastur sifatida ishlatiladi.
 * Kuhn algoritmi $O(nm)$ vaqtda ishlaydi. Odatda uni implementatsiya qilish sodda, ammo ikki bo‘lakli grafda eng katta juftlashtirish masalasi uchun samaraliroq algoritmlar ham mavjud, masalan $O(\sqrt{n}m)$ vaqtda ishlaydigan **Hopcroft–Karp–Karzanov algoritmi**.
 * [Minimal tugun qoplamasi masalasi](https://en.wikipedia.org/wiki/Vertex_cover) umumiy graflar uchun NP-qiyin. Ammo [Kőnig teoremasi](https://en.wikipedia.org/wiki/K%C5%91nig%27s_theorem_(graph_theory)) ikki bo‘lakli graflarda eng katta juftlashtirish quvvati minimal tugun qoplamasi quvvatiga tengligini beradi. Demak, ikki bo‘lakli graflarda minimal tugun qoplamasi masalasini polinomial vaqtda yechish uchun eng katta juftlashtirish algoritmlaridan foydalanishimiz mumkin.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Kattis - Gopher II](https://open.kattis.com/problems/gopher2)
 * [Kattis - Borders](https://open.kattis.com/problems/borders)

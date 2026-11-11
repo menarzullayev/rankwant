@@ -1,4 +1,4 @@
-# Suffiks daraxti. Ukkonen algoritmi
+# Suffiks daraxti. Ukkonen algoritmi {#suffix-tree-ukkonens-algorithm}
 
 *Ushbu maqola qoralama bo‘lib, algoritmning tavsifini o‘z ichiga olmaydi. Algoritm tavsifi uchun boshqa manbalarga, masalan, Dan Gusfieldning [Algorithms on Strings, Trees, and Sequences](https://www.cs.cmu.edu/afs/cs/project/pscico-guyb/realworld/www/slidesF06/cmuonly/gusfield.pdf) kitobiga murojaat qiling.*
 
@@ -105,7 +105,7 @@ void build_tree() {
 }
 ```
 
-## Siqilgan implementatsiya
+## Siqilgan implementatsiya {#compressed-implementation}
 
 Ushbu siqilgan implementatsiyani [freopen](http://codeforces.com/profile/freopen) taklif qilgan.
 
@@ -213,6 +213,6 @@ void build() {
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [UVA 10679 - I Love Strings!!!](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1620)

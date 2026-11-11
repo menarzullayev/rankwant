@@ -1,8 +1,8 @@
-# Search the subarray with the maximum/minimum sum
+# Search the subarray with the maximum/minimum sum {#search-the-subarray-with-the-maximumminimum-sum}
 
 Here, we consider the problem of finding a subarray with maximum sum, as well as some of its variations (including the algorithm for solving this problem online).
 
-## Problem statement
+## Problem statement {#problem-statement}
 
 Given an array of numbers $a[1 \ldots n]$. It is required to find a subarray $a[l \ldots r]$ with the maximal sum:
 
@@ -13,11 +13,11 @@ However, the solution is non-trivial when the array can contain both positive an
 
 It is clear that the problem of finding the **minimum** subarray is essentially the same, you just need to change the signs of all numbers.
 
-## Algorithm 1
+## Algorithm 1 {#algorithm-1}
 
 Here we consider an almost obvious algorithm. (Next, we'll look at another algorithm, which is a little harder to come up with, but its implementation is even shorter.)
 
-### Algorithm description
+### Algorithm description {#algorithm-description}
 
 The algorithm is very simple.
 
@@ -31,7 +31,7 @@ From here, we immediately obtain a solution: we simply store where the current m
 
 Obviously, this algorithm works in $O(n)$ and is asymptotically optimal.
 
-### Implementation
+### Implementation {#implementation}
 
 To implement it, we don't even need to explicitly store an array of partial sums $s[]$ — we will only need the current element from it.
 
@@ -70,11 +70,11 @@ for (int r = 0; r < n; ++r) {
 }
 ```
 
-## Algorithm 2
+## Algorithm 2 {#algorithm-2}
 
 Here we consider a different algorithm. It is a little more difficult to understand, but it is more elegant than the above, and its implementation is a little bit shorter. This algorithm was proposed by Jay Kadane in 1984.
 
-### Algorithm description
+### Algorithm description {#algorithm-description}
 
 The algorithm itself is as follows. Let's go through the array and accumulate the current partial sum in some variable $s$. If at some point $s$ is negative, we just assign $s=0$. It is argued that the maximum all the values that the variable $s$ is assigned to during the algorithm will be the answer to the problem.
 
@@ -88,7 +88,7 @@ But, in fact, consider an arbitrary segment $[l, r]$, and $l$ is not in such a "
 
 One way or another, it turns out that when searching for an answer, you can limit yourself to only segments that begin immediately after the positions in which $s<0$ appeared. This proves that the algorithm is correct.
 
-### Implementation
+### Implementation {#implementation}
 
 As in algorithm 1, we first gave a simplified implementation that looks for only a numerical answer without finding the boundaries of the desired segment:
 
@@ -122,13 +122,13 @@ for (int r = 0; r < n; ++r) {
 }
 ```
 
-## Related tasks
+## Related tasks {#related-tasks}
 
-### Finding the maximum/minimum subarray with constraints
+### Finding the maximum/minimum subarray with constraints {#finding-the-maximumminimum-subarray-with-constraints}
 
 If the problem condition imposes additional restrictions on the required segment $[l, r]$ (for example, that the length $r-l+1$ of the segment must be within the specified limits), then the described algorithm is likely to be easily generalized to these cases — anyway, the problem will still be to find the minimum in the array $s[]$ with the specified additional restrictions.
 
-### Two-dimensional case of the problem: search for maximum/minimum submatrix
+### Two-dimensional case of the problem: search for maximum/minimum submatrix {#two-dimensional-case-of-the-problem-search-for-maximumminimum-submatrix}
 
 The problem described in this article is naturally generalized to large dimensions. For example, in a two-dimensional case, it turns into a search for such a submatrix $[l_1 \ldots r_1, l_2 \ldots r_2]$ of a given matrix, which has the maximum sum of numbers in it.
 
@@ -139,7 +139,7 @@ we iterate over all possible values of $l_1$ and $r_1$, and calculate the sums f
 
 This algorithm by Chan, as well as many other results in this area, actually describe **fast matrix multiplication** (where matrix multiplication means modified multiplication: minimum is used instead of addition, and addition is used instead of multiplication). The problem of finding the submatrix with the largest sum can be reduced to the problem of finding the shortest paths between all pairs of vertices, and this problem, in turn, can be reduced to such a multiplication of matrices.
 
-### Search for a subarray with a maximum/minimum average
+### Search for a subarray with a maximum/minimum average {#search-for-a-subarray-with-a-maximumminimum-average}
 
 This problem lies in finding such a segment $a[l, r]$, such that the average value is maximal:
 
@@ -156,7 +156,7 @@ To solve this subproblem, subtract $x$ from each element of array $a[]$. Then ou
 
 Thus, we obtained the solution for the asymptotic $O(T(n) \log W)$, where $W$ is the required accuracy, $T(n)$ is the time of solving the subtask for an array of length $n$ (which may vary depending on the specific additional restrictions imposed).
 
-### Solving the online problem
+### Solving the online problem {#solving-the-online-problem}
 
 The condition of the problem is as follows: given an array of $n$ numbers, and a number $L$. There are queries of the form $(l,r)$, and in response to each query, it is required to find a subarray of the segment $[l, r]$ of length not less than $L$ with the maximum possible arithmetic mean.
 

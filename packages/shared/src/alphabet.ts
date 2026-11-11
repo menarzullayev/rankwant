@@ -82,6 +82,9 @@ const PROTECTED = new RegExp(
     "\\]\\([^)\\n]*\\)",
     "<[^<>\\n]+>",
     "\\{[A-Za-z_][\\w.]*\\}",
+    // A heading anchor (`## Qidiruv {#binary-search}`): links point at the
+    // id as written, so converting it would break them (ADR-0062).
+    "\\{#[\\w-]+\\}",
     // A file name's extension is lower case: `Main.java`, not the
     // `yechildi.Shu` of a missing space.
     "\\b[\\w-]+\\.[a-z][a-z0-9]{0,4}\\b",

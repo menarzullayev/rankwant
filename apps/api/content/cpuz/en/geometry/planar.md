@@ -1,15 +1,15 @@
-# Finding faces of a planar graph
+# Finding faces of a planar graph {#finding-faces-of-a-planar-graph}
 
 Consider a graph $G$ with $n$ vertices and $m$ edges, which can be drawn on a plane in such a way that two edges intersect only at a common vertex (if it exists).
 Such graphs are called **planar**. Now suppose that we are given a planar graph together with its straight-line embedding, which means that for each vertex $v$ we have a corresponding point $(x, y)$ and all edges are drawn as line segments between these points without intersection (such embedding always exists). These line segments split the plane into several regions, which are called faces. Exactly one of the faces is unbounded. This face is called **outer**, while the other faces are called **inner**.
 
 In this article we will deal with finding both inner and outer faces of a planar graph. We will assume that the graph is connected.
 
-## Some facts about planar graphs
+## Some facts about planar graphs {#some-facts-about-planar-graphs}
 
 In this section we present several facts about planar graphs without proof. Readers who are interested in proofs should refer to [Graph Theory by R. Diestel](https://www.math.uni-hamburg.de/home/diestel/books/graph.theory/preview/Ch4.pdf) (see also [video lectures on planarity](https://www.youtube.com/@DiestelGraphTheory) based on this book) or some other book.
 
-### Euler's theorem
+### Euler's theorem {#eulers-theorem}
 Euler's theorem states that any correct embedding of a connected planar graph with $n$ vertices, $m$ edges and $f$ faces satisfies:
 
 $$n - m + f = 2$$
@@ -18,38 +18,38 @@ And more generally, every planar graph with $k$ connected components satisfies:
 
 $$n - m + f = 1 + k$$
 
-### Number of edges of a planar graph.
+### Number of edges of a planar graph. {#number-of-edges-of-a-planar-graph}
 If $n \ge 3$ then the maximum number of edges of a planar graph with $n$ vertices is $3n - 6$. This number is achieved by any connected planar graph where each face is bounded by a triangle. In terms of complexity this fact means that $m = O(n)$ for any planar graph.
 
-### Number of faces of a planar graph.
+### Number of faces of a planar graph. {#number-of-faces-of-a-planar-graph}
 As a direct consequence of the above fact, if $n \ge 3$ then the maximum number of faces of a planar graph with $n$ vertices is $2n - 4$.
 
-### Minimum vertex degree in a planar graph.
+### Minimum vertex degree in a planar graph. {#minimum-vertex-degree-in-a-planar-graph}
 Every planar graph has a vertex of degree 5 or less.
 
-## The algorithm
+## The algorithm {#the-algorithm}
 
 Firstly, sort the adjacent edges for each vertex by polar angle.
 Now let's traverse the graph in the following way. Suppose that we entered vertex $u$ through the edge $(v, u)$ and $(u, w)$ is the next edge after $(v, u)$ in the sorted adjacency list of $u$. Then the next vertex will be $w$. It turns out that if we start this traversal at some edge $(v, u)$, we will traverse exactly one of the faces adjacent to $(v, u)$, the exact face depending on whether our first step is from $u$ to $v$ or from $v$ to $u$.
 
 Now the algorithm is quite obvious. We must iterate over all edges of the graph and start the traversal for each edge that wasn't visited by one of the previous traversals. This way we will find each face exactly once, and each edge will be traversed twice (once in each direction).
 
-### Finding the next edge
+### Finding the next edge {#finding-the-next-edge}
 During the traversal we have to find the next edge in counter-clockwise order. The most obvious way to find the next edge is binary search by angle. However, given the counter-clockwise order of adjacent edges for each vertex, we can precompute the next edges and store them in a hash table. If the edges are already sorted by angle, the complexity of finding all faces in this case becomes linear.
 
-### Finding the outer face
+### Finding the outer face {#finding-the-outer-face}
 It's not hard to see that the algorithm traverses each inner face in a clockwise order and the outer face in the counter-clockwise order, so the outer face can be found by checking the order of each face.
 
-### Complexity
+### Complexity {#complexity}
 It's quite clear that the complexity of the algorithm is $O(m \log m)$ because of sorting, and since $m = O(n)$, it's actually $O(n \log n)$. As mentioned before, without sorting the complexity becomes $O(n)$.
 
-## What if the graph isn't connected?
+## What if the graph isn't connected? {#what-if-the-graph-isnt-connected}
 
 At the first glance it may seem that finding faces of a disconnected graph is not much harder because we can run the same algorithm for each connected component. However, the components may be drawn in a nested way, forming **holes** (see the image below). In this case the inner face of some component becomes the outer face of some other components and has a complex disconnected border. Dealing with such cases is quite hard, one possible approach is to identify nested components with [point location](/algorithms/geometry/point-location) algorithms. 
 
   ![Planar graph with holes](/algorithms-media/geometry/planar_hole.png)
 
-## Implementation
+## Implementation {#implementation}
 The following implementation returns a vector of vertices for each face, outer face goes first.
 Inner faces are returned in counter-clockwise orders and the outer face is returned in clockwise order.
 
@@ -137,13 +137,13 @@ std::vector<std::vector<size_t>> find_faces(std::vector<Point> vertices, std::ve
 }
 ```
 
-## Building planar graph from line segments
+## Building planar graph from line segments {#building-planar-graph-from-line-segments}
 
 Sometimes you are not given a graph explicitly, but rather as a set of line segments on a plane, and the actual graph is formed by intersecting those segments, as shown in the picture below. In this case you have to build the graph manually. The easiest way to do so is as follows. Fix a segment and intersect it with all other segments. Then sort all intersection points together with the two endpoints of the segment lexicographically and add them to the graph as vertices. Also link each two adjacent vertices in lexicographical order by an edge. After doing this procedure for all edges we will obtain the graph. Of course, we should ensure that two equal intersection points will always correspond to the same vertex. The easiest way to do this is to store the points in a map by their coordinates, regarding points whose coordinates differ by a small number (say, less than $10^{-9}$) as equal. This algorithm works in $O(n^2 \log n)$.
 
   ![Implicitly defined graph](/algorithms-media/geometry/planar_implicit.png)
 
-## Implementation
+## Implementation {#implementation}
 ```cpp
 using dbl = long double;
 
@@ -334,6 +334,6 @@ std::pair<std::vector<Point>, std::vector<std::vector<size_t>>> build_graph(std:
 }
 ```
 
-## Problems
+## Problems {#problems}
  * [TIMUS 1664 Pipeline Transportation](https://acm.timus.ru/problem.aspx?space=1&num=1664)
  * [TIMUS 1681 Brother Bear's Garden](https://acm.timus.ru/problem.aspx?space=1&num=1681)

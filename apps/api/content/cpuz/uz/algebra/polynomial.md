@@ -1,16 +1,16 @@
-# Ko‘phadlar va qatorlar ustidagi amallar
+# Ko‘phadlar va qatorlar ustidagi amallar {#operations-on-polynomials-and-series}
 
 
 Musobaqa dasturlashidagi masalalar, ayniqsa qandaydir obyektlarni sanashga oid masalalar, ko‘pincha masalani ko‘phadlar va formal darajali qatorlar ustida biror narsani hisoblashga keltirish orqali yechiladi.
 
 Bunga ko‘phadlarni ko‘paytirish, interpolyatsiya va ko‘phad logarifmi hamda eksponentasi kabi murakkabroq tushunchalar kiradi. Ushbu maqolada bunday amallar va ularni bajarishning keng tarqalgan yondashuvlari haqida qisqacha umumiy ma’lumot beriladi.
 
-## Asosiy tushunchalar va faktlar
+## Asosiy tushunchalar va faktlar {#basic-notion-and-facts}
 
 
 Ushbu bo‘limda turli ko‘phad amallarining ta’riflari va “intuitiv” xossalariga ko‘proq e’tibor qaratamiz. Ularni amalga oshirishning texnik tafsilotlari va murakkabliklari keyingi bo‘limlarda ko‘rib chiqiladi.
 
-### Ko‘phadlarni ko‘paytirish
+### Ko‘phadlarni ko‘paytirish {#polynomial-multiplication}
 
 
 > **Ta’rif**
@@ -75,7 +75,7 @@ Konvolyutsiyalar ko‘plab sanash masalalarini yechishning asosini tashkil etadi
 
 $A(x)$ ko‘phaddagi $x^k$ oldidagi koeffitsiyent qisqacha $[x^k]A$ deb belgilanadi.
 
-### Formal darajali qatorlar
+### Formal darajali qatorlar {#formal-power-series}
 
 
 > **Ta’rif**
@@ -115,7 +115,7 @@ Biroq juda qisqacha shuni aytamizki, agar $A(x)$ va $B(x)$ o‘zlaridagi “atom
 U holda $C(x) = A(x) B(x) = \sum\limits_{k=0}^\infty c_k x^k$ dagi $c_k$ “ikki tosh paketi: birinchi paket faqat $A$ turidagi toshlardan, ikkinchi paket faqat $B$ turidagi toshlardan iborat va ikkala paketdagi jami toshlar soni $k$” ko‘rinishida tasvirlanadigan obyektlarni sanaydi.
 Shunga o‘xshash tarzda, formal darajali qatorlar ustidagi ayrim boshqa funksiyalarning ham intuitiv ma’nosi bor.
 
-### Ko‘phadlarni ustun usulida bo‘lish
+### Ko‘phadlarni ustun usulida bo‘lish {#long-polynomial-division}
 
 
 Butun sonlardagi kabi, ko‘phadlar uchun ham ustun usulida bo‘lishni aniqlash mumkin.
@@ -160,7 +160,7 @@ Ko‘phadlarni ustun usulida bo‘lish ko‘plab muhim xossalarga ega bo‘lgani
 
 Formal darajali qatorlar uchun ustun usulida bo‘lishni to‘g‘ri aniqlab bo‘lmasligiga e’tibor bering. Buning o‘rniga $a_0 \neq 0$ bo‘lgan istalgan $A(x)$ uchun $A(x) A^{-1}(x) = 1$ shartni qanoatlantiradigan teskari formal darajali qator $A^{-1}(x)$ ni aniqlash mumkin. Bu fakt, o‘z navbatida, ko‘phadlarni ustun usulida bo‘lish natijasini hisoblash uchun ishlatilishi mumkin.
 
-## Asosiy implementatsiya
+## Asosiy implementatsiya {#basic-implementation}
 
 [Bu yerda](https://cp-algorithms.github.io/cp-algorithms-aux/cp-algo/math/poly.hpp) ko‘phadlar algebrasining asosiy implementatsiyasini topishingiz mumkin.
 
@@ -187,9 +187,9 @@ Boshqa foydali funksiyalar:
 - `poly<T> inter(vector<T> x, vector<T> y)`: $P(x_i) = y_i$ juftliklar to‘plami bo‘yicha ko‘phadni $O(n \log^2 n)$ vaqtda interpolyatsiya qiladi.
 - Yana boshqa imkoniyatlar ham bor — kodni bemalol o‘rganib chiqing!
 
-## Arifmetika
+## Arifmetika {#arithmetic}
 
-### Ko‘paytirish
+### Ko‘paytirish {#multiplication}
 
 
 Eng asosiy amal — ikkita ko‘phadni ko‘paytirish. Ya’ni $A$ va $B$ ko‘phadlar berilgan bo‘lsin:
@@ -204,12 +204,12 @@ $$\boxed{C = \sum\limits_{i=0}^n \sum\limits_{j=0}^m a_i b_j x^{i+j}}  = c_0 + c
 
 Uni [tez Fourier almashtirishi](/algorithms/algebra/fft) yordamida $O(n \log n)$ vaqtda hisoblash mumkin; bu yerdagi deyarli barcha metodlar undan qism algoritm sifatida foydalanadi.
 
-### Teskari qator
+### Teskari qator {#inverse-series}
 
 
 Agar $A(0) \neq 0$ bo‘lsa, $A^{-1} A = 1$ shartni qanoatlantiradigan $A^{-1}(x) = q_0+q_1 x + q_2 x^2 + \dots$ cheksiz formal darajali qator doimo mavjud. Ko‘pincha $A^{-1}$ ning dastlabki $k$ koeffitsiyentini (ya’ni uni $x^k$ modul bo‘yicha) hisoblash foydali bo‘ladi. Uni hisoblashning ikkita asosiy usuli mavjud.
 
-#### Bo‘lib yechish
+#### Bo‘lib yechish {#divide-and-conquer}
 
 
 Ushbu algoritm [Schönhage maqolasida](http://algo.inria.fr/seminars/sem00-01/schoenhage.pdf) tilga olingan va [Graeffe usulidan](https://en.wikipedia.org/wiki/Graeffe's_method) ilhomlangan. $B(x)=A(x)A(-x)$ uchun $B(x)=B(-x)$ o‘rinli ekani, ya’ni $B(x)$ juft ko‘phad ekani ma’lum. Bu uning faqat juft indeksli koeffitsiyentlari noldan farqli ekanini va $B(x)=T(x^2)$ ko‘rinishida ifodalanishini anglatadi. Demak, quyidagi o‘tishni bajarishimiz mumkin:
@@ -224,7 +224,7 @@ $$T(n) = T(n/2) + O(n \log n) = O(n \log n)$$
 
 deb baholash mumkin.
 
-#### Sieveking–Kung algoritmi
+#### Sieveking–Kung algoritmi {#sievekingkung-algorithm}
 
 
 Bu yerda tasvirlanadigan umumiy jarayon Hensel lemmasidan kelib chiqqani uchun Hensel ko‘tarishi deb ataladi. Uni quyida batafsilroq ko‘rib chiqamiz, hozir esa maxsus yechimga e’tibor qaratamiz. Bu yerdagi “ko‘tarish” shuni anglatadiki, $A^{-1} \pmod x$ bo‘lgan $B_0=q_0=a_0^{-1}$ yaqinlashuvdan boshlaymiz va keyin $\bmod x^a$ dan $\bmod x^{2a}$ ga iterativ ravishda ko‘tarib boramiz.
@@ -251,7 +251,7 @@ $$T(n) = T(n/2) + O(n \log n) = O(n \log n)$$
 murakkablikda hisoblaymiz.
 Bu yerdagi algoritm birinchi algoritmdan biroz murakkabroq ko‘rinishi mumkin, ammo uning juda mustahkam va amaliy asosi hamda boshqa nuqtayi nazardan qaralganda katta umumlashtirish imkoniyati bor; bu quyida tushuntiriladi.
 
-### Evklid bo‘lishi
+### Evklid bo‘lishi {#euclidean-division}
 
 
 Darajalari $n$ va $m$ bo‘lgan $A(x)$ hamda $B(x)$ ko‘phadlarni ko‘rib chiqamiz. Yuqorida aytilganidek, $A(x)$ ni
@@ -291,9 +291,9 @@ $$\boxed{D^R(x) \equiv A^R(x) (B^R(x))^{-1} \pmod{x^{n-m+1}}}$$
 Bundan esa, o‘z navbatida, $R(x) = A(x) - B(x)D(x)$ formula orqali $R(x)$ ni tiklash mumkin.
 E’tibor bering, yuqoridagi matritsa uchburchak [Toeplitz matritsa](https://en.wikipedia.org/wiki/Toeplitz_matrix) deb ataladigan matritsadir va bu yerda ko‘rib turganimizdek, ixtiyoriy Toeplitz matritsali chiziqli tenglamalar sistemasini yechish aslida ko‘phadni teskarilashga ekvivalent ekan. Bundan tashqari, uning teskari matritsasi ham uchburchak Toeplitz matritsa bo‘ladi va yuqoridagi atamalar bilan aytganda, uning elementlari $(B^R(x))^{-1} \pmod{x^{n-m+1}}$ ning koeffitsiyentlaridir.
 
-## Ko‘phad funksiyalarini hisoblash
+## Ko‘phad funksiyalarini hisoblash {#calculating-functions-of-polynomial}
 
-### Newton usuli
+### Newton usuli {#newtons-method}
 
 
 Sieveking–Kung algoritmini umumlashtiramiz. $P(x)$ ko‘phad bo‘lishi kerak bo‘lgan $F(P) = 0$ tenglamani ko‘rib chiqamiz; bunda $F(x)$ quyidagicha aniqlangan ko‘phad qiymatli funksiya:
@@ -333,14 +333,14 @@ murakkablikda topishimiz mumkin. Bu yerda $f(n)$ — odatda $O(n \log n)$ bo‘l
 
 Yuqoridagi iterativ qoida sonli analizda [Newton usuli](https://en.wikipedia.org/wiki/Newton%27s_method) deb ataladi.
 
-#### Hensel lemmasi
+#### Hensel lemmasi {#hensels-lemma}
 
 
 Yuqorida aytilganidek, formal va umumiy ko‘rinishda bu natija [Hensel lemmasi](https://en.wikipedia.org/wiki/Hensel%27s_lemma) deb ataladi. Ichma-ich halqalar ketma-ketligi bilan ishlaganimizda undan yanada kengroq ma’noda foydalanish mumkin. Ushbu xususiy holatda biz $x$, $x^2$, $x^3$ va hokazo modullar bo‘yicha ko‘phad qoldiqlari ketma-ketligi bilan ishladik.
 Hensel ko‘tarishi foydali bo‘ladigan yana bir misol — [p-adik sonlar](https://en.wikipedia.org/wiki/P-adic_number). U yerda aslida $p$, $p^2$, $p^3$ va hokazo modullar bo‘yicha butun son qoldiqlari ketma-ketligi bilan ishlaymiz. Masalan, Newton usuli yordamida berilgan sanoq tizimi uchun barcha mumkin bo‘lgan [avtomorf sonlarni](https://en.wikipedia.org/wiki/Automorphic_number) (kvadrati o‘zining o‘zi bilan tugaydigan sonlarni) topish mumkin. Bu masala o‘quvchiga mashq sifatida qoldiriladi.
 Yechimingiz 10 asosli sonlar uchun ishlashini tekshirish uchun [ushbu](https://acm.timus.ru/problem.aspx?space=1&num=1698) masalani ko‘rib chiqishingiz mumkin.
 
-### Logarifm
+### Logarifm {#logarithm}
 
 
 $\ln P(x)$ funksiya uchun quyidagi tenglik ma’lum:
@@ -351,7 +351,7 @@ $$
 
 Demak, $\ln P(x)$ ning $n$ ta koeffitsiyentini $O(n \log n)$ vaqtda hisoblash mumkin.
 
-### Teskari qator
+### Teskari qator {#inverse-series}
 
 
 Ma’lum bo‘lishicha, Newton usuli orqali $A^{-1}$ formulasini olishimiz mumkin.
@@ -363,7 +363,7 @@ $$F'(Q) = -Q^{-2}$$
 
 $$\boxed{Q_{k+1} \equiv Q_k(2-AQ_k) \pmod{x^{2^{k+1}}}}$$
 
-### Eksponenta
+### Eksponenta {#exponent}
 
 
 $e^{P(x)}=Q(x)$ ni hisoblashni o‘rganamiz. $\ln Q = P$ bo‘lishi kerak, demak:
@@ -374,7 +374,7 @@ $$F'(Q) = Q^{-1}$$
 
 $$\boxed{Q_{k+1} \equiv Q_k(1 + P - \ln Q_k) \pmod{x^{2^{k+1}}}}$$
 
-### $k$-daraja
+### $k$-daraja {#k-th-power}
 
 
 Endi $P^k(x)=Q$ ni hisoblashimiz kerak. Buni quyidagi formula orqali bajarish mumkin:
@@ -392,9 +392,9 @@ $$\boxed{P^k(x) = \alpha^kx^{kt} \exp[k \ln T(x)]}$$
 
 Agar $\sqrt[k]{\alpha}$ ni, masalan, $\alpha=1$ uchun hisoblay olsangiz, ko‘phadning qandaydir $k$-ildizini ham hisoblash mumkinligiga e’tibor bering.
 
-## Qiymatlarni hisoblash va interpolyatsiya
+## Qiymatlarni hisoblash va interpolyatsiya {#evaluation-and-interpolation}
 
-### Chirp-z almashtirishi
+### Chirp-z almashtirishi {#chirp-z-transform}
 
 
 Ko‘phad qiymatini $x_r = z^{2r}$ nuqtalarda hisoblash kerak bo‘lgan xususiy holatda quyidagini bajarish mumkin:
@@ -417,7 +417,7 @@ $$\boxed{A(z^r) = z^{-\binom{r}{2}}\sum\limits_{k=0}^n \left(a_k z^{-\binom{k}{2
 
 $A_0(x) = \sum\limits_{k=0}^n a_{n-k}z^{-\binom{n-k}{2}}x^k$ va $A_1(x) = \sum\limits_{k\geq 0}z^{\binom{k}{2}}x^k$ ko‘phadlar ko‘paytmasidagi $x^{n+r}$ oldidagi koeffitsiyent $z^{\binom{r}{2}}A(z^r)$ ga teng. $A_0(x)$ va $A_1(x)$ koeffitsiyentlarini hisoblash uchun $z^{\binom{k+1}{2}}=z^{\binom{k}{2}+k}$ formuladan foydalanish mumkin.
 
-### Ko‘p nuqtada qiymat hisoblash
+### Ko‘p nuqtada qiymat hisoblash {#multi-point-evaluation}
 
 $A(x_1), \dots, A(x_n)$ ni hisoblash kerak deb faraz qilaylik. Yuqorida aytilganidek, $A(x) \equiv A(x_i) \pmod{x-x_i}$. Shuning uchun quyidagilarni bajarish mumkin:
 
@@ -428,7 +428,7 @@ $A(x_1), \dots, A(x_n)$ ni hisoblash kerak deb faraz qilaylik. Yuqorida aytilgan
 
 Butun jarayon $O(n \log^2 n)$ vaqtda ishlaydi.
 
-### Interpolyatsiya
+### Interpolyatsiya {#interpolation}
 
 
 $(x_i, y_i)$ juftliklar to‘plami berilganda ko‘phadni interpolyatsiya qilish uchun Lagrangening bevosita formulasi mavjud:
@@ -451,7 +451,7 @@ Rekursiyadan qaytayotganda chap va o‘ng tugunlardan kelgan natijalarni $A_{l,r
 Shu tariqa ildizga qaytganda unda aynan $A(x)$ hosil bo‘ladi.
 Butun jarayon ham $O(n \log^2 n)$ vaqtda ishlaydi.
 
-## EKUB va rezultantlar
+## EKUB va rezultantlar {#gcd-and-resultants}
 
 
 $A(x) = a_0 + a_1 x + \dots + a_n x^n$ va $B(x) = b_0 + b_1 x + \dots + b_m x^m$ ko‘phadlar berilgan deb faraz qilamiz.
@@ -460,7 +460,7 @@ $\lambda_0, \dots, \lambda_n$ — $A(x)$ ning ildizlari, $\mu_0, \dots, \mu_m$ e
 
 $A(x)$ va $B(x)$ ning umumiy ildizi bor-yo‘qligini bilmoqchisiz. Buni aniqlashning o‘zaro bog‘liq ikkita usuli mavjud.
 
-### Evklid algoritmi
+### Evklid algoritmi {#euclidean-algorithm}
 
 
 Bu haqda allaqachon alohida [maqolamiz](/algorithms/algebra/euclid-algorithm) bor. Ixtiyoriy soha uchun Evklid algoritmini quyidagicha sodda yozish mumkin:
@@ -474,7 +474,7 @@ T gcd(const T &a, const T &b) {
 
 Ko‘phadlar $A(x)$ va $B(x)$ uchun u $O(nm)$ vaqtda ishlashini isbotlash mumkin.
 
-### Rezultant
+### Rezultant {#resultant}
 
 
 $A(\mu_0)\cdots A(\mu_m)$ ko‘paytmani hisoblaymiz. U faqat va faqat qandaydir $\mu_i$ $A(x)$ ning ildizi bo‘lganda nolga teng bo‘ladi.
@@ -512,7 +512,7 @@ T resultant(poly<T> a, poly<T> b) {
 }
 ```
 
-### Yarim-EKUB algoritmi
+### Yarim-EKUB algoritmi {#half-gcd-algorithm}
 
 
 EKUB va rezultantlarni $O(n \log^2 n)$ vaqtda hisoblash usuli mavjud.
@@ -522,7 +522,7 @@ Algoritmning aniq tafsilotlarini tushuntirish biroz zerikarli, biroq uning imple
 
 Yarim-EKUB amalga oshirilgach, ko‘phadlar juftligi $\gcd(a, b)$ va $0$ ga kelguncha uni takroran qo‘llash mumkin.
 
-## Masalalar
+## Masalalar {#problems}
 
 
 - [CodeChef - RNG](https://www.codechef.com/problems/RNG)

@@ -1,11 +1,11 @@
-# Finding the Eulerian path in $O(M)$
+# Finding the Eulerian path in $O(M)$ {#finding-the-eulerian-path-in-om}
 
 A Eulerian path is a path in a graph that passes through all of its edges exactly once.
 A Eulerian cycle is a Eulerian path that is a cycle.
 
 The problem is to find the Eulerian path in an **undirected multigraph with loops**.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 First we can check if there is an Eulerian path.
 We can use the following theorem. An Eulerian cycle exists if and only if the degrees of all vertices are even.
@@ -46,7 +46,7 @@ until St is empty
 
 It is easy to check the equivalence of these two forms of the algorithm. However, the second form is obviously faster, and the code will be much more efficient.
 
-## The Domino problem
+## The Domino problem {#the-domino-problem}
 
 We give here a classical Eulerian cycle problem - the Domino problem.
 
@@ -54,7 +54,7 @@ There are $N$ dominoes, as it is known, on both ends of the Domino one number is
 
 Reformulate the problem. Let the numbers written on the bottoms be the vertices of the graph, and the dominoes be the edges of this graph (each Domino with numbers $(a,b)$ are the edges $(a,b)$ and $(b, a)$). Then our problem is reduced to the problem of finding the Eulerian path in this graph.
 
-## Implementation
+## Implementation {#implementation}
 
 The program below searches for and outputs a Eulerian loop or path in a graph, or outputs $-1$ if it does not exist.
 
@@ -153,7 +153,7 @@ int main() {
     }
 }
 ```
-### Practice problems:
+### Practice problems: {#practice-problems}
 
 - [CSES : Mail Delivery](https://cses.fi/problemset/task/1691)
 - [CSES : Teleporters Path](https://cses.fi/problemset/task/1693)

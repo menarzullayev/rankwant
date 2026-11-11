@@ -1,10 +1,10 @@
-# Kirchhoff's theorem. Finding the number of spanning trees
+# Kirchhoff's theorem. Finding the number of spanning trees {#kirchhoffs-theorem-finding-the-number-of-spanning-trees}
 
 Problem: You are given a connected undirected graph (with possible multiple edges) represented using an adjacency matrix. Find the number of different spanning trees of this graph.
 
 The following formula was proven by Kirchhoff in 1847.
 
-## Kirchhoff's matrix tree theorem
+## Kirchhoff's matrix tree theorem {#kirchhoffs-matrix-tree-theorem}
 
 Let $A$ be the adjacency matrix of the graph: $A_{u,v}$ is the number of edges between $u$ and $v$.
 Let $D$ be the degree matrix of the graph: a diagonal matrix with $D_{u,u}$ being the degree of vertex $u$ (including multiple edges and loops - edges which connect vertex $u$ with itself).
@@ -18,7 +18,7 @@ The determinant of the matrix can be found in $O(N^3)$ by using the [Gaussian me
 
 The proof of this theorem is quite difficult and is not presented here; for an outline of the proof and variations of the theorem for graphs without multiple edges and for directed graphs refer to [Wikipedia](https://en.wikipedia.org/wiki/Kirchhoff%27s_theorem).
 
-## Relation to Kirchhoff's circuit laws
+## Relation to Kirchhoff's circuit laws {#relation-to-kirchhoffs-circuit-laws}
 
 Kirchhoff's matrix tree theorem and Kirchhoff's laws for electrical circuit are related in a beautiful way. It is possible to show (using Ohm's law and Kirchhoff's first law) that resistance $R_{ij}$ between two points of the circuit $i$ and $j$ is
 
@@ -29,7 +29,7 @@ $T^j$ is the matrix with row and column $j$ removed, $T^{(i,j)}$ is the matrix w
 
 Kirchhoff's theorem gives this formula geometric meaning.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
  - [CODECHEF: Roads in Stars](https://www.codechef.com/problems/STARROAD)
  - [SPOJ: Maze](http://www.spoj.com/problems/KPMAZE/)
  - [CODECHEF: Complement Spanning Trees](https://www.codechef.com/problems/CSTREE)

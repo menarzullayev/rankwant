@@ -1,8 +1,8 @@
-# Tub sonlik testlari
+# Tub sonlik testlari {#primality-tests}
 
 Ushbu maqolada sonning tub yoki tub emasligini aniqlash uchun bir nechta algoritm tasvirlanadi.
 
-## Sinov tariqasida bo‘lish
+## Sinov tariqasida bo‘lish {#trial-division}
 
 Ta’rifga ko‘ra, tub sonning $1$ va o‘zidan boshqa bo‘luvchilari bo‘lmaydi.
 Murakkab sonning esa kamida bitta qo‘shimcha bo‘luvchisi mavjud; uni $d$ deb ataylik.
@@ -26,7 +26,7 @@ Bu tub sonlik tekshiruvining eng sodda ko‘rinishi.
 Bu funksiyani ancha optimallashtirish mumkin. Masalan, siklda faqat barcha toq sonlarni tekshirish mumkin, chunki yagona juft tub son — 2.
 Bunday optimallashtirishlarning bir nechtasi [butun sonlarni faktorizatsiya qilish](/algorithms/algebra/factorization) maqolasida tasvirlangan.
 
-## Fermat tub sonlik testi
+## Fermat tub sonlik testi {#fermat-primality-test}
 
 Bu ehtimollik testidir.
 
@@ -69,7 +69,7 @@ Fermat tub sonlik testi bu sonlarni faqat juda omadimiz kelib, $\gcd(a, n) \ne 1
 Shunga qaramay, Fermat testi juda tez ishlashi va Karmaykl sonlari juda kam uchrashi sababli amalda hamon ishlatiladi.
 Masalan, $10^9$ dan kichik atigi 646 ta shunday son mavjud.
 
-## Miller–Rabin tub sonlik testi
+## Miller–Rabin tub sonlik testi {#miller-rabin-primality-test}
 
 Miller–Rabin testi Fermat testidagi g‘oyalarni kengaytiradi.
 
@@ -160,7 +160,7 @@ Miller–Rabin testidan oldin dastlabki bir nechta tub sonlardan biri bo‘luvch
 Bu testni ancha tezlashtiradi, chunki murakkab sonlarning aksariyatida juda kichik tub bo‘luvchilar mavjud.
 Masalan, barcha sonlarning $88\%$ ida $100$ dan kichik tub ko‘paytuvchi bor.
 
-### Deterministik ko‘rinish
+### Deterministik ko‘rinish {#deterministic-version}
 
 Miller faqat $\le O((\ln n)^2)$ bo‘lgan barcha asoslarni tekshirish orqali algoritmni deterministik qilish mumkinligini ko‘rsatgan.
 Keyinroq Bach aniq chegara berdi: faqat $a \le 2 \ln(n)^2$ asoslarini tekshirish kifoya.
@@ -196,7 +196,7 @@ bool MillerRabin(u64 n) { // returns true if n is prime, else returns false.
 Tekshiruvni faqat 7 ta asos — 2, 325, 9375, 28178, 450775, 9780504 va 1795265022 — yordamida ham bajarish mumkin.
 Biroq bu sonlar (2 dan tashqari) tub emasligi sababli, tekshirilayotgan son ushbu asoslarning biror tub bo‘luvchisiga — 2, 3, 5, 13, 19, 73, 193, 407521 yoki 299210837 ga — teng emasligini ham qo‘shimcha tekshirish kerak.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ — Tubmi yoki yo‘qmi](https://www.spoj.com/problems/PON/)
 - [Project Euler — Tub sonlar naqshini tadqiq qilish](https://projecteuler.net/problem=146)

@@ -1,10 +1,10 @@
-# Check if point belongs to the convex polygon in $O(\log N)$
+# Check if point belongs to the convex polygon in $O(\log N)$ {#check-if-point-belongs-to-the-convex-polygon-in-olog-n}
 
 Consider the following problem: you are given a convex polygon with integer vertices and a lot of queries.
 Each query is a point, for which we should determine whether it lies inside or on the boundary of the polygon or not.
 Suppose the polygon is ordered counter-clockwise. We will answer each query in $O(\log n)$ online.
 
-## Algorithm
+## Algorithm {#algorithm}
 Let's pick the point with the smallest x-coordinate. If there are several of them, we pick the one with the smallest y-coordinate. Let's denote it as $p_0$.
 Now all other points $p_1,\dots,p_n$ of the polygon are ordered by their polar angle from the chosen point (because the polygon is ordered counter-clockwise).
 
@@ -34,7 +34,7 @@ This checks if the area of the triangle $p_0, p_i, p_{i+1}$ has to exact same si
 If $p$ is outside, then the sum of those three triangle will be bigger than the size of the triangle.
 If it is inside, then it will be equal.
 
-## Implementation
+## Implementation {#implementation}
 
 The function `prepare` will make sure that the lexicographical smallest point (smallest x value, and in ties smallest y value) will be $p_0$, and computes the vectors $p_i - p_0$.
 Afterwards the function `pointInConvexPolygon` computes the result of a query.
@@ -113,7 +113,7 @@ bool pointInConvexPolygon(pt point) {
 }
 ```
 
-## Problems
+## Problems {#problems}
 * [SGU253 Theodore Roosevelt](https://codeforces.com/problemsets/acmsguru/problem/99999/253)
 * [Codeforces 55E Very simple problem](https://codeforces.com/contest/55/problem/E)
 * [Codeforces 166B Polygons](https://codeforces.com/problemset/problem/166/B)

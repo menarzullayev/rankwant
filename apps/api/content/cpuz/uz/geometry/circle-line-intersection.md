@@ -1,8 +1,8 @@
-# Aylana va to‘g‘ri chiziq kesishmasi
+# Aylana va to‘g‘ri chiziq kesishmasi {#circle-line-intersection}
 
 Aylana markazining koordinatalari va radiusi hamda to‘g‘ri chiziq tenglamasi berilgan; kesishish nuqtalarini topish talab qilinadi.
 
-## Yechim
+## Yechim {#solution}
 
 Ikki tenglamadan iborat sistemani yechish o‘rniga masalaga geometrik yondashamiz. Bu usul sonli turg‘unlik nuqtayi nazaridan aniqroq yechim beradi.
 
@@ -41,7 +41,7 @@ b_x &= x_0 - B \cdot m, b_y = y_0 + A \cdot m
 
 Dastlabki sistemani algebraik usullar bilan yechganimizda, ehtimol, javobni boshqacha ko‘rinishda va kattaroq xato bilan olgan bo‘lardik. Bu yerda tavsiflangan geometrik usul ko‘rgazmaliroq va aniqroq.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Boshida aytilganidek, aylana markazi koordinatalar boshida deb faraz qilamiz, shuning uchun dasturning kirishi — aylananing radiusi $r$ va to‘g‘ri chiziq tenglamasining $A$, $B$, $C$ parametrlari.
 
@@ -67,6 +67,6 @@ else {
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [CODECHEF: ANDOOR](https://www.codechef.com/problems/ANDOOR)

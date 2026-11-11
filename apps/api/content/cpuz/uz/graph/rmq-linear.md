@@ -1,4 +1,4 @@
-# RMQ (oraliqdagi minimum so‘rovi) masalasini LCA (eng yaqin umumiy ajdod) ni topish orqali yechish
+# RMQ (oraliqdagi minimum so‘rovi) masalasini LCA (eng yaqin umumiy ajdod) ni topish orqali yechish {#solve-rmq-range-minimum-query-by-finding-lca-lowest-common-ancestor}
 
 Bizga `A[0..N-1]` massiv berilgan.
 Har bir `[L, R]` ko‘rinishidagi so‘rov uchun `A` massivining `L` pozitsiyadan boshlanib `R` pozitsiyada tugaydigan qismidagi minimumni topmoqchimiz.
@@ -8,7 +8,7 @@ Quyida asimptotik jihatdan optimal yechim bayon qilinadi.
 U RMQ masalasining boshqa yechimlaridan alohida turadi, chunki ulardan keskin farq qiladi:
 u RMQ masalasini LCA masalasiga keltiradi, so‘ng [Farach–Colton va Bender algoritmi](/algorithms/graph/lca-farachcoltonbender)dan foydalanadi; bu algoritm LCA masalasini yana maxsus RMQ masalasiga qaytarib, uni yechadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 `A` massividan **Dekart daraxti** quramiz.
 `A` massivning Dekart daraxti — minimum uyum xossasiga ega (ota tugun qiymati farzandlari qiymatlaridan kichik yoki ularga teng bo‘lishi kerak) ikkilik daraxt bo‘lib, daraxtni in-order tartibda aylanib chiqish tugunlarga `A` massivdagi tartibda tashrif buyuradi.
@@ -33,7 +33,7 @@ Birinchi so‘rovda `A[1]` va `A[3]` tugunlarining LCA’si qiymati 2 bo‘lgan 
 
 Bunday daraxtni $O(N)$ vaqtda qurish mumkin, Farach–Colton va Bender algoritmi esa daraxtga $O(N)$ vaqtda oldindan ishlov berib, LCA ni $O(1)$ vaqtda topadi.
 
-## Dekart daraxtini qurish
+## Dekart daraxtini qurish {#construction-of-a-cartesian-tree}
 
 Dekart daraxtini elementlarni bittadan qo‘shish orqali quramiz.
 Har bir qadamda barcha qayta ishlangan elementlar uchun yaroqli Dekart daraxtini saqlab turamiz.

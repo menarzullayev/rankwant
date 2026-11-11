@@ -1,4 +1,4 @@
-# Introduction to Dynamic Programming
+# Introduction to Dynamic Programming {#introduction-to-dynamic-programming}
 
 The essence of dynamic programming is to avoid repeated calculation.  Often, dynamic programming problems are naturally solvable by recursion. In such cases, it's easiest to write the recursive solution, then save repeated states in a lookup table. This process is known as top-down dynamic programming with memoization. That's read "memoization" (like we are writing in a memo pad) not memorization.
 
@@ -14,7 +14,7 @@ int f(int n) {
 
 The runtime of this recursive function is exponential - approximately $O(2^n)$ since one function call ( $f(n)$ ) results in 2 similarly sized function calls ($f(n-1)$ and $f(n-2)$ ).
 
-## Speeding up Fibonacci with Dynamic Programming (Memoization)
+## Speeding up Fibonacci with Dynamic Programming (Memoization) {#speeding-up-fibonacci-with-dynamic-programming-memoization}
 
 Our recursive function currently solves fibonacci in exponential time. This means that we can only handle small input values before the problem becomes too difficult. For instance, $f(29)$ results in *over 1 million* function calls!
 
@@ -78,7 +78,7 @@ Using a binary search tree (map in C++) to save states will technically result i
 
 This approach is called top-down, as we can call the function with a query value and the calculation starts going from the top (queried value) down to the bottom (base cases of the recursion), and makes shortcuts via memoization on the way.
 
-## Bottom-up Dynamic Programming
+## Bottom-up Dynamic Programming {#bottom-up-dynamic-programming}
 
 Until now you've only seen top-down dynamic programming with memoization. However, we can also solve problems with bottom-up dynamic programming. 
 Bottom-up is exactly the opposite of top-down, you start at the bottom (base cases of the recursion), and extend it to more and more values.
@@ -124,7 +124,7 @@ That's it. That's the basics of dynamic programming: Don't repeat the work you'v
 
 One of the tricks to getting better at dynamic programming is to study some of the classic examples.
 
-## Classic Dynamic Programming Problems
+## Classic Dynamic Programming Problems {#classic-dynamic-programming-problems}
 | Name                                           | Description/Example                                                                                                                                                                                                            |
 | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [0-1 Knapsack](/algorithms/dynamic-programming/knapsack)                                   | Given $N$ items with weights $w_i$ and values $v_i$ and maximum weight $W$, what is the maximum $\sum_{i=1}^{k} v_i$ for each subset of items of size $k$ ($1 \le k \le N$) while ensuring $\sum_{i=1}^{k} w_i \le W$?                  |
@@ -137,14 +137,14 @@ One of the tricks to getting better at dynamic programming is to study some of t
 | Rod Cutting                                    | Given a rod of length $n$ units and an integer array cuts where cuts[i] denotes a position you should perform a cut at. The cost of one cut is the length of the rod to be cut. What is the minimum total cost of the cuts. |
 | Edit Distance                                  | The edit distance between two strings is the minimum number of operations required to transform one string into the other. Operations are ["Add", "Remove", "Replace"]                                                         |
 
-## Related Topics
+## Related Topics {#related-topics}
 * [Bitmask Dynamic Programming](/algorithms/dynamic-programming/profile-dynamics)
 * Digit Dynamic Programming
 * Dynamic Programming on Trees
 
 Of course, the most important trick is to practice.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [LeetCode - 1137. N-th Tribonacci Number](https://leetcode.com/problems/n-th-tribonacci-number/description/)
 * [LeetCode - 118. Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/description/)
 * [LeetCode - 1025. Divisor Game](https://leetcode.com/problems/divisor-game/description/)
@@ -154,6 +154,6 @@ Of course, the most important trick is to practice.
 * [LeetCode - 221. Maximal Square](https://leetcode.com/problems/maximal-square/description/)
 * [LeetCode - 1039. Minimum Score Triangulation of Polygon](https://leetcode.com/problems/minimum-score-triangulation-of-polygon/description/)
 
-## DP Contests
+## DP Contests {#dp-contests}
 * [Atcoder - Educational DP Contest](https://atcoder.jp/contests/dp/tasks)
 * [CSES - Dynamic Programming](https://cses.fi/problemset/list/)

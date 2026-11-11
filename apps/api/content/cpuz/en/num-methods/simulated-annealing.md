@@ -1,33 +1,33 @@
-# Simulated Annealing
+# Simulated Annealing {#simulated-annealing}
 
 **Simulated Annealing (SA)** is a randomized algorithm, which approximates the global optimum of a function. It's called a randomized algorithm, because it employs a certain amount of randomness in its search and thus its output can vary for the same input.
 
-## The problem
+## The problem {#the-problem}
 
 We are given a function $E(s)$, which calculates the energy of the state $s$. We are tasked with finding the state $s_{best}$ at which $E(s)$ is minimized. **SA** is suited for problems where the states are discrete and $E(s)$ has multiple local minima. We'll take the example of the [Travelling Salesman Problem (TSP)](https://en.wikipedia.org/wiki/Travelling_salesman_problem). 
 
-### Travelling Salesman Problem (TSP)
+### Travelling Salesman Problem (TSP) {#travelling-salesman-problem-tsp}
 
 You are given a set of nodes in 2 dimensional space. Each node is characterised by its $x$ and $y$ coordinates. Your task is to find an ordering of the nodes, which will minimise the distance to be travelled when visiting these nodes in that order.
 
-## Motivation
+## Motivation {#motivation}
 Annealing is a metallurgical process, wherein a material is heated up and allowed to cool, in order to allow the atoms inside to rearrange themselves in an arrangement with minimal internal energy, which in turn causes the material to have different properties. The state is the arrangement of atoms and the internal energy is the function being minimised. We can think of the original state of the atoms, as a local minima for its internal energy. To make the material rearrange its atoms, we need to motivate it to go across a region where its internal energy is not minimised in order to reach the global minima. This motivation is given by heating the material to a higher temperature. 
 
 Simulated annealing, literally, simulates this process. We start off with some random state (material) and set a high temperature (heat it up). Now, the algorithm is ready to accept states which have a higher energy than the current state, as it is motivated by the high temperature. This prevents the algorithm from getting stuck inside local minimas and move towards the global minima. As time progresses, the algorithm cools down and refuses the states with higher energy and moves into the closest minima it has found.
 
-### The energy function E(s)
+### The energy function E(s) {#the-energy-function-es}
 
 $E(s)$ is the function which needs to be minimised (or maximised). It maps every state to a real number. In the case of TSP, $E(s)$ returns the distance of travelling one full circle in the order of nodes in the state. 
 
-### State
+### State {#state}
 
 The state space is the domain of the energy function, $E(s)$, and a state is any element which belongs to the state space. In the case of TSP, all possible paths that we can take to visit all the nodes is the state space, and any single one of these paths can be considered as a state.
 
-### Neighbouring state
+### Neighbouring state {#neighbouring-state}
 
 It is a state in the state space which is close to the previous state. This usually means that we can obtain the neighbouring state from the original state using a simple transform. In the case of the Travelling Salesman Problem, a neighbouring state is obtained by randomly choosing 2 nodes, and swapping their positions in the current state. 
 
-## Algorithm
+## Algorithm {#algorithm}
 
 We start with a random state $s$. In every step, we choose a neighbouring state $s_{next}$ of the current state $s$. If $E(s_{next}) < E(s)$, then we update $s = s_{next}$. Otherwise, we use a probability acceptance function $P(E(s),E(s_{next}),T)$ which decides whether we should move to $s_{next}$ or stay at $s$. T here is the temperature, which is initially set to a high value and decays slowly with every step. The higher the temperature, the more likely it is to move to $s_{next}$. 
 At the same time we also keep a track of the best state $s_{best}$ across all iterations. Proceeding till convergence or time runs out.
@@ -37,11 +37,11 @@ At the same time we also keep a track of the best state $s_{best}$ across all it
 *A visual representation of simulated annealing, searching for the maxima of this function with multiple local maxima.*
  
 
-### Temperature(T) and decay(u)
+### Temperature(T) and decay(u) {#temperaturet-and-decayu}
 
 The temperature of the system quantifies the willingness of the algorithm to accept a state with a higher energy. The decay is a constant which quantifies the "cooling rate" of the algorithm. A slow cooling rate (larger $u$) is known to give better results.
 
-## Probability Acceptance Function(PAF)
+## Probability Acceptance Function(PAF) {#probability-acceptance-functionpaf}
 
 $P(E,E_{next},T) = 
     \begin{cases}
@@ -61,7 +61,7 @@ bool P(double E,double E_next,double T,mt19937 rng){
     }
 }
 ```
-## Code Template
+## Code Template {#code-template}
 
 ```cpp
 class state {
@@ -105,10 +105,10 @@ pair<double, state> simAnneal() {
 }
 
 ```
-## How to use:
+## How to use: {#how-to-use}
 Fill in the state class functions as appropriate. If you are trying to find a global maxima and not a minima, ensure that the $E()$ function returns negative of the function you are maximizing and print $-E_{best}$ in the end. Set the below parameters as per your need.
 
-### Parameters
+### Parameters {#parameters}
 - $T$ : Initial temperature. Set it to a higher value if you want the search to run for a longer time.
 - $u$ : Decay. Decides the rate of cooling. A slower cooling rate (larger value of u) usually gives better results, at the cost of running for a longer time. Ensure $u < 1$. 
 
@@ -120,7 +120,7 @@ Tips for choosing $T$ and $u$ : If there are many local minimas and a wide state
 
 $T = u^{-N}$
 
-### Example implementation for TSP
+### Example implementation for TSP {#example-implementation-for-tsp}
 ```cpp
 
 class state {
@@ -168,7 +168,7 @@ int main() {
 }
 ```
 
-## Further modifications to the algorithm:
+## Further modifications to the algorithm: {#further-modifications-to-the-algorithm}
 
 - Add a time based exit condition to the while loop to prevent TLE
 - The decay implemented above is an exponential decay. You can always replace this with a decay function as per your needs.
@@ -187,7 +187,7 @@ bool P(double E, double E_next, double T, mt19937 rng) {
 }
 ```
 
-## Problems
+## Problems {#problems}
 
 - [USACO Jan 2017 - Subsequence Reversal](https://usaco.org/index.php?page=viewproblem2&cpid=698)
 - [Deltix Summer 2021 - DIY Tree](https://codeforces.com/contest/1556/problem/H)

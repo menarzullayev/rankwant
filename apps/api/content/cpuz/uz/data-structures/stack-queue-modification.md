@@ -1,8 +1,8 @@
-# Minimum stek va minimum navbat
+# Minimum stek va minimum navbat {#minimum-stack-minimum-queue}
 
 Ushbu maqolada uchta masalani ko‘rib chiqamiz: avval stekni undagi eng kichik elementni $O(1)$ vaqtda topish mumkin bo‘ladigan qilib o‘zgartiramiz; keyin navbat uchun ham xuddi shunday imkoniyat yaratamiz; nihoyat, shu ma’lumotlar tuzilmalaridan foydalanib massivdagi berilgan uzunlikka ega barcha ostmassivlarning minimumini $O(n)$ vaqtda topamiz.
 
-## Stekni o‘zgartirish
+## Stekni o‘zgartirish {#stack-modification}
 
 Stek ma’lumotlar tuzilmasini undagi eng kichik elementni $O(1)$ vaqtda topish mumkin bo‘ladigan qilib o‘zgartirmoqchimiz. Bunda stekka element qo‘shish va undan element olib tashlash amallarining asimptotik murakkabligi o‘zgarmasligi kerak.
 
@@ -40,7 +40,7 @@ st.pop();
 int minimum = st.top().second;
 ```
 
-## Navbatni o‘zgartirish (1-usul)
+## Navbatni o‘zgartirish (1-usul) {#queue-modification-method-1}
 
 Endi navbat bilan ham xuddi shu amallarni bajarishni istaymiz, ya’ni elementlarni oxiriga qo‘shamiz va boshidan olib tashlaymiz.
 
@@ -83,7 +83,7 @@ if (!q.empty() && q.front() == remove_element)
 
 Bu amallarning barchasi o‘rtacha $O(1)$ vaqt olishi ravshan, chunki har bir element faqat bir marta qo‘shilishi va faqat bir marta olib tashlanishi mumkin.
 
-## Navbatni o‘zgartirish (2-usul)
+## Navbatni o‘zgartirish (2-usul) {#queue-modification-method-2}
 
 Bu — 1-usulning o‘zgartirilgan ko‘rinishi. Qaysi elementni olib tashlashimizni bilmasdan ham navbat boshidan element o‘chira olishni istaymiz.
 
@@ -118,7 +118,7 @@ if (!q.empty() && q.front().second == cnt_removed)
 cnt_removed++;
 ```
 
-## Navbatni o‘zgartirish (3-usul)
+## Navbatni o‘zgartirish (3-usul) {#queue-modification-method-3}
 
 Bu yerda minimumni $O(1)$ vaqtda topish uchun navbatni o‘zgartirishning yana bir usulini ko‘rib chiqamiz. Bu usulni implementatsiya qilish biroz murakkabroq, ammo bu safar barcha elementlar haqiqatan ham saqlanadi. Bundan tashqari, olib tashlanayotgan elementning qiymatini bilmasdan navbat boshidan element o‘chira olamiz.
 
@@ -165,7 +165,7 @@ int remove_element = s2.top().first;
 s2.pop();
 ```
 
-## Berilgan uzunlikdagi barcha ostmassivlar minimumini topish
+## Berilgan uzunlikdagi barcha ostmassivlar minimumini topish {#finding-the-minimum-for-all-subarrays-of-fixed-length}
 
 Uzunligi $N$ bo‘lgan $A$ massiv va $M \le N$ soni berilgan bo‘lsin. Massivdagi uzunligi $M$ bo‘lgan har bir ostmassivning minimumini, ya’ni quyidagi qiymatlarni topishimiz kerak:
 
@@ -177,7 +177,7 @@ Yuqoridagi uchta o‘zgartirilgan navbatdan istalgan biri bilan masalani yechish
 
 Navbat bilan barcha amallar o‘rtacha o‘zgarmas vaqtda bajarilgani uchun butun algoritmning murakkabligi $O(n)$ bo‘ladi.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [Queries with Fixed Length](https://www.hackerrank.com/challenges/queries-with-fixed-length/problem)
 * [Sliding Window Minimum](https://cses.fi/problemset/task/3221)

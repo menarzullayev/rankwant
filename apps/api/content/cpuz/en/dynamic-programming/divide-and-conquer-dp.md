@@ -1,8 +1,8 @@
-# Divide and Conquer DP
+# Divide and Conquer DP {#divide-and-conquer-dp}
 
 Divide and Conquer is a dynamic programming optimization.
 
-### Preconditions
+### Preconditions {#preconditions}
 Some dynamic programming problems have a recurrence of this form: 
 
 $$
@@ -49,7 +49,7 @@ $$
 Thus, the complexity of each divide and conquer is $O(n\log{n})$, and the complexity
 of the entire DP computation is $O(mn\log{n})$.
 
-## Generic implementation
+## Generic implementation {#generic-implementation}
 
 Even though implementation varies based on problem, here's a fairly generic
 template.
@@ -97,14 +97,14 @@ long long solve() {
 }
 ```
 
-### Things to look out for
+### Things to look out for {#things-to-look-out-for}
 
 The greatest difficulty with Divide and Conquer DP problems is proving the
 monotonicity of $opt$. One special case where this is true is when the cost function satisfies the quadrangle inequality, i.e., $C(a, c) + C(b, d) \leq C(a, d) + C(b, c)$ for all $a \leq b \leq c \leq d$. 
 Many Divide and Conquer DP problems can also be solved with the Convex Hull trick or vice-versa. It is useful to know and understand
 both! 
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 - [AtCoder - Yakiniku Restaurants](https://atcoder.jp/contests/arc067/tasks/arc067_d)
 - [CodeForces - Ciel and Gondolas](https://codeforces.com/contest/321/problem/E) (Be careful with I/O!)
 - [CodeForces - Levels And Regions](https://codeforces.com/problemset/problem/673/E)
@@ -124,6 +124,6 @@ both!
 - [UVA - Arranging Heaps](https://onlinejudge.org/external/125/12524.pdf)
 - [UVA - Naming Babies](https://onlinejudge.org/external/125/12594.pdf)
 
-## References
+## References {#references}
 - [Quora Answer by Michael Levin](https://www.quora.com/What-is-divide-and-conquer-optimization-in-dynamic-programming)
 - [Video Tutorial by "Sothe" the Algorithm Wolf](https://www.youtube.com/watch?v=wLXEWuDWnzI)

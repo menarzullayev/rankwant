@@ -1,10 +1,10 @@
-# Butun sonlarni faktorizatsiya qilish
+# Butun sonlarni faktorizatsiya qilish {#integer-factorization}
 
 Ushbu maqolada butun sonlarni faktorizatsiya qilishning bir nechta algoritmlari keltiriladi; ularning har biri kirishga qarab tez yoki turli darajada sekin ishlashi mumkin.
 Faktorizatsiya qilmoqchi bo‘lgan son aslida tub bo‘lsa, algoritmlarning aksariyati juda sekin ishlashiga e’tibor bering. Bu ayniqsa Fermat, Pollardning $p-1$ va Pollardning rho faktorizatsiya algoritmlariga tegishli.
 Shuning uchun sonni faktorizatsiya qilishga urinishdan oldin ehtimollik (yoki tez deterministik) [tub sonlik testi](/algorithms/algebra/primality-tests) ni bajarish maqsadga muvofiq.
 
-## Sinov tariqasida bo‘lish
+## Sinov tariqasida bo‘lish {#trial-division}
 
 Bu tub ko‘paytuvchilarga ajratishni topishning eng sodda algoritmidir.
 Biz har bir mumkin bo‘lgan $d$ bo‘luvchiga bo‘lib ko‘ramiz.
@@ -30,7 +30,7 @@ vector<long long> trial_division1(long long n) {
 }
 ```
 
-### G‘ildirak faktorizatsiyasi
+### G‘ildirak faktorizatsiyasi {#wheel-factorization}
 
 Bu sinov tariqasida bo‘lish usulining optimallashtirilgan ko‘rinishi.
 Son 2 ga bo‘linmasligini bilganimizdan keyin boshqa juft sonlarni tekshirish shart emas.
@@ -93,7 +93,7 @@ vector<long long> trial_division3(long long n) {
 
 Usulni yanada ko‘proq tub sonlarni qamrab oladigan qilib kengaytirsak, tekshiriladigan sonlar ulushi yanada kamayadi, ammo o‘tkazib yuborish ro‘yxatlari kattalashadi.
 
-### Avvaldan hisoblangan tub sonlar
+### Avvaldan hisoblangan tub sonlar {#precomputed-primes}
 
 G‘ildirak faktorizatsiyasi usulini cheksiz kengaytirsak, tekshirish uchun faqat tub sonlar qoladi.
 Buning yaxshi usuli — [Eratosfen elagi](/algorithms/algebra/sieve-of-eratosthenes) yordamida $\sqrt{n}$ gacha bo‘lgan barcha tub sonlarni avvaldan hisoblab, ularning har birini alohida tekshirish.
@@ -116,7 +116,7 @@ vector<long long> trial_division4(long long n) {
 }
 ```
 
-## Fermat faktorizatsiya usuli
+## Fermat faktorizatsiya usuli {#fermats-factorization-method}
 
 Toq murakkab $n = p \cdot q$ sonini ikki kvadrat ayirmasi $n = a^2 - b^2$ ko‘rinishida yozish mumkin:
 
@@ -145,7 +145,7 @@ Ammo amalda bu usul kamdan-kam qo‘llanadi. Ko‘paytuvchilar bir-biridan uzoql
 Shunga qaramay, bu yondashuvni optimallashtirishning ko‘plab usullari mavjud.
 $a^2$ kvadratlarni kichik o‘zgarmas son modul bo‘yicha ko‘rib, ayrim $a$ qiymatlarini tekshirish shart emasligini aniqlash mumkin, chunki ular $a^2-n$ ning kvadrat son bo‘lishiga olib kela olmaydi.
 
-## Pollardning $p - 1$ usuli
+## Pollardning $p - 1$ usuli {#pollards-p-1-method}
 
 $n$ sonida kamida bitta shunday $p$ tub ko‘paytuvchi bo‘lish ehtimoli yuqoriki, kichik $\mathrm{B}$ uchun $p-1$ soni $\mathrm{B}$-**daraja-silliq** bo‘ladi. Agar $m$ ni bo‘ladigan har bir tub son darajasi $\mathrm{B}$ dan oshmasa, $m$ butun soni $\mathrm{B}$-daraja-silliq deyiladi. Rasmiy ravishda, $\mathrm{B} \geqslant 1$ va $m$ ixtiyoriy musbat butun son bo‘lsin. $m$ ning tub ko‘paytuvchilarga ajratilishi $m = \prod {q_i}^{e_i}$ bo‘lsin, bunda har bir $q_i$ tub va $e_i \geqslant 1$.
 U holda barcha $i$ uchun ${q_i}^{e_i} \leqslant \mathrm{B}$ bo‘lsa, $m$ soni $\mathrm{B}$-daraja-silliq deyiladi.
@@ -214,7 +214,7 @@ Buning oqibati shuki, algoritm umuman ko‘paytuvchi topa olmasligi ham mumkin.
 
 Har bir iteratsiyaning murakkabligi $O(B \log B \log^2 n)$.
 
-## Pollardning rho algoritmi
+## Pollardning rho algoritmi {#pollards-rho-algorithm}
 
 Pollardning rho algoritmi — John Pollardning yana bir faktorizatsiya algoritmi.
 
@@ -241,7 +241,7 @@ Bu holatda xos ko‘paytuvchi topmaganmiz, shuning uchun algoritmni boshqa param
 
 Siklni topish uchun istalgan odatiy sikl aniqlash algoritmidan foydalanish mumkin.
 
-### Floydning sikl topish algoritmi
+### Floydning sikl topish algoritmi {#floyds-cycle-finding-algorithm}
 
 Bu algoritm ketma-ketlik bo‘ylab turli tezliklarda harakatlanadigan ikkita ko‘rsatkich yordamida siklni topadi.
 Har bir iteratsiyada birinchi ko‘rsatkich bir element oldinga, ikkinchi ko‘rsatkich esa ikki element oldinga siljiydi.
@@ -263,7 +263,7 @@ function floyd(f, x0):
     return true
 ```
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Avval **Floydning sikl topish algoritmi** dan foydalanadigan implementatsiyani keltiramiz.
 Algoritm odatda $O(\sqrt[4]{n} \log(n))$ vaqtda ishlaydi.
@@ -331,7 +331,7 @@ Masalan, $x_0 = c = 1$ tanlovi $25 = 5 \cdot 5$ ni faktorizatsiya qilmaydi.
 Algoritm $25$ ni qaytaradi.
 Ammo $x_0 = 1$, $c = 2$ tanlovi uni faktorizatsiya qiladi.
 
-### Brent algoritmi
+### Brent algoritmi {#brents-algorithm}
 
 Brent ham Floydga o‘xshash, ikkita ko‘rsatkichli usulni qo‘llaydi.
 Farqi shundaki, ko‘rsatkichlar mos ravishda bir va ikki o‘rin emas, 2 ning darajalari miqdorida siljitiladi.
@@ -354,7 +354,7 @@ function floyd(f, x0):
 
 Brent algoritmi ham chiziqli vaqtda ishlaydi, ammo odatda Floyd algoritmidan tezroq, chunki $f$ funksiyasini kamroq hisoblaydi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Brent algoritmining to‘g‘ridan-to‘g‘ri implementatsiyasini $k < \frac{3 \cdot l}{2}$ bo‘lganda $x_l - x_k$ hadlarini tashlab yuborish orqali tezlashtirish mumkin.
 Bundan tashqari, har qadamda $\gcd$ hisoblash o‘rniga hadlarni ko‘paytiramiz, $\gcd$ ni faqat bir necha qadamda bir marta tekshiramiz va chegaradan o‘tib ketgan bo‘lsak, orqaga qaytamiz.
@@ -395,7 +395,7 @@ long long brent(long long n, long long x0=2, long long c=1) {
 
 Kichik tub sonlar bilan sinov tariqasida bo‘lish va Pollard rho algoritmining Brent ko‘rinishini birlashtirish juda kuchli faktorizatsiya algoritmini beradi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ — FACT0](https://www.spoj.com/problems/FACT0/)
 - [SPOJ — FACT1](https://www.spoj.com/problems/FACT1/)

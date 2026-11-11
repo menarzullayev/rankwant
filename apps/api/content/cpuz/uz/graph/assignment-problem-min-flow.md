@@ -1,4 +1,4 @@
-# Tayinlash masalasini minimal narxli oqim yordamida yechish
+# Tayinlash masalasini minimal narxli oqim yordamida yechish {#solving-assignment-problem-using-min-cost-flow}
 
 **Tayinlash masalasi**ning o‘zaro teng kuchli ikkita ta’rifi bor:
 
@@ -7,7 +7,7 @@
 
 Bu yerda masalani [minimal narxli oqim (min-cost-flow)](/algorithms/graph/min-cost-flow) topish algoritmiga asoslanib yechamiz; tayinlash masalasi $\mathcal{O}(N^3)$ vaqtda yechiladi.
 
-## Tavsif
+## Tavsif {#description}
 
 Ikki bo‘lakli tarmoq quramiz: $S$ manba, $T$ qabul qiluvchi bor; birinchi qismda $N$ ta tugun (matritsa satrlari yoki buyurtmalarga mos), ikkinchi qismda ham $N$ ta tugun (matritsa ustunlari yoki mashinalarga mos) mavjud. Birinchi to‘plamdagi har bir $i$ tugun bilan ikkinchi to‘plamdagi har bir $j$ tugun orasida sig‘imi 1 va narxi $A_{ij}$ bo‘lgan qirra chizamiz. $S$ manbadan birinchi to‘plamdagi barcha $i$ tugunlarga sig‘imi 1 va narxi 0 bo‘lgan qirralar chizamiz. Ikkinchi to‘plamdagi har bir $j$ tugundan $T$ qabul qiluvchiga sig‘imi 1 va narxi 0 bo‘lgan qirra chizamiz.
 
@@ -15,7 +15,7 @@ Hosil bo‘lgan tarmoqda minimal narxli maksimal oqimni topamiz. Ravshanki, oqim
 
 Tayinlash masalasi uchun ushbu yechimning murakkabligi minimal narxli maksimal oqim qaysi algoritm bilan topilishiga bog‘liq. [Dijkstra](/algorithms/graph/dijkstra) ishlatilsa murakkablik $\mathcal{O}(N^3)$, [Bellman–Ford](/algorithms/graph/bellman-ford) ishlatilsa $\mathcal{O}(N^4)$ bo‘ladi. Sababi, oqim hajmi $O(N)$, Dijkstra algoritmining har bir iteratsiyasini $O(N^2)$, Bellman–Ford iteratsiyasini esa $O(N^3)$ vaqtda bajarish mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Bu yerda berilgan implementatsiya uzun; ehtimol uni sezilarli darajada qisqartirish mumkin.
 Eng qisqa yo‘llarni topish uchun [SPFA algoritmi](/algorithms/graph/bellman-ford) ishlatilgan.

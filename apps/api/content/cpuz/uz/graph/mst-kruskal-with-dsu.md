@@ -1,10 +1,10 @@
-# Minimal ostov daraxt — DSU bilan Kruskal algoritmi
+# Minimal ostov daraxt — DSU bilan Kruskal algoritmi {#minimum-spanning-tree-kruskal-with-disjoint-set-union}
 
 Minimal ostov daraxt masalasi va Kruskal algoritmi haqidagi tushuntirish uchun avval [Kruskal algoritmi haqidagi asosiy maqola](/algorithms/graph/mst-kruskal)ni o‘qing.
 
 Ushbu maqolada Kruskal algoritmini implementatsiya qilish uchun [“Kesishmaydigan to‘plamlar birlashmasi”](/algorithms/data-structures/disjoint-set-union) ma’lumotlar tuzilmasidan foydalanamiz; bu algoritmga $O(M \log N)$ vaqt murakkabligiga erishish imkonini beradi.
 
-## Tavsif
+## Tavsif {#description}
 
 Kruskal algoritmining sodda ko‘rinishidagi kabi, grafning barcha qirralarini og‘irlik bo‘yicha kamaymaydigan tartibda saralaymiz.
 
@@ -16,7 +16,7 @@ Nihoyat, ikkita daraxtni (to‘plamni) birlashtirishimiz kerak; buning uchun DSU
 
 Shunday qilib, umumiy vaqt murakkabligi $O(M \log N + N + M)$ = $O(M \log N)$ bo‘ladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida rank bo‘yicha birlashtirishdan foydalanadigan Kruskal algoritmi implementatsiyasi keltirilgan.
 
@@ -74,6 +74,6 @@ for (Edge e : edges) {
 
 E’tibor bering: minimal ostov daraxt aynan $N-1$ ta qirrani o‘z ichiga olgani sababli, shuncha qirra topilishimiz bilanoq `for` siklini to‘xtatishimiz mumkin.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 Bu mavzudagi amaliy masalalar ro‘yxati uchun [Kruskal algoritmi haqidagi asosiy maqola](/algorithms/graph/mst-kruskal)ga qarang.

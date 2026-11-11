@@ -1,8 +1,8 @@
-# Siyrak graflarda Dijkstra algoritmi
+# Siyrak graflarda Dijkstra algoritmi {#dijkstra-on-sparse-graphs}
 
 Masala bayoni, algoritm, implementatsiya va to‘g‘rilik isbotini [Dijkstra algoritmi](/algorithms/graph/dijkstra) maqolasidan topish mumkin.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Dijkstra algoritmining murakkabligini chiqarishda ikkita omildan foydalanganimizni eslaylik:
 
@@ -21,9 +21,9 @@ Fibonacci uyumlari bu vazifa uchun optimal murakkablikni beradi, ammo ularni ama
 
 C++ ikkita shunday ma’lumotlar tuzilmasini beradi: `set` va `priority_queue`. Birinchisi qizil-qora daraxtga, ikkinchisi uyumga asoslangan. Shu sababli `priority_queue` odatda kichikroq yashirin doimiyga ega, biroq unda elementni olib tashlash amali yo‘q. Shu muammo uchun aylanma yo‘l ishlatiladi va natijada nazariy jihatdan $\log n$ o‘rniga biroz yomonroq $\log m$ koeffitsiyenti kelib chiqadi; asimptotik nuqtayi nazardan ular baribir bir xil.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
-### `set`
+### `set` {#set}
 
 Avval `set` konteyneridan boshlaymiz. Tugunlarni $d[]$ qiymatlari bo‘yicha tartibda saqlashimiz kerakligi sababli, masofa va tugun indeksidan iborat juftliklarni saqlash qulay. `set` ichida juftliklar avtomatik ravishda masofa bo‘yicha tartiblanadi.
 
@@ -61,7 +61,7 @@ Oddiy Dijkstra implementatsiyasidagi $u[]$ massiviga endi ehtiyoj yo‘q. Bu ma�
 
 Asosiy sikl to‘plam, ya’ni navbat bo‘shaguncha ishlaydi. Eng kichik masofali tugun chiqariladi. Har bir muvaffaqiyatli relaksatsiyada avval eski juftlik to‘plamdan o‘chiriladi, masofa yangilangach esa yangi juftlik navbatga qo‘shiladi.
 
-### `priority_queue`
+### `priority_queue` {#priority_queue}
 
 `set` implementatsiyasidan asosiy farq shuki, ko‘plab tillarda, jumladan C++da ham, `priority_queue` ichidan ixtiyoriy elementni olib tashlab bo‘lmaydi; nazariy jihatdan uyum bunday amalni qo‘llashi mumkin bo‘lsa ham, standart konteyner uni bermaydi.
 
@@ -105,7 +105,7 @@ void dijkstra(int s, vector<int> & d, vector<int> & p) {
 
 Amaliyotda `priority_queue` varianti `set` variantidan biroz tezroq ishlaydi. Qiziq tomoni, [2007-yildagi texnik hisobot](https://www3.cs.stonybrook.edu/~rezaul/papers/TR-07-54.pdf) `decrease-key` amalisiz variant `decrease-key` ishlatadigan variantdan tezroq ishlashini, siyrak graflarda esa farq yanada katta bo‘lishini ko‘rsatgan.
 
-### Juftliklardan voz kechish
+### Juftliklardan voz kechish {#getting-rid-of-pairs}
 
 Konteynerlarda juftliklar o‘rniga faqat tugun indekslarini saqlash orqali ishlash tezligini yana biroz oshirish mumkin. Bunda solishtirish operatorini qayta aniqlash kerak: u ikki tugunni $d[]$ da saqlangan masofalari bo‘yicha solishtiradi.
 

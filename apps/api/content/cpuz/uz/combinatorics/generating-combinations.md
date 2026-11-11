@@ -1,10 +1,10 @@
-# Barcha $K$-kombinatsiyalarni hosil qilish
+# Barcha $K$-kombinatsiyalarni hosil qilish {#generating-all-k-combinations}
 
 Ushbu maqolada barcha $K$-kombinatsiyalarni hosil qilish masalasini muhokama qilamiz.
 $N$ va $K$ natural sonlari hamda $1$ dan $N$ gacha bo‘lgan sonlar to‘plami berilgan.
 Vazifa — **o‘lchami $K$ bo‘lgan barcha qism to‘plamlarni** hosil qilish.
 
-## Keyingi leksikografik $K$-kombinatsiyani hosil qilish
+## Keyingi leksikografik $K$-kombinatsiyani hosil qilish {#generate-next-lexicographical-k-combination}
 
 Avval kombinatsiyalarni leksikografik tartibda hosil qilamiz.
 Buning algoritmi sodda. Birinchi kombinatsiya ${1, 2, ..., K}$ bo‘ladi. Endi undan leksikografik tartibda darhol keyin keladigan kombinatsiyani qanday topishni ko‘ramiz. Buning uchun joriy kombinatsiyani ko‘rib chiqib, hali o‘zining eng katta mumkin bo‘lgan qiymatiga yetmagan eng o‘ng elementni topamiz. Bu elementni topgach, uni $1$ ga oshiramiz va undan keyingi barcha elementlarga ruxsat etilgan eng kichik qiymatlarni beramiz.
@@ -24,7 +24,7 @@ bool next_combination(vector<int>& a, int n) {
 }
 ```
 
-## Qo‘shni kombinatsiyalar bitta element bilan farq qiladigan barcha $K$-kombinatsiyalarni hosil qilish
+## Qo‘shni kombinatsiyalar bitta element bilan farq qiladigan barcha $K$-kombinatsiyalarni hosil qilish {#generate-all-k-combinations-such-that-adjacent-combinations-differ-by-one-element}
 
 Bu safar barcha $K$-kombinatsiyalarni shunday tartibda hosil qilmoqchimizki, qo‘shni kombinatsiyalar aynan bitta element bilan farq qilsin.
 

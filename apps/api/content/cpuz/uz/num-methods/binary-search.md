@@ -1,8 +1,8 @@
-# Ikkilik qidiruv
+# Ikkilik qidiruv {#binary-search}
 
 **Ikkilik qidiruv** qidiruv oralig‘ini ikki qismga bo‘lish orqali biror narsani tezroq topish imkonini beradigan usuldir. Uning eng keng tarqalgan qo‘llanishi tartiblangan massivlarda qiymat qidirish, biroq oraliqni bo‘lish g‘oyasi boshqa ko‘plab odatiy masalalarda ham hal qiluvchi ahamiyatga ega.
 
-## Tartiblangan massivda qidirish
+## Tartiblangan massivda qidirish {#search-in-sorted-arrays}
 
 Ikkilik qidiruvga olib keladigan eng odatiy masala quyidagicha. Sizga tartiblangan $A_0 \leq A_1 \leq \dots \leq A_{n-1}$ massiv berilgan; $k$ soni ketma-ketlikda bor-yo‘qligini tekshirish kerak. Eng sodda yechim — har bir elementni birma-bir tekshirib, $k$ bilan solishtirish (bu chiziqli qidiruv deyiladi). Bu yondashuv $O(n)$ vaqtda ishlaydi, ammo massiv tartiblanganidan foydalanmaydi.
 
@@ -31,13 +31,13 @@ Ikkala tomondan $\log_2$ olsak, $h \approx \log_2(R-L) \in O(\log n)$ ni olamiz.
 
 Qadamlarning logarifmik soni chiziqli qidiruvdagidan keskin yaxshi. Masalan, $n \approx 2^{20} \approx 10^6$ uchun chiziqli qidiruvda taxminan million amal bajarish kerak, ikkilik qidiruvda esa atigi taxminan $20$ amal.
 
-### Quyi va yuqori chegara
+### Quyi va yuqori chegara {#lower-bound-and-upper-bound}
 
 Ko‘pincha elementning aniq o‘rnini emas, $k$ dan katta yoki unga teng birinchi element o‘rnini (massivda $k$ ning **quyi chegarasi** deyiladi) yoki $k$ dan katta birinchi element o‘rnini ($k$ ning **yuqori chegarasi** deyiladi) topish qulay bo‘ladi.
 
 Quyi va yuqori chegaralar birgalikda massivdagi $k$ ga teng elementlardan iborat, bo‘sh bo‘lishi ham mumkin bo‘lgan yarim intervalni beradi. $k$ massivda borligini tekshirish uchun uning quyi chegarasini topib, mos element $k$ ga tengligini tekshirish yetarli.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Yuqoridagi tushuntirish algoritmning taxminiy tavsifini beradi. Implementatsiya tafsilotlari uchun aniqroq bo‘lishimiz kerak.
 
@@ -66,7 +66,7 @@ Algoritm bajarilishi davomida $L < M < R$ bo‘lgani uchun $A_L$ ham, $A_R$ ham 
 
 **Eslatma.** `m = (r + l) / 2` deb hisoblash `l` va `r` ikkita musbat butun son bo‘lsa, toshib ketishga olib kelishi mumkin; bu xato JDK da taxminan 9 yil saqlanib qolgan, bu [blog yozuvida](https://ai.googleblog.com/2006/06/extra-extra-read-all-about-it-nearly.html) tasvirlangan. Muqobil yondashuvlardan biri — `m = l + (r - l) / 2` deb yozish: u musbat butun `l` va `r` uchun doim ishlaydi, lekin `l` manfiy son bo‘lsa, baribir toshib ketishi mumkin. C++20 dan foydalansangiz, u `m = std::midpoint(l, r)` ko‘rinishida muqobil yechim taklif qiladi, u doim to‘g‘ri ishlaydi.
 
-## Ixtiyoriy predikat bo‘yicha qidirish
+## Ixtiyoriy predikat bo‘yicha qidirish {#search-on-arbitrary-predicate}
 
 $f : \{0,1,\dots, n-1\} \to \{0, 1\}$ — $0,1,\dots,n-1$ da aniqlangan, monoton o‘suvchi, ya’ni
 
@@ -95,7 +95,7 @@ while (r - l > 1) {
 }
 ```
 
-### Javob bo‘yicha ikkilik qidiruv
+### Javob bo‘yicha ikkilik qidiruv {#binary-search-on-the-answer}
 
 Bunday holat ko‘pincha biror qiymatni hisoblash so‘ralganda, lekin biz faqat shu qiymat kamida $i$ ekanini tekshira olgandagina uchraydi. Masalan, sizga $a_1,\dots,a_n$ massiv berilgan va $r-l \geq x$ bo‘ladigan barcha mumkin bo‘lgan $l,r$ juftliklari orasida pastga yaxlitlangan eng katta o‘rtacha yig‘indini topish so‘ralgan:
 
@@ -117,7 +117,7 @@ $$
 
 demak, endi yangi $a_i - \lambda$ massivda uzunligi kamida $x+1$ va yig‘indisi manfiy bo‘lmagan qism massiv bor-yo‘qligini tekshirish kerak, buni prefiks yig‘indilari yordamida bajarish mumkin.
 
-## Uzluksiz qidiruv
+## Uzluksiz qidiruv {#continuous-search}
 
 $f : \mathbb R \to \mathbb R$ funksiya $[L, R]$ kesmada uzluksiz haqiqiy qiymatli funksiya bo‘lsin.
 
@@ -127,13 +127,13 @@ $x$ qiymatini istalgan aniq $\delta$ uchun $\pm\delta$ aniqlikda $O\left(\log \f
 
 Masalan, $f(x)=x^3 + ax^2 + bx + c$ bo‘lsin. U holda $L \to -\infty$ va $R \to +\infty$ da $f(L) \to -\infty$ va $f(R) \to +\infty$. Bu $f(L) < 0$ va $f(R) > 0$ bo‘ladigan yetarlicha kichik $L$ va yetarlicha katta $R$ ni har doim topish mumkinligini bildiradi. Shundan keyin ikkilik qidiruv yordamida $f(x)=0$ bo‘ladigan $x$ ni o‘z ichiga olgan istalgancha kichik oraliqni topish mumkin.
 
-## Ikkining darajalari bilan qidirish
+## Ikkining darajalari bilan qidirish {#search-with-powers-of-2}
 
 Ikkilik qidiruvni bajarishning yana bir e’tiborga loyiq usuli — faol kesmani saqlash o‘rniga joriy $i$ ko‘rsatkichni va joriy $k$ darajani saqlash. Ko‘rsatkich $i=L$ dan boshlanadi, keyin har iteratsiyada predikat $i+2^k$ nuqtada tekshiriladi. Agar predikat hamon $0$ bo‘lsa, ko‘rsatkich $i$ dan $i+2^k$ ga suriladi, aks holda o‘z joyida qoladi; so‘ng $k$ daraja $1$ ga kamaytiriladi.
 
 Bu paradigma daraxtlar bilan bog‘liq masalalarda, masalan, ikki tugunning eng yaqin umumiy ajdodini yoki ma’lum tugunning muayyan balandlikdagi ajdodini topishda keng qo‘llanadi. Uni, masalan, Fenwick daraxtida $k$-noldan farqli elementni topish uchun ham moslashtirish mumkin.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [LeetCode — Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 - [LeetCode — Search Insert Position](https://leetcode.com/problems/search-insert-position/)

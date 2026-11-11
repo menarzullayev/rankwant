@@ -1,6 +1,6 @@
-# Sprague-Grundy theorem. Nim
+# Sprague-Grundy theorem. Nim {#sprague-grundy-theorem-nim}
 
-## Introduction
+## Introduction {#introduction}
 
 This theorem describes the so-called **impartial** two-player game,
 i.e. those in which the available moves and winning/losing depends only on the state of the game.
@@ -24,7 +24,7 @@ Our task is to classify the states of a given game.
 
 The theory of such games was independently developed by Roland Sprague in 1935 and Patrick Michael Grundy in 1939.
 
-## Nim
+## Nim {#nim}
 
 This game obeys the restrictions described above.
 Moreover, *any* perfect-information impartial two-player game can be reduced to the game of Nim.
@@ -35,7 +35,7 @@ Its origin is probably in China — or at least the game *Jianshizi* is very sim
 In Europe the earliest references to it are from the 16th century.
 The name was given by Charles Bouton, who in 1901 published a full analysis of this game.
 
-### Game description
+### Game description {#game-description}
 
 There are several piles, each with several stones.
 In a move a player can take any positive number of stones from any one pile and throw them away.
@@ -44,7 +44,7 @@ A player loses if they can't make a move, which happens when all the piles are e
 The game state is unambiguously described by a multiset of positive integers.
 A move consists of strictly decreasing a chosen integer (if it becomes zero, it is removed from the set).
 
-### The solution
+### The solution {#the-solution}
 
 The solution by Charles L. Bouton looks like this:
 
@@ -94,7 +94,7 @@ If $s \neq 0$, we have to prove that there is a move leading to a state with $t 
 Any state of Nim can be replaced by an equivalent state as long as the xor-sum doesn't change.
 Moreover, when analyzing a Nim with several piles, we can replace it with a single pile of size $s$.
 
-### Misère Game
+### Misère Game {#misere-game}
 
 In a **misère game**, the goal of the game is opposite, so the player who removes the last stick loses the game.
 It turns out that the misère nim game can be optimally played almost like a standard nim game.
@@ -105,11 +105,11 @@ the misère game,we choose a move so that there is an odd number of heaps with o
   This strategy works because a state where the strategy changes always appears in the game, and this state is a 
   winning state, because it contains exactly one heap that has more than one stick so the nim sum is not 0.
 
-## The equivalence of impartial games and Nim (Sprague-Grundy theorem)
+## The equivalence of impartial games and Nim (Sprague-Grundy theorem) {#the-equivalence-of-impartial-games-and-nim-sprague-grundy-theorem}
 
 Now we will learn how to find, for any game state of any impartial game, a corresponding state of Nim.
 
-### Lemma about Nim with increases
+### Lemma about Nim with increases {#lemma-about-nim-with-increases}
 
 We consider the following modification to Nim: we also allow **adding stones to a chosen pile**.
 The exact rules about how and when increasing is allowed **do not interest us**, however the rules should keep our game **acyclic**. In later sections, example games are considered.
@@ -122,7 +122,7 @@ In other words, increases are useless, and we don't have to use them in a winnin
 Suppose a player added stones to a pile. Then his opponent can simply undo his move — decrease the number back to the previous value.
 Since the game is acyclic, sooner or later the current player won't be able to use an increase move and will have to do the usual Nim move.
 
-### Sprague-Grundy theorem
+### Sprague-Grundy theorem {#sprague-grundy-theorem}
 
 Let's consider a state $v$ of a two-player impartial game and let $v_i$ be the states reachable from it (where $i \in \{ 1, 2, \dots, k \} , k \ge 0$).
 To this state, we can assign a fully equivalent game of Nim with one pile of size $x$.
@@ -152,7 +152,7 @@ This means $v$ is **equivalent to a state of the game of Nim with increases with
 In such a game we have transitions to piles of every size smaller than $p$ and possibly transitions to piles with sizes greater than $p$.
 Therefore, $p$ is indeed the desired Grundy value for the currently considered state.
 
-## Application of the theorem
+## Application of the theorem {#application-of-the-theorem}
 
 Finally, we describe an algorithm to determine the win/loss outcome of a game, which is applicable to any impartial two-player game.
 
@@ -172,7 +172,7 @@ In comparison to the previous section, we take into account the fact that there 
 We consider them a Nim with pile sizes equal to the independent games' Grundy values.
 We can xor-sum them just like usual Nim according to Bouton's theorem.
 
-## Patterns in Grundy values
+## Patterns in Grundy values {#patterns-in-grundy-values}
 
 Very often when solving specific tasks using Grundy values, it may be beneficial to **study the table of the values** in search of patterns.
 
@@ -182,9 +182,9 @@ In the overwhelming majority of cases the observed pattern turns out to be true 
 
 However, Grundy values are far from *always* containing such regularities and even for some very simple games, the problem asking if those regularities exist is still open (e.g. "Grundy's game").
 
-## Example games
+## Example games {#example-games}
 
-### Crosses-crosses
+### Crosses-crosses {#crosses-crosses}
 
 **The rules.**
 Consider a checkered strip of size $1 \times n$. In one move, the player must put one cross, but it is forbidden to put two crosses next to each other (in adjacent cells). As usual, the player without a valid move loses.
@@ -205,7 +205,7 @@ So we've got a $O(n^2)$ solution.
 
 In fact, $g(n)$ has a period of length 34 starting with $n=52$.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [KATTIS S-Nim](https://open.kattis.com/problems/snim)
 - [CodeForces - Marbles (2018-2019 ACM-ICPC Brazil Subregional)](https://codeforces.com/gym/101908/problem/B)

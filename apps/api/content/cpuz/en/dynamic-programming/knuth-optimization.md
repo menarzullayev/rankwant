@@ -1,8 +1,8 @@
-# Knuth's Optimization
+# Knuth's Optimization {#knuths-optimization}
 
 Knuth's optimization, also known as the Knuth-Yao Speedup, is a special case of dynamic programming on ranges, that can optimize the time complexity of solutions by a linear factor, from $O(n^3)$ for standard range DP to $O(n^2)$.
 
-## Conditions
+## Conditions {#conditions}
 
 The Speedup is applied for transitions of the form
 
@@ -20,11 +20,11 @@ We can show that it is true when the cost function $C$ satisfies the following c
 
 This result is proved further below.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Let's process the dp states in such a way that we calculate $dp(i, j-1)$ and $dp(i+1, j)$ before $dp(i, j)$, and in doing so we also calculate $opt(i, j-1)$ and $opt(i+1, j)$. Then for calculating $opt(i, j)$, instead of testing values of $k$ from $i$ to $j-1$, we only need to test from $opt(i, j-1)$ to $opt(i+1, j)$. To process $(i,j)$ pairs in this order it is sufficient to use nested for loops in which $i$ goes from the maximum value to the minimum one and $j$ goes from $i+1$ to the maximum value.
 
-### Generic implementation
+### Generic implementation {#generic-implementation}
 
 Though implementation varies, here's a fairly generic
 example. The structure of the code is almost identical to that of Range DP.
@@ -63,7 +63,7 @@ int solve() {
 }
 ```
 
-### Complexity
+### Complexity {#complexity}
 
 A complexity of the algorithm can be estimated as the following sum:
 
@@ -80,13 +80,13 @@ $$
 
 rather than $O(n^3)$ as it would be if we were using a regular range DP.
 
-### On practice
+### On practice {#on-practice}
 
 The most common application of Knuth's optimization is in Range DP, with the given transition. The only difficulty is in proving that the cost function satisfies the given conditions. The simplest case is when the cost function $C(i, j)$ is simply the sum of the elements of the subarray $S[i, i+1, ..., j]$ for some array (depending on the question). However, they can be more complicated at times. 
 
 Note that more than the conditions on the dp transition and the cost function, the key to this optimization is the inequality on the optimum splitting point. In some problems, such as the optimal binary search tree problem (which is, incidentally, the original problem for which this optimization was developed), the transitions and cost functions will be less obvious, however, one can still prove that $opt(i, j-1) \leq opt(i, j) \leq opt(i+1, j)$, and thus, use this optimization.
 
-### Proof of correctness
+### Proof of correctness {#proof-of-correctness}
 
 To prove the correctness of this algorithm in terms of $C(i,j)$ conditions, it suffices to prove that
 
@@ -178,13 +178,13 @@ $dp(i, p) + dp(i+1, q) ≤ dp(i+1, p) + dp(i, q)$.
 
 This completes the proof.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 - [UVA - Cutting Sticks](https://onlinejudge.org/external/100/10003.pdf)
 - [UVA - Prefix Codes](https://onlinejudge.org/external/120/12057.pdf)
 - [SPOJ - Breaking String](https://www.spoj.com/problems/BRKSTRNG/)
 - [UVA - Optimal Binary Search Tree](https://onlinejudge.org/external/103/10304.pdf)
 
-## References
+## References {#references}
 - [Geeksforgeeks Article](https://www.geeksforgeeks.org/knuths-optimization-in-dynamic-programming/)
 - [Doc on DP Speedups](https://home.cse.ust.hk/~golin/COMP572/Notes/DP_speedup.pdf)
 - [Efficient Dynamic Programming Using Quadrangle Inequalities](https://dl.acm.org/doi/pdf/10.1145/800141.804691)

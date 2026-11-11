@@ -1,4 +1,4 @@
-# Lowest Common Ancestor - Farach-Colton and Bender Algorithm
+# Lowest Common Ancestor - Farach-Colton and Bender Algorithm {#lowest-common-ancestor-farach-colton-and-bender-algorithm}
 
 Let $G$ be a tree.
 For every query of the form $(u, v)$ we want to find the lowest common ancestor of the nodes $u$ and $v$, i.e. we want to find a node $w$ that lies on the path from $u$ to the root node, that lies on the path from $v$ to the root node, and if there are multiple nodes we pick the one that is farthest away from the root node.
@@ -8,7 +8,7 @@ In particular if $u$ is an ancestor of $v$, then $u$ is their lowest common ance
 The algorithm which will be described in this article was developed by Farach-Colton and Bender.
 It is asymptotically optimal.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 We use the classical reduction of the LCA problem to the RMQ problem.
 We traverse all nodes of the tree with [DFS](/algorithms/graph/depth-first-search) and keep an array with all visited nodes and the heights of these nodes. 
@@ -79,7 +79,7 @@ For the implementation we can characterize a block by a bitmask of length $K-1$ 
 So we learned how to precompute range minimum queries within each block, as well as range minimum queries over a range of blocks, all in $O(N)$.
 With these precomputations we can answer each query in $O(1)$, by using at most four precomputed values: the minimum of the block containing `l`, the minimum of the block containing `r`, and the two minima of the overlapping segments of the blocks between them.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 int n;

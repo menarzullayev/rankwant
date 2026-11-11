@@ -1,4 +1,4 @@
-# Gauss usuli va chiziqli tenglamalar sistemasi
+# Gauss usuli va chiziqli tenglamalar sistemasi {#gauss-method-for-solving-system-of-linear-equations}
 
 $m$ ta noma’lumli $n$ ta chiziqli algebraik tenglamalar sistemasi berilgan bo‘lsin. Sistemaning yechimi yo‘qligini, yagona yechimga yoki cheksiz ko‘p yechimga egaligini aniqlash, yechim mavjud bo‘lsa esa ulardan bittasini topish talab qilinadi.
 
@@ -28,11 +28,11 @@ a_{21} x_1 + a_{22} x_2 + &\dots + a_{2m} x_m \equiv b_2 \pmod p \\
 a_{n1} x_1 + a_{n2} x_2 + &\dots + a_{nm} x_m \equiv b_n \pmod p
 \end{align}$$
 
-## Gauss–Jordan eliminatsiyasi
+## Gauss–Jordan eliminatsiyasi {#gauss}
 
 Quyida tavsiflanadigan algoritmni aniqroq qilib **Gauss–Jordan eliminatsiyasi** deyish kerak. U Gauss usulining Jordan 1887-yilda ta’riflagan ko‘rinishidir.
 
-## Umumiy ko‘rinish
+## Umumiy ko‘rinish {#overview}
 
 Algoritm har bir tenglamadan noma’lumlarni ketma-ket yo‘qotib boradi. Jarayon oxirida har bir ishlov berilgan tenglamada faqat bitta asosiy noma’lum qoladi. $n=m$ bo‘lgan va sistema yagona yechimga ega holatda buni $A$ matritsani birlik matritsaga aylantirish deb tasavvur qilish mumkin; o‘shanda javob oxirgi ustundagi koeffitsiyentlardan bevosita olinadi.
 
@@ -45,7 +45,7 @@ Birinchi qadamda birinchi satr $a_{11}$ ga bo‘linadi. So‘ng birinchi ustunda
 
 Natijada birinchi ustunning birinchi elementi $1$, qolgan elementlari $0$ bo‘ladi. Keyin ikkinchi satr va ikkinchi ustun uchun ayni jarayon takrorlanadi: satr $a_{22}$ ga bo‘linadi va u boshqa satrlardan kerakli koeffitsiyentlarda ayrilib, ikkinchi ustun tozalanadi. Barcha ustunlarga ishlov berilgach, kvadrat va buzilmagan sistemada $A$ birlik matritsaga aylanadi.
 
-## Tayanch elementni tanlash
+## Tayanch elementni tanlash {#search-for-the-pivoting-element}
 
 Yuqoridagi sodda tavsifda muhim holat chetda qoldi: $i$-qadamda $a_{ii}=0$ bo‘lishi mumkin va bunday songa bo‘lib bo‘lmaydi. Shunda $i$-ustuni noldan farqli bo‘lgan boshqa satr topilib, joriy satr bilan almashtiriladi. Tanlangan element **tayanch element**, satr esa **tayanch satr** deyiladi.
 
@@ -53,7 +53,7 @@ Bu yerda ustunlar emas, faqat satrlar almashtiriladi. Ustunlar almashtirilsa, ul
 
 Hatto $a_{ii}\ne0$ bo‘lganda ham, suzuvchi nuqtali hisoblarda odatda joriy ustundagi moduli eng katta $a_{ji}$ elementi tayanch qilib olinadi. **Qisman tayanchlash** deb ataladigan bu evristika keyingi hisoblarda sonlar diapazoni va yaxlitlash xatosini kamaytiradi. Tayanchlashsiz hatto taxminan $20$ o‘lchamli matritsada ham xato sezilarli kattalashishi yoki suzuvchi nuqtali tur diapazonidan chiqib ketishi mumkin.
 
-## Buzilgan va to‘g‘ri to‘rtburchak sistemalar
+## Buzilgan va to‘g‘ri to‘rtburchak sistemalar {#degenerate-cases}
 
 $m=n$, determinant noldan farqli va yechim yagona bo‘lsa, algoritm $A$ ni birlik matritsaga aylantiradi. Umumiy holatda esa $n$ va $m$ teng bo‘lishi shart emas, sistema buzilgan bo‘lishi ham mumkin.
 
@@ -63,7 +63,7 @@ Jarayon davomida ayrim noma’lumlar erkin ekanligi aniqlanishi mumkin. $m>n$ bo
 
 Biroq erkin o‘zgaruvchining mavjudligi yechim borligini kafolatlamaydi. Ishlov berilmagan satrda barcha noma’lum koeffitsiyentlari nol, lekin ozod had noldan farqli bo‘lsa, qarama-qarshilik hosil bo‘ladi. Buni erkin o‘zgaruvchilarga nol berib, qolganlarini hisoblash va olingan vektorni boshlang‘ich sistemaga qo‘yib tekshirish mumkin.
 
-## C++ implementatsiyasi
+## C++ implementatsiyasi {#implementation}
 
 Quyidagi `gauss` funksiyasi kengaytirilgan $[A\mid b]$ matritsani qabul qiladi; oxirgi ustun $b$ vektoridir. Tayanch satr joriy ustundagi moduli eng katta element bo‘yicha tanlanadi.
 
@@ -125,13 +125,13 @@ Muhim tafsilotlar:
 - implementatsiya joriy satrni tayanch elementga bo‘lmaydi, shu sabab yakuniy matritsa aynan birlik matritsa bo‘lmaydi; javob `a[where[i]][m] / a[where[i]][i]` orqali olinadi;
 - topilgan yechim boshlang‘ich kengaytirilgan matritsaga qayta qo‘yilib tekshiriladi. Tekshiruv o‘tsa, erkin o‘zgaruvchi bor-yo‘qligiga qarab `1` yoki `INF` qaytariladi.
 
-## Murakkablik
+## Murakkablik {#complexity}
 
 Algoritm ko‘pi bilan $m$ fazadan iborat. Har fazada tayanch satrni qidirish va almashtirish $O(n+m)$, tayanch topilsa uni boshqa satrlardan yo‘qotish esa $O(nm)$ vaqt oladi. Umumiy murakkablik $O(\min(n,m)\cdot nm)$.
 
 $n=m$ bo‘lgan kvadrat sistemada bu $O(n^3)$ ga teng. Sistema haqiqiy sonlar ustida emas, modul 2 bo‘yicha bo‘lsa, uni ancha tezroq yechish mumkin; bu quyida tavsiflanadi.
 
-## Oldinga va orqaga yurish bilan tezlatish
+## Oldinga va orqaga yurish bilan tezlatish {#acceleration-of-the-algorithm}
 
 Yuqoridagi Gauss–Jordan implementatsiyasini ikki fazaga ajratib, amallar sonini qariyb ikki baravar kamaytirish mumkin:
 
@@ -140,7 +140,7 @@ Yuqoridagi Gauss–Jordan implementatsiyasini ikki fazaga ajratib, amallar sonin
 
 Orqaga yurish $O(nm)$ vaqt oladi. Asosiy yutuq oldinga yurishda satrlarning faqat yarmiga o‘rtacha ishlov berilishidan keladi.
 
-## Modul bo‘yicha sistema
+## Modul bo‘yicha sistema {#solving-modular-slae}
 
 Gauss–Jordan usuli modul bo‘yicha sistemalarda ham ishlaydi. Modul 2 ga teng bo‘lsa, satrlarni `bitset` ko‘rinishida saqlab, ayirish va qo‘shishni XOR bilan bajarish ayniqsa samarali:
 
@@ -168,19 +168,19 @@ int gauss(vector<bitset<N>> a, int n, int m, bitset<N>& ans) {
 
 Bitlarni bir so‘zga zich joylash tufayli kod qisqaradi va amaliy tezlik taxminan 32 baravar oshadi.
 
-## Tayanch tanlash evristikalari
+## Tayanch tanlash evristikalari {#a-little-note-about-different-heuristics-of-choosing-pivoting-row}
 
 Barcha matritsalar uchun eng yaxshi yagona evristika yo‘q. Joriy ustundagi moduli eng katta elementni olish amalda yaxshi ishlaydi va ko‘pincha butun qolgan qismmatritsadan eng katta elementni tanlaydigan **to‘liq tayanchlash**ga yaqin aniqlik beradi.
 
 Shunga qaramay, ikkala yondashuv ham tenglamalarning qanday masshtablanganiga bog‘liq. Masalan, bir tenglama $10^6$ ga ko‘paytirilgan bo‘lsa, uning koeffitsiyentlari birinchi tayanch bo‘lib tanlanish ehtimoli juda katta. Buni yumshatish uchun **yashirin tayanchlash** ishlatiladi: satrlar go‘yo eng katta elementi birga teng qilib normallangandek taqqoslanadi. Implementatsiya har bir satrdagi maksimal modulni alohida saqlashi mumkin; satrning o‘zini doimiy normallash esa yig‘ilib boruvchi xatoni oshirishi ehtimol.
 
-## Yechim aniqligini yaxshilash
+## Yechim aniqligini yaxshilash {#improve-the-solution}
 
 Tayanchlash evristikalariga qaramay, maxsus tuzilgan $50 - 100$ o‘lchamli matritsalarda Gauss–Jordan sezilarli sonli xato berishi mumkin. Bunday vaziyatda olingan yechimni sodda iteratsion sonli usul bilan aniqlashtirish mumkin.
 
 Amaliy jarayon ikki bosqichli bo‘ladi: avval Gauss–Jordan boshlang‘ich yechimni topadi, keyin iteratsion usul shu yechimdan boshlab qoldiqni kamaytiradi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ — Xor Maximization](http://www.spoj.com/problems/XMAX/)
 - [CodeChef — Knight Moving](https://www.codechef.com/SEP12/problems/KNGHTMOV)

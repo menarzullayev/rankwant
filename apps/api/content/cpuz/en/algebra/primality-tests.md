@@ -1,8 +1,8 @@
-# Primality tests
+# Primality tests {#primality-tests}
 
 This article describes multiple algorithms to determine if a number is prime or not.
 
-## Trial division
+## Trial division {#trial-division}
 
 By definition a prime number doesn't have any divisors other than $1$ and itself.
 A composite number has at least one additional divisor, let's call it $d$.
@@ -27,7 +27,7 @@ This is the simplest form of a prime check.
 You can optimize this function quite a bit, for instance by only checking all odd numbers in the loop, since the only even prime number is 2.
 Multiple such optimizations are described in the article about [integer factorization](/algorithms/algebra/factorization).
 
-## Fermat primality test
+## Fermat primality test {#fermat-primality-test}
 
 This is a probabilistic test.
 
@@ -76,7 +76,7 @@ The Fermat primality test can identify these numbers only, if we have immense lu
 The Fermat test is still being used in practice, as it is very fast and Carmichael numbers are very rare.
 E.g. there only exist 646 such numbers below $10^9$.
 
-## Miller-Rabin primality test
+## Miller-Rabin primality test {#miller-rabin-primality-test}
 
 The Miller-Rabin test extends the ideas from the Fermat test.
 
@@ -172,7 +172,7 @@ Before the Miller-Rabin test you can test additionally if one of the first few p
 This can speed up the test by a lot, since most composite numbers have very small prime divisors.
 E.g. $88\%$ of all numbers have a prime factor smaller than $100$.
 
-### Deterministic version
+### Deterministic version {#deterministic-version}
 
 Miller showed that it is possible to make the algorithm deterministic by only checking all bases $\le O((\ln n)^2)$.
 Bach later gave a concrete bound, it is only necessary to test all bases $a \le 2 \ln(n)^2$.
@@ -210,7 +210,7 @@ bool MillerRabin(u64 n) { // returns true if n is prime, else returns false.
 It's also possible to do the check with only 7 bases: 2, 325, 9375, 28178, 450775, 9780504 and 1795265022.
 However, since these numbers (except 2) are not prime, you need to check additionally if the number you are checking is equal to any prime divisor of those bases: 2, 3, 5, 13, 19, 73, 193, 407521, 299210837.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [SPOJ - Prime or Not](https://www.spoj.com/problems/PON/)
 - [Project euler - Investigating a Prime Pattern](https://projecteuler.net/problem=146)

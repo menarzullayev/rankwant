@@ -1,12 +1,12 @@
-# Ryukzak masalasi
+# Ryukzak masalasi {#knapsack-problem}
 
 Oldindan bilish tavsiya etiladi: [Dinamik dasturlashga kirish](https://cp-algorithms.com/dynamic_programming/intro-to-dp.html)
 
-## Kirish
+## Kirish {#introduction}
 
 Quyidagi misolni ko‘rib chiqamiz:
 
-### [[USACO07 Dec] Charm Bracelet](https://www.acmicpc.net/problem/6144)
+### [[USACO07 Dec] Charm Bracelet](https://www.acmicpc.net/problem/6144) {#usaco07-dec-charm-bracelethttpswwwacmicpcnetproblem6144}
 
 $n$ ta turli buyum va sig‘imi $W$ bo‘lgan ryukzak bor. Har bir buyumning ikkita xususiyati mavjud: vazni ($w_{i}$) va qiymati ($v_{i}$).
 
@@ -14,9 +14,9 @@ Buyumlarning shunday qism to‘plamini tanlab ryukzakka joylashtirish kerakki, u
 
 Yuqoridagi misolda har bir buyum faqat ikkita holatdan birida bo‘lishi mumkin: tanlangan yoki tanlanmagan. Bu ikkilik 0 va 1 ga mos keladi. Shu sababli bunday masala “0-1 ryukzak masalasi” deb ataladi.
 
-## 0-1 ryukzak
+## 0-1 ryukzak {#0-1-knapsack}
 
-### Tushuntirish
+### Tushuntirish {#explanation}
 
 Yuqoridagi masalaning kirish ma’lumotlari quyidagilardan iborat: $i$-buyumning vazni $w_{i}$, uning qiymati $v_{i}$ va ryukzakning umumiy sig‘imi $W$.
 
@@ -39,7 +39,7 @@ Bu qoida $j$ ning **kamayib boruvchi** tartibida bajarilishi kerak. Shunda $f_{j
 
 **Bu o‘tish qoidasini tushunish juda muhim, chunki ryukzak masalalaridagi aksariyat o‘tishlar xuddi shu usulda keltirib chiqariladi.**
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Ta’riflangan algoritmni $O(nW)$ vaqtda quyidagicha amalga oshirish mumkin:
 
@@ -51,7 +51,7 @@ for (int i = 1; i <= n; i++)
 
 Bajarilish tartibiga yana bir bor e’tibor bering. Quyidagi invariantni saqlash uchun unga qat’iy rioya qilish zarur: $(i, j)$ juftligi qayta ishlanishidan oldin $k > j$ uchun $f_k$ qiymati $f_{i,k}$ ga, $k < j$ uchun esa $f_{i-1,k}$ ga mos keladi. Bu $f_{j-w_i}$ qiymati $i$-qadamdan emas, $(i-1)$-qadamdan olinishini ta’minlaydi.
 
-## Cheksiz ryukzak
+## Cheksiz ryukzak {#complete-knapsack}
 
 Cheksiz ryukzak modeli 0-1 ryukzakka o‘xshaydi. Yagona farq shundaki, har bir buyumni faqat bir marta emas, cheklanmagan miqdorda tanlash mumkin.
 
@@ -59,7 +59,7 @@ Cheksiz ryukzak modeli 0-1 ryukzakka o‘xshaydi. Yagona farq shundaki, har bir 
 
 Holat ta’rifi 0-1 ryukzakdagi ta’rifga o‘xshash bo‘lsa-da, o‘tish qoidasi boshqacha ekaniga e’tibor berish kerak.
 
-### Tushuntirish
+### Tushuntirish {#explanation}
 
 Sodda yondashuvda dastlabki $i$ ta buyum uchun har bir buyum necha marta olinishini sanab chiqamiz. Buning vaqt murakkabligi $O(n^2W)$ bo‘ladi.
 
@@ -77,7 +77,7 @@ Buning sababi shundaki, $f_{i, j-w_i}$ qiymati allaqachon $f_{i, j-2\cdot w_i}$ 
 
 $$f_j \gets \max(f_j, f_{j-w_i}+v_i)$$
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Ta’riflangan algoritmni $O(nW)$ vaqtda quyidagicha amalga oshirish mumkin:
 
@@ -91,11 +91,11 @@ O‘tish formulasi bir xil bo‘lishiga qaramay, yuqoridagi kod 0-1 ryukzak uchu
 
 Kodga sinchiklab qarasak, hozir qayta ishlanayotgan $i$-buyum va joriy $f_{i,j}$ holati uchun $j\geqslant w_{i}$ bo‘lganda, $f_{i,j}$ ga $f_{i,j-w_{i}}$ ta’sir qilishini ko‘ramiz. Bu $i$-buyumni ryukzakka bir necha marta qo‘yish imkoniga teng. Aynan shu xususiyat cheksiz ryukzakka mos keladi, 0-1 ryukzakka emas.
 
-## Cheklangan sonli ryukzak
+## Cheklangan sonli ryukzak {#multiple-knapsack}
 
 Cheklangan sonli ryukzak ham 0-1 ryukzakning bir variantidir. Asosiy farq shundaki, har bir buyumdan atigi 1 ta emas, $k_i$ ta nusxa mavjud.
 
-### Tushuntirish
+### Tushuntirish {#explanation}
 
 Juda sodda g‘oya: “har bir buyumni $k_i$ marta tanlash” — “bir xil buyumning $k_i$ ta nusxasini bittadan tanlash” bilan teng. Shunday qilib masalani 0-1 ryukzak modeliga aylantirish mumkin. Uning o‘tish funksiyasi:
 
@@ -103,7 +103,7 @@ $$f_{i, j} = \max_{k=0}^{k_i}(f_{i-1,j-k\cdot w_i} + k\cdot v_i)$$
 
 Bu jarayonning vaqt murakkabligi $O(W\sum\limits_{i=1}^{n}k_i)$.
 
-### Ikkilik guruhlash optimallashtirishi
+### Ikkilik guruhlash optimallashtirishi {#binary-grouping-optimization}
 
 Optimallashtirish uchun cheklangan sonli ryukzak modelini yana 0-1 ryukzak modeliga aylantiramiz. Yuqoridagi yondashuv bilan $O(Wn)$ qismini bundan ortiq yaxshilab bo‘lmaydi, shuning uchun $O(\sum k_i)$ qismiga e’tibor qaratamiz.
 
@@ -117,7 +117,7 @@ Yuqoridagi bo‘lish usuli yordamida bir nechta $A_{i, j}$ guruhini tanlab, $k_i
 
 Bu optimallashtirish $O(W\sum\limits_{i=1}^{n}\log k_i)$ vaqt murakkabligini beradi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 index = 0;
@@ -135,7 +135,7 @@ for (int i = 1; i <= n; i++) {
 }
 ```
 
-### Monoton navbat bilan optimallashtirish
+### Monoton navbat bilan optimallashtirish {#monotone-queue-optimization}
 
 Bu optimallashtirishda ryukzak masalasini [maksimum navbat](https://cp-algorithms.com/data_structures/stack_queue_modification.html) masalasiga aylantirishga harakat qilamiz.
 
@@ -153,7 +153,7 @@ Demak, barcha $g_{x, y}$ qiymatlarini topish murakkabligi $O(\lfloor \frac{W}{w_
 
 Shu tariqa algoritmning umumiy murakkabligi $O(nW)$ gacha kamayadi.
 
-## Aralash ryukzak
+## Aralash ryukzak {#mixed-knapsack}
 
 Aralash ryukzak masalasi yuqorida tavsiflangan uch turdagi masalalarning birikmasidir. Ya’ni ayrim buyumlarni faqat bir marta, ayrimlarini cheksiz marta, boshqalarini esa ko‘pi bilan $k$ marta olish mumkin.
 
@@ -170,7 +170,7 @@ for (each item) {
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practise-problems}
 
 - [Atcoder: Knapsack-1](https://atcoder.jp/contests/dp/tasks/dp_d)
 - [Atcoder: Knapsack-2](https://atcoder.jp/contests/dp/tasks/dp_e)

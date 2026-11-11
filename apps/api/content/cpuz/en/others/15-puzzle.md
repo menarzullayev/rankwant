@@ -1,4 +1,4 @@
-# 15 Puzzle Game: Existence Of The Solution
+# 15 Puzzle Game: Existence Of The Solution {#15-puzzle-game-existence-of-the-solution}
 
 This game is played on a $4 \times 4$ board. On this board there are $15$ playing tiles numbered from 1 to 15. One cell is left empty (denoted by 0). You need to get the board to the position presented below by repeatedly moving one of the tiles to the free space:
 
@@ -6,7 +6,7 @@ $$\begin{matrix} 1 & 2 & 3 & 4 \\ 5 & 6 & 7 & 8 \\ 9 & 10 & 11 & 12 \\ 13 & 14 &
 
 The game "15 Puzzle” was created by Noyes Chapman in 1880.
 
-## Existence Of The Solution
+## Existence Of The Solution {#existence-of-the-solution}
 
 Let's consider this problem: given a position on the board, determine whether a sequence of moves which leads to a solution exists.
 
@@ -28,7 +28,7 @@ Suppose $K$ is an index of a row where the empty element is located (i.e. using 
 
 Then, **the solution exists iff $N + K$ is even**.
 
-## Implementation
+## Implementation {#implementation}
 
 The algorithm above can be illustrated with the following program code:
 
@@ -50,7 +50,7 @@ for (int i=0; i<16; ++i)
 puts ((inv & 1) ? "No Solution" : "Solution Exists");
 ```
 
-## Proof
+## Proof {#proof}
 
 In 1879 Johnson proved that if $N + K$ is odd, then the solution doesn’t exist, and in the same year Story proved that all positions when $N + K$ is even have a solution.
 
@@ -58,6 +58,6 @@ However, all these proofs were quite complex.
 
 In 1999 Archer proposed a much simpler proof (you can download his article [here](http://www.cs.cmu.edu/afs/cs/academic/class/15859-f01/www/notes/15-puzzle.pdf)).
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Hackerrank - N-puzzle](https://www.hackerrank.com/challenges/n-puzzle)

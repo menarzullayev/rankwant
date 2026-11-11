@@ -1,9 +1,9 @@
-# Deleting from a data structure in $O(T(n)\log n)$
+# Deleting from a data structure in $O(T(n)\log n)$ {#deleting-from-a-data-structure-in-otnlog-n}
 
 Suppose you have a data structure which allows adding elements in **true** $O(T(n))$.
 This article will describe a technique that allows deletion in $O(T(n)\log n)$ offline.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Each element lives in the data structure for some segments of time between additions and deletions.
 Let's build a segment tree over the queries.
@@ -16,12 +16,12 @@ When leaving the node, we must undo the additions.
 Note that if we change the structure in $O(T(n))$ we can roll back the changes in $O(T(n))$ by keeping a stack of changes.
 Note that rollbacks break amortized complexity.
 
-## Notes
+## Notes {#notes}
 
 The idea of creating a segment tree over segments when something is alive may be used not only for data structure problems.
 See some problems below.
 
-## Implementation
+## Implementation {#implementation}
 
 This implementation is for the [dynamic connectivity](https://en.wikipedia.org/wiki/Dynamic_connectivity) problem.
 It can add edges, remove edges and count the number of connected components.
@@ -145,7 +145,7 @@ struct QueryTree {
 };
 ```
 
-## Problems
+## Problems {#problems}
 
 - [Codeforces - Connect and Disconnect](https://codeforces.com/gym/100551/problem/A)
 - [Codeforces - Addition on Segments](https://codeforces.com/contest/981/problem/E)
