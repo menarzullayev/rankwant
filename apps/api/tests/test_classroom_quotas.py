@@ -174,9 +174,16 @@ class TestJoinRequests:
         assert note.code == "classroom_join_rejected"
         # The student cannot open the classroom, so the notice links nowhere.
         assert (note.ref_type, note.ref_id) == ("", "")
-        assert (
-            client.post(reverse("classroom-join"), {"join_code": room.join_code}).status_code == 202
+        # Straight back: refused, so a declined student cannot ring the
+        # teacher once per request.
+        again = client.post(reverse("classroom-join"), {"join_code": room.join_code})
+        assert again.json()["error"]["code"] == "request_answered"
+        assert Notification.objects.filter(user=user).count() == 1
+        ClassroomJoinRequest.objects.filter(pk=req.pk).update(
+            decided_at=timezone.now() - timedelta(days=2)
         )
+        again = client.post(reverse("classroom-join"), {"join_code": room.join_code})
+        assert again.status_code == 202
         req.refresh_from_db()
         assert req.status == ClassroomJoinRequest.Status.PENDING
         assert Notification.objects.filter(user=user).count() == 2
@@ -220,6 +227,13 @@ class TestClassroomFull:
         res = _client(other_user).post(reverse("classroom-join"), {"join_code": room.join_code})
         assert res.status_code == 400
         assert res.json()["error"]["code"] == "classroom_full"
+
+    def test_full_classroom_still_queues_a_request(self, user, other_user) -> None:
+        set_free_quota(class_members=1)
+        room = _room(user)
+        ClassroomMember.objects.create(classroom=room, user=_user("s1"))
+        res = _client(other_user).post(reverse("classroom-join"), {"join_code": room.join_code})
+        assert res.status_code == 202
 
     def test_approve_past_the_limit(self, user, other_user) -> None:
         set_free_quota(class_members=1)
@@ -326,6 +340,9 @@ class TestRoles:
         assert _client(user).delete(url).status_code == 204
         assert not room.members.filter(user=student).exists()
         assert _client(user).delete(url).json()["error"]["code"] == "not_a_member"
+        # Removed is not let back in by the old code at once.
+        again = _client(student).post(reverse("classroom-join"), {"join_code": room.join_code})
+        assert again.json()["error"]["code"] == "request_answered"
 
     def test_progress_counts_students_only(self, user, problem) -> None:
         room, _, student = self._setup(user)

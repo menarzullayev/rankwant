@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
+
 from django.db import transaction
 from django.utils import timezone
 
@@ -24,6 +26,9 @@ class ClassroomError(Exception):
         #: The API error code (`error.<code>` on the site); not a notification code.
         self.code = error
 
+
+#: A declined student may ask again after this pause.
+ASK_AGAIN_AFTER = timedelta(days=1)
 
 #: Who manages a classroom with its owner: approves requests, sees reports.
 MANAGERS = (ClassroomMember.Role.ASSISTANT,)
@@ -96,15 +101,21 @@ def join(user: User, join_code: str) -> ClassroomMember | ClassroomJoinRequest:
     member = classroom.members.filter(user=user).first()
     if member is not None:
         return member
-    check_room(classroom)
 
     if classroom.join_mode == Classroom.JoinMode.INSTANT:
+        check_room(classroom)
         member, _ = ClassroomMember.objects.get_or_create(classroom=classroom, user=user)
         return member
 
+    # A full classroom still queues the request: the room is checked when the
+    # teacher approves, after a seat may have been freed.
     request, created = ClassroomJoinRequest.objects.get_or_create(classroom=classroom, user=user)
     if not created and request.status != ClassroomJoinRequest.Status.PENDING:
-        # Asking again after a rejection reopens the request.
+        if request.decided_at is not None and timezone.now() - request.decided_at < ASK_AGAIN_AFTER:
+            # Without a pause a declined student could ring every manager
+            # once per request.
+            raise ClassroomError("This request is already answered", error="request_answered")
+        # Asking again after the pause reopens the request.
         request.status = ClassroomJoinRequest.Status.PENDING
         request.decided_at = None
         request.decided_by = None
@@ -118,17 +129,22 @@ def join(user: User, join_code: str) -> ClassroomMember | ClassroomJoinRequest:
 @transaction.atomic
 def decide(actor: User, request_id: int, *, approve: bool) -> ClassroomJoinRequest:
     """The owner or an assistant answers a pending request."""
-    request = (
-        ClassroomJoinRequest.objects.select_for_update()
-        .select_related("classroom", "user")
-        .filter(pk=request_id)
-        .first()
+    found = ClassroomJoinRequest.objects.filter(pk=request_id).values_list(
+        "classroom_id", flat=True
     )
-    if request is None or not manages(request.classroom, actor):
+    classroom_id = found.first()
+    if classroom_id is None:
+        raise ClassroomError("Request not found", error="request_not_found")
+    # The classroom is locked before the request, in the same order as
+    # `join()`, so the two cannot deadlock.
+    classroom = Classroom.objects.select_for_update().get(pk=classroom_id)
+    request = (
+        ClassroomJoinRequest.objects.select_for_update().select_related("user").get(pk=request_id)
+    )
+    if not manages(classroom, actor):
         raise ClassroomError("Request not found", error="request_not_found")
     if request.status != ClassroomJoinRequest.Status.PENDING:
         raise ClassroomError("This request is already answered", error="request_answered")
-    classroom = Classroom.objects.select_for_update().get(pk=request.classroom_id)
     if approve:
         check_room(classroom)
         ClassroomMember.objects.get_or_create(classroom=classroom, user=request.user)
@@ -148,11 +164,24 @@ def decide(actor: User, request_id: int, *, approve: bool) -> ClassroomJoinReque
 
 
 def remove(classroom: Classroom, username: str) -> None:
-    """The owner takes a member out; the request is closed so a new one notifies."""
-    deleted, _ = classroom.members.filter(user__username=username).delete()
-    if not deleted:
+    """The owner takes a member out.
+
+    Their request is marked declined, so in an approval classroom they cannot
+    ask straight back in; an instant classroom needs a new code for that.
+    """
+    member = classroom.members.filter(user__username=username).select_related("user").first()
+    if member is None:
         raise ClassroomError("Not a member", error="not_a_member")
-    ClassroomJoinRequest.objects.filter(classroom=classroom, user__username=username).delete()
+    member.delete()
+    ClassroomJoinRequest.objects.update_or_create(
+        classroom=classroom,
+        user=member.user,
+        defaults={
+            "status": ClassroomJoinRequest.Status.REJECTED,
+            "decided_at": timezone.now(),
+            "decided_by": classroom.owner,
+        },
+    )
 
 
 def leave(classroom: Classroom, user: User) -> None:

@@ -92,7 +92,7 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
         if self.action in self.OWNER_ONLY_ACTIONS:
             base = base.filter(owner=self.request.user)
         else:
-            # Ko'rish uchun: egasi YOKI a'zo. A subquery, not `members__user`:
+            # To read: the owner OR a member. A subquery, not `members__user`:
             # that join would be shared with the count below, and a member
             # would count only their own row (an assistant saw "0 students").
             mine = ClassroomMember.objects.filter(user=self.request.user).values("classroom")
@@ -125,9 +125,9 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
         if self.action == "create":
             return ClassroomCreateSerializer
         if self.action == "retrieve":
-            # `join_code` FAQAT egasiga: kod bilan istalgan odam sinfga
-            # qo'shila oladi. A'zolar ro'yxati sinfdoshlarning reytingini
-            # oshkor qiladi, shuning uchun u egasi va yordamchiga.
+            # The join code goes to the owner ONLY: anyone with it can join.
+            # The member list shows classmates' ratings, so it goes to the
+            # owner and assistants.
             if self._is_owner():
                 return ClassroomOwnerSerializer
             obj = getattr(self, "_cached_object", None)

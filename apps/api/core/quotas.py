@@ -111,9 +111,9 @@ def owned(user: Any, key: str) -> int:
 
 def enforce(user: Any, key: str) -> None:
     """Refuse a new one past the plan. Staff are not counted at all."""
-    if limit(user, key) is None:
-        return
-    check(user, key, owned(user, key))
+    allowed = limit(user, key)
+    if allowed is not None and owned(user, key) >= allowed:
+        raise QuotaExceeded(key, allowed)
 
 
 def usage(user: Any) -> list[dict[str, Any]]:
