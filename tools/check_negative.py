@@ -6132,6 +6132,33 @@ def neg_openapi_path_removed() -> tuple[bool, str]:
     return True, "openapi buzuvchi o'zgarish: o'chirilgan yo'l tutildi (exit 1)"
 
 
+def neg_openapi_response_ref_switched() -> tuple[bool, str]:
+    """An operation's response points at another component that lacks its fields.
+
+    Both components stay in the schema unchanged, so comparing components by
+    name sees nothing; only resolving the operation's own `$ref` does. This
+    is the PR 541 case (2026-11-11): `POST /classrooms/join/` 201 went from
+    `Classroom` to `JoinResult` and the check printed "only grew".
+    """
+    import shutil
+    import tempfile
+
+    path = ROOT / "apps/api/openapi/schema.yml"
+    old = "$ref: '#/components/schemas/DuelRecord'"
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "openapi javob $ref: langar topilmadi (schema.yml)"
+    with tempfile.TemporaryDirectory() as tmp:
+        before = Path(tmp) / "schema.yml"
+        shutil.copyfile(path, before)
+        with Mutation(path, old, "$ref: '#/components/schemas/Wallet'"):
+            code, out = run([PY, "tools/check_openapi_breaking.py", "--old", str(before)])
+    if code != 1:
+        return False, f"openapi javob $ref: boshqa komponentga o'tgan javob exit {code} berdi (1 kerak)"
+    if "[DuelRecord → Wallet].wins: property removed" not in out:
+        return False, f"openapi javob $ref: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, "openapi javob $ref: maydonlari yo'q komponentga o'tish tutildi (exit 1)"
+
+
 def neg_decisions_search_unthrottled() -> tuple[bool, str]:
     """The search endpoint loses its own rate limit."""
     return _decision_broken(
@@ -12866,6 +12893,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("unvon hover matni olib tashlansa tutilsin", neg_decisions_title_tooltip_dropped),
             ("yangi protokol ishi qabul qilinsa tutilsin", neg_decisions_newer_protocol_accepted),
             ("API v1 yo'li o'chirilsa tutilsin", neg_openapi_path_removed),
+            ("API v1 javobi boshqa komponentga o'tsa tutilsin", neg_openapi_response_ref_switched),
             ("qidiruv chegarasiz qolsa tutilsin", neg_decisions_search_unthrottled),
             ("qidiruv katta jadvalni skanerlasa tutilsin", neg_decisions_search_large_table_unguarded),
             ("eng mos natija taxmin bo'lsa tutilsin", neg_decisions_search_top_hit_guesses),
