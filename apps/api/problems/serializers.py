@@ -244,6 +244,9 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
             "has_editorial",
             "my_verdict",
             "code",
+            # ADR-0060 § 2.3: an unofficial problem has no number; it shows
+            # its tier instead.
+            "is_official",
             "has_tests",
             "has_hidden_tests",
             "likes_count",
@@ -349,7 +352,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
         links = (
             problem.similar_to.select_related("similar")
             .prefetch_related(translations.prefetch(locale, through="similar__translations"))
-            .filter(similar__is_public=True)[:6]
+            .filter(similar__is_public=True, similar__is_official=True)[:6]
         )
         return [
             {

@@ -152,9 +152,9 @@ def _level_totals() -> dict[str, int]:
         value = dict(
             Counter(
                 difficulty_level(difficulty)[0]
-                for difficulty in Problem.objects.filter(is_public=True).values_list(
-                    "difficulty", flat=True
-                )
+                for difficulty in Problem.objects.filter(
+                    is_public=True, is_official=True
+                ).values_list("difficulty", flat=True)
             )
         )
         cache_set("pstats:levels", value, CATALOG_TTL)
@@ -182,7 +182,7 @@ def overview(user: User) -> dict[str, Any]:
     solved = Counter(
         difficulty_level(value)[0]
         for value in UserSolvedProblem.objects.filter(
-            user=user, problem__is_public=True
+            user=user, problem__is_public=True, problem__is_official=True
         ).values_list("problem__difficulty", flat=True)
     )
     totals = _level_totals()
@@ -218,7 +218,7 @@ def _catalog() -> list[dict[str, Any]]:
                 "rate": round(solved / attempts * 100) if attempts else None,
             }
             for pk, code, slug, title, difficulty, solved, attempts in Problem.objects.filter(
-                is_public=True
+                is_public=True, is_official=True
             )
             .order_by("code", "pk")
             .values_list(

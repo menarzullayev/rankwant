@@ -6347,6 +6347,42 @@ def neg_decisions_rejected_solution_left_running() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_unofficial_gets_a_number() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/problems/models.py",
+        "            if not self.is_public or not self.is_official or self.code:\n",
+        "            if not self.is_public or self.code:\n",
+        "norasmiy masalalar hisobdan tashqari",
+    )
+
+
+def neg_decisions_unofficial_moves_skills() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/ratings/services.py",
+        "UserSolvedProblem.objects.filter(user=user, problem__is_official=True)",
+        "UserSolvedProblem.objects.filter(user=user)",
+        "norasmiy masalalar hisobdan tashqari",
+    )
+
+
+def neg_decisions_unofficial_pays_milestone() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/qvant/services.py",
+        "    current, _ = streak.touch(user, reward=False)\n",
+        "    current, _ = streak.touch(user)\n",
+        "norasmiy masalalar hisobdan tashqari",
+    )
+
+
+def neg_decisions_archive_lists_unofficial() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/problems/views.py",
+        'visibility.tier_q(self.request.query_params.get("tier"))',
+        "Q()",
+        "norasmiy masalalar hisobdan tashqari",
+    )
+
+
 def neg_decisions_mle_counts_page_cache() -> tuple[bool, str]:
     return _decision_broken(
         "services/judge-go/judge.go",
@@ -6604,8 +6640,8 @@ def neg_decisions_contest_problem_in_the_archive_list() -> tuple[bool, str]:
     """The archive list uses the wider "may be opened" scope."""
     return _decision_broken(
         "apps/api/problems/views.py",
-        'scope = Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)',
-        "scope = visibility.openable_q()",
+        "            scope = Q(is_public=True) & visibility.tier_q(",
+        "            scope = visibility.openable_q() & visibility.tier_q(",
         "arxiv ro'yxati musobaqa masalasini ham beradi",
     )
 
@@ -12712,6 +12748,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("checker format farqini ko'rmasa tutilsin", neg_decisions_checker_never_sees_a_format_difference),
             ("scorer balli verdikt bo'lmasa tutilsin", neg_decisions_scorer_score_is_not_a_verdict),
             ("rad etilgan yechim to'xtatilmasa tutilsin", neg_decisions_rejected_solution_left_running),
+            ("norasmiy masala raqam olsa tutilsin", neg_decisions_unofficial_gets_a_number),
+            ("norasmiy yechim Skills'ga kirsa tutilsin", neg_decisions_unofficial_moves_skills),
+            ("norasmiy yechim bosqich Qvant'ini to'lasa tutilsin", neg_decisions_unofficial_pays_milestone),
+            ("arxiv norasmiylarni ko'rsatsa tutilsin", neg_decisions_archive_lists_unofficial),
             ("MLE sahifa keshini sanasa tutilsin", neg_decisions_mle_counts_page_cache),
             ("ishda til ustamasi tushsa tutilsin", neg_decisions_job_drops_language_overhead),
             ("panelda til ustamasi tushsa tutilsin", neg_decisions_panel_drops_language_overhead),

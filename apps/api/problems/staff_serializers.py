@@ -95,6 +95,7 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "checker_source",
             "checker_language",
             "is_public",
+            "is_official",
             "source",
             "source_url",
             "solved_count",

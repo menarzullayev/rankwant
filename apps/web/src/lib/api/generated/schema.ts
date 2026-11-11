@@ -9632,6 +9632,7 @@ export interface components {
             checker_source?: string;
             checker_language?: string | null;
             is_public?: boolean;
+            is_official?: boolean;
             source?: string;
             source_url?: string;
             readonly solved_count?: number;
@@ -10139,6 +10140,7 @@ export interface components {
             readonly my_verdict: string | null;
             /** Format: int64 */
             code?: number | null;
+            is_official?: boolean;
             readonly has_tests: boolean;
             readonly has_hidden_tests: boolean;
             /** Format: int64 */
@@ -10278,6 +10280,7 @@ export interface components {
             readonly my_verdict: string | null;
             /** Format: int64 */
             code?: number | null;
+            is_official?: boolean;
             readonly has_tests: boolean;
             readonly has_hidden_tests: boolean;
             /** Format: int64 */
@@ -11039,6 +11042,7 @@ export interface components {
             checker_source?: string;
             checker_language?: string | null;
             is_public?: boolean;
+            is_official?: boolean;
             source?: string;
             source_url?: string;
             readonly solved_count: number;

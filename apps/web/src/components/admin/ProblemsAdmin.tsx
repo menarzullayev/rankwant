@@ -44,6 +44,7 @@ type StaffProblem = {
   checker_source: string;
   checker_language: string | null;
   is_public: boolean;
+  is_official: boolean;
   source: string;
   source_url: string;
   solved_count: number;
@@ -223,6 +224,13 @@ const PROBLEM_FIELDS: FieldDef[] = [
   { name: "source", labelKey: "admin.label.text.source" },
   { name: "source_url", labelKey: "admin.label.tech.sourceUrl" },
   { name: "is_public", labelKey: "admin.label.flag.public", type: "checkbox" },
+  // ADR-0060 § 2.3: unchecked — no number, no rating, no Qvant.
+  {
+    name: "is_official",
+    labelKey: "admin.label.flag.official",
+    type: "checkbox",
+    helpKey: "admin.help.officialArchive",
+  },
 ];
 
 const TOPIC_FIELDS: FieldDef[] = [

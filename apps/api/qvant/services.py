@@ -31,9 +31,12 @@ def _distinct_ac_count(user: User, day: date) -> int:
     from judging.verdicts import Verdict
     from problems.testsets import hidden_tests_exist
 
-    # Audit Q-05: a samples-only problem does not count towards a daily quest.
+    # Audit Q-05: a samples-only problem does not count towards a daily quest;
+    # nor does an unofficial one (ADR-0060 § 2.3).
     return (
-        Attempt.objects.filter(user=user, verdict=Verdict.AC, created_at__date=day)
+        Attempt.objects.filter(
+            user=user, verdict=Verdict.AC, created_at__date=day, problem__is_official=True
+        )
         .filter(hidden_tests_exist("problem_id"))
         .values("problem_id")
         .distinct()
@@ -82,6 +85,18 @@ def on_first_accepted(user: User) -> dict[str, object]:
 
 
 @transaction.atomic
+def on_unofficial_accepted(user: User) -> int:
+    """First AC on an unofficial problem (ADR-0060 § 2.3): the streak only.
+
+    The owner's rule: the solve keeps the streak and the heatmap, and moves
+    no rating and pays no Qvant — no quest, marathon, achievement or streak
+    milestone (`reward=False`).
+    """
+    current, _ = streak.touch(user, reward=False)
+    return current
+
+
+@transaction.atomic
 def on_contest_finished(user: User, contest_slug: str) -> int:
     granted = quests.on_contest_finished(user, contest_slug)
     if granted:
@@ -116,8 +131,12 @@ def activity_inputs(user: User) -> tuple[int, int, int]:
 
     since = timezone.now() - timedelta(days=formulas.ACTIVITY_WINDOW_DAYS)
 
+    # The Activity rating is a rating: unofficial problems (ADR-0060) do not
+    # make a day active for it.
     active_days = (
-        Attempt.objects.filter(user=user, created_at__gte=since).dates("created_at", "day").count()
+        Attempt.objects.filter(user=user, created_at__gte=since, problem__is_official=True)
+        .dates("created_at", "day")
+        .count()
     )
     quests_done = UserQuestCompletion.objects.filter(user=user, completed_at__gte=since).count()
     return active_days, quests_done, user.streak_count

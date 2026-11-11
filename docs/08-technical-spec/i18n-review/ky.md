@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2983 strings.**
+**2990 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -184,6 +184,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.leaderboard` | Reyting | Рейтинг |  |
 | `nav.ratingInfo` | Reyting qanday hisoblanadi | Рейтинг кантип эсептелет |  |
 | `problems.title` | Masalalar arxivi | Маселелер архиви |  |
+| `problems.tier.hint` | Reyting, Qvant va yechilganlar soniga kirmaydi; seriya va faollik xaritasiga kiradi | Рейтингге, Qvantка жана чечилгендердин санына кирбейт; серияга жана активдүүлүк картасына кирет |  |
+| `problems.tier.unofficial` | Norasmiy masalalar | Расмий эмес маселелер |  |
+| `problems.tier.official` | Rasmiy arxiv | Расмий архив |  |
+| `problems.tier.label` | Arxiv bo'limi | Архив бөлүмү |  |
 | `problems.difficulty` | Qiyinlik | Татаалдык |  |
 | `problems.solved` | Yechilgan | Чечилген |  |
 | `problems.likes` | Yoqdi | Жакты |  |
@@ -1708,6 +1712,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.duration.secondsPerQuestion` | Savol uchun soniya | Суроого секунд |  |
 | `admin.label.duration.readMin` | O'qish (daqiqa) | Окуу (мүнөт) |  |
 | `admin.label.flag.public` | Ommaviy | Жалпыга ачык |  |
+| `admin.label.flag.official` | Rasmiy arxivda | Расмий архивде |  |
 | `admin.label.flag.rated` | Reytingli | Рейтингдик |  |
 | `admin.label.flag.virtual` | Virtual | Виртуалдык |  |
 | `admin.label.flag.mirror` | Ko'zgu (asl musobaqa slug'i) | Күзгү (түпнуска мелдеш slug) |  |
@@ -1851,6 +1856,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.editorialPrice` | Yechmaganlar uchun. 0 — hammaga bepul | Чечпегендер үчүн. 0 — баарына акысыз |  |
 | `admin.help.interactorOnlyInteractive` | Faqat Interactive uchun. Bo'sh = yo'q | Interactive үчүн гана. Бош = жок |  |
 | `admin.help.checkerRequired` | Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi | «Атайын» жана «Скоринг» үчүн. Бош болсо, ар бир жөнөтүү IE болот |  |
+| `admin.help.officialArchive` | Belgilanmasa: raqam berilmaydi, reyting va Qvant'ga kirmaydi, arxivning standart ro'yxatida ko'rinmaydi | Белгиленбесе: номер берилбейт, рейтингге жана Qvantка кирбейт, архивдин демейки тизмесинде көрүнбөйт |  |
 | `admin.help.realToleranceOnlyReal` | Faqat «Haqiqiy son» checkerida: \|javob − hakam\| ≤ ε · max(1, \|hakam\|). Standart 1e-6 | «Чыныгы сан» текшергичинде гана: \|жооп − калыс\| ≤ ε · max(1, \|калыс\|). Демейки 1e-6 |  |
 | `admin.help.testlibInvocation` | testlib chaqiruvi: checker <input> <output> <answer> | testlib чакыруусу: checker <input> <output> <answer> |  |
 | `admin.help.parentEmptyRoot` | Bo'sh = ildiz | Бош = тамыр |  |
@@ -1944,6 +1950,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.review` | Ko'rik | Текшерүү |  |
 | `studio.tab.translations` | Tarjimalar | Котормолор |  |
 | `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Бул маселе азырынча {locale} тилинде жок — {shown} тилинде көрсөтүлүүдө. |  |
+| `problem.unofficial` | Norasmiy | Расмий эмес |  |
 | `problem.realToleranceHint` | Sonlar {eps} aniqlik bilan solishtiriladi: 2.0 va 2 bir xil javob | Сандар {eps} тактык менен салыштырылат: 2.0 жана 2 — бирдей жооп |  |
 | `problem.realTolerance` | Aniqlik {eps} | Тактык {eps} |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Маселенин тексти башка тилдерде. Которулбаган талаа окурманга түп нускадан көрсөтүлөт. |  |

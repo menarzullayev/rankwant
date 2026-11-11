@@ -101,7 +101,8 @@ def on_solved(user: User, *, streak: int) -> list[str]:
     """Yangi masala yechilgach (birinchi AC): masala va streak bosqichlari."""
     from ratings.models import UserSolvedProblem
 
-    solved = UserSolvedProblem.objects.filter(user=user).count()
+    # Achievements pay Qvant: unofficial solves (ADR-0060 § 2.3) do not count.
+    solved = UserSolvedProblem.objects.filter(user=user, problem__is_official=True).count()
     codes = _missing(user, "solve", solved) + _missing(user, "streak", streak)
     for code in codes:
         grant(user, code)
@@ -164,7 +165,7 @@ def rows(user: User) -> list[dict[str, Any]]:
 
     have = dict(UserAchievement.objects.filter(user=user).values_list("code", "achieved_at"))
     progress = {
-        "solve": UserSolvedProblem.objects.filter(user=user).count(),
+        "solve": UserSolvedProblem.objects.filter(user=user, problem__is_official=True).count(),
         "streak": user.streak_count,
         "contest": user.rated_contest_count,
         "profile": 1 if "profile-1" in have else 0,

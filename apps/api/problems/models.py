@@ -324,6 +324,13 @@ class Problem(TimeStampedModel):
     )
 
     is_public = models.BooleanField(default=False, db_index=True)
+    #: Official archive (ADR-0060 § 2.3). An unofficial problem is public
+    #: and opens by its address, but it is outside the archive's default
+    #: list, the solved counts, every rating and Qvant, and it gets no
+    #: public number: its slug (the book code) is its identifier. Its
+    #: solve still marks it solved and keeps the streak and the heatmap.
+    #: Staff promote a problem; the promotion gives it the next number.
+    is_official = models.BooleanField(default=True, db_index=True)
     author = models.ForeignKey(
         "core.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="problems"
     )
@@ -363,20 +370,42 @@ class Problem(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.slug} ({self.difficulty})"
 
+    @property
+    def is_counted(self) -> bool:
+        """In the official archive: counted in solved figures, ratings and Qvant."""
+        return self.is_public and self.is_official
+
     def save(self, *args: Any, **kwargs: Any) -> None:
-        # `User.solved_count` counts public problems only (ADR-0024), so a
-        # change of visibility moves this problem's solvers up or down by one.
+        # `User.solved_count` counts official public problems only (ADR-0024,
+        # ADR-0060), so a change of either flag moves this problem's solvers
+        # up or down by one; leaving or joining the official archive also
+        # changes their Skills.
         update_fields = kwargs.get("update_fields")
-        was_public = None
-        if self.pk is not None and (update_fields is None or "is_public" in update_fields):
-            was_public = (
-                type(self).objects.filter(pk=self.pk).values_list("is_public", flat=True).first()
+        before = None
+        if self.pk is not None and (
+            update_fields is None or {"is_public", "is_official"} & set(update_fields)
+        ):
+            before = (
+                type(self)
+                .objects.filter(pk=self.pk)
+                .values_list("is_public", "is_official")
+                .first()
             )
         self._save_with_code(*args, **kwargs)
-        if was_public is not None and was_public != self.is_public:
+        if before is None:
+            return
+        was_public, was_official = before
+        if (was_public and was_official) != self.is_counted:
             from ratings.services import on_problem_visibility_changed
 
-            on_problem_visibility_changed(self.pk, self.is_public)
+            on_problem_visibility_changed(self.pk, self.is_counted)
+        if was_official != self.is_official:
+            from django.db import transaction
+
+            from ratings.tasks import recalc_skills_for_problem_task
+
+            pk = self.pk
+            transaction.on_commit(lambda: recalc_skills_for_problem_task.delay(pk))
 
     def _save_with_code(self, *args: Any, **kwargs: Any) -> None:
         self.title_search = normalize_search(self.title)
@@ -385,7 +414,8 @@ class Problem(TimeStampedModel):
         # poyga holatini ushlaydi; publish kamdan-kam amal, shu bois
         # qayta urinish yetarli.
         for _ in range(4):
-            if not self.is_public or self.code:
+            # An unofficial problem has no number (ADR-0060 § 2.3).
+            if not self.is_public or not self.is_official or self.code:
                 return super().save(*args, **kwargs)
             try:
                 with transaction.atomic():

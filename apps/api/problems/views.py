@@ -122,7 +122,12 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         # also be a contest problem whose contest has started (ADR-0055) —
         # or, for its insiders, one whose contest has not (part 2).
         viewer = self.request.user
-        scope = Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)
+        if self.action == "list":
+            # ADR-0060 § 2.3: the default list is the official archive;
+            # `?tier=unofficial` lists the unofficial problems, `all` both.
+            scope = Q(is_public=True) & visibility.tier_q(self.request.query_params.get("tier"))
+        else:
+            scope = visibility.openable_q(user=viewer)
         return (
             Problem.objects.filter(scope)
             .select_related("author")
@@ -535,7 +540,9 @@ class ProgressView(APIView):
     @extend_schema(responses={200: OpenApiResponse(description="Daraja bo'yicha progress")})
     def get(self, request: Request) -> Response:
         totals: Counter[str] = Counter()
-        for value in Problem.objects.filter(is_public=True).values_list("difficulty", flat=True):
+        for value in Problem.objects.filter(is_public=True, is_official=True).values_list(
+            "difficulty", flat=True
+        ):
             totals[difficulty_level(value)[0]] += 1
 
         solved: Counter[str] = Counter()
@@ -543,7 +550,7 @@ class ProgressView(APIView):
             from ratings.models import UserSolvedProblem
 
             for value in UserSolvedProblem.objects.filter(
-                user=request.user, problem__is_public=True
+                user=request.user, problem__is_public=True, problem__is_official=True
             ).values_list("problem__difficulty", flat=True):
                 solved[difficulty_level(value)[0]] += 1
 
@@ -578,7 +585,7 @@ def topic_skills(solved_ids: set[int], attempted_ids: set[int]) -> list[dict[str
 
     # Bitta so'rov: (masala, qiyinlik, mavzu). Mavzu soniga qarab
     # so'rov ko'paymaydi — arxivda 148 ta mavzu bor.
-    rows = Problem.objects.filter(is_public=True).values_list(
+    rows = Problem.objects.filter(is_public=True, is_official=True).values_list(
         "pk", "difficulty", "topics__slug", "topics__name_uz", "topics__name_ru", "topics__name_en"
     )
 
@@ -656,10 +663,14 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):
     # O'lchandi: 1 mavzuga 3 so'rov, 50 mavzuga 33. Staff view'da
     # bu allaqachon bor edi, ommaviysida esa yo'q.
     queryset = (
-        Topic.objects.filter(problems__is_public=True)
+        Topic.objects.filter(problems__is_public=True, problems__is_official=True)
         .select_related("parent")
         .annotate(
-            problem_count=Count("problems", filter=Q(problems__is_public=True), distinct=True)
+            problem_count=Count(
+                "problems",
+                filter=Q(problems__is_public=True, problems__is_official=True),
+                distinct=True,
+            )
         )
         .distinct()
         .order_by("slug")

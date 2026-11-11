@@ -20428,6 +20428,8 @@ components:
           nullable: true
         is_public:
           type: boolean
+        is_official:
+          type: boolean
         source:
           type: string
           maxLength: 100
@@ -21630,6 +21632,8 @@ components:
           minimum: 0
           format: int64
           nullable: true
+        is_official:
+          type: boolean
         has_tests:
           type: boolean
           readOnly: true
@@ -21932,6 +21936,8 @@ components:
           minimum: 0
           format: int64
           nullable: true
+        is_official:
+          type: boolean
         has_tests:
           type: boolean
           readOnly: true
@@ -23801,6 +23807,8 @@ components:
           type: string
           nullable: true
         is_public:
+          type: boolean
+        is_official:
           type: boolean
         source:
           type: string
