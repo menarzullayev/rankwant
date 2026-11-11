@@ -33,11 +33,13 @@ import {
 import { DEFAULT_TAB, EDITOR_TABS, type EditorTab } from "../editor-tabs";
 import { DraftPreview } from "./DraftPreview";
 import { DraftTests } from "./DraftTests";
+import { GeneratorPanel } from "./GeneratorPanel";
 
 
 const TAB_LABEL: Record<EditorTab, MessageKey> = {
   statement: "studio.tab.statement",
   tests: "studio.tab.tests",
+  generator: "studio.tab.generator",
   editorial: "studio.tab.editorial",
   translations: "studio.tab.translations",
   review: "studio.tab.review",
@@ -520,6 +522,9 @@ export function ProblemEditor({
               )}
               {tab === "tests" && (
                 <DraftTests slug={problem.slug} locked={problem.is_public} tests={tests} onChange={withCounts} />
+              )}
+              {tab === "generator" && (
+                <GeneratorPanel slug={problem.slug} locked={problem.is_public} onTests={withCounts} />
               )}
               {tab === "editorial" && !problem.is_public && (
                 <EditorialForm problem={problem} onSaved={setProblem} />

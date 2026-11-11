@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3176 strings.**
+**3207 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1958,6 +1958,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.status.public` | Nashr qilingan | Járiyalanǵan |  |
 | `studio.tab.statement` | Shart | Shárt |  |
 | `studio.tab.tests` | Testlar | Testler |  |
+| `studio.tab.generator` | Test generatori | Test generatorı |  |
+| `studio.gen.intro` | Har bir parametr qatori generatorga beriladi; uning chiqishi test kiritmasi bo'ladi. Validator bo'lsa kiritmani tekshiradi, javobni etalon yechim beradi. Testlar birma-bir yasaladi va «Testlar» bo'limiga qo'shiladi. | Hár parametr qatarı generatorǵa beriledi; onıń shıǵısı testtiń kirisi boladı. Validator bolsa kiristi tekseredi, juwaptı etalon sheshim beredi. Testler birim-birim jasalıp, «Testler» bólimine qosıladı. |  |
+| `studio.gen.generator` | Generator dasturi | Generator baǵdarlaması |  |
+| `studio.gen.generatorHint` | Bitta qatorni stdin'dan o'qiydi va test kiritmasini stdout'ga yozadi. | stdin'nen bir qatardı oqıp, test kirisin stdout'qa jazadı. |  |
+| `studio.gen.reference` | Etalon yechim | Etalon sheshim |  |
+| `studio.gen.referenceHint` | To'g'ri yechim: har kiritmaga javob shu dasturdan olinadi. | Durıs sheshim: hár kiristiń juwabı usı baǵdarlamadan alınadı. |  |
+| `studio.gen.validator` | Validator (ixtiyoriy) | Validator (májbúriy emes) |  |
+| `studio.gen.validatorHint` | Kiritma masala cheklovlariga mosligini tekshiradi; mos kelmasa yurish to'xtaydi. | Kiristiń másele sheklewlerine sáykesligin tekseredi; sáykes bolmasa júrgiziw toqtaydı. |  |
+| `studio.gen.saved` | Saqlangan | Saqlanǵan |  |
+| `studio.gen.save` | Saqlash | Saqlaw |  |
+| `studio.gen.lines` | Parametrlar | Parametrler |  |
+| `studio.gen.linesHint` | Har qator — bitta test, masalan: 10 1000 yoki n=200000 seed=7. Ko'pi bilan 100 qator. | Hár qatar — bir test, mısalı: 10 1000 yamasa n=200000 seed=7. Kóbi menen 100 qatar. |  |
+| `studio.gen.group` | Test turi | Test túri |  |
+| `studio.gen.group.random` | Tasodifiy | Tosınnan |  |
+| `studio.gen.group.boundary` | Chegara | Shegaralıq |  |
+| `studio.gen.group.maximum` | Maksimal | Eń úlken |  |
+| `studio.gen.group.stress` | Yuklama (stress) | Stress testi |  |
+| `studio.gen.group.special` | Alohida holat | Ayrıqsha jaǵday |  |
+| `studio.gen.start` | {count} ta test yasash | {count} test jasaw |  |
+| `studio.gen.status.running` | Ishlayapti | Islep atır |  |
+| `studio.gen.status.done` | Tayyor | Tayın |  |
+| `studio.gen.status.failed` | To'xtadi | Toqtadı |  |
+| `studio.gen.progress` | {made} / {total} test | {made} / {total} testten |  |
+| `studio.gen.size` | {size} MB yozildi | {size} MB jazıldı |  |
 | `studio.tab.testsCount` | Testlar ({count}) | Testler ({count}) |  |
 | `studio.tab.editorial` | Yechim tahlili | Sheshim talqısı |  |
 | `studio.tab.review` | Ko'rik | Tekseriw |  |
@@ -3138,6 +3162,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Kóbi menen 3 murabbiy bolıwı múmkin |  |
 | `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Bul baylanıs juwmaqlanǵan |  |
 | `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Másele tabılmadı yamasa ashıq emes |  |
+| `error.generation_empty` | Kamida bitta qator yozing | Keminde bir qatar jazıń |  |
+| `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Bir júrgiziwde kóbi menen 100 test |  |
+| `error.generation_line_long` | Qator 1000 belgidan uzun | Qatar 1000 belgiden uzın |  |
+| `error.generation_group` | Testlar nimani tekshirishini tanlang | Testler neni tekseretuǵının tańlań |  |
+| `error.generation_no_generator` | Avval generator dasturini yuklang | Aldın generatordı júkleń |  |
+| `error.generation_no_reference` | Avval etalon yechimni yuklang | Aldın etalon sheshimdi júkleń |  |
+| `error.generation_running` | Hozir bitta yurish ishlayapti — tugashini kuting | Júrgiziw islep atır — juwmaqlanıwın kútiń |  |
 | `error.quiz_taken` | Bu testni faqat bir marta topshirish mumkin | Bul testti tek bir ret tapsırıwǵa boladı |  |
 | `error.quiz_not_started` | Avval testni boshlang | Aldın testti baslań |  |
 | `error.quiz_in_use` | Test sinfga berilgan yoki topshirilgan — o'chirib bo'lmaydi | Test klassqa berilgen yamasa tapsırılǵan — óshiriw múmkin emes |  |

@@ -12,3 +12,13 @@ def _problems(user: Any) -> int:
 
 
 quotas.register("problems", _problems)
+
+
+def _storage_mb(user: Any) -> int:
+    from problems.generation import storage_used_mb
+
+    return storage_used_mb(user)
+
+
+# Generated test data counts against the plan (ADR-0061 § 6).
+quotas.register("storage_mb", _storage_mb)

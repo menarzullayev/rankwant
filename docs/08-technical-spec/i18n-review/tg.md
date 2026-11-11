@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3176 strings.**
+**3207 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1958,6 +1958,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.status.public` | Nashr qilingan | Нашршуда |  |
 | `studio.tab.statement` | Shart | Шарт |  |
 | `studio.tab.tests` | Testlar | Тестҳо |  |
+| `studio.tab.generator` | Test generatori | Генератори тестҳо |  |
+| `studio.gen.intro` | Har bir parametr qatori generatorga beriladi; uning chiqishi test kiritmasi bo'ladi. Validator bo'lsa kiritmani tekshiradi, javobni etalon yechim beradi. Testlar birma-bir yasaladi va «Testlar» bo'limiga qo'shiladi. | Ҳар сатри параметрҳо ба генератор дода мешавад; бароварди он вуруди тест мегардад. Агар валидатор бошад, вурудро месанҷад, ҷавобро ҳалли намунавӣ медиҳад. Тестҳо якто-якто сохта шуда, ба бахши «Тестҳо» илова мешаванд. |  |
+| `studio.gen.generator` | Generator dasturi | Барномаи генератор |  |
+| `studio.gen.generatorHint` | Bitta qatorni stdin'dan o'qiydi va test kiritmasini stdout'ga yozadi. | Як сатрро аз stdin мехонад ва вуруди тестро ба stdout менависад. |  |
+| `studio.gen.reference` | Etalon yechim | Ҳалли намунавӣ |  |
+| `studio.gen.referenceHint` | To'g'ri yechim: har kiritmaga javob shu dasturdan olinadi. | Ҳалли дуруст: ҷавоби ҳар вурудро ҳамин барнома медиҳад. |  |
+| `studio.gen.validator` | Validator (ixtiyoriy) | Валидатор (ихтиёрӣ) |  |
+| `studio.gen.validatorHint` | Kiritma masala cheklovlariga mosligini tekshiradi; mos kelmasa yurish to'xtaydi. | Мувофиқати вурудро ба маҳдудиятҳои масъала месанҷад; агар мувофиқ набошад, иҷро қатъ мегардад. |  |
+| `studio.gen.saved` | Saqlangan | Нигоҳ дошта шуд |  |
+| `studio.gen.save` | Saqlash | Нигоҳ доштан |  |
+| `studio.gen.lines` | Parametrlar | Параметрҳо |  |
+| `studio.gen.linesHint` | Har qator — bitta test, masalan: 10 1000 yoki n=200000 seed=7. Ko'pi bilan 100 qator. | Ҳар сатр — як тест, масалан: 10 1000 ё n=200000 seed=7. Ҳадди аксар 100 сатр. |  |
+| `studio.gen.group` | Test turi | Намуди тест |  |
+| `studio.gen.group.random` | Tasodifiy | Тасодуфӣ |  |
+| `studio.gen.group.boundary` | Chegara | Сарҳадӣ |  |
+| `studio.gen.group.maximum` | Maksimal | Ҳадди аксар |  |
+| `studio.gen.group.stress` | Yuklama (stress) | Стресс |  |
+| `studio.gen.group.special` | Alohida holat | Ҳолати махсус |  |
+| `studio.gen.start` | {count} ta test yasash | Сохтани {count} тест |  |
+| `studio.gen.status.running` | Ishlayapti | Иҷро мешавад |  |
+| `studio.gen.status.done` | Tayyor | Тайёр |  |
+| `studio.gen.status.failed` | To'xtadi | Қатъ шуд |  |
+| `studio.gen.progress` | {made} / {total} test | {made} / {total} тест |  |
+| `studio.gen.size` | {size} MB yozildi | {size} МБ навишта шуд |  |
 | `studio.tab.testsCount` | Testlar ({count}) | Тестҳо ({count}) |  |
 | `studio.tab.editorial` | Yechim tahlili | Таҳлили ҳал |  |
 | `studio.tab.review` | Ko'rik | Тафтиш |  |
@@ -3138,6 +3162,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Ҳадди аксар 3 мураббӣ |  |
 | `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Ин пайванд аллакай анҷом ёфтааст |  |
 | `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Масъала ёфт нашуд ё кушода нест |  |
+| `error.generation_empty` | Kamida bitta qator yozing | Ақаллан як сатр нависед |  |
+| `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Дар як иҷро ҳадди аксар 100 тест |  |
+| `error.generation_line_long` | Qator 1000 belgidan uzun | Сатр аз 1000 аломат дарозтар аст |  |
+| `error.generation_group` | Testlar nimani tekshirishini tanlang | Интихоб кунед, ки тестҳо чиро месанҷанд |  |
+| `error.generation_no_generator` | Avval generator dasturini yuklang | Аввал генераторро бор кунед |  |
+| `error.generation_no_reference` | Avval etalon yechimni yuklang | Аввал ҳалли намунавиро бор кунед |  |
+| `error.generation_running` | Hozir bitta yurish ishlayapti — tugashini kuting | Иҷро идома дорад — хотимаашро интизор шавед |  |
 | `error.quiz_taken` | Bu testni faqat bir marta topshirish mumkin | Ин тестро танҳо як бор супоридан мумкин аст |  |
 | `error.quiz_not_started` | Avval testni boshlang | Аввал тестро оғоз кунед |  |
 | `error.quiz_in_use` | Test sinfga berilgan yoki topshirilgan — o'chirib bo'lmaydi | Тест ба синф дода шуда ё супорида шудааст — нест кардан мумкин нест |  |

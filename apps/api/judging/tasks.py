@@ -131,6 +131,12 @@ def drain_results(max_items: int = 500) -> int:
                 from hacks.services import apply_hack_result
 
                 handled = apply_hack_result(result)
+            elif str(result.get("hack_stage") or "").startswith("testgen:"):
+                # A test generator step (ADR-0061 § 6): the judge copies
+                # `hack_stage` back unread, so the protocol stays as it is.
+                from problems.generation import apply_result as apply_generation
+
+                handled = apply_generation(result)
             elif result.get("custom_run_id"):
                 handled = apply_custom_result(result)
             else:

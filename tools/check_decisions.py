@@ -2768,7 +2768,8 @@ def studio_problems_panel() -> str | None:
     if "if problem.review_requested_at is None:" not in views.split("def review(", 1)[-1]:
         return "author_views.py: ko'rik so'rovi har bosishda xodimga qayta yuboriladi"
     staff = read("apps/api/problems/staff_views.py")
-    if 'AUTHOR_ACTIONS = ("tests", "delete_test")' not in staff:
+    actions = re.search(r"^AUTHOR_ACTIONS = \((.*?)\)$", staff, re.M | re.S)
+    if not actions or '"tests"' not in actions.group(1) or '"delete_test"' not in actions.group(1):
         return "staff_views.py: muallif o'z qoralamasining testini o'chira olmaydi"
     delete = staff.split("def delete_test(", 1)[-1].split("\n    def ", 1)[0]
     if "_require_ops_or_draft_author(request, problem)" not in delete:
@@ -3159,6 +3160,41 @@ def teacher_quizzes_stay_in_class() -> str | None:
     guard = 'if classroom.owner_id != request.user.pk:\n            return _not_owner("Only the classroom owner can see results")'
     if guard not in report:
         return "classroom/views.py: test hisoboti egasidan boshqaga ochiq"
+    return None
+
+
+def test_generator_is_bounded() -> str | None:
+    """2026-11-11 (HITL, 4 raund; ADR-0061 § 6): serverdagi test generatori.
+
+    ⑬ Har qator generator stdin'iga, javobni etalon yechim beradi, validator
+    tekshiradi; judge protokoli o'zgarmaydi (natija `hack_stage` orqali
+    qaytadi). Yurishda ko'pi bilan 100 test, har fayl 8 MiB; yozilgan
+    ma'lumot `storage_mb` kvotasiga sanaladi; faqat qoralama muallifi yoki
+    xodim. Testlar birma-bir yasaladi — navbatni band qilmaydi.
+    """
+    gen = read("apps/api/problems/generation.py")
+    if not re.search(r"^MAX_LINES = 100$", gen, re.M):
+        return "problems/generation.py: yurishdagi testlar 100 emas"
+    if "MAX_TEST_KB = storage.MAX_TEST_BYTES // 1024" not in gen:
+        return "problems/generation.py: test hajmi chegarasi 8 MiB dan olinmaydi"
+    if "validate_input=validator is not None," not in gen:
+        return "problems/generation.py: validator yasalgan kiritmani tekshirmaydi"
+    if "if left is not None and left <= 0:" not in gen:
+        return "problems/generation.py: test ma'lumoti kvotasi tekshirilmaydi"
+    answer = gen.split("def apply_result(", 1)[-1].split("def _add_test(", 1)[0]
+    created = answer.find("_add_test(run, output_ref)")
+    queued = answer.find("transaction.on_commit(lambda: _queue_generator(run, generator))")
+    if created < 0 or queued < created:
+        return "problems/generation.py: keyingi test oldingisi tugamay navbatga qo'yiladi"
+    tasks = read("apps/api/judging/tasks.py")
+    if 'elif str(result.get("hack_stage") or "").startswith("testgen:"):' not in tasks:
+        return "judging/tasks.py: generator natijasi yo'naltirilmaydi va tashlab yuboriladi"
+    views = read("apps/api/problems/staff_views.py")
+    block = views.split("    def generate(", 1)[-1].split("\n    @", 1)[0]
+    if "_require_ops_or_draft_author(request, problem)" not in block:
+        return "problems/staff_views.py: generatorni qoralama muallifidan boshqasi yurgizadi"
+    if 'quotas.register("storage_mb", _storage_mb)' not in read("apps/api/problems/quotas.py"):
+        return "problems/quotas.py: test ma'lumoti reja kvotasiga sanalmaydi"
     return None
 
 
@@ -5562,6 +5598,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sinf: tasdiq bilan qo'shilish, reja kvotasi, arxivlash", classroom_joins_and_quotas),
     ("murabbiy: ≤3, ruxsat har biriga, musobaqada kod yopiq", coaching_is_chosen_and_consented),
     ("o'qituvchi testi: sinfga, Qvant'siz, vaqt va bitta urinish serverda", teacher_quizzes_stay_in_class),
+    ("test generatori: 100 × 8 MiB, validator, kvota, birma-bir", test_generator_is_bounded),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

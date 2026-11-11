@@ -20,10 +20,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.models import User
 from core.openapi_docs import crud_summaries
 from core.permissions import STAFF_GROUP_OPS, StaffOps, has_staff_group
 from core.staff import SessionOnly, StaffViewSet
-from problems import release, storage
+from problems import generation, release, storage
 from problems.models import (
     Language,
     Problem,
@@ -32,10 +33,14 @@ from problems.models import (
     ProblemRevision,
     ReferenceSolution,
     TestCase,
+    TestGenerator,
     Topic,
     Validator,
 )
 from problems.staff_serializers import (
+    GenerateSerializer,
+    GenerationRunSerializer,
+    StaffGeneratorSerializer,
     StaffProblemLanguageSerializer,
     StaffProblemReportSerializer,
     StaffProblemSerializer,
@@ -83,7 +88,16 @@ class StaffProblemReportViewSet(StaffViewSet):
 #: Test actions a draft's author may use besides staff-ops (ADR-0025). Adding
 #: a test without being able to remove a wrong one left the author stuck
 #: (measured 2026-11-10: POST 201, DELETE 403).
-AUTHOR_ACTIONS = ("tests", "delete_test")
+AUTHOR_ACTIONS = (
+    "tests",
+    "delete_test",
+    # The draft's author writes its generator, reference solution and
+    # validator, and runs the generator (ADR-0061 § 6).
+    "validator",
+    "reference_solution",
+    "generator",
+    "generate",
+)
 
 
 def _require_ops_or_draft_author(request: Request, problem: Problem) -> None:
@@ -110,6 +124,8 @@ def _require_ops_or_draft_author(request: Request, problem: Problem) -> None:
         "delete_test": "Testni o'chirish",
         "validator": "Tekshiruvchi (validator) yuklash",
         "reference_solution": "Namuna yechim yuklash",
+        "generator": "Test generatori yuklash",
+        "generate": "Generator bilan testlar yasash",
         "languages": "Masala tillari (limit, shablon, hakam dasturi)",
         "language_row": "Bitta til qatorini yozish yoki o'chirish",
         "translations": "Masala tarjimalari (ADR-0058)",
@@ -286,6 +302,7 @@ class StaffProblemViewSet(TranslationActions, StaffViewSet):
         yozadi yoki almashtiradi, DELETE olib tashlaydi.
         """
         problem = self.get_object()
+        _require_ops_or_draft_author(request, problem)
         existing = model.objects.filter(problem=problem).first()
 
         if request.method == "GET":
@@ -334,9 +351,48 @@ class StaffProblemViewSet(TranslationActions, StaffViewSet):
         """Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
 
         Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
-        masala bilan keladi va faqat xodim yuklaydi.
+        masala bilan keladi: xodim yoki qoralamaning muallifi yuklaydi
+        (ADR-0061 § 6 — generator testlariga javobni ham shu beradi).
         """
         return self._program(request, ReferenceSolution, StaffReferenceSolutionSerializer)
+
+    @extend_schema(
+        request=StaffGeneratorSerializer,
+        responses={200: StaffGeneratorSerializer, 201: StaffGeneratorSerializer, 204: None},
+    )
+    @action(detail=True, methods=["get", "put", "delete"], url_path="generator")
+    def generator(self, request: Request, slug: str | None = None) -> Response:
+        """The test generator (ADR-0061 § 6)."""
+        return self._program(request, TestGenerator, StaffGeneratorSerializer)
+
+    @extend_schema(
+        request=GenerateSerializer,
+        responses={200: GenerationRunSerializer(many=True), 202: GenerationRunSerializer},
+    )
+    @action(detail=True, methods=["get", "post"], url_path="generate")
+    def generate(self, request: Request, slug: str | None = None) -> Response:
+        """Run the generator over lines of parameters, one test each; GET lists runs."""
+        problem = self.get_object()
+        _require_ops_or_draft_author(request, problem)
+        if request.method == "GET":
+            runs = problem.generation_runs.all()[:10]
+            return Response(GenerationRunSerializer(runs, many=True).data)
+        body = GenerateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        assert isinstance(request.user, User)
+        try:
+            run = generation.start(
+                request.user,
+                problem,
+                generation.parse_lines(body.validated_data["lines"]),
+                body.validated_data["group"],
+            )
+        except generation.GenerationError as exc:
+            return Response(
+                {"error": {"code": exc.code, "message": str(exc), "details": {}}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(GenerationRunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
 
     @extend_schema(request=None, responses={200: StaffProblemLanguageSerializer(many=True)})
     @action(detail=True, methods=["get"], url_path="languages")

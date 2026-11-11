@@ -9,6 +9,7 @@ from rest_framework import serializers
 from problems import evaluation, readiness, release, taskkinds, testgroups, translations
 from problems.models import (
     DIFFICULTY_STEP,
+    GenerationRun,
     Language,
     Problem,
     ProblemLanguage,
@@ -16,6 +17,7 @@ from problems.models import (
     ProblemRevision,
     ReferenceSolution,
     TestCase,
+    TestGenerator,
     Topic,
     Validator,
 )
@@ -337,6 +339,50 @@ class StaffValidatorSerializer(_ProblemProgramSerializer):
         model = Validator
         fields = ["language", "source", "updated_at"]
         read_only_fields = ["updated_at"]
+
+
+class StaffGeneratorSerializer(_ProblemProgramSerializer):
+    """The test generator: one line of parameters in, one test input out
+    (ADR-0061 § 6)."""
+
+    class Meta:
+        model = TestGenerator
+        fields = ["language", "source", "updated_at"]
+        read_only_fields = ["updated_at"]
+
+
+class GenerateSerializer(serializers.Serializer):  # type: ignore[type-arg]
+    #: One test per non-empty line, fed to the generator's stdin.
+    lines = serializers.CharField(trim_whitespace=False)
+    group = serializers.ChoiceField(choices=TestCase.Group.choices, default=TestCase.Group.RANDOM)
+
+    def validate_group(self, value: str) -> str:
+        # «Unclassified» is only for tests written before 2026-09-30.
+        if value == TestCase.Group.UNCLASSIFIED:
+            raise serializers.ValidationError("Choose what the tests check")
+        return value
+
+
+class GenerationRunSerializer(serializers.ModelSerializer):  # type: ignore[type-arg]
+    total = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GenerationRun
+        fields = [
+            "id",
+            "status",
+            "group",
+            "total",
+            "current",
+            "made",
+            "bytes_written",
+            "error",
+            "created_at",
+            "finished_at",
+        ]
+
+    def get_total(self, run: GenerationRun) -> int:
+        return len(run.lines or [])
 
 
 class StaffReferenceSolutionSerializer(_ProblemProgramSerializer):

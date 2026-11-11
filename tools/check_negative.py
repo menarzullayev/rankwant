@@ -4795,8 +4795,8 @@ def neg_decisions_studio_author_cannot_delete_tests() -> tuple[bool, str]:
     """The draft's author loses the delete-test action again (DELETE 403)."""
     return _decision_broken(
         "apps/api/problems/staff_views.py",
-        'AUTHOR_ACTIONS = ("tests", "delete_test")',
-        'AUTHOR_ACTIONS = ("tests",)',
+        '    "tests",\n    "delete_test",\n',
+        '    "tests",\n',
         "muallif o'z qoralamasining testini o'chira olmaydi",
     )
 
@@ -4968,6 +4968,56 @@ def neg_decisions_quiz_report_open() -> tuple[bool, str]:
         '            return _not_owner("Only the classroom owner can see results")\n',
         "            pass\n",
         "test hisoboti egasidan boshqaga ochiq",
+    )
+
+
+def neg_decisions_generator_lines() -> tuple[bool, str]:
+    """A run could make more than 100 tests."""
+    return _decision_broken(
+        "apps/api/problems/generation.py",
+        "MAX_LINES = 100" + "\n",
+        "MAX_LINES = 500" + "\n",
+        "yurishdagi testlar 100 emas",
+    )
+
+
+def neg_decisions_generator_skips_validator() -> tuple[bool, str]:
+    """A generated input would skip the validator."""
+    return _decision_broken(
+        "apps/api/problems/generation.py",
+        "validate_input=validator is not None,",
+        "validate_input=False,",
+        "validator yasalgan kiritmani tekshirmaydi",
+    )
+
+
+def neg_decisions_generator_unrouted() -> tuple[bool, str]:
+    """A generator answer would be dropped as nobody's."""
+    return _decision_broken(
+        "apps/api/judging/tasks.py",
+        'elif str(result.get("hack_stage") or "").startswith("testgen:"):',
+        "elif False:",
+        "generator natijasi yo'naltirilmaydi",
+    )
+
+
+def neg_decisions_generator_no_quota() -> tuple[bool, str]:
+    """Test storage would not count against the plan."""
+    return _decision_broken(
+        "apps/api/problems/generation.py",
+        "if left is not None and left <= 0:",
+        "if False:",
+        "test ma'lumoti kvotasi tekshirilmaydi",
+    )
+
+
+def neg_decisions_generator_queues_ahead() -> tuple[bool, str]:
+    """The next test would be queued before the last one answered."""
+    return _decision_broken(
+        "apps/api/problems/generation.py",
+        "    transaction.on_commit(lambda: _queue_generator(run, generator))" + "\n    return run" + "\n" + "\n" + "\ndef _add_test",
+        "    return run" + "\n" + "\n" + "\ndef _add_test",
+        "keyingi test oldingisi tugamay",
     )
 
 
@@ -8867,6 +8917,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/problems/generation.py",
     "apps/api/quizzes/services.py",
     "apps/api/quizzes/views.py",
     "apps/api/quizzes/serializers.py",
@@ -13250,6 +13301,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("vaqtli savollar erta ko'rinsa tutilsin", neg_decisions_timed_questions_early),
             ("bepul test chegarasi o'zgarsa tutilsin", neg_decisions_quiz_free_limit),
             ("test hisoboti ochilsa tutilsin", neg_decisions_quiz_report_open),
+            ("generator 100 dan ko'p yasasa tutilsin", neg_decisions_generator_lines),
+            ("generator validatorsiz o'tsa tutilsin", neg_decisions_generator_skips_validator),
+            ("generator natijasi tashlansa tutilsin", neg_decisions_generator_unrouted),
+            ("generator kvotasiz yursa tutilsin", neg_decisions_generator_no_quota),
+            ("generator navbatni to'ldirsa tutilsin", neg_decisions_generator_queues_ahead),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

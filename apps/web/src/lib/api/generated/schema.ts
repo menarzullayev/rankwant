@@ -5162,6 +5162,58 @@ export interface paths {
         patch: operations["staff_problems_partial_update"];
         trace?: never;
     };
+    "/api/v1/staff/problems/{slug}/generate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Generator bilan testlar yasash
+         * @description Run the generator over lines of parameters, one test each; GET lists runs.
+         */
+        get: operations["staff_problems_generate_list"];
+        put?: never;
+        /**
+         * Generator bilan testlar yasash
+         * @description Run the generator over lines of parameters, one test each; GET lists runs.
+         */
+        post: operations["staff_problems_generate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/problems/{slug}/generator/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Test generatori yuklash
+         * @description The test generator (ADR-0061 § 6).
+         */
+        get: operations["staff_problems_generator_retrieve"];
+        /**
+         * Test generatori yuklash
+         * @description The test generator (ADR-0061 § 6).
+         */
+        put: operations["staff_problems_generator_update"];
+        post?: never;
+        /**
+         * Test generatori yuklash
+         * @description The test generator (ADR-0061 § 6).
+         */
+        delete: operations["staff_problems_generator_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/staff/problems/{slug}/languages/": {
         parameters: {
             query?: never;
@@ -5218,7 +5270,8 @@ export interface paths {
          * @description Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
          *
          *     Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
-         *     masala bilan keladi va faqat xodim yuklaydi.
+         *     masala bilan keladi: xodim yoki qoralamaning muallifi yuklaydi
+         *     (ADR-0061 § 6 — generator testlariga javobni ham shu beradi).
          */
         get: operations["staff_problems_reference_solution_retrieve"];
         /**
@@ -5226,7 +5279,8 @@ export interface paths {
          * @description Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
          *
          *     Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
-         *     masala bilan keladi va faqat xodim yuklaydi.
+         *     masala bilan keladi: xodim yoki qoralamaning muallifi yuklaydi
+         *     (ADR-0061 § 6 — generator testlariga javobni ham shu beradi).
          */
         put: operations["staff_problems_reference_solution_update"];
         post?: never;
@@ -5235,7 +5289,8 @@ export interface paths {
          * @description Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
          *
          *     Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
-         *     masala bilan keladi va faqat xodim yuklaydi.
+         *     masala bilan keladi: xodim yoki qoralamaning muallifi yuklaydi
+         *     (ADR-0061 § 6 — generator testlariga javobni ham shu beradi).
          */
         delete: operations["staff_problems_reference_solution_destroy"];
         options?: never;
@@ -8262,6 +8317,35 @@ export interface components {
          * @enum {string}
          */
         GenderEnum: "male" | "female" | "non_binary" | "prefer_not";
+        Generate: {
+            lines: string;
+            /** @default random */
+            group: components["schemas"]["GroupEnum"];
+        };
+        GenerationRun: {
+            readonly id: number;
+            status?: components["schemas"]["GenerationRunStatusEnum"];
+            group?: string;
+            readonly total: number;
+            /** Format: int64 */
+            current?: number;
+            /** Format: int64 */
+            made?: number;
+            /** Format: int64 */
+            bytes_written?: number;
+            error?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            finished_at?: string | null;
+        };
+        /**
+         * @description * `running` - Ishlayapti
+         *     * `done` - Tayyor
+         *     * `failed` - To'xtadi
+         * @enum {string}
+         */
+        GenerationRunStatusEnum: "running" | "done" | "failed";
         /**
          * @description * `sample` - Namuna
          *     * `minimal` - Minimal
@@ -9086,6 +9170,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Follower"][];
+        };
+        PaginatedGenerationRunList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["GenerationRun"][];
         };
         PaginatedHackList: {
             /**
@@ -11820,6 +11919,16 @@ export interface components {
         StaffDuelFinalize: {
             /** @default false */
             force: boolean;
+        };
+        /**
+         * @description The test generator: one line of parameters in, one test input out
+         *     (ADR-0061 § 6).
+         */
+        StaffGenerator: {
+            language: string;
+            source: string;
+            /** Format: date-time */
+            readonly updated_at: string;
         };
         StaffHackathon: {
             slug: string;
@@ -20943,6 +21052,202 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["StaffProblem"];
                 };
+            };
+        };
+    };
+    staff_problems_generate_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedGenerationRunList"];
+                };
+            };
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerationRun"];
+                };
+            };
+        };
+    };
+    staff_problems_generate_create: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Generate"];
+                "application/x-www-form-urlencoded": components["schemas"]["Generate"];
+                "multipart/form-data": components["schemas"]["Generate"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedGenerationRunList"];
+                };
+            };
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerationRun"];
+                };
+            };
+        };
+    };
+    staff_problems_generator_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffGenerator"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffGenerator"];
+                };
+            };
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    staff_problems_generator_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffGenerator"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffGenerator"];
+                "multipart/form-data": components["schemas"]["StaffGenerator"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffGenerator"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffGenerator"];
+                };
+            };
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    staff_problems_generator_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffGenerator"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffGenerator"];
+                };
+            };
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

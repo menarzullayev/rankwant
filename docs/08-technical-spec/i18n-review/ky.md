@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3176 strings.**
+**3207 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1958,6 +1958,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.status.public` | Nashr qilingan | Жарыяланган |  |
 | `studio.tab.statement` | Shart | Шарт |  |
 | `studio.tab.tests` | Testlar | Тесттер |  |
+| `studio.tab.generator` | Test generatori | Тест генератору |  |
+| `studio.gen.intro` | Har bir parametr qatori generatorga beriladi; uning chiqishi test kiritmasi bo'ladi. Validator bo'lsa kiritmani tekshiradi, javobni etalon yechim beradi. Testlar birma-bir yasaladi va «Testlar» bo'limiga qo'shiladi. | Ар бир параметр сабы генераторго берилет; анын чыгышы тесттин кирүүсү болот. Валидатор болсо кирүүнү текшерет, жоопту эталон чечим берет. Тесттер бир-бирден түзүлүп, «Тесттер» бөлүмүнө кошулат. |  |
+| `studio.gen.generator` | Generator dasturi | Генератор программасы |  |
+| `studio.gen.generatorHint` | Bitta qatorni stdin'dan o'qiydi va test kiritmasini stdout'ga yozadi. | stdin'ден бир сапты окуп, тесттин кирүүсүн stdout'ка жазат. |  |
+| `studio.gen.reference` | Etalon yechim | Эталон чечим |  |
+| `studio.gen.referenceHint` | To'g'ri yechim: har kiritmaga javob shu dasturdan olinadi. | Туура чечим: ар бир кирүүнүн жообу ушул программадан алынат. |  |
+| `studio.gen.validator` | Validator (ixtiyoriy) | Валидатор (милдеттүү эмес) |  |
+| `studio.gen.validatorHint` | Kiritma masala cheklovlariga mosligini tekshiradi; mos kelmasa yurish to'xtaydi. | Кирүү маселенин чектөөлөрүнө туура келерин текшерет; келбесе иштетүү токтойт. |  |
+| `studio.gen.saved` | Saqlangan | Сакталган |  |
+| `studio.gen.save` | Saqlash | Сактоо |  |
+| `studio.gen.lines` | Parametrlar | Параметрлер |  |
+| `studio.gen.linesHint` | Har qator — bitta test, masalan: 10 1000 yoki n=200000 seed=7. Ko'pi bilan 100 qator. | Ар бир сап — бир тест, мисалы: 10 1000 же n=200000 seed=7. Эң көп дегенде 100 сап. |  |
+| `studio.gen.group` | Test turi | Тесттин түрү |  |
+| `studio.gen.group.random` | Tasodifiy | Кокустук |  |
+| `studio.gen.group.boundary` | Chegara | Чектик |  |
+| `studio.gen.group.maximum` | Maksimal | Максималдуу |  |
+| `studio.gen.group.stress` | Yuklama (stress) | Стресс |  |
+| `studio.gen.group.special` | Alohida holat | Өзгөчө учур |  |
+| `studio.gen.start` | {count} ta test yasash | {count} тест түзүү |  |
+| `studio.gen.status.running` | Ishlayapti | Иштеп жатат |  |
+| `studio.gen.status.done` | Tayyor | Даяр |  |
+| `studio.gen.status.failed` | To'xtadi | Токтоду |  |
+| `studio.gen.progress` | {made} / {total} test | {made} / {total} тест |  |
+| `studio.gen.size` | {size} MB yozildi | {size} МБ жазылды |  |
 | `studio.tab.testsCount` | Testlar ({count}) | Тесттер ({count}) |  |
 | `studio.tab.editorial` | Yechim tahlili | Чыгарылыштын талдоосу |  |
 | `studio.tab.review` | Ko'rik | Текшерүү |  |
@@ -3138,6 +3162,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Эң көп дегенде 3 машыктыруучу болушу мүмкүн |  |
 | `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Бул байланыш бүткөн |  |
 | `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Маселе табылган жок же ачык эмес |  |
+| `error.generation_empty` | Kamida bitta qator yozing | Жок дегенде бир сап жазыңыз |  |
+| `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Бир иштетүүдө эң көп 100 тест |  |
+| `error.generation_line_long` | Qator 1000 belgidan uzun | Сап 1000 белгиден узун |  |
+| `error.generation_group` | Testlar nimani tekshirishini tanlang | Тесттер эмнени текшерерин тандаңыз |  |
+| `error.generation_no_generator` | Avval generator dasturini yuklang | Адегенде генераторду жүктөңүз |  |
+| `error.generation_no_reference` | Avval etalon yechimni yuklang | Адегенде эталон чечимди жүктөңүз |  |
+| `error.generation_running` | Hozir bitta yurish ishlayapti — tugashini kuting | Иштетүү жүрүп жатат — бүтүшүн күтүңүз |  |
 | `error.quiz_taken` | Bu testni faqat bir marta topshirish mumkin | Бул тестти бир гана жолу тапшырууга болот |  |
 | `error.quiz_not_started` | Avval testni boshlang | Адегенде тестти баштаңыз |  |
 | `error.quiz_in_use` | Test sinfga berilgan yoki topshirilgan — o'chirib bo'lmaydi | Тест класска берилген же тапшырылган — өчүрүүгө болбойт |  |
