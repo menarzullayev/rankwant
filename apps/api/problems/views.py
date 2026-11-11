@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Avg, Count, F, Max, Min, Q, prefetch_related_objects
 from django.http import Http404, HttpResponse
@@ -23,7 +24,7 @@ from core.models import User
 from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 from judging.verdicts import Verdict
-from problems import testsets, translations, visibility
+from problems import speech, testsets, translations, visibility
 from problems.filters import ProblemFilter
 from problems.models import (
     DIFFICULTY_LEVELS,
@@ -42,6 +43,7 @@ from problems.serializers import (
     LanguageSerializer,
     ProblemDetailSerializer,
     ProblemListSerializer,
+    ProblemSpeechSerializer,
     RateProblemSerializer,
     ReportProblemSerializer,
     TopicSerializer,
@@ -227,6 +229,32 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         response = HttpResponse(inputs_archive(problem), content_type="application/zip")
         response["Content-Disposition"] = f'attachment; filename="{problem.slug}-inputs.zip"'
         return response
+
+    @extend_schema(
+        summary="Shartning ovozda o'qiladigan matni",
+        responses={200: ProblemSpeechSerializer, 404: OpenApiResponse(description="No Uzbek text")},
+    )
+    @action(detail=True, methods=["get"], permission_classes=[AllowAny])
+    def speech(self, request: Request, slug: str | None = None) -> Response:
+        """The statement as the voice reads it, and the name of its audio (ADR-0064).
+
+        `get_object()` is the detail's own lookup, so a problem the reader may not open (a
+        contest problem before the start, ADR-0055) has no text here either. The voice reads
+        Uzbek only; a problem without an Uzbek text answers 404.
+        """
+        problem = self.get_object()
+        parts = speech.uzbek_parts(problem)
+        if parts is None:
+            raise Http404
+        text = speech.spoken(parts)
+        model = settings.TTS_MODEL
+        payload = {
+            "text": text,
+            "key": speech.cache_key(model, text),
+            "model": model,
+            "chars": len(text),
+        }
+        return Response(ProblemSpeechSerializer(payload).data)
 
     @extend_schema(request=None, responses={200: {"type": "object"}})
     @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])

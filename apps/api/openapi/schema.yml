@@ -6494,6 +6494,37 @@ paths:
       responses:
         '200':
           description: Yechganlar ro'yxati
+  /api/v1/problems/{slug}/speech/:
+    get:
+      operationId: problems_speech_retrieve
+      description: |-
+        The statement as the voice reads it, and the name of its audio (ADR-0064).
+
+        `get_object()` is the detail's own lookup, so a problem the reader may not open (a
+        contest problem before the start, ADR-0055) has no text here either. The voice reads
+        Uzbek only; a problem without an Uzbek text answers 404.
+      summary: Shartning ovozda o'qiladigan matni
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemSpeech'
+          description: ''
+        '404':
+          description: No Uzbek text
   /api/v1/problems/{slug}/stats/:
     get:
       operationId: problems_stats_retrieve
@@ -26289,6 +26320,23 @@ components:
       - slug
       - tasks
       - title
+    ProblemSpeech:
+      type: object
+      description: The statement as the voice reads it (ADR-0064).
+      properties:
+        text:
+          type: string
+        key:
+          type: string
+        model:
+          type: string
+        chars:
+          type: integer
+      required:
+      - chars
+      - key
+      - model
+      - text
     ProblemTranslation:
       type: object
       description: One other language of a problem's text (ADR-0058); the locale is

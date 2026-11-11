@@ -3669,6 +3669,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/problems/{slug}/speech/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Shartning ovozda o'qiladigan matni
+         * @description The statement as the voice reads it, and the name of its audio (ADR-0064).
+         *
+         *     `get_object()` is the detail's own lookup, so a problem the reader may not open (a
+         *     contest problem before the start, ADR-0055) has no text here either. The voice reads
+         *     Uzbek only; a problem without an Uzbek text answers 404.
+         */
+        get: operations["problems_speech_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/problems/{slug}/stats/": {
         parameters: {
             query?: never;
@@ -12184,6 +12208,13 @@ export interface components {
             description?: string;
             readonly tasks: components["schemas"]["TaskRow"][];
         };
+        /** @description The statement as the voice reads it (ADR-0064). */
+        ProblemSpeech: {
+            text: string;
+            key: string;
+            model: string;
+            chars: number;
+        };
         /** @description One other language of a problem's text (ADR-0058); the locale is in the URL. */
         ProblemTranslation: {
             readonly locale: components["schemas"]["LocaleEnum"];
@@ -19474,6 +19505,34 @@ export interface operations {
         responses: {
             /** @description Yechganlar ro'yxati */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    problems_speech_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemSpeech"];
+                };
+            };
+            /** @description No Uzbek text */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

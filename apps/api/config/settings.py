@@ -635,3 +635,7 @@ LOGGING = {
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "root": {"handlers": ["console"], "level": env("LOG_LEVEL", "INFO")},
 }
+
+# Statements read aloud (ADR-0064): the model's name is part of every audio file's cache key, so
+# another model never serves the old one's recordings.
+TTS_MODEL = env("TTS_MODEL", "navoiy-xotirjam")
