@@ -30,6 +30,11 @@ import re
 import sys
 from pathlib import Path
 
+# A piped Windows stdout is `cp1252` and dies on the first `✓`; see `_console.py`.
+import _console
+
+_console.force_utf8()
+
 ROOT = Path(__file__).resolve().parent.parent
 SNAPSHOT = ROOT / "apps/api/content/cpuz"
 FENCE = re.compile(r"^\s*(?:>\s*)*(```+|~~~+)")
