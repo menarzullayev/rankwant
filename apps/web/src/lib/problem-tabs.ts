@@ -23,6 +23,8 @@ export const PROBLEM_TABS = [
   "editorial",
   "statistics",
   "solvers",
+  // Comments under the problem (decision 2026-11-11).
+  "discussion",
 ] as const;
 export type ProblemTab = (typeof PROBLEM_TABS)[number];
 
@@ -41,7 +43,7 @@ const LEGACY_ALIAS: Record<string, ProblemTab> = {
  *
  *  Noma'lum/bo'sh qiymat `null` qaytaradi, ya'ni chaqiruvchi standart
  *  holatga tushadi. Buzuq qiymatni jimgina qabul qilish bo'sh panel
- *  ko'rsatardi: bo'lim faqat ro'yxatdagi beshtadan biri bo'lishi mumkin.
+ *  ko'rsatardi: bo'lim faqat ro'yxatdagilardan biri bo'lishi mumkin.
  */
 export function parseProblemTab(
   raw: string | string[] | null | undefined,

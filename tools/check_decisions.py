@@ -3198,6 +3198,32 @@ def test_generator_is_bounded() -> str | None:
     return None
 
 
+def discussion_is_open_but_guarded() -> str | None:
+    """2026-11-11 (HITL, 2 raund; `docs/decisions/2026-11-11-community-details.md`).
+
+    Muhokama: javoblar daraxt; kod bloki masalani yechmagan o'quvchiga yopiq
+    (serverda olib tashlanadi, faqat CSS bilan emas); faqat arxivdagi
+    masalada — faol musobaqa masalasida muhokama yo'q; keyin moderatsiya:
+    3 ta shikoyat darhol yashiradi, yangi hisob kuniga 5 izoh, havola faqat
+    email tasdiqlangach; o'qish hammaga, yozish faqat kirganlarga.
+    """
+    svc = read("apps/api/community/services.py")
+    if not re.search(r"^AUTO_HIDE_REPORTS = 3$", svc, re.M):
+        return "community/services.py: avto-yashirish 3 ta shikoyatda emas"
+    if not re.search(r"^NEW_DAILY_COMMENTS = 5$", svc, re.M):
+        return "community/services.py: yangi hisobning kunlik chegarasi 5 emas"
+    if "if LINK.search(text) and not user.email_verified:" not in svc:
+        return "community/services.py: havola email tasdiqisiz qo'yiladi"
+    if "elif not code_open and row.author_id != viewer_id:" not in svc:
+        return "community/services.py: kod yechmaganlarga serverda yashirilmaydi"
+    if "problem = public_problem(ref)" not in svc:
+        return "community/services.py: muhokama arxivda bo'lmagan masalada ham ochiq"
+    views = read("apps/api/community/views.py")
+    if 'return [IsAuthenticated()] if self.request.method == "POST" else [AllowAny()]' not in views:
+        return "community/views.py: muhokamaga kirmasdan yoziladi yoki o'qib bo'lmaydi"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -5599,6 +5625,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("murabbiy: ≤3, ruxsat har biriga, musobaqada kod yopiq", coaching_is_chosen_and_consented),
     ("o'qituvchi testi: sinfga, Qvant'siz, vaqt va bitta urinish serverda", teacher_quizzes_stay_in_class),
     ("test generatori: 100 × 8 MiB, validator, kvota, birma-bir", test_generator_is_bounded),
+    ("muhokama: yechmaganga kod yopiq, 3 shikoyat, yangi hisob 5", discussion_is_open_but_guarded),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

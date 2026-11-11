@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3207 strings.**
+**3260 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1472,6 +1472,38 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.tab.status` | Urinishlar | Жөнөтүүлөр |  |
 | `problem.tab.stats` | Statistika | Статистика |  |
 | `problem.tab.solvers` | Yechganlar | Чечкендер |  |
+| `problem.tab.discussion` | Muhokama | Талкуу |  |
+| `discussion.title` | Muhokama | Талкуу |  |
+| `discussion.count` | {count} ta izoh | {count} пикир |  |
+| `discussion.placeholder` | Savol yoki fikr… Markdown, $formula$ va ```kod``` ishlaydi | Суроо же ой… Markdown, $формула$ жана ```код``` иштейт |  |
+| `discussion.limits` | {count} / {max} · kod bloki masalani yechmaganlarga yopiq ko'rinadi | {count} / {max} · код блогу маселени чечпегендерге жашырылат |  |
+| `discussion.send` | Yuborish | Жөнөтүү |  |
+| `discussion.reply` | Javob berish | Жооп берүү |  |
+| `discussion.edit` | Tahrirlash | Оңдоо |  |
+| `discussion.delete` | O'chirish | Өчүрүү |  |
+| `discussion.deleteConfirm` | Izoh o'chirilsinmi? Unga yozilgan javoblar joyida qoladi. | Пикир өчүрүлсүнбү? Ага жазылган жооптор ордунда калат. |  |
+| `discussion.save` | Saqlash | Сактоо |  |
+| `discussion.cancel` | Bekor qilish | Жокко чыгаруу |  |
+| `discussion.deleted` | Izoh o'chirildi | Пикир өчүрүлдү |  |
+| `discussion.hidden` | Izoh moderatsiya tomonidan yashirildi | Пикир модерация тарабынан жашырылды |  |
+| `discussion.edited` | tahrirlangan | оңдолгон |  |
+| `discussion.solved` | yechgan | чечкен |  |
+| `discussion.owner` | muallif | автор |  |
+| `discussion.hiddenCode` | Yechim kodi — masalani yechgandan keyin ochiladi | Чыгарылыш коду — маселени чечкенден кийин ачылат |  |
+| `discussion.replyTo` | @{user} ga javob | @{user} колдонуучусуна жооп |  |
+| `discussion.empty` | Hali izoh yo'q. Birinchi savolni siz bering. | Азырынча пикир жок. Биринчи суроону сиз бериңиз. |  |
+| `discussion.more` | Oldingi mavzular | Мурунку темалар |  |
+| `discussion.closed` | Musobaqa tugaguncha muhokama yopiq | Мелдеш бүткөнгө чейин талкуу жабык |  |
+| `discussion.closedHint` | Masala arxivga o'tgach muhokamani o'qish va yozish mumkin bo'ladi. | Маселе архивге өткөндөн кийин талкууну окуп, жазууга болот. |  |
+| `discussion.voteUp` | Foydali | Пайдалуу |  |
+| `discussion.voteDown` | Foydasiz | Пайдасыз |  |
+| `discussion.report` | Shikoyat | Арыз |  |
+| `discussion.reportTitle` | Sabab: | Себеби: |  |
+| `discussion.reported` | Shikoyat yuborildi | Арыз жөнөтүлдү |  |
+| `discussion.reason.spam` | Spam yoki reklama | Спам же жарнама |  |
+| `discussion.reason.rude` | Haqorat | Кордоо |  |
+| `discussion.reason.spoiler` | Yechimni ochib beradi | Чыгарылышты ачып берет |  |
+| `discussion.reason.other` | Boshqa | Башка |  |
 | `problem.tab.mine` | Urinishlarim | Менин аракеттерим |  |
 | `problem.tab.myStats` | Statistikam | Менин статистикам |  |
 | `problem.tab.favourites` | Sevimlilar | Тандалмалар |  |
@@ -1667,6 +1699,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.updates` | O'zgarishlar | Өзгөрүүлөр |  |
 | `admin.section.platformRoadmap` | Yo'l xaritasi | Жол картасы |  |
 | `admin.section.roadmapComments` | Reja izohlari | Картага комментарийлер |  |
+| `admin.section.comments` | Izohlar | Пикирлер |  |
 | `admin.section.quests` | Questlar | Квесттер |  |
 | `admin.section.shop` | Do'kon | Дүкөн |  |
 | `admin.section.users` | Foydalanuvchilar | Колдонуучулар |  |
@@ -1799,6 +1832,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.flag.published` | Nashr qilingan | Жарыяланган |  |
 | `admin.label.text.description` | Tavsif | Сүрөттөмө |  |
 | `admin.label.text.comment` | Izoh | Комментарий |  |
+| `admin.label.text.reports` | Shikoyatlar | Арыздар |  |
 | `admin.label.text.code` | Kod | Код |  |
 | `admin.label.flag.open` | Ochiq | Ачык |  |
 | `admin.label.text.deadline` | Muddat | Мөөнөт |  |
@@ -1936,6 +1970,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.prev` | Oldingi sahifa | Мурунку бет |  |
 | `admin.title.next` | Keyingi sahifa | Кийинки бет |  |
 | `admin.title.roadmapComments` | Yo'l xaritasi izohlari | Жол картасы комментарийлери |  |
+| `admin.title.comments` | Muhokama izohlari | Талкуу пикирлери |  |
 | `admin.title.tournaments` | Chempionatlar | Чемпионаттар |  |
 | `admin.title.broadcast` | Umumiy e'lon | Жалпы жарыя |  |
 | `admin.title.page` | Admin | Админ |  |
@@ -2873,6 +2908,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.coach_declined.body` | Boshqa murabbiyga so'rov yuborishingiz mumkin. | Башка машыктыруучуга өтүнүч жөнөтө аласыз. |  |
 | `notif.msg.coach_recommended.title` | Yangi tavsiya — {problem} | Жаңы сунуш — {problem} |  |
 | `notif.msg.coach_recommended.body` | @{user} sizga «{problem}» masalasini tavsiya qildi. | @{user} сизге «{problem}» маселесин сунуштады. |  |
+| `notif.msg.comment_reply.title` | @{user} javob berdi — {title} | @{user} жооп берди — {title} |  |
+| `notif.msg.comment_reply.body` | @{user} «{title}» dagi izohingizga javob yozdi. | @{user} «{title}» ичиндеги пикириңизге жооп жазды. |  |
+| `notif.msg.comment_mention.title` | @{user} sizni eslatdi — {title} | @{user} сизди эскерди — {title} |  |
+| `notif.msg.comment_mention.body` | @{user} «{title}» muhokamasida sizni eslatdi. | @{user} «{title}» талкуусунда сизди эскерди. |  |
 | `admin.section.courses` | Kurslar | Курстар |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Авторлор текшерүүгө жөнөткөн курстар. Баа коюңуз, жарыялаңыз же себеби менен кайтарыңыз. |  |
 | `admin.courses.queue` | Ko'rik navbati | Текшерүү кезеги |  |
@@ -3162,6 +3201,20 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Эң көп дегенде 3 машыктыруучу болушу мүмкүн |  |
 | `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Бул байланыш бүткөн |  |
 | `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Маселе табылган жок же ачык эмес |  |
+| `error.comment_short` | Izoh juda qisqa | Пикир өтө кыска |  |
+| `error.comment_long` | Izoh 2000 belgidan oshmasin | Пикир 2000 белгиден ашпасын |  |
+| `error.comment_link_unverified` | Havola qo'yish uchun emailingizni tasdiqlang | Шилтеме коюу үчүн e-mail дарегиңизди ырастаңыз |  |
+| `error.comment_daily_limit` | Bugungi izohlar chegarasiga yetdingiz — ertaga davom eting | Бүгүнкү пикир чегине жеттиңиз — эртең улантыңыз |  |
+| `error.comment_not_found` | Izoh topilmadi | Пикир табылган жок |  |
+| `error.comment_not_yours` | Bu sizning izohingiz emas | Бул сиздин пикириңиз эмес |  |
+| `error.comment_removed` | Bu izoh o'chirilgan | Бул пикир өчүрүлгөн |  |
+| `error.vote_self` | O'zingizga ovoz bera olmaysiz | Өзүңүзгө добуш бере албайсыз |  |
+| `error.vote_kind` | Bunga ovoz berib bo'lmaydi | Буга добуш берүүгө болбойт |  |
+| `error.vote_value` | Ovoz faqat +1, −1 yoki 0 bo'ladi | Добуш +1, −1 же 0 гана болот |  |
+| `error.report_reason` | Shikoyat sababini tanlang | Арыздын себебин тандаңыз |  |
+| `error.report_self` | O'zingiz ustingizdan shikoyat qila olmaysiz | Өзүңүзгө арыз бере албайсыз |  |
+| `error.report_already` | Siz allaqachon shikoyat qilgansiz | Сиз мурун эле арыз бергенсиз |  |
+| `error.discussion_closed` | Bu yerda muhokama yopiq | Бул жерде талкуу жабык |  |
 | `error.generation_empty` | Kamida bitta qator yozing | Жок дегенде бир сап жазыңыз |  |
 | `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Бир иштетүүдө эң көп 100 тест |  |
 | `error.generation_line_long` | Qator 1000 belgidan uzun | Сап 1000 белгиден узун |  |

@@ -18,3 +18,19 @@ def public_problem(ref: str) -> Problem | None:
         Problem.objects.filter(code=int(key)) if key.isdigit() else Problem.objects.filter(slug=key)
     )
     return query.filter(is_public=True).first()
+
+
+def public_problem_by_id(pk: int) -> Problem | None:
+    return Problem.objects.filter(pk=pk, is_public=True).first()
+
+
+def author_ids(problem: Problem) -> set[int]:
+    """The problem's authors (`Problem.authors`), for an "author" mark."""
+    return set(problem.authors.values_list("pk", flat=True))
+
+
+def slugs_by_id(ids: set[int]) -> dict[int, str]:
+    """Problem slugs for links in lists that hold only problem ids."""
+    if not ids:
+        return {}
+    return dict(Problem.objects.filter(pk__in=ids).values_list("pk", "slug"))

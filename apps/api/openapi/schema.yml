@@ -1822,6 +1822,124 @@ paths:
                 items:
                   $ref: '#/components/schemas/CoachStudent'
           description: ''
+  /api/v1/comments/{id}/:
+    patch:
+      operationId: comments_partial_update
+      summary: O'z izohini tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEditComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEditComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEditComment'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+    delete:
+      operationId: comments_destroy
+      summary: O'z izohini o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - comments
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/comments/{id}/report/:
+    post:
+      operationId: comments_report_create
+      summary: Izoh ustidan shikoyat
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunityReport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommunityReport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommunityReport'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          description: No response body
+  /api/v1/comments/{id}/vote/:
+    post:
+      operationId: comments_vote_create
+      summary: 'Izohga ovoz: 1, -1 yoki 0 (qaytarib olish)'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunityVote'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommunityVote'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommunityVote'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityVoteResult'
+          description: ''
   /api/v1/contests/:
     get:
       operationId: contests_list
@@ -2970,6 +3088,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomRun'
+          description: ''
+  /api/v1/discussions/problem/{ref}/:
+    get:
+      operationId: discussions_problem_retrieve
+      summary: 'Masala muhokamasi: mavzular sahifasi'
+      parameters:
+      - in: query
+        name: before
+        schema:
+          type: integer
+      - in: path
+        name: ref
+        schema:
+          type: string
+        required: true
+      tags:
+      - discussions
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadPage'
+          description: ''
+    post:
+      operationId: discussions_problem_create
+      summary: Masala muhokamasiga izoh yozish
+      parameters:
+      - in: path
+        name: ref
+        schema:
+          type: string
+        required: true
+      tags:
+      - discussions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PostComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PostComment'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
           description: ''
   /api/v1/duels/:
     get:
@@ -7677,6 +7855,149 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/staff/community/comments/:
+    get:
+      operationId: staff_community_comments_list
+      description: 'Moderation after the fact: hidden by reports or by staff, never
+        deleted.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffCommentList'
+          description: ''
+    post:
+      operationId: staff_community_comments_create
+      description: 'Moderation after the fact: hidden by reports or by staff, never
+        deleted.'
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffComment'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffComment'
+          description: ''
+  /api/v1/staff/community/comments/{id}/:
+    get:
+      operationId: staff_community_comments_retrieve
+      description: 'Moderation after the fact: hidden by reports or by staff, never
+        deleted.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this comment.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffComment'
+          description: ''
+  /api/v1/staff/community/comments/{id}/hide/:
+    post:
+      operationId: staff_community_comments_hide_create
+      description: 'Moderation after the fact: hidden by reports or by staff, never
+        deleted.'
+      summary: Izohni yashirish (shikoyatlar qabul)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this comment.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffComment'
+          description: ''
+  /api/v1/staff/community/comments/{id}/unhide/:
+    post:
+      operationId: staff_community_comments_unhide_create
+      description: 'Moderation after the fact: hidden by reports or by staff, never
+        deleted.'
+      summary: Izohni qaytarish (shikoyatlar rad)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this comment.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffComment'
+          description: ''
   /api/v1/staff/contests/:
     get:
       operationId: staff_contests_list
@@ -16986,6 +17307,138 @@ components:
       - solved_count
       - streak
       - username
+    Comment:
+      type: object
+      description: One comment as one reader may see it (`services.visible`).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        parent:
+          type: integer
+          readOnly: true
+          nullable: true
+        depth:
+          type: integer
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/CommentAuthor'
+          nullable: true
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        hidden_code:
+          type: integer
+          description: How many code blocks were taken out for this reader (②).
+          readOnly: true
+        score:
+          type: integer
+          readOnly: true
+        my_vote:
+          type: integer
+          readOnly: true
+        mine:
+          type: boolean
+          readOnly: true
+        author_solved:
+          type: boolean
+          readOnly: true
+        author_owner:
+          type: boolean
+          readOnly: true
+        is_deleted:
+          type: boolean
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        edited_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - author
+      - author_owner
+      - author_solved
+      - body
+      - created_at
+      - depth
+      - edited_at
+      - hidden_code
+      - id
+      - is_deleted
+      - is_hidden
+      - mine
+      - my_vote
+      - parent
+      - score
+    CommentAuthor:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        display_name:
+          type: string
+          maxLength: 100
+        title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
+      required:
+      - title
+      - username
+    CommunityReport:
+      type: object
+      properties:
+        reason:
+          $ref: '#/components/schemas/CommunityReportReasonEnum'
+        note:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - reason
+    CommunityReportReasonEnum:
+      enum:
+      - spam
+      - rude
+      - spoiler
+      - other
+      type: string
+      description: |-
+        * `spam` - Spam yoki reklama
+        * `rude` - Haqorat
+        * `spoiler` - Yechimni ochib beradi
+        * `other` - Boshqa
+    CommunityVote:
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/ValueEnum'
+      required:
+      - value
+    CommunityVoteResult:
+      type: object
+      properties:
+        score:
+          type: integer
+        my_vote:
+          type: integer
+      required:
+      - my_vote
+      - score
     ContentLocaleEnum:
       enum:
       - uz
@@ -20474,6 +20927,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffArticle'
+    PaginatedStaffCommentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffComment'
     PaginatedStaffContestList:
       type: object
       required:
@@ -21465,6 +21941,12 @@ components:
       properties:
         can_view_attempts:
           type: boolean
+    PatchedEditComment:
+      type: object
+      properties:
+        body:
+          type: string
+          maxLength: 2000
     PatchedFolder:
       type: object
       properties:
@@ -23276,6 +23758,18 @@ components:
         * `open_phase` - Ochiq faza
         * `practice` - Amaliyot
         * `uphack` - Uphack
+    PostComment:
+      type: object
+      properties:
+        body:
+          type: string
+          maxLength: 2000
+        reply_to:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+      - body
     PostDetail:
       type: object
       properties:
@@ -25468,6 +25962,66 @@ components:
       - id
       - order
       - text
+    StaffComment:
+      type: object
+      description: 'A comment in the moderation list: the whole text, whoever wrote
+        it.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        target_type:
+          allOf:
+          - $ref: '#/components/schemas/TargetTypeEnum'
+          readOnly: true
+        target_id:
+          type: integer
+          readOnly: true
+        link:
+          type: string
+          description: Where the comment lives on the site.
+          readOnly: true
+        author:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        score:
+          type: integer
+          readOnly: true
+        report_count:
+          type: integer
+          readOnly: true
+        reasons:
+          type: array
+          items:
+            type: string
+          description: Reasons of the reports still open.
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+        is_deleted:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - body
+      - created_at
+      - id
+      - is_deleted
+      - is_hidden
+      - link
+      - reasons
+      - report_count
+      - score
+      - target_id
+      - target_type
     StaffContest:
       type: object
       properties:
@@ -27743,6 +28297,14 @@ components:
         * `module` - module
         * `section` - section
         * `lesson` - lesson
+    TargetTypeEnum:
+      enum:
+      - problem
+      - entry
+      type: string
+      description: |-
+        * `problem` - Masala
+        * `entry` - Blog posti
     TaskKindEnum:
       enum:
       - program
@@ -28051,6 +28613,25 @@ components:
       - expected
       - input
       - order
+    ThreadPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: integer
+          nullable: true
+        code_open:
+          type: boolean
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+      required:
+      - code_open
+      - comments
+      - count
+      - next
     TierEnum:
       enum:
       - gold

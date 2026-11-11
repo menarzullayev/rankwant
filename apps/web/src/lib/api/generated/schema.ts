@@ -1198,6 +1198,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/comments/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** O'z izohini o'chirish */
+        delete: operations["comments_destroy"];
+        options?: never;
+        head?: never;
+        /** O'z izohini tahrirlash */
+        patch: operations["comments_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/comments/{id}/report/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Izoh ustidan shikoyat */
+        post: operations["comments_report_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/comments/{id}/vote/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Izohga ovoz: 1, -1 yoki 0 (qaytarib olish) */
+        post: operations["comments_vote_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contests/": {
         parameters: {
             query?: never;
@@ -1782,6 +1834,24 @@ export interface paths {
         get: operations["custom_test_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discussions/problem/{ref}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Masala muhokamasi: mavzular sahifasi */
+        get: operations["discussions_problem_retrieve"];
+        put?: never;
+        /** Masala muhokamasiga izoh yozish */
+        post: operations["discussions_problem_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4359,6 +4429,81 @@ export interface paths {
         head?: never;
         /** maqolani qisman yangilash */
         patch: operations["staff_articles_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/staff/community/comments/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Moderation after the fact: hidden by reports or by staff, never deleted. */
+        get: operations["staff_community_comments_list"];
+        put?: never;
+        /** @description Moderation after the fact: hidden by reports or by staff, never deleted. */
+        post: operations["staff_community_comments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/community/comments/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Moderation after the fact: hidden by reports or by staff, never deleted. */
+        get: operations["staff_community_comments_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/community/comments/{id}/hide/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Izohni yashirish (shikoyatlar qabul)
+         * @description Moderation after the fact: hidden by reports or by staff, never deleted.
+         */
+        post: operations["staff_community_comments_hide_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/community/comments/{id}/unhide/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Izohni qaytarish (shikoyatlar rad)
+         * @description Moderation after the fact: hidden by reports or by staff, never deleted.
+         */
+        post: operations["staff_community_comments_unhide_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/staff/contests/": {
@@ -7895,6 +8040,53 @@ export interface components {
             recent: components["schemas"]["RecentAttempt"][];
             recommended: components["schemas"]["Recommended"][];
         };
+        /** @description One comment as one reader may see it (`services.visible`). */
+        Comment: {
+            readonly id: number;
+            readonly parent: number | null;
+            readonly depth: number;
+            readonly author: components["schemas"]["CommentAuthor"] | null;
+            readonly body: string;
+            /** @description How many code blocks were taken out for this reader (②). */
+            readonly hidden_code: number;
+            readonly score: number;
+            readonly my_vote: number;
+            readonly mine: boolean;
+            readonly author_solved: boolean;
+            readonly author_owner: boolean;
+            readonly is_deleted: boolean;
+            readonly is_hidden: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly edited_at: string | null;
+        };
+        CommentAuthor: {
+            /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+            username: string;
+            display_name?: string;
+            readonly title: components["schemas"]["UserTitle"] | null;
+        };
+        CommunityReport: {
+            reason: components["schemas"]["CommunityReportReasonEnum"];
+            /** @default  */
+            note: string;
+        };
+        /**
+         * @description * `spam` - Spam yoki reklama
+         *     * `rude` - Haqorat
+         *     * `spoiler` - Yechimni ochib beradi
+         *     * `other` - Boshqa
+         * @enum {string}
+         */
+        CommunityReportReasonEnum: "spam" | "rude" | "spoiler" | "other";
+        CommunityVote: {
+            value: components["schemas"]["ValueEnum"];
+        };
+        CommunityVoteResult: {
+            score: number;
+            my_vote: number;
+        };
         /**
          * @description * `uz` - uz
          *     * `ru` - ru
@@ -9495,6 +9687,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["StaffArticle"][];
         };
+        PaginatedStaffCommentList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffComment"][];
+        };
         PaginatedStaffContestList: {
             /** @example 123 */
             count: number;
@@ -10109,6 +10316,9 @@ export interface components {
         };
         PatchedConsent: {
             can_view_attempts?: boolean;
+        };
+        PatchedEditComment: {
+            body?: string;
         };
         PatchedFolder: {
             readonly id?: number;
@@ -10895,6 +11105,10 @@ export interface components {
          * @enum {string}
          */
         PolicyEnum: "contest_room" | "open_phase" | "practice" | "uphack";
+        PostComment: {
+            body: string;
+            reply_to?: number | null;
+        };
         PostDetail: {
             slug: string;
             kind?: components["schemas"]["PostKindEnum"];
@@ -11803,6 +12017,24 @@ export interface components {
             text: string;
             is_correct?: boolean;
         };
+        /** @description A comment in the moderation list: the whole text, whoever wrote it. */
+        StaffComment: {
+            readonly id: number;
+            readonly target_type: components["schemas"]["TargetTypeEnum"];
+            readonly target_id: number;
+            /** @description Where the comment lives on the site. */
+            readonly link: string;
+            readonly author: string;
+            readonly body: string;
+            readonly score: number;
+            readonly report_count: number;
+            /** @description Reasons of the reports still open. */
+            readonly reasons: string[];
+            readonly is_hidden: boolean;
+            readonly is_deleted: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         StaffContest: {
             slug: string;
             title: string;
@@ -12686,6 +12918,12 @@ export interface components {
          */
         TargetEnum: "course" | "module" | "section" | "lesson";
         /**
+         * @description * `problem` - Masala
+         *     * `entry` - Blog posti
+         * @enum {string}
+         */
+        TargetTypeEnum: "problem" | "entry";
+        /**
          * @description * `program` - Whole program
          *     * `function` - Function
          *     * `answer` - Answer files
@@ -12789,6 +13027,12 @@ export interface components {
             group?: components["schemas"]["GroupEnum"] | components["schemas"]["BlankEnum"];
             /** @default 0 */
             points: number;
+        };
+        ThreadPage: {
+            count: number;
+            next: number | null;
+            code_open: boolean;
+            comments: components["schemas"]["Comment"][];
         };
         /**
          * @description * `gold` - 1-o'rin
@@ -14651,6 +14895,106 @@ export interface operations {
             };
         };
     };
+    comments_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    comments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedEditComment"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedEditComment"];
+                "multipart/form-data": components["schemas"]["PatchedEditComment"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"];
+                };
+            };
+        };
+    };
+    comments_report_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommunityReport"];
+                "application/x-www-form-urlencoded": components["schemas"]["CommunityReport"];
+                "multipart/form-data": components["schemas"]["CommunityReport"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    comments_vote_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommunityVote"];
+                "application/x-www-form-urlencoded": components["schemas"]["CommunityVote"];
+                "multipart/form-data": components["schemas"]["CommunityVote"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityVoteResult"];
+                };
+            };
+        };
+    };
     contests_list: {
         parameters: {
             query?: {
@@ -15501,6 +15845,56 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CustomRun"];
+                };
+            };
+        };
+    };
+    discussions_problem_retrieve: {
+        parameters: {
+            query?: {
+                before?: number;
+            };
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThreadPage"];
+                };
+            };
+        };
+    };
+    discussions_problem_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostComment"];
+                "application/x-www-form-urlencoded": components["schemas"]["PostComment"];
+                "multipart/form-data": components["schemas"]["PostComment"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"];
                 };
             };
         };
@@ -19385,6 +19779,125 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffArticle"];
+                };
+            };
+        };
+    };
+    staff_community_comments_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffCommentList"];
+                };
+            };
+        };
+    };
+    staff_community_comments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["StaffComment"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffComment"];
+                "multipart/form-data": components["schemas"]["StaffComment"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffComment"];
+                };
+            };
+        };
+    };
+    staff_community_comments_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this comment. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffComment"];
+                };
+            };
+        };
+    };
+    staff_community_comments_hide_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this comment. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffComment"];
+                };
+            };
+        };
+    };
+    staff_community_comments_unhide_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this comment. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffComment"];
                 };
             };
         };

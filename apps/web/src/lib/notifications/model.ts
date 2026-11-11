@@ -105,6 +105,9 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   coach_accepted: { body: true },
   coach_declined: { body: true },
   coach_recommended: { body: true },
+  // Discussion replies and mentions (decision 2026-11-11 ⑧).
+  comment_reply: { body: true },
+  comment_mention: { body: true },
 };
 
 /** The words of a notification in the language it is being read in.
@@ -174,6 +177,13 @@ export function notificationHref(row: Notification): string | null {
     case "classroom":
       // A join request (the teacher's queue) or an accepted one.
       return `/classroom/${id}`;
+    case "comment": {
+      // A comment lives in its thread: the problem's discussion tab.
+      const problem = row.params?.problem;
+      return typeof problem === "string"
+        ? `/problems/${encodeURIComponent(problem)}?tab=discussion#c${id}`
+        : null;
+    }
     default:
       return null;
   }

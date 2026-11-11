@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3207 strings.**
+**3260 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1472,6 +1472,38 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.tab.status` | Urinishlar | Фиристодаҳо |  |
 | `problem.tab.stats` | Statistika | Омор |  |
 | `problem.tab.solvers` | Yechganlar | Ҳалкунандагон |  |
+| `problem.tab.discussion` | Muhokama | Муҳокима |  |
+| `discussion.title` | Muhokama | Муҳокима |  |
+| `discussion.count` | {count} ta izoh | {count} шарҳ |  |
+| `discussion.placeholder` | Savol yoki fikr… Markdown, $formula$ va ```kod``` ishlaydi | Савол ё фикр… Markdown, $формула$ ва ```код``` кор мекунанд |  |
+| `discussion.limits` | {count} / {max} · kod bloki masalani yechmaganlarga yopiq ko'rinadi | {count} / {max} · блоки код аз касоне, ки масъаларо ҳал накардаанд, пинҳон аст |  |
+| `discussion.send` | Yuborish | Фиристодан |  |
+| `discussion.reply` | Javob berish | Ҷавоб додан |  |
+| `discussion.edit` | Tahrirlash | Таҳрир |  |
+| `discussion.delete` | O'chirish | Нест кардан |  |
+| `discussion.deleteConfirm` | Izoh o'chirilsinmi? Unga yozilgan javoblar joyida qoladi. | Шарҳ нест карда шавад? Ҷавобҳо ба он дар ҷояшон мемонанд. |  |
+| `discussion.save` | Saqlash | Нигоҳ доштан |  |
+| `discussion.cancel` | Bekor qilish | Бекор кардан |  |
+| `discussion.deleted` | Izoh o'chirildi | Шарҳ нест карда шуд |  |
+| `discussion.hidden` | Izoh moderatsiya tomonidan yashirildi | Шарҳ аз ҷониби модератсия пинҳон шуд |  |
+| `discussion.edited` | tahrirlangan | таҳриршуда |  |
+| `discussion.solved` | yechgan | ҳал кардааст |  |
+| `discussion.owner` | muallif | муаллиф |  |
+| `discussion.hiddenCode` | Yechim kodi — masalani yechgandan keyin ochiladi | Коди ҳал — пас аз ҳал кардани масъала кушода мешавад |  |
+| `discussion.replyTo` | @{user} ga javob | ҷавоб ба @{user} |  |
+| `discussion.empty` | Hali izoh yo'q. Birinchi savolni siz bering. | Ҳоло шарҳ нест. Саволи аввалро шумо диҳед. |  |
+| `discussion.more` | Oldingi mavzular | Мавзӯъҳои пешина |  |
+| `discussion.closed` | Musobaqa tugaguncha muhokama yopiq | То анҷоми мусобиқа муҳокима баста аст |  |
+| `discussion.closedHint` | Masala arxivga o'tgach muhokamani o'qish va yozish mumkin bo'ladi. | Пас аз ба бойгонӣ гузаштани масъала муҳокимаро хондан ва навиштан мумкин мешавад. |  |
+| `discussion.voteUp` | Foydali | Муфид |  |
+| `discussion.voteDown` | Foydasiz | Бефоида |  |
+| `discussion.report` | Shikoyat | Шикоят |  |
+| `discussion.reportTitle` | Sabab: | Сабаб: |  |
+| `discussion.reported` | Shikoyat yuborildi | Шикоят фиристода шуд |  |
+| `discussion.reason.spam` | Spam yoki reklama | Спам ё реклама |  |
+| `discussion.reason.rude` | Haqorat | Таҳқир |  |
+| `discussion.reason.spoiler` | Yechimni ochib beradi | Ҳалро ошкор мекунад |  |
+| `discussion.reason.other` | Boshqa | Дигар |  |
 | `problem.tab.mine` | Urinishlarim | Кӯшишҳои ман |  |
 | `problem.tab.myStats` | Statistikam | Омори ман |  |
 | `problem.tab.favourites` | Sevimlilar | Дӯстдоштаҳо |  |
@@ -1667,6 +1699,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.updates` | O'zgarishlar | Тағйиротҳо |  |
 | `admin.section.platformRoadmap` | Yo'l xaritasi | Харитаи роҳ |  |
 | `admin.section.roadmapComments` | Reja izohlari | Шарҳҳо ба харита |  |
+| `admin.section.comments` | Izohlar | Шарҳҳо |  |
 | `admin.section.quests` | Questlar | Квестҳо |  |
 | `admin.section.shop` | Do'kon | Дӯкон |  |
 | `admin.section.users` | Foydalanuvchilar | Корбарандагон |  |
@@ -1799,6 +1832,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.flag.published` | Nashr qilingan | Нашр шудааст |  |
 | `admin.label.text.description` | Tavsif | Тавсиф |  |
 | `admin.label.text.comment` | Izoh | Шарҳ |  |
+| `admin.label.text.reports` | Shikoyatlar | Шикоятҳо |  |
 | `admin.label.text.code` | Kod | Код |  |
 | `admin.label.flag.open` | Ochiq | Кушод |  |
 | `admin.label.text.deadline` | Muddat | Муҳлат |  |
@@ -1936,6 +1970,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.prev` | Oldingi sahifa | Саҳифаи пешина |  |
 | `admin.title.next` | Keyingi sahifa | Саҳифаи навбатӣ |  |
 | `admin.title.roadmapComments` | Yo'l xaritasi izohlari | Шарҳҳои нақшаи роҳ |  |
+| `admin.title.comments` | Muhokama izohlari | Шарҳҳои муҳокима |  |
 | `admin.title.tournaments` | Chempionatlar | Чемпионатҳо |  |
 | `admin.title.broadcast` | Umumiy e'lon | Эълони умумӣ |  |
 | `admin.title.page` | Admin | Мудир |  |
@@ -2873,6 +2908,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.coach_declined.body` | Boshqa murabbiyga so'rov yuborishingiz mumkin. | Шумо метавонед ба мураббии дигар дархост фиристед. |  |
 | `notif.msg.coach_recommended.title` | Yangi tavsiya — {problem} | Тавсияи нав — {problem} |  |
 | `notif.msg.coach_recommended.body` | @{user} sizga «{problem}» masalasini tavsiya qildi. | @{user} ба шумо масъалаи «{problem}»-ро тавсия дод. |  |
+| `notif.msg.comment_reply.title` | @{user} javob berdi — {title} | @{user} ҷавоб дод — {title} |  |
+| `notif.msg.comment_reply.body` | @{user} «{title}» dagi izohingizga javob yozdi. | @{user} ба шарҳи шумо дар «{title}» ҷавоб навишт. |  |
+| `notif.msg.comment_mention.title` | @{user} sizni eslatdi — {title} | @{user} шуморо ёдовар шуд — {title} |  |
+| `notif.msg.comment_mention.body` | @{user} «{title}» muhokamasida sizni eslatdi. | @{user} дар муҳокимаи «{title}» шуморо ёдовар шуд. |  |
 | `admin.section.courses` | Kurslar | Курсҳо |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Курсҳое, ки муаллифон ба санҷиш фиристодаанд. Нарх гузоред, нашр кунед ё бо сабаб баргардонед. |  |
 | `admin.courses.queue` | Ko'rik navbati | Навбати санҷиш |  |
@@ -3162,6 +3201,20 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Ҳадди аксар 3 мураббӣ |  |
 | `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Ин пайванд аллакай анҷом ёфтааст |  |
 | `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Масъала ёфт нашуд ё кушода нест |  |
+| `error.comment_short` | Izoh juda qisqa | Шарҳ хеле кӯтоҳ аст |  |
+| `error.comment_long` | Izoh 2000 belgidan oshmasin | Шарҳ на зиёда аз 2000 аломат |  |
+| `error.comment_link_unverified` | Havola qo'yish uchun emailingizni tasdiqlang | Барои гузоштани пайванд e-mail-и худро тасдиқ кунед |  |
+| `error.comment_daily_limit` | Bugungi izohlar chegarasiga yetdingiz — ertaga davom eting | Ба ҳадди шарҳҳои имрӯза расидед — фардо идома диҳед |  |
+| `error.comment_not_found` | Izoh topilmadi | Шарҳ ёфт нашуд |  |
+| `error.comment_not_yours` | Bu sizning izohingiz emas | Ин шарҳи шумо нест |  |
+| `error.comment_removed` | Bu izoh o'chirilgan | Ин шарҳ нест карда шудааст |  |
+| `error.vote_self` | O'zingizga ovoz bera olmaysiz | Ба худ овоз дода наметавонед |  |
+| `error.vote_kind` | Bunga ovoz berib bo'lmaydi | Ба ин овоз додан мумкин нест |  |
+| `error.vote_value` | Ovoz faqat +1, −1 yoki 0 bo'ladi | Овоз танҳо +1, −1 ё 0 мешавад |  |
+| `error.report_reason` | Shikoyat sababini tanlang | Сабаби шикоятро интихоб кунед |  |
+| `error.report_self` | O'zingiz ustingizdan shikoyat qila olmaysiz | Аз худ шикоят карда наметавонед |  |
+| `error.report_already` | Siz allaqachon shikoyat qilgansiz | Шумо аллакай шикоят кардаед |  |
+| `error.discussion_closed` | Bu yerda muhokama yopiq | Дар ин ҷо муҳокима баста аст |  |
 | `error.generation_empty` | Kamida bitta qator yozing | Ақаллан як сатр нависед |  |
 | `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Дар як иҷро ҳадди аксар 100 тест |  |
 | `error.generation_line_long` | Qator 1000 belgidan uzun | Сатр аз 1000 аломат дарозтар аст |  |

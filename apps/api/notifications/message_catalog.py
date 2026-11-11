@@ -36,6 +36,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Coaching request — @{user}",
             "body": "@{user} asked you to be their coach.",
         },
+        "comment_mention": {
+            "title": "@{user} mentioned you — {title}",
+            "body": "@{user} mentioned you in the «{title}» discussion.",
+        },
+        "comment_reply": {
+            "title": "@{user} replied — {title}",
+            "body": "@{user} replied to your comment on «{title}».",
+        },
         "contest_announcement": {
             "title": "“{contest}”: an announcement from the jury",
             "body": "Announcement: {text}",
@@ -155,6 +163,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "coach_requested": {
             "title": "Solicitud de mentoría — @{user}",
             "body": "@{user} le pidió que sea su mentor.",
+        },
+        "comment_mention": {
+            "title": "@{user} te mencionó — {title}",
+            "body": "@{user} te mencionó en el debate de «{title}».",
+        },
+        "comment_reply": {
+            "title": "@{user} respondió — {title}",
+            "body": "@{user} respondió a tu comentario en «{title}».",
         },
         "contest_announcement": {
             "title": "«{contest}»: anuncio del jurado",
@@ -276,6 +292,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Murabbiylik sorawı — @{user}",
             "body": "@{user} sizden murabbiyi bolıwıńızdı soradı.",
         },
+        "comment_mention": {
+            "title": "@{user} sizdi esletti — {title}",
+            "body": "@{user} «{title}» talqılawında sizdi esletti.",
+        },
+        "comment_reply": {
+            "title": "@{user} juwap berdi — {title}",
+            "body": "@{user} «{title}» degi pikirińizge juwap jazdı.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: tóreshiler daǵazası",
             "body": "Daǵaza: {text}",
@@ -395,6 +419,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "coach_requested": {
             "title": "Жаттықтырушылық сұранысы — @{user}",
             "body": "@{user} сізден жаттықтырушысы болуды сұрады.",
+        },
+        "comment_mention": {
+            "title": "@{user} сізді атап өтті — {title}",
+            "body": "@{user} «{title}» талқылауында сізді атап өтті.",
+        },
+        "comment_reply": {
+            "title": "@{user} жауап берді — {title}",
+            "body": "@{user} «{title}» ішіндегі пікіріңізге жауап жазды.",
         },
         "contest_announcement": {
             "title": "«{contest}»: қазылар хабарландыруы",
@@ -516,6 +548,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Машыктыруу өтүнүчү — @{user}",
             "body": "@{user} сизден машыктыруучусу болууну суранды.",
         },
+        "comment_mention": {
+            "title": "@{user} сизди эскерди — {title}",
+            "body": "@{user} «{title}» талкуусунда сизди эскерди.",
+        },
+        "comment_reply": {
+            "title": "@{user} жооп берди — {title}",
+            "body": "@{user} «{title}» ичиндеги пикириңизге жооп жазды.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: калыстардын жарыясы",
             "body": "Жарыя: {text}",
@@ -635,6 +675,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "coach_requested": {
             "title": "Запрос на наставничество — @{user}",
             "body": "@{user} просит вас стать наставником.",
+        },
+        "comment_mention": {
+            "title": "@{user} упомянул(а) вас — {title}",
+            "body": "@{user} упомянул(а) вас в обсуждении «{title}».",
+        },
+        "comment_reply": {
+            "title": "@{user} ответил(а) — {title}",
+            "body": "@{user} ответил(а) на ваш комментарий в «{title}».",
         },
         "contest_announcement": {
             "title": "«{contest}»: объявление жюри",
@@ -756,6 +804,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Дархости мураббигӣ — @{user}",
             "body": "@{user} аз шумо хоҳиш кард, ки мураббияш шавед.",
         },
+        "comment_mention": {
+            "title": "@{user} шуморо ёдовар шуд — {title}",
+            "body": "@{user} дар муҳокимаи «{title}» шуморо ёдовар шуд.",
+        },
+        "comment_reply": {
+            "title": "@{user} ҷавоб дод — {title}",
+            "body": "@{user} ба шарҳи шумо дар «{title}» ҷавоб навишт.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: эълони ҳакамон",
             "body": "Эълон: {text}",
@@ -875,6 +931,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "coach_requested": {
             "title": "Koçluk isteği — @{user}",
             "body": "@{user} koçu olmanızı istedi.",
+        },
+        "comment_mention": {
+            "title": "@{user} sizden bahsetti — {title}",
+            "body": "@{user}, «{title}» tartışmasında sizden bahsetti.",
+        },
+        "comment_reply": {
+            "title": "@{user} yanıt verdi — {title}",
+            "body": "@{user}, «{title}» içindeki yorumunuza yanıt yazdı.",
         },
         "contest_announcement": {
             "title": "“{contest}”: jüri duyurusu",
@@ -996,6 +1060,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Murabbiylik so'rovi — @{user}",
             "body": "@{user} sizdan murabbiy bo'lishingizni so'radi.",
         },
+        "comment_mention": {
+            "title": "@{user} sizni eslatdi — {title}",
+            "body": "@{user} «{title}» muhokamasida sizni eslatdi.",
+        },
+        "comment_reply": {
+            "title": "@{user} javob berdi — {title}",
+            "body": "@{user} «{title}» dagi izohingizga javob yozdi.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: hakamlar e'loni",
             "body": "E'lon: {text}",
@@ -1115,6 +1187,14 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "coach_requested": {
             "title": "教练请求 — @{user}",
             "body": "@{user} 请您担任其教练。",
+        },
+        "comment_mention": {
+            "title": "@{user} 提到了你 — {title}",
+            "body": "@{user} 在《{title}》的讨论中提到了你。",
+        },
+        "comment_reply": {
+            "title": "@{user} 回复了你 — {title}",
+            "body": "@{user} 回复了你在《{title}》中的评论。",
         },
         "contest_announcement": {
             "title": "“{contest}”：评委公告",

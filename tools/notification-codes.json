@@ -22,6 +22,14 @@
   "coach_requested": [
     "user"
   ],
+  "comment_mention": [
+    "title",
+    "user"
+  ],
+  "comment_reply": [
+    "title",
+    "user"
+  ],
   "contest_announcement": [
     "contest",
     "text"

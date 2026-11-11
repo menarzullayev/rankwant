@@ -16,3 +16,15 @@ def solved_ids(user_id: int, problem_ids: Iterable[int]) -> set[int]:
             "problem_id", flat=True
         )
     )
+
+
+def solvers_among(problem_id: int, user_ids: Iterable[int]) -> set[int]:
+    """Which of these users have solved the problem."""
+    ids = list(user_ids)
+    if not ids:
+        return set()
+    return set(
+        UserSolvedProblem.objects.filter(problem_id=problem_id, user_id__in=ids).values_list(
+            "user_id", flat=True
+        )
+    )

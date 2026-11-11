@@ -14,6 +14,7 @@ import { SignInGate } from "@/components/auth/SignInGate";
 import { ContestGate } from "./_panels/ContestGate";
 import { ProblemAttemptsPanel } from "./_panels/ProblemAttemptsPanel";
 import { ProblemDescription } from "./_panels/ProblemDescription";
+import { ProblemDiscussionPanel } from "./_panels/ProblemDiscussionPanel";
 import { ApiError, type ProblemDetail } from "@/lib/api";
 import { getSessionUser, getWithSession } from "@/lib/api.server";
 import { SITE_URL, jsonLd } from "@/lib/site";
@@ -246,6 +247,14 @@ export default async function ProblemPage({ params, searchParams }: Props) {
           problem={problem}
           slug={slug}
           ordering={one(query.ordering) ?? "first"}
+          locale={locale}
+        />
+      )}
+      {tab === "discussion" && (
+        <ProblemDiscussionPanel
+          problem={problem}
+          slug={slug}
+          signedIn={signedIn}
           locale={locale}
         />
       )}
