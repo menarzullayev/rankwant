@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 from django.core.cache import cache
 from django.urls import reverse
@@ -15,7 +17,7 @@ from core.models import User
 pytestmark = pytest.mark.django_db
 
 
-def _row(contest: Contest, username: str, position: int, rank: int, **user: object) -> User:
+def _row(contest: Contest, username: str, position: int, rank: int, **user: Any) -> User:
     person = User.objects.create_user(username=username, password="Parol!12345", **user)
     Standing.objects.create(contest=contest, user=person, position=position, rank=rank)
     return person
@@ -35,10 +37,11 @@ def table(contest: Contest) -> Contest:
     return contest
 
 
-def _standings(contest: Contest, **query: str) -> dict:
+def _standings(contest: Contest, **query: str) -> dict[str, Any]:
     response = APIClient().get(reverse("contest-standings", args=[contest.slug]), query)
     assert response.status_code == 200, response.content
-    return response.json()
+    body: dict[str, Any] = response.json()
+    return body
 
 
 def test_region_keeps_its_rows_in_order_with_their_own_places(table: Contest) -> None:
