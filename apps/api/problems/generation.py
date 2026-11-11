@@ -217,7 +217,9 @@ def apply_result(result: dict[str, Any]) -> GenerationRun | None:
     if len(parts) != 4 or parts[0] != ROUTE or not parts[1].isdigit() or not parts[2].isdigit():
         return None
     run = (
-        GenerationRun.objects.select_for_update()
+        # Only the run row: `started_by` is nullable, and Postgres refuses
+        # FOR UPDATE on the outer-joined side.
+        GenerationRun.objects.select_for_update(of=("self",))
         .select_related("problem", "started_by")
         .filter(pk=int(parts[1]))
         .first()
