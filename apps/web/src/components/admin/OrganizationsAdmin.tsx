@@ -61,7 +61,7 @@ export function OrganizationsAdmin() {
       idField="slug"
       columns={COLUMNS}
       fields={FIELDS}
-      ordering="name"
+      ordering="name,pk"
       toPayload={(values) => ({ ...values, kind: values.kind || "center" })}
     />
   );

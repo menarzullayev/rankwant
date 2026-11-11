@@ -133,4 +133,4 @@ class StaffOrganizationViewSet(StaffViewSet):
     lookup_field = "slug"
     search_fields: ClassVar[list[str]] = ["slug", "name"]
     ordering_fields: ClassVar[list[str]] = ["pk", "name"]
-    ordering: ClassVar[list[str]] = ["name"]
+    ordering: ClassVar[list[str]] = ["name", "pk"]
