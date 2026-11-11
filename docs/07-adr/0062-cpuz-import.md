@@ -98,6 +98,12 @@ half of ADR-0005 stands. The "own content only" half changes for these articles.
   The builder gives every heading (Uzbek and English) the original's id, moves a
   `<div id>` anchor onto the heading it marks, and points a link to a paragraph anchor at
   its section. The Uzbek alphabet converter leaves `{#id}` as written.
+- **Olympiad archive.** It lives in its own `olympiads` app, not in `problems`: the
+  statements are not judged, and the archive's gates (tests, readiness) would refuse them.
+  All of it — seasons, events, statements, results, participants — is imported from a cp.uz
+  clone on the host (`manage.py import_olympiads --source <content> --commit <sha>`); the
+  event files carry results by name, and the APIO and IZhO statements record no licence.
+  A removal request is `removed_at`: the row is hidden and a later import keeps it hidden.
 - **Practice section.** The text's own practice section is not drawn on the page: the same
   links are listed under "on other sites", next to the problems on this site.
 - **Personal data stays out of the repository.** The repository is public and its history

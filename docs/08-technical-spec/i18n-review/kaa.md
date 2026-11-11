@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3403 strings.**
+**3442 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2448,6 +2448,45 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `algorithms.source.changedMarkup` | RankWant faqat belgilashni o'zgartirgan: havolalar, sarlavha belgilari va formula chegaralari shu sayt uchun moslangan. | RankWant tek belgilewdi ózgertti: siltemeler, sarlawha belgileri hám formula shegaraları usı saytqa beyimlestirildi. |  |
 | `algorithms.source.license` | Litsenziya: | Licenziya: |  |
 | `algorithms.notFound` | Algoritm topilmadi | Algoritm tabılmadı |  |
+| `olympiads.title` | Olimpiada arxivi | Olimpiadalar arxivi |  |
+| `olympiads.intro` | Mavsumlar bo'yicha olimpiadalar: maktab bosqichidan IOI, EGOI, APIO va boshqalargacha — masala shartlari va natijalar. | Mawsımlar boyınsha olimpiadalar: mektep basqıshınan IOI, EGOI, APIO hám basqalarǵa shekem — máseleler shártleri hám nátiyjeler. |  |
+| `olympiads.seasons` | Mavsumlar | Mawsımlar |  |
+| `olympiads.otherEvents` | Boshqa tadbirlar | Basqa ilajlar |  |
+| `olympiads.source` | Manba: cp.uz olimpiada arxivi. | Derek: cp.uz olimpiada arxivi. |  |
+| `olympiads.kind.international` | Xalqaro | Xalıqaralıq |  |
+| `olympiads.kind.selection` | Saralash | Saralaw |  |
+| `olympiads.kind.stage` | Bosqich | Basqısh |  |
+| `olympiads.kind.training` | Tayyorgarlik | Tayarlıq |  |
+| `olympiads.kind.unofficial` | Norasmiy | Rásmiy emes |  |
+| `olympiads.status.completed` | Yakunlangan | Juwmaqlanǵan |  |
+| `olympiads.status.scheduled` | Rejalashtirilgan | Rejelestirilgen |  |
+| `olympiads.status.tba` | Sana aniqlanmagan | Sánesi anıqlanbaǵan |  |
+| `olympiads.medal.gold` | Oltin | Altın |  |
+| `olympiads.medal.silver` | Kumush | Gúmis |  |
+| `olympiads.medal.bronze` | Bronza | Bronza |  |
+| `olympiads.medal.honourable` | Faxriy yorliq | Húrmet jarlıǵı |  |
+| `olympiads.taskCount` | {count} ta masala | Máseleler: {count} |  |
+| `olympiads.resultCount` | {count} ta natija | Nátiyjeler: {count} |  |
+| `olympiads.col.rank` | O'rin | Orın |  |
+| `olympiads.col.name` | Ishtirokchi | Qatnasıwshı |  |
+| `olympiads.col.score` | Ball | Ball |  |
+| `olympiads.col.medal` | Mukofot | Medal túri |  |
+| `olympiads.when` | Qachon | Qashan |  |
+| `olympiads.where` | Qayerda | Qay jerde |  |
+| `olympiads.organizer` | Tashkilotchi | Shólkemlestiriwshi |  |
+| `olympiads.platform` | Platforma | Platforma |  |
+| `olympiads.eligibility` | Kim qatnashadi | Kim qatnasadı |  |
+| `olympiads.results` | Natijalar | Nátiyjeler |  |
+| `olympiads.resources` | Rasmiy manbalar | Rásmiy derekler |  |
+| `olympiads.breadcrumbs` | Navigatsiya yo'li | Navigaciya jolı |  |
+| `olympiads.notFound` | Tadbir topilmadi | Ilaj tabılmadı |  |
+| `olympiads.kepNote` | Bu shart KEP.uz saytidan olingan; KEP bilan hamkorlik yoki litsenziya yo'q, so'rov bo'lsa olib tashlanadi. Manba: | Bul shárt KEP.uz saytınan alınǵan; KEP penen sheriklik yamasa licenziya joq, soraw bolsa alıp taslanadı. Derek: |  |
+| `olympiads.limits` | Vaqt: {ms} ms · Xotira: {mb} MB | Waqıt: {ms} ms · Yad: {mb} MB |  |
+| `olympiads.maxScore` | {score} ball | {score} ball |  |
+| `olympiads.solve` | Yechish | Sheshiw |  |
+| `olympiads.solveHere` | Shu saytda yechish: {title} | Usı saytta sheshiw: {title} |  |
+| `olympiads.pdf` | Asl shart (PDF) | Túpnusqa shárt (PDF) |  |
+| `olympiads.personNote` | Ism va mamlakat rasmiy natijalardan olingan. O'chirishni so'rash uchun biz bilan bog'laning. | Atı hám mámleketi rásmiy nátiyjelerden alınǵan. Óshiriwdi soraw ushın biz benen baylanısıń. |  |
 | `algorithms.glossary.title` | Atamalar lug'ati | Terminler sózligi |  |
 | `algorithms.glossary.intro` | Algoritmlar kutubxonasidagi atamalar: o'zbekcha nomi, inglizchasi va qisqa izohi. | Algoritmler kitapxanasındaǵı terminler: ózbekshe atı, inglisshesi hám qısqa túsindirmesi. |  |
 | `algorithms.glossary.letters` | Harflar | Háripler |  |

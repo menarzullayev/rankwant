@@ -43,6 +43,8 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   duels: "public",
   hackathons: "public",
   leaderboard: "public",
+  // The olympiad archive (ADR-0062 § 2.6): statements and results are public.
+  olympiads: "public",
   learn: "public",
   "platform-roadmap": "public",
   privacy: "public",
