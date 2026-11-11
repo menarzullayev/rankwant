@@ -20,6 +20,7 @@ urlpatterns = [
     path("", include("classroom.urls")),
     path("", include("coaching.urls")),
     path("", include("community.urls")),
+    path("", include("olympiads.urls")),
     path("", include("quizzes.urls")),
     path("", include("courses.urls")),
     path("", include("billing.urls")),

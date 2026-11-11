@@ -57,6 +57,12 @@ import type {
   Roadmap,
 } from "./content";
 import type {
+  OlympiadEvent,
+  OlympiadParticipant,
+  OlympiadSeason,
+  OlympiadTask,
+} from "./olympiads";
+import type {
   DailyStats,
   PlatformStats,
   Presence,
@@ -242,6 +248,13 @@ export const api = {
   algorithmLibrary: (locale: string) =>
     get<LibraryEntry[]>(`/articles/library/?lang=${locale}`, 300),
   algorithmGlossary: () => get<GlossaryEntry[]>("/articles/glossary/", 3600),
+  // The olympiad archive (ADR-0062 § 2.6); it changes only on an import.
+  olympiadSeasons: () => get<OlympiadSeason[]>("/olympiads/", 600),
+  olympiadEvent: (slug: string) => get<OlympiadEvent>(`/olympiads/events/${slug}/`, 600),
+  olympiadTask: (event: string, task: string) =>
+    get<OlympiadTask>(`/olympiads/events/${event}/tasks/${task}/`, 600),
+  olympiadParticipant: (slug: string) =>
+    get<OlympiadParticipant>(`/olympiads/participants/${slug}/`, 600),
   algorithm: (slug: string, locale: string) =>
     get<ArticleDetail>(`/articles/${slug}/?lang=${locale}`, 300),
   ratingHistory: (username: string) =>

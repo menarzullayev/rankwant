@@ -5551,6 +5551,96 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmailUnsubscribeResult'
           description: ''
+  /api/v1/olympiads/:
+    get:
+      operationId: olympiads_list
+      description: Every season with its routes and events, newest first.
+      tags:
+      - olympiads
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Season'
+          description: ''
+  /api/v1/olympiads/events/{slug}/:
+    get:
+      operationId: olympiads_events_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - olympiads
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDetail'
+          description: ''
+  /api/v1/olympiads/events/{slug}/tasks/{task}/:
+    get:
+      operationId: olympiads_events_tasks_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: task
+        schema:
+          type: string
+        required: true
+      tags:
+      - olympiads
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetail'
+          description: ''
+  /api/v1/olympiads/participants/{slug}/:
+    get:
+      operationId: olympiads_participants_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - olympiads
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+          description: ''
   /api/v1/platform-roadmap/:
     get:
       operationId: platform_roadmap_list
@@ -19405,6 +19495,144 @@ components:
       required:
       - body
       - title
+    EventCard:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        code:
+          type: string
+          maxLength: 20
+        title:
+          type: string
+          maxLength: 300
+        short_title:
+          type: string
+          maxLength: 120
+        summary:
+          type: string
+        kind:
+          type: string
+          maxLength: 40
+        status:
+          type: string
+          maxLength: 20
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        date_label:
+          type: string
+          maxLength: 120
+        location:
+          type: string
+          maxLength: 200
+        is_featured:
+          type: boolean
+        routes: {}
+        task_count:
+          type: integer
+          readOnly: true
+          default: 0
+        result_count:
+          type: integer
+          readOnly: true
+          default: 0
+      required:
+      - result_count
+      - slug
+      - task_count
+      - title
+    EventDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        code:
+          type: string
+          maxLength: 20
+        title:
+          type: string
+          maxLength: 300
+        short_title:
+          type: string
+          maxLength: 120
+        summary:
+          type: string
+        kind:
+          type: string
+          maxLength: 40
+        status:
+          type: string
+          maxLength: 20
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        date_label:
+          type: string
+          maxLength: 120
+        location:
+          type: string
+          maxLength: 200
+        is_featured:
+          type: boolean
+        routes: {}
+        task_count:
+          type: integer
+          readOnly: true
+          default: 0
+        result_count:
+          type: integer
+          readOnly: true
+          default: 0
+        season:
+          type: string
+        description:
+          type: string
+        mode:
+          type: string
+          maxLength: 20
+        platform:
+          type: string
+          maxLength: 120
+        organizer:
+          type: string
+          maxLength: 300
+        eligibility:
+          type: string
+        resources: {}
+        sets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemSet'
+          readOnly: true
+        results:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+      required:
+      - result_count
+      - results
+      - season
+      - sets
+      - slug
+      - task_count
+      - title
     ExternalIn:
       type: object
       properties:
@@ -22974,6 +23202,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserPublic'
+    Participant:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        full_name:
+          type: string
+          maxLength: 200
+        country_code:
+          type: string
+          maxLength: 3
+        results:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+      required:
+      - full_name
+      - results
+      - slug
     PasswordChange:
       type: object
       properties:
@@ -25578,6 +25829,27 @@ components:
         * `translation` - Tarjima xato
         * `duplicate` - Takroriy masala
         * `other` - Boshqa
+    ProblemSet:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 60
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskRow'
+          readOnly: true
+      required:
+      - slug
+      - tasks
+      - title
     ProblemTranslation:
       type: object
       description: One other language of a problem's text (ADR-0058); the locale is
@@ -26790,6 +27062,36 @@ components:
       - top
       - total
       - type
+    Season:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 40
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        routes: {}
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventCard'
+          readOnly: true
+      required:
+      - events
+      - slug
+      - title
     SectionEnum:
       enum:
       - core
@@ -29662,6 +29964,81 @@ components:
       description: |-
         * `problem` - Masala
         * `entry` - Blog posti
+    TaskDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        code:
+          type: string
+          maxLength: 10
+        title:
+          type: string
+          maxLength: 300
+        original_title:
+          type: string
+          maxLength: 300
+        statement:
+          type: string
+          description: Markdown + LaTeX
+        translation_status:
+          type: string
+          maxLength: 40
+        problem_type:
+          type: string
+          maxLength: 40
+        time_limit_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        memory_limit_mb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        max_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        tags: {}
+        links: {}
+        statement_pdf:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
+        from_kep:
+          type: boolean
+        event:
+          type: string
+        event_title:
+          type: string
+        set_title:
+          type: string
+        practice_here:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: Our own copy of the problem, matched by its source (KEP, Codeforces,
+            …).
+          readOnly: true
+      required:
+      - event
+      - event_title
+      - practice_here
+      - set_title
+      - slug
+      - title
     TaskKindEnum:
       enum:
       - program
@@ -29676,6 +30053,30 @@ components:
         * `answer` - Answer files
         * `two_pass` - Two passes
         * `sql` - SQL query
+    TaskRow:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        code:
+          type: string
+          maxLength: 10
+        title:
+          type: string
+          maxLength: 300
+        original_title:
+          type: string
+          maxLength: 300
+        problem_type:
+          type: string
+          maxLength: 40
+        from_kep:
+          type: boolean
+      required:
+      - slug
+      - title
     Team:
       type: object
       properties:

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3403 strings.**
+**3442 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2448,6 +2448,45 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `algorithms.source.changedMarkup` | RankWant faqat belgilashni o'zgartirgan: havolalar, sarlavha belgilari va formula chegaralari shu sayt uchun moslangan. | RankWant белгилөөнү гана өзгөрттү: шилтемелер, аталыш белгилери жана формула чектегичтери ушул сайтка ылайыкталды. |  |
 | `algorithms.source.license` | Litsenziya: | Лицензия: |  |
 | `algorithms.notFound` | Algoritm topilmadi | Алгоритм табылган жок |  |
+| `olympiads.title` | Olimpiada arxivi | Олимпиада архиви |  |
+| `olympiads.intro` | Mavsumlar bo'yicha olimpiadalar: maktab bosqichidan IOI, EGOI, APIO va boshqalargacha — masala shartlari va natijalar. | Мезгилдер боюнча олимпиадалар: мектеп баскычынан IOI, EGOI, APIO жана башкаларга чейин — маселелердин шарттары жана жыйынтыктар. |  |
+| `olympiads.seasons` | Mavsumlar | Мезгилдер |  |
+| `olympiads.otherEvents` | Boshqa tadbirlar | Башка иш-чаралар |  |
+| `olympiads.source` | Manba: cp.uz olimpiada arxivi. | Булак: cp.uz олимпиада архиви. |  |
+| `olympiads.kind.international` | Xalqaro | Эл аралык |  |
+| `olympiads.kind.selection` | Saralash | Тандоо |  |
+| `olympiads.kind.stage` | Bosqich | Баскыч |  |
+| `olympiads.kind.training` | Tayyorgarlik | Даярдык |  |
+| `olympiads.kind.unofficial` | Norasmiy | Расмий эмес |  |
+| `olympiads.status.completed` | Yakunlangan | Аяктаган |  |
+| `olympiads.status.scheduled` | Rejalashtirilgan | Пландалган |  |
+| `olympiads.status.tba` | Sana aniqlanmagan | Күнү аныктала элек |  |
+| `olympiads.medal.gold` | Oltin | Алтын |  |
+| `olympiads.medal.silver` | Kumush | Күмүш |  |
+| `olympiads.medal.bronze` | Bronza | Коло |  |
+| `olympiads.medal.honourable` | Faxriy yorliq | Ардак грамота |  |
+| `olympiads.taskCount` | {count} ta masala | Маселелер: {count} |  |
+| `olympiads.resultCount` | {count} ta natija | Жыйынтыктар: {count} |  |
+| `olympiads.col.rank` | O'rin | Орун |  |
+| `olympiads.col.name` | Ishtirokchi | Катышуучу |  |
+| `olympiads.col.score` | Ball | Упай |  |
+| `olympiads.col.medal` | Mukofot | Медаль |  |
+| `olympiads.when` | Qachon | Качан |  |
+| `olympiads.where` | Qayerda | Кайда |  |
+| `olympiads.organizer` | Tashkilotchi | Уюштуруучу |  |
+| `olympiads.platform` | Platforma | Платформа |  |
+| `olympiads.eligibility` | Kim qatnashadi | Ким катышат |  |
+| `olympiads.results` | Natijalar | Жыйынтыктар |  |
+| `olympiads.resources` | Rasmiy manbalar | Расмий булактар |  |
+| `olympiads.breadcrumbs` | Navigatsiya yo'li | Навигация жолу |  |
+| `olympiads.notFound` | Tadbir topilmadi | Иш-чара табылган жок |  |
+| `olympiads.kepNote` | Bu shart KEP.uz saytidan olingan; KEP bilan hamkorlik yoki litsenziya yo'q, so'rov bo'lsa olib tashlanadi. Manba: | Бул шарт KEP.uz сайтынан алынган; KEP менен өнөктөштүк же лицензия жок, суроо болсо алынып салынат. Булак: |  |
+| `olympiads.limits` | Vaqt: {ms} ms · Xotira: {mb} MB | Убакыт: {ms} мс · Эс тутум: {mb} МБ |  |
+| `olympiads.maxScore` | {score} ball | {score} упай |  |
+| `olympiads.solve` | Yechish | Чечүү |  |
+| `olympiads.solveHere` | Shu saytda yechish: {title} | Ушул сайтта чечүү: {title} |  |
+| `olympiads.pdf` | Asl shart (PDF) | Түп нуска шарт (PDF) |  |
+| `olympiads.personNote` | Ism va mamlakat rasmiy natijalardan olingan. O'chirishni so'rash uchun biz bilan bog'laning. | Аты жана өлкөсү расмий жыйынтыктардан алынган. Өчүрүүнү суроо үчүн биз менен байланышыңыз. |  |
 | `algorithms.glossary.title` | Atamalar lug'ati | Терминдер сөздүгү |  |
 | `algorithms.glossary.intro` | Algoritmlar kutubxonasidagi atamalar: o'zbekcha nomi, inglizchasi va qisqa izohi. | Алгоритмдер китепканасындагы терминдер: өзбекче аталышы, англисчеси жана кыска түшүндүрмөсү. |  |
 | `algorithms.glossary.letters` | Harflar | Тамгалар |  |

@@ -5393,6 +5393,46 @@ def neg_decisions_algorithm_terms_unlinked() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_olympiad_resurrects_person() -> tuple[bool, str]:
+    """A re-import would bring a removed participant back."""
+    return _decision_broken(
+        "apps/api/olympiads/importer.py",
+        "report.kept_removed.append(f\"participant:{doc['slug']}\")",
+        "pass",
+        "qayta importda qaytib keladi",
+    )
+
+
+def neg_decisions_olympiad_shows_removed_person() -> tuple[bool, str]:
+    """The API would show a removed participant."""
+    return _decision_broken(
+        "apps/api/olympiads/views.py",
+        "Participant.objects.filter(slug=slug, removed_at__isnull=True)",
+        "Participant.objects.filter(slug=slug)",
+        "o'chirilgan ishtirokchi API'da ko'rinadi",
+    )
+
+
+def neg_decisions_olympiad_person_indexed() -> tuple[bool, str]:
+    """A pupil's page would be offered to search engines."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/olympiads/participants/[slug]/page.tsx",
+        "robots: { index: false, follow: false }",
+        "robots: { index: true, follow: true }",
+        "qidiruvga berilgan",
+    )
+
+
+def neg_decisions_olympiad_kep_note_dropped() -> tuple[bool, str]:
+    """A KEP statement would lose its source and "no partnership" note."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/olympiads/[event]/[task]/page.tsx",
+        'data-kep-note=""',
+        'data-note=""',
+        "hamkorlik yo'q",
+    )
+
+
 def neg_cpuz_broken_anchor() -> tuple[bool, str]:
     """A link to a section that no heading carries."""
     return _cpuz_broken(
@@ -9349,6 +9389,10 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/olympiads/importer.py",
+    "apps/api/olympiads/views.py",
+    "apps/web/src/app/(site)/olympiads/participants/[slug]/page.tsx",
+    "apps/web/src/app/(site)/olympiads/[event]/[task]/page.tsx",
     "apps/web/src/app/(site)/algorithms/glossary/page.tsx",
     "apps/web/src/app/(site)/algorithms/[category]/[slug]/page.tsx",
     "apps/web/src/features/algorithms/components/SourceNote.tsx",
@@ -13806,6 +13850,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("alifbo langarni o'zgartirsa tutilsin", neg_decisions_alphabet_converts_anchors),
             ("/learn ikkinchi manzil bo'lsa tutilsin", neg_decisions_learn_keeps_library_article),
             ("lug'at havolalari tushsa tutilsin", neg_decisions_algorithm_terms_unlinked),
+            ("olib tashlangan ishtirokchi qaytsa tutilsin", neg_decisions_olympiad_resurrects_person),
+            ("olib tashlangan ishtirokchi ko'rinsa tutilsin", neg_decisions_olympiad_shows_removed_person),
+            ("o'quvchi sahifasi indekslansa tutilsin", neg_decisions_olympiad_person_indexed),
+            ("KEP izohi tushsa tutilsin", neg_decisions_olympiad_kep_note_dropped),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),
