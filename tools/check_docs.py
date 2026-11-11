@@ -87,6 +87,10 @@ def markdown_files() -> list[Path]:
         # o'sha namunalarni haqiqiy havola deb o'qib, tekshiruvni doim qizil
         # qiladi — bir marta aynan shunday bo'ldi.
         and rel_parts(p)[0] != ".workbuddy-ai"
+        # `apps/api/content/cpuz/` — the vendored cp.uz articles (ADR-0062).
+        # They are content, not documentation: their links are site routes
+        # (`/algorithms/…`) and their own gate is `tools/check_cpuz.py`.
+        and rel_parts(p)[:4] != ("apps", "api", "content", "cpuz")
     )
 
 

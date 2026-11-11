@@ -47,10 +47,56 @@ class Article(TimeStampedModel):
     published_at = models.DateTimeField(null=True, blank=True)
     reading_minutes = models.PositiveIntegerField(default=0)
 
+    # ── Imported articles (ADR-0062: the cp.uz algorithms library) ──────
+    class Level(models.TextChoices):
+        BEGINNER = "beginner", "Boshlang'ich"
+        INTERMEDIATE = "intermediate", "O'rta"
+        ADVANCED = "advanced", "Yuqori"
+
+    class Review(models.TextChoices):
+        #: Imported, the agent review has not finished: never published.
+        PENDING = "pending", "Ko'rik kutilmoqda"
+        #: Reviewed technically and linguistically; fixes are in the log.
+        REVIEWED = "reviewed", "Ko'rikdan o'tgan"
+        #: The review could not fix it: stays a draft (ADR-0062 § 2.3).
+        DRAFT = "draft", "Qoralama"
+
+    #: The library's section, as in the address `/algorithms/<category>/<slug>`.
+    category = models.SlugField(max_length=40, blank=True, db_index=True)
+    subcategory = models.CharField(max_length=120, blank=True)
+    level = models.CharField(max_length=12, choices=Level.choices, blank=True)
+    #: Position within the library (the source's own order).
+    order = models.PositiveIntegerField(default=0)
+    #: The short card text: the idea, the complexity, where it is used.
+    idea = models.TextField(blank=True)
+    complexity = models.CharField(max_length=300, blank=True)
+    uses = models.TextField(blank=True)
+    #: The source's id (`algebra--binary-exp`); blank on our own articles.
+    source_ref = models.CharField(max_length=120, blank=True)
+    #: The original the text is adapted from — shown as the attribution.
+    source_title = models.CharField(max_length=200, blank=True)
+    source_url = models.URLField(max_length=300, blank=True)
+    source_commit = models.CharField(max_length=40, blank=True)
+    source_license = models.CharField(max_length=32, blank=True)
+    #: The cp.uz commit the text came from, and the hash of the text as it
+    #: was imported. A body whose hash differs was edited here, and a later
+    #: import leaves it alone (ADR-0062 § 2.1).
+    import_commit = models.CharField(max_length=40, blank=True)
+    import_sha256 = models.CharField(max_length=64, blank=True)
+    translator = models.CharField(max_length=120, blank=True)
+    review_state = models.CharField(max_length=12, choices=Review.choices, blank=True)
+
     class Meta:
         ordering: ClassVar = ["difficulty", "slug"]
         indexes: ClassVar = [
             models.Index(fields=["is_published", "difficulty"], name="article_browse")
+        ]
+        constraints: ClassVar = [
+            models.UniqueConstraint(
+                fields=["source_ref"],
+                condition=~models.Q(source_ref=""),
+                name="uniq_article_source_ref",
+            )
         ]
 
     def __str__(self) -> str:
@@ -63,6 +109,84 @@ class Article(TimeStampedModel):
             # ~200 so'z/daqiqa — taxminiy, lekin bo'shdan yaxshiroq
             self.reading_minutes = max(1, len(self.body.split()) // 200)
         super().save(*args, **kwargs)  # type: ignore[arg-type]
+
+
+class ArticleTranslation(models.Model):
+    """An article in another language (ADR-0062 § 2.4).
+
+    For the imported library this is the English cp-algorithms original the
+    Uzbek text was translated from, under the same licence. A locale without
+    a row reads the article in its own language.
+    """
+
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="translations")
+    locale = models.CharField(max_length=8)
+    title = models.CharField(max_length=200)
+    body = models.TextField()
+    #: Hash of the body as imported; a different body was edited here.
+    import_sha256 = models.CharField(max_length=64, blank=True)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["article", "locale"], name="uniq_article_translation")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.article_id}:{self.locale}"
+
+
+class ArticleExternalLink(models.Model):
+    """A practice problem on another judge (ADR-0062 § 2.5).
+
+    `key` is the judge-independent id (`content.exercise_keys`): a problem
+    imported here later from the same source can be matched by it.
+    """
+
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="external_links")
+    platform = models.CharField(max_length=80, blank=True)
+    title = models.CharField(max_length=300)
+    url = models.URLField(max_length=500)
+    key = models.CharField(max_length=200, db_index=True)
+    note = models.CharField(max_length=300, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering: ClassVar = ["order"]
+
+    def __str__(self) -> str:
+        return self.key
+
+
+class ArticleReview(models.Model):
+    """One entry of an imported article's review log (ADR-0062 § 2.3).
+
+    The licence asks to say what we changed; the log says it change by change.
+    """
+
+    class Stage(models.TextChoices):
+        IMPORT = "import", "Import"
+        MECHANICAL = "mechanical", "Kod va formulalar"
+        TECHNICAL = "technical", "Texnik"
+        LANGUAGE = "language", "Til"
+
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="reviews")
+    at = models.DateTimeField()
+    actor = models.CharField(max_length=120)
+    stage = models.CharField(max_length=12, choices=Stage.choices)
+    decision = models.CharField(max_length=16)
+    notes = models.TextField(blank=True)
+    content_sha256 = models.CharField(max_length=64, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["at", "pk"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(
+                fields=["article", "at", "stage", "actor"], name="uniq_article_review_entry"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.article_id} {self.stage} {self.decision}"
 
 
 class ArticleProblemLink(models.Model):

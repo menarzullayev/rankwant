@@ -86,3 +86,15 @@ half of ADR-0005 stands. The "own content only" half changes for these articles.
 5. Glossary page and tooltips.
 6. Olympiad: seasons and events, statements, participant profiles.
 7. Publish everything together.
+
+## 6. Notes from the build
+
+- **Images** are part of the vendored snapshot and are served as the web's static files
+  (`apps/web/public/algorithms-media/`), not uploaded to S3: 1.8 MB, versioned with the text.
+- **Markup.** Our renderer draws no raw HTML on purpose, so the snapshot builder turns mkdocs
+  admonitions, tabs, fence attributes and the `<img>`, `<figure>`, `<center>` and `<a>` tags
+  into Markdown. Prose, code and formulas are left as they are.
+- **Personal data stays out of the repository.** The repository is public and its history
+  is permanent. The participant profiles and the KEP statements are imported into the
+  database from a cp-uz clone on the host, so a removal request can still be honoured
+  (owner, 2026-11-11).

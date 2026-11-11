@@ -3274,6 +3274,33 @@ def karma_is_all_time_votes() -> str | None:
     return None
 
 
+def cpuz_library_is_pinned_and_checked() -> str | None:
+    """2026-11-11 (HITL; `docs/decisions/2026-11-11-cpuz-import.md`, ADR-0062).
+
+    cp.uz kutubxonasi qadalgan commitdan import qilinadi: snapshot cp.uz va
+    cp-algorithms commitlarini yozadi; kod va formulalar asl bilan CI'da
+    solishtiriladi (`tools/check_cpuz.py`); import biz tahrirlagan maqola
+    ustidan yozmaydi va ko'rikdan o'tmaganini nashr qilmaydi; eski
+    `ikkilik-qidiruv` o'chirilgan va demo seed uni qaytarmaydi.
+    """
+    snapshot = read("apps/api/content/cpuz/articles.json")
+    for key in ("cpuz_commit", "upstream_commit"):
+        if not re.search(rf'"{key}": "[0-9a-f]{{40}}"', snapshot):
+            return f"cpuz/articles.json: `{key}` to'liq commitga qadalmagan"
+    if "run: python3 tools/check_cpuz.py" not in read(".github/workflows/ci.yml"):
+        return "ci.yml: cp.uz kod va formula tekshiruvi CI'da yo'q"
+    service = read("apps/api/content/cpuz.py")
+    if "sha256(article.body) != article.import_sha256" not in service:
+        return "content/cpuz.py: import biz tahrirlagan maqola ustidan yozadi"
+    if "if article.review_state == Article.Review.REVIEWED:" not in service:
+        return "content/cpuz.py: ko'rikdan o'tmagan maqola ham nashr qilinadi"
+    if "ikkilik-qidiruv" in read("apps/api/core/management/commands/seed_demo.py"):
+        return "seed_demo.py: o'chirilgan `ikkilik-qidiruv` maqolasini qaytaradi"
+    if not (ROOT / "apps/api/content/migrations/0005_drop_ikkilik_qidiruv.py").exists():
+        return "content/migrations: `ikkilik-qidiruv` ni o'chiradigan migratsiya yo'q"
+    return None
+
+
 def streak_page_and_region_map() -> str | None:
     """2026-11-11 (HITL; `docs/decisions/2026-11-11-community-and-contests.md` ④).
 
@@ -5722,6 +5749,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("karma: abadiy ovoz yig'indisi, 30 kunlik faol mualliflar", karma_is_all_time_votes),
     ("seriya bosqichlari, hudud xaritasi, kontentim anonim", streak_page_and_region_map),
     ("masala sahifasi: haqiqiy taymer va fokus rejimi", problem_page_tools_are_real),
+    ("cp.uz kutubxonasi qadalgan va tekshirilgan", cpuz_library_is_pinned_and_checked),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

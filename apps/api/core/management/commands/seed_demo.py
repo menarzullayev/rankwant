@@ -178,22 +178,6 @@ ROADMAP_STEPS = [
 ]
 
 
-ALGO_BODY = """## G'oya
-
-Oraliqni har qadamda ikkiga bo'lamiz.
-
-```cpp
-int lo = 0, hi = n - 1;
-while (lo <= hi) {
-  int mid = (lo + hi) / 2;
-  if (a[mid] == x) return mid;
-  if (a[mid] < x) lo = mid + 1; else hi = mid - 1;
-}
-```
-
-Murakkablik: $O(\\log n)$.
-"""
-
 #: (matn, [(variant, to'g'rimi), ...], tushuntirish)
 QUESTIONS = [
     (
@@ -377,18 +361,9 @@ class Command(BaseCommand):
             article.topics.set([topics[s] for s in topic_slugs])
             articles[slug] = article
 
-        algo, _ = Article.objects.update_or_create(
-            slug="ikkilik-qidiruv",
-            defaults={
-                "title": "Ikkilik qidiruv",
-                "kind": Article.Kind.ALGORITHM,
-                "summary": "Saralangan massivda O(log n) qidiruv.",
-                "body": ALGO_BODY,
-                "difficulty": 1000,
-                "is_published": True,
-            },
-        )
-        algo.topics.set([topics["implementation"]])
+        # No demo algorithm article: the algorithms library is the cp.uz
+        # import (ADR-0062), and our old binary search article was deleted
+        # on the owner's decision — a seed must not bring it back.
 
         roadmap, _ = Roadmap.objects.update_or_create(
             slug="boshlangich",

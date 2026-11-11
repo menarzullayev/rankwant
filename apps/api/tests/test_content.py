@@ -290,7 +290,8 @@ class TestSeedDemo:
         assert Tournament.objects.get(slug="demo-mavsum").stages.count() == 2
         assert Hackathon.objects.get(slug="demo-hakaton").accepts_submissions
         assert Duel.objects.filter(status=Duel.Status.OPEN).count() == 1  # idempotent
-        assert Article.objects.filter(kind=Article.Kind.ALGORITHM).count() == 1
+        # The algorithms library comes from the cp.uz import (ADR-0062), not the seed.
+        assert not Article.objects.filter(kind=Article.Kind.ALGORITHM).exists()
 
     def test_a_plus_b_is_open_to_every_active_language(self) -> None:
         """A memory override for one language must not shut the others out.
