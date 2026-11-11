@@ -759,7 +759,7 @@ function EditorTools({
   async function upload(file: File | undefined) {
     if (!file) return;
     if (file.size > MAX_SOURCE_BYTES) {
-      onError(`Fayl ${MAX_SOURCE_BYTES / 1024} KB dan oshmasligi kerak`);
+      onError(fill(t(locale, "submit.fileTooLarge"), { kb: MAX_SOURCE_BYTES / 1024 }));
       return;
     }
     onError(null);

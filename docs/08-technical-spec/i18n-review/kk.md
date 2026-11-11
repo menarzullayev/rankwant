@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3349 strings.**
+**3360 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1616,6 +1616,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.verdictLayout.modal` | Oyna | Termin |  |
 | `problem.solveTimer` | Yechish | Шешу уақыты |  |
 | `problem.roundTimer` | Raund | Раунд |  |
+| `timer.pause` | To'xtatish | Тоқтату |  |
+| `timer.resume` | Davom ettirish | Жалғастыру |  |
+| `timer.reset` | Qaytadan | Қайта бастау |  |
+| `timer.set` | Taymer | Таймер |  |
+| `timer.minutes` | {count} daq | {count} мин |  |
+| `timer.done` | Vaqt tugadi | Уақыт бітті |  |
+| `timer.stop` | O'chirish | Өшіру |  |
+| `problem.focus` | Fokus rejimi | Фокус режимі |  |
+| `problem.focusExit` | Fokusdan chiqish | Фокустан шығу |  |
+| `problem.focusHint` | Menyu va sarlavhasiz faqat masala va muharrir; Esc — chiqish | Мәзір мен тақырыпсыз тек есеп пен редактор; Esc — шығу |  |
+| `submit.fileTooLarge` | Fayl {kb} KB dan oshmasligi kerak | Файл {kb} КБ-тан аспауы керек |  |
 | `problem.copy` | Nusxalash | Көшіру |  |
 | `problem.copied` | Nusxalandi | Көшірілді |  |
 | `problem.copyFailed` | Nusxa olinmadi | Көшірілмеді |  |

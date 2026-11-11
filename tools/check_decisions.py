@@ -3293,6 +3293,29 @@ def streak_page_and_region_map() -> str | None:
     return None
 
 
+def problem_page_tools_are_real() -> str | None:
+    """2026-11-11 (HITL; `docs/decisions/2026-11-11-community-and-contests.md` ①).
+
+    Masala sahifasida sekundomer va taymer haqiqiy (ilgari «45 daqiqalik
+    raund» demo sanog'i edi — orqasida musobaqa yo'q edi); musobaqada
+    qolgan vaqt haqiqiy `end_at` dan; fokus rejimi menyu, header va
+    footer'ni yashiradi.
+    """
+    timer = read("apps/web/src/features/problems/components/ProblemSolveTimer.tsx")
+    if "45 * 60 * 1000" in timer:
+        return "ProblemSolveTimer.tsx: o'ylab topilgan 45 daqiqalik raund sanog'i qaytdi"
+    if "new Date(contestEndsAt).getTime() - now" not in timer:
+        return "ProblemSolveTimer.tsx: musobaqa vaqti haqiqiy tugashdan sanalmaydi"
+    shell = read("apps/web/src/layout/AppShell.tsx")
+    if "{full || focused ? null : navMode" not in shell or '!focused && <AppFooter />' not in shell:
+        return "layout/AppShell.tsx: fokus rejimida header yoki footer yashirilmaydi"
+    if "onClick={() => setFocusMode(!focused)}" not in read(
+        "apps/web/src/features/problems/components/ProblemTabs.tsx"
+    ):
+        return "ProblemTabs.tsx: fokus rejimi tugmasi yo'q"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -5698,6 +5721,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bloglar: hamma yozadi, yangi hisob 1, ovoz va shikoyat, menyuda", blogs_are_open_and_moderated),
     ("karma: abadiy ovoz yig'indisi, 30 kunlik faol mualliflar", karma_is_all_time_votes),
     ("seriya bosqichlari, hudud xaritasi, kontentim anonim", streak_page_and_region_map),
+    ("masala sahifasi: haqiqiy taymer va fokus rejimi", problem_page_tools_are_real),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

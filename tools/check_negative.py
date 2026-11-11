@@ -5211,6 +5211,46 @@ def neg_decisions_home_without_map() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_timer_demo_back() -> tuple[bool, str]:
+    """The fake 45-minute round countdown would come back."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/ProblemSolveTimer.tsx",
+        "const PRESETS = [15, 30, 45, 60] as const;",
+        "const PRESETS = [15, 30, 45, 60] as const;\nconst DEMO = 45 * 60 * 1000;",
+        "45 daqiqalik raund",
+    )
+
+
+def neg_decisions_timer_fake_contest() -> tuple[bool, str]:
+    """The contest countdown would not read the real end."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/ProblemSolveTimer.tsx",
+        "new Date(contestEndsAt).getTime() - now",
+        "45 * 60_000",
+        "musobaqa vaqti haqiqiy tugashdan sanalmaydi",
+    )
+
+
+def neg_decisions_focus_keeps_chrome() -> tuple[bool, str]:
+    """Focus mode would keep the footer."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        "!focused && <AppFooter />",
+        "<AppFooter />",
+        "fokus rejimida header yoki footer yashirilmaydi",
+    )
+
+
+def neg_decisions_focus_without_button() -> tuple[bool, str]:
+    """The problem page would lose the focus button."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/ProblemTabs.tsx",
+        "onClick={() => setFocusMode(!focused)}",
+        "onClick={() => undefined}",
+        "fokus rejimi tugmasi yo'q",
+    )
+
+
 def neg_decisions_classroom_skips_request() -> tuple[bool, str]:
     """A classroom that asks for approval lets the student straight in."""
     return _decision_broken(
@@ -9107,6 +9147,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/web/src/features/problems/components/ProblemSolveTimer.tsx",
+    "apps/web/src/features/problems/components/ProblemTabs.tsx",
     "apps/api/qvant/views.py",
     "apps/api/profiles/regions.py",
     "apps/api/community/mine.py",
@@ -13524,6 +13566,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("hudud davri o'zgarsa tutilsin", neg_decisions_region_periods),
             ("kontentim shikoyatchini aytsa tutilsin", neg_decisions_my_content_names_reporter),
             ("bosh sahifada xarita yo'qolsa tutilsin", neg_decisions_home_without_map),
+            ("demo raund sanog'i qaytsa tutilsin", neg_decisions_timer_demo_back),
+            ("musobaqa sanog'i soxta bo'lsa tutilsin", neg_decisions_timer_fake_contest),
+            ("fokusda footer qolsa tutilsin", neg_decisions_focus_keeps_chrome),
+            ("fokus tugmasi yo'qolsa tutilsin", neg_decisions_focus_without_button),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

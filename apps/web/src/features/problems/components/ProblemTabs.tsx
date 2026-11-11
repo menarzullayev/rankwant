@@ -10,6 +10,10 @@ import {
   PROBLEM_TABS,
   type ProblemTab,
 } from "@/lib/problem-tabs";
+import { useEffect } from "react";
+
+import { setFocusMode, useFocusMode } from "@/lib/focus-mode";
+
 import { StatementSectionModeToggle } from "./StatementSectionMode";
 import { VerdictLayoutModeToggle } from "./VerdictLayoutMode";
 import { useProblemWorkspace } from "./problem-workspace-context";
@@ -56,6 +60,18 @@ export function ProblemTabs({
 }) {
   const locale = useLocale();
   const workspace = useProblemWorkspace();
+  const focused = useFocusMode();
+
+  // Esc leaves focus mode; leaving the problem page does too.
+  useEffect(() => {
+    if (!focused) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFocusMode(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [focused]);
+  useEffect(() => () => setFocusMode(false), []);
 
   return (
     <div className="flex flex-wrap items-end justify-between gap-2 border-b rw-divider">
@@ -88,6 +104,15 @@ export function ProblemTabs({
               <VerdictLayoutModeToggle />
             </>
           )}
+          <button
+            type="button"
+            className="rw-radius-sm border rw-divider px-2.5 py-1 [@media(pointer:coarse)]:min-h-11 text-theme-xs font-semibold rw-dim rw-hover-bg rw-focus-ring"
+            aria-pressed={focused}
+            title={t(locale, "problem.focusHint")}
+            onClick={() => setFocusMode(!focused)}
+          >
+            {t(locale, focused ? "problem.focusExit" : "problem.focus")}
+          </button>
           {workspace && (
             <button
               type="button"

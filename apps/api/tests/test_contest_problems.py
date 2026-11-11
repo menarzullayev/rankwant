@@ -12,6 +12,7 @@ from datetime import timedelta
 import pytest
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from rest_framework.test import APIClient
 
 from contests.models import Contest, ContestProblem, ContestRegistration
@@ -159,11 +160,16 @@ class TestDuringTheContest:
     def problem_(self, contest_: Contest) -> Problem:
         return held_problem(contest_)
 
-    def test_the_statement_is_for_everybody(self, client: APIClient, problem_: Problem) -> None:
+    def test_the_statement_is_for_everybody(
+        self, client: APIClient, contest_: Contest, problem_: Problem
+    ) -> None:
         response = client.get(reverse("problem-detail", args=[problem_.slug]))
         assert response.status_code == 200
         body = response.json()
         assert body["statement"] == "Faqat musobaqada ochiladi."
+        # The countdown beside the statement reads the contest's real end.
+        end_at = body["contest"].pop("end_at")
+        assert parse_datetime(end_at) == contest_.end_at
         assert body["contest"] == {
             "slug": "kuz-raundi",
             "title": "Kuz raundi",

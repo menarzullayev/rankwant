@@ -433,6 +433,8 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "index_letter": entry.index_letter,
             "is_running": contest.is_running,
             "is_frozen": contest.is_frozen,
+            # The real end, for the countdown beside the statement.
+            "end_at": contest.end_at,
             "registered": registered,
             # Only an insider reaches a contest problem before the start:
             # what they send is a testing attempt (ADR-0055, part 2).

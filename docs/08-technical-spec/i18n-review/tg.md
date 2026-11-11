@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3349 strings.**
+**3360 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1616,6 +1616,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.verdictLayout.modal` | Oyna | Panjara |  |
 | `problem.solveTimer` | Yechish | Вақти ҳал |  |
 | `problem.roundTimer` | Raund | Раунд |  |
+| `timer.pause` | To'xtatish | Таваққуф |  |
+| `timer.resume` | Davom ettirish | Идома |  |
+| `timer.reset` | Qaytadan | Аз нав |  |
+| `timer.set` | Taymer | Таймер |  |
+| `timer.minutes` | {count} daq | {count} дақ |  |
+| `timer.done` | Vaqt tugadi | Вақт тамом шуд |  |
+| `timer.stop` | O'chirish | Хомӯш кардан |  |
+| `problem.focus` | Fokus rejimi | Реҷаи фокус |  |
+| `problem.focusExit` | Fokusdan chiqish | Аз фокус баромадан |  |
+| `problem.focusHint` | Menyu va sarlavhasiz faqat masala va muharrir; Esc — chiqish | Танҳо шарт ва муҳаррир, бе меню ва сарлавҳа; Esc — баромадан |  |
+| `submit.fileTooLarge` | Fayl {kb} KB dan oshmasligi kerak | Файл бояд на зиёда аз {kb} КБ бошад |  |
 | `problem.copy` | Nusxalash | Нусхабардорӣ |  |
 | `problem.copied` | Nusxalandi | Нусхабардорӣ шуд |  |
 | `problem.copyFailed` | Nusxa olinmadi | Нусхабардорӣ нашуд |  |
