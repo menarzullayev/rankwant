@@ -14,6 +14,11 @@ Every rule here is read off the judge (`services/judge-go`), not assumed:
       handed stdout only (`runChecker(..., out.Stdout, ...)`). A solution
       that writes the file gives the checker an empty answer.
 
+  `both` + `real`
+      Allowed: `real` is not a program but the judge's own comparison
+      (`compareAnswer`, ADR-0060), and `classifyAnswer` applies it to
+      stdout and to `output.txt` alike.
+
   `both` + `interactive`
       The interactive branch (`runInteractive`) returns before any test is
       resolved: `input.txt` is never written and `output.txt` is never read.
@@ -70,12 +75,16 @@ EVALUATION_MODE_INVALID = "EVALUATION_MODE_INVALID"
 
 _FILE_IO = "both"
 _STANDARD = "standard"
+_REAL = "real"
+#: Checker types the judge carries out itself, with no program to hand an
+#: answer to: they read `output.txt` as well as stdout.
+_BUILT_IN = frozenset({_STANDARD, _REAL})
 _NO_SUBTASKS = frozenset({"interactive", "scorer"})
 
 
 def combination_error(io_mode: str, checker_type: str) -> str | None:
     """Why this `io_mode` / `checker_type` pair cannot be graded, or `None`."""
-    if io_mode != _FILE_IO or checker_type == _STANDARD:
+    if io_mode != _FILE_IO or checker_type in _BUILT_IN:
         return None
     if checker_type == "interactive":
         return (
@@ -126,7 +135,7 @@ def task_kind_error(task_kind: str, io_mode: str, checker_type: str) -> str | No
             return (
                 "a 'two_pass' problem cannot use io_mode 'both': both runs talk over stdin/stdout"
             )
-        if checker_type not in (_STANDARD, "special"):
+        if checker_type not in (_STANDARD, _REAL, "special"):
             return (
                 f"a 'two_pass' problem cannot use a '{checker_type}' checker: the answer "
                 "of the second run is compared or given to a special checker"
@@ -190,6 +199,19 @@ def two_pass_error(problem: Problem) -> str | None:
     if not problem.manager_source.strip() or problem.manager_language_id is None:
         return "a 'two_pass' problem needs a manager program and its language"
     return None
+
+
+def checker_spec(problem: Problem) -> dict[str, object]:
+    """The part of a judge job's `checker` that comes from the problem alone.
+
+    Every job builder (attempts, hacks) starts from here, so the tolerance
+    of a `real` problem cannot be left out of one of them; the programs of
+    `special`, `scorer` and `interactive` are added by the builder.
+    """
+    spec: dict[str, object] = {"type": problem.checker_type}
+    if problem.checker_type == _REAL:
+        spec["epsilon"] = problem.real_tolerance
+    return spec
 
 
 def evaluation_error(problem: Problem) -> str | None:

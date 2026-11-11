@@ -86,6 +86,7 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "time_limit_ms",
             "memory_limit_kb",
             "checker_type",
+            "real_tolerance",
             "task_kind",
             "manager_source",
             "manager_language",

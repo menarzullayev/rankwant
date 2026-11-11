@@ -34,7 +34,8 @@ type StaffProblem = {
   topics: string[];
   time_limit_ms: number;
   memory_limit_kb: number;
-  checker_type: "standard" | "special" | "interactive" | "scorer";
+  checker_type: "standard" | "special" | "interactive" | "scorer" | "real";
+  real_tolerance: number;
   task_kind: "program" | "function" | "answer" | "two_pass" | "sql";
   manager_source: string;
   manager_language: string | null;
@@ -172,7 +173,18 @@ const PROBLEM_FIELDS: FieldDef[] = [
       { value: "interactive", labelKey: "admin.label.text.interactive" },
       // Modelda bor edi, ro'yxatda esa yo'q — ya'ni tanlab bo'lmasdi.
       { value: "scorer", labelKey: "admin.label.value.scoring" },
+      // Compared by the judge itself, no program (ADR-0060).
+      { value: "real", labelKey: "admin.label.value.realNumbers" },
     ],
+  },
+  {
+    name: "real_tolerance",
+    labelKey: "admin.label.value.realTolerance",
+    type: "number",
+    min: 1e-12,
+    max: 0.1,
+    step: 1e-12,
+    helpKey: "admin.help.realToleranceOnlyReal",
   },
   {
     name: "manager_language",

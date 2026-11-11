@@ -6347,6 +6347,42 @@ def neg_decisions_rejected_solution_left_running() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_real_tolerance_absolute() -> tuple[bool, str]:
+    return _decision_broken(
+        "services/judge-go/compare.go",
+        "math.Abs(value-jury) > eps*math.Max(1, math.Abs(jury))",
+        "math.Abs(value-jury) > eps",
+        "haqiqiy son judge ichida solishtiriladi",
+    )
+
+
+def neg_decisions_unknown_checker_falls_through() -> tuple[bool, str]:
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "	if !knownChecker(job.Checker.Type) {\n",
+        "	if false && !knownChecker(job.Checker.Type) {\n",
+        "haqiqiy son judge ichida solishtiriladi",
+    )
+
+
+def neg_decisions_real_job_keeps_old_protocol() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/judging/provider.py",
+        '                "protocol_version": job_protocol_version(self.checker),\n',
+        '                "protocol_version": 1,\n',
+        "haqiqiy son judge ichida solishtiriladi",
+    )
+
+
+def neg_decisions_hack_job_drops_tolerance() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/hacks/services.py",
+        "evaluation.checker_spec(problem)",
+        '{"type": problem.checker_type}',
+        "haqiqiy son judge ichida solishtiriladi",
+    )
+
+
 def neg_decisions_evaluation_gate_dropped() -> tuple[bool, str]:
     """The release pipeline stops checking the evaluation mode."""
     return _decision_broken(
@@ -8888,8 +8924,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/about/sections.ts",
     "apps/web/src/app/(site)/about/page.tsx",
     "services/judge-go/judge.go",
+    "services/judge-go/compare.go",
     "services/judge-go/interactive.go",
     "apps/api/problems/release.py",
+    "apps/api/hacks/services.py",
     "apps/api/problems/staff_serializers.py",
     "apps/api/judging/services.py",
     "apps/api/problems/evaluation.py",
@@ -12646,6 +12684,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("checker format farqini ko'rmasa tutilsin", neg_decisions_checker_never_sees_a_format_difference),
             ("scorer balli verdikt bo'lmasa tutilsin", neg_decisions_scorer_score_is_not_a_verdict),
             ("rad etilgan yechim to'xtatilmasa tutilsin", neg_decisions_rejected_solution_left_running),
+            ("haqiqiy son chegarasi mutlaq bo'lsa tutilsin", neg_decisions_real_tolerance_absolute),
+            (
+                "noma'lum checker aniq solishtiruvga tushsa tutilsin",
+                neg_decisions_unknown_checker_falls_through,
+            ),
+            ("real ishi eski protokolda ketsa tutilsin", neg_decisions_real_job_keeps_old_protocol),
+            ("hack ishida aniqlik tushsa tutilsin", neg_decisions_hack_job_drops_tolerance),
             ("tekshiruv turi darvozasi tushsa tutilsin", neg_decisions_evaluation_gate_dropped),
             ("yaroqsiz birikma saqlansa tutilsin", neg_decisions_invalid_combination_can_be_saved),
             ("tekshiruv yo'llari Nightly'dan chiqsa tutilsin", neg_decisions_evaluation_paths_leave_nightly),

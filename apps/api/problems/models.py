@@ -161,6 +161,9 @@ class Problem(TimeStampedModel):
         #: qaytaradi (TSP yo'l uzunligi, qadoqlar soni). Ball mutlaq —
         #: boshqalarning yechimiga bog'liq emas, ya'ni qayta hisoblash yo'q.
         SCORER = "scorer", "Skoring"
+        #: Numbers equal within `real_tolerance`, compared by the judge itself
+        #: (ADR-0060): `2.0` and `2` are one answer. No checker program.
+        REAL = "real", "Haqiqiy son"
 
     slug = models.SlugField(unique=True, max_length=100)
     #: Ommaviy qisqa raqam — `#0431`. Slug'dan farqli: og'zaki muomala
@@ -211,6 +214,12 @@ class Problem(TimeStampedModel):
     memory_limit_kb = models.PositiveIntegerField(default=262144)
     checker_type = models.CharField(
         max_length=16, choices=Checker.choices, default=Checker.STANDARD
+    )
+    #: `real` checker: |answer − jury| ≤ tolerance · max(1, |jury|). The 1e-6
+    #: of the Robocontest checker the Abramyan problems came with (ADR-0060).
+    real_tolerance = models.FloatField(
+        default=1e-6,
+        validators=[MinValueValidator(1e-12), MaxValueValidator(0.1)],
     )
 
     class Readiness(models.TextChoices):

@@ -183,13 +183,14 @@ dastur (`RE_EXIT`) ajratildi (DMOJ modeli).
 
 ## Tekshiruv turlari — verdikt qayerdan keladi
 
-`checker.type` to'rtta qiymatdan biri. Har biri uchun haqiqiy masala va
+`checker.type` beshta qiymatdan biri; boshqa qiymatli ish `IE` bilan rad etiladi (2026-11-11 gacha noma'lum tur aniq solishtiruvga jimgina tushardi). Har biri uchun haqiqiy masala va
 kutilgan verdiktlar jadvali bor (`apps/api/problems/reference_problems.py`);
 `tests/evaluation/check_evaluation_paths.py` ularni haqiqiy judge'da yuboradi.
 
 | Tur | Kim hal qiladi | Qoidalar |
 | --- | --- | --- |
 | `standard` | judge'ning o'z solishtiruvi | tokenlar teng, formatlash boshqa — `PE` |
+| `real` | judge'ning o'z solishtiruvi, `checker.epsilon` (standart `1e-6`) bilan ([ADR-0060](../../docs/07-adr/0060-abramyan-import.md)) | Tokenlar soni teng. Hakam tokeni son bo'lsa, yechimniki ham son va `abs(y − x) ≤ ε · max(1, abs(x))` (`x` — hakamniki); boshqa tokenlar aniq. `nan`, `inf`, o'n oltilik yozuv son emas. Joylashuv ahamiyatsiz — `PE` yo'q. Faqat shu tur ishlatgan ish `protocol_version: 2` oladi |
 | `special` | `checker <input> <output> <answer>`, stdout `ok` / boshqa | Dastlabki solishtiruv `AC`, `WA` **yoki `PE`** bersa ham checker chaqiriladi: formatni u hal qiladi |
 | `scorer` | o'sha chaqiruv, stdout — 0…100 | Yakuniy ball — testlar o'rtachasi. 100 — `AC`; 0 < ball < 100 — `PARTIAL`; 0 — `WA` |
 | `interactive` | interactor'ning chiqish kodi (0 — qabul) | **Bitta** dialog; `tests` va fayl I/O ishlatilmaydi. Interactor rad etib chiqsa — `WA`, yechim shundan keyin nima bo'lganidan qat'i nazar (judge uni to'xtatadi). Yechim interactor'dan oldin o'zi yiqilsa — `RE_*` |
@@ -199,8 +200,9 @@ boshqacha formatlangan to'g'ri javob `PE` olardi (checker chaqirilmasdi);
 `scorer` da har testda 100 dan kam olgan yechim `AC` bo'lardi; interactor rad
 etgandan keyin yozishda davom etgan yechim `IDLENESS` yoki `RE` olardi.
 
-`io_mode = both` (stdout **yoki** `output.txt`) faqat `standard` bilan
-ishlaydi: checker va interactor faylga yozilgan javobni ko'rmaydi. API bu
+`io_mode = both` (stdout **yoki** `output.txt`) faqat `standard` va `real` bilan
+ishlaydi (ikkalasini judge o'zi solishtiradi): checker va interactor faylga
+yozilgan javobni ko'rmaydi. API bu
 birikmani saqlashda ham, nashr darvozasida ham rad etadi
 (`problems/evaluation.py`).
 

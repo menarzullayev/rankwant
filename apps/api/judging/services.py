@@ -13,7 +13,7 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, API_ONLY, Verdict
-from problems import sqltasks, taskkinds, testgroups
+from problems import evaluation, sqltasks, taskkinds, testgroups
 from problems.models import Language, Problem, ProblemLanguage, TestCase, Validator
 
 log = logging.getLogger(__name__)
@@ -100,7 +100,7 @@ def build_standalone_job(
 
     _program = _trusted
 
-    checker: dict[str, Any] = {"type": problem.checker_type}
+    checker: dict[str, Any] = evaluation.checker_spec(problem)
     if problem.checker_type == Problem.Checker.INTERACTIVE:
         interactor = _program(problem.interactor_language, problem.interactor_source)
         if interactor:

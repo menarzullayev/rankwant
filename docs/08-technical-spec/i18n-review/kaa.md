@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2978 strings.**
+**2983 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1726,6 +1726,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.value.difficulty` | Qiyinlik | Qıyınlıǵı |  |
 | `admin.label.value.difficultyRange` | Qiyinlik (800–3500, qadam 100) | Qıyınlıq (800–3500, qádem 100) |  |
 | `admin.label.value.scoring` | Skoring (0–100) | Ball (0–100) |  |
+| `admin.label.value.realTolerance` | Aniqlik (ε) | Anıqlıq (ε) |  |
+| `admin.label.value.realNumbers` | Haqiqiy son (aniqlik bilan) | Haqıyqıy san (anıqlıq penen) |  |
 | `admin.label.value.timeLimit` | Vaqt limiti, ms | Waqıt shegi, ms |  |
 | `admin.label.value.memoryLimit` | Xotira limiti, KB | Yad shegi, KB |  |
 | `admin.label.text.title` | Sarlavha | Ataması |  |
@@ -1849,6 +1851,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.editorialPrice` | Yechmaganlar uchun. 0 — hammaga bepul | Sheshpegenler ushın. 0 — hámmege tegin |  |
 | `admin.help.interactorOnlyInteractive` | Faqat Interactive uchun. Bo'sh = yo'q | Tek Interactive ushın. Bos = joq |  |
 | `admin.help.checkerRequired` | Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi | «Arnawlı» hám «Skoring» ushın. Bos bolsa, hár jiberiw IE boladı |  |
+| `admin.help.realToleranceOnlyReal` | Faqat «Haqiqiy son» checkerida: \|javob − hakam\| ≤ ε · max(1, \|hakam\|). Standart 1e-6 | Tek «Haqıyqıy san» checkerinde: \|juwap − hakim\| ≤ ε · max(1, \|hakim\|). Standart 1e-6 |  |
 | `admin.help.testlibInvocation` | testlib chaqiruvi: checker <input> <output> <answer> | testlib shaqırıwı: checker <input> <output> <answer> |  |
 | `admin.help.parentEmptyRoot` | Bo'sh = ildiz | Bos = tamır |  |
 | `admin.help.questCodeMatch` | Hodisaga bog'lanish uchun qvant/quests.py dagi kod bilan mos bo'lishi kerak | Waqıyanı baylaw ushın qvant/quests.py dagi kod menen sáykes keliwi kerek |  |
@@ -1941,6 +1944,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.review` | Ko'rik | Tekseriw |  |
 | `studio.tab.translations` | Tarjimalar | Awdarmalar |  |
 | `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Bul másele ele {locale} tilinde joq — {shown} tilinde kórsetilmekte. |  |
+| `problem.realToleranceHint` | Sonlar {eps} aniqlik bilan solishtiriladi: 2.0 va 2 bir xil javob | Sanlar {eps} anıqlıq penen salıstırıladı: 2.0 hám 2 birdey juwap |  |
+| `problem.realTolerance` | Aniqlik {eps} | Anıqlıq {eps} |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Máseleniń teksti basqa tillerde. Awdarılmaǵan maydan oqıwshıǵa túp nusqadan kórsetiledi. |  |
 | `translation.base` | Asl til: {locale} | Túp til: {locale} |  |
 | `translation.none` | Tarjima yo'q | Awdarma joq |  |

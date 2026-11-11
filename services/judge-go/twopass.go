@@ -159,7 +159,7 @@ func twoPass(ctx context.Context, work string, runCmd, managerCmd []string,
 	if err != nil {
 		return nil, "", err
 	}
-	if v := classify(first, test, limits); !ranToTheEnd(v) {
+	if v := classify(first, test, limits, Compare{}); !ranToTheEnd(v) {
 		return first, v, nil
 	}
 	next, verdict, err := runManager(ctx, work, managerCmd, test.Input, first.Stdout, test.Expected)

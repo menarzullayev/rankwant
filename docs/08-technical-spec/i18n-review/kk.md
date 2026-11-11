@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2978 strings.**
+**2983 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1726,6 +1726,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.value.difficulty` | Qiyinlik | Қиындығы |  |
 | `admin.label.value.difficultyRange` | Qiyinlik (800–3500, qadam 100) | Қиындық (800–3500, қадам 100) |  |
 | `admin.label.value.scoring` | Skoring (0–100) | Скоринг (0–100) |  |
+| `admin.label.value.realTolerance` | Aniqlik (ε) | Дәлдік (ε) |  |
+| `admin.label.value.realNumbers` | Haqiqiy son (aniqlik bilan) | Нақты сан (дәлдікпен) |  |
 | `admin.label.value.timeLimit` | Vaqt limiti, ms | Уақыт шегі, мс |  |
 | `admin.label.value.memoryLimit` | Xotira limiti, KB | Жады шегі, КБ |  |
 | `admin.label.text.title` | Sarlavha | Тақырып |  |
@@ -1849,6 +1851,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.editorialPrice` | Yechmaganlar uchun. 0 — hammaga bepul | Шешпегендер үшін. 0 — барлығына тегін |  |
 | `admin.help.interactorOnlyInteractive` | Faqat Interactive uchun. Bo'sh = yo'q | Тек Interactive үшін. Бос = жоқ |  |
 | `admin.help.checkerRequired` | Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi | «Арнайы» және «Скоринг» үшін. Бос болса, әр жіберу IE болады |  |
+| `admin.help.realToleranceOnlyReal` | Faqat «Haqiqiy son» checkerida: \|javob − hakam\| ≤ ε · max(1, \|hakam\|). Standart 1e-6 | Тек «Нақты сан» тексерушісінде: \|жауап − қазы\| ≤ ε · max(1, \|қазы\|). Әдепкі 1e-6 |  |
 | `admin.help.testlibInvocation` | testlib chaqiruvi: checker <input> <output> <answer> | testlib шақыруы: checker <input> <output> <answer> |  |
 | `admin.help.parentEmptyRoot` | Bo'sh = ildiz | Бос = түбір |  |
 | `admin.help.questCodeMatch` | Hodisaga bog'lanish uchun qvant/quests.py dagi kod bilan mos bo'lishi kerak | Оқиғаны байланыстыру үшін qvant/quests.py кодымен сәйкес болуы керек |  |
@@ -1941,6 +1944,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.review` | Ko'rik | Тексеру |  |
 | `studio.tab.translations` | Tarjimalar | Аудармалар |  |
 | `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Бұл есеп әлі {locale} тілінде жоқ — {shown} тілінде көрсетілуде. |  |
+| `problem.realToleranceHint` | Sonlar {eps} aniqlik bilan solishtiriladi: 2.0 va 2 bir xil javob | Сандар {eps} дәлдікпен салыстырылады: 2.0 және 2 — бірдей жауап |  |
+| `problem.realTolerance` | Aniqlik {eps} | Дәлдік {eps} |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Есептің мәтіні басқа тілдерде. Аударылмаған өріс оқырманға түпнұсқадан көрсетіледі. |  |
 | `translation.base` | Asl til: {locale} | Түпнұсқа тілі: {locale} |  |
 | `translation.none` | Tarjima yo'q | Аударма жоқ |  |

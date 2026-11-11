@@ -134,6 +134,14 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		return res
 	}
 
+	// A checker type this build does not know is refused, not graded by
+	// the exact comparison it would otherwise fall through to (compare.go).
+	if !knownChecker(job.Checker.Type) {
+		res.CompileOutput = "unsupported checker type: " + job.Checker.Type
+		res.Meta.TotalMS = time.Since(t0).Milliseconds()
+		return res
+	}
+
 	// The submission's language decides /proc and the open-file limit for
 	// every sandbox run of this job: compile, tests and the interactive run.
 	job.Limits.ProcSelf = job.Language.ProcSelf
@@ -298,6 +306,7 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 	// kompilyatsiya vaqtni test soniga ko'paytirardi.
 	var checkerCmd []string
 	useChecker := job.Checker.Type == "special" || job.Checker.Type == "scorer"
+	cmp := compareFor(job)
 	if useChecker {
 		if job.Checker.Program == nil {
 			res.Verdict = VIE
@@ -356,7 +365,7 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		}
 		v := decided
 		if v == "" {
-			v = classifyAnswer(out, test, job.Limits, work, job.IO)
+			v = classifyAnswer(out, test, job.Limits, work, job.IO, cmp)
 		}
 
 		// ⚠️ `RE_SIGNAL` — kam uchraydigan va tushunarsiz holat: dastur
@@ -478,7 +487,7 @@ func scorerVerdict(worst string, score int) string {
 
 // classify — bitta test natijasini verdictga aylantiradi.
 // Tartib muhim: xavfsizlik va resurs chegaralari to'g'ri javobdan OLDIN tekshiriladi.
-func classify(out *runOutcome, test Test, lim Limits) string {
+func classify(out *runOutcome, test Test, lim Limits, cmp Compare) string {
 	switch {
 	case out.OutputEx:
 		return VOLE
@@ -493,16 +502,7 @@ func classify(out *runOutcome, test Test, lim Limits) string {
 		}
 		return VTLE
 	case out.ExitCode == 0:
-		if normalise(out.Stdout) == normalise(test.Expected) {
-			return VAC
-		}
-		// Tokenlar mos, joylashuvi boshqa → algoritm to'g'ri, format xato.
-		// `normalise` faqat QATOR OXIRIDAGI bo'shliqni kechiradi; bu yerda
-		// esa qator uzilishi o'rniga probel qo'yilgan holat ham ushlanadi.
-		if sameTokens(out.Stdout, test.Expected) {
-			return VPE
-		}
-		return VWA
+		return compareAnswer(out.Stdout, test.Expected, cmp)
 	default:
 		// nsjail izolyatsiya qoidasini buzganda o'ldiradi; buni RE dan ajratamiz.
 		if strings.Contains(out.Stderr, "Operation not permitted") ||

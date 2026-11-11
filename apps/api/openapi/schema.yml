@@ -4859,6 +4859,7 @@ paths:
           type: string
           enum:
           - interactive
+          - real
           - scorer
           - special
           - standard
@@ -4867,6 +4868,7 @@ paths:
           * `special` - Maxsus
           * `interactive` - Interactive
           * `scorer` - Skoring
+          * `real` - Haqiqiy son
       - in: query
         name: difficulty
         schema:
@@ -15228,12 +15230,14 @@ components:
       - special
       - interactive
       - scorer
+      - real
       type: string
       description: |-
         * `standard` - Standart
         * `special` - Maxsus
         * `interactive` - Interactive
         * `scorer` - Skoring
+        * `real` - Haqiqiy son
     ChoicePublic:
       type: object
       description: '`is_correct` ATAYLAB yo''q — baholash serverda.'
@@ -20391,6 +20395,11 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        real_tolerance:
+          type: number
+          format: double
+          maximum: 0.1
+          minimum: 1.0e-12
         task_kind:
           allOf:
           - $ref: '#/components/schemas/TaskKindEnum'
@@ -21749,6 +21758,11 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        real_tolerance:
+          type: number
+          format: double
+          maximum: 0.1
+          minimum: 1.0e-12
         task_kind:
           allOf:
           - $ref: '#/components/schemas/TaskKindEnum'
@@ -23755,6 +23769,11 @@ components:
           format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
+        real_tolerance:
+          type: number
+          format: double
+          maximum: 0.1
+          minimum: 1.0e-12
         task_kind:
           allOf:
           - $ref: '#/components/schemas/TaskKindEnum'

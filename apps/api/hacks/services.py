@@ -30,7 +30,7 @@ from hacks.policies import AddsTest, Policy
 from judging.models import Attempt
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import Verdict
-from problems import storage
+from problems import evaluation, storage
 from problems.models import (
     Language,
     Problem,
@@ -383,7 +383,7 @@ def _enqueue_defender(hack: Hack) -> None:
     """
     attempt = hack.defender_attempt
     problem = hack.problem
-    checker: dict[str, Any] = {"type": problem.checker_type}
+    checker: dict[str, Any] = evaluation.checker_spec(problem)
     if problem.checker_type in (Problem.Checker.SPECIAL, Problem.Checker.SCORER):
         if problem.checker_language and problem.checker_source:
             checker["program"] = _program(problem.checker_language, problem.checker_source)

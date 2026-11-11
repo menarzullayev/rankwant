@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2978 strings.**
+**2983 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1726,6 +1726,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.value.difficulty` | Qiyinlik | Кыйындыгы |  |
 | `admin.label.value.difficultyRange` | Qiyinlik (800–3500, qadam 100) | Кыйындык (800–3500, кадам 100) |  |
 | `admin.label.value.scoring` | Skoring (0–100) | Скоринг (0–100) |  |
+| `admin.label.value.realTolerance` | Aniqlik (ε) | Тактык (ε) |  |
+| `admin.label.value.realNumbers` | Haqiqiy son (aniqlik bilan) | Чыныгы сан (тактык менен) |  |
 | `admin.label.value.timeLimit` | Vaqt limiti, ms | Убакыт чеги, мс |  |
 | `admin.label.value.memoryLimit` | Xotira limiti, KB | Эс чеги, КБ |  |
 | `admin.label.text.title` | Sarlavha | Аталыш |  |
@@ -1849,6 +1851,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.editorialPrice` | Yechmaganlar uchun. 0 — hammaga bepul | Чечпегендер үчүн. 0 — баарына акысыз |  |
 | `admin.help.interactorOnlyInteractive` | Faqat Interactive uchun. Bo'sh = yo'q | Interactive үчүн гана. Бош = жок |  |
 | `admin.help.checkerRequired` | Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi | «Атайын» жана «Скоринг» үчүн. Бош болсо, ар бир жөнөтүү IE болот |  |
+| `admin.help.realToleranceOnlyReal` | Faqat «Haqiqiy son» checkerida: \|javob − hakam\| ≤ ε · max(1, \|hakam\|). Standart 1e-6 | «Чыныгы сан» текшергичинде гана: \|жооп − калыс\| ≤ ε · max(1, \|калыс\|). Демейки 1e-6 |  |
 | `admin.help.testlibInvocation` | testlib chaqiruvi: checker <input> <output> <answer> | testlib чакыруусу: checker <input> <output> <answer> |  |
 | `admin.help.parentEmptyRoot` | Bo'sh = ildiz | Бош = тамыр |  |
 | `admin.help.questCodeMatch` | Hodisaga bog'lanish uchun qvant/quests.py dagi kod bilan mos bo'lishi kerak | Окуяны байлоо үчүн qvant/quests.py коду менен дал келиши керек |  |
@@ -1941,6 +1944,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.review` | Ko'rik | Текшерүү |  |
 | `studio.tab.translations` | Tarjimalar | Котормолор |  |
 | `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Бул маселе азырынча {locale} тилинде жок — {shown} тилинде көрсөтүлүүдө. |  |
+| `problem.realToleranceHint` | Sonlar {eps} aniqlik bilan solishtiriladi: 2.0 va 2 bir xil javob | Сандар {eps} тактык менен салыштырылат: 2.0 жана 2 — бирдей жооп |  |
+| `problem.realTolerance` | Aniqlik {eps} | Тактык {eps} |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Маселенин тексти башка тилдерде. Которулбаган талаа окурманга түп нускадан көрсөтүлөт. |  |
 | `translation.base` | Asl til: {locale} | Түп нуска тили: {locale} |  |
 | `translation.none` | Tarjima yo'q | Котормо жок |  |
