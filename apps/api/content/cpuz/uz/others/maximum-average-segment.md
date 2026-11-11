@@ -6,7 +6,9 @@ Bu yerda eng katta yig‘indili ostkesmani topish masalasi va uning ayrim ko‘r
 
 $a[1 \ldots n]$ sonlar massivi berilgan. Yig‘indisi eng katta bo‘lgan $a[l \ldots r]$ ostkesmani topish talab etiladi:
 
-$$\max_{1 \le l \le r \le n} \sum_{i=l}^{r} a[i].$$
+$$
+\max_{1 \le l \le r \le n} \sum_{i=l}^{r} a[i].
+$$
 
 Masalan, $a[]$ massividagi barcha sonlar nomanfiy bo‘lsa, javob massivning o‘zi bo‘ladi. Massivda musbat hamda manfiy sonlar bo‘lishi mumkin bo‘lganda esa yechim oddiy emas.
 
@@ -136,7 +138,9 @@ Chan algoritmi va bu sohadagi ko‘plab boshqa natijalar aslida **tez matritsa k
 
 Bu masalada o‘rtacha qiymati eng katta bo‘lgan $a[l,r]$ kesma izlanadi:
 
-$$\max_{l \le r} \frac{1}{r-l+1} \sum_{i=l}^{r} a[i].$$
+$$
+\max_{l \le r} \frac{1}{r-l+1} \sum_{i=l}^{r} a[i].
+$$
 
 Agar $[l,r]$ kesmaga boshqa shart qo‘yilmasa, javob har doim massivning maksimum elementidan iborat uzunligi $1$ bo‘lgan kesma bo‘ladi. Masala faqat qo‘shimcha cheklovlar, masalan, kesma uzunligining quyi chegarasi mavjud bo‘lganda mazmunli.
 

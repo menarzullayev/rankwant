@@ -3,7 +3,9 @@
 Ikkita manfiy bo‘lmagan $a$ va $b$ butun son berilgan. Ularning **EKUB**ini (eng katta umumiy bo‘luvchisini), ya’ni $a$ va $b$ ning ikkalasiga ham bo‘linadigan eng katta sonni topishimiz kerak.
 U odatda $\gcd(a, b)$ bilan belgilanadi. Matematik jihatdan quyidagicha ta’riflanadi:
 
-$$\gcd(a, b) = \max \{k > 0 : (k \mid a) \text{ va } (k \mid b) \}$$
+$$
+\gcd(a, b) = \max \{k > 0 : (k \mid a) \text{ va } (k \mid b) \}
+$$
 
 (bu yerda "$\mid$" belgisi bo‘linuvchanlikni bildiradi, ya’ni "$k \mid a$" — "$k$ soni $a$ ni bo‘ladi" degani)
 
@@ -19,7 +21,9 @@ Dastlab Evklid algoritmi quyidagicha ifodalangan: sonlardan biri nol bo‘lgunch
 
 $a$ dan $b$ kamida $\left\lfloor\frac{a}{b}\right\rfloor$ marta ayrilmaguncha $a$ kattaroq son bo‘lib qolishiga e’tibor bering. Shu sababli algoritmni tezlashtirish uchun $a-b$ o‘rniga $a-\left\lfloor\frac{a}{b}\right\rfloor b = a \bmod b$ ishlatiladi. Shunda algoritm nihoyatda sodda ko‘rinishga keladi:
 
-$$\gcd(a, b) = \begin{cases}a,&\text{agar }b = 0 \\ \gcd(b, a \bmod b),&\text{aks holda.}\end{cases}$$
+$$
+\gcd(a, b) = \begin{cases}a,&\text{agar }b = 0 \\ \gcd(b, a \bmod b),&\text{aks holda.}\end{cases}
+$$
 
 ## Implementatsiya {#implementation}
 
@@ -71,7 +75,9 @@ Bu mulohazani $a_1,\dots,a_n \leq C$ sonlar to‘plamining EKUBini hisoblash hol
 
 Odatda **EKUK** deb belgilanadigan eng kichik umumiy karralini hisoblash quyidagi sodda formula yordamida EKUBni hisoblashga keltiriladi:
 
-$$\text{lcm}(a, b) = \frac{a \cdot b}{\gcd(a, b)}$$
+$$
+\text{lcm}(a, b) = \frac{a \cdot b}{\gcd(a, b)}
+$$
 
 Demak, EKUKni Evklid algoritmi yordamida ayni vaqt murakkabligida hisoblash mumkin:
 

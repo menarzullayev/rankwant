@@ -120,7 +120,9 @@ vector<long long> trial_division4(long long n) {
 
 Toq murakkab $n = p \cdot q$ sonini ikki kvadrat ayirmasi $n = a^2 - b^2$ ko‘rinishida yozish mumkin:
 
-$$n = \left(\frac{p + q}{2}\right)^2 - \left(\frac{p - q}{2}\right)^2$$
+$$
+n = \left(\frac{p + q}{2}\right)^2 - \left(\frac{p - q}{2}\right)^2
+$$
 
 Fermat faktorizatsiya usuli birinchi $a^2$ kvadratni taxmin qilib, qolgan $b^2 = a^2 - n$ qism ham kvadrat son ekanini tekshirish orqali bu faktdan foydalanishga urinadi.
 Agar u kvadrat bo‘lsa, $n$ ning $a-b$ va $a+b$ ko‘paytuvchilarini topgan bo‘lamiz.
@@ -156,11 +158,15 @@ G‘oya [Fermatning kichik teoremasi](/algorithms/algebra/phi-function#applicati
 $n$ ning faktorizatsiyasi $n = p \cdot q$ bo‘lsin.
 Teoremaga ko‘ra, agar $a$ soni $p$ bilan o‘zaro tub bo‘lsa, quyidagi tasdiq o‘rinli:
 
-$$a^{p - 1} \equiv 1 \pmod{p}$$
+$$
+a^{p - 1} \equiv 1 \pmod{p}
+$$
 
 Bu shuni ham anglatadiki,
 
-$${\left(a^{(p - 1)}\right)}^k \equiv a^{k \cdot (p - 1)} \equiv 1 \pmod{p}.$$
+$$
+{\left(a^{(p - 1)}\right)}^k \equiv a^{k \cdot (p - 1)} \equiv 1 \pmod{p}.
+$$
 
 Demak, $p-1 ~|~ M$ bo‘lgan istalgan $M$ uchun $a^M \equiv 1$ ekanini bilamiz.
 Bu $a^M - 1 = p \cdot r$ ekanini va natijada $p ~|~ \gcd(a^M - 1, n)$ bo‘lishini anglatadi.
@@ -169,7 +175,9 @@ Shuning uchun, agar $n$ ning biror $p$ ko‘paytuvchisi uchun $p-1$ soni $M$ ni 
 Har bir $\mathrm{B}$-daraja-silliq songa karrali eng kichik $M$ soni $\text{lcm}(1,~2~,3~,4~,~\dots,~B)$ ekanligi ravshan.
 Yoki boshqacha:
 
-$$M = \prod_{\text{prime } q \le B} q^{\lfloor \log_q B \rfloor}$$
+$$
+M = \prod_{\text{prime } q \le B} q^{\lfloor \log_q B \rfloor}
+$$
 
 Agar $n$ ning barcha $p$ tub ko‘paytuvchilari uchun $p-1$ soni $M$ ni bo‘lsa, $\gcd(a^M - 1, n)$ shunchaki $n$ ga teng bo‘lishiga e’tibor bering.
 Bu holatda ko‘paytuvchi olmaymiz.
@@ -307,7 +315,8 @@ i & x_i \bmod n & x_{2i} \bmod n & x_i \bmod 317 & x_{2i} \bmod 317 & \gcd(x_i -
 6   & 1671573 & 1264682 & 32      & 169     & 1   \\
 7   & 2193080 & 2088470 & 74      & 74      & 317 \\
 \hline
-\end{array}$$
+\end{array}
+$$
 
 Implementatsiyadagi `mult` funksiyasi GCC ning 128-bitli `__int128` butun turidan foydalanib, $\le 10^{18}$ bo‘lgan ikkita butun sonni toshib ketmasdan ko‘paytiradi.
 Agar GCC mavjud bo‘lmasa, [ikkilik darajaga oshirish](/algorithms/algebra/binary-exp) dagiga o‘xshash g‘oyadan foydalanish mumkin.

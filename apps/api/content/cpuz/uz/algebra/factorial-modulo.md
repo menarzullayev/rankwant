@@ -16,19 +16,23 @@ Ushbu o‘zgartirilgan faktorialni samarali hisoblashni o‘rganish turli kombin
 ## Algoritm {#algorithm}
 Bu o‘zgartirilgan faktorialni oshkora yozamiz.
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 n!_{\%p} &=& 1 \cdot 2 \cdot 3 \cdot \ldots \cdot (p-2) \cdot (p-1) \cdot \underbrace{1}_{p} \cdot (p+1) \cdot (p+2) \cdot \ldots \cdot (2p-1) \cdot \underbrace{2}_{2p} \\
  & &\quad \cdot (2p+1) \cdot \ldots \cdot (p^2-1) \cdot \underbrace{1}_{p^2} \cdot (p^2 +1) \cdot \ldots \cdot n \pmod{p} \\
 &=& 1 \cdot 2 \cdot 3 \cdot \ldots \cdot (p-2) \cdot (p-1) \cdot \underbrace{1}_{p} \cdot 1 \cdot 2 \cdot \ldots \cdot (p-1) \cdot \underbrace{2}_{2p} \cdot 1 \cdot 2 \\
 & &\quad \cdot \ldots \cdot (p-1) \cdot \underbrace{1}_{p^2} \cdot 1 \cdot 2 \cdot \ldots \cdot (n \bmod p) \pmod{p}
-\end{aligned}$$
+\end{aligned}
+$$
 
 Faktorial oxirgisidan tashqari uzunligi bir xil bo‘lgan bir nechta blokka bo‘linishini aniq ko‘rish mumkin.
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 n!_{\%p}&=& \underbrace{1 \cdot 2 \cdot 3 \cdot \ldots \cdot (p-2) \cdot (p-1) \cdot 1}_{1\text{st}} \cdot \underbrace{1 \cdot 2 \cdot 3 \cdot \ldots \cdot (p-2) \cdot (p-1) \cdot 2}_{2\text{nd}} \cdot \ldots \\
 & & \cdot \underbrace{1 \cdot 2 \cdot 3 \cdot \ldots \cdot (p-2) \cdot (p-1) \cdot 1}_{p\text{th}} \cdot \ldots \cdot \quad \underbrace{1 \cdot 2 \cdot \cdot \ldots \cdot (n \bmod p)}_{\text{tail}} \pmod{p}.
-\end{aligned}$$
+\end{aligned}
+$$
 
 Bloklarning asosiy qismini hisoblash oson — bu shunchaki $(p-1)!\ \mathrm{mod}\ p$.
 Uni dasturiy ravishda hisoblashimiz yoki istalgan tub $p$ uchun $(p-1)! \bmod p=-1$ ekanini aytadigan Wilson teoremasini qo‘llashimiz mumkin.
@@ -42,7 +46,9 @@ Oxirgi to‘liq bo‘lmagan blok qiymatini alohida $O(p)$ vaqtda hisoblash mumki
 Endi har bir blokning faqat oxirgi elementi qoldi.
 Hisobga olingan elementlarni yashirsak, quyidagi andozani ko‘ramiz:
 
-$$n!_{\%p} = \underbrace{ \ldots \cdot 1 } \cdot \underbrace{ \ldots \cdot 2} \cdot \ldots \cdot \underbrace{ \ldots \cdot (p-1)} \cdot \underbrace{ \ldots \cdot 1 } \cdot \underbrace{ \ldots \cdot 1} \cdot \underbrace{ \ldots \cdot 2} \cdots$$
+$$
+n!_{\%p} = \underbrace{ \ldots \cdot 1 } \cdot \underbrace{ \ldots \cdot 2} \cdot \ldots \cdot \underbrace{ \ldots \cdot (p-1)} \cdot \underbrace{ \ldots \cdot 1 } \cdot \underbrace{ \ldots \cdot 1} \cdot \underbrace{ \ldots \cdot 2} \cdots
+$$
 
 Bu yana bir *o‘zgartirilgan* faktorial, faqat o‘lchami ancha kichik.
 U $\lfloor n/p \rfloor !_{\%p}$ ga teng.
@@ -86,7 +92,9 @@ Binomial koeffitsiyentni $p$ modul bo‘yicha hisoblamoqchi bo‘lsak, qo‘shim
 [Legendre formulasi](https://en.wikipedia.org/wiki/Legendre%27s_formula) buni $O(\log_p n)$ vaqtda hisoblash imkonini beradi.
 Formula $\nu_p$ karralilikni quyidagicha beradi:
 
-$$\nu_p(n!) = \sum_{i=1}^{\infty} \left\lfloor \frac{n}{p^i} \right\rfloor$$
+$$
+\nu_p(n!) = \sum_{i=1}^{\infty} \left\lfloor \frac{n}{p^i} \right\rfloor
+$$
 
 Shundan quyidagi implementatsiyani olamiz:
 

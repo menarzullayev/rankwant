@@ -50,7 +50,9 @@ Nolinchi iteratsiyada tartib o‘suvchi bo‘lgani uchun u har bir keyingi itera
 
 **Qisqarmaslik.** Buni isbotlash uchun istalgan ikkita qo‘shni $\frac{a}{b}$ va $\frac{c}{d}$ kasr uchun
 
-$$bc-ad=1$$
+$$
+bc-ad=1
+$$
 
 bo‘lishini ko‘rsatamiz.
 
@@ -66,10 +68,12 @@ $$
 
 yangi ifodalar quyidagicha bo‘ladi:
 
-$$\begin{align}
+$$
+\begin{align}
 b(a+c)-a(b+d)&=1 \\
 c(b+d)-d(a+c)&=1
-\end{align}$$
+\end{align}
+$$
 
 Ularning rostligi $bc-ad=1$ dan oson kelib chiqadi.
 
@@ -102,7 +106,9 @@ $$
 
 Ifodani ochib va yuqorida isbotlangan $bc-ad=1$ xossadan foydalanib:
 
-$$x+y \ge a+b+c+d$$
+$$
+x+y \ge a+b+c+d
+$$
 
 natijani olamiz.
 
@@ -213,8 +219,12 @@ Stern–Brocot daraxtini qurish algoritmidan Farey ketma-ketliklari algoritmi ke
 
 $n$-tartibli Farey ketma-ketligi $n-1$-tartibli ketma-ketlikning barcha elementlarini, shuningdek maxraji $n$ bo‘lgan barcha qisqarmas kasrlarni o‘z ichiga oladi. Keyingilar soni aynan Eyler funksiyasi $\varphi(n)$ ga teng. Demak, $n$-tartibli Farey ketma-ketligining $L_n$ uzunligi:
 
-$$L_n = L_{n-1}+\varphi(n),$$
+$$
+L_n = L_{n-1}+\varphi(n),
+$$
 
 yoki rekursiyani ochib yozsak:
 
-$$L_n = 1+\sum_{k=1}^n \varphi(k).$$
+$$
+L_n = 1+\sum_{k=1}^n \varphi(k).
+$$

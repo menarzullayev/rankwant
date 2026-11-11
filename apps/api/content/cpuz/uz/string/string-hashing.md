@@ -28,10 +28,12 @@ Ushbu maqolada kolliziya ehtimolini qanday juda past saqlash mumkinligini ham ko
 
 Uzunligi $n$ bo‘lgan $s$ satr xeshini aniqlashning yaxshi va keng tarqalgan usuli quyidagicha:
 
-$$\begin{align}
+$$
+\begin{align}
 \text{hash}(s) &= s[0] + s[1] \cdot p + s[2] \cdot p^2 + ... + s[n-1] \cdot p^{n-1} \mod m \\
 &= \sum_{i=0}^{n-1} s[i] \cdot p^i \mod m,
-\end{align}$$
+\end{align}
+$$
 
 bu yerda $p$ va $m$ — oldindan tanlangan musbat sonlar.
 Bu **polinomial siljuvchi xesh funksiyasi** deyiladi.
@@ -101,14 +103,18 @@ Masala: $s$ satr hamda $i$ va $j$ indekslar berilgan. $s[i \dots j]$ qism satrin
 
 Ta’rifga ko‘ra:
 
-$$\text{hash}(s[i \dots j]) = \sum_{k = i}^j s[k] \cdot p^{k-i} \mod m$$
+$$
+\text{hash}(s[i \dots j]) = \sum_{k = i}^j s[k] \cdot p^{k-i} \mod m
+$$
 
 Ikki tomonni $p^i$ ga ko‘paytirsak:
 
-$$\begin{align}
+$$
+\begin{align}
 \text{hash}(s[i \dots j]) \cdot p^i &= \sum_{k = i}^j s[k] \cdot p^k \mod m \\
 &= \text{hash}(s[0 \dots j]) - \text{hash}(s[0 \dots i-1]) \mod m
-\end{align}$$
+\end{align}
+$$
 
 Demak, $s$ satrning har bir prefiksi xeshini bilsak, shu formula orqali istalgan qism satr xeshini bevosita hisoblay olamiz.
 Yagona muammo shundaki, $\text{hash}(s[0 \dots j]) - \text{hash}(s[0 \dots i-1])$ qiymatini $p^i$ ga bo‘la olishimiz kerak.

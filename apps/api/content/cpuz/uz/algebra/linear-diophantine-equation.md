@@ -2,7 +2,9 @@
 
 Chiziqli Diofant tenglamasi (ikki o‘zgaruvchili) umumiy holda quyidagi ko‘rinishdagi tenglamadir:
 
-$$ax + by = c$$
+$$
+ax + by = c
+$$
 
 bu yerda $a$, $b$, $c$ — berilgan butun sonlar, $x$, $y$ esa noma’lum butun sonlar.
 
@@ -21,26 +23,34 @@ Alohida ko‘rib chiqilishi kerak bo‘lgan aynigan holat — $a = b = 0$. $c = 
 
 $a \neq 0$ va $b \neq 0$ bo‘lganda $ax+by=c$ tenglamasini quyidagi tenglamalardan istalgan biri sifatida ekvivalent ravishda qarash mumkin:
 
+$$
 \begin{align}
 ax &\equiv c \pmod b \\
 by &\equiv c \pmod a
 \end{align}
+$$
 
 Umumiylikni yo‘qotmasdan, $b \neq 0$ deb faraz qilamiz va birinchi tenglamani ko‘rib chiqamiz. $a$ va $b$ o‘zaro tub bo‘lganda uning yechimi quyidagicha:
 
-$$x \equiv ca^{-1} \pmod b,$$
+$$
+x \equiv ca^{-1} \pmod b,
+$$
 
 bu yerda $a^{-1}$ — $a$ ning $b$ modul bo‘yicha [teskari elementi](/algorithms/algebra/module-inverse).
 $a$ va $b$ o‘zaro tub bo‘lmaganda, barcha butun $x$ lar uchun $ax$ ning $b$ modul bo‘yicha qiymatlari $g=\gcd(a, b)$ ga bo‘linadi; demak, yechim faqat $c$ soni ham $g$ ga bo‘lingandagina mavjud. Bu holatda tenglamani $g$ ga qisqartirish orqali yechimlardan birini topish mumkin:
 
-$$(a/g) x \equiv (c/g) \pmod{b/g}.$$
+$$
+(a/g) x \equiv (c/g) \pmod{b/g}.
+$$
 
 $g$ ning ta’rifiga ko‘ra $a/g$ va $b/g$ o‘zaro tub, shuning uchun yechim aniq ko‘rinishda quyidagicha beriladi:
 
-$$\begin{cases}
+$$
+\begin{cases}
 x \equiv (c/g)(a/g)^{-1}\pmod{b/g},\\
 y = \frac{c-ax}{b}.
-\end{cases}$$
+\end{cases}
+$$
 
 ## Algoritmik yechim {#algorithmic-solution}
 
@@ -52,19 +62,27 @@ y = \frac{c-ax}{b}.
 
 Ikki noma’lumli Diofant tenglamasining bitta yechimini topish uchun [Kengaytirilgan Evklid algoritmidan](/algorithms/algebra/extended-euclid-algorithm) foydalanish mumkin. Avval $a$ va $b$ ni manfiy bo‘lmagan deb faraz qilamiz. $a$ va $b$ ga kengaytirilgan Evklid algoritmini qo‘llasak, ularning eng katta umumiy bo‘luvchisi $g$ ni hamda quyidagi tenglikni qanoatlantiradigan $x_g$ va $y_g$ sonlarni topamiz:
 
-$$a x_g + b y_g = g$$
+$$
+a x_g + b y_g = g
+$$
 
 Agar $c$ soni $g = \gcd(a, b)$ ga bo‘linsa, berilgan Diofant tenglamasi yechimga ega; aks holda yechim mavjud emas. Isbot bevosita: ikki sonning chiziqli kombinatsiyasi ularning umumiy bo‘luvchisiga bo‘linadi.
 
 Endi $c$ soni $g$ ga bo‘linadi deb faraz qilamiz. U holda:
 
-$$a \cdot x_g \cdot \frac{c}{g} + b \cdot y_g \cdot \frac{c}{g} = c$$
+$$
+a \cdot x_g \cdot \frac{c}{g} + b \cdot y_g \cdot \frac{c}{g} = c
+$$
 
 Demak, Diofant tenglamasining yechimlaridan biri:
 
-$$x_0 = x_g \cdot \frac{c}{g},$$
+$$
+x_0 = x_g \cdot \frac{c}{g},
+$$
 
-$$y_0 = y_g \cdot \frac{c}{g}.$$
+$$
+y_0 = y_g \cdot \frac{c}{g}.
+$$
 
 Yuqoridagi g‘oya $a$ yoki $b$, yoxud ikkalasi ham manfiy bo‘lganda ham ishlaydi. Faqat zarur bo‘lganda $x_0$ va $y_0$ ishorasini o‘zgartirish kerak.
 
@@ -103,17 +121,25 @@ Bitta $(x_0, y_0)$ yechimdan berilgan tenglamaning barcha yechimlarini olish mum
 
 $g = \gcd(a, b)$ bo‘lsin va $x_0, y_0$ quyidagi tenglikni qanoatlantiradigan butun sonlar bo‘lsin:
 
-$$a \cdot x_0 + b \cdot y_0 = c$$
+$$
+a \cdot x_0 + b \cdot y_0 = c
+$$
 
 $x_0$ ga $b / g$ ni qo‘shish va ayni vaqtda $y_0$ dan $a / g$ ni ayirish tenglikni buzmasligini ko‘ramiz:
 
-$$a \cdot \left(x_0 + \frac{b}{g}\right) + b \cdot \left(y_0 - \frac{a}{g}\right) = a \cdot x_0 + b \cdot y_0 + a \cdot \frac{b}{g} - b \cdot \frac{a}{g} = c$$
+$$
+a \cdot \left(x_0 + \frac{b}{g}\right) + b \cdot \left(y_0 - \frac{a}{g}\right) = a \cdot x_0 + b \cdot y_0 + a \cdot \frac{b}{g} - b \cdot \frac{a}{g} = c
+$$
 
 Bu jarayonni yana takrorlash mumkinligi ayon, demak quyidagi ko‘rinishdagi barcha sonlar:
 
-$$x = x_0 + k \cdot \frac{b}{g}$$
+$$
+x = x_0 + k \cdot \frac{b}{g}
+$$
 
-$$y = y_0 - k \cdot \frac{a}{g}$$
+$$
+y = y_0 - k \cdot \frac{a}{g}
+$$
 
 berilgan Diofant tenglamasining yechimlaridir.
 Tenglama chiziqli bo‘lgani uchun barcha yechimlar bir to‘g‘ri chiziqda yotadi va $g$ ning ta’rifiga ko‘ra bu berilgan Diofant tenglamasining barcha mumkin bo‘lgan yechimlari to‘plamidir.
@@ -194,13 +220,19 @@ G‘oya oldingi bo‘limdagiga o‘xshaydi: Diofant tenglamasining istalgan yech
 
 Nihoyat, minimumni topish uchun barcha yechimlar to‘plami haqidagi bilimdan foydalanamiz:
 
-$$x' = x + k \cdot \frac{b}{g},$$
+$$
+x' = x + k \cdot \frac{b}{g},
+$$
 
-$$y' = y - k \cdot \frac{a}{g}.$$
+$$
+y' = y - k \cdot \frac{a}{g}.
+$$
 
 $x + y$ quyidagicha o‘zgarishiga e’tibor bering:
 
-$$x' + y' = x + y + k \cdot \left(\frac{b}{g} - \frac{a}{g}\right) = x + y + k \cdot \frac{b-a}{g}$$
+$$
+x' + y' = x + y + k \cdot \left(\frac{b}{g} - \frac{a}{g}\right) = x + y + k \cdot \frac{b-a}{g}
+$$
 
 Agar $a < b$ bo‘lsa, $k$ ning eng kichik mumkin bo‘lgan qiymatini tanlashimiz kerak. Agar $a > b$ bo‘lsa, $k$ ning eng katta mumkin bo‘lgan qiymatini tanlaymiz. Agar $a = b$ bo‘lsa, barcha yechimlarda $x + y$ yig‘indisi bir xil bo‘ladi.
 

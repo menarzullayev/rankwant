@@ -2,7 +2,9 @@
 
 Bu o‘yin $4 \times 4$ katakli taxtada o‘ynaladi. Unda 1 dan 15 gacha raqamlangan 15 ta tosh bor, bitta katak esa bo‘sh qoladi va 0 bilan belgilanadi. Har safar toshlardan birini bo‘sh katakka surib, taxtani quyidagi holatga keltirish kerak:
 
-$$\begin{matrix} 1 & 2 & 3 & 4 \\ 5 & 6 & 7 & 8 \\ 9 & 10 & 11 & 12 \\ 13 & 14 & 15 & 0 \end{matrix}$$
+$$
+\begin{matrix} 1 & 2 & 3 & 4 \\ 5 & 6 & 7 & 8 \\ 9 & 10 & 11 & 12 \\ 13 & 14 & 15 & 0 \end{matrix}
+$$
 
 “15 Puzzle” o‘yinini 1880-yilda Noyes Chapman yaratgan.
 
@@ -12,13 +14,17 @@ Quyidagi masalani ko‘ramiz: taxtaning biror holati berilganida, uni maqsad hol
 
 Taxtada quyidagi holat berilgan bo‘lsin:
 
-$$\begin{matrix} a_1 & a_2 & a_3 & a_4 \\ a_5 & a_6 & a_7 & a_8 \\ a_9 & a_{10} & a_{11} & a_{12} \\ a_{13} & a_{14} & a_{15} & a_{16} \end{matrix}$$
+$$
+\begin{matrix} a_1 & a_2 & a_3 & a_4 \\ a_5 & a_6 & a_7 & a_8 \\ a_9 & a_{10} & a_{11} & a_{12} \\ a_{13} & a_{14} & a_{15} & a_{16} \end{matrix}
+$$
 
 Bu yerda elementlardan biri nolga teng va bo‘sh katakni bildiradi: $a_z = 0$.
 
 Nol elementini tashlab yuborib, taxtadagi joylashuvga mos quyidagi permutatsiyani ko‘ramiz:
 
-$$a_1 a_2 \ldots a_{z-1} a_{z+1} \ldots a_{15} a_{16}$$
+$$
+a_1 a_2 \ldots a_{z-1} a_{z+1} \ldots a_{15} a_{16}
+$$
 
 Bu permutatsiyadagi inversiyalar sonini $N$ deb belgilaymiz. Ya’ni $i < j$, ammo $a_i > a_j$ bo‘lgan $a_i$ va $a_j$ juftliklari soni $N$ ga teng.
 

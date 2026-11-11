@@ -8,14 +8,18 @@ Biror bit birga teng bo‘lsa, uni **o‘rnatilgan**, nolga teng bo‘lsa esa **
 
 $(a_k a_{k-1} \dots a_1 a_0)_2$ ikkilik soni quyidagi sonni ifodalaydi:
 
-$$(a_k a_{k-1} \dots a_1 a_0)_2 = a_k \cdot 2^k + a_{k-1} \cdot 2^{k-1} + \dots + a_1 \cdot 2^1 + a_0 \cdot 2^0.$$
+$$
+(a_k a_{k-1} \dots a_1 a_0)_2 = a_k \cdot 2^k + a_{k-1} \cdot 2^{k-1} + \dots + a_1 \cdot 2^1 + a_0 \cdot 2^0.
+$$
 
 Masalan, $1101_2$ ikkilik soni 13 sonini ifodalaydi:
 
-$$\begin{align}
+$$
+\begin{align}
 1101_2 &= 1 \cdot 2^3 + 1 \cdot 2^2 + 0 \cdot 2^1 + 1 \cdot 2^0 \\
        &= 1\cdot 8 + 1 \cdot 4 + 0 \cdot 2 + 1 \cdot 1 = 13
-\end{align}$$
+\end{align}
+$$
 
 Kompyuterlar butun sonlarni ikkilik sonlar ko‘rinishida ifodalaydi.
 Musbat butun sonlar (ishorali va ishorasiz) shunchaki ikkilik raqamlari bilan ifodalanadi, manfiy qiymat ham olishi mumkin bo‘lgan ishorali sonlarning manfiy qiymatlari esa odatda [ikkilik qo‘shimcha kod](https://en.wikipedia.org/wiki/Two%27s_complement) yordamida ifodalanadi.

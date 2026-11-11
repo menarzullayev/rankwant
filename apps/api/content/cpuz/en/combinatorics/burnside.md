@@ -32,11 +32,13 @@ At the same time we introduce a partition of this set into equivalence classes.
 For example, suppose $n = 3$, and the tree consists of the root $1$ and its two children $2$ and $3$.
 Then the following functions $f_1$ and $f_2$ are considered equivalent.
 
-$$\begin{array}{ll}
+$$
+\begin{array}{ll}
 f_1(1) = 0 & f_2(1) = 0\\
 f_1(2) = 1 & f_2(2) = 0\\
 f_1(3) = 0 & f_2(3) = 1
-\end{array}$$
+\end{array}
+$$
 
 ### Invariant permutations {#invariant-permutations}
 
@@ -45,7 +47,9 @@ Intuitively this is understandable - we can rearrange the children of vertex $1$
 
 But formally this means that there exists an **invariant permutation** $\pi$ (i.e. a permutation which does not change the object itself, but only its representation), such that:
 
-$$f_2 \pi \equiv f_1$$
+$$
+f_2 \pi \equiv f_1
+$$
 
 So starting from the definition of objects, we can find all the invariant permutations, i.e. all permutations which do not change the object when applying the permutation to the representation.
 Then we can check whether two functions $f_1$ and $f_2$ are equivalent (i.e. if they correspond to the same object) by checking the condition $f_2 \pi \equiv f_1$ for each invariant permutation (or equivalently $f_1 \pi \equiv f_2$).
@@ -68,7 +72,9 @@ We denote by $I(\pi)$ the **number of fixed points** for the permutation $\pi$.
 Then **Burnside's lemma** goes as follows:
 the number of equivalence classes is equal to the sum of the numbers of fixed points with respect to all permutations from the group $G$, divided by the size of this group:
 
-$$|\text{Classes}| = \frac{1}{|G|} \sum_{\pi \in G} I(\pi)$$
+$$
+|\text{Classes}| = \frac{1}{|G|} \sum_{\pi \in G} I(\pi)
+$$
 
 Although Burnside's lemma itself is not so convenient to use in practice (it is unclear how to quickly look for the value $I(\pi)$, it most clearly reveals the mathematical essence on which the idea of calculating equivalence classes is based.
 
@@ -81,13 +87,17 @@ The proof was published by Kenneth P. Bogart in 1991.
 
 We need to prove the following statement:
 
-$$|\text{Classes}| \cdot |G| = \sum_{\pi \in G} I(\pi)$$
+$$
+|\text{Classes}| \cdot |G| = \sum_{\pi \in G} I(\pi)
+$$
 
 The value on the right side is nothing more than the number of "invariant pairs" $(f, \pi)$, i.e. pairs such that $f \pi \equiv f$.
 It is obvious that we can change the order of summation.
 We let the sum iterate over all elements $f$ and sum over the values $J(f)$ - the number of permutations for which $f$ is a fixed point.
 
-$$|\text{Classes}| \cdot |G| = \sum_{f} J(f)$$
+$$
+|\text{Classes}| \cdot |G| = \sum_{f} J(f)
+$$
 
 To prove this formula we will compose a table with columns labeled with all functions $f_i$ and rows labeled with all permutations $\pi_j$.
 And we fill the cells with $f_i \pi_j$.
@@ -109,7 +119,9 @@ Therefore within each column of a given equivalence class any element $g$ occurs
 
 Thus if we arbitrarily take one column from each equivalence class, and sum the number of elements in them, we obtain on one hand $|\text{Classes}| \cdot |G|$ (simply by multiplying the number of columns by the number of rows), and on the other hand the sum of the quantities $J(f)$ for all $f$ (this follows from all the previous arguments):
 
-$$|\text{Classes}| \cdot |G| = \sum_{f} J(f)$$
+$$
+|\text{Classes}| \cdot |G| = \sum_{f} J(f)
+$$
 
 ## Pólya enumeration theorem {#polya-enumeration-theorem}
 
@@ -123,7 +135,9 @@ The general formula of the theorem will not be discussed.
 We denote by $C(\pi)$ the number of cycles in the permutation $\pi$.
 Then the following formula (a **special case of the Pólya enumeration theorem**) holds:
 
-$$|\text{Classes}| = \frac{1}{|G|} \sum_{\pi \in G} k^{C(\pi)}$$
+$$
+|\text{Classes}| = \frac{1}{|G|} \sum_{\pi \in G} k^{C(\pi)}
+$$
 
 $k$ is the number of values that each representation element can take, in the case of the coloring of a binary tree this would be $k = 2$.
 
@@ -139,7 +153,9 @@ Since the result should obtain $f \equiv f \pi$, the elements touched by one cyc
 At the same time different cycles are independent.
 Thus for each permutation cycle $\pi$ we can choose one value (among $k$ possible) and thus we get the number of fixed points:
 
-$$I(\pi) = k^{C(\pi)}$$
+$$
+I(\pi) = k^{C(\pi)}
+$$
 
 ## Application: Coloring necklaces {#application-coloring-necklaces}
 
@@ -149,12 +165,14 @@ When comparing two necklaces, they can be rotated, but not reversed (i.e. a cycl
 
 In this problem we can immediately find the group of invariant permutations:
 
-$$\begin{align}
+$$
+\begin{align}
 \pi_0 &= 1 2 3 \dots n\\
 \pi_1 &= 2 3 \dots n 1\\
 \pi_2 &= 3 \dots n 12\\
 &\dots\\
-\pi_{n-1} &= n 1 2 3\dots\end{align}$$
+\pi_{n-1} &= n 1 2 3\dots\end{align}
+$$
 
 Let us find an explicit formula for calculating $C(\pi_i)$.
 First we note, that the permutation $\pi_i$ has at the $j$-th position the value $i + j$ (taken modulo $n$).
@@ -166,14 +184,18 @@ Thus the number of cycles in $\pi_i$ will be equal to $\gcd(i, n)$.
 
 Substituting these values into the Pólya enumeration theorem, we obtain the solution:
 
-$$\frac{1}{n} \sum_{i=1}^n k^{\gcd(i, n)}$$
+$$
+\frac{1}{n} \sum_{i=1}^n k^{\gcd(i, n)}
+$$
 
 You can leave this formula in this form, or you can simplify it even more.
 Let transfer the sum so that it iterates over all divisors of $n$.
 In the original sum there will be many equivalent terms: if $i$ is not a divisor of $n$, then such a divisor can be found after computing $\gcd(i, n)$.
 Therefore for each divisor $d ~|~ n$ its term $k^{\gcd(d, n)} = k^d$ will appear in the sum multiple times, i.e. the answer to the problem can be rewritten as
 
-$$\frac{1}{n} \sum_{d ~|~ n} C_d k^d,$$
+$$
+\frac{1}{n} \sum_{d ~|~ n} C_d k^d,
+$$
 
 where $C_d$ is the number of such numbers $i$ with $\gcd(i, n) = d$.
 We can find an explicit expression for this value.
@@ -181,7 +203,9 @@ Any such number $i$ has the form $i = d j$ with $\gcd(j, n / d) = 1$ (otherwise 
 So we can count the number of $j$ with this behavior.
 [Euler's phi function](/algorithms/algebra/phi-function) gives us the result $C_d = \phi(n / d)$, and therefore we get the answer:
 
-$$\frac{1}{n} \sum_{d ~|~ n} \phi\left(\frac{n}{d}\right) k^d$$
+$$
+\frac{1}{n} \sum_{d ~|~ n} \phi\left(\frac{n}{d}\right) k^d
+$$
 
 ## Application: Coloring a torus {#application-coloring-a-torus}
 

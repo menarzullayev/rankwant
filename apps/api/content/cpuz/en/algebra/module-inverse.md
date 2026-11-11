@@ -5,7 +5,9 @@
 A [modular multiplicative inverse](http://en.wikipedia.org/wiki/Modular_multiplicative_inverse) of an integer $a$ is an integer $x$ such that $a \cdot x$ is congruent to $1$ modular some modulus $m$.
 To write it in a formal way: we want to find an integer $x$ so that 
 
-$$a \cdot x \equiv 1 \mod m.$$
+$$
+a \cdot x \equiv 1 \mod m.
+$$
 
 We will also denote $x$ simply with $a^{-1}$.
 
@@ -19,7 +21,9 @@ In this article, we present two methods for finding the modular inverse in case 
 
 Consider the following equation (with unknown $x$ and $y$):
 
-$$a \cdot x + m \cdot y = 1$$
+$$
+a \cdot x + m \cdot y = 1
+$$
 
 This is a [Linear Diophantine equation in two variables](/algorithms/algebra/linear-diophantine-equation).
 As shown in the linked article, when $\gcd(a, m) = 1$, the equation has a solution which can be found using the [extended Euclidean algorithm](/algorithms/algebra/extended-euclid-algorithm).
@@ -27,7 +31,9 @@ Note that $\gcd(a, m) = 1$ is also the condition for the modular inverse to exis
 
 Now, if we take modulo $m$ of both sides, we can get rid of $m \cdot y$, and the equation becomes:
 
-$$a \cdot x \equiv 1 \mod m$$
+$$
+a \cdot x \equiv 1 \mod m
+$$
 
 Thus, the modular inverse of $a$ is $x$.
 
@@ -52,14 +58,18 @@ The resulting `x` from the extended Euclidean algorithm may be negative, so `x %
 
 Another method for finding modular inverse is to use Euler's theorem, which states that the following congruence is true if $a$ and $m$ are relatively prime:
 
-$$a^{\phi (m)} \equiv 1 \mod m$$
+$$
+a^{\phi (m)} \equiv 1 \mod m
+$$
 
 $\phi$ is [Euler's Totient function](/algorithms/algebra/phi-function).
 Again, note that $a$ and $m$ being relative prime was also the condition for the modular inverse to exist.
 
 If $m$ is a prime number, this simplifies to [Fermat's little theorem](http://en.wikipedia.org/wiki/Fermat's_little_theorem):
 
-$$a^{m - 1} \equiv 1 \mod m$$
+$$
+a^{m - 1} \equiv 1 \mod m
+$$
 
 Multiply both sides of the above equations by $a^{-1}$, and we get:
 
@@ -74,7 +84,9 @@ Even though this method is easier to understand than the method described in pre
 
 Given a prime modulus $m > a$ (or we can apply modulo to make it smaller in 1 step), according to [Euclidean Division](https://en.wikipedia.org/wiki/Euclidean_division)
 
-$$m = k \cdot a + r$$
+$$
+m = k \cdot a + r
+$$
 
 where $k = \left\lfloor \frac{m}{a} \right\rfloor$ and $r = m \bmod a$, then
 

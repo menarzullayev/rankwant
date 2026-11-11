@@ -11,7 +11,9 @@ Besides that, continued fractions are closely related to Euclidean algorithm whi
 >
 > Let $a_0, a_1, \dots, a_k \in \mathbb Z$ and $a_1, a_2, \dots, a_k \geq 1$. Then the expression
 >
-> $$r=a_0 + \frac{1}{a_1 + \frac{1}{\dots + \frac{1}{a_k}}},$$
+> $$
+> r=a_0 + \frac{1}{a_1 + \frac{1}{\dots + \frac{1}{a_k}}},
+> $$
 >
 > is called the **continued fraction representation** of the rational number $r$ and is denoted shortly as $r=[a_0;a_1,a_2,\dots,a_k]$.
 
@@ -26,7 +28,9 @@ Besides that, continued fractions are closely related to Euclidean algorithm whi
 
 It can be proven that any rational number can be represented as a continued fraction in exactly $2$ ways:
 
-$$r = [a_0;a_1,\dots,a_k,1] = [a_0;a_1,\dots,a_k+1].$$
+$$
+r = [a_0;a_1,\dots,a_k,1] = [a_0;a_1,\dots,a_k+1].
+$$
 
 Moreover, the length $k$ of such continued fraction is estimated as $k = O(\log \min(p, q))$ for $r=\frac{p}{q}$.
 
@@ -36,7 +40,9 @@ The reasoning behind this will be clear once we delve into the details of the co
 >
 > Let $a_0,a_1,a_2, \dots$ be an integer sequence such that $a_1, a_2, \dots \geq 1$. Let $r_k = [a_0; a_1, \dots, a_k]$. Then the expression
 >
-> $$r = a_0 + \frac{1}{a_1 + \frac{1}{a_2+\dots}} = \lim\limits_{k \to \infty} r_k.$$
+> $$
+> r = a_0 + \frac{1}{a_1 + \frac{1}{a_2+\dots}} = \lim\limits_{k \to \infty} r_k.
+> $$
 >
 > is called the **continued fraction representation** of the irrational number $r$ and is denoted shortly as $r = [a_0;a_1,a_2,\dots]$.
 
@@ -52,15 +58,21 @@ Another important observation is that $\frac{1}{r}=[0;a_0, a_1, \dots]$ when $a_
 
 > Consider $r = [1; 1, 1, 1, \dots]$. It can be proven by induction that $r_k = \frac{F_{k+2}}{F_{k+1}}$, where $F_k$ is the Fibonacci sequence defined as $F_0 = 0$, $F_1 = 1$ and $F_{k} = F_{k-1} + F_{k-2}$. From the Binet's formula, it is known that
 >
-> $$r_k = \frac{\phi^{k+2} - \psi^{k+2}}{\phi^{k+1} - \psi^{k+1}},$$
+> $$
+> r_k = \frac{\phi^{k+2} - \psi^{k+2}}{\phi^{k+1} - \psi^{k+1}},
+> $$
 >
 > where $\phi = \frac{1+\sqrt{5}}{2} \approx 1.618$ is the golden ratio and $\psi = \frac{1-\sqrt{5}}{2} = -\frac{1}{\phi} \approx -0.618$. Thus,
 >
-> $$r = 1+\frac{1}{1+\frac{1}{1+\dots}}=\lim\limits_{k \to \infty} r_k = \phi = \frac{1+\sqrt{5}}{2}.$$
+> $$
+> r = 1+\frac{1}{1+\frac{1}{1+\dots}}=\lim\limits_{k \to \infty} r_k = \phi = \frac{1+\sqrt{5}}{2}.
+> $$
 >
 > Note that in this specific case, an alternative way to find $r$ would be to solve the equation
 >
-> $$r = 1+\frac{1}{r} \implies r^2 = r + 1. $$
+> $$
+> r = 1+\frac{1}{r} \implies r^2 = r + 1.
+> $$
 
 > **Definition**
 >
@@ -78,11 +90,15 @@ From the definitions above, one can conclude that $s_k \geq 1$ for $k \geq 1$.
 
 Treating $[a_0; a_1, \dots, a_k]$ as a formal algebraic expression and allowing arbitrary real numbers instead of $a_i$, we obtain
 
-$$r = [a_0; a_1, \dots, a_{k-1}, s_k].$$
+$$
+r = [a_0; a_1, \dots, a_{k-1}, s_k].
+$$
 
 In particular, $r = [s_0] = s_0$. On the other hand, we can express $s_k$ as
 
-$$s_k = [a_k; s_{k+1}] = a_k + \frac{1}{s_{k+1}},$$
+$$
+s_k = [a_k; s_{k+1}] = a_k + \frac{1}{s_{k+1}},
+$$
 
 meaning that we can compute $a_k = \lfloor s_k \rfloor$ and $s_{k+1} = (s_k - a_k)^{-1}$ from $s_k$.
 
@@ -96,11 +112,15 @@ In the code snippets we will mostly assume finite continued fractions.
 
 From $s_k$, the transition to $s_{k+1}$ looks like
 
-$$s_k =\left\lfloor s_k \right\rfloor + \frac{1}{s_{k+1}}.$$
+$$
+s_k =\left\lfloor s_k \right\rfloor + \frac{1}{s_{k+1}}.
+$$
 
 From this expression, the next complete quotient $s_{k+1}$ is obtained as
 
-$$s_{k+1} = \left(s_k-\left\lfloor s_k\right\rfloor\right)^{-1}.$$
+$$
+s_{k+1} = \left(s_k-\left\lfloor s_k\right\rfloor\right)^{-1}.
+$$
 
 For $s_k=\frac{p}{q}$ it means that
 
@@ -144,7 +164,9 @@ To provide some motivation for further study of continued fraction, we give some
 >
 > For the convergents $r_k = \frac{p_k}{q_k}$, the following recurrence stands, allowing their fast computation:
 >
-> $$\frac{p_k}{q_k}=\frac{a_k p_{k-1} + p_{k-2}}{a_k q_{k-1} + q_{k-2}},$$
+> $$
+> \frac{p_k}{q_k}=\frac{a_k p_{k-1} + p_{k-2}}{a_k q_{k-1} + q_{k-2}},
+> $$
 >
 > where $\frac{p_{-1}}{q_{-1}}=\frac{1}{0}$ and $\frac{p_{-2}}{q_{-2}}=\frac{0}{1}$.
 
@@ -152,11 +174,15 @@ To provide some motivation for further study of continued fraction, we give some
 >
 > The deviation of $r_k = \frac{p_k}{q_k}$ from $r$ can be generally estimated as
 >
-> $$\left|\frac{p_k}{q_k}-r\right| \leq \frac{1}{q_k q_{k+1}} \leq \frac{1}{q_k^2}.$$
+> $$
+> \left|\frac{p_k}{q_k}-r\right| \leq \frac{1}{q_k q_{k+1}} \leq \frac{1}{q_k^2}.
+> $$
 >
 > Multiplying both sides with $q_k$, we obtain alternate estimation:
 >
-> $$|p_k - q_k r| \leq \frac{1}{q_{k+1}}.$$
+> $$
+> |p_k - q_k r| \leq \frac{1}{q_{k+1}}.
+> $$
 >
 > From the recurrence above it follows that $q_k$ grows at least as fast as Fibonacci numbers.
 >
@@ -174,7 +200,9 @@ To provide some motivation for further study of continued fraction, we give some
 >
 > All integers vertices on the hulls are obtained as $(q;p)$ such that
 >
-> $$\frac{p}{q} = \frac{tp_{k-1} + p_{k-2}}{tq_{k-1} + q_{k-2}}$$
+> $$
+> \frac{p}{q} = \frac{tp_{k-1} + p_{k-2}}{tq_{k-1} + q_{k-2}}
+> $$
 >
 > for integer $0 \leq t \leq a_k$. In other words, the set of lattice points on the hulls corresponds to the set of semiconvergents.
 >
@@ -196,25 +224,31 @@ Below you will find the further explanation and a bit of intuition and interpret
 
 Let's take a closer look at the convergents that were defined earlier. For $r=[a_0, a_1, a_2, \dots]$, its convergents are
 
+$$
 \begin{gather}
 r_0=[a_0],\\r_1=[a_0, a_1],\\ \dots,\\ r_k=[a_0, a_1, \dots, a_k].
 \end{gather}
+$$
 
 Convergents are the core concept of continued fractions, so it is important to study their properties.
 
 For the number $r$, its $k$-th convergent $r_k = \frac{p_k}{q_k}$ can be computed as
 
-$$r_k = \frac{P_k(a_0,a_1,\dots,a_k)}{P_{k-1}(a_1,\dots,a_k)} = \frac{a_k p_{k-1} + p_{k-2}}{a_k q_{k-1} + q_{k-2}},$$
+$$
+r_k = \frac{P_k(a_0,a_1,\dots,a_k)}{P_{k-1}(a_1,\dots,a_k)} = \frac{a_k p_{k-1} + p_{k-2}}{a_k q_{k-1} + q_{k-2}},
+$$
 
 where $P_k(a_0,\dots,a_k)$ is [the continuant](https://en.wikipedia.org/wiki/Continuant_(mathematics)), a multivariate polynomial defined as
 
-$$P_k(x_0,x_1,\dots,x_k) = \det \begin{bmatrix}
+$$
+P_k(x_0,x_1,\dots,x_k) = \det \begin{bmatrix}
 x_k & 1 & 0 & \dots & 0 \\
 -1 & x_{k-1} & 1 & \dots & 0 \\
 0 & -1 & x_2 & . & \vdots \\
 \vdots & \vdots & . & \ddots & 1 \\
 0 & 0 & \dots & -1 & x_0
-\end{bmatrix}_{\textstyle .}$$
+\end{bmatrix}_{\textstyle .}
+$$
 
 Thus, $r_k$ is a weighted [mediant](https://en.wikipedia.org/wiki/Mediant_(mathematics)) of $r_{k-1}$ and $r_{k-2}$.
 
@@ -225,45 +259,59 @@ For consistency, two additional convergents $r_{-1} = \frac{1}{0}$ and $r_{-2} =
 >
 > The numerator and the denominator of $r_k$ can be seen as multivariate polynomials of $a_0, a_1, \dots, a_k$:
 >
-> $$r_k = \frac{P_k(a_0, a_1, \dots, a_k)}{Q_k(a_0,a_1, \dots, a_k)}.$$
+> $$
+> r_k = \frac{P_k(a_0, a_1, \dots, a_k)}{Q_k(a_0,a_1, \dots, a_k)}.
+> $$
 >
 > From the definition of convergents,
 >
-> $$r_k = a_0 + \frac{1}{[a_1;a_2,\dots, a_k]}= a_0 + \frac{Q_{k-1}(a_1, \dots, a_k)}{P_{k-1}(a_1, \dots, a_k)} = \frac{a_0 P_{k-1}(a_1, \dots, a_k) + Q_{k-1}(a_1, \dots, a_k)}{P_{k-1}(a_1, \dots, a_k)}.$$
+> $$
+> r_k = a_0 + \frac{1}{[a_1;a_2,\dots, a_k]}= a_0 + \frac{Q_{k-1}(a_1, \dots, a_k)}{P_{k-1}(a_1, \dots, a_k)} = \frac{a_0 P_{k-1}(a_1, \dots, a_k) + Q_{k-1}(a_1, \dots, a_k)}{P_{k-1}(a_1, \dots, a_k)}.
+> $$
 >
 > From this follows $Q_k(a_0, \dots, a_k) = P_{k-1}(a_1, \dots, a_k)$. This yields the relation
 >
-> $$P_k(a_0, \dots, a_k) = a_0 P_{k-1}(a_1, \dots, a_k) + P_{k-2}(a_2, \dots, a_k).$$
+> $$
+> P_k(a_0, \dots, a_k) = a_0 P_{k-1}(a_1, \dots, a_k) + P_{k-2}(a_2, \dots, a_k).
+> $$
 >
 > Initially, $r_0 = \frac{a_0}{1}$ and $r_1 = \frac{a_0 a_1 + 1}{a_1}$, thus
 >
-> $$\begin{align}P_0(a_0)&=a_0,\\ P_1(a_0, a_1) &= a_0 a_1 + 1.\end{align}$$
+> $$
+> \begin{align}P_0(a_0)&=a_0,\\ P_1(a_0, a_1) &= a_0 a_1 + 1.\end{align}
+> $$
 >
 > For consistency, it is convenient to define $P_{-1} = 1$ and $P_{-2}=0$ and formally say that $r_{-1} = \frac{1}{0}$ and $r_{-2}=\frac{0}{1}$.
 >
 > From numerical analysis, it is known that the determinant of an arbitrary tridiagonal matrix
 >
-> $$T_k = \det \begin{bmatrix}
+> $$
+> T_k = \det \begin{bmatrix}
 > a_0 & b_0 & 0 & \dots & 0 \\
 > c_0 & a_1 & b_1 & \dots & 0 \\
 > 0 & c_1 & a_2 & . & \vdots \\
 > \vdots & \vdots & . & \ddots & c_{k-1} \\
 > 0 & 0 & \dots & b_{k-1} & a_k
-> \end{bmatrix}$$
+> \end{bmatrix}
+> $$
 >
 > can be computed recursively as $T_k = a_k T_{k-1} - b_{k-1} c_{k-1} T_{k-2}$. Comparing it to $P_k$, we get a direct expression
 >
-> $$P_k = \det \begin{bmatrix}
+> $$
+> P_k = \det \begin{bmatrix}
 > x_k & 1 & 0 & \dots & 0 \\
 > -1 & x_{k-1} & 1 & \dots & 0 \\
 > 0 & -1 & x_2 & . & \vdots \\
 > \vdots & \vdots & . & \ddots & 1 \\
 > 0 & 0 & \dots & -1 & x_0
-> \end{bmatrix}_{\textstyle .}$$
+> \end{bmatrix}_{\textstyle .}
+> $$
 >
 > This polynomial is also known as [the continuant](https://en.wikipedia.org/wiki/Continuant_(mathematics)) due to its close relation with continued fraction. The continuant won't change if the sequence on the main diagonal is reversed. This yields an alternative formula to compute it:
 >
-> $$P_k(a_0, \dots, a_k) = a_k P_{k-1}(a_0, \dots, a_{k-1}) + P_{k-2}(a_0, \dots, a_{k-2}).$$
+> $$
+> P_k(a_0, \dots, a_k) = a_k P_{k-1}(a_0, \dots, a_{k-1}) + P_{k-2}(a_0, \dots, a_{k-2}).
+> $$
 
 ### Implementation {#implementation}
 
@@ -493,56 +541,80 @@ Thus, numbers on the same levels of the Stern-Brocot tree and the Calkin-Wilf tr
 
 For the number $r$ and its $k$-th convergent $r_k=\frac{p_k}{q_k}$ the following formula stands:
 
-$$r_k = a_0 + \sum\limits_{i=1}^k \frac{(-1)^{i-1}}{q_i q_{i-1}}.$$
+$$
+r_k = a_0 + \sum\limits_{i=1}^k \frac{(-1)^{i-1}}{q_i q_{i-1}}.
+$$
 
 In particular, it means that 
 
-$$r_k - r_{k-1} = \frac{(-1)^{k-1}}{q_k q_{k-1}}$$
+$$
+r_k - r_{k-1} = \frac{(-1)^{k-1}}{q_k q_{k-1}}
+$$
 
 and 
 
-$$p_k q_{k-1} - p_{k-1} q_k = (-1)^{k-1}.$$
+$$
+p_k q_{k-1} - p_{k-1} q_k = (-1)^{k-1}.
+$$
 
 From this we can conclude that
 
-$$\left| r-\frac{p_k}{q_k} \right| \leq \frac{1}{q_{k+1}q_k} \leq \frac{1}{q_k^2}.$$
+$$
+\left| r-\frac{p_k}{q_k} \right| \leq \frac{1}{q_{k+1}q_k} \leq \frac{1}{q_k^2}.
+$$
 
 The latter inequality is due to the fact that $r_k$ and $r_{k+1}$ are generally located on different sides of $r$, thus
 
-$$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
+$$
+|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.
+$$
 
 > **Detailed explanation**
 >
 >
 > To estimate $|r-r_k|$, we start by estimating the difference between adjacent convergents. By definition,
 >
-> $$\frac{p_k}{q_k} - \frac{p_{k-1}}{q_{k-1}} = \frac{p_k q_{k-1} - p_{k-1} q_k}{q_k q_{k-1}}.$$
+> $$
+> \frac{p_k}{q_k} - \frac{p_{k-1}}{q_{k-1}} = \frac{p_k q_{k-1} - p_{k-1} q_k}{q_k q_{k-1}}.
+> $$
 >
 > Replacing $p_k$ and $q_k$ in the numerator with their recurrences, we get
 >
-> $$\begin{align} p_k q_{k-1} - p_{k-1} q_k &= (a_k p_{k-1} + p_{k-2}) q_{k-1} - p_{k-1} (a_k q_{k-1} + q_{k-2})
-> \\&= p_{k-2} q_{k-1} - p_{k-1} q_{k-2},\end{align}$$
+> $$
+> \begin{align} p_k q_{k-1} - p_{k-1} q_k &= (a_k p_{k-1} + p_{k-2}) q_{k-1} - p_{k-1} (a_k q_{k-1} + q_{k-2})
+> \\&= p_{k-2} q_{k-1} - p_{k-1} q_{k-2},\end{align}
+> $$
 >
 > thus the numerator of $r_k - r_{k-1}$ is always the negated numerator of $r_{k-1} - r_{k-2}$. It, in turn, equals to $1$ for
 >
-> $$r_1 - r_0=\left(a_0+\frac{1}{a_1}\right)-a_0=\frac{1}{a_1},$$
+> $$
+> r_1 - r_0=\left(a_0+\frac{1}{a_1}\right)-a_0=\frac{1}{a_1},
+> $$
 >
 > thus
 >
-> $$r_k - r_{k-1} = \frac{(-1)^{k-1}}{q_k q_{k-1}}.$$
+> $$
+> r_k - r_{k-1} = \frac{(-1)^{k-1}}{q_k q_{k-1}}.
+> $$
 >
 > This yields an alternative representation of $r_k$ as a partial sum of infinite series:
 >
-> $$r_k = (r_k - r_{k-1}) + \dots + (r_1 - r_0) + r_0
-> = a_0 + \sum\limits_{i=1}^k \frac{(-1)^{i-1}}{q_i q_{i-1}}.$$
+> $$
+> r_k = (r_k - r_{k-1}) + \dots + (r_1 - r_0) + r_0
+> = a_0 + \sum\limits_{i=1}^k \frac{(-1)^{i-1}}{q_i q_{i-1}}.
+> $$
 >
 > From the recurrent relation it follows that $q_k$ monotonously increases at least as fast as Fibonacci numbers, thus
 >
-> $$r = \lim\limits_{k \to \infty} r_k = a_0 + \sum\limits_{i=1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}$$
+> $$
+> r = \lim\limits_{k \to \infty} r_k = a_0 + \sum\limits_{i=1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}
+> $$
 >
 > is always well-defined, as the underlying series always converge. Noteworthy, the residual series
 >
-> $$r-r_k = \sum\limits_{i=k+1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}$$
+> $$
+> r-r_k = \sum\limits_{i=k+1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}
+> $$
 >
 > has the same sign as $(-1)^k$ due to how fast $q_i q_{i-1}$ decreases. Hence even-indexed $r_k$ approach $r$ from below while odd-indexed $r_k$ approach it from above:
 >
@@ -553,11 +625,15 @@ $$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
 >
 > From this picture we can see that
 >
-> $$|r-r_k| = |r_k - r_{k+1}| - |r-r_{k+1}| \leq |r_k - r_{k+1}|,$$
+> $$
+> |r-r_k| = |r_k - r_{k+1}| - |r-r_{k+1}| \leq |r_k - r_{k+1}|,
+> $$
 >
 > thus the distance between $r$ and $r_k$ is never larger than the distance between $r_k$ and $r_{k+1}$:
 >
-> $$\left|r-\frac{p_k}{q_k}\right| \leq \frac{1}{q_k q_{k+1}} \leq \frac{1}{q_k^2}.$$
+> $$
+> \left|r-\frac{p_k}{q_k}\right| \leq \frac{1}{q_k q_{k+1}} \leq \frac{1}{q_k^2}.
+> $$
 
 > **Extended Euclidean?**
 >
@@ -569,7 +645,9 @@ $$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
 >
 > Let $\frac{A}{B}=[a_0; a_1, \dots, a_k]$. It was proved above that $p_k q_{k-1} - p_{k-1} q_k = (-1)^{k-1}$. Substituting $p_k$ and $q_k$ with $A$ and $B$, we get
 >
-> $$Aq_{k-1} - Bp_{k-1} = (-1)^{k-1} g,$$
+> $$
+> Aq_{k-1} - Bp_{k-1} = (-1)^{k-1} g,
+> $$
 >
 > where $g = \gcd(A, B)$. If $C$ is divisible by $g$, then the solution is $x = (-1)^{k-1}\frac{C}{g} q_{k-1}$ and $y = (-1)^{k}\frac{C}{g} p_{k-1}$.
 >
@@ -596,11 +674,15 @@ Another important concept for continued fractions are the so-called [linear frac
 
 A composition $(L_0 \circ L_1)(x) = L_0(L_1(x))$ of linear fractional transforms $L_0(x)=\frac{a_0 x + b_0}{c_0 x + d_0}$ and $L_1(x)=\frac{a_1 x + b_1}{c_1 x + d_1}$ is itself a linear fractional transform:
 
-$$\frac{a_0\frac{a_1 x + b_1}{c_1 x + d_1} + b_0}{c_0 \frac{a_1 x + b_1}{c_1 x + d_1} + d_0} = \frac{a_0(a_1 x + b_1) + b_0 (c_1 x + d_1)}{c_0 (a_1 x + b_1) + d_0 (c_1 x + d_1)} = \frac{(a_0 a_1 + b_0 c_1) x + (a_0 b_1 + b_0 d_1)}{(c_0 a_1 + d_0 c_1) x + (c_0 b_1 + d_0 d_1)}.$$
+$$
+\frac{a_0\frac{a_1 x + b_1}{c_1 x + d_1} + b_0}{c_0 \frac{a_1 x + b_1}{c_1 x + d_1} + d_0} = \frac{a_0(a_1 x + b_1) + b_0 (c_1 x + d_1)}{c_0 (a_1 x + b_1) + d_0 (c_1 x + d_1)} = \frac{(a_0 a_1 + b_0 c_1) x + (a_0 b_1 + b_0 d_1)}{(c_0 a_1 + d_0 c_1) x + (c_0 b_1 + d_0 d_1)}.
+$$
 
 Inverse of a linear fractional transform, is also a linear fractional transform:
 
-$$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
+$$
+y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.
+$$
 > **[DMOPC '19 Contest 7 P4 - Bob and Continued Fractions](https://dmoj.ca/problem/dmopc19c7p4)**
 >
 > You're given an array of positive integers $a_1, \dots, a_n$. You need to answer $m$ queries. Each query is to compute $[a_l; a_{l+1}, \dots, a_r]$.
@@ -613,11 +695,15 @@ $$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
 >
 > Let's denote $L_{k}(x) = [a_k; x] = a_k + \frac{1}{x} = \frac{a_k\cdot x+1}{1\cdot x + 0}$. Note that $L_k(\infty) = a_k$. In this notion, it holds that
 >
-> $$[a_0; a_1, \dots, a_k, x] = [a_0; [a_1; [\dots; [a_k; x]]]] = (L_0 \circ L_1 \circ \dots \circ L_k)(x) = \frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}.$$
+> $$
+> [a_0; a_1, \dots, a_k, x] = [a_0; [a_1; [\dots; [a_k; x]]]] = (L_0 \circ L_1 \circ \dots \circ L_k)(x) = \frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}.
+> $$
 >
 > Thus, the problem boils down to the computation of
 >
-> $$(L_l \circ L_{l+1} \circ \dots \circ L_r)(\infty).$$
+> $$
+> (L_l \circ L_{l+1} \circ \dots \circ L_r)(\infty).
+> $$
 >
 > Composition of transforms is associative, so it's possible to compute in each node of a segment tree the composition of transforms in its subtree.
 
@@ -633,7 +719,9 @@ $$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
 >
 > Hence, by consequentially adding $L_{a_0}$, $L_{a_1}$ and so on we would be able to compute
 >
-> $$(L \circ L_{a_0} \circ \dots \circ L_{a_k})(x) = L\left(\frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}\right)=\frac{a_k x + b_k}{c_k x + d_k}.$$
+> $$
+> (L \circ L_{a_0} \circ \dots \circ L_{a_k})(x) = L\left(\frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}\right)=\frac{a_k x + b_k}{c_k x + d_k}.
+> $$
 >
 > Since $L(x)$ is invertible, it is also monotonous in $x$. Therefore, for any $x \geq 0$ it holds that $L(\frac{p_k x + p_{k-1}}{q_k x + q_{k-1}})$ is between $L(\frac{p_k}{q_k}) = \frac{a_k}{c_k}$ and $L(\frac{p_{k-1}}{q_{k-1}}) = \frac{b_k}{d_k}$.
 >
@@ -653,7 +741,9 @@ $$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
 >
 > Then, you check if $\lfloor \frac{a}{e} \rfloor = \lfloor \frac{b}{f} \rfloor = \lfloor \frac{c}{g} \rfloor = \lfloor \frac{d}{h} \rfloor$ and if they all agree, you use this value as $c_k$ in the resulting fraction and change the transform as
 >
-> $$L(x, y) \mapsto \frac{1}{L(x, y) - c_k}.$$
+> $$
+> L(x, y) \mapsto \frac{1}{L(x, y) - c_k}.
+> $$
 
 > **Definition**
 >
@@ -663,21 +753,29 @@ $$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
 
 For $x = [1; 1, 1, \dots]$ it holds that $x = 1 + \frac{1}{x}$, thus $x^2 = x + 1$. There is a generic connection between periodic continued fractions and quadratic equations. Consider the following equation:
 
-$$ x = [a_0; a_1, \dots, a_k, x].$$
+$$
+x = [a_0; a_1, \dots, a_k, x].
+$$
 
 On one hand, this equation means that the continued fraction representation of $x$ is periodic with the period $k+1$.
 
 On the other hand, using the formula for convergents, this equation means that
 
-$$x = \frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}.$$
+$$
+x = \frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}.
+$$
 
 That is, $x$ is a linear fractional transformation of itself. It follows from the equation that $x$ is a root of the second degree equation:
 
-$$q_k x^2 + (q_{k-1}-p_k)x - p_{k-1} = 0.$$
+$$
+q_k x^2 + (q_{k-1}-p_k)x - p_{k-1} = 0.
+$$
 
 Similar reasoning stands for continued fractions that are eventually periodic, that is $x = [a_0; a_1, \dots, a_k, y]$ for $y=[b_0; b_1, \dots, b_k, y]$. Indeed, from first equation we derive that $x = L_0(y)$ and from second equation that $y = L_1(y)$, where $L_0$ and $L_1$ are linear fractional transformations. Therefore,
 
-$$x = (L_0 \circ L_1)(y) = (L_0 \circ L_1 \circ L_0^{-1})(x).$$
+$$
+x = (L_0 \circ L_1)(y) = (L_0 \circ L_1 \circ L_0^{-1})(x).
+$$
 
 One can further prove (and it was first done by Lagrange) that for arbitrary quadratic equation $ax^2+bx+c=0$ with integer coefficients, its solution $x$ is an eventually periodic continued fraction.
 
@@ -689,25 +787,35 @@ One can further prove (and it was first done by Lagrange) that for arbitrary qua
 >
 > For the $k$-th complete quotient $s_k$ of the number it generally holds that
 >
-> $$\alpha = [a_0; a_1, \dots, a_{k-1}, s_k] = \frac{s_k p_{k-1} + p_{k-2}}{s_k q_{k-1} + q_{k-2}}.$$
+> $$
+> \alpha = [a_0; a_1, \dots, a_{k-1}, s_k] = \frac{s_k p_{k-1} + p_{k-2}}{s_k q_{k-1} + q_{k-2}}.
+> $$
 >
 > Therefore, 
 >
-> $$s_k = -\frac{\alpha q_{k-1} - p_{k-1}}{\alpha q_k - p_k} = -\frac{q_{k-1} y \sqrt n + (x q_{k-1} - z p_{k-1})}{q_k y \sqrt n + (xq_k-zp_k)}.$$
+> $$
+> s_k = -\frac{\alpha q_{k-1} - p_{k-1}}{\alpha q_k - p_k} = -\frac{q_{k-1} y \sqrt n + (x q_{k-1} - z p_{k-1})}{q_k y \sqrt n + (xq_k-zp_k)}.
+> $$
 >
 > Multiplying the numerator and denominator by $(xq_k - zp_k) - q_k y \sqrt n$, we'll get rid of $\sqrt n$ in the denominator, thus the complete quotients are of form
 >
-> $$s_k = \frac{x_k + y_k \sqrt n}{z_k}.$$
+> $$
+> s_k = \frac{x_k + y_k \sqrt n}{z_k}.
+> $$
 >
 > Let's find $s_{k+1}$, assuming that $s_k$ is known.
 >
 > First of all, $a_k = \lfloor s_k \rfloor = \left\lfloor \frac{x_k + y_k \lfloor \sqrt n \rfloor}{z_k} \right\rfloor$. Then,
 >
-> $$s_{k+1} = \frac{1}{s_k-a_k} = \frac{z_k}{(x_k - z_k a_k) + y_k \sqrt n} = \frac{z_k (x_k - y_k a_k) - y_k z_k \sqrt n}{(x_k - y_k a_k)^2 - y_k^2 n}.$$
+> $$
+> s_{k+1} = \frac{1}{s_k-a_k} = \frac{z_k}{(x_k - z_k a_k) + y_k \sqrt n} = \frac{z_k (x_k - y_k a_k) - y_k z_k \sqrt n}{(x_k - y_k a_k)^2 - y_k^2 n}.
+> $$
 >
 > Thus, if we denote $t_k = x_k - y_k a_k$, it will hold that
 >
+> $$
 > \begin{align}x_{k+1} &=& z_k t_k, \\ y_{k+1} &=& -y_k z_k, \\ z_{k+1} &=& t_k^2 - y_k^2 n.\end{align}
+> $$
 >
 > Nice thing about such representation is that if we reduce $x_{k+1}, y_{k+1}, z_{k+1}$ by their greatest common divisor, the result would be unique. Therefore, we may use it to check whether the current state has already been repeated and also to check where was the previous index that had this state.
 >
@@ -787,39 +895,55 @@ One can further prove (and it was first done by Lagrange) that for arbitrary qua
 
 Let $\vec r_k = (q_k;p_k)$ for the convergent $r_k = \frac{p_k}{q_k}$. Then, the following recurrence holds:
 
-$$\vec r_k = a_k \vec r_{k-1} + \vec r_{k-2}.$$
+$$
+\vec r_k = a_k \vec r_{k-1} + \vec r_{k-2}.
+$$
 
 Let $\vec r = (1;r)$. Then, each vector $(x;y)$ corresponds to the number that is equal to its slope coefficient $\frac{y}{x}$.
 
 With the notion of [pseudoscalar product](/algorithms/geometry/basic-geometry) $(x_1;y_1) \times (x_2;y_2) = x_1 y_2 - x_2 y_1$, it can be shown (see the explanation below) that
 
-$$s_k = -\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r} = \left|\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r}\right|.$$
+$$
+s_k = -\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r} = \left|\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r}\right|.
+$$
 
 The last equation is due to the fact that $r_{k-1}$ and $r_{k-2}$ lie on the different sides of $r$, thus pseudoscalar products of $\vec r_{k-1}$ and $\vec r_{k-2}$ with $\vec r$ have distinct signs. With $a_k = \lfloor s_k \rfloor$ in mind, formula for $\vec r_k$ now looks like
 
-$$\vec r_k = \vec r_{k-2} + \left\lfloor \left| \frac{\vec r \times \vec r_{k-2}}{\vec r \times \vec r_{k-1}}\right|\right\rfloor \vec r_{k-1}.$$
+$$
+\vec r_k = \vec r_{k-2} + \left\lfloor \left| \frac{\vec r \times \vec r_{k-2}}{\vec r \times \vec r_{k-1}}\right|\right\rfloor \vec r_{k-1}.
+$$
 
 Note that $\vec r_k \times r = (q;p) \times (1;r) = qr - p$, thus
 
-$$a_k = \left\lfloor \left| \frac{q_{k-1}r-p_{k-1}}{q_{k-2}r-p_{k-2}} \right| \right\rfloor.$$
+$$
+a_k = \left\lfloor \left| \frac{q_{k-1}r-p_{k-1}}{q_{k-2}r-p_{k-2}} \right| \right\rfloor.
+$$
 
 > **Explanation**
 >
 > As we have already noted, $a_k = \lfloor s_k \rfloor$, where $s_k = [a_k; a_{k+1}, a_{k+2}, \dots]$. On the other hand, from the convergent recurrence we derive that
 >
-> $$r = [a_0; a_1, \dots, a_{k-1}, s_k] = \frac{s_k p_{k-1} + p_{k-2}}{s_k q_{k-1} + q_{k-2}}.$$
+> $$
+> r = [a_0; a_1, \dots, a_{k-1}, s_k] = \frac{s_k p_{k-1} + p_{k-2}}{s_k q_{k-1} + q_{k-2}}.
+> $$
 >
 > In vector form, it rewrites as
 >
-> $$\vec r \parallel s_k \vec r_{k-1} + \vec r_{k-2},$$
+> $$
+> \vec r \parallel s_k \vec r_{k-1} + \vec r_{k-2},
+> $$
 >
 > meaning that $\vec r$ and $s_k \vec r_{k-1} + \vec r_{k-2}$ are collinear (that is, have the same slope coefficient). Taking the [pseudoscalar product](/algorithms/geometry/basic-geometry) of both parts with $\vec r$, we get
 >
-> $$0 = s_k (\vec r_{k-1} \times \vec r) + (\vec r_{k-2} \times \vec r),$$
+> $$
+> 0 = s_k (\vec r_{k-1} \times \vec r) + (\vec r_{k-2} \times \vec r),
+> $$
 >
 > which yields the final formula
 >
-> $$s_k = -\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r}.$$
+> $$
+> s_k = -\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r}.
+> $$
 
 > **Nose stretching algorithm**
 >
@@ -844,7 +968,9 @@ $$a_k = \left\lfloor \left| \frac{q_{k-1}r-p_{k-1}}{q_{k-2}r-p_{k-2}} \right| \r
 
 If we look on the triangle drawn on points $\vec r_{k-2}$, $\vec r_{k}$ and $\vec 0$ we will notice that its doubled area is
 
-$$|\vec r_{k-2} \times \vec r_k| = |\vec r_{k-2} \times (\vec r_{k-2} + a_k \vec r_{k-1})| = a_k |\vec r_{k-2} \times \vec r_{k-1}| = a_k.$$
+$$
+|\vec r_{k-2} \times \vec r_k| = |\vec r_{k-2} \times (\vec r_{k-2} + a_k \vec r_{k-1})| = a_k |\vec r_{k-2} \times \vec r_{k-1}| = a_k.
+$$
 
 Combined with the [Pick's theorem](/algorithms/geometry/picks-theorem), it means that there are no lattice points strictly inside the triangle and the only lattice points on its border are $\vec 0$ and $\vec r_{k-2} + t \cdot \vec r_{k-1}$ for all integer $t$ such that $0 \leq t \leq a_k$. When joined for all possible $k$ it means that there are no integer points in the space between polygons formed by even-indexed and odd-indexed convergent vectors.
 
@@ -1064,7 +1190,9 @@ Now that the most important facts and concepts were introduced, it is time to de
 >
 > This problem reduces to the previous one if you note that $a \bmod b = a - \lfloor \frac{a}{b} \rfloor b$. With this fact, the sum reduces to
 >
-> $$\sum\limits_{i=1}^n \left(p \cdot i - \left\lfloor \frac{p \cdot i}{q} \right\rfloor q\right) = \frac{pn(n+1)}{2}-q\sum\limits_{i=1}^n \left\lfloor \frac{p \cdot i}{q}\right\rfloor.$$
+> $$
+> \sum\limits_{i=1}^n \left(p \cdot i - \left\lfloor \frac{p \cdot i}{q} \right\rfloor q\right) = \frac{pn(n+1)}{2}-q\sum\limits_{i=1}^n \left\lfloor \frac{p \cdot i}{q}\right\rfloor.
+> $$
 >
 > However, summing up $\lfloor rx \rfloor$ for $x$ from $1$ to $N$ is something that we're capable of from the previous problem.
 >

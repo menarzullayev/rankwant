@@ -9,10 +9,12 @@ Dinic algoritmidan asosiy farqi — bloklovchi oqimni qanday topishimizda.
 $L$ qatlamli tarmoqni ko‘ramiz.
 Har bir tugun uchun uning _kirish potensiali_ va _chiqish potensiali_ni quyidagicha aniqlaymiz:
 
-$$\begin{align}
+$$
+\begin{align}
 p_{in}(v) &= \sum\limits_{(u, v)\in L}(c(u, v) - f(u, v)) \\
 p_{out}(v) &= \sum\limits_{(v, u)\in L}(c(v, u) - f(v, u))
-\end{align}$$
+\end{align}
+$$
 
 Shuningdek, $p_{in}(s) = p_{out}(t) = \infty$ deb olamiz.
 $p_{in}$ va $p_{out}$ berilganda _potensial_ni $p(v) = \min(p_{in}(v), p_{out}(v))$ deb aniqlaymiz.

@@ -4,7 +4,9 @@
 
 Given an undirected weighted graph $G$ with $n$ vertices and $m$ edges. A cut $C$ is a non-empty proper subset of the vertices (effectively, a cut is a partition of the vertices into two non-empty sets: the ones belonging to $C$ and all the others). The weight of a cut is the sum of the weights of the edges crossing the cut, i.e. the edges that have exactly one endpoint in $C$:
 
-$$ w(C) = \sum_{\substack{(v,u) \in E \\ u \in C,\ v \not\in C}} c(v,u), $$
+$$
+w(C) = \sum_{\substack{(v,u) \in E \\ u \in C,\ v \not\in C}} c(v,u),
+$$
 
 where $E$ denotes the set of all edges of the graph $G$, and $c(v,u)$ is the weight of the edge $(v,u)$.
 
@@ -22,7 +24,9 @@ The **basic idea** of the algorithm is very simple. We iteratively repeat the fo
 
 Thus we reduced the problem to the following one: for a given graph, find the **minimum cut between some, arbitrary, pair of vertices** $s$ and $t$. To solve this problem, the following, also iterative, process was proposed. We introduce a set of vertices $A$, which initially contains a single arbitrary vertex. At every step, we find the vertex **most strongly connected** to the set $A$, i.e. the vertex $v \not\in A$ for which the following quantity is maximal:
 
-$$ w(v,A) = \sum_{\substack{(v,u) \in E \\ u \in A}} c(v,u) $$
+$$
+w(v,A) = \sum_{\substack{(v,u) \in E \\ u \in A}} c(v,u)
+$$
 
 (i.e. the sum of the weights of the edges with one endpoint at $v$ and the other in $A$ is maximal).
 
@@ -40,15 +44,21 @@ Let us recall the statement of this theorem. If we add all the vertices to the s
 
 To prove it, consider an arbitrary $s$-$t$ cut $C$ and show that its weight cannot be less than the weight of the cut consisting of the single vertex $t$:
 
-$$ w(\{t\}) \le w(C). $$
+$$
+w(\{t\}) \le w(C).
+$$
 
 To do this, we prove the following fact. Let $A_v$ be the state of the set $A$ immediately before adding the vertex $v$. Let $C_v$ be the cut of the set $A_v \cup \{v\}$ induced by the cut $C$ (simply put, $C_v$ equals the intersection of these two sets of vertices). Further, a vertex $v$ is called active (with respect to the cut $C$) if the vertex $v$ and the previously added vertex belong to different parts of the cut $C$. Then, we claim, for any active vertex $v$ the following inequality holds:
 
-$$ w(v,A_v) \le w(C_v). $$
+$$
+w(v,A_v) \le w(C_v).
+$$
 
 In particular, $t$ is an active vertex (since the vertex added before it was $s$), and for $v = t$ this inequality turns into the statement of the theorem:
 
-$$ w(t,A_t) = w(\{t\}) \le w(C_t) = w(C). $$
+$$
+w(t,A_t) = w(\{t\}) \le w(C_t) = w(C).
+$$
 
 So, we will prove this inequality using mathematical induction.
 
@@ -56,25 +66,35 @@ For the first active vertex $v$ the inequality holds (moreover, it turns into an
 
 Now suppose this inequality holds for all active vertices up to some vertex $v$; let us prove it for the next active vertex $u$. To do this, transform the left-hand side:
 
-$$ w(u,A_u) \equiv w(u,A_v) + w(u,A_u \setminus A_v). $$
+$$
+w(u,A_u) \equiv w(u,A_v) + w(u,A_u \setminus A_v).
+$$
 
 First, note that:
 
-$$ w(u,A_v) \le w(v,A_v), $$
+$$
+w(u,A_v) \le w(v,A_v),
+$$
 
 which follows from the fact that when the set $A$ was equal to $A_v$, the vertex added to it was precisely $v$ and not $u$, which means it had the largest value of $w$.
 
 Further, since $w(v,A_v) \le w(C_v)$ by the induction hypothesis, we obtain:
 
-$$ w(u,A_v) \le w(C_v), $$
+$$
+w(u,A_v) \le w(C_v),
+$$
 
 from which we have:
 
-$$ w(u,A_u) \le w(C_v) + w(u,A_u \setminus A_v). $$
+$$
+w(u,A_u) \le w(C_v) + w(u,A_u \setminus A_v).
+$$
 
 Now note that the vertex $u$ and all vertices of $A_u \setminus A_v$ are in different parts of the cut $C$, so the quantity $w(u,A_u \setminus A_v)$ denotes the sum of the weights of the edges that are counted in $w(C_u)$ but were not yet counted in $w(C_v)$, from which we get:
 
-$$ w(u,A_u) \le w(C_v) + w(u,A_u \setminus A_v) \le w(C_u), $$
+$$
+w(u,A_u) \le w(C_v) + w(u,A_u \setminus A_v) \le w(C_u),
+$$
 
 as required.
 

@@ -10,7 +10,9 @@ We denote its area by $S$, the number of points with integer coordinates lying s
 
 Then, the **Pick's formula** states:
 
-$$S=I+\frac{B}{2}-1$$
+$$
+S=I+\frac{B}{2}-1
+$$
 
 In particular, if the values of $I$ and $B$ for a polygon are given, the area can be calculated in $O(1)$ without even knowing the vertices.
 
@@ -36,10 +38,12 @@ Unfortunately, this simple and beautiful formula cannot be generalized to higher
 
 John Reeve demonstrated this by proposing a tetrahedron (**Reeve tetrahedron**) with following vertices in 1957:
 
-$$A=(0,0,0),
+$$
+A=(0,0,0),
 B=(1,0,0),
 C=(0,1,0),
-D=(1,1,k),$$
+D=(1,1,k),
+$$
 
 where $k$ can be any natural number. Then for any $k$, the tetrahedron $ABCD$ does not contain integer point inside it and has only $4$ points on its borders, $A, B, C, D$. Thus, the volume and surface area may vary in spite of unchanged number of points within and on boundary. Therefore, Pick's theorem doesn't allow generalizations.
 

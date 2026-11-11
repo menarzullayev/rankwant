@@ -11,11 +11,15 @@ Algoritm Andrew Goldberg va Robert Tarjan tomonidan 1985-yilda ishlab chiqilgan.
 Algoritm davomida **dastlabki oqim** (`preflow`) bilan ishlashimiz kerak bo‘ladi — bu oqim funksiyasiga o‘xshash $f$ funksiya, ammo u oqim saqlanishi cheklovini bajarishi shart emas.
 U uchun faqat quyidagi cheklovlar
 
-$$0 \le f(e) \le c(e)$$
+$$
+0 \le f(e) \le c(e)
+$$
 
 va
 
-$$\sum_{(v, u) \in E} f((v, u)) \ge \sum_{(u, v) \in E} f((u, v))$$
+$$
+\sum_{(v, u) \in E} f((v, u)) \ge \sum_{(u, v) \in E} f((u, v))
+$$
 
 bajarilishi kerak.
 

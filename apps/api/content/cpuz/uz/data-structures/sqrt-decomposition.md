@@ -14,15 +14,21 @@ Sqrt decompositionning asosiy g‘oyasi — oldindan hisoblash. $a$ massivini uz
 
 Blok uzunligi ham, bloklar soni ham yuqoriga yaxlitlangan $\sqrt n$ ga teng deb olish mumkin:
 
-$$ s = \lceil \sqrt n \rceil $$
+$$
+s = \lceil \sqrt n \rceil
+$$
 
 Shunda $a$ massivi quyidagicha bloklarga bo‘linadi:
 
-$$ \underbrace{a[0], a[1], \dots, a[s-1]}_{\text{b[0]}}, \underbrace{a[s], \dots, a[2s-1]}_{\text{b[1]}}, \dots, \underbrace{a[(s-1) \cdot s], \dots, a[n-1]}_{\text{b[s-1]}} $$
+$$
+\underbrace{a[0], a[1], \dots, a[s-1]}_{\text{b[0]}}, \underbrace{a[s], \dots, a[2s-1]}_{\text{b[1]}}, \dots, \underbrace{a[(s-1) \cdot s], \dots, a[n-1]}_{\text{b[s-1]}}
+$$
 
 Agar $n$ soni $s$ ga bo‘linmasa, oxirgi blok boshqalaridan qisqaroq bo‘lishi mumkin; bu muammo tug‘dirmaydi. Har bir $k$-blok uchun undagi elementlar yig‘indisi ma’lum:
 
-$$ b[k] = \sum\limits_{i=k\cdot s}^{\min {(n-1,(k+1)\cdot s - 1})} a[i] $$
+$$
+b[k] = \sum\limits_{i=k\cdot s}^{\min {(n-1,(k+1)\cdot s - 1})} a[i]
+$$
 
 $b[k]$ qiymatlarini hisoblash $O(n)$ ta amal talab qiladi. Endi bu qiymatlar $[l,r]$ so‘roviga qanday yordam berishini ko‘ramiz.
 
@@ -30,7 +36,9 @@ Agar $[l,r]$ yetarlicha uzun bo‘lsa, uning ichida bir nechta to‘liq blok yot
 
 Demak, $[l,r]$ yig‘indisini topish uchun ikkita “dum” — $[l\dots (k + 1)\cdot s-1]$ va $[p\cdot s\dots r]$ elementlarini hamda $k+1$ dan $p-1$ gacha bo‘lgan to‘liq bloklarning $b[i]$ qiymatlarini qo‘shamiz:
 
-$$ \sum\limits_{i=l}^r a[i] = \sum\limits_{i=l}^{(k+1) \cdot s-1} a[i] + \sum\limits_{i=k+1}^{p-1} b[i] + \sum\limits_{i=p\cdot s}^r a[i] $$
+$$
+\sum\limits_{i=l}^r a[i] = \sum\limits_{i=l}^{(k+1) \cdot s-1} a[i] + \sum\limits_{i=k+1}^{p-1} b[i] + \sum\limits_{i=p\cdot s}^r a[i]
+$$
 
 _Eslatma: $k=p$ bo‘lsa, ya’ni $l$ va $r$ bitta blokda yotsa, yuqoridagi formula qo‘llanmaydi; bu holda elementlar odatiy usulda yig‘iladi._
 
@@ -91,7 +99,9 @@ else {
 
 Hozirgacha uzluksiz ostmassiv elementlari yig‘indisini topdik. Masalani **massivning alohida elementlarini yangilash** amali bilan kengaytirish mumkin. $a[i]$ o‘zgarsa, u tegishli bo‘lgan $k=i/s$ blokning $b[k]$ qiymatini bitta amal bilan yangilash kifoya:
 
-$$ b[k] += a_{new}[i] - a_{old}[i] $$
+$$
+b[k] += a_{new}[i] - a_{old}[i]
+$$
 
 Yig‘indi o‘rniga ostmassiv minimumi yoki maksimumini topish ham mumkin. Alohida elementlarni yangilash ham talab qilinsa, $b[k]$ ni qayta hisoblash uchun $k$-blokning barcha qiymatlarini ko‘rib chiqish kerak bo‘ladi; bu $O(s)=O(\sqrt n)$ ta amal oladi.
 

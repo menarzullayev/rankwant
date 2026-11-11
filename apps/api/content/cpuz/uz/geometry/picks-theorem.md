@@ -10,7 +10,9 @@ Uning yuzini $S$ bilan, ko‘pburchak ichida qat’iy yotgan butun koordinatali 
 
 U holda **Pick formulasi** quyidagini tasdiqlaydi:
 
-$$S=I+\frac{B}{2}-1$$
+$$
+S=I+\frac{B}{2}-1
+$$
 
 Xususan, agar ko‘pburchak uchun $I$ va $B$ qiymatlari berilgan bo‘lsa, uchlarini bilmasdan turib ham yuzni $O(1)$ da hisoblash mumkin.
 
@@ -36,10 +38,12 @@ Afsuski, bu sodda va go‘zal formulani yuqori o‘lchamlarga umumlashtirib bo�
 
 Buni 1957-yilda Jon Riv quyidagi uchlarga ega tetraedr (**Riv tetraedri**) taklif qilib ko‘rsatgan:
 
-$$A=(0,0,0),
+$$
+A=(0,0,0),
 B=(1,0,0),
 C=(0,1,0),
-D=(1,1,k),$$
+D=(1,1,k),
+$$
 
 bu yerda $k$ istalgan natural son bo‘lishi mumkin. U holda har qanday $k$ uchun $ABCD$ tetraedr ichida butun nuqta yo‘q va chegarasida faqat $4$ ta nuqta, ya’ni $A, B, C, D$ bor. Shunday qilib, ichkarisidagi va chegarasidagi nuqtalar soni o‘zgarmasa ham, hajm va sirt yuzi turlicha bo‘lishi mumkin. Demak, Pick teoremasini umumlashtirib bo‘lmaydi.
 

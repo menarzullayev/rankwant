@@ -108,10 +108,12 @@ Consider two non-empty substrings $u$ and $w$ (with $length(u) \le length(w)$).
 Then their sets $endpos$ either don't intersect at all, or $endpos(w)$ is a subset of $endpos(u)$.
 And it depends on if $u$ is a suffix of $w$ or not.
 
-$$\begin{cases}
+$$
+\begin{cases}
 endpos(w) \subseteq endpos(u) & \text{if } u \text{ is a suffix of } w \\
 endpos(w) \cap endpos(u) = \emptyset & \text{otherwise}
-\end{cases}$$
+\end{cases}
+$$
 
 Proof:
 If the sets $endpos(u)$ and $endpos(w)$ have at least one common element, then the strings $u$ and $w$ both end in that position, i.e. $u$ is a suffix of $w$.
@@ -168,7 +170,9 @@ The fact that we can construct a tree using the sets $endpos$ follows directly f
 Let us now consider an arbitrary state $v \ne t_0$, and its suffix link $link(v)$.
 From the definition of the suffix link and from Lemma 2 it follows that
 
-$$endpos(v) \subseteq endpos(link(v)),$$
+$$
+endpos(v) \subseteq endpos(link(v)),
+$$
 
 which together with the previous lemma proves the assertion:
 the tree of suffix links is essentially a tree of sets $endpos$.
@@ -192,7 +196,9 @@ Before proceeding to the algorithm itself, we recap the accumulated knowledge, a
   The suffix links form a tree with the root in $t_0$, and at the same time this tree forms an inclusion relationship between the sets $endpos$.
 - We can express $minlen(v)$ for $v \ne t_0$ using the suffix link $link(v)$ as:
   
-$$minlen(v) = len(link(v)) + 1$$
+$$
+minlen(v) = len(link(v)) + 1
+$$
 
 - If we start from an arbitrary state $v_0$ and follow the suffix links, then sooner or later we will reach the initial state $t_0$.
   In this case we obtain a sequence of disjoint intervals $[minlen(v_i); len(v_i)]$, which in union forms the continuous interval $[0; len(v_0)]$.
@@ -419,7 +425,9 @@ Therefore there are no more than $2n - 1$ vertices in such a tree.
 This bound of the number of states can actually be achieved for each $n$.
 A possible string is:
 
-$$\text{"abbb}\dots \text{bbb"}$$
+$$
+\text{"abbb}\dots \text{bbb"}
+$$
 
 In each iteration, starting at the third one, the algorithm will split a state, resulting in exactly $2n - 1$ states.
 
@@ -445,7 +453,9 @@ However, since the maximum number of states can only be achieved with the test c
 
 This bound can also be achieved with the string:
 
-$$\text{"abbb}\dots \text{bbbc"}$$
+$$
+\text{"abbb}\dots \text{bbbc"}
+$$
 
 ## Applications {#applications}
 
@@ -480,7 +490,9 @@ Given that the suffix automaton is a directed acyclic graph, the number of diffe
 Namely, let $d[v]$ be the number of ways, starting at the state $v$ (including the path of length zero).
 Then we have the recursion:
 
-$$d[v] = 1 + \sum_{w : (v, w, c) \in DAWG} d[w]$$
+$$
+d[v] = 1 + \sum_{w : (v, w, c) \in DAWG} d[w]
+$$
 
 I.e. $d[v]$ can be expressed as the sum of answers for all ends of the transitions of $v$.
 
@@ -516,7 +528,9 @@ the number of different substrings $d[v]$ and their total length $ans[v]$.
 We already described how to compute $d[v]$ in the previous task.
 The value $ans[v]$ can be computed using the recursion:
 
-$$ans[v] = \sum_{w : (v, w, c) \in DAWG} d[w] + ans[w]$$
+$$
+ans[v] = \sum_{w : (v, w, c) \in DAWG} d[w] + ans[w]
+$$
 
 We take the answer of each adjacent vertex $w$, and add to it $d[w]$ (since every substring is one character longer when starting from the state $v$).
 
@@ -584,7 +598,9 @@ To compute them we proceed as follows.
 For each state, if it was not created by cloning (and if it is not the initial state $t_0$), we initialize it with $cnt = 1$.
 Then we will go through all states in decreasing order of their length $len$, and add the current value $cnt[v]$ to the suffix links:
 
-$$cnt[link(v)] \text{ += } cnt[v]$$
+$$
+cnt[link(v)] \text{ += } cnt[v]
+$$
 
 This gives the correct value for each state.
 
@@ -617,11 +633,15 @@ In other words, we want to find in advance the minimal element of each set $endp
 To maintain these positions $firstpos$ we extend the function `sa_extend()`.
 When we create a new state $cur$, we set:
 
-$$firstpos(cur) = len(cur) - 1$$
+$$
+firstpos(cur) = len(cur) - 1
+$$
 
 And when we clone a vertex $q$ as $clone$, we set:
 
-$$firstpos(clone) = firstpos(q)$$
+$$
+firstpos(clone) = firstpos(q)
+$$
 
 (since the only other option for a value would be $firstpos(cur)$ which is definitely too big)
 
@@ -692,7 +712,9 @@ Computing $d[v]$ is very simple.
 If there is not transition using at least one character of the alphabet, then $d[v] = 1$.
 Otherwise one character is not enough, and so we need to take the minimum of all answers of all transitions:
 
-$$d[v] = 1 + \min_{w:(v,w,c) \in SA} d[w].$$
+$$
+d[v] = 1 + \min_{w:(v,w,c) \in SA} d[w].
+$$
 
 The answer to the problem will be $d[t_0]$, and the actual string can be restored using the computed array $d[]$.
 
@@ -757,7 +779,9 @@ We have to find the longest common substring, i.e. such a string $X$ that appear
 
 We join all strings into one large string $T$, separating the strings by a special characters $D_i$ (one for each string):
 
-$$T = S_1 + D_1 + S_2 + D_2 + \dots + S_k + D_k.$$
+$$
+T = S_1 + D_1 + S_2 + D_2 + \dots + S_k + D_k.
+$$
 
 Then we construct the suffix automaton for the string $T$.
 

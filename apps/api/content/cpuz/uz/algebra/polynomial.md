@@ -194,13 +194,19 @@ Boshqa foydali funksiyalar:
 
 Eng asosiy amal — ikkita ko‘phadni ko‘paytirish. Ya’ni $A$ va $B$ ko‘phadlar berilgan bo‘lsin:
 
-$$A = a_0 + a_1 x + \dots + a_n x^n$$
+$$
+A = a_0 + a_1 x + \dots + a_n x^n
+$$
 
-$$B = b_0 + b_1 x + \dots + b_m x^m$$
+$$
+B = b_0 + b_1 x + \dots + b_m x^m
+$$
 
 Quyidagicha aniqlanadigan $C = A \cdot B$ ko‘phadni hisoblash kerak:
 
-$$\boxed{C = \sum\limits_{i=0}^n \sum\limits_{j=0}^m a_i b_j x^{i+j}}  = c_0 + c_1 x + \dots + c_{n+m} x^{n+m}.$$
+$$
+\boxed{C = \sum\limits_{i=0}^n \sum\limits_{j=0}^m a_i b_j x^{i+j}}  = c_0 + c_1 x + \dots + c_{n+m} x^{n+m}.
+$$
 
 Uni [tez Fourier almashtirishi](/algorithms/algebra/fft) yordamida $O(n \log n)$ vaqtda hisoblash mumkin; bu yerdagi deyarli barcha metodlar undan qism algoritm sifatida foydalanadi.
 
@@ -214,13 +220,17 @@ Agar $A(0) \neq 0$ bo‘lsa, $A^{-1} A = 1$ shartni qanoatlantiradigan $A^{-1}(x
 
 Ushbu algoritm [Schönhage maqolasida](http://algo.inria.fr/seminars/sem00-01/schoenhage.pdf) tilga olingan va [Graeffe usulidan](https://en.wikipedia.org/wiki/Graeffe's_method) ilhomlangan. $B(x)=A(x)A(-x)$ uchun $B(x)=B(-x)$ o‘rinli ekani, ya’ni $B(x)$ juft ko‘phad ekani ma’lum. Bu uning faqat juft indeksli koeffitsiyentlari noldan farqli ekanini va $B(x)=T(x^2)$ ko‘rinishida ifodalanishini anglatadi. Demak, quyidagi o‘tishni bajarishimiz mumkin:
 
-$$A^{-1}(x) \equiv \frac{1}{A(x)} \equiv \frac{A(-x)}{A(x)A(-x)} \equiv \frac{A(-x)}{T(x^2)} \pmod{x^k}$$
+$$
+A^{-1}(x) \equiv \frac{1}{A(x)} \equiv \frac{A(-x)}{A(x)A(-x)} \equiv \frac{A(-x)}{T(x^2)} \pmod{x^k}
+$$
 
 $T(x)$ ni bitta ko‘paytirish bilan hisoblash mumkinligiga e’tibor bering; undan keyin uning teskari qatorining faqat birinchi yarmidagi koeffitsiyentlar kerak bo‘ladi. Shunday qilib, $A^{-1} \pmod{x^k}$ ni hisoblashning boshlang‘ich masalasi $T^{-1} \pmod{x^{\lceil k / 2 \rceil}}$ ni hisoblashga keltiriladi.
 
 Ushbu usulning murakkabligini
 
-$$T(n) = T(n/2) + O(n \log n) = O(n \log n)$$
+$$
+T(n) = T(n/2) + O(n \log n) = O(n \log n)
+$$
 
 deb baholash mumkin.
 
@@ -230,23 +240,31 @@ deb baholash mumkin.
 Bu yerda tasvirlanadigan umumiy jarayon Hensel lemmasidan kelib chiqqani uchun Hensel ko‘tarishi deb ataladi. Uni quyida batafsilroq ko‘rib chiqamiz, hozir esa maxsus yechimga e’tibor qaratamiz. Bu yerdagi “ko‘tarish” shuni anglatadiki, $A^{-1} \pmod x$ bo‘lgan $B_0=q_0=a_0^{-1}$ yaqinlashuvdan boshlaymiz va keyin $\bmod x^a$ dan $\bmod x^{2a}$ ga iterativ ravishda ko‘tarib boramiz.
 $B_k \equiv A^{-1} \pmod{x^a}$ bo‘lsin. Keyingi yaqinlashuv $A B_{k+1} \equiv 1 \pmod{x^{2a}}$ tenglamani qanoatlantirishi kerak va uni $B_{k+1} = B_k + x^a C$ ko‘rinishida ifodalash mumkin. Bundan
 
-$$A(B_k + x^{a}C) \equiv 1 \pmod{x^{2a}}$$
+$$
+A(B_k + x^{a}C) \equiv 1 \pmod{x^{2a}}
+$$
 
 tenglama kelib chiqadi.
 
 $A B_k \equiv 1 + x^a D \pmod{x^{2a}}$ bo‘lsin. U holda yuqoridagi tenglama
 
-$$x^a(D+AC) \equiv 0 \pmod{x^{2a}} \implies D \equiv -AC \pmod{x^a} \implies C \equiv -B_k D \pmod{x^a}$$
+$$
+x^a(D+AC) \equiv 0 \pmod{x^{2a}} \implies D \equiv -AC \pmod{x^a} \implies C \equiv -B_k D \pmod{x^a}
+$$
 
 ni beradi.
 
 Bundan yakuniy formulani olish mumkin:
 
-$$x^a C \equiv -B_k x^a D  \equiv B_k(1-AB_k) \pmod{x^{2a}} \implies \boxed{B_{k+1} \equiv B_k(2-AB_k) \pmod{x^{2a}}}$$
+$$
+x^a C \equiv -B_k x^a D  \equiv B_k(1-AB_k) \pmod{x^{2a}} \implies \boxed{B_{k+1} \equiv B_k(2-AB_k) \pmod{x^{2a}}}
+$$
 
 Shunday qilib, $B_0 \equiv a_0^{-1} \pmod x$ dan boshlab $AB_k \equiv 1 \pmod{x^{2^k}}$ shartni qanoatlantiradigan $B_k$ ketma-ketlikni
 
-$$T(n) = T(n/2) + O(n \log n) = O(n \log n)$$
+$$
+T(n) = T(n/2) + O(n \log n) = O(n \log n)
+$$
 
 murakkablikda hisoblaymiz.
 Bu yerdagi algoritm birinchi algoritmdan biroz murakkabroq ko‘rinishi mumkin, ammo uning juda mustahkam va amaliy asosi hamda boshqa nuqtayi nazardan qaralganda katta umumlashtirish imkoniyati bor; bu quyida tushuntiriladi.
@@ -256,37 +274,51 @@ Bu yerdagi algoritm birinchi algoritmdan biroz murakkabroq ko‘rinishi mumkin, 
 
 Darajalari $n$ va $m$ bo‘lgan $A(x)$ hamda $B(x)$ ko‘phadlarni ko‘rib chiqamiz. Yuqorida aytilganidek, $A(x)$ ni
 
-$$A(x) = B(x) D(x) + R(x), \deg R < \deg B$$
+$$
+A(x) = B(x) D(x) + R(x), \deg R < \deg B
+$$
 
 ko‘rinishda qayta yozish mumkin.
 
 $n \geq m$ bo‘lsin. Bundan $\deg D = n - m$ ekani va $A$ ning katta darajali $n-m+1$ ta koeffitsiyenti $R$ ga ta’sir qilmasligi kelib chiqadi. Demak, buni tenglamalar sistemasi sifatida qarab, $A(x)$ va $B(x)$ ning eng katta darajali $n-m+1$ ta koeffitsiyentidan $D(x)$ ni tiklash mumkin.
 Biz nazarda tutayotgan chiziqli tenglamalar sistemasi quyidagi ko‘rinishda yoziladi:
 
-$$\begin{bmatrix} a_n \\ \vdots \\ a_{m+1} \\ a_{m} \end{bmatrix} = \begin{bmatrix}
+$$
+\begin{bmatrix} a_n \\ \vdots \\ a_{m+1} \\ a_{m} \end{bmatrix} = \begin{bmatrix}
 b_m & \dots & 0 & 0 \\
 \vdots & \ddots & \vdots & \vdots \\
 \dots & \dots & b_m & 0 \\
 \dots & \dots & b_{m-1} & b_m
-\end{bmatrix} \begin{bmatrix}d_{n-m} \\ \vdots \\ d_1 \\ d_0\end{bmatrix}$$
+\end{bmatrix} \begin{bmatrix}d_{n-m} \\ \vdots \\ d_1 \\ d_0\end{bmatrix}
+$$
 
 Ko‘rinishidan shuni xulosa qilish mumkinki, teskari yozilgan ko‘phadlarni
 
-$$A^R(x) = x^nA(x^{-1})= a_n + a_{n-1} x + \dots + a_0 x^n$$
+$$
+A^R(x) = x^nA(x^{-1})= a_n + a_{n-1} x + \dots + a_0 x^n
+$$
 
-$$B^R(x) = x^m B(x^{-1}) = b_m + b_{m-1} x + \dots + b_0 x^m$$
+$$
+B^R(x) = x^m B(x^{-1}) = b_m + b_{m-1} x + \dots + b_0 x^m
+$$
 
-$$D^R(x) = x^{n-m}D(x^{-1}) = d_{n-m} + d_{n-m-1} x + \dots + d_0 x^{n-m}$$
+$$
+D^R(x) = x^{n-m}D(x^{-1}) = d_{n-m} + d_{n-m-1} x + \dots + d_0 x^{n-m}
+$$
 
 kiritgach, sistemani
 
-$$A^R(x) \equiv B^R(x) D^R(x) \pmod{x^{n-m+1}}$$
+$$
+A^R(x) \equiv B^R(x) D^R(x) \pmod{x^{n-m+1}}
+$$
 
 ko‘rinishda qayta yozish mumkin.
 
 Bundan $D(x)$ ning barcha koeffitsiyentlarini bir qiymatli tarzda tiklash mumkin:
 
-$$\boxed{D^R(x) \equiv A^R(x) (B^R(x))^{-1} \pmod{x^{n-m+1}}}$$
+$$
+\boxed{D^R(x) \equiv A^R(x) (B^R(x))^{-1} \pmod{x^{n-m+1}}}
+$$
 
 Bundan esa, o‘z navbatida, $R(x) = A(x) - B(x)D(x)$ formula orqali $R(x)$ ni tiklash mumkin.
 E’tibor bering, yuqoridagi matritsa uchburchak [Toeplitz matritsa](https://en.wikipedia.org/wiki/Toeplitz_matrix) deb ataladigan matritsadir va bu yerda ko‘rib turganimizdek, ixtiyoriy Toeplitz matritsali chiziqli tenglamalar sistemasini yechish aslida ko‘phadni teskarilashga ekvivalent ekan. Bundan tashqari, uning teskari matritsasi ham uchburchak Toeplitz matritsa bo‘ladi va yuqoridagi atamalar bilan aytganda, uning elementlari $(B^R(x))^{-1} \pmod{x^{n-m+1}}$ ning koeffitsiyentlaridir.
@@ -298,15 +330,21 @@ E’tibor bering, yuqoridagi matritsa uchburchak [Toeplitz matritsa](https://en.
 
 Sieveking–Kung algoritmini umumlashtiramiz. $P(x)$ ko‘phad bo‘lishi kerak bo‘lgan $F(P) = 0$ tenglamani ko‘rib chiqamiz; bunda $F(x)$ quyidagicha aniqlangan ko‘phad qiymatli funksiya:
 
-$$F(x) = \sum\limits_{i=0}^\infty \alpha_i (x-\beta)^i,$$
+$$
+F(x) = \sum\limits_{i=0}^\infty \alpha_i (x-\beta)^i,
+$$
 
 bunda $\beta$ — qandaydir o‘zgarmas. Yangi formal $y$ o‘zgaruvchini kiritsak, $F(x)$ ni
 
-$$F(x) = F(y) + (x-y)F'(y) + (x-y)^2 G(x,y)$$
+$$
+F(x) = F(y) + (x-y)F'(y) + (x-y)^2 G(x,y)
+$$
 
 ko‘rinishda ifodalash mumkinligini isbotlash mumkin. Bunda $F'(x)$ quyidagicha aniqlangan hosila formal darajali qatoridir:
 
-$$F'(x) = \sum\limits_{i=0}^\infty (i+1)\alpha_{i+1}(x-\beta)^i,$$
+$$
+F'(x) = \sum\limits_{i=0}^\infty (i+1)\alpha_{i+1}(x-\beta)^i,
+$$
 
 $G(x, y)$ esa $x$ va $y$ ning qandaydir formal darajali qatori. Bu natija yordamida yechimni iterativ ravishda topish mumkin.
 
@@ -314,20 +352,28 @@ $F(Q_k) \equiv 0 \pmod{x^{a}}$ bo‘lsin. $F(Q_{k+1}) \equiv 0 \pmod{x^{2a}}$ bo
 
 Yuqoridagi formulaga $x = Q_{k+1}$ va $y=Q_k$ ni qo‘yib,
 
-$$F(Q_{k+1}) \equiv F(Q_k) + (Q_{k+1} - Q_k) F'(Q_k) + (Q_{k+1} - Q_k)^2 G(x, y) \pmod x^{2a}$$
+$$
+F(Q_{k+1}) \equiv F(Q_k) + (Q_{k+1} - Q_k) F'(Q_k) + (Q_{k+1} - Q_k)^2 G(x, y) \pmod x^{2a}
+$$
 
 ni olamiz.
 $Q_{k+1} - Q_k \equiv 0 \pmod{x^a}$ bo‘lgani uchun $(Q_{k+1} - Q_k)^2 \equiv 0 \pmod{x^{2a}}$ ham o‘rinli. Demak,
 
-$$0 \equiv F(Q_{k+1}) \equiv F(Q_k) + (Q_{k+1} - Q_k) F'(Q_k) \pmod{x^{2a}}.$$
+$$
+0 \equiv F(Q_{k+1}) \equiv F(Q_k) + (Q_{k+1} - Q_k) F'(Q_k) \pmod{x^{2a}}.
+$$
 
 Oxirgi formula $Q_{k+1}$ ning qiymatini beradi:
 
-$$\boxed{Q_{k+1} = Q_k - \dfrac{F(Q_k)}{F'(Q_k)} \pmod{x^{2a}}}$$
+$$
+\boxed{Q_{k+1} = Q_k - \dfrac{F(Q_k)}{F'(Q_k)} \pmod{x^{2a}}}
+$$
 
 Shunday qilib, ko‘phadlarni teskarilash va $F(Q_k)$ ni hisoblashni bilsak, $P$ ning $n$ ta koeffitsiyentini
 
-$$T(n) = T(n/2) + f(n)$$
+$$
+T(n) = T(n/2) + f(n)
+$$
 
 murakkablikda topishimiz mumkin. Bu yerda $f(n)$ — odatda $O(n \log n)$ bo‘ladigan $F(Q_k)$ va $F'(Q_k)^{-1}$ ni hisoblash vaqti.
 
@@ -357,29 +403,43 @@ Demak, $\ln P(x)$ ning $n$ ta koeffitsiyentini $O(n \log n)$ vaqtda hisoblash mu
 Ma’lum bo‘lishicha, Newton usuli orqali $A^{-1}$ formulasini olishimiz mumkin.
 Buning uchun $A=Q^{-1}$ tenglamani olamiz. U holda:
 
-$$F(Q) = Q^{-1} - A$$
+$$
+F(Q) = Q^{-1} - A
+$$
 
-$$F'(Q) = -Q^{-2}$$
+$$
+F'(Q) = -Q^{-2}
+$$
 
-$$\boxed{Q_{k+1} \equiv Q_k(2-AQ_k) \pmod{x^{2^{k+1}}}}$$
+$$
+\boxed{Q_{k+1} \equiv Q_k(2-AQ_k) \pmod{x^{2^{k+1}}}}
+$$
 
 ### Eksponenta {#exponent}
 
 
 $e^{P(x)}=Q(x)$ ni hisoblashni o‘rganamiz. $\ln Q = P$ bo‘lishi kerak, demak:
 
-$$F(Q) = \ln Q - P$$
+$$
+F(Q) = \ln Q - P
+$$
 
-$$F'(Q) = Q^{-1}$$
+$$
+F'(Q) = Q^{-1}
+$$
 
-$$\boxed{Q_{k+1} \equiv Q_k(1 + P - \ln Q_k) \pmod{x^{2^{k+1}}}}$$
+$$
+\boxed{Q_{k+1} \equiv Q_k(1 + P - \ln Q_k) \pmod{x^{2^{k+1}}}}
+$$
 
 ### $k$-daraja {#k-th-power}
 
 
 Endi $P^k(x)=Q$ ni hisoblashimiz kerak. Buni quyidagi formula orqali bajarish mumkin:
 
-$$Q = \exp\left[k \ln P(x)\right]$$
+$$
+Q = \exp\left[k \ln P(x)\right]
+$$
 
 Biroq logarifm va eksponentani faqat qandaydir boshlang‘ich $Q_0$ ni topa olsangizgina to‘g‘ri hisoblash mumkinligiga e’tibor bering.
 
@@ -388,7 +448,9 @@ Ammo buni oqilona bajarishning yagona holati: $Q = \ln P$ uchun $P(0)=1$ bo‘li
 
 Shuning uchun yuqoridagi formuladan faqat $P(0) = 1$ bo‘lganda foydalanish mumkin. Aks holda, agar $P(x) = \alpha x^t T(x)$ va $T(0)=1$ bo‘lsa, quyidagicha yozish mumkin:
 
-$$\boxed{P^k(x) = \alpha^kx^{kt} \exp[k \ln T(x)]}$$
+$$
+\boxed{P^k(x) = \alpha^kx^{kt} \exp[k \ln T(x)]}
+$$
 
 Agar $\sqrt[k]{\alpha}$ ni, masalan, $\alpha=1$ uchun hisoblay olsangiz, ko‘phadning qandaydir $k$-ildizini ham hisoblash mumkinligiga e’tibor bering.
 
@@ -399,11 +461,15 @@ Agar $\sqrt[k]{\alpha}$ ni, masalan, $\alpha=1$ uchun hisoblay olsangiz, ko‘ph
 
 Ko‘phad qiymatini $x_r = z^{2r}$ nuqtalarda hisoblash kerak bo‘lgan xususiy holatda quyidagini bajarish mumkin:
 
-$$A(z^{2r}) = \sum\limits_{k=0}^n a_k z^{2kr}$$
+$$
+A(z^{2r}) = \sum\limits_{k=0}^n a_k z^{2kr}
+$$
 
 $2kr = r^2+k^2-(r-k)^2$ ni qo‘yamiz. Shunda bu yig‘indi quyidagicha qayta yoziladi:
 
-$$\boxed{A(z^{2r}) = z^{r^2}\sum\limits_{k=0}^n (a_k z^{k^2}) z^{-(r-k)^2}}$$
+$$
+\boxed{A(z^{2r}) = z^{r^2}\sum\limits_{k=0}^n (a_k z^{k^2}) z^{-(r-k)^2}}
+$$
 
 Bu $z^{r^2}$ ko‘paytuvchigacha $u_k = a_k z^{k^2}$ va $v_k = z^{-k^2}$ ketma-ketliklar konvolyutsiyasiga teng.
 Bu yerda $u_k$ indekslari $0$ dan $n$ gacha, $v_k$ indekslari esa $-n$ dan $m$ gacha ekaniga e’tibor bering; bunda $m$ — sizga kerak bo‘lgan $z$ ning eng katta darajasi.
@@ -413,7 +479,9 @@ Endi ko‘phad qiymatini $x_r = z^{2r+1}$ nuqtalarda hisoblash kerak bo‘lsa, $
 Bu $z$ ning darajalaridagi qiymatlarni hisoblash uchun $O(n \log n)$ algoritm beradi; shu tariqa ikkining darajasi bo‘lmagan o‘lchamlar uchun ham DFT hisoblash mumkin.
 Yana bir kuzatuv: $kr = \binom{k+r}{2} - \binom{k}{2} - \binom{r}{2}$. U holda
 
-$$\boxed{A(z^r) = z^{-\binom{r}{2}}\sum\limits_{k=0}^n \left(a_k z^{-\binom{k}{2}}\right)z^{\binom{k+r}{2}}}$$
+$$
+\boxed{A(z^r) = z^{-\binom{r}{2}}\sum\limits_{k=0}^n \left(a_k z^{-\binom{k}{2}}\right)z^{\binom{k+r}{2}}}
+$$
 
 $A_0(x) = \sum\limits_{k=0}^n a_{n-k}z^{-\binom{n-k}{2}}x^k$ va $A_1(x) = \sum\limits_{k\geq 0}z^{\binom{k}{2}}x^k$ ko‘phadlar ko‘paytmasidagi $x^{n+r}$ oldidagi koeffitsiyent $z^{\binom{r}{2}}A(z^r)$ ga teng. $A_0(x)$ va $A_1(x)$ koeffitsiyentlarini hisoblash uchun $z^{\binom{k+1}{2}}=z^{\binom{k}{2}+k}$ formuladan foydalanish mumkin.
 
@@ -433,7 +501,9 @@ Butun jarayon $O(n \log^2 n)$ vaqtda ishlaydi.
 
 $(x_i, y_i)$ juftliklar to‘plami berilganda ko‘phadni interpolyatsiya qilish uchun Lagrangening bevosita formulasi mavjud:
 
-$$\boxed{A(x) = \sum\limits_{i=1}^n y_i \prod\limits_{j \neq i}\dfrac{x-x_j}{x_i - x_j}}$$
+$$
+\boxed{A(x) = \sum\limits_{i=1}^n y_i \prod\limits_{j \neq i}\dfrac{x-x_j}{x_i - x_j}}
+$$
 
 Uni bevosita hisoblash qiyin, ammo bo‘lib yechish yondashuvi bilan $O(n \log^2 n)$ vaqtda hisoblash mumkin ekan:
 
@@ -481,7 +551,9 @@ $A(\mu_0)\cdots A(\mu_m)$ ko‘paytmani hisoblaymiz. U faqat va faqat qandaydir 
 
 Simmetriya uchun uni $b_m^n$ ga ham ko‘paytirib, butun ko‘paytmani quyidagi ko‘rinishda qayta yozishimiz mumkin:
 
-$$\boxed{\mathcal{R}(A, B) = b_m^n\prod\limits_{j=0}^m A(\mu_j) = b_m^n a_m^n \prod\limits_{i=0}^n \prod\limits_{j=0}^m (\mu_j - \lambda_i)= (-1)^{mn}a_n^m \prod\limits_{i=0}^n B(\lambda_i)}$$
+$$
+\boxed{\mathcal{R}(A, B) = b_m^n\prod\limits_{j=0}^m A(\mu_j) = b_m^n a_m^n \prod\limits_{i=0}^n \prod\limits_{j=0}^m (\mu_j - \lambda_i)= (-1)^{mn}a_n^m \prod\limits_{i=0}^n B(\lambda_i)}
+$$
 
 Yuqorida aniqlangan qiymat $A(x)$ va $B(x)$ ko‘phadlarning rezultanti deyiladi. Ta’rifdan quyidagi xossalarni olish mumkin:
 

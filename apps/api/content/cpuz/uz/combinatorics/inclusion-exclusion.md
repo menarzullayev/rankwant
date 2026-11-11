@@ -14,11 +14,15 @@ Bir nechta to‘plam birlashmasining o‘lchamini hisoblash uchun avval barcha t
 
 Yuqoridagi ta’rifni matematik ko‘rinishda quyidagicha yozish mumkin:
 
-$$\left|\bigcup_{i=1}^n A_i\right|=\sum_{i=1}^n|A_i|-\sum_{1\le i<j\le n}|A_i\cap A_j|+\sum_{1\le i<j<k\le n}|A_i\cap A_j\cap A_k|-\cdots+(-1)^{n-1}|A_1\cap\cdots\cap A_n|$$
+$$
+\left|\bigcup_{i=1}^n A_i\right|=\sum_{i=1}^n|A_i|-\sum_{1\le i<j\le n}|A_i\cap A_j|+\sum_{1\le i<j<k\le n}|A_i\cap A_j\cap A_k|-\cdots+(-1)^{n-1}|A_1\cap\cdots\cap A_n|
+$$
 
 Yanada ixcham ko‘rinishi:
 
-$$\left|\bigcup_{i=1}^n A_i\right|=\sum_{\emptyset\ne J\subseteq\{1,2,\ldots,n\}}(-1)^{|J|-1}{\Biggl|}\bigcap_{j\in J}A_j{\Biggr|}$$
+$$
+\left|\bigcup_{i=1}^n A_i\right|=\sum_{\emptyset\ne J\subseteq\{1,2,\ldots,n\}}(-1)^{|J|-1}{\Biggl|}\bigcap_{j\in J}A_j{\Biggr|}
+$$
 
 ### Venn diagrammasi orqali ifoda {#the-formulation-using-venn-diagrams}
 
@@ -28,7 +32,9 @@ Diagrammada uchta $A$, $B$ va $C$ to‘plam ko‘rsatilgan bo‘lsin:
 
 Ularning $A\cup B\cup C$ birlashmasi yuzi $A$, $B$ va $C$ yuzlari yig‘indisidan ikki marta qoplangan $A\cap B$, $A\cap C$ va $B\cap C$ yuzlarini ayirib, uchala to‘plam qoplaydigan $A\cap B\cap C$ yuzini qayta qo‘shishga teng:
 
-$$S(A\cup B\cup C)=S(A)+S(B)+S(C)-S(A\cap B)-S(A\cap C)-S(B\cap C)+S(A\cap B\cap C)$$
+$$
+S(A\cup B\cup C)=S(A)+S(B)+S(C)-S(A\cap B)-S(A\cap C)-S(B\cap C)+S(A\cap B\cap C)
+$$
 
 Bu formula $n$ ta to‘plam birlashmasiga ham umumlashtiriladi.
 
@@ -36,20 +42,26 @@ Bu formula $n$ ta to‘plam birlashmasiga ham umumlashtiriladi.
 
 $A_i$ $(i = 1,2...n)$ hodisalar, ${\cal P}(A_i)$ esa $A_i$ hodisaning yuz berish ehtimoli bo‘lsin. Ularning birlashmasi ehtimoli, ya’ni kamida bitta hodisa yuz berish ehtimoli:
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 {\cal P}\left(\bigcup_{i=1}^n A_i\right)&=\sum_{i=1}^n{\cal P}(A_i)-\sum_{1\le i<j\le n}{\cal P}(A_i\cap A_j)+\\
 &+\sum_{1\le i<j<k\le n}{\cal P}(A_i\cap A_j\cap A_k)-\cdots+(-1)^{n-1}{\cal P}(A_1\cap\cdots\cap A_n)
-\end{aligned}$$
+\end{aligned}
+$$
 
 Ixcham ko‘rinishi:
 
-$${\cal P}\left(\bigcup_{i=1}^n A_i\right)=\sum_{\emptyset\ne J\subseteq\{1,2,\ldots,n\}}(-1)^{|J|-1}\,{\cal P}{\Biggl(}\bigcap_{j\in J}A_j{\Biggr)}$$
+$$
+{\cal P}\left(\bigcup_{i=1}^n A_i\right)=\sum_{\emptyset\ne J\subseteq\{1,2,\ldots,n\}}(-1)^{|J|-1}\,{\cal P}{\Biggl(}\bigcap_{j\in J}A_j{\Biggr)}
+$$
 
 ## Isbot {#proof}
 
 Isbot uchun to‘plamlar nazariyasidagi matematik ifodadan foydalanish qulay:
 
-$$\left|\bigcup_{i=1}^n A_i\right|=\sum_{\emptyset\ne J\subseteq\{1,2,\ldots,n\}}(-1)^{|J|-1}{\Biggl|}\bigcap_{j\in J}A_j{\Biggr|}$$
+$$
+\left|\bigcup_{i=1}^n A_i\right|=\sum_{\emptyset\ne J\subseteq\{1,2,\ldots,n\}}(-1)^{|J|-1}{\Biggl|}\bigcap_{j\in J}A_j{\Biggr|}
+$$
 
 Kamida bitta $A_i$ to‘plamga tegishli har qanday element formulada aynan bir marta hisoblanishini isbotlamoqchimiz. Hech bir $A_i$ to‘plamga kirmaydigan elementlar formulaning o‘ng tomonida umuman ko‘rilmaydi.
 
@@ -64,11 +76,15 @@ $x$ elementi $k\ge1$ ta $A_i$ to‘plamga tegishli bo‘lsin. U formulada aynan 
 
 Natijada [binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients) yig‘indisini olamiz:
 
-$$T=\binom{k}{1}-\binom{k}{2}+\binom{k}{3}-\cdots+(-1)^{i-1}\cdot\binom{k}{i}+\cdots+(-1)^{k-1}\cdot\binom{k}{k}$$
+$$
+T=\binom{k}{1}-\binom{k}{2}+\binom{k}{3}-\cdots+(-1)^{i-1}\cdot\binom{k}{i}+\cdots+(-1)^{k-1}\cdot\binom{k}{k}
+$$
 
 Bu ifoda $(1-x)^k$ binomial yoyilmasiga juda o‘xshaydi:
 
-$$(1-x)^k=\binom{k}{0}-\binom{k}{1}\cdot x+\binom{k}{2}\cdot x^2-\binom{k}{3}\cdot x^3+\cdots+(-1)^k\cdot\binom{k}{k}\cdot x^k$$
+$$
+(1-x)^k=\binom{k}{0}-\binom{k}{1}\cdot x+\binom{k}{2}\cdot x^2-\binom{k}{3}\cdot x^3+\cdots+(-1)^k\cdot\binom{k}{k}\cdot x^k
+$$
 
 $x=1$ bo‘lganda bu ifoda $T$ ga deyarli teng. Faqat unda qo‘shimcha $\binom{k}{0}=1$ hadi bor va qolgan qism $-1$ ga ko‘paytirilgan. Bu bizni $(1 - 1)^k = 1 - T$ ga olib keladi. Demak, $T = 1 - (1 - 1)^k = 1$, isbotlash talab qilingan narsa shu edi. Element aynan bir marta hisoblanadi.
 
@@ -76,15 +92,21 @@ $x=1$ bo‘lganda bu ifoda $T$ ga deyarli teng. Faqat unda qo‘shimcha $\binom{
 
 Kiritish–chiqarish prinsipini hech bir to‘plamga tegishli bo‘lmagan elementlar sonini hisoblash uchun quyidagicha yozish mumkin:
 
-$$\left|\bigcap_{i=1}^n\overline{A_i}\right|=\sum_{m=0}^n(-1)^m\sum_{|X|=m}\left|\bigcap_{i\in X}A_i\right|$$
+$$
+\left|\bigcap_{i=1}^n\overline{A_i}\right|=\sum_{m=0}^n(-1)^m\sum_{|X|=m}\left|\bigcap_{i\in X}A_i\right|
+$$
 
 Endi aynan $r$ ta to‘plamga tegishli elementlar sonini hisoblash uchun umumlashmani ko‘rib chiqamiz:
 
-$$\left|\bigcup_{|B|=r}\left[\bigcap_{i\in B}A_i\cap\bigcap_{j\notin B}\overline{A_j}\right]\right|=\sum_{m=r}^n(-1)^{m-r}\dbinom mr\sum_{|X|=m}\left|\bigcap_{i\in X}A_i\right|$$
+$$
+\left|\bigcup_{|B|=r}\left[\bigcap_{i\in B}A_i\cap\bigcap_{j\notin B}\overline{A_j}\right]\right|=\sum_{m=r}^n(-1)^{m-r}\dbinom mr\sum_{|X|=m}\left|\bigcap_{i\in X}A_i\right|
+$$
 
 Formulani isbotlash uchun biror aniq $B$ ni ko‘rib chiqamiz. Oddiy kiritish–chiqarish prinsipiga ko‘ra:
 
-$$\left|\bigcap_{i\in B}A_i\cap\bigcap_{j\notin B}\overline{A_j}\right|=\sum_{m=r}^n(-1)^{m-r}\sum_{\substack{|X|=m\\B\subset X}}\left|\bigcap_{i\in X}A_i\right|$$
+$$
+\left|\bigcap_{i\in B}A_i\cap\bigcap_{j\notin B}\overline{A_j}\right|=\sum_{m=r}^n(-1)^{m-r}\sum_{\substack{|X|=m\\B\subset X}}\left|\bigcap_{i\in X}A_i\right|
+$$
 
 Chap tomondagi to‘plamlar turli $B$ lar uchun kesishmaydi, shuning uchun ularni bevosita qo‘shish mumkin. Bundan tashqari, har qanday $X$ to‘plam qatnashganida doimo $(-1)^{m-r}$ koeffitsiyentiga ega bo‘ladi va u aynan $\dbinom mr$ ta $B$ to‘plam uchun qatnashadi.
 
@@ -104,11 +126,15 @@ Avval prinsipning qo‘llanishini ko‘rsatadigan qog‘ozda yechiladigan uchta 
 
 Birinchi elementi $\le1$ bo‘lgan permutatsiyalar to‘plamini $X$, oxirgi elementi $\ge8$ bo‘lgan permutatsiyalar to‘plamini $Y$ bilan belgilaymiz. Kiritish–chiqarish formulasiga ko‘ra “yomon” permutatsiyalar soni:
 
-$$|X\cup Y|=|X|+|Y|-|X\cap Y|$$
+$$
+|X\cup Y|=|X|+|Y|-|X\cap Y|
+$$
 
 Sodda kombinatorik hisobdan so‘ng:
 
-$$2\cdot9!+2\cdot9!-2\cdot2\cdot8!$$
+$$
+2\cdot9!+2\cdot9!-2\cdot2\cdot8!
+$$
 
 ni olamiz. “Yaxshi” permutatsiyalar sonini topish uchun bu qiymatni jami $10!$ dan ayirish qoladi.
 
@@ -120,7 +146,9 @@ Yana teskari masalaga o‘tamiz: sonlardan **kamida bittasi qatnashmaydigan** ke
 
 $i$ raqami qatnashmaydigan ketma-ketliklar to‘plamini $A_i (i = 0,1,2)$ bilan belgilaymiz. “Yomon” ketma-ketliklar uchun kiritish–chiqarish formulasi:
 
-$$|A_0\cup A_1\cup A_2|=|A_0|+|A_1|+|A_2|-|A_0\cap A_1|-|A_0\cap A_2|-|A_1\cap A_2|+|A_0\cap A_1\cap A_2|$$
+$$
+|A_0\cup A_1\cup A_2|=|A_0|+|A_1|+|A_2|-|A_0\cap A_1|-|A_0\cap A_2|-|A_1\cap A_2|+|A_0\cap A_1\cap A_2|
+$$
 
 - Har bir $A_i$ o‘lchami $2^n$, chunki ketma-ketlikda faqat qolgan ikkita raqam qatnashishi mumkin.
 - Har bir juft kesishma $A_i\cap A_j$ o‘lchami $1$, chunki ketma-ketlikni tuzish uchun faqat bitta raqam qoladi.
@@ -128,13 +156,17 @@ $$|A_0\cup A_1\cup A_2|=|A_0|+|A_1|+|A_2|-|A_0\cap A_1|-|A_0\cap A_2|-|A_1\cap A
 
 Teskari masalani yechganimiz sababli natijani jami $3^n$ ta ketma-ketlikdan ayiramiz:
 
-$$3^n-(3\cdot2^n-3\cdot1+0)$$
+$$
+3^n-(3\cdot2^n-3\cdot1+0)
+$$
 
 ### Yuqori chegarali butun sonlar yig‘indisi {#number-of-upper-bound-integer-sums}
 
 Quyidagi tenglamani ko‘rib chiqamiz:
 
-$$x_1+x_2+x_3+x_4+x_5+x_6=20,$$
+$$
+x_1+x_2+x_3+x_4+x_5+x_6=20,
+$$
 
 bu yerda $0 \le x_i \le 8 ~ (i = 1,2,\ldots 6)$.
 
@@ -142,7 +174,9 @@ bu yerda $0 \le x_i \le 8 ~ (i = 1,2,\ldots 6)$.
 
 Bir muddat $x_i$ lar uchun yuqori chegara mavjudligini unutib, tenglamaning barcha manfiy bo‘lmagan yechimlarini sanaymiz. Buni [Stars and Bars](/algorithms/combinatorics/stars-and-bars) usuli bilan oson bajarish mumkin: $20$ ta birlik ketma-ketligini $6$ ta guruhga ajratishimiz kerak, bu esa $5$ ta chiziq va $20$ ta yulduzni joylashtirishga teng:
 
-$$N_0=\binom{25}{5}$$
+$$
+N_0=\binom{25}{5}
+$$
 
 Endi kiritish–chiqarish prinsipi yordamida “yomon” yechimlar sonini hisoblaymiz. Bir yoki bir nechta $x_i$ qiymati $9$ dan katta yoki unga teng bo‘lgan yechimlar “yomon” hisoblanadi.
 
@@ -150,21 +184,29 @@ $x_k \ge 9$ va qolgan barcha $x_i \ge 0 ~ (i \ne k)$ bo‘lgan (ular $\ge 9$ bo�
 
 $A_k$ hajmini hisoblashda yuqoridagi masalaga juda o‘xshash masala hosil bo‘ladi. Faqat endi $9$ ta birlik joylardan chiqarib tashlangan va ular aniq birinchi guruhga tegishli. Shuning uchun:
 
-$$|A_k|=\binom{16}{5}$$
+$$
+|A_k|=\binom{16}{5}
+$$
 
 Xuddi shunday, $k\ne p$ uchun ikki to‘plam kesishmasining o‘lchami:
 
-$$|A_k\cap A_p|=\binom75$$
+$$
+|A_k\cap A_p|=\binom75
+$$
 
 Uchta to‘plamning har qanday kesishmasi bo‘sh, chunki $20$ ta birlik uchta yoki undan ko‘p o‘zgaruvchini $9$ dan kam bo‘lmagan qilishga yetmaydi.
 
 Bularni kiritish–chiqarish formulasiga qo‘yib va teskari masalani yechganimizni hisobga olib, yakuniy javobni olamiz:
 
-$$\binom{25}{5}-\left(\binom61\cdot\binom{16}{5}-\binom62\cdot\binom75\right)$$
+$$
+\binom{25}{5}-\left(\binom61\cdot\binom{16}{5}-\binom62\cdot\binom75\right)
+$$
 
 Bu natija yig‘indisi $s$ ga teng bo‘lgan va $0\le x_i\le b$ shartini qanoatlantiradigan $d$ ta son uchun osongina umumlashtiriladi:
 
-$$\sum_{i=0}^d(-1)^i\binom di\binom{s+d-1-(b+1)i}{d-1}$$
+$$
+\sum_{i=0}^d(-1)^i\binom di\binom{s+d-1-(b+1)i}{d-1}
+$$
 
 Yuqoridagidek, yuqori indeksi manfiy bo‘lgan binomial koeffitsiyentlarni nol deb qaraymiz.
 
@@ -180,7 +222,9 @@ $n$ ning turli tub bo‘luvchilarini $p_i (i = 1\cdots k)$ bilan belgilaymiz.
 
 $[1;r]$ oraliqdagi nechta son $p_i$ ga bo‘linadi? Javob:
 
-$$\left\lfloor\frac r{p_i}\right\rfloor$$
+$$
+\left\lfloor\frac r{p_i}\right\rfloor
+$$
 
 Biroq bu qiymatlarni shunchaki qo‘shsak, bir nechta $p_i$ ni bo‘luvchi sifatida o‘z ichiga olgan sonlar bir necha marta sanaladi. Shuning uchun kiritish–chiqarish prinsipini qo‘llash kerak.
 
@@ -249,7 +293,9 @@ Avval satr aynan $k$ ta andozani qanoatlantirishi kerak bo‘lgan birinchi masal
 
 Andozalar to‘plamidan $k$ ta andozali aniq $X$ qism to‘plamni tanlaymiz. Endi aynan shu andozalarni qanoatlantirib, boshqa hech qaysi andozaga mos kelmaydigan satrlar sonini hisoblash kerak. Kiritish–chiqarish prinsipini biroz boshqacha ko‘rinishda qo‘llaymiz: $X$ ni o‘z ichiga olgan barcha $Y$ ustto‘plamlar bo‘yicha yig‘ib, satrlar sonini javobga qo‘shamiz yoki undan ayiramiz:
 
-$$ans(X)=\sum_{Y\supseteq X}(-1)^{|Y|-k}\cdot f(Y)$$
+$$
+ans(X)=\sum_{Y\supseteq X}(-1)^{|Y|-k}\cdot f(Y)
+$$
 
 Bu yerda $f(Y)$ — $Y$ dagi barcha andozalarga mos keladigan satrlar soni.
 
@@ -257,13 +303,17 @@ Bu formula tushunarsiz tuyulsa, Venn diagrammalarini chizib ko‘rish yordam ber
 
 Barcha $ans(X)$ larni qo‘shsak, yakuniy javobni olamiz:
 
-$$ans=\sum_{X:\,|X|=k}ans(X)$$
+$$
+ans=\sum_{X:\,|X|=k}ans(X)
+$$
 
 Biroq bu yechimning murakkabligi $O(3^k\cdot k)$. Uni yaxshilash uchun turli $ans(X)$ hisoblarida bir xil $Y$ to‘plamlar juda ko‘p marta qatnashishiga e’tibor beramiz.
 
 Kiritish–chiqarish yig‘indilarining tartibini almashtirib, $Y$ lar bo‘yicha yig‘amiz. Bir xil $Y$ to‘plam bir xil $(-1)^{|Y|-k}$ ishora bilan $\binom{|Y|}{k}$ ta turli $ans(X)$ hisobida qatnashishi ravshan bo‘ladi:
 
-$$ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\cdot\binom{|Y|}{k}\cdot f(Y)$$
+$$
+ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\cdot\binom{|Y|}{k}\cdot f(Y)
+$$
 
 Endi yechimning murakkabligi $O(2^k\cdot k)$.
 
@@ -271,19 +321,27 @@ Ikkinchi masalani — kamida $k$ ta andozaga mos keladigan satrlar sonini — ye
 
 Albatta, birinchi masala yechimidan foydalanib, o‘lchami $k$ dan katta to‘plamlar uchun javoblarni qo‘shish mumkin. Biroq bu masalada biror $Y$ to‘plam formulada $Y$ ichidagi o‘lchami kamida $k$ bo‘lgan barcha qism to‘plamlar uchun hisobga olinadi. Shuning uchun $f(Y)$ ga ko‘paytiriladigan qismni quyidagicha yozish mumkin:
 
-$$(-1)^{|Y|-k}\cdot\binom{|Y|}{k}+(-1)^{|Y|-k-1}\cdot\binom{|Y|}{k+1}+(-1)^{|Y|-k-2}\cdot\binom{|Y|}{k+2}+\cdots+(-1)^{|Y|-|Y|}\cdot\binom{|Y|}{|Y|}$$
+$$
+(-1)^{|Y|-k}\cdot\binom{|Y|}{k}+(-1)^{|Y|-k-1}\cdot\binom{|Y|}{k+1}+(-1)^{|Y|-k-2}\cdot\binom{|Y|}{k+2}+\cdots+(-1)^{|Y|-|Y|}\cdot\binom{|Y|}{|Y|}
+$$
 
 Graham, Knuth va Patashnikning *Concrete Mathematics* (1998) kitobidagi [binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients) uchun mashhur formulani ishlatamiz:
 
-$$\sum_{k=0}^m(-1)^k\cdot\binom nk=(-1)^m\cdot\binom{n-1}m$$
+$$
+\sum_{k=0}^m(-1)^k\cdot\binom nk=(-1)^m\cdot\binom{n-1}m
+$$
 
 Uni qo‘llab, yuqoridagi binomial koeffitsiyentlar yig‘indisini quyidagicha qisqartiramiz:
 
-$$(-1)^{|Y|-k}\cdot\binom{|Y|-1}{|Y|-k}$$
+$$
+(-1)^{|Y|-k}\cdot\binom{|Y|-1}{|Y|-k}
+$$
 
 Demak, bu masala uchun ham $O(2^k\cdot k)$ murakkablikdagi yechim olamiz:
 
-$$ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\cdot\binom{|Y|-1}{|Y|-k}\cdot f(Y)$$
+$$
+ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\cdot\binom{|Y|-1}{|Y|-k}\cdot f(Y)
+$$
 
 ### Bir katakdan boshqasiga borish usullari soni {#the-number-of-ways-of-going-from-a-cell-to-another}
 
@@ -295,7 +353,9 @@ To‘siqlarni avval $x$ koordinatasi bo‘yicha, teng bo‘lsa $y$ koordinatasi 
 
 Avval to‘siqsiz masalani, ya’ni bir katakdan boshqasiga borish usullari sonini hisoblashni o‘rganamiz. Bir o‘q bo‘yicha $x$ ta, ikkinchi o‘q bo‘yicha $y$ ta qadam yurish kerak. Sodda kombinatorika va [binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients) yordamida:
 
-$$\binom{x+y}{x}$$
+$$
+\binom{x+y}{x}
+$$
 
 formulasini olamiz.
 
@@ -323,7 +383,9 @@ Teskari masalani yechamiz: barcha sonlari biror $d>1$ ga bo‘linadigan “yomon
 
 $d$ bo‘luvchiga bo‘linadigan barcha mumkin bo‘lgan to‘rttaliklar bo‘yicha yig‘ishda kiritish–chiqarish prinsipidan foydalanamiz:
 
-$$ans=\sum_{d\ge2}(-1)^{deg(d)-1}\cdot f(d)$$
+$$
+ans=\sum_{d\ge2}(-1)^{deg(d)-1}\cdot f(d)
+$$
 
 Bu yerda $deg(d)$ — $d$ ning tub ko‘paytuvchilarga ajratilishidagi tub sonlar miqdori, $f(d)$ esa barcha elementlari $d$ ga bo‘linadigan to‘rttaliklar soni.
 
@@ -399,11 +461,15 @@ $n$ gacha bo‘lgan deyarli har bir son uchun ichki siklda $n/i$ ta iteratsiya b
 
 Uzunligi $n$ bo‘lgan, hech bir $i$ soni $i$-o‘rinda turmaydigan, ya’ni qo‘zg‘almas nuqtasi bo‘lmagan permutatsiyalar soni quyidagiga tengligini isbotlaymiz:
 
-$$n!-\binom n1(n-1)!+\binom n2(n-2)!-\binom n3(n-3)!+\cdots\pm\binom nn(n-n)!$$
+$$
+n!-\binom n1(n-1)!+\binom n2(n-2)!-\binom n3(n-3)!+\cdots\pm\binom nn(n-n)!
+$$
 
 Bu son taxminan:
 
-$$\frac{n!}{e}$$
+$$
+\frac{n!}{e}
+$$
 
 ga teng. Ushbu ifodani eng yaqin butun songa yaxlitlasak, qo‘zg‘almas nuqtasiz permutatsiyalar sonining aynan o‘zini olamiz.
 
@@ -411,26 +477,34 @@ $A_k$ bilan $k$-o‘rinda qo‘zg‘almas nuqtaga ega, ya’ni $k$ elementi $k$-
 
 Kamida bitta qo‘zg‘almas nuqtali permutatsiyalar sonini hisoblash uchun kiritish–chiqarish formulasidan foydalanamiz. Buning uchun $A_i$ to‘plamlar kesishmalarining o‘lchamlarini hisoblaymiz:
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 |A_p|&=(n-1)!,\\
 |A_p\cap A_q|&=(n-2)!,\\
 |A_p\cap A_q\cap A_r|&=(n-3)!,\\
 &\cdots
-\end{aligned}$$
+\end{aligned}
+$$
 
 Haqiqatan ham, qo‘zg‘almas nuqtalar soni $x$ bo‘lsa, permutatsiyaning $x$ ta elementi qayerda turishi ma’lum, qolgan $(n-x)$ ta elementni esa istalgan tartibda joylashtirish mumkin.
 
 Bu qiymatlarni kiritish–chiqarish formulasiga qo‘yib va $n$ elementli to‘plamdan $x$ elementli qism to‘plam tanlash usullari soni $\binom nx$ ekanini hisobga olib, kamida bitta qo‘zg‘almas nuqtali permutatsiyalar sonini olamiz:
 
-$$\binom n1(n-1)!-\binom n2(n-2)!+\binom n3(n-3)!-\cdots\pm\binom nn(n-n)!$$
+$$
+\binom n1(n-1)!-\binom n2(n-2)!+\binom n3(n-3)!-\cdots\pm\binom nn(n-n)!
+$$
 
 Demak, qo‘zg‘almas nuqtasiz permutatsiyalar soni:
 
-$$n!-\binom n1(n-1)!+\binom n2(n-2)!-\binom n3(n-3)!+\cdots\pm\binom nn(n-n)!$$
+$$
+n!-\binom n1(n-1)!+\binom n2(n-2)!-\binom n3(n-3)!+\cdots\pm\binom nn(n-n)!
+$$
 
 Ifodani soddalashtirib, **qo‘zg‘almas nuqtasiz permutatsiyalar soni uchun aniq va taqribiy formulalarni** olamiz:
 
-$$n!\left(1-\frac1{1!}+\frac1{2!}-\frac1{3!}+\cdots\pm\frac1{n!}\right)\approx\frac{n!}{e}$$
+$$
+n!\left(1-\frac1{1!}+\frac1{2!}-\frac1{3!}+\cdots\pm\frac1{n!}\right)\approx\frac{n!}{e}
+$$
 
 Qavs ichidagi yig‘indi $e^{-1}$ ning Taylor qatoridagi dastlabki $n+1$ ta haddan iborat.
 

@@ -27,7 +27,9 @@ Suppose we are given an array of integers, $A[0 \dots N-1]$.
 (Note that we are using zero-based indexing.)
 A Fenwick tree is just an array, $T[0 \dots N-1]$, where each element is equal to the sum of elements of $A$ in some range, $[g(i), i]$:
 
-$$T_i = \sum_{j = g(i)}^{i}{A_j}$$
+$$
+T_i = \sum_{j = g(i)}^{i}{A_j}
+$$
 
 where $g$ is some function that satisfies $0 \le g(i) \le i$.
 We will define $g$ in the next few paragraphs.
@@ -84,17 +86,21 @@ And otherwise the least significant digit is a $1$, and we take this $1$ and all
 
 For instance we get
 
-$$\begin{align}
+$$
+\begin{align}
 g(11) = g(1011_2) = 1000_2 &= 8 \\
 g(12) = g(1100_2) = 1100_2 &= 12 \\
 g(13) = g(1101_2) = 1100_2 &= 12 \\
 g(14) = g(1110_2) = 1110_2 &= 14 \\
 g(15) = g(1111_2) = 0000_2 &= 0 \\
-\end{align}$$
+\end{align}
+$$
 
 There exists a simple implementation using bitwise operations for the non-trivial operation described above:
 
-$$g(i) = i ~\&~ (i+1),$$
+$$
+g(i) = i ~\&~ (i+1),
+$$
 
 where $\&$ is the bitwise AND operator. It is not hard to convince yourself that this solution does the same thing as the operation described above.
 
@@ -104,18 +110,22 @@ It is easy to see that we can find all such $j$'s by starting with $i$ and flipp
 We will call this operation $h(j)$.
 For example, for $i = 10$ we have:
 
-$$\begin{align}
+$$
+\begin{align}
 10 &= 0001010_2 \\
 h(10) = 11 &= 0001011_2 \\
 h(11) = 15 &= 0001111_2 \\
 h(15) = 31 &= 0011111_2 \\
 h(31) = 63 &= 0111111_2 \\
 \vdots &
-\end{align}$$
+\end{align}
+$$
 
 Unsurprisingly, there also exists a simple way to perform $h$ using bitwise operations:
 
-$$h(j) = j ~|~ (j+1),$$
+$$
+h(j) = j ~|~ (j+1),
+$$
 
 where $|$ is the bitwise OR operator.
 
@@ -277,19 +287,25 @@ def increase(int i, int delta):
 The computation of $g(i)$ is defined as:
 toggling of the last set $1$ bit in the binary representation of $i$.
 
-$$\begin{align}
+$$
+\begin{align}
 g(7) = g(111_2) = 110_2 &= 6 \\
 g(6) = g(110_2) = 100_2 &= 4 \\
 g(4) = g(100_2) = 000_2 &= 0 \\
-\end{align}$$
+\end{align}
+$$
 
 The last set bit can be extracted using $i ~\&~ (-i)$, so the operation can be expressed as:
 
-$$g(i) = i - (i ~\&~ (-i)).$$
+$$
+g(i) = i - (i ~\&~ (-i)).
+$$
 
 And it's not hard to see, that you need to change all values $T[j]$ in the sequence $i,~ h(i),~ h(h(i)),~ \dots$ when you want to update $A[j]$, where $h(i)$ is defined as:
 
-$$h(i) = i + (i ~\&~ (-i)).$$
+$$
+h(i) = i + (i ~\&~ (-i)).
+$$
 
 As you can see, the main benefit of this approach is that the binary operations complement each other very nicely.
 
@@ -407,7 +423,8 @@ $$
 We can write the range sum as difference of two terms, where we use $B_1$ for first term and $B_2$ for second term.
 The difference of the queries will give us prefix sum over $[0, i]$.
 
-$$\begin{align}
+$$
+\begin{align}
 sum[0, i] &= sum(B_1, i) \cdot i - sum(B_2, i) \\
 &= \begin{cases}
 0 \cdot i - 0 & i < l\\

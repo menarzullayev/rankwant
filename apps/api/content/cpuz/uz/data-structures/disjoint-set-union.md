@@ -302,7 +302,9 @@ Ikki komponentni bog‘lovchi $(a,b)$ qirra qo‘shilsin. Bir daraxt ikkinchisig
 
 $B$ dan $A$ gacha yo‘l uch qismdan iborat: $B$ dan $b$ gacha, $b$ dan $a$ gacha bo‘lgan bitta qirra va $a$ dan $A$ gacha. Shuning uchun, $\oplus$ XOR amalini bildirsa:
 
-$$t = x \oplus y \oplus 1$$
+$$
+t = x \oplus y \oplus 1
+$$
 
 Qancha birlashtirish bajarilishidan qat’i nazar, qirralar pariteti shu tarzda bir liderdan ikkinchisiga o‘tkaziladi.
 

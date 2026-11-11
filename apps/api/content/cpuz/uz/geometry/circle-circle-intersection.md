@@ -8,25 +8,37 @@ Bu masalani [aylana va to‘g‘ri chiziq kesishmasi masalasi](/algorithms/geome
 
 Umumiylikni yo‘qotmasdan birinchi aylananing markazi koordinatalar boshida deb faraz qilamiz (agar bunday bo‘lmasa, koordinatalar boshini birinchi aylananing markaziga ko‘chirib, chiqarish paytida kesishish nuqtalarining koordinatalarini mos ravishda to‘g‘rilashimiz mumkin). Ikki tenglamadan iborat sistemaga ega bo‘lamiz:
 
-$$x^2+y^2=r_1^2$$
+$$
+x^2+y^2=r_1^2
+$$
 
-$$(x - x_2)^2 + (y - y_2)^2 = r_2^2$$
+$$
+(x - x_2)^2 + (y - y_2)^2 = r_2^2
+$$
 
 O‘zgaruvchilarning ikkinchi darajalaridan qutulish uchun ikkinchi tenglamadan birinchisini ayiramiz:
 
-$$x^2+y^2=r_1^2$$
+$$
+x^2+y^2=r_1^2
+$$
 
-$$x \cdot (-2x_2) + y \cdot (-2y_2) + (x_2^2+y_2^2+r_1^2-r_2^2) = 0$$
+$$
+x \cdot (-2x_2) + y \cdot (-2y_2) + (x_2^2+y_2^2+r_1^2-r_2^2) = 0
+$$
 
 Shunday qilib, dastlabki masalani birinchi aylana va to‘g‘ri chiziqning kesishish nuqtalarini topish masalasiga keltirdik:
 
-$$Ax + By + C = 0$$
+$$
+Ax + By + C = 0
+$$
 
-$$\begin{align}
+$$
+\begin{align}
 A &= -2x_2 \\
 B &= -2y_2 \\
 C &= x_2^2+y_2^2+r_1^2-r_2^2
-\end{align}$$
+\end{align}
+$$
 
 Bu masalani [tegishli maqolada](/algorithms/geometry/circle-line-intersection) bayon qilinganidek yechish mumkin.
 

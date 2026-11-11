@@ -6,7 +6,9 @@ Ikkita $n$ va $k$ sonlari berilgan. $k^x$ soni $n!$ ni bo‘ladigan eng katta bu
 
 Avval $k$ tub son bo‘lgan holatni ko‘rib chiqamiz. Faktorialning ochiq ko‘rinishi:
 
-$$n! = 1 \cdot 2 \cdot 3 \ldots (n-1) \cdot n$$
+$$
+n! = 1 \cdot 2 \cdot 3 \ldots (n-1) \cdot n
+$$
 
 Ko‘paytmaning har $k$-chi elementi $k$ ga bo‘linadi, ya’ni javobga $+1$ qo‘shadi. Bunday elementlar soni $\Bigl\lfloor\dfrac{n}{k}\Bigr\rfloor$ ga teng.
 
@@ -16,7 +18,9 @@ Xuddi shu tarzda, har bir $i$ uchun har $k^i$-chi element javobga yana $+1$ qo�
 
 Demak, yakuniy javob:
 
-$$\Bigl\lfloor\dfrac{n}{k}\Bigr\rfloor + \Bigl\lfloor\dfrac{n}{k^2}\Bigr\rfloor + \ldots + \Bigl\lfloor\dfrac{n}{k^i}\Bigr\rfloor + \ldots$$
+$$
+\Bigl\lfloor\dfrac{n}{k}\Bigr\rfloor + \Bigl\lfloor\dfrac{n}{k^2}\Bigr\rfloor + \ldots + \Bigl\lfloor\dfrac{n}{k^i}\Bigr\rfloor + \ldots
+$$
 
 Bu natija [Legendre formulasi](https://en.wikipedia.org/wiki/Legendre%27s_formula) nomi bilan ham ma’lum.
 Yig‘indi, albatta, chekli: taxminan faqat dastlabki $\log_k n$ ta hadi noldan farqli bo‘ladi. Shuning uchun algoritmning vaqt murakkabligi $O(\log_k n)$.
@@ -40,6 +44,8 @@ int fact_pow (int n, int k) {
 
 Yuqoridagi g‘oyani bevosita qo‘llab bo‘lmaydi. Buning o‘rniga $k$ ni tub ko‘paytuvchilarga ajratib, $k = k_1^{p_1} \cdot \ldots \cdot k_m^{p_m}$ ko‘rinishda ifodalaymiz. Har bir $k_i$ uchun yuqoridagi algoritm yordamida uning $n!$ tarkibida necha marta qatnashishini topamiz va bu qiymatni $a_i$ deb belgilaymiz. Murakkab $k$ uchun javob:
 
-$$\min_ {i=1 \ldots m} \dfrac{a_i}{p_i}$$
+$$
+\min_ {i=1 \ldots m} \dfrac{a_i}{p_i}
+$$
 
 bo‘ladi.

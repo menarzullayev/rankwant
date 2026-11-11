@@ -10,16 +10,20 @@ Umumiylikni yo‘qotmasdan aylana markazi koordinatalar boshida deb faraz qilami
 
 Avval to‘g‘ri chiziqda koordinatalar boshiga eng yaqin $(x_0, y_0)$ nuqtani topamiz. Birinchidan, u
 
-$$ d_0 = \frac{|C|}{\sqrt{A^2+B^2}} $$
+$$
+d_0 = \frac{|C|}{\sqrt{A^2+B^2}}
+$$
 
 masofada bo‘lishi kerak.
 
 Ikkinchidan, $(A, B)$ vektor to‘g‘ri chiziqqa perpendikulyar bo‘lgani uchun nuqtaning koordinatalari bu vektorning koordinatalariga proporsional bo‘lishi kerak. Nuqtadan koordinatalar boshigacha bo‘lgan masofani bilganimiz uchun $(A, B)$ vektorni shu uzunlikka masshtablashtirish kifoya, shunda quyidagini olamiz:
 
-$$\begin{align}
+$$
+\begin{align}
 x_0 &= - \frac{AC}{A^2 + B^2} \\
 y_0 &= - \frac{BC}{A^2 + B^2} 
-\end{align}$$
+\end{align}
+$$
 
 Minus ishoralari ochiq-oydin emas, lekin $x_0$ va $y_0$ ni to‘g‘ri chiziq tenglamasiga qo‘yib, ularni osongina tekshirish mumkin.
 
@@ -27,17 +31,21 @@ Bu bosqichda kesishish nuqtalari sonini aniqlash, hatto nuqta bitta yoki nol bo�
 
 Demak, $(x_0, y_0)$ nuqta aylana ichida. Ikkita kesishish nuqtasi, $(a_x, a_y)$ va $(b_x, b_y)$, $Ax+By+C=0$ to‘g‘ri chiziqqa tegishli bo‘lishi va $(x_0, y_0)$ dan bir xil $d$ masofada yotishi kerak; bu masofani topish oson:
 
-$$ d = \sqrt{r^2 - \frac{C^2}{A^2 + B^2}} $$
+$$
+d = \sqrt{r^2 - \frac{C^2}{A^2 + B^2}}
+$$
 
 E’tibor bering, $(-B, A)$ vektor to‘g‘ri chiziqqa kollinear, shuning uchun kerakli nuqtalarni $(x_0, y_0)$ nuqtaga $d$ uzunlikka masshtablangan $(-B,A)$ vektorni qo‘shib va ayirib topish mumkin.
 
 Nihoyat, ikkita kesishish nuqtasining formulalari quyidagicha:
 
-$$\begin{align}
+$$
+\begin{align}
 m &= \sqrt{\frac{d^2}{A^2 + B^2}} \\
 a_x &= x_0 + B \cdot m, a_y = y_0 - A \cdot m \\
 b_x &= x_0 - B \cdot m, b_y = y_0 + A \cdot m
-\end{align}$$
+\end{align}
+$$
 
 Dastlabki sistemani algebraik usullar bilan yechganimizda, ehtimol, javobni boshqacha ko‘rinishda va kattaroq xato bilan olgan bo‘lardik. Bu yerda tavsiflangan geometrik usul ko‘rgazmaliroq va aniqroq.
 

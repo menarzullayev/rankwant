@@ -4,11 +4,15 @@
 
 Given $n$ points on the plane. Each point $p_i$ is defined by its coordinates $(x_i,y_i)$. It is required to find among them two such points, such that the distance between them is minimal:
 
-$$ \min_{\scriptstyle i, j=0 \ldots n-1,\atop \scriptstyle i \neq j } \rho (p_i, p_j). $$
+$$
+\min_{\scriptstyle i, j=0 \ldots n-1,\atop \scriptstyle i \neq j } \rho (p_i, p_j).
+$$
 
 We take the usual Euclidean distances:
 
-$$ \rho (p_i,p_j) = \sqrt{(x_i-x_j)^2 + (y_i-y_j)^2} .$$
+$$
+\rho (p_i,p_j) = \sqrt{(x_i-x_j)^2 + (y_i-y_j)^2} .
+$$
 
 The trivial algorithm - iterating over all pairs and calculating the distance for each — works in $O(n^2)$. 
 
@@ -17,30 +21,42 @@ The algorithm running in time $O(n \log n)$ is described below. This algorithm w
 ## Algorithm {#algorithm}
 We construct an algorithm according to the general scheme of **divide-and-conquer** algorithms: the algorithm is designed as a recursive function, to which we pass a set of points; this recursive function splits this set in half, calls itself recursively on each half, and then performs some operations to combine the answers. The operation of combining consist of  detecting the cases when one point of the optimal solution fell into one half, and the other point into the other (in this case, recursive calls from each of the halves cannot detect this pair separately). The main difficulty, as always in case of divide and conquer algorithms, lies in the effective implementation of the merging stage. If a set of $n$ points is passed to the recursive function, then the merge stage should work no more than $O(n)$, then the asymptotics of the whole algorithm $T(n)$ will be found from the equation:
 
-$$T(n) = 2T(n/2) + O(n).$$ 
+$$
+T(n) = 2T(n/2) + O(n).
+$$
 
 The solution to this equation, as is known, is $T(n) = O(n \log n).$
 
 So, we proceed on to the construction of the algorithm. In order to come to an effective implementation of the merge stage in the future, we will divide the set of points into two subsets, according to their $x$-coordinates: In fact, we draw some vertical line dividing the set of points into two subsets of approximately the same size. It is convenient to make such a partition as follows: We sort the points in the standard way as pairs of numbers, ie.:
 
-$$p_i < p_j \Longleftrightarrow (x_i < x_j) \lor \Big(\left(x_i = x_j\right) \wedge \left(y_i < y_j \right) \Big) $$
+$$
+p_i < p_j \Longleftrightarrow (x_i < x_j) \lor \Big(\left(x_i = x_j\right) \wedge \left(y_i < y_j \right) \Big)
+$$
 
 Then take the middle point after sorting $p_m (m = \lfloor n/2 \rfloor)$, and all the points before it and the $p_m$ itself are assigned to the first half, and all the points after it - to the second half:
 
-$$A_1 = \{p_i \ | \ i = 0 \ldots m \}$$
+$$
+A_1 = \{p_i \ | \ i = 0 \ldots m \}
+$$
 
-$$A_2 = \{p_i \ | \ i = m + 1 \ldots n-1 \}.$$ 
+$$
+A_2 = \{p_i \ | \ i = m + 1 \ldots n-1 \}.
+$$
 
 Now, calling recursively on each of the sets $A_1$ and $A_2$, we will find the answers $h_1$ and $h_2$ for each of the halves. And take the best of them: $h = \min(h_1, h_2)$.
 
 Now we need to make a **merge stage**, i.e. we try to find such pairs of points, for which the distance between which is less than $h$ and one point is lying in $A_1$ and the other in $A_2$.
 It is obvious that it is sufficient to consider only those points that are separated from the vertical line by a distance less than $h$, i.e. the set $B$ of the points considered at this stage is equal to:
 
-$$B = \{ p_i\ | \ | x_i - x_m\ | < h \}.$$ 
+$$
+B = \{ p_i\ | \ | x_i - x_m\ | < h \}.
+$$
 
 For each point in the set $B$, we try to find the points that are closer to it than $h$. For example, it is sufficient to consider only those points whose $y$-coordinate differs by no more than $h$. Moreover, it makes no sense to consider those points whose $y$-coordinate is greater than the $y$-coordinate of the current point. Thus, for each point $p_i$ we define the set of considered points $C(p_i)$ as follows:
 
-$$C(p_i) = \{ p_j\ |\ p_j \in B,\ \ y_i - h < y_j \le y_i \}.$$
+$$
+C(p_i) = \{ p_j\ |\ p_j \in B,\ \ y_i - h < y_j \le y_i \}.
+$$
 
 If we sort the points of the set $B$ by $y$-coordinate, it will be very easy to find $C(p_i)$: these are several points in a row ahead to the point $p_i$.
 
@@ -180,18 +196,24 @@ We need $d$ to be an approximation of the minimum distance $d$. Richard Lipton p
 >
 > Imagine the disposition of points in squares with a particular choice of $d$, say $x$. Consider $d$ a random variable, resulting from our sampling of distances. Let's define $C(x) := \sum_{i=1}^{k(x)} n_i(x)^2$ as the cost estimation for a particular disposition when we choose $d=x$. Now, let's define $\lambda(x)$ such that $C(x) = \lambda(x) \, n$. What is the probability that such choice $x$ survives the sampling of $n$ independent distances? If a single pair among the sampled ones has distance smaller than $x$, this arrangement will be replaced by the smaller $d$. Inside a square, about $1/16$ of the pairs would raise a smaller distance (imagine four subsquares in every square; using the pigeonhole principle, at least one subsquare has $n_i/4$ points), so we have about $\sum_{i=1}^{k} {n_i/4 \choose 2} \approx \sum_{i=1}^{k} \frac{1}{16} {n_i \choose 2}$ pairs which yield a smaller final $d$. This is, approximately, $\frac{1}{32} \sum_{i=1}^{k} n_i^2 = \frac{1}{32} \lambda(x) n$. On the other hand, there are about $\frac{1}{2} n^2$ pairs that can be sampled. We have that the probability of sampling a pair with distance smaller than $x$ is at least (approximately) 
 >
-> $$\frac{\lambda(x) \, n / 32}{n^2 / 2} = \frac{\lambda(x)/16}{n}$$
+> $$
+> \frac{\lambda(x) \, n / 32}{n^2 / 2} = \frac{\lambda(x)/16}{n}
+> $$
 >
 > so the probability of at least one such pair being chosen during the $n$ rounds (and therefore finding a smaller $d$) is 
 >
-> $$1 - \left(1 - \frac{\lambda(x)/16}{n}\right)^n \ge 1 - e^{-\lambda(x)/16}$$
+> $$
+> 1 - \left(1 - \frac{\lambda(x)/16}{n}\right)^n \ge 1 - e^{-\lambda(x)/16}
+> $$
 >
 > (we have used that $(1 + x)^n \le e^{xn}$ for any real number $x$, check [Bernoulli inequalities](https://en.wikipedia.org/wiki/Bernoulli%27s_inequality#Related_inequalities)).   Notice this goes to $1$ exponentially as $\lambda(x)$ increases. This hints that $\lambda$ will be small for a poorly chosen $d$.
 >
 >
 > We have shown that $\Pr(d \le x) \ge 1 - e^{-\lambda(x)/16}$, or equivalently, $\Pr(d \ge x) \le e^{-\lambda(x)/16}$. We need to know $\Pr(\lambda(d) \ge \text{something})$ to be able to estimate its expected value. We notice that $\lambda(d) \ge \lambda(x) \iff d \ge x$. This is because making the squares smaller only reduces the number of points in each square (splits the points into other squares), and this keeps reducing the sum of squares. Therefore,
 >
-> $$\Pr(\lambda(d) \ge \lambda(x)) = \Pr(d \ge x) \le e^{-\lambda(x)/16} \implies \Pr(\lambda(d) \ge t) \le e^{-t/16} \implies \mathbb{E}[\lambda(d)] \le \int_{0}^{+\infty} e^{-t/16} \, \mathrm{d}t = 16$$
+> $$
+> \Pr(\lambda(d) \ge \lambda(x)) = \Pr(d \ge x) \le e^{-\lambda(x)/16} \implies \Pr(\lambda(d) \ge t) \le e^{-t/16} \implies \mathbb{E}[\lambda(d)] \le \int_{0}^{+\infty} e^{-t/16} \, \mathrm{d}t = 16
+> $$
 >
 > (we have used that $E[X] = \int_0^{+\infty} \Pr(X \ge x) \, \mathrm{d}x$, check [Stackexchange proof](https://math.stackexchange.com/a/1690829)).
 >
@@ -340,7 +362,9 @@ While this algorithm may look slow, because of recomputing everything multiple t
 >
 > We can therefore see that the expected cost is 
 >
-> $$O\!\left(n + \sum_{i=1}^{n} i \Pr(X_i = 1)\right) \le O\!\left(n + \sum_{i=1}^{n} i \frac{2}{i}\right) = O(3n) = O(n) \quad \quad \blacksquare$$ 
+> $$
+> O\!\left(n + \sum_{i=1}^{n} i \Pr(X_i = 1)\right) \le O\!\left(n + \sum_{i=1}^{n} i \frac{2}{i}\right) = O(3n) = O(n) \quad \quad \blacksquare
+> $$
 
 ## Generalization: finding a triangle with minimal perimeter {#generalization-finding-a-triangle-with-minimal-perimeter}
 

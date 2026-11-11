@@ -24,7 +24,9 @@ Soddalik uchun bundan buyon $f(x,y)=x+y$ deb olamiz.
 
 Bizga $A[0\dots N-1]$ butun sonlar massivi berilgan bo‘lsin. Bu yerda indekslash noldan boshlanadi. Fenwick daraxti aslida $T[0\dots N-1]$ massividir; uning har bir elementi $A$ ning muayyan $[g(i),i]$ oralig‘idagi elementlari yig‘indisiga teng:
 
-$$T_i = \sum_{j = g(i)}^{i}{A_j}$$
+$$
+T_i = \sum_{j = g(i)}^{i}{A_j}
+$$
 
 Bu yerda $g$ funksiya $0\le g(i)\le i$ shartini qanoatlantiradi. $g$ ning aniq ta’rifi keyinroq beriladi.
 
@@ -67,17 +69,21 @@ Boshqacha aytganda, $i$ ning eng kichik razryadli biti $0$ bo‘lsa, $g(i)=i$. A
 
 Masalan:
 
-$$\begin{align}
+$$
+\begin{align}
 g(11) = g(1011_2) = 1000_2 &= 8 \\
 g(12) = g(1100_2) = 1100_2 &= 12 \\
 g(13) = g(1101_2) = 1100_2 &= 12 \\
 g(14) = g(1110_2) = 1110_2 &= 14 \\
 g(15) = g(1111_2) = 0000_2 &= 0 \\
-\end{align}$$
+\end{align}
+$$
 
 Bu amal bitli operatorlar orqali juda sodda yoziladi:
 
-$$g(i) = i ~\&~ (i+1),$$
+$$
+g(i) = i ~\&~ (i+1),
+$$
 
 bu yerda $\&$ — bitli AND operatori. Ushbu formula yuqoridagi oxirgi $1$ bitlarni nolga aylantirish amalini aynan bajarishini ikkilik yozuvdan ko‘rish qiyin emas.
 
@@ -85,18 +91,22 @@ Endi $g(j)\le i\le j$ bo‘ladigan barcha $j$ larni qanday aylanib chiqishni top
 
 Masalan, $i=10$ uchun:
 
-$$\begin{align}
+$$
+\begin{align}
 10 &= 0001010_2 \\
 h(10) = 11 &= 0001011_2 \\
 h(11) = 15 &= 0001111_2 \\
 h(15) = 31 &= 0011111_2 \\
 h(31) = 63 &= 0111111_2 \\
 \vdots &
-\end{align}$$
+\end{align}
+$$
 
 $h$ ham bitli operatorlar orqali sodda hisoblanadi:
 
-$$h(j) = j ~|~ (j+1),$$
+$$
+h(j) = j ~|~ (j+1),
+$$
 
 bu yerda $|$ — bitli OR operatori.
 
@@ -244,19 +254,25 @@ def increase(int i, int delta):
 
 Bu variantda $g(i)$ — $i$ ning ikkilik yozuvidagi eng oxirgi o‘rnatilgan $1$ bitni o‘chirish amali:
 
-$$\begin{align}
+$$
+\begin{align}
 g(7) = g(111_2) = 110_2 &= 6 \\
 g(6) = g(110_2) = 100_2 &= 4 \\
 g(4) = g(100_2) = 000_2 &= 0 \\
-\end{align}$$
+\end{align}
+$$
 
 Eng oxirgi o‘rnatilgan bitni $i~\&~(-i)$ bilan ajratib olish mumkin. Demak:
 
-$$g(i) = i - (i ~\&~ (-i)).$$
+$$
+g(i) = i - (i ~\&~ (-i)).
+$$
 
 $A[i]$ ni yangilash uchun $T[j]$ qiymatlari $i,h(i),h(h(i)),\dots$ ketma-ketligida o‘zgartiriladi, bu yerda
 
-$$h(i) = i + (i ~\&~ (-i)).$$
+$$
+h(i) = i + (i ~\&~ (-i)).
+$$
 
 Bu yondashuvning asosiy afzalligi — ikkala bitli amal bir-birini juda chiroyli to‘ldiradi.
 
@@ -369,7 +385,8 @@ $$
 
 Oraliq yig‘indisini ikki hadning ayirmasi sifatida yozish mumkin: birinchi had uchun $B_1$, ikkinchisi uchun $B_2$ ishlatiladi. Ularning ayirmasi $[0,i]$ prefiks yig‘indisini beradi:
 
-$$\begin{align}
+$$
+\begin{align}
 sum[0, i] &= sum(B_1, i) \cdot i - sum(B_2, i) \\
 &= \begin{cases}
 0 \cdot i - 0 & i < l\\
