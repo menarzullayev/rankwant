@@ -245,6 +245,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/articles/glossary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The algorithms library's glossary (ADR-0062 § 3), from the snapshot. */
+        get: operations["articles_glossary_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/articles/library/": {
         parameters: {
             query?: never;
@@ -7955,7 +7972,7 @@ export interface components {
             published_at?: string | null;
             category?: string;
             subcategory?: string;
-            level?: components["schemas"]["Level154Enum"] | components["schemas"]["BlankEnum"];
+            level?: components["schemas"]["ArticleLevelEnum"] | components["schemas"]["BlankEnum"];
             /** Format: int64 */
             order?: number;
             /** @description Markdown + LaTeX */
@@ -7977,6 +7994,13 @@ export interface components {
          * @enum {string}
          */
         ArticleKindEnum: "article" | "algorithm";
+        /**
+         * @description * `beginner` - Boshlang'ich
+         *     * `intermediate` - O'rta
+         *     * `advanced` - Yuqori
+         * @enum {string}
+         */
+        ArticleLevelEnum: "beginner" | "intermediate" | "advanced";
         ArticleList: {
             slug: string;
             kind?: components["schemas"]["ArticleKindEnum"];
@@ -7994,7 +8018,7 @@ export interface components {
             published_at?: string | null;
             category?: string;
             subcategory?: string;
-            level?: components["schemas"]["Level154Enum"] | components["schemas"]["BlankEnum"];
+            level?: components["schemas"]["ArticleLevelEnum"] | components["schemas"]["BlankEnum"];
             /** Format: int64 */
             order?: number;
         };
@@ -8964,6 +8988,14 @@ export interface components {
          * @enum {string}
          */
         GenerationRunStatusEnum: "running" | "done" | "failed";
+        /** @description One term of the library's glossary. */
+        GlossaryEntry: {
+            slug: string;
+            term: string;
+            english: string;
+            aliases: string[];
+            note: string;
+        };
         /**
          * @description * `sample` - Namuna
          *     * `minimal` - Minimal
@@ -9276,13 +9308,6 @@ export interface components {
             playlist: string | null;
         };
         /**
-         * @description * `beginner` - Boshlang'ich
-         *     * `intermediate` - O'rta
-         *     * `advanced` - Yuqori
-         * @enum {string}
-         */
-        Level154Enum: "beginner" | "intermediate" | "advanced";
-        /**
          * @description * `debug` - debug
          *     * `info` - info
          *     * `warn` - warn
@@ -9298,7 +9323,7 @@ export interface components {
             summary?: string;
             category?: string;
             subcategory?: string;
-            level?: components["schemas"]["Level154Enum"] | components["schemas"]["BlankEnum"];
+            level?: components["schemas"]["ArticleLevelEnum"] | components["schemas"]["BlankEnum"];
             /** Format: int64 */
             order?: number;
             /** Format: int64 */
@@ -14180,6 +14205,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ArticleDetail"];
+                };
+            };
+        };
+    };
+    articles_glossary_list: {
+        parameters: {
+            query?: {
+                category?: string;
+                /**
+                 * @description * `article` - Maqola
+                 *     * `algorithm` - Algoritm
+                 */
+                kind?: "algorithm" | "article";
+                /**
+                 * @description * `beginner` - Boshlang'ich
+                 *     * `intermediate` - O'rta
+                 *     * `advanced` - Yuqori
+                 */
+                level?: "advanced" | "beginner" | "intermediate";
+                locale?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                topics__slug?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GlossaryEntry"][];
                 };
             };
         };

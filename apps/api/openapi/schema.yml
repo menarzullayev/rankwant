@@ -371,6 +371,66 @@ paths:
               schema:
                 $ref: '#/components/schemas/ArticleDetail'
           description: ''
+  /api/v1/articles/glossary/:
+    get:
+      operationId: articles_glossary_list
+      description: The algorithms library's glossary (ADR-0062 § 3), from the snapshot.
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - algorithm
+          - article
+        description: |-
+          * `article` - Maqola
+          * `algorithm` - Algoritm
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - advanced
+          - beginner
+          - intermediate
+        description: |-
+          * `beginner` - Boshlang'ich
+          * `intermediate` - O'rta
+          * `advanced` - Yuqori
+      - in: query
+        name: locale
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: topics__slug
+        schema:
+          type: string
+      tags:
+      - articles
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GlossaryEntry'
+          description: ''
   /api/v1/articles/library/:
     get:
       operationId: articles_library_list
@@ -16869,7 +16929,7 @@ components:
           maxLength: 120
         level:
           oneOf:
-          - $ref: '#/components/schemas/Level154Enum'
+          - $ref: '#/components/schemas/ArticleLevelEnum'
           - $ref: '#/components/schemas/BlankEnum'
         order:
           type: integer
@@ -16938,6 +16998,16 @@ components:
       description: |-
         * `article` - Maqola
         * `algorithm` - Algoritm
+    ArticleLevelEnum:
+      enum:
+      - beginner
+      - intermediate
+      - advanced
+      type: string
+      description: |-
+        * `beginner` - Boshlang'ich
+        * `intermediate` - O'rta
+        * `advanced` - Yuqori
     ArticleList:
       type: object
       properties:
@@ -16991,7 +17061,7 @@ components:
           maxLength: 120
         level:
           oneOf:
-          - $ref: '#/components/schemas/Level154Enum'
+          - $ref: '#/components/schemas/ArticleLevelEnum'
           - $ref: '#/components/schemas/BlankEnum'
         order:
           type: integer
@@ -19574,6 +19644,28 @@ components:
         * `running` - Ishlayapti
         * `done` - Tayyor
         * `failed` - To'xtadi
+    GlossaryEntry:
+      type: object
+      description: One term of the library's glossary.
+      properties:
+        slug:
+          type: string
+        term:
+          type: string
+        english:
+          type: string
+        aliases:
+          type: array
+          items:
+            type: string
+        note:
+          type: string
+      required:
+      - aliases
+      - english
+      - note
+      - slug
+      - term
     GroupEnum:
       enum:
       - sample
@@ -20344,16 +20436,6 @@ components:
       - provider
       - ref
       - seconds
-    Level154Enum:
-      enum:
-      - beginner
-      - intermediate
-      - advanced
-      type: string
-      description: |-
-        * `beginner` - Boshlang'ich
-        * `intermediate` - O'rta
-        * `advanced` - Yuqori
     LevelEnum:
       enum:
       - debug
@@ -20395,7 +20477,7 @@ components:
           maxLength: 120
         level:
           oneOf:
-          - $ref: '#/components/schemas/Level154Enum'
+          - $ref: '#/components/schemas/ArticleLevelEnum'
           - $ref: '#/components/schemas/BlankEnum'
         order:
           type: integer

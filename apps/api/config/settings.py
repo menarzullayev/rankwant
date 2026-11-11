@@ -368,6 +368,8 @@ SPECTACULAR_SETTINGS = {
         # drf-spectacular xesh qo'shib (`Kind598Enum`), generatsiya qilingan
         # TS tipi har safar o'zgarib ketardi.
         "SchoolKindEnum": "core.models.School.Kind",
+        # The algorithms library (ADR-0062): `level` collides with other choice sets.
+        "ArticleLevelEnum": "content.models.Article.Level",
         # Billing (ADR-0057): `kind`, `provider` and the plan code collide
         # with other models' choice sets.
         "OrderKindEnum": "billing.models.Order.Kind",
