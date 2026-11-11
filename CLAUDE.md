@@ -257,6 +257,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-11](docs/decisions/2026-11-11-abramyan-import.md) · Abramyan importi: judge'da haqiqiy son solishtiruvi, 64 MB + til ustamasi, norasmiy (raqamsiz, faollik hisoblanadi), «Begin1. Nom», agent bahosi bilan nashr, production'da tungi tekshiruv · `real_numbers_compared_in_the_judge`
 - [2026-11-11](docs/decisions/2026-11-11-abramyan-verification.md) · Abramyan: tekshiruv hozir production judge'da, izi qoladi (o'chirish keyin); 150 × 4 matnni agent tekshiradi, muammolar Report'dan; 19 bo'lim → mavjud mavzular · `abramyan_publishes_only_verified`
 - [2026-11-11](docs/decisions/2026-11-11-next-directions.md) · Abramyan hammasi tuzalguncha kutadi, e'lonsiz; keyingi tartib: o'qituvchi vositalari → jamoa funksiyalari → cp.uz importi → AI agent (prototiplar bilan) · `abramyan_publishes_only_verified`
+- [2026-11-11](docs/decisions/2026-11-11-teacher-tools-details.md) · O'qituvchi vositalari batafsil: eski sinflar darhol, 3×40 / 50×50, murabbiy ≤3 alohida ruxsat bilan, test turlari, Qvant'siz, generator stdin, kvota hammasini sanaydi · `hali kod yo'q`
 
 ## Tekshiruvlar
 
