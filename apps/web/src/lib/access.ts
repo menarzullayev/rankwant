@@ -74,6 +74,8 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   settings: "user",
   // The author's own drafts (2026-11-10): any signed-in user, nobody else.
   studio: "user",
+  // The reader's streak (decision 2026-11-11 ④).
+  streak: "user",
 
   admin: "staff",
 };

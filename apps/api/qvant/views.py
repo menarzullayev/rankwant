@@ -32,6 +32,7 @@ from qvant.serializers import (
     QuestSerializer,
     QvantTopSerializer,
     ShopItemSerializer,
+    StreakSerializer,
     TransactionSerializer,
     WalletSerializer,
 )
@@ -248,3 +249,44 @@ class InventoryViewSet(viewsets.ReadOnlyModelViewSet[UserInventory]):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         return Response(InventorySerializer(entry).data)
+
+
+#: Streak milestones shown on the streak page (decision 2026-11-11 ④).
+STREAK_MILESTONES = (3, 7, 14, 30, 100, 365)
+
+
+class StreakView(APIView):
+    """The reader's streak: current, longest, freeze, milestones."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(summary="Mening seriyam", responses={200: StreakSerializer})
+    def get(self, request: Request) -> Response:
+        from profiles.stats import streaks
+
+        assert isinstance(request.user, User)
+        user = User.objects.get(pk=request.user.pk)
+        today = timezone.localdate()
+        runs = streaks(user)
+        freeze = (
+            user.streak_freeze_until
+            if user.streak_freeze_until and user.streak_freeze_until >= today
+            else None
+        )
+        item = (
+            ShopItem.objects.filter(category=ShopItem.Category.STREAK_FREEZE, is_active=True)
+            .order_by("price")
+            .first()
+        )
+        return Response(
+            StreakSerializer(
+                {
+                    "current": runs["current"],
+                    "longest": runs["longest"],
+                    "active_today": user.last_active_date == today,
+                    "freeze_until": freeze,
+                    "milestones": list(STREAK_MILESTONES),
+                    "freeze": {"code": item.code, "price": item.price} if item else None,
+                }
+            ).data
+        )

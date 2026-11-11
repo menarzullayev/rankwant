@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3315 strings.**
+**3349 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -208,6 +208,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `standings.penalty` | Jarima | Айыппұл |  |
 | `standings.frozen` | Jadval muzlatilgan | Кесте мұздатылған |  |
 | `leaderboard.title` | Reyting | Рейтинг |  |
+| `regions.title` | Hududlar bo'yicha faollik | Аймақтар бойынша белсенділік |  |
+| `regions.total` | {count} ta faol a'zo | {count} белсенді мүше |  |
+| `regions.period` | Davr | Кезең |  |
+| `regions.days` | {count} kun | {count} күн |  |
+| `streak.title` | Mening seriyam | Менің сериям |  |
+| `streak.current` | Joriy seriya | Ағымдағы серия |  |
+| `streak.longest` | Eng uzun seriya | Ең ұзақ серия |  |
+| `streak.days` | {count} kun | {count} күн |  |
+| `streak.todayDone` | Bugun hisoblandi — seriya davom etmoqda | Бүгін есептелді — серия жалғасуда |  |
+| `streak.todayOpen` | Bugun hali masala yechilmagan — seriyani saqlash uchun bitta masala yeching | Бүгін әлі есеп шығарылмаған — серияны сақтау үшін бір есеп шығарыңыз |  |
+| `streak.next` | {milestone} kungacha {left} kun qoldi | {milestone} күнге дейін {left} күн қалды |  |
+| `streak.freeze` | Muzlatgich | Мұздатқыш |  |
+| `streak.freezeUntil` | {date} gacha faol | {date} дейін белсенді |  |
+| `streak.freezeNone` | Muzlatgich yo'q | Мұздатқыш жоқ |  |
+| `streak.freezeHint` | Muzlatgich bir kun o'tkazib yuborsangiz seriyani saqlab qoladi. | Мұздатқыш бір күнді өткізіп алсаңыз да серияны сақтайды. |  |
+| `streak.buyFreeze` | Muzlatgich olish — {price} Qvant | Мұздатқыш алу — {price} Qvant |  |
+| `streak.milestones` | Bosqichlar | Кезеңдер |  |
+| `streak.reached` | Erishilgan | Жетті |  |
+| `streak.progress` | {count} / {milestone} kun | {count} / {milestone} күн |  |
+| `streak.calendar` | So'nggi 12 oy | Соңғы 12 ай |  |
+| `streak.shop` | Do'konga o'tish | Дүкенге өту |  |
 | `karma.title` | Karma bali | Карма |  |
 | `karma.entries` | Blog postlari | Блог жазбалары |  |
 | `karma.empty` | Hali hech kim ovoz olmagan | Әзірге ешкім дауыс алмаған |  |
@@ -2980,6 +3001,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.nav.courses` | Kurslar | Курстар |  |
 | `studio.nav.quizzes` | Testlarim | Тесттерім |  |
 | `studio.nav.questions` | Savollar banki | Сұрақтар банкі |  |
+| `studio.nav.reports` | Kontentim | Менің контентім |  |
+| `myContent.hint` | Masalalaringiz, postlaringiz va izohlaringizga kelgan shikoyatlar. Kim yuborgani ko'rsatilmaydi. | Есептеріңізге, жазбаларыңызға және пікірлеріңізге келген шағымдар. Кім жібергені көрсетілмейді. |  |
+| `myContent.what` | Nima haqida | Не туралы |  |
+| `myContent.reason` | Sabab | Себебі |  |
+| `myContent.status` | Holat | Күйі |  |
+| `myContent.date` | Sana | Күні |  |
+| `myContent.empty` | Hozircha shikoyat yo'q | Әзірге шағым жоқ |  |
+| `myContent.kind.problem` | Masala | Есеп |  |
+| `myContent.kind.entry` | Blog posti | Блог жазбасы |  |
+| `myContent.kind.comment` | Izoh | Пікір |  |
+| `myContent.status.open` | Ko'rib chiqilmoqda | Қаралуда |  |
+| `myContent.status.accepted` | Qabul qilindi | Қабылданды |  |
+| `myContent.status.rejected` | Rad etildi | Қабылданбады |  |
 | `studio.quizzes.intro` | O'z testingizni savollar bankidan tuzing va sinf sahifasida o'quvchilarga bering. O'qituvchi testi Qvant bermaydi. | Тестті өз сұрақтар банкіңізден құрып, сынып бетінде оқушыларға беріңіз. Мұғалім тесті Qvant бермейді. |  |
 | `studio.quizzes.new` | Yangi test | Жаңа тест |  |
 | `studio.quizzes.count` | {count} / {limit} test — rejangiz chegarasi | Тарифіңізде {count} / {limit} тест |  |

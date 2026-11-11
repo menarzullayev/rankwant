@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3315 strings.**
+**3349 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -208,6 +208,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `standings.penalty` | Jarima | Jaza |  |
 | `standings.frozen` | Jadval muzlatilgan | Keste muzlatılǵan |  |
 | `leaderboard.title` | Reyting | Reyting |  |
+| `regions.title` | Hududlar bo'yicha faollik | Aymaqlar boyınsha belsendilik |  |
+| `regions.total` | {count} ta faol a'zo | {count} belsendi aǵza |  |
+| `regions.period` | Davr | Dáwir |  |
+| `regions.days` | {count} kun | {count} kún |  |
+| `streak.title` | Mening seriyam | Meniń seriyam |  |
+| `streak.current` | Joriy seriya | Házirgi seriya |  |
+| `streak.longest` | Eng uzun seriya | Eń uzın seriya |  |
+| `streak.days` | {count} kun | {count} kún |  |
+| `streak.todayDone` | Bugun hisoblandi — seriya davom etmoqda | Búgin esaplandı — seriya dawam etpekte |  |
+| `streak.todayOpen` | Bugun hali masala yechilmagan — seriyani saqlash uchun bitta masala yeching | Búgin ele másele sheshilmegen — seriyanı saqlaw ushın bir másele sheshiń |  |
+| `streak.next` | {milestone} kungacha {left} kun qoldi | {milestone} kúnge shekem {left} kún qaldı |  |
+| `streak.freeze` | Muzlatgich | Muzlatqısh |  |
+| `streak.freezeUntil` | {date} gacha faol | {date} shekem iske qosılǵan |  |
+| `streak.freezeNone` | Muzlatgich yo'q | Muzlatqısh joq |  |
+| `streak.freezeHint` | Muzlatgich bir kun o'tkazib yuborsangiz seriyani saqlab qoladi. | Muzlatqısh bir kún ótkerip jiberseńiz seriyanı saqlap qaladı. |  |
+| `streak.buyFreeze` | Muzlatgich olish — {price} Qvant | Muzlatqısh alıw — {price} Qvant |  |
+| `streak.milestones` | Bosqichlar | Basqıshlar |  |
+| `streak.reached` | Erishilgan | Erisilgen |  |
+| `streak.progress` | {count} / {milestone} kun | {count} / {milestone} kún |  |
+| `streak.calendar` | So'nggi 12 oy | Sońǵı 12 ay |  |
+| `streak.shop` | Do'konga o'tish | Dúkanǵa ótiw |  |
 | `karma.title` | Karma bali | Karma ballı |  |
 | `karma.entries` | Blog postlari | Blog postları |  |
 | `karma.empty` | Hali hech kim ovoz olmagan | Ele hesh kim dawıs almaǵan |  |
@@ -2980,6 +3001,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.nav.courses` | Kurslar | Kurs dizimi |  |
 | `studio.nav.quizzes` | Testlarim | Testlerim |  |
 | `studio.nav.questions` | Savollar banki | Sorawlar banki |  |
+| `studio.nav.reports` | Kontentim | Meniń kontentim |  |
+| `myContent.hint` | Masalalaringiz, postlaringiz va izohlaringizga kelgan shikoyatlar. Kim yuborgani ko'rsatilmaydi. | Máseleleriñiz, postlarıńız hám pikirlerińizge kelgen shaǵımlar. Kim jibergeni kórsetilmeydi. |  |
+| `myContent.what` | Nima haqida | Ne haqqında |  |
+| `myContent.reason` | Sabab | Sebep |  |
+| `myContent.status` | Holat | Jaǵday |  |
+| `myContent.date` | Sana | Sáne |  |
+| `myContent.empty` | Hozircha shikoyat yo'q | Házirshe shaǵım joq |  |
+| `myContent.kind.problem` | Masala | Másele |  |
+| `myContent.kind.entry` | Blog posti | Blog postı |  |
+| `myContent.kind.comment` | Izoh | Pikir |  |
+| `myContent.status.open` | Ko'rib chiqilmoqda | Kórip shıǵılmaqta |  |
+| `myContent.status.accepted` | Qabul qilindi | Qabıl etildi |  |
+| `myContent.status.rejected` | Rad etildi | Biykar etildi |  |
 | `studio.quizzes.intro` | O'z testingizni savollar bankidan tuzing va sinf sahifasida o'quvchilarga bering. O'qituvchi testi Qvant bermaydi. | Testti óz sorawlar bankińizden dúzip, klass betinde oqıwshılarǵa beriń. Muǵallim testi Qvant bermeydi. |  |
 | `studio.quizzes.new` | Yangi test | Jańa test |  |
 | `studio.quizzes.count` | {count} / {limit} test — rejangiz chegarasi | Tarifińizde {count} / {limit} test |  |

@@ -2514,6 +2514,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/content-reports/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mening kontentim: kelgan shikoyatlar
+         * @description Reports about the reader's problems, entries and comments (decision ④).
+         */
+        get: operations["me_content_reports_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/courses/": {
         parameters: {
             query?: never;
@@ -4164,6 +4184,26 @@ export interface paths {
          * @description Do'kon — ADR-0002: v1 da faqat kosmetika va qulaylik.
          */
         post: operations["qvant_shop_purchase_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/qvant/streak/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mening seriyam
+         * @description The reader's streak: current, longest, freeze, milestones.
+         */
+        get: operations["qvant_streak_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6651,6 +6691,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/stats/regions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Hududlar bo'yicha faol a'zolar
+         * @description Members active in each region over 7, 30, 90 or 365 days.
+         */
+        get: operations["stats_regions_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/studio/courses/": {
         parameters: {
             query?: never;
@@ -8331,6 +8391,24 @@ export interface components {
          * @enum {string}
          */
         ContentLocaleEnum: "uz" | "ru" | "en";
+        /** @description A report about something the reader wrote ("My content"). */
+        ContentReport: {
+            kind: components["schemas"]["ContentReportKindEnum"];
+            title: string;
+            link: string;
+            reason: string;
+            note: string;
+            status: string;
+            /** Format: date-time */
+            created_at: string;
+        };
+        /**
+         * @description * `problem` - problem
+         *     * `entry` - entry
+         *     * `comment` - comment
+         * @enum {string}
+         */
+        ContentReportKindEnum: "problem" | "entry" | "comment";
         Contest: {
             slug: string;
             title: string;
@@ -11936,6 +12014,15 @@ export interface components {
             problem_title: string;
             solved: boolean;
         };
+        RegionActivity: {
+            days: number;
+            total: number;
+            regions: components["schemas"]["RegionCount"][];
+        };
+        RegionCount: {
+            code: string;
+            users: number;
+        };
         Register: {
             /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
             username?: string;
@@ -13063,6 +13150,20 @@ export interface components {
             last_ac_at?: string | null;
             insider_role?: components["schemas"]["InsiderRoleEnum"] | components["schemas"]["BlankEnum"];
             is_disqualified?: boolean;
+        };
+        /** @description The streak page (decision 2026-11-11 ④). */
+        Streak: {
+            current: number;
+            longest: number;
+            active_today: boolean;
+            /** Format: date */
+            freeze_until: string | null;
+            milestones: number[];
+            freeze: components["schemas"]["StreakFreeze"] | null;
+        };
+        StreakFreeze: {
+            code: string;
+            price: number;
         };
         /** @description The studio's course: settings, texts, tree and review state. */
         StudioCourse: {
@@ -17235,6 +17336,25 @@ export interface operations {
             };
         };
     };
+    me_content_reports_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentReport"][];
+                };
+            };
+        };
+    };
     me_courses_list: {
         parameters: {
             query?: {
@@ -19760,6 +19880,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Inventory"];
+                };
+            };
+        };
+    };
+    qvant_streak_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Streak"];
                 };
             };
         };
@@ -25369,6 +25508,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DailyStats"][];
+                };
+            };
+        };
+    };
+    stats_regions_retrieve: {
+        parameters: {
+            query?: {
+                days?: 30 | 365 | 7 | 90;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionActivity"];
                 };
             };
         };

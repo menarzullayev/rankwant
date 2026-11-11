@@ -23,6 +23,7 @@ import {
   type UserPublic,
 } from "@/lib/api";
 import { getSessionUser, getWithSession } from "@/lib/api.server";
+import { RegionMap } from "./_home/RegionMap";
 import { SignedInHome, type ResumeTarget } from "./_home/SignedInHome";
 
 /** Kirgan foydalanuvchi uchun «qayerdan davom etaman» savoliga javob:
@@ -325,6 +326,10 @@ export default async function Home() {
           ))}
         </div>
       </Card>
+
+      {/* Active members by region (decision 2026-11-11 ④); loads in the
+          browser, so the cached guest page carries no extra request. */}
+      <RegionMap />
 
       {/* Vision principle #2 — KEP dan asosiy farq, doim ko'rinib turadi. */}
       <Card title={t(locale, "home.openRating")}>

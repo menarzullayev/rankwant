@@ -5171,6 +5171,46 @@ def neg_decisions_vote_forgets_author() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_streak_milestones() -> tuple[bool, str]:
+    """The streak page would lose its 100-day milestone."""
+    return _decision_broken(
+        "apps/api/qvant/views.py",
+        "STREAK_MILESTONES = (3, 7, 14, 30, 100, 365)",
+        "STREAK_MILESTONES = (3, 7, 14, 30, 365)",
+        "seriya bosqichlari",
+    )
+
+
+def neg_decisions_region_periods() -> tuple[bool, str]:
+    """The region map would offer a 180-day period instead of a year."""
+    return _decision_broken(
+        "apps/api/profiles/regions.py",
+        "PERIODS = (7, 30, 90, 365)",
+        "PERIODS = (7, 30, 90, 180)",
+        "hudud xaritasi davrlari",
+    )
+
+
+def neg_decisions_my_content_names_reporter() -> tuple[bool, str]:
+    """"My content" would name the person who reported."""
+    return _decision_broken(
+        "apps/api/community/mine.py",
+        '"reason": row.reason,',
+        '"reason": row.reason, "reporter": row.reporter_id,',
+        "shikoyatchini oshkor qiladi",
+    )
+
+
+def neg_decisions_home_without_map() -> tuple[bool, str]:
+    """The home page would lose the region map."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/page.tsx",
+        "      <RegionMap />",
+        "",
+        "hududlar xaritasi yo'q",
+    )
+
+
 def neg_decisions_classroom_skips_request() -> tuple[bool, str]:
     """A classroom that asks for approval lets the student straight in."""
     return _decision_broken(
@@ -9067,6 +9107,10 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/qvant/views.py",
+    "apps/api/profiles/regions.py",
+    "apps/api/community/mine.py",
+    "apps/api/problems/reports.py",
     "apps/api/community/karma.py",
     "apps/api/community/blog.py",
     "apps/web/src/layout/nav.ts",
@@ -13476,6 +13520,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("faol mualliflar 90 kun bo'lsa tutilsin", neg_decisions_karma_active_window),
             ("profilda karma yo'qolsa tutilsin", neg_decisions_karma_off_profile),
             ("ovoz muallifsiz yozilsa tutilsin", neg_decisions_vote_forgets_author),
+            ("seriya bosqichi yo'qolsa tutilsin", neg_decisions_streak_milestones),
+            ("hudud davri o'zgarsa tutilsin", neg_decisions_region_periods),
+            ("kontentim shikoyatchini aytsa tutilsin", neg_decisions_my_content_names_reporter),
+            ("bosh sahifada xarita yo'qolsa tutilsin", neg_decisions_home_without_map),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

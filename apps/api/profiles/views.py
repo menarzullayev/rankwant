@@ -22,7 +22,7 @@ from core.models import User
 from core.pagination import StandardPagination
 from core.tasks import queue
 from core.throttling import ResilientScopedRateThrottle
-from profiles import achievements, external, public, stats, teams
+from profiles import achievements, external, public, regions, stats, teams
 from profiles.catalog import TECHNOLOGIES
 from profiles.models import (
     MAX_SKILL_BADGES,
@@ -43,6 +43,7 @@ from profiles.serializers import (
     ExternalInSerializer,
     ExternalOutSerializer,
     FollowerSerializer,
+    RegionActivitySerializer,
     SkillBadgeSerializer,
     SkillSerializer,
     TeamCreateSerializer,
@@ -662,3 +663,19 @@ class UserContestsView(APIView):
             queryset.order_by("-contest__start_at", "-pk"), request, view=self
         )
         return paginator.get_paginated_response(stats.contest_rows(user, list(page or [])))
+
+
+class RegionActivityView(APIView):
+    """Members active in each region over 7, 30, 90 or 365 days."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        summary="Hududlar bo'yicha faol a'zolar",
+        parameters=[OpenApiParameter("days", int, enum=list(regions.PERIODS), required=False)],
+        responses=RegionActivitySerializer,
+    )
+    def get(self, request: Request) -> Response:
+        raw = request.query_params.get("days", "30")
+        days = int(raw) if raw.isdigit() else 30
+        return Response(RegionActivitySerializer(regions.active_by_region(days)).data)

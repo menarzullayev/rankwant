@@ -88,3 +88,22 @@ class QvantTopSerializer(serializers.ModelSerializer[QvantWallet]):
     class Meta:
         model = QvantWallet
         fields = ["username", "display_name", "avatar_url", "balance"]
+
+
+class StreakFreezeSerializer(serializers.Serializer[Any]):
+    code = serializers.CharField()
+    price = serializers.IntegerField()
+
+
+class StreakSerializer(serializers.Serializer[Any]):
+    """The streak page (decision 2026-11-11 ④)."""
+
+    current = serializers.IntegerField()
+    longest = serializers.IntegerField()
+    #: Today already counts: nothing to do to keep the streak.
+    active_today = serializers.BooleanField()
+    #: The last day a missed day is forgiven; null without a freeze.
+    freeze_until = serializers.DateField(allow_null=True)
+    milestones = serializers.ListField(child=serializers.IntegerField())
+    #: The shop's freeze, if it is on sale.
+    freeze = StreakFreezeSerializer(allow_null=True)
