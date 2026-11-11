@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Reworded the sentence on the i^2 optimisation so it says it is allowed because smaller multiples were already sieved (the original's meaning), and rewrote the badly phrased range [L, R] sentence with the original's conditions. All formulas, complexities and code match.",
+      "content_sha256": "42ba5b53f67a16a56456badf05c76c5ebf0969e273cdf3e6575f2b52b0a70eab"
+    },
+    {
+      "at": "2026-11-12T10:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed ordinal forms ('k-chi tub son', 'k-chi blok') and reworded the awkward 'Ba’zan uzunligi kichik...' sentence.",
+      "content_sha256": "42ba5b53f67a16a56456badf05c76c5ebf0969e273cdf3e6575f2b52b0a70eab"
+    }
+  ]
+}

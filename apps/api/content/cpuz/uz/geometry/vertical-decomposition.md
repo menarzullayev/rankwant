@@ -6,175 +6,231 @@ Vertikal dekompozitsiya ko‘plab geometrik masalalarda ishlatiladigan kuchli us
 
 ## Uchburchaklar birlashmasining yuzi
 
-Tekislikda $n$ ta uchburchak berilgan va ularning birlashmasi yuzini topish kerak bo‘lsin. Uchburchaklar kesishmaganida masala oson bo‘lardi. Kesishishlardan xalos bo‘lish uchun barcha uchlar va turli uchburchaklar tomonlarining kesishish nuqtalari orqali vertikal chiziqlar o‘tkazamiz. Bunday chiziqlar $\mathcal{O}(n^2)$ ta, demak $\mathcal{O}(n^2)$ vertikal polosa hosil bo‘lishi mumkin.
+Tekislikda $n$ ta uchburchak berilgan va ularning birlashmasi yuzini topish kerak bo‘lsin. Uchburchaklar kesishmaganida masala oson bo‘lardi. Kesishishlardan xalos bo‘lish uchun barcha uchlar va turli uchburchaklar tomonlarining kesishish nuqtalari orqali vertikal chiziqlar o‘tkazib, tekislikni vertikal polosalarga ajratamiz. Bunday chiziqlar $O(n^2)$ ta bo‘lishi mumkin, demak $O(n^2)$ ta polosa hosil bo‘ladi. Endi biror vertikal polosani ko‘rib chiqamiz. Har bir vertikal bo‘lmagan kesma polosani chapdan o‘ngga to‘liq kesib o‘tadi yoki umuman kesib o‘tmaydi. Bundan tashqari, polosa ichida (uning chegaralarida emas) hech qanday ikkita kesma kesishmaydi. Demak, uchburchaklar birlashmasining shu polosa ichida yotgan qismi asoslari polosaning yon tomonlarida yotadigan o‘zaro kesishmaydigan trapetsiyalardan iborat.
 
-Bitta polosani ko‘rib chiqamiz. Har bir vertikal bo‘lmagan kesma polosani chapdan o‘ngga to‘liq kesib o‘tadi yoki uning ichiga umuman kirmaydi. Polosa ichida ikkita tomon kesishmaydi. Shu sababli uchburchaklar birlashmasining polosadagi qismi asoslari polosaning vertikal chegaralarida yotadigan o‘zaro kesishmaydigan trapetsiyalardan iborat.
-
-Polosani kesib o‘tuvchi tomon tegishli uchburchakning ichi undan yuqorida bo‘lsa “pastki”, ichi undan pastda bo‘lsa “yuqori” chegara sifatida qaraladi. Yuqori chegarani ochuvchi qavs, pastki chegarani yopuvchi qavs deb tasavvur qilib, $y$ bo‘yicha tartiblangan tomonlardan hosil bo‘lgan qavslar ketma-ketligini to‘g‘ri kichik ketma-ketliklarga ajratamiz. Har bir juft bir trapetsiyani belgilaydi.
-
-Polosalarni oshkora qurib, har biri uchun barcha tomonlarni saralash $\mathcal{O}(n^3\log n)$ vaqt va $\mathcal{O}(n^2)$ xotira talab qiladi.
+Bu xossa har bir polosa ichidagi yuzni quyidagi supuruvchi chiziq (scanline) algoritmi bilan hisoblashga imkon beradi. Polosani kesib o‘tuvchi har bir kesma yoki yuqori, yoki pastki bo‘ladi: bu mos uchburchakning ichi kesmadan yuqorida yoki pastda joylashganiga bog‘liq. Har bir yuqori kesmani ochuvchi qavs, har bir pastki kesmani yopuvchi qavs deb tasavvur qilish mumkin va qavslar ketma-ketligini kichikroq to‘g‘ri qavs ketma-ketliklariga ajratish orqali polosani trapetsiyalarga ajratamiz. Bu algoritm $O(n^3\log n)$ vaqt va $O(n^2)$ xotira talab qiladi.
 
 ### 1-optimizatsiya
 
-Murakkablikni $\mathcal{O}(n^2\log n)$ gacha kamaytiramiz. Har bir polosa uchun trapetsiyalarni alohida qurish o‘rniga, bitta uchburchak tomoni $s=(s_0,s_1)$ ni mahkamlab, u qaysi polosalarda biror trapetsiyaning tomoni bo‘lishini topamiz.
+Avval ishlash vaqtini $O(n^2\log n)$ gacha kamaytiramiz. Har bir polosa uchun trapetsiyalarni alohida hosil qilish o‘rniga, biror uchburchak tomonini (ya’ni $s=(s_0,s_1)$ kesmani) tanlab, bu kesma qaysi polosalarda biror trapetsiyaning tomoni bo‘lishini topamiz. E’tibor bering, bu holda faqat $s$ ning pastidagi (pastki kesma bo‘lsa — ustidagi) qavslar balansi nolga teng bo‘lgan polosalarni topish kerak. Demak, har bir polosa uchun vertikal supuruvchi chiziq yurgizish o‘rniga, $s$ ga nisbatan qavslar balansiga ta’sir qiladigan boshqa kesmalarning barcha qismlari bo‘yicha bitta gorizontal supuruvchi chiziq yurgizishimiz mumkin.
 
-$s$ yuqori tomon bo‘lsin. U trapetsiya chegarasi bo‘lishi uchun uning pastidagi qavslar balansi nol bo‘lishi kerak. Shunday qilib, vertikal scanline o‘rniga $s$ ga nisbatan balansga ta’sir qiladigan boshqa kesmalar qismlari bo‘yicha gorizontal mantiqda hodisalar yig‘amiz.
+Soddalik uchun buni yuqori kesma uchun ko‘rsatamiz; pastki kesmalar uchun algoritm shunga o‘xshash. Boshqa biror vertikal bo‘lmagan $t=(t_0,t_1)$ kesmani olaylik va $s$ hamda $t$ ning $Ox$ o‘qidagi proyeksiyalari kesishmasi $[x_1,x_2]$ ni topaylik. Bu kesishma bo‘sh yoki bitta nuqtadan iborat bo‘lsa, $t$ ni tashlab yuborish mumkin, chunki $s$ va $t$ bir polosaning ichini kesib o‘tmaydi. Aks holda $s$ va $t$ ning $I$ kesishmasini ko‘rib chiqamiz. Uch holat bor.
 
-Boshqa vertikal bo‘lmagan $t=(t_0,t_1)$ kesmani olaylik. $s$ va $t$ proyeksiyalarining $Ox$ dagi kesishmasi $[x_1,x_2]$ bo‘lsin. U bo‘sh yoki bitta nuqtadan iborat bo‘lsa, ular bir polosaning ichini birga kesib o‘tmaydi va $t$ tashlab yuboriladi. Aks holda $s$ va $t$ kesishmasi $I$ uchun uch holat bor.
+1. $I=\varnothing$
 
-1. **$I=\varnothing$.** $[x_1,x_2]$ bo‘ylab $t$ to‘liq $s$ dan yuqori yoki pastda. Yuqorida bo‘lsa, $s$ ning chegaraviy bo‘lishiga ta’sir qilmaydi. Pastda bo‘lsa, $t$ yuqori yoki pastki tomon ekaniga qarab balansga butun $[x_1,x_2]$ da $+1$ yoki $-1$ qo‘shiladi.
-2. **$I$ bitta $p$ nuqta.** $[x_1,x_2]$ ni $[x_1,p_x]$ va $[p_x,x_2]$ ga bo‘lib, oldingi holatga keltiriladi.
-3. **$I$ kesma.** $s$ va $t$ ning tegishli qismlari ustma-ust tushadi. $t$ qarama-qarshi turdagi tomon bo‘lsa, $s$ bu oraliqda trapetsiya tomoni bo‘la olmaydi. Bir xil turdagi ustma-ust tomonlarda noaniqlikni yo‘qotish uchun faqat indeksi eng kichik kesmani vakil sifatida qoldiramiz; qolganiga, masalan, balansni hech qachon nol qilmaydigan `-2` hodisa beriladi.
+    Bu holda $[x_1,x_2]$ da $t$ yoki $s$ dan yuqorida, yoki pastda joylashadi. Agar $t$ yuqorida bo‘lsa, u $s$ ning biror trapetsiya tomoni bo‘lish-bo‘lmasligiga ta’sir qilmaydi.
+    Agar $t$ $s$ dan pastda bo‘lsa, $t$ yuqori yoki pastki kesma ekaniga qarab, $[x_1,x_2]$ dagi barcha polosalar uchun qavslar ketma-ketligi balansiga $1$ yoki $-1$ qo‘shishimiz kerak.
 
-$[x_1,x_2]$ ga $w$ qo‘shishni ikkita hodisa bilan ifodalaymiz: $(x_1,w)$ va $(x_2,-w)$. Hodisalar $x$ bo‘yicha saralanib, sweep line bilan yuriladi. Balans nol bo‘lgan oraliqlarda $s$ trapetsiya tomoni hisoblanadi va uning ostidagi yoki ustidagi integral yuzga qo‘shiladi.
+2. $I$ bitta $p$ nuqtadan iborat
+
+    Bu holni $[x_1,x_2]$ ni $[x_1,p_x]$ va $[p_x,x_2]$ ga bo‘lib, oldingi holga keltirish mumkin.
+
+3. $I$ biror $l$ kesma
+
+    Bu $x\in[x_1,x_2]$ uchun $s$ va $t$ ning mos qismlari ustma-ust tushishini bildiradi. Agar $t$ pastki bo‘lsa, $s$ aniq trapetsiya tomoni emas.
+    Aks holda $s$ ham, $t$ ham biror trapetsiyaning tomoni deb hisoblanishi mumkin. Bu noaniqlikni hal qilish uchun faqat eng kichik indeksli kesmani tomon deb hisoblashga kelishib olamiz (bunda uchburchak tomonlari qandaydir tarzda raqamlangan deb faraz qilamiz). Demak, agar $index(s)<index(t)$ bo‘lsa, bu holni e’tiborsiz qoldiramiz, aks holda $s$ hech qachon $[x_1,x_2]$ da tomon bo‘la olmasligini belgilashimiz kerak (masalan, balansi $-2$ bo‘lgan mos hodisani qo‘shish orqali).
+
+Uch holatning grafik tasviri:
+
+  ![Visual](/algorithms-media/geometry/triangle_union.png)
+
+Nihoyat, $[x_1,x_2]$ dagi barcha polosalarga $1$ yoki $-1$ qo‘shishlarni qayta ishlash haqida to‘xtalib o‘tamiz. $[x_1,x_2]$ ga har bir $w$ qo‘shish uchun $(x_1,w),\ (x_2,-w)$ hodisalarini yaratib, barcha hodisalarni supuruvchi chiziq bilan qayta ishlash mumkin.
 
 ### 2-optimizatsiya
 
-Birinchi optimizatsiyadan so‘ng polosalarning o‘zini saqlashga hojat qolmaydi. Har bir mahkamlangan kesma uchun faqat $\mathcal{O}(n)$ hodisa kerak, shuning uchun xotira $\mathcal{O}(n)$ gacha kamayadi.
+Agar oldingi optimizatsiyani qo‘llasak, barcha polosalarni oshkora topishimiz shart emas. Bu xotira sarfini $O(n)$ gacha kamaytiradi.
 
 ## Qavariq ko‘pburchaklar kesishmasi
 
-Vertikal dekompozitsiyaning yana bir qo‘llanishi — ikkita qavariq ko‘pburchak kesishmasini chiziqli vaqtda topish. Har ikki ko‘pburchakning barcha uchlari orqali vertikal chiziqlar o‘tkazilsin. Har bir polosa bilan bitta qavariq ko‘pburchakning kesishmasi trapetsiya, uchburchak, kesma yoki nuqtadan iborat bo‘ladi. Har polosada shu sodda shakllar kesishmasi topilib, natijalar ketma-ket birlashtiriladi. Uchlar tartiblangan bo‘lgani uchun ikki ko‘pburchak bo‘ylab ko‘rsatkichlar faqat oldinga siljiydi va umumiy vaqt $\mathcal{O}(|P|+|Q|)$ bo‘ladi.
+Vertikal dekompozitsiyaning yana bir qo‘llanishi — ikkita qavariq ko‘pburchakning kesishmasini chiziqli vaqtda hisoblash. Tekislik har bir ko‘pburchakning har bir uchidan o‘tuvchi vertikal chiziqlar bilan vertikal polosalarga ajratilgan deylik. U holda kirish ko‘pburchaklaridan birini va biror polosani olsak, ularning kesishmasi trapetsiya, uchburchak yoki nuqta bo‘ladi. Demak, har bir vertikal polosa uchun shu shakllarning kesishmasini oddiygina topib, bu kesishmalarni bitta ko‘pburchakka birlashtirishimiz mumkin.
 
 ## Implementatsiya
 
-Quyidagi kod uchburchaklar birlashmasi yuzini $\mathcal{O}(n^2\log n)$ vaqt va $\mathcal{O}(n)$ qo‘shimcha xotirada hisoblaydi.
+Quyidagi kod uchburchaklar birlashmasi yuzini $O(n^2\log n)$ vaqt va $O(n)$ xotirada hisoblaydi.
 
 ```cpp
 typedef double dbl;
+
 const dbl eps = 1e-9;
-
-inline bool eq(dbl x, dbl y) { return fabs(x-y) < eps; }
-inline bool lt(dbl x, dbl y) { return x < y-eps; }
-inline bool gt(dbl x, dbl y) { return x > y+eps; }
-inline bool le(dbl x, dbl y) { return x < y+eps; }
-inline bool ge(dbl x, dbl y) { return x > y-eps; }
-
-struct pt {
+ 
+inline bool eq(dbl x, dbl y){
+    return fabs(x - y) < eps;
+}
+ 
+inline bool lt(dbl x, dbl y){
+    return x < y - eps;
+}
+ 
+inline bool gt(dbl x, dbl y){
+    return x > y + eps;
+}
+ 
+inline bool le(dbl x, dbl y){
+    return x < y + eps;
+}
+ 
+inline bool ge(dbl x, dbl y){
+    return x > y - eps;
+}
+ 
+struct pt{
     dbl x, y;
-    pt operator-(const pt& p) const { return {x-p.x, y-p.y}; }
-    pt operator+(const pt& p) const { return {x+p.x, y+p.y}; }
-    pt operator*(dbl a) const { return {x*a, y*a}; }
-    dbl cross(const pt& p) const { return x*p.y-y*p.x; }
-    dbl dot(const pt& p) const { return x*p.x+y*p.y; }
-    bool operator==(const pt& p) const { return eq(x,p.x)&&eq(y,p.y); }
+    inline pt operator - (const pt & p)const{
+        return pt{x - p.x, y - p.y};
+    }
+    inline pt operator + (const pt & p)const{
+        return pt{x + p.x, y + p.y};
+    }
+    inline pt operator * (dbl a)const{
+        return pt{x * a, y * a};
+    }
+    inline dbl cross(const pt & p)const{
+        return x * p.y - y * p.x;
+    }
+    inline dbl dot(const pt & p)const{
+        return x * p.x + y * p.y;
+    }
+    inline bool operator == (const pt & p)const{
+        return eq(x, p.x) && eq(y, p.y);
+    }
 };
-
-struct Line {
+ 
+struct Line{
     pt p[2];
-    Line() {}
-    Line(pt a, pt b): p{a,b} {}
-    pt vec() const { return p[1]-p[0]; }
-    pt& operator[](size_t i) { return p[i]; }
+    Line(){}
+    Line(pt a, pt b):p{a, b}{}
+    pt vec()const{
+        return p[1] - p[0];
+    }
+    pt& operator [](size_t i){
+        return p[i];
+    }
 };
-
-inline bool lexComp(const pt& l, const pt& r) {
-    if (fabs(l.x-r.x)>eps) return l.x<r.x;
-    return l.y<r.y;
+ 
+inline bool lexComp(const pt & l, const pt & r){
+	if(fabs(l.x - r.x) > eps){
+		return l.x < r.x;
+	}
+	else return l.y < r.y;
 }
-
-vector<pt> interSegSeg(Line l1, Line l2) {
-    if (eq(l1.vec().cross(l2.vec()),0)) {
-        if (!eq(l1.vec().cross(l2[0]-l1[0]),0)) return {};
-        if (!lexComp(l1[0],l1[1])) swap(l1[0],l1[1]);
-        if (!lexComp(l2[0],l2[1])) swap(l2[0],l2[1]);
-        pt l=lexComp(l1[0],l2[0])?l2[0]:l1[0];
-        pt r=lexComp(l1[1],l2[1])?l1[1]:l2[1];
-        if (l==r) return {l};
-        return lexComp(l,r)?vector<pt>{l,r}:vector<pt>();
+ 
+vector<pt> interSegSeg(Line l1, Line l2){
+    if(eq(l1.vec().cross(l2.vec()), 0)){
+        if(!eq(l1.vec().cross(l2[0] - l1[0]), 0))
+            return {};
+        if(!lexComp(l1[0], l1[1]))
+            swap(l1[0], l1[1]);
+        if(!lexComp(l2[0], l2[1]))
+            swap(l2[0], l2[1]);
+        pt l = lexComp(l1[0], l2[0]) ? l2[0] : l1[0];
+        pt r = lexComp(l1[1], l2[1]) ? l1[1] : l2[1];
+        if(l == r)
+            return {l};
+        else return lexComp(l, r) ? vector<pt>{l, r} : vector<pt>();
     }
-    dbl s=(l2[0]-l1[0]).cross(l2.vec())/l1.vec().cross(l2.vec());
-    pt inter=l1[0]+l1.vec()*s;
-    if (ge(s,0)&&le(s,1)&&le((l2[0]-inter).dot(l2[1]-inter),0))
-        return {inter};
-    return {};
+    else{
+        dbl s = (l2[0] - l1[0]).cross(l2.vec()) / l1.vec().cross(l2.vec());
+        pt inter = l1[0] + l1.vec() * s;
+        if(ge(s, 0) && le(s, 1) && le((l2[0] - inter).dot(l2[1] - inter), 0))
+            return {inter};
+        else
+            return {};
+    }
 }
-
-inline char get_segtype(Line segment, pt other_point) {
-    if (eq(segment[0].x,segment[1].x)) return 0;
-    if (!lexComp(segment[0],segment[1])) swap(segment[0],segment[1]);
-    return (segment[1]-segment[0]).cross(other_point-segment[0])>0?1:-1;
+inline char get_segtype(Line segment, pt other_point){
+    if(eq(segment[0].x, segment[1].x))
+        return 0;
+    if(!lexComp(segment[0], segment[1]))
+        swap(segment[0], segment[1]);
+    return (segment[1] - segment[0]).cross(other_point - segment[0]) > 0 ? 1 : -1;
 }
-
-dbl union_area(vector<tuple<pt,pt,pt>> triangles) {
-    vector<Line> segments(3*triangles.size());
+ 
+dbl union_area(vector<tuple<pt, pt, pt> > triangles){
+    vector<Line> segments(3 * triangles.size());
     vector<char> segtype(segments.size());
-    for (size_t i=0;i<triangles.size();i++) {
-        pt a,b,c; tie(a,b,c)=triangles[i];
-        segments[3*i]=lexComp(a,b)?Line(a,b):Line(b,a);
-        segtype[3*i]=get_segtype(segments[3*i],c);
-        segments[3*i+1]=lexComp(b,c)?Line(b,c):Line(c,b);
-        segtype[3*i+1]=get_segtype(segments[3*i+1],a);
-        segments[3*i+2]=lexComp(c,a)?Line(c,a):Line(a,c);
-        segtype[3*i+2]=get_segtype(segments[3*i+2],b);
+    for(size_t i = 0; i < triangles.size(); i++){
+        pt a, b, c;
+        tie(a, b, c) = triangles[i];
+        segments[3 * i] = lexComp(a, b) ? Line(a, b) : Line(b, a);
+        segtype[3 * i] = get_segtype(segments[3 * i], c);
+        segments[3 * i + 1] = lexComp(b, c) ? Line(b, c) : Line(c, b);
+        segtype[3 * i + 1] = get_segtype(segments[3 * i + 1], a);
+        segments[3 * i + 2] = lexComp(c, a) ? Line(c, a) : Line(a, c);
+        segtype[3 * i + 2] = get_segtype(segments[3 * i + 2], b);
     }
-
     vector<dbl> k(segments.size()), b(segments.size());
-    for (size_t i=0;i<segments.size();i++) if (segtype[i]) {
-        k[i]=(segments[i][1].y-segments[i][0].y)/
-             (segments[i][1].x-segments[i][0].x);
-        b[i]=segments[i][0].y-k[i]*segments[i][0].x;
+    for(size_t i = 0; i < segments.size(); i++){
+        if(segtype[i]){
+            k[i] = (segments[i][1].y - segments[i][0].y) / (segments[i][1].x - segments[i][0].x);
+            b[i] = segments[i][0].y - k[i] * segments[i][0].x;
+        }
     }
-
-    dbl ans=0;
-    for (size_t i=0;i<segments.size();i++) {
-        if (!segtype[i]) continue;
-        dbl l=segments[i][0].x, r=segments[i][1].x;
-        vector<pair<dbl,int>> evts;
-
-        for (size_t j=0;j<segments.size();j++) {
-            if (!segtype[j]||i==j) continue;
-            dbl l1=segments[j][0].x, r1=segments[j][1].x;
-            if (ge(l1,r)||ge(l,r1)) continue;
-            dbl common_l=max(l,l1), common_r=min(r,r1);
-            auto pts=interSegSeg(segments[i],segments[j]);
-
-            if (pts.empty()) {
-                dbl yi=k[i]*common_l+b[i];
-                dbl yj=k[j]*common_l+b[j];
-                if (lt(yj,yi)==(segtype[i]==1)) {
-                    int w=-segtype[i]*segtype[j];
-                    evts.emplace_back(common_l,w);
-                    evts.emplace_back(common_r,-w);
+    dbl ans = 0;
+    for(size_t i = 0; i < segments.size(); i++){
+        if(!segtype[i])
+            continue;
+        dbl l = segments[i][0].x, r = segments[i][1].x;
+        vector<pair<dbl, int> > evts;
+        for(size_t j = 0; j < segments.size(); j++){
+            if(!segtype[j] || i == j)
+                continue;
+            dbl l1 = segments[j][0].x, r1 = segments[j][1].x;
+            if(ge(l1, r) || ge(l, r1))
+                continue;
+            dbl common_l = max(l, l1), common_r = min(r, r1);
+            auto pts = interSegSeg(segments[i], segments[j]);
+            if(pts.empty()){
+                dbl yl1 = k[j] * common_l + b[j];
+                dbl yl = k[i] * common_l + b[i];
+                if(lt(yl1, yl) == (segtype[i] == 1)){
+                    int evt_type = -segtype[i] * segtype[j];
+                    evts.emplace_back(common_l, evt_type);
+                    evts.emplace_back(common_r, -evt_type);
                 }
-            } else if (pts.size()==1) {
-                int w=-segtype[i]*segtype[j];
-                dbl yi=k[i]*common_l+b[i], yj=k[j]*common_l+b[j];
-                if (lt(yj,yi)==(segtype[i]==1)) {
-                    evts.emplace_back(common_l,w);
-                    evts.emplace_back(pts[0].x,-w);
+            }
+            else if(pts.size() == 1u){
+                dbl yl = k[i] * common_l + b[i], yl1 = k[j] * common_l + b[j];
+                int evt_type = -segtype[i] * segtype[j];
+                if(lt(yl1, yl) == (segtype[i] == 1)){
+                    evts.emplace_back(common_l, evt_type);
+                    evts.emplace_back(pts[0].x, -evt_type);
                 }
-                yi=k[i]*common_r+b[i]; yj=k[j]*common_r+b[j];
-                if (lt(yj,yi)==(segtype[i]==1)) {
-                    evts.emplace_back(pts[0].x,w);
-                    evts.emplace_back(common_r,-w);
+                yl = k[i] * common_r + b[i], yl1 = k[j] * common_r + b[j];
+                if(lt(yl1, yl) == (segtype[i] == 1)){
+                    evts.emplace_back(pts[0].x, evt_type);
+                    evts.emplace_back(common_r, -evt_type);
                 }
-            } else if (segtype[j]!=segtype[i]||j>i) {
-                evts.emplace_back(common_l,-2);
-                evts.emplace_back(common_r,2);
+            }
+            else{
+                if(segtype[j] != segtype[i] || j > i){
+                    evts.emplace_back(common_l, -2);
+                    evts.emplace_back(common_r, 2);
+                }
             }
         }
-
-        evts.emplace_back(l,0);
-        sort(evts.begin(),evts.end());
-        size_t j=0; int balance=0;
-        while (j<evts.size()) {
-            size_t ptr=j;
-            while (ptr<evts.size()&&eq(evts[j].first,evts[ptr].first))
-                balance+=evts[ptr++].second;
-            if (!balance&&!eq(evts[j].first,r)) {
-                dbl nx=ptr==evts.size()?r:evts[ptr].first;
-                ans-=segtype[i]*(k[i]*(nx+evts[j].first)+2*b[i])
-                    *(nx-evts[j].first);
+        evts.emplace_back(l, 0);
+        sort(evts.begin(), evts.end());
+        size_t j = 0;
+        int balance = 0;
+        while(j < evts.size()){
+            size_t ptr = j;
+            while(ptr < evts.size() && eq(evts[j].first, evts[ptr].first)){
+                balance += evts[ptr].second;
+                ++ptr;
             }
-            j=ptr;
+            if(!balance && !eq(evts[j].first, r)){
+                dbl next_x = ptr == evts.size() ? r : evts[ptr].first;
+                ans -= segtype[i] * (k[i] * (next_x + evts[j].first) + 2 * b[i]) * (next_x - evts[j].first);
+            }
+            j = ptr;
         }
     }
     return ans/2;
 }
+
 ```
 
 ## Masalalar
 
-- [Codeforces 62C — Inquisition](https://codeforces.com/problemset/problem/62/C)
-- [Codeforces 107E — Darts](https://codeforces.com/problemset/problem/107/E)
+- [Codeforces 62C — Inquisition](https://codeforces.com/contest/62/problem/C)
+- [Codeforces 107E — Darts](https://codeforces.com/contest/107/problem/E)

@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Code and display formulas now match the original (align environments only). The remaining differences are inline formulas that follow rephrased Uzbek sentences or reproduce typos of the original (P[I], a_{i+1}); they state the same mathematics."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T21:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Checked all sections against the original; the content was complete. Removed a stray full stop inside the display formula of the string-matching derivation so it matches the original.",
+      "content_sha256": "132d3032284f60c255fd4df9469d51225becb8086fd71686260b0cabd13ef371"
+    },
+    {
+      "at": "2026-11-11T21:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the calque 'bo‘lib tashla va hukmronlik qil' with the glossary term 'bo‘lib yechish', fixed the link texts (primitiv ildiz, Xitoy qoldiqlari teoremasi) and added blank lines around display formulas, headings and code blocks so they render.",
+      "content_sha256": "132d3032284f60c255fd4df9469d51225becb8086fd71686260b0cabd13ef371"
+    },
+    {
+      "at": "2026-11-11T21:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Display formulas and code blocks equal the original; only inline formulas differ because sentences were rephrased, with no change in meaning.",
+      "content_sha256": "132d3032284f60c255fd4df9469d51225becb8086fd71686260b0cabd13ef371"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared with the original; problem statement, DP state definition, code and references are complete. No technical errors found.",
+      "content_sha256": "a78f26dbb0647f1ad6d2cb2e0bfb1e72610655c6256a0e2f0f0121aa8df4836c"
+    },
+    {
+      "at": "2026-11-12T10:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Made the problem name consistent ('Parket' in the title and section heading), rephrased the DP-building sentence to 'iteratsiya qilib quramiz' and fixed blank lines.",
+      "content_sha256": "a78f26dbb0647f1ad6d2cb2e0bfb1e72610655c6256a0e2f0f0121aa8df4836c"
+    }
+  ]
+}

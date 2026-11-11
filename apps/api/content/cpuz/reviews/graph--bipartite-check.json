@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T22:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked all paragraphs, the code and the problem list against the original; nothing was missing or wrong.",
+      "content_sha256": "4f36ce95c79c1c5d8ac35efc7f238e6c6bcc0d8e0458b8f2687b3a0838110e8d"
+    },
+    {
+      "at": "2026-11-11T22:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rephrased the 'if and only if' theorem sentences into idiomatic Uzbek ('zarur va yetarli'), rejoined the BFS paragraph that was broken by a stray line break and replaced 'ayni tomonga' with 'o‘sha tomonga'.",
+      "content_sha256": "4f36ce95c79c1c5d8ac35efc7f238e6c6bcc0d8e0458b8f2687b3a0838110e8d"
+    }
+  ]
+}

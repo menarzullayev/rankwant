@@ -38,7 +38,7 @@ Bu eng sodda usuldir. Barcha suffikslarni hosil qilamiz, ularning dastlabki inde
 
 ### $O(n\log n)$ usul
 
-Qat’iy aytganda, quyidagi algoritm suffikslarni emas, satrning siklik siljishlarini saralaydi. Biroq undan suffikslarni saralash algoritmini juda oson olish mumkin: satr oxiriga undagi barcha belgilardan kichik bo‘lgan ixtiyoriy belgi qo‘shish kifoya. Odatda `$` belgisi ishlatiladi. Shunda saralangan siklik siljishlar tartibi saralangan suffikslar tartibiga teng bo‘ladi. Buni $dabbb$ satri misolida ko‘rish mumkin:
+Qat’iy aytganda, quyidagi algoritm suffikslarni emas, satrning siklik siljishlarini saralaydi. Biroq undan suffikslarni saralash algoritmini juda oson olish mumkin: satr oxiriga undagi barcha belgilardan kichik bo‘lgan ixtiyoriy belgi qo‘shish kifoya. Odatda \$ belgisi ishlatiladi. Shunda saralangan siklik siljishlar tartibi saralangan suffikslar tartibiga teng bo‘ladi. Buni $dabbb$ satri misolida ko‘rish mumkin:
 
 $$\begin{array}{lll}
 1. & abbb\$d & abbb \\
@@ -59,9 +59,9 @@ $c[i]$ sonlari tartib haqidagi ma’lumotni ham saqlaydigan qilib beriladi: bir 
 Misol sifatida $s=aaba$ satrini ko‘raylik. Har bir iteratsiyadagi siklik ostsatrlar hamda ularga mos $p[]$ va $c[]$ massivlari:
 
 $$\begin{array}{cccc}
-0: & (a,~a,~b,~a) & p=(0,~1,~3,~2) & c=(0,~0,~1,~0)\\
-1: & (aa,~ab,~ba,~aa) & p=(0,~3,~1,~2) & c=(0,~1,~2,~0)\\
-2: & (aaba,~abaa,~baaa,~aaab) & p=(3,~0,~1,~2) & c=(1,~2,~3,~0)
+0: & (a,~ a,~ b,~ a) & p = (0,~ 1,~ 3,~ 2) & c = (0,~ 0,~ 1,~ 0)\\
+1: & (aa,~ ab,~ ba,~ aa) & p = (0,~ 3,~ 1,~ 2) & c = (0,~ 1,~ 2,~ 0)\\
+2: & (aaba,~ abaa,~ baaa,~ aaab) & p = (3,~ 0,~ 1,~ 2) & c = (1,~ 2,~ 3,~ 0)\\
 \end{array}$$
 
 $p[]$ qiymatlari yagona bo‘lmasligi mumkin. Masalan, $0$-iteratsiyada $p=(3,~1,~0,~2)$ yoki $p=(3,~0,~1,~2)$ ham bo‘lishi mumkin. Bu variantlarning barchasi ostsatrlarni saralangan tartibga keltiradi va shuning uchun to‘g‘ri. Biroq $c[]$ massivi qat’iy aniqlangan va unda noaniqlik bo‘lmaydi.
@@ -100,8 +100,20 @@ Endi iteratsiya qadamini ko‘ramiz. $k-1$-qadam bajarilgan va shu qadam uchun $
 Uzunligi $2^k$ bo‘lgan siklik ostsatr uzunligi $2^{k-1}$ bo‘lgan ikkita ostsatrdan tashkil topadi. Oldingi bosqichdagi $c[]$ ekvivalentlik sinflari yordamida bunday qismlarni $O(1)$ da taqqoslash mumkin. Demak, $i$ va $j$ pozitsiyalardan boshlanuvchi uzunligi $2^k$ bo‘lgan ostsatrlarni taqqoslash uchun zarur barcha ma’lumot mos ravishda
 $(c[i],~c[i+2^{k-1}])$ va $(c[j],~c[j+2^{k-1}])$ juftliklarida saqlanadi.
 
-$$\dots \overbrace{\underbrace{s_i\dots s_{i+2^{k-1}-1}}_{\text{uzunlik}=2^{k-1},~\text{sinf}=c[i]}\quad
-\underbrace{s_{i+2^{k-1}}\dots s_{i+2^k-1}}_{\text{uzunlik}=2^{k-1},~\text{sinf}=c[i+2^{k-1}]}}^{\text{uzunlik}=2^k}\dots$$
+$$\dots
+\overbrace{
+\underbrace{s_i \dots s_{i+2^{k-1}-1}}_{\text{uzunlik} = 2^{k-1},~ \text{sinf} = c[i]}
+\quad
+\underbrace{s_{i+2^{k-1}} \dots s_{i+2^k-1}}_{\text{uzunlik} = 2^{k-1},~ \text{sinf} = c[i + 2^{k-1}]}
+}^{\text{uzunlik} = 2^k}
+\dots
+\overbrace{
+\underbrace{s_j \dots s_{j+2^{k-1}-1}}_{\text{uzunlik} = 2^{k-1},~ \text{sinf} = c[j]}
+\quad
+\underbrace{s_{j+2^{k-1}} \dots s_{j+2^k-1}}_{\text{uzunlik} = 2^{k-1},~ \text{sinf} = c[j + 2^{k-1}]}
+}^{\text{uzunlik} = 2^k}
+\dots
+$$
 
 Shuning uchun sodda yechim — uzunligi $2^k$ bo‘lgan ostsatrlarni shu sonlar juftligi bo‘yicha saralash. Bu kerakli $p[]$ tartibini beradi. Biroq odatiy saralash $O(n\log n)$ vaqt oladi va natijada suffikslar massivini $O(n\log^2 n)$ da quradigan algoritm hosil bo‘ladi.
 
@@ -149,7 +161,7 @@ Algoritm $O(n\log n)$ vaqt va $O(n)$ xotira talab qiladi. Soddalik uchun alifbo 
 
 Agar satr faqat ma’lum belgilar to‘plamidan, masalan, kichik lotin harflaridan iboratligi ma’lum bo‘lsa, implementatsiyani optimallashtirish mumkin. Biroq yutuq odatda kichik bo‘ladi, chunki alifbo o‘lchami faqat birinchi iteratsiyada ahamiyatli. Keyingi iteratsiyalar ekvivalentlik sinflari soniga bog‘liq; hatto boshlang‘ich alifbo atigi ikkita belgidan iborat bo‘lsa ham, sinflar soni tezda $O(n)$ ga yetishi mumkin.
 
-Bu algoritm faqat siklik siljishlarni saralashini ham unutmang. Bo‘lim boshida aytilganidek, satrdagi barcha belgilardan kichik belgi qo‘shib, hosil bo‘lgan satrning siklik siljishlarini saralash orqali suffikslarning saralangan tartibini olamiz. Masalan, `s+$` satrini saralash $s$ ning suffikslar massivini beradi, faqat uning boshida $|s|$ indeksi turadi.
+Bu algoritm faqat siklik siljishlarni saralashini ham unutmang. Bo‘lim boshida aytilganidek, satrdagi barcha belgilardan kichik belgi qo‘shib, hosil bo‘lgan satrning siklik siljishlarini saralash orqali suffikslarning saralangan tartibini olamiz. Masalan, $s + \$$ ning siklik siljishlarini saralaymiz. Bu, shubhasiz, $s$ ning suffikslar massivini beradi, ammo uning boshiga $|s|$ qo‘shilgan bo‘ladi.
 
 ```cpp
 vector<int> suffix_array_construction(string s) {
@@ -182,7 +194,19 @@ Uzunligi ikkilik daraja bo‘lgan ikkita ostsatrni $O(1)$ da taqqoslash uchun ul
 
 Boshlanish indekslari $i$ va $j$, uzunligi $l$ bo‘lgan ikkita ostsatrni taqqoslaylik. $2^k\le l$ bo‘ladigan eng katta $k$ ni topamiz. Ikki ostsatrni taqqoslashni uzunligi $2^k$ bo‘lgan ikkita ustma-ust tushuvchi blok juftligini taqqoslashga almashtirish mumkin: avval $i$ va $j$ dan boshlanuvchi bloklar, ular teng bo‘lsa, $i+l-1$ va $j+l-1$ pozitsiyalarda tugaydigan bloklar solishtiriladi.
 
-Taqqoslash implementatsiyasi quyidagicha. Funksiyaga oldindan hisoblangan $k$ beriladi. $k=\lfloor\log l\rfloor$ orqali topilishi mumkin, lekin barcha $l$ lar uchun logarifmlarni oldindan hisoblash samaraliroq. Xuddi shu g‘oya [Sparse Table](/algorithms/data-structures/sparse-table) maqolasida ham ishlatiladi.
+$$\dots
+\overbrace{\underbrace{s_i \dots s_{i+l-2^k} \dots s_{i+2^k-1}}_{2^k} \dots s_{i+l-1}}^{\text{birinchi}}
+\dots
+\overbrace{\underbrace{s_j \dots s_{j+l-2^k} \dots s_{j+2^k-1}}_{2^k} \dots s_{j+l-1}}^{\text{ikkinchi}}
+\dots$$
+
+$$\dots
+\overbrace{s_i \dots \underbrace{s_{i+l-2^k} \dots s_{i+2^k-1} \dots s_{i+l-1}}_{2^k}}^{\text{birinchi}}
+\dots
+\overbrace{s_j \dots \underbrace{s_{j+l-2^k} \dots s_{j+2^k-1} \dots s_{j+l-1}}_{2^k}}^{\text{ikkinchi}}
+\dots$$
+
+Taqqoslash implementatsiyasi quyidagicha. Funksiyaga oldindan hisoblangan $k$ beriladi. $k=\lfloor\log l\rfloor$ orqali topilishi mumkin, lekin barcha $l$ lar uchun logarifmlarni oldindan hisoblash samaraliroq. Masalan, o‘xshash g‘oyadan foydalanadigan va barcha $\log$ qiymatlarini hisoblaydigan [Sparse Table](/algorithms/data-structures/sparse-table) maqolasiga qarang.
 
 ```cpp
 int compare(int i, int j, int l, int k) {
@@ -222,21 +246,17 @@ Bu yerda `log_n` — $n$ ning ikkilik logarifmi pastga yaxlitlangan qiymatiga te
 
 Vazifa avvalgi bo‘limdagidek: $s$ satrning ikkita suffiksi uchun LCP ni hisoblash kerak.
 
-Bu safar faqat $O(|s|)$ xotira ishlatiladi. Preprocessing natijasi satr haqida o‘zi ham muhim ma’lumot saqlovchi massiv bo‘ladi. LCP so‘rovlari shu massivdagi RMQ so‘rovlari orqali javoblanadi; turli RMQ implementatsiyalari bilan logarifmik yoki hatto o‘zgarmas so‘rov vaqtiga erishish mumkin.
+Bu safar faqat $O(|s|)$ xotira ishlatiladi. Preprocessing natijasi massiv bo‘ladi (u satr haqida o‘zi ham muhim ma’lumot manbai, shuning uchun boshqa masalalarni yechishda ham ishlatiladi). LCP so‘rovlari shu massivdagi RMQ so‘rovlari orqali javoblanadi; turli RMQ implementatsiyalari bilan logarifmik yoki hatto o‘zgarmas so‘rov vaqtiga erishish mumkin.
 
 Algoritmning asosi quyidagi g‘oya: saralangan tartibdagi har bir qo‘shni suffiks juftligining LCP sini hisoblaymiz. Ya’ni $\text{lcp}[0\dots n-2]$ massivini quramiz, bunda $\text{lcp}[i]$ $p[i]$ va $p[i+1]$ pozitsiyalardan boshlanuvchi suffikslarning eng uzun umumiy prefiksi uzunligidir. Bu massiv qo‘shni suffikslar uchun javobni beradi.
 
-Ixtiyoriy, qo‘shni bo‘lishi shart bo‘lmagan ikkita suffiks uchun javob ham shu massivdan olinadi. $p[i]$ va $p[j]$ suffikslarining LCP si
-
-$$\min(\text{lcp}[i],~\text{lcp}[i+1],~\dots,~\text{lcp}[j-1])$$
-
-ga teng.
+Ixtiyoriy, qo‘shni bo‘lishi shart bo‘lmagan ikkita suffiks uchun javob ham shu massivdan olinadi. $p[i]$ va $p[j]$ suffikslarining LCP si $\min(\text{lcp}[i],~\text{lcp}[i+1],~\dots,~\text{lcp}[j-1])$ ga teng.
 
 Demak, `lcp` massivi qurilgach, masala turli murakkablikdagi ko‘plab yechimlari mavjud bo‘lgan [RMQ](/algorithms/sequences/rmq) masalasiga keladi.
 
 Asosiy vazifa `lcp` massivini qurishdir. Buning uchun massivni $O(n)$ vaqtda hisoblaydigan Kasai algoritmidan foydalanamiz.
 
-Saralangan tartibdagi ikkita qo‘shni suffiksning boshlanish pozitsiyalari $i$ va $j$, ularning LCP si esa $k>0$ bo‘lsin. Har ikki suffiksning birinchi belgisini olib tashlasak, ya’ni $i+1$ va $j+1$ suffikslarini olsak, ularning umumiy prefiksi kamida $k-1$ bo‘ladi. Bu qiymatni `lcp` massiviga darhol yoza olmaymiz, chunki yangi suffikslar saralangan tartibda qo‘shni bo‘lmasligi mumkin.
+Saralangan tartibdagi ikkita qo‘shni suffiksning boshlanish pozitsiyalari $i$ va $j$, ularning LCP si esa $k>0$ bo‘lsin. Har ikki suffiksning birinchi belgisini olib tashlasak, ya’ni $i+1$ va $j+1$ suffikslarini olsak, ularning LCP si $k-1$ ga teng bo‘lishi ravshan. Bu qiymatni `lcp` massiviga darhol yoza olmaymiz, chunki yangi suffikslar saralangan tartibda qo‘shni bo‘lmasligi mumkin.
 
 $i+1$ suffiksi $j+1$ suffiksidan kichik bo‘ladi, ammo ularning orasida boshqa suffikslar bo‘lishi mumkin. Ikki suffiksning LCP si ular orasidagi barcha qo‘shni o‘tishlar minimumiga teng bo‘lgani uchun, shu oraliqdagi har bir qo‘shni juftlik LCP si kamida $k-1$ bo‘ladi; $i+1$ bilan undan keyingi suffiks uchun qiymat bundan kattaroq ham bo‘lishi mumkin.
 

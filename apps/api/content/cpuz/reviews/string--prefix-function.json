@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph, formula, code block and illustration with the original; no omissions or numeric errors found.",
+      "content_sha256": "f69317734a6bacfd46ea9ecb4def92ec6f11979b6ea42909b56af16df197ae09"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Read the whole article for grammar and glossary terms; no corrections were needed.",
+      "content_sha256": "f69317734a6bacfd46ea9ecb4def92ec6f11979b6ea42909b56af16df197ae09"
+    }
+  ]
+}

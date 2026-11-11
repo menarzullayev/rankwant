@@ -1,137 +1,109 @@
-# Determinantni Kraut usuli bilan hisoblash
+# Determinantni Kraut usuli bilan $O(N^3)$ vaqtda hisoblash
 
-Kraut usuli $N\times N$ matritsa determinantini $O(N^3)$ vaqtda hisoblaydi. Uning asosiy g‘oyasi $A$ matritsani quyi va yuqori uchburchak matritsalar ko‘paytmasiga ajratishdir:
+Ushbu maqolada Kraut usuli yordamida matritsa determinantini $O(N^3)$ vaqtda topish bayon qilinadi.
 
-$$A=LU.$$
+Kraut algoritmi $A$ matritsaning $A = L U$ yoyilmasini topadi, bunda $L$ — quyi uchburchak, $U$ esa yuqori uchburchak matritsa. Umumiylikni yo‘qotmasdan $L$ ning barcha diagonal elementlarini 1 ga teng deb hisoblash mumkin. Bu matritsalarni bilganimizdan keyin $A$ ning determinantini hisoblash oson: u $U$ matritsaning bosh diagonalidagi barcha elementlar ko‘paytmasiga teng.
 
-Bu yerda $L$ — quyi uchburchak, $U$ esa yuqori uchburchak matritsa. Umumiylikni yo‘qotmagan holda $L$ bosh diagonalidagi barcha elementlarni $1$ deb olish mumkin.
+Har qanday teskarilanuvchi matritsa LU-yoyilmaga ega ekanini, bu yoyilma esa faqat va faqat barcha bosh minorlari noldan farqli bo‘lgandagina yagona bo‘lishini tasdiqlovchi teorema mavjud. Biz faqat $L$ matritsaning diagonali birlardan iborat bo‘lgan yoyilmani qaraymiz.
 
-## Determinant va LU ajratish
+$A$ matritsa, $N$ esa uning o‘lchami bo‘lsin. $L$ va $U$ matritsalarning elementlarini quyidagi qadamlar bilan topamiz:
 
-Ko‘paytma determinantining xossasiga ko‘ra
+ 1. $i = 1, 2, ..., N$ uchun $L_{i i} = 1$ deb olamiz.
+ 2. Har bir $j = 1, 2, ..., N$ uchun quyidagilarni bajaramiz:
+    - $i = 1, 2, ..., j$ uchun qiymatlarni topamiz
 
-$$\det(A)=\det(L)\det(U).$$
+      $$
+      U_{ij} = A_{ij} - \sum_{k=1}^{i-1} L_{ik} \cdot U_{kj}
+      $$
 
-Uchburchak matritsa determinanti uning bosh diagonalidagi elementlar ko‘paytmasiga teng. $L_{ii}=1$ bo‘lgani uchun $\det(L)=1$, demak
+    - So‘ng $i = j+1, j+2, ..., N$ uchun qiymatlarni topamiz
 
-$$\det(A)=\prod_{i=1}^{N}U_{ii}.$$
+      $$
+      L_{ij} = \frac{1}{U_{jj}} \left(A_{ij} - \sum_{k=1}^{j-1} L_{ik} \cdot U_{kj} \right).
+      $$
 
-Shunday qilib, $L$ va $U$ topilgach, determinantni hisoblash uchun $U$ diagonalini ko‘paytirish kifoya.
-
-Har qanday teskarilanuvchi matritsa satrlarni almashtirishga ruxsat berilganda LU ajratishga ega. Satr almashtirishsiz va $L$ diagonali birlardan iborat ko‘rinishning mavjudligi hamda yagonaligi barcha yetakchi bosh minorlar noldan farqli bo‘lishiga bog‘liq. Amaliy implementatsiya nol yoki juda kichik tayanchdan qochish uchun satrlarni almashtiradi; har bir almashtirish determinant ishorasini teskarilaydi.
-
-## $L$ va $U$ elementlarini hisoblash
-
-$A$ matritsa o‘lchami $N$ bo‘lsin. Dastlab
-
-$$L_{ii}=1,\qquad i=1,2,\ldots,N$$
-
-qilib olinadi. Keyin har bir $j=1,2,\ldots,N$ ustun uchun ikki qadam bajariladi.
-
-Avval $i=1,2,\ldots,j$ satrlardagi $U$ elementlari hisoblanadi:
-
-$$U_{ij}=A_{ij}-\sum_{k=1}^{i-1}L_{ik}U_{kj}.$$
-
-So‘ng $i=j+1,j+2,\ldots,N$ satrlar uchun $L$ elementlari topiladi:
-
-$$L_{ij}=\frac{1}{U_{jj}}\left(A_{ij}-\sum_{k=1}^{j-1}L_{ik}U_{kj}\right).$$
-
-Formulalar $A_{ij}=\sum_k L_{ik}U_{kj}$ tenglikdan bevosita kelib chiqadi. Birinchi formulada joriy $U_{ij}$ dan oldin ma’lum bo‘lgan hadlar ayriladi. Ikkinchisida ayni qoldiq tayanch $U_{jj}$ ga bo‘linadi.
-
-## Tayanchlash va sonli barqarorlik
-
-Tayanch $U_{jj}$ nol bo‘lsa, ikkinchi formuladagi bo‘lish bajarilmaydi. Bundan tashqari, juda kichik tayanch suzuvchi nuqtali hisoblarda xatoni keskin kattalashtirishi mumkin. Quyidagi kod har bir satrni undagi eng katta modulga nisbatan masshtablaydi va joriy ustunda masshtablangan moduli eng katta satrni tanlaydi. Bu **masshtablangan qisman tayanchlash** deyiladi.
-
-Satr almashtirilganda `sign` qiymati o‘zgartiriladi. $L$ va $U$ alohida matritsalarda emas, bitta `a` matritsada saqlanadi: diagonal va uning yuqori qismi $U$ ga, diagonal osti esa $L$ ning diagonal ostidagi elementlariga tegishli.
-
-## Java implementatsiyasi
-
-Original implementatsiya butun determinantni aniqroq tiklash uchun `BigDecimal` bilan oraliq hisoblarni 100 xonali aniqlikda olib boradi va yakunda `BigInteger` qaytaradi.
+## Implementatsiya
 
 ```java
-static BigInteger det(BigDecimal a[][], int n) {
-    try {
-        for (int i = 0; i < n; i++) {
-            boolean nonzero = false;
-            for (int j = 0; j < n; j++)
-                if (a[i][j].compareTo(new BigDecimal(BigInteger.ZERO)) != 0)
-                    nonzero = true;
-            if (!nonzero)
-                return BigInteger.ZERO;
-        }
+static BigInteger det (BigDecimal a [][], int n) {
+	try {
 
-        BigDecimal scaling[] = new BigDecimal[n];
-        for (int i = 0; i < n; i++) {
-            BigDecimal big = new BigDecimal(BigInteger.ZERO);
-            for (int j = 0; j < n; j++)
-                if (a[i][j].abs().compareTo(big) > 0)
-                    big = a[i][j].abs();
-            scaling[i] = (new BigDecimal(BigInteger.ONE)).divide(
-                big, 100, BigDecimal.ROUND_HALF_EVEN
-            );
-        }
+	for (int i=0; i<n; i++) {
+		boolean nonzero = false;
+		for (int j=0; j<n; j++)
+			if (a[i][j].compareTo (new BigDecimal (BigInteger.ZERO)) > 0)
+				nonzero = true;
+		if (!nonzero)
+			return BigInteger.ZERO;
+	}
 
-        int sign = 1;
+	BigDecimal scaling [] = new BigDecimal [n];
+	for (int i=0; i<n; i++) {
+		BigDecimal big = new BigDecimal (BigInteger.ZERO);
+		for (int j=0; j<n; j++)
+			if (a[i][j].abs().compareTo (big) > 0)
+				big = a[i][j].abs();
+		scaling[i] = (new BigDecimal (BigInteger.ONE)) .divide
+			(big, 100, BigDecimal.ROUND_HALF_EVEN);
+	}
 
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < j; i++) {
-                BigDecimal sum = a[i][j];
-                for (int k = 0; k < i; k++)
-                    sum = sum.subtract(a[i][k].multiply(a[k][j]));
-                a[i][j] = sum;
-            }
+	int sign = 1;
 
-            BigDecimal big = new BigDecimal(BigInteger.ZERO);
-            int imax = -1;
-            for (int i = j; i < n; i++) {
-                BigDecimal sum = a[i][j];
-                for (int k = 0; k < j; k++)
-                    sum = sum.subtract(a[i][k].multiply(a[k][j]));
-                a[i][j] = sum;
-                BigDecimal cur = sum.abs().multiply(scaling[i]);
-                if (cur.compareTo(big) >= 0) {
-                    big = cur;
-                    imax = i;
-                }
-            }
+	for (int j=0; j<n; j++) {
+		for (int i=0; i<j; i++) {
+			BigDecimal sum = a[i][j];
+			for (int k=0; k<i; k++)
+				sum = sum.subtract (a[i][k].multiply (a[k][j]));
+			a[i][j] = sum;
+		}
 
-            if (j != imax) {
-                for (int k = 0; k < n; k++) {
-                    BigDecimal t = a[j][k];
-                    a[j][k] = a[imax][k];
-                    a[imax][k] = t;
-                }
+		BigDecimal big = new BigDecimal (BigInteger.ZERO);
+		int imax = -1;
+		for (int i=j; i<n; i++) {
+			BigDecimal sum = a[i][j];
+			for (int k=0; k<j; k++)
+				sum = sum.subtract (a[i][k].multiply (a[k][j]));
+			a[i][j] = sum;
+			BigDecimal cur = sum.abs();
+			cur = cur.multiply (scaling[i]);
+			if (cur.compareTo (big) >= 0) {
+				big = cur;
+				imax = i;
+			}
+		}
 
-                BigDecimal t = scaling[imax];
-                scaling[imax] = scaling[j];
-                scaling[j] = t;
-                sign = -sign;
-            }
+		if (j != imax) {
+			for (int k=0; k<n; k++) {
+				BigDecimal t = a[j][k];
+				a[j][k] = a[imax][k];
+				a[imax][k] = t;
+			}
 
-            if (j != n - 1)
-                for (int i = j + 1; i < n; i++)
-                    a[i][j] = a[i][j].divide(
-                        a[j][j], 100, BigDecimal.ROUND_HALF_EVEN
-                    );
-        }
+			BigDecimal t = scaling[imax];
+			scaling[imax] = scaling[j];
+			scaling[j] = t;
 
-        BigDecimal result = new BigDecimal(1);
-        if (sign == -1)
-            result = result.negate();
-        for (int i = 0; i < n; i++)
-            result = result.multiply(a[i][i]);
+			sign = -sign;
+		}
 
-        return result.divide(
-            BigDecimal.valueOf(1), 0, BigDecimal.ROUND_HALF_EVEN
-        ).toBigInteger();
-    } catch (Exception e) {
-        return BigInteger.ZERO;
-    }
+		if (j != n-1)
+			for (int i=j+1; i<n; i++)
+				a[i][j] = a[i][j].divide
+					(a[j][j], 100, BigDecimal.ROUND_HALF_EVEN);
+
+	}
+
+	BigDecimal result = new BigDecimal (1);
+	if (sign == -1)
+		result = result.negate();
+	for (int i=0; i<n; i++)
+		result = result.multiply (a[i][i]);
+
+	return result.divide
+		(BigDecimal.valueOf(1), 0, BigDecimal.ROUND_HALF_EVEN).toBigInteger();
+	}
+	catch (Exception e) {
+		return BigInteger.ZERO;
+	}
 }
 ```
-
-## Murakkablik va cheklovlar
-
-Har bir $j$ ustunda $O(N)$ ta element hisoblanadi va har biri uchun ko‘pi bilan $O(N)$ ta oldingi had yig‘iladi. Shu sabab umumiy vaqt murakkabligi $O(N^3)$, matritsani saqlash uchun xotira $O(N^2)$.
-
-Kod istisno yuz bersa nol qaytaradi, shuning uchun ishlab chiqarish kodida nol determinant bilan arifmetik xatoni alohida ajratish ma’qul. Yuqoridagi nusxada satrning noldan farqliligi `compareTo(...) != 0` bilan tekshiriladi; bu barcha qiymatlari manfiy bo‘lgan satrni ham to‘g‘ri qabul qiladi. Bunday implementatsion mayda tafsilotlar natijaning ishonchliligi uchun muhim.

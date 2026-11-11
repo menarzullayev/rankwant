@@ -50,7 +50,7 @@ Odatdagidek, $v$ ning barcha bolalarini qayta ishlaymiz.
 
 Buning uchun avval o‘sha tugundan rekursiv DFS chaqiramiz, keyin bu tugunni butun qismdaraxti bilan $v$ ning to‘plamiga qo‘shamiz.
 
-Buni `union_sets` funksiyasi va undan keyingi `ancestor[find_set(v)] = v` o‘zlashtirish yordamida bajarish mumkin (`union_sets` to‘plam vakilini o‘zgartirishi mumkinligi sababli bu o‘zlashtirish zarur).
+Buni `union_sets` funksiyasi va undan keyingi `ancestor[find_set(v)] = v` tayinlash yordamida bajarish mumkin (`union_sets` to‘plam vakilini o‘zgartirishi mumkinligi sababli bu tayinlash zarur).
 
 Nihoyat, barcha bolalarni qayta ishlagach, $u$ tugunga allaqachon tashrif buyurilgan barcha $(u, v)$ so‘rovlarga javob bera olamiz.
 

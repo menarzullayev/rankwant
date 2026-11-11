@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared the Dijkstra derivation, the queue invariant, both code blocks and Dial's algorithm with the original; nothing omitted or altered.",
+      "content_sha256": "8f9f9471ed1657cf6d2c26e1e7fc34ad97984f8cf8793e128e8795db65e9c81b"
+    },
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Corrected the clumsy construction 'Qirralar og‘irliklariga ... ega bo‘lishga ruxsat bersak' and renamed 'Amaliy masalalar' to 'Mashq masalalari' for consistency.",
+      "content_sha256": "8f9f9471ed1657cf6d2c26e1e7fc34ad97984f8cf8793e128e8795db65e9c81b"
+    }
+  ]
+}

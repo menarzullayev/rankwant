@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T15:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Code, the quickselect and median-of-medians notes, the std::nth_element worst-case remark and the K smallest elements reduction all match the original.",
+      "content_sha256": "dddf87872cd6ad79da6cfc39676599088f172aa016788ef6572f4d8f76997162"
+    },
+    {
+      "at": "2026-11-11T15:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "The Uzbek is correct and natural; no changes needed.",
+      "content_sha256": "dddf87872cd6ad79da6cfc39676599088f172aa016788ef6572f4d8f76997162"
+    }
+  ]
+}

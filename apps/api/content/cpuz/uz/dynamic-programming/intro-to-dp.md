@@ -39,7 +39,7 @@ int f(int n) {
 
 Yangi memoizatsiyali rekursiv funksiyada avval *1 milliondan ortiq chaqiruv* talab qilgan $f(29)$ endi *atigi 57 ta* chaqiruv bilan hisoblanadi — funksiya chaqiruvlari soni qariyb *20 000 baravar* kamayadi. Qizig‘i shundaki, endi bizni algoritm emas, ma’lumot turi cheklaydi: $f(46)$ — ishorali 32 bitli butun songa sig‘adigan oxirgi Fibonacci soni.
 
-Odatda, imkon bo‘lsa, holatlarni massivda saqlashga harakat qilamiz, chunki juda kichik qo‘shimcha xarajat bilan qidiruv vaqti $O(1)$ bo‘ladi. Biroq umumiy holda holatlarni istalgan usulda saqlash mumkin. Masalan, ikkilik qidiruv daraxtidan (C++ dagi `map`) yoki hash-jadvaldan (C++ dagi `unordered_map`) foydalanish mumkin.
+Odatda, imkon bo‘lsa, holatlarni massivda saqlashga harakat qilamiz, chunki juda kichik qo‘shimcha xarajat bilan qidiruv vaqti $O(1)$ bo‘ladi. Biroq umumiy holda holatlarni istalgan usulda saqlash mumkin. Masalan, ikkilik qidiruv daraxtidan (C++ dagi `map`) yoki xesh jadvalidan (C++ dagi `unordered_map`) foydalanish mumkin.
 
 Masalan:
 
@@ -128,7 +128,7 @@ Dinamik dasturlashni yaxshiroq o‘rganish usullaridan biri — klassik misollar
 | [Eng uzun o‘suvchi qism ketma-ketlik (LIS)](/algorithms/dynamic-programming/longest-increasing-subsequence)           | $N$ ta butun sondan iborat massiv berilgan. Massivdagi har bir keyingi elementi oldingisidan katta bo‘lgan eng uzun qism ketma-ketlikni toping.                                                       |
 | Ikki o‘lchamli massivdagi yo‘llarni sanash                   | $N$ va $M$ berilgan. Har bir qadam $(i,j)$ dan $(i+1,j)$ yoki $(i,j+1)$ ga o‘tishdan iborat bo‘lsa, $(1,1)$ dan $(N, M)$ gacha bo‘lgan barcha turli yo‘llar sonini toping.                                                                               |
 | Eng uzun umumiy qism ketma-ketlik                     | $s$ va $t$ satrlari berilgan. Ikkala satrning ham qism ketma-ketligi bo‘lgan eng uzun satr uzunligini toping.                                                                                                            |
-| Yo‘naltirilgan asiklik grafdagi eng uzun yo‘l | Yo‘naltirilgan asiklik grafda (DAG) eng uzun yo‘lni topish.                                                                                                                                                                      |
+| Yo‘naltirilgan siklsiz grafdagi eng uzun yo‘l | Yo‘naltirilgan siklsiz grafda (DAG) eng uzun yo‘lni topish.                                                                                                                                                                      |
 | Eng uzun palindrom qism ketma-ketlik                | Berilgan satrning eng uzun palindrom qism ketma-ketligini (LPS) topish.                                                                                                                                                           |
 | Tayoqni kesish                                    | Uzunligi $n$ birlik bo‘lgan tayoq va `cuts[i]` kesish nuqtasini bildiradigan butun sonlar massivi berilgan. Bitta kesish narxi kesilayotgan tayoq bo‘lagining uzunligiga teng. Barcha kesishlarning eng kichik umumiy narxini toping. |
 | Tahrirlash masofasi                                  | Ikki satr orasidagi tahrirlash masofasi — bir satrni ikkinchisiga aylantirish uchun zarur bo‘lgan amallar sonining minimumi. Amallar: qo‘shish, o‘chirish va almashtirish.                                                         |

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T11:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "No omissions or mistranslations found against the English original; code, formulas, numbers and conditions match.",
+      "content_sha256": "5450e8c627a9eec36e9839307821971b6659556cda0649bcb5e46778f3ef7dca"
+    },
+    {
+      "at": "2026-11-12T11:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Uzbek text reads correctly; no changes needed.",
+      "content_sha256": "5450e8c627a9eec36e9839307821971b6659556cda0649bcb5e46778f3ef7dca"
+    }
+  ]
+}

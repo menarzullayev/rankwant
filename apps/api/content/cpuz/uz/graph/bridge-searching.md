@@ -16,32 +16,28 @@ Grafning ixtiyoriy `root` tugunini tanlab, undan [chuqurlik bo‘yicha qidiruv](
 
 Endi bu faktni har bir tugun uchun samarali tekshirishni o‘rganishimiz kerak. Chuqurlik bo‘yicha qidiruv hisoblaydigan «tugunga kirish vaqti»dan foydalanamiz.
 
-$\texttt{tin}[v]$ qiymat $v$ tugunga kirish vaqtini bildirsin. Bundan tashqari, $\texttt{low}$ massivini kiritamiz. U $v$ tugunning o‘zidan yoki uning avlodlaridan bitta qirra yordamida yetish mumkin bo‘lgan DFS tugunlari orasidagi eng erta kirish vaqtini saqlaydi.
+$\mathtt{tin}[v]$ qiymat $v$ tugunga kirish vaqtini bildirsin. Bundan tashqari, $\mathtt{low}$ massivini kiritamiz. U $v$ tugunning o‘zidan yoki uning avlodlaridan bitta qirra yordamida yetish mumkin bo‘lgan DFS tugunlari orasidagi eng erta kirish vaqtini saqlaydi.
 
-$\texttt{low}[v]$ — $\texttt{tin}[v]$, $(v,p)$ orqa qirra bilan $v$ ga ulangan har bir $p$ tugunning $\texttt{tin}[p]$ kirish vaqti hamda DFS daraxtida $v$ ning bevosita avlodi bo‘lgan har bir $to$ tugunning $\texttt{low}[to]$ qiymatlari minimumidir:
+$\mathtt{low}[v]$ — $\mathtt{tin}[v]$, $(v,p)$ orqa qirra bilan $v$ ga ulangan har bir $p$ tugunning $\mathtt{tin}[p]$ kirish vaqti hamda DFS daraxtida $v$ ning bevosita avlodi bo‘lgan har bir $to$ tugunning $\mathtt{low}[to]$ qiymatlari minimumidir:
 
-$$\texttt{low}[v] = \min \left\{
+$$\mathtt{low}[v] = \min \left\{
     \begin{array}{ll}
-    \texttt{tin}[v] \\
-    \texttt{tin}[p]  &\text{ barcha }p\text{ uchun, agar }(v,p)\text{ orqa qirra bo‘lsa} \\
-    \texttt{low}[to] &\text{ barcha }to\text{ uchun, agar }(v,to)\text{ daraxt qirrasi bo‘lsa}
+    \mathtt{tin}[v] \\
+    \mathtt{tin}[p]  &\text{ barcha }p\text{ uchun, agar }(v,p)\text{ orqa qirra bo‘lsa} \\
+    \mathtt{low}[to] &\text{ barcha }to\text{ uchun, agar }(v,to)\text{ daraxt qirrasi bo‘lsa}
     \end{array}
 \right\}$$
 
-$v$ tugundan yoki uning biror avlodidan $v$ ning biror ajdodiga orqa qirra mavjud bo‘lishi uchun va faqat shundagina $v$ ning shunday $to$ farzandi mavjud bo‘ladiki, $\texttt{low}[to] \leq \texttt{tin}[v]$. Agar $\texttt{low}[to] = \texttt{tin}[v]$ bo‘lsa, orqa qirra bevosita $v$ ga keladi; aks holda u $v$ ning ajdodlaridan biriga keladi.
+$v$ tugundan yoki uning biror avlodidan $v$ ning biror ajdodiga orqa qirra mavjud bo‘lishi uchun va faqat shundagina $v$ ning shunday $to$ farzandi mavjud bo‘ladiki, $\mathtt{low}[to] \leq \mathtt{tin}[v]$. Agar $\mathtt{low}[to] = \mathtt{tin}[v]$ bo‘lsa, orqa qirra bevosita $v$ ga keladi; aks holda u $v$ ning ajdodlaridan biriga keladi.
 
-Demak DFS daraxtidagi joriy $(v,to)$ qirra ko‘prik bo‘lishi uchun va faqat shundagina
-
-$$\texttt{low}[to] > \texttt{tin}[v]$$
-
-bo‘lishi kerak.
+Demak DFS daraxtidagi joriy $(v,to)$ qirra ko‘prik bo‘lishi uchun va faqat shundagina $\mathtt{low}[to] > \mathtt{tin}[v]$ bo‘lishi kerak.
 
 ## Implementatsiya
 
 Implementatsiya uchta holatni farqlashi kerak: DFS daraxtidagi qirra bo‘ylab pastga tushish, tugunning ajdodiga qaytuvchi orqa qirrani topish va tugunning otasiga qaytish. Bu holatlar quyidagicha:
 
-- $\texttt{visited}[to] = false$ — qirra DFS daraxtining bir qismi;
-- $\texttt{visited}[to] = true$ va $to \ne parent$ — qirra ajdodlardan biriga boruvchi orqa qirra;
+- $\mathtt{visited}[to] = false$ — qirra DFS daraxtining bir qismi;
+- $\mathtt{visited}[to] = true$ va $to \neq parent$ — qirra ajdodlardan biriga boruvchi orqa qirra;
 - $to = parent$ — qirra DFS daraxtida otaga qaytadi.
 
 Buni amalga oshirish uchun joriy tugunning ota tugunini parametr sifatida qabul qiladigan chuqurlik bo‘yicha qidiruv funksiyasi kerak.
@@ -92,7 +88,7 @@ Asosiy funksiya `find_bridges` bo‘lib, u zarur boshlang‘ich qiymatlarni o‘
 
 `IS_BRIDGE(a,b)` — $(a,b)$ qirra ko‘prik ekanini qayta ishlaydigan funksiya; masalan, u qirrani ekranga chiqarishi mumkin.
 
-Bu implementatsiya parallel qirralarni hisobga olmasa noto‘g‘ri ishlashi mumkin. Albatta parallel qirra hech qachon javobning bir qismi bo‘lmaydi, shuning uchun `IS_BRIDGE` xabar qilingan qirra parallel qirra emasligini qo‘shimcha tekshirishi mumkin. Boshqa yo‘l — `dfs` funksiyasiga ota tugun o‘rniga tugunga kirishda ishlatilgan qirraning indeksini uzatish va barcha qirralarning indekslarini saqlash.
+Shuni yodda tuting: graf parallel qirralarga ega bo‘lsa, bu implementatsiya noto‘g‘ri ishlaydi, chunki u ularni e’tiborsiz qoldiradi. Albatta parallel qirra hech qachon javobning bir qismi bo‘lmaydi, shuning uchun `IS_BRIDGE` xabar qilingan qirra parallel qirra emasligini qo‘shimcha tekshirishi mumkin. Boshqa yo‘l — `dfs` funksiyasiga ota tugun o‘rniga tugunga kirishda ishlatilgan qirraning indeksini uzatish (va barcha tugunlarning indekslarini saqlash).
 
 ## Mashq masalalari
 

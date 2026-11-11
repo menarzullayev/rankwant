@@ -47,5 +47,5 @@ Ya’ni bu qirraning sig‘imi eski tarmoq oqimining qiymatiga ta’sir qiladi.
 Bu qirraga yetarlicha katta sig‘im, ya’ni $\infty$ berish orqali eski tarmoq oqimini cheklamaymiz.
 Bu qirrani kichikroq sig‘imlar bilan cheklasak, oqim qiymati kamayadi.
 Ammo uni juda kichik qiymat bilan cheklasak, tarmoqda to‘yintiruvchi yechim bo‘lmaydi, ya’ni asl tarmoqdagi mos yechim qirralar talabini qanoatlantirmaydi.
-Ravshanki, barcha cheklovlar hali ham qanoatlantiriladigan eng kichik qiymatni topish uchun bu yerda binary search ishlatish mumkin.
+Ravshanki, barcha cheklovlar hali ham qanoatlantiriladigan eng kichik qiymatni topish uchun bu yerda ikkilik qidiruvdan foydalanish mumkin.
 Bu asl tarmoqning minimal oqimini beradi.

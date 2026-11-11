@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T11:11:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every section, formula, code block and example with the original; all are present and correct.",
+      "content_sha256": "d2a8bec299fefc9411cb49a6505d5cc14dfb8eca031e38b994d09f0198ca5736"
+    },
+    {
+      "at": "2026-11-12T11:11:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed leftover mkdocs attribute lists (data-toc-label) from four headings, added blank lines around display formulas, code blocks and bold labels so the markdown renders, and fixed two phrasings ('ikki sonni', 'modulini oling').",
+      "content_sha256": "d2a8bec299fefc9411cb49a6505d5cc14dfb8eca031e38b994d09f0198ca5736"
+    }
+  ]
+}

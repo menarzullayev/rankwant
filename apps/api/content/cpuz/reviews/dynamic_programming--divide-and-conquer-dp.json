@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Preconditions, monotonicity argument, complexity proof, code and notes match the original.",
+      "content_sha256": "ef97e0cc07c14f949bbdf0aab20ce27ec9f95441f5dc6f9e4903fe6c77766276"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Introduced the glossary term 'Bo‘lib yechish' next to the English name in the opening sentence.",
+      "content_sha256": "ef97e0cc07c14f949bbdf0aab20ce27ec9f95441f5dc6f9e4903fe6c77766276"
+    }
+  ]
+}

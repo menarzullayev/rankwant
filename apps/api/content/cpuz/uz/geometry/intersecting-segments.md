@@ -1,32 +1,58 @@
 # Kesishuvchi kesmalar juftini topish
 
-Tekislikda $n$ ta kesma berilgan. Ulardan kamida ikkitasi kesishadimi-yo‘qmi aniqlash va kesishsa, istalgan bitta kesishuvchi juftni chiqarish talab etiladi.
+Tekislikda $n$ ta kesma berilgan. Ulardan kamida ikkitasi bir-biri bilan kesishishini tekshirish talab qilinadi.
+Javob "ha" bo‘lsa, kesishuvchi shu juftni chiqarish kerak; bir nechta javob orasidan istalgan bittasini tanlash yetarli.
 
-Sodda algoritm barcha juftlarni tekshiradi va $\mathcal{O}(n^2)$ vaqt oladi. Quyida sweep line, ya’ni suriluvchi chiziq usuliga asoslangan $\mathcal{O}(n\log n)$ algoritm bayon qilinadi.
+Sodda yechim algoritmi barcha kesmalar juftini $O(n^2)$ vaqtda ko‘rib chiqib, har bir juft uchun ularning kesishish-kesishmasligini tekshirishdan iborat. Ushbu maqolada **supuruvchi chiziq algoritmi**ga asoslangan, ishlash vaqti $O(n \log n)$ bo‘lgan algoritm bayon qilinadi.
 
 ## Algoritm
 
-$x=-\infty$ vertikal chiziqni tasavvur qilib, uni o‘ngga siljitamiz. Chiziq kesmalarning chap uchlariga yetganda kesmalar faol to‘plamga kiradi, o‘ng uchidan o‘tganda esa chiqadi. Dastlab vertikal kesmalar yo‘q deb tasavvur qilish mumkin; yakuniy implementatsiya ularni ham to‘g‘ri qayta ishlaydi.
+Aqlan $x = -\infty$ vertikal chiziqni chizamiz va uni o‘ng tomonga siljita boshlaymiz.
+Harakat davomida bu chiziq kesmalarga duch keladi va kesma chiziqni kesib o‘tadigan har bir vaqtda u chiziq bilan aynan bitta nuqtada kesishadi (vertikal kesmalar yo‘q deb hisoblaymiz).
 
-Har bir vaqtda sweep line bilan kesishayotgan faol kesmalarni shu chiziqdagi $y$ koordinata bo‘yicha tartibda saqlaymiz. Bu tartib muhim, chunki ikki kesishuvchi kesmaning kesishish paytida $y$ koordinatalari tenglashadi.
+  ![supuruvchi chiziq va kesmalarning kesishishi](/algorithms-media/geometry/sweep_line_1.png)
 
-Asosiy faktlar quyidagilar:
+Shunday qilib, har bir kesma uchun qaysidir vaqtda uning nuqtasi supuruvchi chiziqda paydo bo‘ladi, so‘ng chiziq harakatlanishi bilan bu nuqta siljiydi va nihoyat, qaysidir paytda kesma chiziqdan yo‘qoladi.
 
-- Har bir sweep line holatida faqat qo‘shni kesmalarni ko‘rish kifoya.
-- Chiziqning barcha haqiqiy $x$ holatlarini ko‘rib chiqish shart emas; kesmalar boshlanadigan yoki tugaydigan, ya’ni uchlarining abssissalariga teng holatlar yetarli.
-- Yangi kesma paydo bo‘lganda uni avvalgi faol tartibga kerakli joyga qo‘shamiz va faqat tepa hamda pastdagi qo‘shnilari bilan kesishishini tekshiramiz.
-- Kesma tugaganda u faol to‘plamdan o‘chiriladi. O‘chirishdan keyin bir-biriga qo‘shni bo‘lib qolgan yuqori va pastki kesmalar tekshiriladi.
-- Boshqa juftlarni tekshirish kerak emas.
+Bizni vertikal bo‘yicha **kesmalarning nisbiy tartibi** qiziqtiradi.
+Ya’ni, berilgan vaqtda supuruvchi chiziqni kesib o‘tuvchi kesmalar ro‘yxatini saqlaymiz; bunda kesmalar supuruvchi chiziqdagi $y$ koordinatasi bo‘yicha tartiblangan bo‘ladi.
 
-Bu faktlarning sababi oddiy. Kesishmaydigan ikki kesma o‘zaro vertikal tartibini o‘zgartira olmaydi: biri avval yuqorida, keyin pastda bo‘lsa, oraliqda ular kesishgan bo‘lardi. Kesishuvchi juft esa kesishish nuqtasida faol tartibda albatta qo‘shni bo‘lib qoladi. Demak, algoritm kesishuvchi juftni uning a’zolari qo‘shni bo‘lgan biror hodisada tekshiradi.
+  ![kesmalarning supuruvchi chiziq bo‘yicha nisbiy tartibi](/algorithms-media/geometry/sweep_line_2.png)
 
-Bir xil $x$ koordinatada avval barcha boshlanuvchi kesmalarni qo‘shib, keyin tugaydiganlarini o‘chirish lozim. Shu orqali umumiy uchda kesishish holatlari ham o‘tkazib yuborilmaydi. Vertikal kesmalar ham to‘g‘rilikka xalaqit bermaydi: ularning chap va o‘ng uchlari bir $x$ da bo‘ladi va hodisalarni to‘g‘ri tartiblash ularni qamrab oladi.
+Bu tartib qiziq, chunki kesishuvchi kesmalar kamida bir paytda bir xil $y$ koordinataga ega bo‘ladi:
 
-Faol to‘plam muvozanatlangan qidiruv daraxtida saqlanadi. Har bir qo‘shish, o‘chirish va qo‘shnini topish $\mathcal{O}(\log n)$ vaqt oladi; jami $2n$ ta uch hodisasi bor. Shuning uchun umumiy murakkablik $\mathcal{O}(n\log n)$, xotira esa $\mathcal{O}(n)$.
+  ![kesishish nuqtasida y koordinatalar bir xil](/algorithms-media/geometry/sweep_line_3.png)
+
+Asosiy tasdiqlarni shakllantiramiz:
+
+  - Kesishuvchi juftni topish uchun supuruvchi chiziqning har bir qayd etilgan holatida **faqat qo‘shni kesmalarni** ko‘rib chiqish yetarli.
+  - Supuruvchi chiziqni barcha mumkin bo‘lgan haqiqiy holatlarda $(-\infty \ldots +\infty)$ emas, balki **faqat yangi kesmalar paydo bo‘ladigan yoki eskilari yo‘qoladigan holatlardagina** ko‘rib chiqish yetarli. Boshqacha aytganda, o‘zimizni faqat kesmalar uchlarining abssissalariga teng holatlar bilan cheklash kifoya.
+  - Yangi kesma paydo bo‘lganda uni oldingi supuruvchi chiziq uchun olingan ro‘yxatdagi kerakli joyga **qo‘shish** yetarli. Faqat **qo‘shilgan kesmaning ro‘yxatdagi yuqori va pastki bevosita qo‘shnilari bilan** kesishishini tekshirish kerak.
+  - Kesma yo‘qolsa, uni joriy ro‘yxatdan **o‘chirish** yetarli. Shundan so‘ng **ro‘yxatdagi yuqori va pastki qo‘shnilarning kesishishini tekshirish** zarur.
+  - Kesmalar ro‘yxatida tasvirlanganlardan boshqa o‘zgarishlar bo‘lmaydi. Boshqa kesishish tekshiruvlari talab qilinmaydi.
+
+Bu tasdiqlarning to‘g‘riligini tushunish uchun quyidagi mulohazalar yetarli:
+
+  - Kesishmaydigan ikki kesma o‘zining **nisbiy tartibini** hech qachon o‘zgartirmaydi.
+    Haqiqatan, agar bir kesma avval ikkinchisidan yuqorida bo‘lib, keyin pastda bo‘lib qolgan bo‘lsa, bu ikki lahza orasida shu ikki kesmaning kesishishi bo‘lgan.
+  - Kesishmaydigan ikki kesma bir xil $y$ koordinataga ham ega bo‘la olmaydi.
+  - Bundan kelib chiqadiki, kesma paydo bo‘lgan paytda navbatdan unga joy topish mumkin va bu kesmani navbatda boshqa qayta joylashtirishga hojat qolmaydi: **uning navbatdagi boshqa kesmalarga nisbatan tartibi o‘zgarmaydi**.
+  - Ikki kesishuvchi kesma kesishish nuqtasi paytida navbatda bir-biriga qo‘shni bo‘ladi.
+  - Shuning uchun kesishuvchi kesmalar juftlarini topish uchun supuruvchi chiziq harakati davomida kamida bir marta bir-biriga qo‘shni bo‘lgan barcha va faqat shunday juftlarning kesishishini tekshirish yetarli.
+    Qo‘shilgan kesmani faqat uning yuqori va pastki qo‘shnilari bilan, kesmani o‘chirishda esa uning yuqori va pastki qo‘shnilarini (ular o‘chirishdan keyin bir-biriga qo‘shni bo‘ladi) tekshirish yetarli ekanini payqash oson.
+  - Shuni ta’kidlash kerakki, supuruvchi chiziqning qayd etilgan holatida avval shu x koordinatadan **boshlanadigan barcha kesmalarni qo‘shish**, va faqat **keyin** bu yerda tugaydigan **barcha kesmalarni o‘chirish** kerak.
+    Shunday qilib, uchdagi kesishishlarni, ya’ni ikki kesma umumiy uchga ega bo‘lgan holatlarni o‘tkazib yubormaymiz.
+  - E’tibor bering, **vertikal kesmalar** algoritmning to‘g‘riligiga aslida ta’sir qilmaydi.
+    Bu kesmalar bir vaqtning o‘zida paydo bo‘lishi va yo‘qolishi bilan ajralib turadi. Biroq oldingi izohga ko‘ra, barcha kesmalar avval navbatga qo‘shilishini, va faqat keyin o‘chirilishini bilamiz. Shuning uchun vertikal kesma shu paytda ochiq bo‘lgan boshqa kesma bilan (shu jumladan vertikal kesma bilan) kesishsa, bu aniqlanadi.
+    **Vertikal kesmalarni navbatning qaysi joyiga qo‘yish kerak?** Axir vertikal kesma bitta aniq $y$ koordinataga ega emas, u $y$ o‘qi bo‘ylab butun bir kesma bo‘ylab cho‘zilgan. Biroq bu kesmaning istalgan koordinatasini $y$ koordinata sifatida olish mumkinligini tushunish oson.
+
+Shunday qilib, butun algoritm kesmalar juftining kesishishi bo‘yicha $2n$ tadan ko‘p bo‘lmagan tekshiruv bajaradi va kesmalar navbati bilan $O(n)$ ta amal bajaradi (har bir kesma paydo bo‘lishi va yo‘qolishi paytida $O(1)$ ta amal).
+
+Natijada **algoritmning asimptotik ishlash vaqti** $O(n \log n)$ bo‘ladi.
 
 ## Implementatsiya
 
-Quyidagi kod kesmalar uchlarini avval $x$ bo‘yicha tartiblaydi. `get_y(x)` kesmaning berilgan $x$ dagi ordinatasini qaytaradi. Faol to‘plam komparatori ikki kesmani ular ikkalasi ham mavjud bo‘lgan abssissada solishtiradi.
+Tasvirlangan algoritmning to‘liq implementatsiyasini keltiramiz:
 
 ```cpp
 const double EPS = 1E-9;
@@ -55,88 +81,90 @@ bool intersect1d(double l1, double r1, double l2, double r2) {
 }
 
 int vec(const pt& a, const pt& b, const pt& c) {
-    double s = (b.x - a.x) * (c.y - a.y)
-             - (b.y - a.y) * (c.x - a.x);
-    return abs(s) < EPS ? 0 : (s > 0 ? +1 : -1);
+    double s = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+    return abs(s) < EPS ? 0 : s > 0 ? +1 : -1;
 }
 
-bool intersect(const seg& a, const seg& b) {
-    return intersect1d(a.p.x, a.q.x, b.p.x, b.q.x)
-        && intersect1d(a.p.y, a.q.y, b.p.y, b.q.y)
-        && vec(a.p, a.q, b.p) * vec(a.p, a.q, b.q) <= 0
-        && vec(b.p, b.q, a.p) * vec(b.p, b.q, a.q) <= 0;
+bool intersect(const seg& a, const seg& b)
+{
+    return intersect1d(a.p.x, a.q.x, b.p.x, b.q.x) &&
+           intersect1d(a.p.y, a.q.y, b.p.y, b.q.y) &&
+           vec(a.p, a.q, b.p) * vec(a.p, a.q, b.q) <= 0 &&
+           vec(b.p, b.q, a.p) * vec(b.p, b.q, a.q) <= 0;
 }
 
-bool operator<(const seg& a, const seg& b) {
+bool operator<(const seg& a, const seg& b)
+{
     double x = max(min(a.p.x, a.q.x), min(b.p.x, b.q.x));
     return a.get_y(x) < b.get_y(x) - EPS;
 }
 
-set<seg>::iterator prev_it(set<seg>::iterator it) {
-    return it == active.begin() ? active.end() : --it;
+struct event {
+    double x;
+    int tp, id;
+
+    event() {}
+    event(double x, int tp, int id) : x(x), tp(tp), id(id) {}
+
+    bool operator<(const event& e) const {
+        if (abs(x - e.x) > EPS)
+            return x < e.x;
+        return tp > e.tp;
+    }
+};
+
+set<seg> s;
+vector<set<seg>::iterator> where;
+
+set<seg>::iterator prev(set<seg>::iterator it) {
+    return it == s.begin() ? s.end() : --it;
 }
 
-set<seg>::iterator next_it(set<seg>::iterator it) {
+set<seg>::iterator next(set<seg>::iterator it) {
     return ++it;
 }
-```
 
-To‘liq asosiy funksiya:
-
-```cpp
-pair<int, int> solve(vector<seg> a) {
+pair<int, int> solve(const vector<seg>& a) {
     int n = (int)a.size();
-    vector<pair<pair<double, int>, pair<int, int>>> e;
-
+    vector<event> e;
     for (int i = 0; i < n; ++i) {
-        a[i].id = i;
-        if (a[i].p.x > a[i].q.x)
-            swap(a[i].p, a[i].q);
-        e.push_back({{a[i].p.x, +1}, {a[i].id, 0}});
-        e.push_back({{a[i].q.x, -1}, {a[i].id, 0}});
+        e.push_back(event(min(a[i].p.x, a[i].q.x), +1, i));
+        e.push_back(event(max(a[i].p.x, a[i].q.x), -1, i));
     }
+    sort(e.begin(), e.end());
 
-    sort(e.begin(), e.end(), [](auto A, auto B) {
-        if (abs(A.first.first - B.first.first) > EPS)
-            return A.first.first < B.first.first;
-        return A.first.second > B.first.second; // add before remove
-    });
-
-    set<seg> active;
-    vector<set<seg>::iterator> where(n);
-
-    for (auto event : e) {
-        int id = event.second.first;
-        int type = event.first.second;
-
-        if (type == +1) {
-            auto it = active.lower_bound(a[id]);
-            auto nxt = it;
-            auto prv = (it == active.begin() ? active.end() : prev(it));
-
-            if (nxt != active.end() && intersect(*nxt, a[id]))
-                return {nxt->id, id};
-            if (prv != active.end() && intersect(*prv, a[id]))
-                return {prv->id, id};
-
-            where[id] = active.insert(it, a[id]);
+    s.clear();
+    where.resize(a.size());
+    for (size_t i = 0; i < e.size(); ++i) {
+        int id = e[i].id;
+        if (e[i].tp == +1) {
+            set<seg>::iterator nxt = s.lower_bound(a[id]), prv = prev(nxt);
+            if (nxt != s.end() && intersect(*nxt, a[id]))
+                return make_pair(nxt->id, id);
+            if (prv != s.end() && intersect(*prv, a[id]))
+                return make_pair(prv->id, id);
+            where[id] = s.insert(nxt, a[id]);
         } else {
-            auto it = where[id];
-            auto nxt = next(it);
-            auto prv = (it == active.begin() ? active.end() : prev(it));
-
-            if (nxt != active.end() && prv != active.end()
-                    && intersect(*nxt, *prv))
-                return {nxt->id, prv->id};
-
-            active.erase(it);
+            set<seg>::iterator nxt = next(where[id]), prv = prev(where[id]);
+            if (nxt != s.end() && prv != s.end() && intersect(*nxt, *prv))
+                return make_pair(prv->id, nxt->id);
+            s.erase(where[id]);
         }
     }
 
-    return {-1, -1};
+    return make_pair(-1, -1);
 }
 ```
 
-Amaliy kodda `active` to‘plami yordamchi funksiyalardan oldin e’lon qilinishi yoki iterator yordamchilari lokal yozilishi kerak. Yuqoridagi asosiy g‘oya o‘zgarmaydi.
+Bu yerdagi asosiy funksiya `solve()` bo‘lib, u kesishuvchi kesmalar mavjud bo‘lsa, ularni, kesishmalar bo‘lmasa $(-1, -1)$ ni qaytaradi.
 
-Komparatorning sweep line holatiga bog‘liq bo‘lishi odatda `std::set` uchun xavfli, ammo bu masalada algoritm birinchi kesishishni topishi bilanoq to‘xtaydi. Kesishish topilmaguncha faol kesmalarning nisbiy tartibi o‘zgarmaydi, shuning uchun daraxt invariantlari saqlanadi.
+Ikki kesmaning kesishishini tekshirish `intersect ()` funksiyasi orqali amalga oshiriladi; u **uchburchakning yo‘naltirilgan yuziga asoslangan algoritm**dan foydalanadi.
+
+Kesmalar navbati — `s` global o‘zgaruvchisi, ya’ni `set<seg>`. Navbatdagi har bir kesmaning o‘rnini ko‘rsatuvchi iteratorlar (kesmalarni navbatdan qulay o‘chirish uchun) `where` global massivida saqlanadi.
+
+Shuningdek, oldingi va keyingi elementlarga iteratorlarni qaytaradigan (yoki ular mavjud bo‘lmasa, `end()` ni qaytaradigan) ikkita yordamchi funksiya `prev()` va `next()` kiritilgan.
+
+`EPS` konstantasi ikki haqiqiy sonni solishtirishdagi xatolikni bildiradi (u asosan ikki kesmaning kesishishini tekshirishda ishlatiladi).
+
+## Mashq masalalari
+ * [TIMUS 1469 No Smoking!](https://acm.timus.ru/problem.aspx?space=1&num=1469)

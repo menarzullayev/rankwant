@@ -1,22 +1,22 @@
-# Minimum Stack va Minimum Queue
+# Minimum stek va minimum navbat
 
-Ushbu maqolada uchta masalani ko‘rib chiqamiz: avval stackni undagi eng kichik elementni $O(1)$ vaqtda topish mumkin bo‘ladigan qilib o‘zgartiramiz; keyin queue uchun ham xuddi shunday imkoniyat yaratamiz; nihoyat, shu ma’lumotlar tuzilmalaridan foydalanib massivdagi berilgan uzunlikka ega barcha ostmassivlarning minimumini $O(n)$ vaqtda topamiz.
+Ushbu maqolada uchta masalani ko‘rib chiqamiz: avval stekni undagi eng kichik elementni $O(1)$ vaqtda topish mumkin bo‘ladigan qilib o‘zgartiramiz; keyin navbat uchun ham xuddi shunday imkoniyat yaratamiz; nihoyat, shu ma’lumotlar tuzilmalaridan foydalanib massivdagi berilgan uzunlikka ega barcha ostmassivlarning minimumini $O(n)$ vaqtda topamiz.
 
-## Stackni o‘zgartirish
+## Stekni o‘zgartirish
 
-Stack ma’lumotlar tuzilmasini undagi eng kichik elementni $O(1)$ vaqtda topish mumkin bo‘ladigan qilib o‘zgartirmoqchimiz. Bunda stackka element qo‘shish va undan element olib tashlash amallarining asimptotik murakkabligi o‘zgarmasligi kerak.
+Stek ma’lumotlar tuzilmasini undagi eng kichik elementni $O(1)$ vaqtda topish mumkin bo‘ladigan qilib o‘zgartirmoqchimiz. Bunda stekka element qo‘shish va undan element olib tashlash amallarining asimptotik murakkabligi o‘zgarmasligi kerak.
 
-Eslatib o‘tamiz: stackda elementlar faqat bitta uchidan qo‘shiladi va olib tashlanadi.
+Eslatib o‘tamiz: stekda elementlar faqat bitta uchidan qo‘shiladi va olib tashlanadi.
 
-Buning uchun stackda faqat elementlarning o‘zini emas, balki juftliklarni saqlaymiz: elementning o‘zi va shu elementdan boshlab stackning pastigacha bo‘lgan qismdagi minimum.
+Buning uchun stekda faqat elementlarning o‘zini emas, balki juftliklarni saqlaymiz: elementning o‘zi va shu elementdan boshlab stekning pastigacha bo‘lgan qismdagi minimum.
 
 ```cpp
 stack<pair<int, int>> st;
 ```
 
-Butun stackdagi minimumni topish uchun faqat `stack.top().second` qiymatiga qarash kifoya ekani ravshan.
+Butun stekdagi minimumni topish uchun faqat `stack.top().second` qiymatiga qarash kifoya ekani ravshan.
 
-Yangi elementni stackka qo‘shish yoki undan element olib tashlash ham o‘zgarmas vaqtda bajarilishi aniq.
+Yangi elementni stekka qo‘shish yoki undan element olib tashlash ham o‘zgarmas vaqtda bajarilishi aniq.
 
 Implementatsiya:
 
@@ -40,19 +40,19 @@ st.pop();
 int minimum = st.top().second;
 ```
 
-## Queueni o‘zgartirish (1-usul)
+## Navbatni o‘zgartirish (1-usul)
 
-Endi queue bilan ham xuddi shu amallarni bajarishni istaymiz, ya’ni elementlarni oxiriga qo‘shamiz va boshidan olib tashlaymiz.
+Endi navbat bilan ham xuddi shu amallarni bajarishni istaymiz, ya’ni elementlarni oxiriga qo‘shamiz va boshidan olib tashlaymiz.
 
-Bu yerda queueni o‘zgartirishning sodda usulini ko‘rib chiqamiz. Biroq uning katta kamchiligi bor: o‘zgartirilgan queue aslida barcha elementlarni saqlamaydi.
+Bu yerda navbatni o‘zgartirishning sodda usulini ko‘rib chiqamiz. Biroq uning katta kamchiligi bor: o‘zgartirilgan navbat aslida barcha elementlarni saqlamaydi.
 
-Asosiy g‘oya — queueda faqat minimumni aniqlash uchun kerak bo‘ladigan elementlarni saqlash. Aniqrog‘i, queuedagi qiymatlarni kamaymaydigan tartibda tutamiz, ya’ni eng kichik qiymat queue boshida turadi. Albatta, tartibni shunchaki ixtiyoriy usulda saqlamaymiz: haqiqiy joriy minimum har doim queueda qolishi kerak.
+Asosiy g‘oya — navbatda faqat minimumni aniqlash uchun kerak bo‘ladigan elementlarni saqlash. Aniqrog‘i, navbatdagi qiymatlarni kamaymaydigan tartibda tutamiz, ya’ni eng kichik qiymat navbat boshida turadi. Albatta, tartibni shunchaki ixtiyoriy usulda saqlamaymiz: haqiqiy joriy minimum har doim navbatda qolishi kerak.
 
-Shunda eng kichik element doimo queue boshida bo‘ladi. Yangi elementni queuega qo‘shishdan oldin “kesish” amalini bajarish kifoya: queuening oxiridan yangi elementdan katta bo‘lgan barcha elementlarni olib tashlaymiz, so‘ng yangi elementni oxiriga qo‘shamiz.
+Shunda eng kichik element doimo navbat boshida bo‘ladi. Yangi elementni navbatga qo‘shishdan oldin “kesish” amalini bajarish kifoya: navbatning oxiridan yangi elementdan katta bo‘lgan barcha elementlarni olib tashlaymiz, so‘ng yangi elementni oxiriga qo‘shamiz.
 
-Bu bilan queuening tartibini buzmaymiz va yangi element keyingi biror qadamda minimum bo‘lib qolsa, uni yo‘qotmaymiz. Olib tashlangan elementlarning hech biri endi hech qachon minimum bo‘la olmaydi, shuning uchun ularni o‘chirish mumkin.
+Bu bilan navbatning tartibini buzmaymiz va yangi element keyingi biror qadamda minimum bo‘lib qolsa, uni yo‘qotmaymiz. Olib tashlangan elementlarning hech biri endi hech qachon minimum bo‘la olmaydi, shuning uchun ularni o‘chirish mumkin.
 
-Queue boshidan bir elementni chiqarishni istaganimizda, u aslida u yerda bo‘lmasligi ham mumkin: oldinroq undan kichikroq element qo‘shilganda u o‘chirib yuborilgan bo‘lishi ehtimol. Shu sababli queuedan element o‘chirishda o‘chirilishi kerak bo‘lgan elementning qiymatini bilishimiz zarur. Agar queue boshidagi qiymat shu qiymatga teng bo‘lsa, uni xavfsiz olib tashlaymiz; aks holda hech narsa qilmaymiz.
+Navbat boshidan bir elementni chiqarishni istaganimizda, u aslida u yerda bo‘lmasligi ham mumkin: oldinroq undan kichikroq element qo‘shilganda u o‘chirib yuborilgan bo‘lishi ehtimol. Shu sababli navbatdan element o‘chirishda o‘chirilishi kerak bo‘lgan elementning qiymatini bilishimiz zarur. Agar navbat boshidagi qiymat shu qiymatga teng bo‘lsa, uni xavfsiz olib tashlaymiz; aks holda hech narsa qilmaymiz.
 
 Yuqoridagi amallarning implementatsiyasi:
 
@@ -83,11 +83,11 @@ if (!q.empty() && q.front() == remove_element)
 
 Bu amallarning barchasi o‘rtacha $O(1)$ vaqt olishi ravshan, chunki har bir element faqat bir marta qo‘shilishi va faqat bir marta olib tashlanishi mumkin.
 
-## Queueni o‘zgartirish (2-usul)
+## Navbatni o‘zgartirish (2-usul)
 
-Bu — 1-usulning o‘zgartirilgan ko‘rinishi. Qaysi elementni olib tashlashimizni bilmasdan ham queue boshidan element o‘chira olishni istaymiz.
+Bu — 1-usulning o‘zgartirilgan ko‘rinishi. Qaysi elementni olib tashlashimizni bilmasdan ham navbat boshidan element o‘chira olishni istaymiz.
 
-Buning uchun queuedagi har bir element bilan birga uning indeksini saqlaymiz. Shuningdek, jami nechta element qo‘shilganini va nechta element olib tashlanganini eslab boramiz.
+Buning uchun navbatdagi har bir element bilan birga uning indeksini saqlaymiz. Shuningdek, jami nechta element qo‘shilganini va nechta element olib tashlanganini eslab boramiz.
 
 ```cpp
 deque<pair<int, int>> q;
@@ -118,15 +118,15 @@ if (!q.empty() && q.front().second == cnt_removed)
 cnt_removed++;
 ```
 
-## Queueni o‘zgartirish (3-usul)
+## Navbatni o‘zgartirish (3-usul)
 
-Bu yerda minimumni $O(1)$ vaqtda topish uchun queueni o‘zgartirishning yana bir usulini ko‘rib chiqamiz. Bu usulni implementatsiya qilish biroz murakkabroq, ammo bu safar barcha elementlar haqiqatan ham saqlanadi. Bundan tashqari, olib tashlanayotgan elementning qiymatini bilmasdan queue boshidan element o‘chira olamiz.
+Bu yerda minimumni $O(1)$ vaqtda topish uchun navbatni o‘zgartirishning yana bir usulini ko‘rib chiqamiz. Bu usulni implementatsiya qilish biroz murakkabroq, ammo bu safar barcha elementlar haqiqatan ham saqlanadi. Bundan tashqari, olib tashlanayotgan elementning qiymatini bilmasdan navbat boshidan element o‘chira olamiz.
 
-G‘oya masalani avval yechilgan stack masalasiga keltirishdan iborat. Demak, faqat ikkita stack yordamida queueni qanday modellashtirishni o‘rganishimiz kerak.
+G‘oya masalani avval yechilgan stek masalasiga keltirishdan iborat. Demak, faqat ikkita stek yordamida navbatni qanday modellashtirishni o‘rganishimiz kerak.
 
-`s1` va `s2` nomli ikkita stack yaratamiz. Albatta, bu stacklar minimumni $O(1)$ vaqtda topishga imkon beradigan o‘zgartirilgan shaklda bo‘ladi. Yangi elementlarni `s1` stackiga qo‘shamiz, elementlarni esa `s2` stackidan olib tashlaymiz. Agar biror payt `s2` bo‘sh bo‘lsa, `s1` dagi barcha elementlarni `s2` ga ko‘chiramiz; bu amalda ularning tartibini teskarisiga aylantiradi.
+`s1` va `s2` nomli ikkita stek yaratamiz. Albatta, bu steklar minimumni $O(1)$ vaqtda topishga imkon beradigan o‘zgartirilgan shaklda bo‘ladi. Yangi elementlarni `s1` stekiga qo‘shamiz, elementlarni esa `s2` stekidan olib tashlaymiz. Agar biror payt `s2` bo‘sh bo‘lsa, `s1` dagi barcha elementlarni `s2` ga ko‘chiramiz; bu amalda ularning tartibini teskarisiga aylantiradi.
 
-Queue minimumini topish uchun ikki stack minimumining kichigini olish kifoya. Shunday qilib, barcha amallar o‘rtacha $O(1)$ vaqtda bajariladi: har bir element `s1` ga bir marta qo‘shiladi, `s2` ga bir marta ko‘chiriladi va `s2` dan bir marta chiqariladi.
+Navbat minimumini topish uchun ikki stek minimumining kichigini olish kifoya. Shunday qilib, barcha amallar o‘rtacha $O(1)$ vaqtda bajariladi: har bir element `s1` ga bir marta qo‘shiladi, `s2` ga bir marta ko‘chiriladi va `s2` dan bir marta chiqariladi.
 
 Implementatsiya:
 
@@ -173,9 +173,9 @@ $$\min_{0 \le i \le M-1} A[i], \min_{1 \le i \le M} A[i], \min_{2 \le i \le M+1}
 
 Masalani chiziqli, ya’ni $O(n)$ vaqtda yechish talab qilinadi.
 
-Yuqoridagi uchta o‘zgartirilgan queuedan istalgan biri bilan masalani yechish mumkin. Yechim sodda: massivning dastlabki $M$ ta elementini queuega qo‘shamiz, minimumni topib chiqaramiz; keyin navbatdagi elementni qo‘shib, massivning eng oldingi elementini olib tashlaymiz va yangi minimumni chiqaramiz; shu jarayonni davom ettiramiz.
+Yuqoridagi uchta o‘zgartirilgan navbatdan istalgan biri bilan masalani yechish mumkin. Yechim sodda: massivning dastlabki $M$ ta elementini navbatga qo‘shamiz, minimumni topib chiqaramiz; keyin navbatdagi elementni qo‘shib, massivning eng oldingi elementini olib tashlaymiz va yangi minimumni chiqaramiz; shu jarayonni davom ettiramiz.
 
-Queue bilan barcha amallar o‘rtacha o‘zgarmas vaqtda bajarilgani uchun butun algoritmning murakkabligi $O(n)$ bo‘ladi.
+Navbat bilan barcha amallar o‘rtacha o‘zgarmas vaqtda bajarilgani uchun butun algoritmning murakkabligi $O(n)$ bo‘ladi.
 
 ## Amaliy masalalar
 

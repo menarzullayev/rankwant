@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:16:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was an invented essay: wrong claims (Fenwick preprocessing, DSU complexity), a comparison table, new display formulas and sections. Restored the original list of approaches with their original complexities, pros and cons and the note on preprocessing.",
+      "content_sha256": "74c633514cee97cfefa1cc68d015aaefe0c9990971aac4bb65edd343e5b60419"
+    },
+    {
+      "at": "2026-11-12T11:16:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Re-translated from the original with glossary terms (kvadrat ildizli dekompozitsiya, segment daraxti, siyrak jadval).",
+      "content_sha256": "74c633514cee97cfefa1cc68d015aaefe0c9990971aac4bb65edd343e5b60419"
+    },
+    {
+      "at": "2026-11-12T11:16:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "74c633514cee97cfefa1cc68d015aaefe0c9990971aac4bb65edd343e5b60419"
+    }
+  ]
+}

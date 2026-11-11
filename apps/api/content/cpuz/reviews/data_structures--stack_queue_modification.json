@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared all three queue methods, the stack modification, the sliding-window section and every code block with the original; nothing omitted.",
+      "content_sha256": "a194947f6b0b7e1a98317b5b1af5d31a0de9b792da3a60fd37e30f18936f5fee"
+    },
+    {
+      "at": "2026-11-12T10:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the Latin words 'stack' and 'queue' (with Uzbek suffixes) by the glossary terms 'stek' and 'navbat' throughout prose and headings; code left untouched.",
+      "content_sha256": "a194947f6b0b7e1a98317b5b1af5d31a0de9b792da3a60fd37e30f18936f5fee"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph, example and both code blocks with the original; nothing was omitted or changed.",
+      "content_sha256": "c3631b9832003ff86dfe61ff2e242238fb2578e67f70b9ed510dea56ec346d83"
+    },
+    {
+      "at": "2026-11-12T10:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed one awkward phrase ('turgan ekan' to 'turgan paytda') in the operator-priority rule.",
+      "content_sha256": "c3631b9832003ff86dfe61ff2e242238fb2578e67f70b9ed510dea56ec346d83"
+    }
+  ]
+}

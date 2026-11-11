@@ -2,10 +2,10 @@
 
 **Suffiks avtomati** satrlarga oid ko‘plab masalalarni yechish imkonini beradigan kuchli ma’lumotlar tuzilmasidir.
 
-Masalan, bir satrning ikkinchi satrdagi barcha uchrashuvlarini topish yoki berilgan satrning turli ostsatrlari sonini hisoblash mumkin.
+Masalan, bir satrning ikkinchi satrdagi barcha uchrashlarini topish yoki berilgan satrning turli qism satrlari sonini hisoblash mumkin.
 Har ikkala masala ham suffiks avtomati yordamida chiziqli vaqtda yechiladi.
 
-Intuitiv ravishda suffiks avtomatini berilgan satrning **barcha ostsatrlari**ning siqilgan ko‘rinishi deb tushunish mumkin.
+Intuitiv ravishda suffiks avtomatini berilgan satrning **barcha qism satrlari**ning siqilgan ko‘rinishi deb tushunish mumkin.
 Ajablanarlisi shundaki, suffiks avtomati bu ma’lumotlarning barchasini nihoyatda ixcham shaklda saqlaydi.
 Uzunligi $n$ bo‘lgan satr uchun faqat $O(n)$ xotira kerak bo‘ladi.
 Bundan tashqari, uni $O(n)$ vaqtda ham qurish mumkin (alifbo o‘lchami $k$ ni o‘zgarmas deb olsak); aks holda xotira va vaqt murakkabligi $O(n \log k)$ bo‘ladi.
@@ -18,23 +18,26 @@ Berilgan $s$ satri uchun suffiks avtomati — $s$ satrining barcha suffikslarini
 
 Boshqacha aytganda:
 
- - Suffiks avtomati yo‘naltirilgan asiklik grafdir.
-   Uning uchlari **holatlar**, qirralari esa holatlar orasidagi **o‘tishlar** deb ataladi.
+ - Suffiks avtomati yo‘naltirilgan siklsiz grafdir.
+   Uning tugunlari **holatlar**, qirralari esa holatlar orasidagi **o‘tishlar** deb ataladi.
+
  - Holatlardan biri $t_0$ — **boshlang‘ich holat** bo‘ladi va u grafning manbasi bo‘lishi kerak (barcha boshqa holatlarga $t_0$ dan yetib borish mumkin).
  - Har bir **o‘tish** biror belgi bilan belgilangan.
    Bitta holatdan chiquvchi barcha o‘tishlarning belgilari **turlicha** bo‘lishi shart.
+
  - Bitta yoki bir nechta holat **terminal holatlar** sifatida belgilanadi.
    Boshlang‘ich $t_0$ holatdan boshlab o‘tishlar bo‘ylab terminal holatga borsak, bosib o‘tilgan o‘tishlar belgilari $s$ satrining biror suffiksini hosil qilishi kerak.
    $s$ ning har bir suffiksi $t_0$ dan terminal holatga olib boruvchi biror yo‘l orqali yozilishi kerak.
- - Yuqoridagi shartlarni qanoatlantiradigan barcha avtomatlar orasida suffiks avtomati eng kam sonli uchga ega.
 
-### Ostsatr xossasi
+ - Suffiks avtomati yuqoridagi shartlarni qanoatlantiradigan barcha avtomatlar orasida eng kam sondagi tugunga ega.
 
-Suffiks avtomatining eng sodda va eng muhim xossasi shundaki, u $s$ satrining barcha ostsatrlari haqidagi ma’lumotni saqlaydi.
-Boshlang‘ich $t_0$ holatdan boshlanadigan istalgan yo‘ldagi o‘tishlar belgilarini yozsak, $s$ ning biror **ostsatri** hosil bo‘ladi.
-Aksincha, $s$ ning har bir ostsatriga $t_0$ dan boshlanadigan muayyan yo‘l mos keladi.
+### Qism satr xossasi
 
-Izohlarni soddalashtirish uchun ostsatr shu yo‘lga **mos keladi** deymiz (yo‘l $t_0$ dan boshlanadi va uning belgilari ostsatrni yozadi).
+Suffiks avtomatining eng sodda va eng muhim xossasi shundaki, u $s$ satrining barcha qism satrlari haqidagi ma’lumotni saqlaydi.
+Boshlang‘ich $t_0$ holatdan boshlanadigan istalgan yo‘ldagi o‘tishlar belgilarini yozsak, $s$ ning biror **qism satri** hosil bo‘ladi.
+Aksincha, $s$ ning har bir qism satriga $t_0$ dan boshlanadigan muayyan yo‘l mos keladi.
+
+Izohlarni soddalashtirish uchun qism satr shu yo‘lga **mos keladi** deymiz (yo‘l $t_0$ dan boshlanadi va uning belgilari qism satrni yozadi).
 Aksincha, istalgan yo‘l uning o‘tishlari belgilari yozadigan satrga **mos keladi** deymiz.
 
 Bir holatga bitta yoki bir nechta yo‘l olib kelishi mumkin.
@@ -78,17 +81,17 @@ $s =~ \text{"abbb"}$ satri uchun:
 
 Suffiks avtomatini chiziqli vaqtda qurish algoritmini tasvirlashdan oldin bir nechta yangi tushuncha va sodda isbotlarni kiritishimiz kerak. Ular qurilish algoritmini tushunishda juda muhim bo‘ladi.
 
-### Tugash pozitsiyalari $endpos$ {data-toc-label="End positions"}
+### Tugash pozitsiyalari $endpos$
 
-$s$ satrining istalgan bo‘sh bo‘lmagan $t$ ostsatrini ko‘rib chiqamiz.
-$t$ uchrashuvlari tugaydigan $s$ satridagi barcha pozitsiyalar to‘plamini $endpos(t)$ bilan belgilaymiz. Masalan, $\text{"abcbc"}$ satri uchun $endpos(\text{"bc"}) = \{2, 4\}$.
+$s$ satrining istalgan bo‘sh bo‘lmagan $t$ qism satrini ko‘rib chiqamiz.
+$t$ uchrashlari tugaydigan $s$ satridagi barcha pozitsiyalar to‘plamini $endpos(t)$ bilan belgilaymiz. Masalan, $\text{"abcbc"}$ satri uchun $endpos(\text{"bc"}) = \{2, 4\}$.
 
-Ikki $t_1$ va $t_2$ ostsatrning tugash to‘plamlari teng, ya’ni $endpos(t_1) = endpos(t_2)$ bo‘lsa, ular $endpos$ bo‘yicha ekvivalent deyiladi.
-Demak, $s$ satrining barcha bo‘sh bo‘lmagan ostsatrlarini ularning $endpos$ to‘plamlariga qarab bir nechta **ekvivalentlik sinflari**ga ajratish mumkin.
+Ikki $t_1$ va $t_2$ qism satrning tugash to‘plamlari teng, ya’ni $endpos(t_1) = endpos(t_2)$ bo‘lsa, ular $endpos$ bo‘yicha ekvivalent deyiladi.
+Demak, $s$ satrining barcha bo‘sh bo‘lmagan qism satrlarini ularning $endpos$ to‘plamlariga qarab bir nechta **ekvivalentlik sinflari**ga ajratish mumkin.
 
-Ma’lum bo‘lishicha, suffiks avtomatida $endpos$ bo‘yicha ekvivalent ostsatrlar **bir xil holatga mos keladi**.
-Boshqacha aytganda, suffiks avtomatidagi holatlar soni barcha ostsatrlar orasidagi ekvivalentlik sinflari soniga boshlang‘ich holatni qo‘shganimizga teng.
-Suffiks avtomatining har bir holati $endpos$ qiymati bir xil bo‘lgan bitta yoki bir nechta ostsatrga mos keladi.
+Ma’lum bo‘lishicha, suffiks avtomatida $endpos$ bo‘yicha ekvivalent qism satrlar **bir xil holatga mos keladi**.
+Boshqacha aytganda, suffiks avtomatidagi holatlar soni barcha qism satrlar orasidagi ekvivalentlik sinflari sonidan bittaga (boshlang‘ich holatga) ko‘p.
+Suffiks avtomatining har bir holati $endpos$ qiymati bir xil bo‘lgan bitta yoki bir nechta qism satrga mos keladi.
 
 Keyinroq qurish algoritmini aynan shu tasdiqdan foydalanib tavsiflaymiz.
 Shunda minimallikdan tashqari suffiks avtomatiga qo‘yilgan barcha talablar bajarilishini ko‘ramiz.
@@ -97,48 +100,48 @@ Minimallik esa Nerode teoremasidan kelib chiqadi (bu maqolada uning isboti kelti
 $endpos$ qiymatlari haqida bir nechta muhim kuzatuv qilish mumkin.
 
 **1-lemma**:
-Bo‘sh bo‘lmagan $u$ va $w$ ostsatrlar ($length(u) \le length(w)$) $endpos$ bo‘yicha ekvivalent bo‘lishi uchun va faqat shundagina $u$ satri $s$ ichida faqat $w$ ning suffiksi ko‘rinishida uchraydi.
+Bo‘sh bo‘lmagan $u$ va $w$ qism satrlar ($length(u) \le length(w)$) $endpos$ bo‘yicha ekvivalent bo‘lishi uchun va faqat shundagina $u$ satri $s$ ichida faqat $w$ ning suffiksi ko‘rinishida uchraydi.
 
 Isbot ravshan.
 Agar $u$ va $w$ ning $endpos$ qiymatlari bir xil bo‘lsa, $u$ — $w$ ning suffiksi va $s$ da faqat $w$ ning suffiksi ko‘rinishida paydo bo‘ladi.
 Agar $u$ — $w$ ning suffiksi bo‘lib, $s$ da faqat shu ko‘rinishda paydo bo‘lsa, ta’rifga ko‘ra ularning $endpos$ qiymatlari teng.
 
 **2-lemma**:
-Bo‘sh bo‘lmagan $u$ va $w$ ostsatrlarni ($length(u) \le length(w)$) ko‘rib chiqamiz.
+Bo‘sh bo‘lmagan $u$ va $w$ qism satrlarni ($length(u) \le length(w)$) ko‘rib chiqamiz.
 Ularning $endpos$ to‘plamlari yo umuman kesishmaydi, yoki $endpos(w)$ to‘plami $endpos(u)$ ning qism to‘plami bo‘ladi.
 Qaysi holat yuz berishi $u$ satri $w$ ning suffiksi ekaniga bog‘liq:
 
 $$\begin{cases}
-endpos(w) \subseteq endpos(u) & \text{if } u \text{ is a suffix of } w \\\\
+endpos(w) \subseteq endpos(u) & \text{if } u \text{ is a suffix of } w \\
 endpos(w) \cap endpos(u) = \emptyset & \text{otherwise}
 \end{cases}$$
 
 Isbot:
 Agar $endpos(u)$ va $endpos(w)$ to‘plamlari kamida bitta umumiy elementga ega bo‘lsa, $u$ va $w$ satrlarining ikkalasi ham shu pozitsiyada tugaydi, ya’ni $u$ — $w$ ning suffiksi.
-Ammo $w$ ning har bir uchrashuvida $u$ ostsatri ham uchraydi, demak $endpos(w)$ — $endpos(u)$ ning qism to‘plami.
+Ammo $w$ ning har bir uchrashida $u$ qism satri ham uchraydi, demak $endpos(w)$ — $endpos(u)$ ning qism to‘plami.
 
 **3-lemma**:
 Biror $endpos$ ekvivalentlik sinfini ko‘rib chiqamiz.
-Bu sinfdagi barcha ostsatrlarni uzunligi kamayish tartibida saralaymiz.
-Hosil bo‘lgan ketma-ketlikda har bir ostsatr oldingisidan bir belgi qisqa bo‘ladi va bir vaqtning o‘zida oldingisining suffiksi bo‘ladi.
-Boshqacha aytganda, bitta ekvivalentlik sinfidagi qisqaroq ostsatrlar uzunroqlarining suffiksi bo‘lib, ular ma’lum $[x; y]$ oraliqdagi barcha uzunliklarni egallaydi.
+Bu sinfdagi barcha qism satrlarni uzunligi kamayish tartibida saralaymiz.
+Hosil bo‘lgan ketma-ketlikda har bir qism satr oldingisidan bir belgi qisqa bo‘ladi va bir vaqtning o‘zida oldingisining suffiksi bo‘ladi.
+Boshqacha aytganda, bitta ekvivalentlik sinfidagi qisqaroq qism satrlar uzunroqlarining suffiksi bo‘lib, ular ma’lum $[x; y]$ oraliqdagi barcha uzunliklarni egallaydi.
 
 Isbot:
 Biror $endpos$ ekvivalentlik sinfini belgilab olamiz.
 Agar u faqat bitta satrdan iborat bo‘lsa, lemma ravshan.
 Endi sinfdagi satrlar soni bittadan ko‘p bo‘lsin.
 
-1-lemmaga ko‘ra, $endpos$ bo‘yicha ekvivalent ikki turli satr orasida qisqaroq satr doimo uzunroq satrning proper suffiksi bo‘ladi.
+1-lemmaga ko‘ra, $endpos$ bo‘yicha ekvivalent ikki turli satr orasida qisqaroq satr doimo uzunroq satrning xos suffiksi bo‘ladi.
 Shuning uchun ekvivalentlik sinfida bir xil uzunlikdagi ikkita satr bo‘lishi mumkin emas.
 
 Sinfdagi eng uzun satrni $w$, eng qisqasini $u$ bilan belgilaymiz.
-1-lemmaga ko‘ra, $u$ — $w$ ning proper suffiksi.
+1-lemmaga ko‘ra, $u$ — $w$ ning xos suffiksi.
 Endi $w$ ning uzunligi $[length(u); length(w)]$ oraliqda bo‘lgan istalgan suffiksini ko‘rib chiqamiz.
 Bu suffiks ham ayni ekvivalentlik sinfiga kirishini ko‘rish oson.
 Chunki bu suffiks $s$ satrida faqat $w$ ning suffiksi ko‘rinishida uchrashi mumkin (sababi undan ham qisqa $u$ suffiksi $s$ da faqat $w$ ning suffiksi ko‘rinishida uchraydi).
 Demak, 1-lemmaga ko‘ra, bu suffiks $w$ bilan $endpos$ bo‘yicha ekvivalent.
 
-### Suffiks havolalari $link$ {data-toc-label="Suffix links"}
+### Suffiks havolalari $link$
 
 Avtomatdagi biror $v \ne t_0$ holatni ko‘rib chiqamiz.
 Ma’lumki, $v$ holat $endpos$ qiymatlari teng bo‘lgan satrlar sinfiga mos keladi.
@@ -174,7 +177,7 @@ kelib chiqadi; bu esa oldingi lemma bilan birga tasdiqni isbotlaydi:
 suffiks havolalari daraxti mohiyatan $endpos$ to‘plamlar daraxtidir.
 
 Quyida $\text{"abcbc"}$ satri uchun qurilgan suffiks avtomatining suffiks havolalari daraxtiga **misol** keltirilgan.
-Tugunlar tegishli ekvivalentlik sinfidagi eng uzun ostsatr bilan belgilangan.
+Tugunlar tegishli ekvivalentlik sinfidagi eng uzun qism satr bilan belgilangan.
 
 !["abcbc" uchun suffiks havolalari ko‘rsatilgan suffiks avtomati](/algorithms-media/string/SA_suffix_links.png)
 
@@ -182,14 +185,16 @@ Tugunlar tegishli ekvivalentlik sinfidagi eng uzun ostsatr bilan belgilangan.
 
 Algoritmning o‘ziga o‘tishdan oldin to‘plangan bilimlarni jamlaymiz va bir nechta yordamchi belgilash kiritamiz.
 
-- $s$ satrining ostsatrlari tugash pozitsiyalari $endpos$ ga ko‘ra ekvivalentlik sinflariga ajratilishi mumkin.
+- $s$ satrining qism satrlari tugash pozitsiyalari $endpos$ ga ko‘ra ekvivalentlik sinflariga ajratilishi mumkin.
 - Suffiks avtomati boshlang‘ich $t_0$ holatdan va har bir $endpos$ ekvivalentlik sinfi uchun bittadan holatdan iborat.
-- Har bir $v$ holatga bitta yoki bir nechta ostsatr mos keladi.
+- Har bir $v$ holatga bitta yoki bir nechta qism satr mos keladi.
   Ularning eng uzunini $longest(v)$, uning uzunligini $len(v)$ bilan belgilaymiz.
-  Eng qisqa ostsatrni $shortest(v)$, uning uzunligini $minlen(v)$ bilan belgilaymiz.
+  Eng qisqa qism satrni $shortest(v)$, uning uzunligini $minlen(v)$ bilan belgilaymiz.
   Bu holatga mos barcha satrlar $longest(v)$ satrining turli suffikslari bo‘lib, $[minlen(v); len(v)]$ oraliqdagi barcha mumkin bo‘lgan uzunliklarga ega.
+
 - Har bir $v \ne t_0$ holat uchun $longest(v)$ satrining uzunligi $minlen(v) - 1$ bo‘lgan suffiksiga mos holatga olib boruvchi suffiks havolasi aniqlangan.
   Suffiks havolalari ildizi $t_0$ da bo‘lgan daraxt hosil qiladi; shu bilan birga bu daraxt $endpos$ to‘plamlarining ichma-ichlik munosabatini ifodalaydi.
+
 - $v \ne t_0$ uchun $minlen(v)$ ni $link(v)$ suffiks havolasi orqali quyidagicha ifodalash mumkin:
 
 $$minlen(v) = len(link(v)) + 1$$
@@ -200,7 +205,7 @@ $$minlen(v) = len(link(v)) + 1$$
 ### Algoritm
 
 Endi algoritmning o‘ziga o‘tishimiz mumkin.
-Algoritm **online** ishlaydi: satr belgilarini bittadan qo‘shamiz va har bir qadamda avtomatni mos ravishda o‘zgartiramiz.
+Algoritm **onlayn** ishlaydi: satr belgilarini bittadan qo‘shamiz va har bir qadamda avtomatni mos ravishda o‘zgartiramiz.
 
 Xotira sarfini chiziqli saqlash uchun har bir holatda faqat $len$, $link$ qiymatlari va o‘tishlar ro‘yxatini saqlaymiz.
 Terminal holatlarni hozircha belgilamaymiz (ammo suffiks avtomati qurilgach, ularni qanday belgilashni keyin ko‘rsatamiz).
@@ -217,12 +222,14 @@ Bu jarayonni tasvirlaymiz:
     Hozircha $link(cur)$ qiymati noma’lum.
   - Endi quyidagi jarayonni bajaramiz:
     $last$ holatdan boshlaymiz.
-    $c$ belgisi bo‘yicha o‘tish mavjud bo‘lmagan paytda $cur$ holatga o‘tish qo‘shib, suffiks havolasi bo‘ylab yuramiz.
+    $c$ belgisi bo‘yicha o‘tish mavjud bo‘lmagan paytda $cur$ holatga o‘tish qo‘shamiz va suffiks havolasi bo‘ylab yuramiz.
     Biror paytda $c$ belgisi bo‘yicha o‘tish allaqachon mavjud bo‘lsa, to‘xtaymiz va shu holatni $p$ bilan belgilaymiz.
   - Agar bunday $p$ holat topilmasa, demak soxta $-1$ holatga yetganmiz; bu holda shunchaki $link(cur) = 0$ deb belgilab, jarayonni tugatamiz.
   - Endi $c$ belgisi bo‘yicha o‘tish mavjud bo‘lgan $p$ holat topilgan deb faraz qilamiz.
     O‘tish olib boradigan holatni $q$ bilan belgilaymiz.
-  - Endi ikki holatdan biri yuz beradi: $len(p) + 1 = len(q)$ yoki aksincha.
+  - Endi ikki holatdan biri yuz beradi: $len(p) + 1 = len(q)$ yoki $len(p) + 1 
+e len(q)$.
+
   - Agar $len(p) + 1 = len(q)$ bo‘lsa, shunchaki $link(cur) = q$ deb belgilab, tugatamiz.
   - Aks holda vaziyat biroz murakkabroq.
     $q$ holatni **klonlash** kerak:
@@ -273,7 +280,7 @@ O‘tishlar sonining chiziqliligi va umuman algoritm ishlash vaqtining chiziqlil
     Shuning uchun $cur$ ning suffiks havolasi $0$ holatga olib borishi kerak.
 
   - Ikkinchi holatda mavjud $(p, q)$ o‘tishga duch kelamiz.
-    Bu mashinaga $x + c$ satrini ($x$ — $s$ ning suffiksi) qo‘shishga uringanimizda u mashinada **allaqachon mavjud** ekanini anglatadi ($x + c$ satri $s$ ning ostsatri sifatida avval uchragan).
+    Bu mashinaga $x + c$ satrini ($x$ — $s$ ning suffiksi) qo‘shishga uringanimizda u mashinada **allaqachon mavjud** ekanini anglatadi ($x + c$ satri $s$ ning qism satri sifatida avval uchragan).
     $s$ uchun avtomat to‘g‘ri qurilgan deb faraz qilganimiz sababli bu yerda yangi o‘tish qo‘shmasligimiz kerak.
 
     Ammo bir qiyinchilik bor.
@@ -287,8 +294,8 @@ O‘tishlar sonining chiziqliligi va umuman algoritm ishlash vaqtining chiziqlil
     $cur$ dan suffiks havolasini $q$ holatga yo‘naltiramiz.
 
   - Aks holda o‘tish uzluksiz emas, ya’ni $len(q) > len(p) + 1$.
-    Bu $q$ holat uzunligi $len(p) + 1$ bo‘lgan $s + c$ suffiksigagina emas, $s$ ning uzunroq ostsatrlariga ham mos kelishini anglatadi.
-    $q$ holatni ikkita ostholatga **bo‘lish**dan boshqa yo‘l yo‘q; birinchi holatning uzunligi $len(p) + 1$ bo‘lishi kerak.
+    Bu $q$ holat uzunligi $len(p) + 1$ bo‘lgan $s + c$ suffiksigagina emas, $s$ ning uzunroq qism satrlariga ham mos kelishini anglatadi.
+    $q$ holatni ikkita qism holatga **bo‘lish**dan boshqa yo‘l yo‘q; birinchi holatning uzunligi $len(p) + 1$ bo‘lishi kerak.
 
     Holatni qanday bo‘lamiz?
     $q$ holatni **klonlab**, $clone$ holatni hosil qilamiz va $len(clone) = len(p) + 1$ deb belgilaymiz.
@@ -299,15 +306,15 @@ O‘tishlar sonining chiziqliligi va umuman algoritm ishlash vaqtining chiziqlil
 
     So‘nggi qadamda $q$ ga olib boruvchi ayrim o‘tishlarni $clone$ ga qayta yo‘naltiramiz.
     Qaysi o‘tishlarni o‘zgartirish kerak?
-    Faqat $w + c$ satrining barcha suffikslariga mos o‘tishlarni ($w$ — $p$ ga mos eng uzun satr) qayta yo‘naltirish yetarli. Ya’ni $p$ uchidan boshlab suffiks havolalari bo‘ylab soxta $-1$ holatga yoki $q$ dan boshqa holatga olib boruvchi o‘tishga yetguncha yurishda davom etamiz.
+    Faqat $w + c$ satrining barcha suffikslariga mos o‘tishlarni ($w$ — $p$ ga mos eng uzun satr) qayta yo‘naltirish yetarli. Ya’ni $p$ tugunidan boshlab suffiks havolalari bo‘ylab soxta $-1$ holatga yoki $q$ dan boshqa holatga olib boruvchi o‘tishga yetguncha yurishda davom etamiz.
 
 ### Amallar sonining chiziqliligi
 
 Avvalo alifbo o‘lchami **o‘zgarmas** deb faraz qilamiz.
 Aks holda chiziqli vaqt murakkabligi haqida gapirib bo‘lmaydi.
-Bitta uchdan chiquvchi o‘tishlar ro‘yxati muvozanatlangan daraxtda saqlanadi; bu kalitni qidirish va kalit qo‘shish amallarini tez bajarishga imkon beradi.
+Bitta tugundan chiquvchi o‘tishlar ro‘yxati muvozanatlangan daraxtda saqlanadi; bu kalitni qidirish va kalit qo‘shish amallarini tez bajarishga imkon beradi.
 Shuning uchun alifbo o‘lchamini $k$ bilan belgilasak, algoritmning asimptotikasi $O(n \log k)$ vaqt va $O(n)$ xotira bo‘ladi.
-Biroq alifbo yetarlicha kichik bo‘lsa, muvozanatlangan daraxtlardan voz kechib, har bir uchdagi o‘tishlarni uzunligi $k$ bo‘lgan massivda (kalit bo‘yicha tez qidirish uchun) va dinamik ro‘yxatda (mavjud barcha kalitlar bo‘ylab tez yurish uchun) saqlab, xotira hisobiga vaqtni tejash mumkin.
+Biroq alifbo yetarlicha kichik bo‘lsa, muvozanatlangan daraxtlardan voz kechib, har bir tugundagi o‘tishlarni uzunligi $k$ bo‘lgan massivda (kalit bo‘yicha tez qidirish uchun) va dinamik ro‘yxatda (mavjud barcha kalitlar bo‘ylab tez yurish uchun) saqlab, xotira hisobiga vaqtni tejash mumkin.
 Shunda algoritm $O(n)$ vaqtda ishlaydi, ammo xotira murakkabligi $O(n k)$ bo‘ladi.
 
 Demak, alifbo o‘lchamini o‘zgarmas deb olamiz: belgi bo‘yicha o‘tishni qidirish, o‘tish qo‘shish va keyingi o‘tishni izlash kabi har bir amal $O(1)$ vaqtda bajariladi.
@@ -414,7 +421,7 @@ Bundan tashqari, bu $endpos$ to‘plamlari daraxt hosil qiladi (ota tugun to‘p
 Shu daraxtni olib, biroz o‘zgartiramiz:
 unda faqat bitta farzandli ichki tugun bor ekan (bu farzand to‘plamida ota to‘plamning kamida bitta pozitsiyasi yo‘qligini anglatadi), yetishmayotgan pozitsiyalar to‘plami bilan yangi farzand yaratamiz.
 Oxirida har bir ichki tugunning darajasi bittadan katta va barglar soni $n$ dan oshmaydigan daraxt hosil bo‘ladi.
-Demak, bunday daraxtda $2n - 1$ tadan ko‘p uch bo‘la olmaydi.
+Demak, bunday daraxtda $2n - 1$ tadan ko‘p tugun bo‘la olmaydi.
 
 Holatlar soni uchun bu chegara har bir $n$ da haqiqatan ham erishilishi mumkin.
 Masalan, quyidagi satr mos keladi:
@@ -452,30 +459,30 @@ $$\text{"abbb}\dots \text{bbbc"}$$
 Quyida suffiks avtomati yordamida yechiladigan ayrim masalalarni ko‘rib chiqamiz.
 Soddalik uchun alifbo o‘lchami $k$ o‘zgarmas deb olamiz; bu belgi qo‘shish va o‘tish bo‘ylab yurish murakkabligini o‘zgarmas deb hisoblash imkonini beradi.
 
-### Uchrashuv mavjudligini tekshirish
+### Uchrash mavjudligini tekshirish
 
 $T$ matn va bir nechta $P$ andoza berilgan.
-Har bir $P$ satr $T$ ning ostsatri sifatida uchrash-uchramasligini tekshirish kerak.
+Har bir $P$ satr $T$ ning qism satri sifatida uchrash-uchramasligini tekshirish kerak.
 
 $T$ matn uchun suffiks avtomatini $O(length(T))$ vaqtda quramiz.
 $P$ andoza $T$ da uchrashini tekshirish uchun $t_0$ holatdan boshlab $P$ belgilariga mos o‘tishlar bo‘ylab yuramiz.
-Biror nuqtada kerakli o‘tish mavjud bo‘lmasa, $P$ andoza $T$ ning ostsatri emas.
+Biror nuqtada kerakli o‘tish mavjud bo‘lmasa, $P$ andoza $T$ ning qism satri emas.
 Agar butun $P$ satrni shu tarzda qayta ishlay olsak, u $T$ da uchraydi.
 
 Bu har bir $P$ satr uchun $O(length(P))$ vaqt olishi ravshan.
 Bundan tashqari, algoritm amalda $P$ ning matnda uchraydigan eng uzun prefiksi uzunligini ham topadi.
 
-### Turli ostsatrlar soni
+### Turli qism satrlar soni
 
 $S$ satri berilgan.
-Uning turli ostsatrlari sonini hisoblash kerak.
+Uning turli qism satrlari sonini hisoblash kerak.
 
 $S$ satri uchun suffiks avtomatini quramiz.
 
-$S$ ning har bir ostsatri avtomatdagi biror yo‘lga mos keladi.
-Shuning uchun turli ostsatrlar soni avtomatdagi $t_0$ dan boshlanadigan turli yo‘llar soniga teng.
+$S$ ning har bir qism satri avtomatdagi biror yo‘lga mos keladi.
+Shuning uchun turli qism satrlar soni avtomatdagi $t_0$ dan boshlanadigan turli yo‘llar soniga teng.
 
-Suffiks avtomati yo‘naltirilgan asiklik graf bo‘lgani sababli turli yo‘llar sonini dinamik dasturlash yordamida hisoblash mumkin.
+Suffiks avtomati yo‘naltirilgan siklsiz graf bo‘lgani sababli turli yo‘llar sonini dinamik dasturlash yordamida hisoblash mumkin.
 
 $v$ holatdan boshlanadigan yo‘llar sonini (uzunligi nol bo‘lgan yo‘lni ham qo‘shib) $d[v]$ bilan belgilaymiz.
 U holda quyidagi rekurrent formula o‘rinli:
@@ -484,12 +491,12 @@ $$d[v] = 1 + \sum_{w : (v, w, c) \in DAWG} d[w]$$
 
 Ya’ni $d[v]$ ni $v$ dan chiquvchi barcha o‘tishlar oxiridagi holatlar javoblari yig‘indisi orqali ifodalash mumkin.
 
-Turli ostsatrlar soni $d[t_0] - 1$ ga teng (bo‘sh ostsatrni hisoblamaymiz).
+Turli qism satrlar soni $d[t_0] - 1$ ga teng (bo‘sh qism satrni hisoblamaymiz).
 
 Umumiy vaqt murakkabligi: $O(length(S))$.
 
-Muqobil ravishda, har bir $v$ holat uzunligi $[minlen(v),len(v)]$ oraliqdagi ostsatrlarga mos kelishidan foydalanish mumkin.
-$minlen(v) = 1 + len(link(v))$ ekan, $v$ holatdagi turli ostsatrlar soni
+Muqobil ravishda, har bir $v$ holat uzunligi $[minlen(v),len(v)]$ oraliqdagi qism satrlarga mos kelishidan foydalanish mumkin.
+$minlen(v) = 1 + len(link(v))$ ekan, $v$ holatdagi turli qism satrlar soni
 $len(v) - minlen(v) + 1 = len(v) - (1 + len(link(v))) + 1 = len(v) - len(link(v))$ ga teng.
 
 Bu quyidagi ixcham kodda ko‘rsatilgan:
@@ -506,25 +513,25 @@ long long get_diff_strings(){
 
 Bu usul ham $O(length(S))$ vaqtda ishlaydi, ammo qo‘shimcha xotira ham, rekursiv chaqiruvlar ham talab qilmaydi; shu sababli amalda tezroq ishlaydi.
 
-### Barcha turli ostsatrlar uzunliklari yig‘indisi
+### Barcha turli qism satrlar uzunliklari yig‘indisi
 
 $S$ satri berilgan.
-Uning barcha turli ostsatrlari uzunliklari yig‘indisini hisoblash kerak.
+Uning barcha turli qism satrlari uzunliklari yig‘indisini hisoblash kerak.
 
 Yechim oldingi masalaga o‘xshaydi, faqat endi dinamik dasturlashda ikkita miqdorni ko‘rib chiqish kerak:
-turli ostsatrlar soni $d[v]$ va ularning umumiy uzunligi $ans[v]$.
+turli qism satrlar soni $d[v]$ va ularning umumiy uzunligi $ans[v]$.
 
 $d[v]$ ni qanday hisoblashni oldingi masalada tasvirladik.
 $ans[v]$ qiymatini quyidagi rekurrent formula bilan hisoblash mumkin:
 
 $$ans[v] = \sum_{w : (v, w, c) \in DAWG} d[w] + ans[w]$$
 
-Har bir qo‘shni $w$ uchning javobini olamiz va unga $d[w]$ ni qo‘shamiz (chunki $v$ holatdan boshlangan har bir ostsatr bitta belgiga uzunroq bo‘ladi).
+Har bir qo‘shni $w$ tugunning javobini olamiz va unga $d[w]$ ni qo‘shamiz (chunki $v$ holatdan boshlangan har bir qism satr bitta belgiga uzunroq bo‘ladi).
 
 Bu masala ham $O(length(S))$ vaqtda yechiladi.
 
-Muqobil usulda yana har bir $v$ holat uzunligi $[minlen(v),len(v)]$ oraliqdagi ostsatrlarga mos kelishidan foydalanamiz.
-$minlen(v) = 1 + len(link(v))$ va arifmetik progressiya yig‘indisi formulasi $S_n = n \cdot \frac{a_1+a_n}{2}$ ekanidan (bu yerda $S_n$ — $n$ ta had yig‘indisi, $a_1$ — birinchi, $a_n$ — oxirgi had) bir holatdagi ostsatrlar uzunliklari yig‘indisini o‘zgarmas vaqtda hisoblash mumkin. Keyin avtomatdagi har bir $v \neq t_0$ holat uchun bu yig‘indilarni qo‘shamiz. Quyidagi kod shuni ko‘rsatadi:
+Muqobil usulda yana har bir $v$ holat uzunligi $[minlen(v),len(v)]$ oraliqdagi qism satrlarga mos kelishidan foydalanamiz.
+$minlen(v) = 1 + len(link(v))$ va arifmetik progressiya yig‘indisi formulasi $S_n = n \cdot \frac{a_1+a_n}{2}$ ekanidan (bu yerda $S_n$ — $n$ ta had yig‘indisi, $a_1$ — birinchi, $a_n$ — oxirgi had) bir holatdagi qism satrlar uzunliklari yig‘indisini o‘zgarmas vaqtda hisoblash mumkin. Keyin avtomatdagi har bir $v \neq t_0$ holat uchun bu yig‘indilarni qo‘shamiz. Quyidagi kod shuni ko‘rsatadi:
 
 ```cpp
 long long get_tot_len_diff_substings() {
@@ -543,14 +550,14 @@ long long get_tot_len_diff_substings() {
 
 Bu yondashuv $O(length(S))$ vaqtda ishlaydi, ammo tajribalarda tasodifiy satrlarda memoizatsiyali dinamik dasturlash variantidan 20 baravar tezroq ishlagan. U qo‘shimcha xotira ham, rekursiya ham talab qilmaydi.
 
-### Leksikografik tartibdagi $k$-ostsatr {data-toc-label="Lexicographically k-th substring"}
+### Leksikografik tartibdagi $k$-qism satr
 
 $S$ satri berilgan.
 Bir nechta so‘rovga javob berish kerak.
-Har bir berilgan $K_i$ soni uchun barcha ostsatrlarning leksikografik tartiblangan ro‘yxatidagi $K_i$-satrni topish talab qilinadi.
+Har bir berilgan $K_i$ soni uchun barcha qism satrlarning leksikografik tartiblangan ro‘yxatidagi $K_i$-satrni topish talab qilinadi.
 
 Bu masalaning yechimi oldingi ikki masala g‘oyasiga asoslanadi.
-Leksikografik tartibdagi $k$-ostsatr suffiks avtomatidagi leksikografik tartibdagi $k$-yo‘lga mos keladi.
+Leksikografik tartibdagi $k$-qism satr suffiks avtomatidagi leksikografik tartibdagi $k$-yo‘lga mos keladi.
 Shuning uchun har bir holatdan boshlanadigan yo‘llar sonini hisoblagach, avtomat ildizidan boshlanadigan $k$-yo‘lni oson topish mumkin.
 
 Oldindan hisoblash $O(length(S))$ vaqt oladi, har bir so‘rov esa $O(length(ans) \cdot k)$ vaqtda ishlaydi (bu yerda $ans$ — so‘rov javobi, $k$ — alifbo o‘lchami).
@@ -567,11 +574,11 @@ Demak, masala uzunligi $length(S)$ bo‘lgan leksikografik jihatdan eng kichik y
 
 Umumiy vaqt murakkabligi $O(length(S))$.
 
-### Uchrashuvlar soni
+### Uchrashlar soni
 
 $T$ matn berilgan.
 Bir nechta so‘rovga javob berish kerak.
-Har bir $P$ andoza $T$ satrida ostsatr sifatida necha marta uchrashini topish talab qilinadi.
+Har bir $P$ andoza $T$ satrida qism satr sifatida necha marta uchrashini topish talab qilinadi.
 
 $T$ matn uchun suffiks avtomatini quramiz.
 
@@ -595,7 +602,7 @@ Shuning uchun bu holatlarning har biri uchun u qayta ishlangan tegishli pozitsiy
 Demak, dastlab bunday har bir holat uchun $cnt = 1$, qolganlari uchun $cnt = 0$ bo‘ladi.
 
 Keyin har bir $v$ uchun $cnt[link(v)] \text{ += } cnt[v]$ amalini bajaramiz.
-Buning ma’nosi shuki, agar $v$ ga mos satr $cnt[v]$ marta uchrasa, uning barcha suffikslari ham aynan shu tugash pozitsiyalarida, demak kamida shu $cnt[v]$ marta uchraydi.
+Buning ma’nosi shuki, agar $v$ ga mos satr $cnt[v]$ marta uchrasa, uning barcha suffikslari ham aynan shu tugash pozitsiyalarida, demak ular ham $cnt[v]$ marta uchraydi.
 
 Nega bunda ortiqcha sanamaymiz (bir pozitsiyani ikki marta hisoblamaymiz)?
 Chunki bir holat pozitsiyalarini faqat bitta boshqa holatga qo‘shamiz; shu sababli bir holat bir xil pozitsiyalarni boshqa holatga ikki xil yo‘l bilan yuborishi mumkin emas.
@@ -606,13 +613,13 @@ Shundan keyin so‘rovga javob berish uchun, andozaga mos $t$ holat mavjud bo‘
 Aks holda javob $0$.
 Har bir so‘rovga javob berish $O(length(P))$ vaqt oladi.
 
-### Birinchi uchrashuv pozitsiyasi
+### Birinchi uchrash pozitsiyasi
 
 $T$ matn va bir nechta so‘rov berilgan.
-Har bir $P$ so‘rov satri uchun uning $T$ dagi birinchi uchrashuvi boshlanish pozitsiyasini topish kerak.
+Har bir $P$ so‘rov satri uchun uning $T$ dagi birinchi uchrashi boshlanish pozitsiyasini topish kerak.
 
 Yana suffiks avtomatini quramiz.
-Bundan tashqari, avtomatdagi barcha holatlar uchun $firstpos$ pozitsiyasini oldindan hisoblaymiz: har bir $v$ holat uchun uning birinchi uchrashuvi tugaydigan $firstpos[v]$ pozitsiyani topmoqchimiz.
+Bundan tashqari, avtomatdagi barcha holatlar uchun $firstpos$ pozitsiyasini oldindan hisoblaymiz: har bir $v$ holat uchun uning birinchi uchrashi tugaydigan $firstpos[v]$ pozitsiyani topmoqchimiz.
 Boshqacha aytganda, har bir $endpos$ to‘plamining minimal elementini oldindan topmoqchimiz (chunki $endpos$ to‘plamlarini aniq saqlab bo‘lmaydi).
 
 $firstpos$ qiymatlarini saqlash uchun `sa_extend()` funksiyasini kengaytiramiz.
@@ -620,7 +627,7 @@ Yangi $cur$ holat yaratganda quyidagicha belgilaymiz:
 
 $$firstpos(cur) = len(cur) - 1$$
 
-$q$ uchni $clone$ sifatida klonlaganda esa:
+$q$ tugunni $clone$ sifatida klonlaganda esa:
 
 $$firstpos(clone) = firstpos(q)$$
 
@@ -629,9 +636,9 @@ deb olamiz (boshqa mumkin bo‘lgan qiymat $firstpos(cur)$ bo‘lardi, ammo u al
 Shu sababli so‘rov javobi shunchaki $firstpos(t) - length(P) + 1$ bo‘ladi; bu yerda $t$ — $P$ satriga mos holat.
 Har bir so‘rovga javob berish yana $O(length(P))$ vaqt oladi.
 
-### Barcha uchrashuv pozitsiyalari
+### Barcha uchrash pozitsiyalari
 
-Bu safar $T$ satridagi barcha uchrashuv pozitsiyalarini chiqarish kerak.
+Bu safar $T$ satridagi barcha uchrash pozitsiyalarini chiqarish kerak.
 
 Yana $T$ matn uchun suffiks avtomatini quramiz.
 Oldingi masaladagidek barcha holatlar uchun $firstpos$ pozitsiyasini hisoblaymiz.
@@ -688,7 +695,7 @@ $S$ da uchramaydigan eng qisqa satrni topish kerak.
 
 $S$ satri uchun qurilgan suffiks avtomatida dinamik dasturlashni qo‘llaymiz.
 
-$d[v]$ — $v$ tugun uchun javob bo‘lsin: ostsatrning bir qismini qayta ishlaganmiz, ayni paytda $v$ holatdamiz va mavjud bo‘lmagan o‘tishni topish uchun qo‘shilishi kerak bo‘lgan eng kam belgilar sonini bilmoqchimiz.
+$d[v]$ — $v$ tugun uchun javob bo‘lsin: qism satrning bir qismini qayta ishlaganmiz, ayni paytda $v$ holatdamiz va mavjud bo‘lmagan o‘tishni topish uchun qo‘shilishi kerak bo‘lgan eng kam belgilar sonini bilmoqchimiz.
 $d[v]$ ni hisoblash juda sodda.
 Alifboning kamida bitta belgisi bo‘yicha o‘tish mavjud bo‘lmasa, $d[v] = 1$.
 Aks holda bitta belgi yetarli emas, shuning uchun barcha o‘tishlarning javoblari orasidan minimumni olish kerak:
@@ -697,15 +704,15 @@ $$d[v] = 1 + \min_{w:(v,w,c) \in SA} d[w].$$
 
 Masala javobi $d[t_0]$ bo‘ladi, haqiqiy satrni esa hisoblangan $d[]$ massivi yordamida tiklash mumkin.
 
-### Ikki satrning eng uzun umumiy ostsatri
+### Ikki satrning eng uzun umumiy qism satri
 
 $S$ va $T$ satrlari berilgan.
-Ikkalasida ham ostsatr sifatida uchraydigan eng uzun $X$ satrni, ya’ni eng uzun umumiy ostsatrni topish kerak.
+Ikkalasida ham qism satr sifatida uchraydigan eng uzun $X$ satrni, ya’ni eng uzun umumiy qism satrni topish kerak.
 
 $S$ satri uchun suffiks avtomatini quramiz.
 
 Endi $T$ satrini olamiz va uning har bir prefiksi uchun shu prefiksning $S$ da uchraydigan eng uzun suffiksini qidiramiz.
-Boshqacha aytganda, $T$ satrining har bir pozitsiyasi uchun shu pozitsiyada tugaydigan $S$ va $T$ ning eng uzun umumiy ostsatrini topmoqchimiz.
+Boshqacha aytganda, $T$ satrining har bir pozitsiyasi uchun shu pozitsiyada tugaydigan $S$ va $T$ ning eng uzun umumiy qism satrini topmoqchimiz.
 
 Buning uchun ikkita o‘zgaruvchidan foydalanamiz: **joriy holat** $v$ va **joriy uzunlik** $l$.
 Ular joriy mos tushgan qismni — uning uzunligi va unga mos holatni — ifodalaydi.
@@ -717,7 +724,7 @@ Endi $T[i]$ belgisini qanday qo‘shish va javobni qayta hisoblashni tasvirlaymi
   - Agar $v$ dan $T[i]$ belgisi bo‘yicha o‘tish mavjud bo‘lsa, shu o‘tish bo‘ylab yurib, $l$ ni bittaga oshiramiz.
   - Bunday o‘tish mavjud bo‘lmasa, joriy mos tushgan qismni qisqartirishimiz kerak; buning uchun suffiks havolasi bo‘ylab yuramiz: $v = link(v)$.
     Shu bilan birga joriy uzunlik ham kamayishi kerak.
-    Ravshanki, $l = len(v)$ deb olish kerak, chunki suffiks havolasidan o‘tgach, eng uzun mos satri ostsatr bo‘lgan holatga kelamiz.
+    Ravshanki, $l = len(v)$ deb olish kerak, chunki suffiks havolasidan o‘tgach, eng uzun mos satri qism satr bo‘lgan holatga kelamiz.
   - Kerakli belgi bo‘yicha o‘tish hali ham mavjud bo‘lmasa, o‘tish topilguncha yoki soxta $-1$ holatga yetguncha (bu $T[i]$ belgisi $S$ da umuman uchramasligini anglatadi va $v = l = 0$ deb olamiz) suffiks havolalari bo‘ylab yurib, $l$ ni kamaytirishni takrorlaymiz.
 
 Masala javobi barcha $l$ qiymatlarining maksimumi bo‘ladi.
@@ -751,10 +758,10 @@ string lcs (string S, string T) {
 } 
 ```
 
-### Bir nechta satrning eng uzun umumiy ostsatri
+### Bir nechta satrning eng uzun umumiy qism satri
 
 $k$ ta $S_i$ satr berilgan.
-Har bir $S_i$ satrda ostsatr sifatida uchraydigan eng uzun $X$ satrni, ya’ni eng uzun umumiy ostsatrni topish kerak.
+Har bir $S_i$ satrda qism satr sifatida uchraydigan eng uzun $X$ satrni, ya’ni eng uzun umumiy qism satrni topish kerak.
 
 Barcha satrlarni bitta katta $T$ satrga birlashtiramiz va ularni maxsus $D_i$ belgilar (har bir satr uchun bittadan) bilan ajratamiz:
 
@@ -763,7 +770,7 @@ $$T = S_1 + D_1 + S_2 + D_2 + \dots + S_k + D_k.$$
 Keyin $T$ satri uchun suffiks avtomatini quramiz.
 
 Endi avtomatda barcha $S_i$ satrlarda uchraydigan satrni topish kerak; buning uchun qo‘shilgan maxsus belgilardan foydalanish mumkin.
-E’tibor bering, agar biror ostsatr $S_j$ satrida mavjud bo‘lsa, suffiks avtomatida shu ostsatrdan boshlanib, $D_j$ belgisini o‘z ichiga oladigan va boshqa $D_1, \dots, D_{j-1}, D_{j+1}, \dots, D_k$ belgilarni o‘z ichiga olmaydigan yo‘l mavjud bo‘ladi.
+E’tibor bering, agar biror qism satr $S_j$ satrida mavjud bo‘lsa, suffiks avtomatida shu qism satrdan boshlanib, $D_j$ belgisini o‘z ichiga oladigan va boshqa $D_1, \dots, D_{j-1}, D_{j+1}, \dots, D_k$ belgilarni o‘z ichiga olmaydigan yo‘l mavjud bo‘ladi.
 
 Demak, yetib borish mumkinligini hisoblash kerak: avtomatning har bir holati va har bir $D_i$ belgisi uchun shunday yo‘l mavjud yoki yo‘qligini bilamiz.
 Buni DFS yoki BFS va dinamik dasturlash yordamida oson hisoblash mumkin.

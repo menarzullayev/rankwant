@@ -3,11 +3,13 @@
 Eylerning totient funksiyasi, **phi-funksiya** $\phi (n)$ deb ham ataladi, 1 dan $n$ gacha bo‘lgan va $n$ bilan o‘zaro tub bo‘lgan butun sonlar sonini hisoblaydi. Ikki sonning eng katta umumiy bo‘luvchisi $1$ ga teng bo‘lsa, ular o‘zaro tub deyiladi ($1$ istalgan son bilan o‘zaro tub deb hisoblanadi).
 
 Dastlabki bir nechta musbat butun son uchun $\phi(n)$ qiymatlari quyidagicha:
+
 $$\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
 n & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 & 21 \\ \hline
 \phi(n) & 1 & 1 & 2 & 2 & 4 & 2 & 6 & 4 & 6 & 4 & 10 & 4 & 12 & 6 & 8 & 8 & 16 & 6 & 18 & 8 & 12 \\ \hline
 \end{array}$$
+
 ## Xossalari
 
 Eylerning totient funksiyasini istalgan son uchun hisoblashga quyidagi xossalar yetarli:
@@ -20,25 +22,29 @@ $$\phi (p) = p - 1.$$
     Bundan quyidagi natija kelib chiqadi:
 
 $$\phi(p^k) = p^k - p^{k-1}.$$
+
   - Agar $a$ va $b$ o‘zaro tub bo‘lsa:
 
-    \[\phi(a b) = \phi(a) \cdot \phi(b).\]
-    Bu munosabatning to‘g‘riligini darhol ko‘rish oson emas. U [Xitoy qoldiqlar teoremasi](/algorithms/algebra/chinese-remainder-theorem)dan kelib chiqadi. Xitoy qoldiqlar teoremasi har bir $0 \le x < a$ va har bir $0 \le y < b$ uchun $z \equiv x \pmod{a}$ hamda $z \equiv y \pmod{b}$ shartlarini qanoatlantiradigan yagona $0 \le z < a b$ mavjudligini kafolatlaydi. $z$ soni $a b$ bilan o‘zaro tub bo‘lishi uchun va faqat shuning uchun $x$ soni $a$ bilan, $y$ esa $b$ bilan o‘zaro tub bo‘lishi kerakligini ko‘rsatish qiyin emas.
-Demak, $a b$ bilan o‘zaro tub butun sonlar soni $a$ va $b$ bilan o‘zaro tub sonlar miqdorlarining ko‘paytmasiga teng.
+    $$\phi(a b) = \phi(a) \cdot \phi(b).$$
+
+    Bu munosabatning to‘g‘riligini darhol ko‘rish oson emas. U [Xitoy qoldiqlari teoremasi](/algorithms/algebra/chinese-remainder-theorem)dan kelib chiqadi. Xitoy qoldiqlari teoremasi har bir $0 \le x < a$ va har bir $0 \le y < b$ uchun $z \equiv x \pmod{a}$ hamda $z \equiv y \pmod{b}$ shartlarini qanoatlantiradigan yagona $0 \le z < a b$ mavjudligini kafolatlaydi. $z$ soni $a b$ bilan o‘zaro tub bo‘lishi uchun $x$ ning $a$ bilan va $y$ ning $b$ bilan o‘zaro tub bo‘lishi zarur va yetarli ekanini ko‘rsatish qiyin emas.
+    Demak, $a b$ bilan o‘zaro tub butun sonlar soni $a$ va $b$ bilan o‘zaro tub sonlar miqdorlarining ko‘paytmasiga teng.
   - Umumiy holda, $a$ va $b$ o‘zaro tub bo‘lmasa ham,
 
-    \[\phi(ab) = \phi(a) \cdot \phi(b) \cdot \dfrac{d}{\phi(d)}\]
+    $$\phi(ab) = \phi(a) \cdot \phi(b) \cdot \dfrac{d}{\phi(d)}$$
 
     tenglik bajariladi, bu yerda $d = \gcd(a, b)$.
 
 Shunday qilib, dastlabki uchta xossadan foydalanib, $n$ ni tub ko‘paytuvchilarga ajratish orqali $\phi(n)$ ni hisoblashimiz mumkin.
 Agar $n = {p_1}^{a_1} \cdot {p_2}^{a_2} \cdots {p_k}^{a_k}$ bo‘lib, $p_i$ lar $n$ ning tub ko‘paytuvchilari bo‘lsa,
+
 $$\begin{align}
 \phi (n) &= \phi ({p_1}^{a_1}) \cdot \phi ({p_2}^{a_2}) \cdots  \phi ({p_k}^{a_k}) \\
 &= \left({p_1}^{a_1} - {p_1}^{a_1 - 1}\right) \cdot \left({p_2}^{a_2} - {p_2}^{a_2 - 1}\right) \cdots \left({p_k}^{a_k} - {p_k}^{a_k - 1}\right) \\
 &= p_1^{a_1} \cdot \left(1 - \frac{1}{p_1}\right) \cdot p_2^{a_2} \cdot \left(1 - \frac{1}{p_2}\right) \cdots p_k^{a_k} \cdot \left(1 - \frac{1}{p_k}\right) \\
 &= n \cdot \left(1 - \frac{1}{p_1}\right) \cdot \left(1 - \frac{1}{p_2}\right) \cdots \left(1 - \frac{1}{p_k}\right)
 \end{align}$$
+
 ## Implementatsiya
 
 Quyidagi implementatsiya $O(\sqrt{n})$ vaqtda faktorizatsiyadan foydalanadi:
@@ -58,7 +64,9 @@ int phi(int n) {
     return result;
 }
 ```
+
 ## $1$ dan $n$ gacha Eyler totient funksiyasi $O(n \log\log{n})$ vaqtda {#etf_1_to_n}
+
 Agar $1$ dan $n$ gacha bo‘lgan barcha sonlarning totient qiymati kerak bo‘lsa, $n$ ta sonning har birini faktorizatsiya qilish samarasiz.
 [Eratosfen elagi](/algorithms/algebra/sieve-of-eratosthenes)dagi ayni g‘oyadan foydalanishimiz mumkin.
 Usul yuqorida ko‘rsatilgan xossaga tayanadi, ammo har bir son uchun har bir tub ko‘paytuvchi bo‘yicha vaqtinchalik natijani yangilash o‘rniga, barcha tub sonlarni topamiz va har bir tub son uchun unga bo‘linadigan barcha sonlarning vaqtinchalik natijasini yangilaymiz.
@@ -78,7 +86,8 @@ void phi_1_to_n(int n) {
     }
 }
 ```
-### [Segmentlangan elak](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve) yordamida $L$ dan $R$ gacha totientlarni topish { data-toc-label="Segmentlangan elak yordamida L dan R gacha totientlarni topish" }
+
+### [Segmentlangan elak](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve) yordamida $L$ dan $R$ gacha totientlarni topish
 
 Agar $L$ dan $R$ gacha bo‘lgan barcha sonlarning totient qiymati kerak bo‘lsa, [segmentlangan elak](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve) yondashuvidan foydalanishimiz mumkin.
 Algoritm avval [chiziqli elak](/algorithms/algebra/prime-sieve-linear) yordamida $O(\sqrt{R})$ vaqt va xotirada $\sqrt{R}$ gacha bo‘lgan barcha tub sonlarni oldindan hisoblaydi. Keyin $[L,R]$ oraliqdagi har bir son uchun shu tub sonlar bo‘ylab yurib, faktorizatsiyaga asoslangan $\phi$ formulasini qo‘llaydi. Har bir sonning hali faktorizatsiya qilinmagan qismini kuzatish uchun qoldiqlar massivini saqlaymiz. Agar barcha kichik tub sonlar ko‘rib chiqilgandan keyin qoldiq 1 dan katta bo‘lib qolsa, bu $\sqrt{R}$ dan katta tub ko‘paytuvchi mavjudligini bildiradi; u oxirgi o‘tishda qayta ishlanadi.
@@ -123,6 +132,7 @@ void segmented_phi(long long L, long long R) {
     }
 }
 ```
+
 ## Bo‘luvchilar yig‘indisi xossasi {#divsum}
 
 Ushbu qiziqarli xossani Gauss aniqlagan:
@@ -133,7 +143,8 @@ Bu yerda yig‘indi $n$ ning barcha musbat bo‘luvchilari $d$ bo‘yicha olinad
 
 Masalan, 10 ning bo‘luvchilari 1, 2, 5 va 10.
 Shuning uchun $\phi{(1)} + \phi{(2)} + \phi{(5)} + \phi{(10)} = 1 + 1 + 4 + 4 = 10$.
-### Bo‘luvchilar yig‘indisi xossasi yordamida 1 dan $n$ gacha totientlarni topish { data-toc-label="Bo‘luvchilar yig‘indisi xossasi yordamida 1 dan n gacha totientlarni topish" }
+
+### Bo‘luvchilar yig‘indisi xossasi yordamida 1 dan $n$ gacha totientlarni topish
 
 Bo‘luvchilar yig‘indisi xossasi 1 dan $n$ gacha bo‘lgan barcha sonlarning totient qiymatini hisoblashga ham imkon beradi.
 Bu implementatsiya Eratosfen elagiga asoslangan oldingi implementatsiyadan biroz sodda, biroq murakkabligi ham sal yomonroq: $O(n \log n)$.
@@ -150,6 +161,7 @@ void phi_1_to_n(int n) {
               phi[j] -= phi[i];
 }
 ```
+
 ## Eyler teoremasida qo‘llanishi {#application}
 
 Eyler totient funksiyasining eng mashhur va muhim xossasi **Eyler teoremasi**da ifodalanadi:
@@ -159,6 +171,7 @@ $$a^{\phi(m)} \equiv 1 \pmod m \quad \text{if } a \text{ and } m \text{ are rela
 $m$ tub bo‘lgan xususiy holda Eyler teoremasi **Fermatning kichik teoremasi**ga aylanadi:
 
 $$a^{m - 1} \equiv 1 \pmod m$$
+
 Eyler teoremasi va Eyler totient funksiyasi amaliy masalalarda juda ko‘p uchraydi; masalan, ikkalasi ham [modul bo‘yicha multiplikativ teskari element](/algorithms/algebra/module-inverse)ni hisoblashda ishlatiladi.
 
 Bevosita natija sifatida quyidagi ekvivalentlikni ham olamiz:
@@ -166,10 +179,13 @@ Bevosita natija sifatida quyidagi ekvivalentlikni ham olamiz:
 $$a^n \equiv a^{n \bmod \phi(m)} \pmod m$$
 
 Bu juda katta $n$ uchun $x^n \bmod m$ ni hisoblash imkonini beradi; ayniqsa $n$ boshqa bir hisoblashning natijasi bo‘lsa, uni modul bo‘yicha hisoblash mumkin bo‘ladi.
+
 ### Guruhlar nazariyasi
+
 $\phi(n)$ — $(\mathbb Z / n\mathbb Z)^\times$ [modul $n$ bo‘yicha multiplikativ guruhining tartibi](https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n), ya’ni birliklar guruhining (multiplikativ teskari elementga ega elementlar guruhining) o‘lchamidir. Multiplikativ teskari elementga ega elementlar aynan $n$ bilan o‘zaro tub bo‘lgan elementlardir.
 $a$ elementning $n$ modul bo‘yicha [multiplikativ tartibi](https://en.wikipedia.org/wiki/Multiplicative_order), $\operatorname{ord}_n(a)$ bilan belgilanadi va $a^k \equiv 1 \pmod n$ bo‘ladigan eng kichik $k>0$ ga teng. $\operatorname{ord}_n(a)$ — $a$ hosil qilgan qismguruhning o‘lchami; shuning uchun Lagrange teoremasiga ko‘ra, istalgan $a$ ning multiplikativ tartibi $\phi(n)$ ni bo‘lishi kerak.
 Agar $a$ ning multiplikativ tartibi mumkin bo‘lgan eng katta qiymat — $\phi(n)$ ga teng bo‘lsa, $a$ [primitiv ildiz](/algorithms/algebra/primitive-root) bo‘ladi va guruh ta’rifga ko‘ra siklikdir.
+
 ## Umumlashtirish
 
 Oxirgi ekvivalentlikning kamroq mashhur bir ko‘rinishi bor; u $x$ va $m$ o‘zaro tub bo‘lmagan holatda ham $x^n \bmod m$ ni samarali hisoblash imkonini beradi.
@@ -182,6 +198,7 @@ $x$ va $m$ ning umumiy tub bo‘luvchilari $p_1, \dots, p_t$, ularning $m$ dagi 
 Ular yordamida $a = p_1^{k_1} \dots p_t^{k_t}$ ni aniqlaymiz; u holda $\frac{m}{a}$ soni $x$ bilan o‘zaro tub bo‘ladi.
 $a$ soni $x^k$ ni bo‘ladigan eng kichik $k$ sonini olaylik.
 $n \ge k$ deb faraz qilsak, quyidagini yozishimiz mumkin:
+
 $$\begin{align}x^n \bmod m &= \frac{x^k}{a}ax^{n-k}\bmod m \\
 &= \frac{x^k}{a}\left(ax^{n-k}\bmod m\right) \bmod m \\
 &= \frac{x^k}{a}\left(ax^{n-k}\bmod a \frac{m}{a}\right) \bmod m \\
@@ -194,11 +211,15 @@ Haqiqatan, $b = cd + r$ va $r < c$ bo‘lsa, $ab = acd + ar$ hamda $ar < ac$ bo�
 $x$ va $\frac{m}{a}$ o‘zaro tub bo‘lgani uchun Eyler teoremasini qo‘llab, quyidagi samarali formulani olamiz ($k$ juda kichik; aslida $k \le \log_2 m$):
 
 $$x^n \bmod m = x^k\left(x^{n-k \bmod \phi(\frac{m}{a})} \bmod \frac{m}{a}\right)\bmod m.$$
+
 Bu formulani bevosita qo‘llash qiyin, ammo undan $x^n \bmod m$ ning xatti-harakatini tahlil qilishda foydalanish mumkin. $(x^1 \bmod m, x^2 \bmod m, x^3 \bmod m, \dots)$ darajalar ketma-ketligi dastlabki $k$ ta (yoki undan kam) elementdan so‘ng uzunligi $\phi\left(\frac{m}{a}\right)$ bo‘lgan siklga kirishini ko‘ramiz.
 $\phi\left(\frac{m}{a}\right)$ soni $\phi(m)$ ni bo‘ladi (chunki $a$ va $\frac{m}{a}$ o‘zaro tub bo‘lgani uchun $\phi(a) \cdot \phi\left(\frac{m}{a}\right) = \phi(m)$), demak davr uzunligi $\phi(m)$ deb ham aytishimiz mumkin.
 $\phi(m) \ge \log_2 m \ge k$ bo‘lgani sababli, bizga kerak bo‘lgan ancha sodda formulaga kelamiz:
+
 $$ x^n \equiv x^{\phi(m)} x^{(n - \phi(m)) \bmod \phi(m)} \bmod m \equiv x^{\phi(m)+[n \bmod \phi(m)]} \mod m.$$
+
 ## Mashq masalalari
+
 * [SPOJ #4141 "Euler Totient Function" [Qiyinlik: juda oson]](http://www.spoj.com/problems/ETF/)
 * [UVA #10179 "Irreducible Basic Fractions" [Qiyinlik: oson]](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1120)
 * [UVA #10299 "Relatives" [Qiyinlik: oson]](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1240)

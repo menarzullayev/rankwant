@@ -1,6 +1,7 @@
 # Xitoy qoldiqlar teoremasi
 
 Xitoy qoldiqlar teoremasini (maqolaning qolgan qismida XQT deb yuritamiz) xitoylik matematik Sun Zi kashf qilgan.
+
 ## Ifodalanishi
 
 $m = m_1 \cdot m_2 \cdots m_k$ bo‘lsin, bu yerda $m_i$ lar juft-jufti bilan o‘zaro tub. $m_i$ lardan tashqari quyidagi kongruensiyalar sistemasi ham berilgan:
@@ -23,6 +24,7 @@ $$\left\{\begin{array}{rcl}
 
 kongruensiyalar sistemasi $105$ modul bo‘yicha $23$ yechimga ega, chunki $23 \bmod{3} = 2$, $23 \bmod{5} = 3$ va $23 \bmod{7} = 2$.
 Barcha yechimlarni $k \in \mathbb{Z}$ uchun $23 + 105\cdot k$ ko‘rinishida yozish mumkin.
+
 ### Natija
 
 XQTdan quyidagi tenglama
@@ -38,6 +40,7 @@ $$\left\{\begin{array}{rcl}
 \end{array}\right.$$
 
 (Yuqoridagidek, $m = m_1 m_2 \cdots m_k$ va $m_i$ lar juft-jufti bilan o‘zaro tub deb faraz qilamiz.)
+
 ## Ikki modul uchun yechim
 
 O‘zaro tub $m_1,m_2$ uchun ikki tenglamali sistemani ko‘rib chiqamiz:
@@ -52,7 +55,8 @@ $$
 $a \pmod{m_1m_2}$ uchun yechim topmoqchimiz. [Kengaytirilgan Evklid algoritmi](/algorithms/algebra/extended-euclid-algorithm) yordamida shunday Bézout koeffitsiyentlari $n_1,n_2$ ni topishimiz mumkinki,
 
 $$n_1 m_1 + n_2 m_2 = 1.$$
-Aslida $n_1$ va $n_2$ mos ravishda $m_1$ va $m_2$ ning $m_2$ hamda $m_1$ bo‘yicha [modul teskari elementlari](/algorithms/algebra/module-inverse)dir.
+
+Aslida $n_1$ va $n_2$ mos ravishda $m_1$ va $m_2$ ning $m_2$ hamda $m_1$ bo‘yicha [modul bo‘yicha teskari elementlar](/algorithms/algebra/module-inverse)dir.
 $n_1m_1 \equiv 1 \pmod{m_2}$ bo‘lgani uchun $n_1 \equiv m_1^{-1} \pmod{m_2}$; xuddi shuningdek, $n_2 \equiv m_2^{-1} \pmod{m_1}$.
 
 Shu ikki koeffitsiyent yordamida yechimni aniqlaymiz:
@@ -74,6 +78,7 @@ Buni ham oson isbotlash mumkin.
 Ikki xil $x$ va $y$ yechim mavjud deb faraz qilamiz.
 $x \equiv a_i \pmod{m_i}$ va $y \equiv a_i \pmod{m_i}$ bo‘lgani sababli, $x-y \equiv 0 \pmod{m_i}$; bundan $x-y \equiv 0 \pmod{m_1m_2}$, yoki teng kuchli ravishda $x \equiv y \pmod{m_1m_2}$ kelib chiqadi.
 Demak, $x$ va $y$ aslida bitta yechimdir.
+
 ## Umumiy hol uchun yechim
 
 ### Induktiv yechim
@@ -81,11 +86,12 @@ Demak, $x$ va $y$ aslida bitta yechimdir.
 $m_1m_2$ soni $m_3$ bilan o‘zaro tub bo‘lgani sababli, istalgan sondagi modullar uchun ikki modulga oid yechimni induktiv ravishda takroran qo‘llashimiz mumkin.
 Avval dastlabki ikki kongruensiyadan foydalanib $b_2 := a \pmod{m_1m_2}$ ni hisoblaymiz,
 so‘ng $a \equiv b_2 \pmod{m_1m_2}$ va $a \equiv a_3 \pmod{m_3}$ kongruensiyalaridan foydalanib $b_3 := a \pmod{m_1m_2m_3}$ ni hisoblaymiz va hokazo.
+
 ### Bevosita qurish
 
 Lagrange interpolyatsiyasiga o‘xshash bevosita konstruksiya ham mumkin.
 
-$M_i := \prod_{i \neq j}m_j$ — $m_i$ dan boshqa barcha modullar ko‘paytmasi, $N_i$ esa $N_i := M_i^{-1} \bmod{m_i}$ modul teskari element bo‘lsin.
+$M_i := \prod_{i \neq j}m_j$ — $m_i$ dan boshqa barcha modullar ko‘paytmasi, $N_i$ esa $N_i := M_i^{-1} \bmod{m_i}$ modul bo‘yicha teskari elementlar bo‘lsin.
 U holda kongruensiyalar sistemasining yechimi:
 
 $$a \equiv \sum_{i=1}^k a_i M_i N_i \pmod{m_1 m_2 \cdots m_k}$$
@@ -98,6 +104,7 @@ a & \equiv & \sum_{j=1}^k a_j M_j N_j & \pmod{m_i} \\
   & \equiv & a_i M_i M_i^{-1}         & \pmod{m_i} \\
   & \equiv & a_i                      & \pmod{m_i}
 \end{array}$$
+
 ### Implementatsiya
 
 ```cpp
@@ -120,13 +127,14 @@ long long chinese_remainder_theorem(vector<Congruence> const& congruences) {
     return solution;
 }
 ```
+
 ## O‘zaro tub bo‘lmagan modullar uchun yechim
 
-Yuqorida aytilganidek, oldingi algoritm faqat o‘zaro tub $m_1,m_2,\dots,m_k$ modullar uchun ishlaydi.
+Yuqorida aytilganidek, oldingi algoritm faqat o‘zaro tub $m_1, m_2, \dots m_k$ modullar uchun ishlaydi.
 
-Modullar o‘zaro tub bo‘lmagan holda kongruensiyalar sistemasi $\operatorname{lcm}(m_1,m_2,\dots,m_k)$ modul bo‘yicha aynan bitta yechimga ega bo‘ladi yoki umuman yechimga ega bo‘lmaydi.
+Modullar o‘zaro tub bo‘lmagan holda kongruensiyalar sistemasi $\text{lcm}(m_1, m_2, \dots, m_k)$ modul bo‘yicha aynan bitta yechimga ega bo‘ladi yoki umuman yechimga ega bo‘lmaydi.
 
-Masalan, quyidagi sistemada birinchi kongruensiya yechim toq bo‘lishini, ikkinchisi esa yechim juft bo‘lishini talab qiladi.
+Masalan, quyidagi sistemada birinchi kongruensiya yechim toq bo‘lishini, ikkinchisi esa yechim juft bo‘lishini bildiradi.
 Son bir vaqtning o‘zida ham toq, ham juft bo‘lishi mumkin emas; shuning uchun yechim yo‘qligi ravshan.
 $$\left\{\begin{align}
     a & \equiv 1 \pmod{4} \\
@@ -147,21 +155,22 @@ $$\left\{\begin{array}{ll}
 \end{array}\right.$$
 
 Dastlab ba’zi modullarda umumiy ko‘paytuvchilar bo‘lgani uchun, bir xil tub songa asoslangan, ammo darajalari turlicha bo‘lishi mumkin bo‘lgan bir nechta kongruensiya hosil bo‘ladi.
-Bir xil tub songa asoslangan kongruensiyalar orasida eng katta tub darajali modulga ega kongruensiya eng kuchlisi bo‘lishini ko‘rish mumkin.
+Bir xil tub songa asoslangan kongruensiyalar orasida tub sonning eng katta darajasi bo‘lgan modulga ega kongruensiya eng kuchlisi bo‘lishini ko‘rish mumkin.
 U boshqa bir kongruensiya bilan zid keladi yoki qolgan kongruensiyalarning barchasini allaqachon keltirib chiqaradi.
 
 Bizning holimizda $a \equiv 1 \pmod 4$ kongruensiya $a \equiv 1 \pmod 2$ ni keltirib chiqaradi va shu sababli $a \equiv 0 \pmod 2$ ikkinchi kongruensiyaga zid.
 Demak, bu kongruensiyalar sistemasining yechimi yo‘q.
 Agar zidlik bo‘lmasa, tenglamalar sistemasi yechimga ega.
-Eng katta tub darajali modullarga ega kongruensiyalardan boshqa barcha kongruensiyalarni e’tibordan chetda qoldirishimiz mumkin.
+Tub sonning eng katta darajasi bo‘lgan modullarga ega kongruensiyalardan boshqa barcha kongruensiyalarni e’tibordan chetda qoldirishimiz mumkin.
 Endi bu modullar o‘zaro tub bo‘ladi va sistemani yuqoridagi bo‘limlarda muhokama qilingan algoritm bilan yechish mumkin.
 
-Masalan, quyidagi sistema $\operatorname{lcm}(10,12)=60$ modul bo‘yicha yechimga ega:
+Masalan, quyidagi sistema $\text{lcm}(10, 12) = 60$ modul bo‘yicha yechimga ega:
 
 $$\left\{\begin{align}
     a & \equiv 3 \pmod{10} \\
     a & \equiv 5 \pmod{12}
 \end{align}\right.$$
+
 Kongruensiyalar sistemasi quyidagi sistemaga teng kuchli:
 
 $$\left\{\begin{align}
@@ -180,6 +189,7 @@ $$\left\{\begin{align}
 \end{align}\right.$$
 
 Uning yechimi $53 \pmod{60}$; haqiqatan ham $53 \bmod{10}=3$ va $53 \bmod{12}=5$.
+
 ## Garner algoritmi
 
 XQTning yana bir natijasi shuki, katta sonlarni kichik butun sonlar massivi yordamida ifodalashimiz mumkin.
@@ -193,6 +203,7 @@ $$a = x_1 + x_2 m_1 + x_3 m_1 m_2 + \ldots + x_k m_1 \cdots m_{k-1} \text{ with 
 
 Alohida [Garner algoritmi](/algorithms/algebra/garners-algorithm) maqolasida muhokama qilingan Garner algoritmi $x_i$ koeffitsiyentlarni hisoblaydi.
 Shu koeffitsiyentlar yordamida to‘liq sonni qayta tiklash mumkin.
+
 ## Mashq masalalari:
 
 * [Google Code Jam - Golf Gophers](https://github.com/google/coding-competitions-archive/blob/main/codejam/2019/round_1a/golf_gophers/statement.pdf)

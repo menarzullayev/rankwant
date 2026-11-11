@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared with the original; the definitions, Duval algorithm description, both code blocks and the complexity argument are complete and correct. No technical errors found.",
+      "content_sha256": "1237943bdaf5c171952feb994e988f6050cdafcbcbe3ef164608a1b6c7cdaa7a"
+    },
+    {
+      "at": "2026-11-12T10:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Reworded 'Hatto ... taqqoslashlari' to 'Aslida ...' for 'In fact', aligned 'Lyndon ajratish' with 'Lyndon faktorizatsiyasi', and fixed blank lines.",
+      "content_sha256": "1237943bdaf5c171952feb994e988f6050cdafcbcbe3ef164608a1b6c7cdaa7a"
+    }
+  ]
+}

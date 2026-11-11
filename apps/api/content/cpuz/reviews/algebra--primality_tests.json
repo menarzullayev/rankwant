@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The array formula uses \\ as the row break (the original has \\\\, an extra empty row in KaTeX); the congruences are identical."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "No omissions or mistranslations found against the English original; code, formulas, numbers and conditions match.",
+      "content_sha256": "762bf21667658180bb1401ad8b7e26f64312e7a35204913ee697995e5efcb8f6"
+    },
+    {
+      "at": "2026-11-12T11:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed one ungrammatical sentence about the Fermat test ('juda tezligi' became 'juda tez ishlashi').",
+      "content_sha256": "762bf21667658180bb1401ad8b7e26f64312e7a35204913ee697995e5efcb8f6"
+    },
+    {
+      "at": "2026-11-12T11:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Only the row-break escape differs in the aligned array; mathematics and code unchanged.",
+      "content_sha256": "762bf21667658180bb1401ad8b7e26f64312e7a35204913ee697995e5efcb8f6"
+    }
+  ]
+}

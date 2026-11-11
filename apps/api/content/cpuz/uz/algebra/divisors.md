@@ -7,9 +7,9 @@ Ushbu maqolada berilgan $n$ sonining bo‘luvchilari soni $d(n)$ va bo‘luvchil
 $d$ bo‘luvchining tub ko‘paytuvchilarga ajratilishi $n$ ning tub ko‘paytuvchilarga ajratilishining qismi bo‘lishi kerakligi ravshan. Masalan, $6 = 2 \cdot 3$ soni $60 = 2^2 \cdot 3 \cdot 5$ ning bo‘luvchisi.
 Demak, $n$ ning tub ko‘paytuvchilarga ajratilishidagi barcha turli qism to‘plamlarni topish kifoya.
 Odatda $x$ elementli to‘plamning qism to‘plamlari soni $2^x$ ga teng.
-Biroq to‘plamda takrorlanuvchi elementlar bo‘lsa, bu endi to‘g‘ri emas. Bizning holatda ayrim tub ko‘paytuvchilar $n$ ning faktorizatsiyasida bir necha marta uchrashi mumkin.
+Biroq to‘plamda takrorlanuvchi elementlar bo‘lsa, bu endi to‘g‘ri emas. Bizning holatda ayrim tub ko‘paytuvchilar $n$ ning tub ko‘paytuvchilarga ajratilishida bir necha marta uchrashi mumkin.
 
-Agar $p$ tub ko‘paytuvchi $n$ ning faktorizatsiyasida $e$ marta qatnashsa, qism to‘plamda $p$ ko‘paytuvchidan ko‘pi bilan $e$ marta foydalanishimiz mumkin.
+Agar $p$ tub ko‘paytuvchi $n$ ning tub ko‘paytuvchilarga ajratilishida $e$ marta qatnashsa, qism to‘plamda $p$ ko‘paytuvchidan ko‘pi bilan $e$ marta foydalanishimiz mumkin.
 Bu $e+1$ xil tanlov borligini anglatadi.
 Shuning uchun, agar $n$ ning tub ko‘paytuvchilarga ajratilishi $p_1^{e_1} \cdot p_2^{e_2} \cdots p_k^{e_k}$ ko‘rinishida bo‘lsa va $p_i$ lar turli tub sonlar bo‘lsa, bo‘luvchilar soni:
 
@@ -63,7 +63,7 @@ $$1 + p_1 + p_1^2 + \dots + p_1^{e_1} = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1}$$
 
 * Agar ikkita turli tub bo‘luvchi bo‘lsa, $n = p_1^{e_1} \cdot p_2^{e_2}$, avvalgidek jadval tuzish mumkin.
   Faqat endi elementlar sonini sanash o‘rniga ularning yig‘indisini hisoblamoqchimiz.
-  Barcha kombinatsiyalar yig‘indisini quyidagicha ifodalash mumkinligini oson ko‘rish mumkin:
+  Har bir kombinatsiya yig‘indisi quyidagicha ifodalanishini ko‘rish oson:
 
 $$\left(1 + p_1 + p_1^2 + \dots + p_1^{e_1}\right) \cdot \left(1 + p_2 + p_2^2 + \dots + p_2^{e_2}\right)$$
 

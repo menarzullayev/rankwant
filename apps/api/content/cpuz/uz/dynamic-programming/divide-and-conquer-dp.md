@@ -1,6 +1,6 @@
 # Divide and Conquer yordamida DP optimallashtirishi
 
-Divide and Conquer — dinamik dasturlash uchun optimallashtirish usuli.
+Bo‘lib yechish (Divide and Conquer) — dinamik dasturlash uchun optimallashtirish usuli.
 
 ### Dastlabki shartlar
 

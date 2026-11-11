@@ -68,7 +68,7 @@ yangi ifodalar quyidagicha bo‘ladi:
 
 $$\begin{align}
 b(a+c)-a(b+d)&=1 \\
-c(b+d)-d(a+c)&=1.
+c(b+d)-d(a+c)&=1
 \end{align}$$
 
 Ularning rostligi $bc-ad=1$ dan oson kelib chiqadi.
@@ -82,10 +82,10 @@ Ixtiyoriy musbat $\frac{x}{y}$ maqsad kasrni tanlaymiz. U $\frac{0}{1}$ va $\fra
 Shunday bo‘lsa, barcha iteratsiyalarda
 
 $$
-\frac{a}{b} < \frac{x}{y} < \frac{c}{d}
+\frac{a}{b} \lt \frac{x}{y} \lt \frac{c}{d}
 $$
 
-bajariladi. Butun $z$ uchun $z>0$ faqat va faqat $z\ge1$ ekanidan foydalanib, buni quyidagicha yozish mumkin:
+bajariladi. Butun son uchun $z \gt 0 \iff z \ge 1$ ekanidan foydalanib, buni quyidagicha yozish mumkin:
 
 $$
 \begin{align}
@@ -118,7 +118,7 @@ Quyidagi psevdokod butun cheksiz daraxtni qurishga urinadi:
 void build(int a = 0, int b = 1, int c = 1, int d = 0, int level = 1) {
     int x = a + c, y = b + d;
 
-    ... daraxtning joriy sathidagi x/y kasrini chiqarish
+    ... output the current fraction x/y at the current level in the tree
 
     build(a, b, x, y, level + 1);
     build(x, y, c, d, level + 1);
@@ -155,7 +155,7 @@ string find(int p, int q) {
 
 Stern–Brocot sanoq tizimida irratsional sonlar cheksiz belgilar ketma-ketligiga mos keladi. Irratsional songa tomon cheksiz yo‘lda algoritm maxrajlari asta-sekin o‘suvchi qisqarmas kasrlarni topadi va ular irratsional sonning tobora aniq yaqinlashuvlarini beradi. Cheksiz ketma-ketlikning prefiksini olish orqali istalgan aniqlikdagi yaqinlashuvga erishish mumkin. Bu qo‘llanish soatsozlikda muhim bo‘lib, daraxt aynan shu sohada kashf etilganini tushuntiradi.
 
-$\frac{p}{q}$ kasr uchun hosil bo‘ladigan ketma-ketlik uzunligi $O(p+q)$ gacha yetishi mumkin; masalan, $\frac{p}{1}$ ko‘rinishidagi kasrda. Shu sababli yuqoridagi algoritmni **faqat bunday murakkablik maqbul bo‘lganda ishlatish kerak**.
+$\frac{p}{q}$ kasr uchun hosil bo‘ladigan ketma-ketlik uzunligi $O(p+q)$ gacha yetishi mumkin; masalan, $\frac{p}{1}$ ko‘rinishidagi kasrda. Shu sababli yuqoridagi algoritmni **ishlatmaslik kerak (bunday murakkablik maqbul bo‘lgan hollar bundan mustasno)**.
 
 ### Logarifmik qidiruv
 
@@ -211,7 +211,7 @@ Stern–Brocot daraxtini qurish algoritmidan Farey ketma-ketliklari algoritmi ke
 
 ### Farey ketma-ketligining uzunligi
 
-$n$-tartibli Farey ketma-ketligi $(n-1)$-tartibli ketma-ketlikning barcha elementlarini, shuningdek maxraji $n$ bo‘lgan barcha qisqarmas kasrlarni o‘z ichiga oladi. Keyingilar soni aynan Eyler funksiyasi $\varphi(n)$ ga teng. Demak, $n$-tartibli Farey ketma-ketligining $L_n$ uzunligi:
+$n$-tartibli Farey ketma-ketligi $n-1$-tartibli ketma-ketlikning barcha elementlarini, shuningdek maxraji $n$ bo‘lgan barcha qisqarmas kasrlarni o‘z ichiga oladi. Keyingilar soni aynan Eyler funksiyasi $\varphi(n)$ ga teng. Demak, $n$-tartibli Farey ketma-ketligining $L_n$ uzunligi:
 
 $$L_n = L_{n-1}+\varphi(n),$$
 

@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The original's doubled '\\\\\\\\' row breaks are written as '\\\\' for KaTeX and its '\\[...\\]' Fibonacci formula is written as '$$...$$' so remark-math renders it; every formula says the same mathematics as the original."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T23:52:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Turned three inline formulas that the translation had promoted to display formulas (l = |u| - cntr, 2l = ..., and the list of lengths) back into inline text as in the original, and replaced '$|s|/2$' with the original's wording.",
+      "content_sha256": "77682b6c18ed204fa6fff553e7af53b583293e887fb46540cfaf24ac0841e72c"
+    },
+    {
+      "at": "2026-11-11T23:52:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary term 'bo'lib yechish' for divide-and-conquer and corrected 'yarm' to 'yarim' and 'yarmilarining' to 'yarmlarining'.",
+      "content_sha256": "77682b6c18ed204fa6fff553e7af53b583293e887fb46540cfaf24ac0841e72c"
+    },
+    {
+      "at": "2026-11-11T23:52:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "passed",
+      "notes": "Remaining difference is the row-break escaping and the delimiters of the Fibonacci formula; mathematics unchanged.",
+      "content_sha256": "77682b6c18ed204fa6fff553e7af53b583293e887fb46540cfaf24ac0841e72c"
+    }
+  ]
+}

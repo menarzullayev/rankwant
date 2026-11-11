@@ -4,7 +4,7 @@ In this article we will discuss the problem of generating all $K$-combinations.
 Given the natural numbers $N$ and $K$, and considering a set of numbers from $1$ to $N$.
 The task is to derive all **subsets of size $K$**.
 
-## Generate next lexicographical $K$-combination {data-toc-label="Generate next lexicographical K-combination"}
+## Generate next lexicographical $K$-combination
 
 First we will generate them in lexicographical order.
 The algorithm for this is simple. The first combination will be ${1, 2, ..., K}$. Now let's see how
@@ -28,7 +28,7 @@ bool next_combination(vector<int>& a, int n) {
 }
 ```
 
-## Generate all $K$-combinations such that adjacent combinations differ by one element {data-toc-label="Generate all K-combinations such that adjacent combinations differ by one element"}
+## Generate all $K$-combinations such that adjacent combinations differ by one element
 
 This time we want to generate all $K$-combinations in such
 an order, that adjacent combinations differ exactly by one element.

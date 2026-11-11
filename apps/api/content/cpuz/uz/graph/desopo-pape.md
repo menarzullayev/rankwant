@@ -1,6 +1,6 @@
 # D´Esopo–Pape algoritmi
 
-Bizga og‘irliklari $w_i$ bo‘lgan, $n$ ta tugun va $m$ ta qirraga ega graf hamda boshlang‘ich $v_0$ tugun berilgan.
+Bizga vaznlari $w_i$ bo‘lgan, $n$ ta tugun va $m$ ta qirraga ega graf hamda boshlang‘ich $v_0$ tugun berilgan.
 
 Vazifa — $v_0$ tugundan qolgan har bir tugungacha eng qisqa yo‘lni topish.
 
@@ -28,7 +28,7 @@ Har bir qadamda tugunlarning uchta to‘plami saqlanadi:
 - $M_1$ — masofasi ayni vaqtda hisoblanayotgan tugunlar;
 - $M_2$ — masofasi hali hisoblanmagan tugunlar.
 
-$M_1$ to‘plamidagi tugunlar ikki uchli navbatda (`deque`) saqlanadi.
+$M_1$ to‘plamidagi tugunlar ikki tomonlama navbatda (`deque`) saqlanadi.
 
 Algoritmning har bir qadamida $M_1$ to‘plamidan (navbat boshidan) bitta tugun olamiz.
 
@@ -38,7 +38,7 @@ Ushbu $u$ tugunni $M_0$ to‘plamiga o‘tkazamiz.
 
 Keyin bu tugundan chiquvchi barcha qirralarni ko‘rib chiqamiz.
 
-Joriy qirraning ikkinchi uchi $v$, og‘irligi esa $w$ bo‘lsin.
+Joriy qirraning ikkinchi uchi $v$, vazni esa $w$ bo‘lsin.
 
 - Agar $v$ tugun $M_2$ ga tegishli bo‘lsa, uni navbat oxiriga qo‘shish orqali $M_1$ to‘plamiga o‘tkazamiz. $d_v$ qiymatini $d_u + w$ ga tenglaymiz.
 - Agar $v$ tugun $M_1$ ga tegishli bo‘lsa, $d_v$ qiymatini yaxshilashga harakat qilamiz: $d_v = \min(d_v, d_u + w)$. $v$ allaqachon $M_1$ va navbat ichida bo‘lgani uchun uni qayta qo‘shish shart emas.

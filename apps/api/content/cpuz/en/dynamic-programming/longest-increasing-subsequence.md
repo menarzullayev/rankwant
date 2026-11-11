@@ -11,7 +11,7 @@ a[i_1] < a[i_2] < \dots < a[i_k]$$
 In this article we discuss multiple algorithms for solving this task.
 Also we will discuss some other problems, that can be reduced to this problem.
 
-## Solution in $O(n^2)$ with dynamic programming {data-toc-label="Solution in O(n^2) with dynamic programming"}
+## Solution in $O(n^2)$ with dynamic programming
 
 Dynamic programming is a very general technique that allows to solve a huge class of problems.
 Here we apply the technique for our specific task.
@@ -47,11 +47,11 @@ Then there are two options:
     Therefore, we can just iterate over all $j < i$ with $a[j] < a[i]$, and take the longest sequence that we get by appending $a[i]$ to the longest increasing subsequence ending in $a[j]$.
     The longest increasing subsequence ending in $a[j]$ has length $d[j]$, extending it by one gives the length $d[j] + 1$.
   
-    $$d[i] = \max_{\substack{j < i \\\\ a[j] < a[i]}} \left(d[j] + 1\right)$$
+    $$d[i] = \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)$$
 
 If we combine these two cases we get the final answer for $d[i]$:
 
-$$d[i] = \max\left(1, \max_{\substack{j < i \\\\ a[j] < a[i]}} \left(d[j] + 1\right)\right)$$
+$$d[i] = \max\left(1, \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)\right)$$
 
 ### Implementation
 
@@ -133,7 +133,7 @@ We can simply recalculate the current value of $d[i]$ and also see how the maxim
 
 This method leads to a slightly longer code, but in return we save some memory.
 
-## Solution in $O(n \log n)$ with dynamic programming and binary search {data-toc-label="Solution in O(n log n) with dynamic programming and binary search"}
+## Solution in $O(n \log n)$ with dynamic programming and binary search
 
 In order to obtain a faster solution for the problem, we construct a different dynamic programming solution that runs in $O(n^2)$, and then later improve it to $O(n \log n)$.
 
@@ -255,7 +255,7 @@ $p[i]$ will be the index of the previous element for the optimal subsequence end
 It's easy to maintain these two arrays in the course of iteration over the array $a[]$ alongside the computations of $d[]$.
 And at the end it is not difficult to restore the desired subsequence using these arrays.
 
-## Solution in $O(n \log n)$ with data structures {data-toc-label="Solution in O(n log n) with data structures"}
+## Solution in $O(n \log n)$ with data structures
 
 Instead of the above method for computing the longest increasing subsequence in $O(n \log n)$ we can also solve the problem in a different way: using some simple data structures.
 

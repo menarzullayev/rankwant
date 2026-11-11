@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked all definitions, formulas, constants (p = 31, m = 1e9+9), complexities and probability estimates against the original; code blocks match.",
+      "content_sha256": "79ddb89dcaaaf6df483c0c5271c58dbd421d98e9f2f61727ba27754bf071b194"
+    },
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the non-word 'quyiga qarang' with 'pastga qarang' (see below); the rest of the Uzbek reads correctly.",
+      "content_sha256": "79ddb89dcaaaf6df483c0c5271c58dbd421d98e9f2f61727ba27754bf071b194"
+    }
+  ]
+}

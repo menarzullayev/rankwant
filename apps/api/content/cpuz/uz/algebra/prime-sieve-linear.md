@@ -67,7 +67,7 @@ bunda $lp [i]$ — $i$ ning eng kichik tub bo‘luvchisi, $x$ esa $lp [i]$ dan k
 
 $$lp [i] \le lp [x].$$
 
-Endi buni algoritmimizning amallari bilan solishtiraylik: aslida, har bir $x$ uchun algoritm $x$ ni ko‘paytirish mumkin bo‘lgan barcha tub sonlarni, ya’ni $lp [x]$ gacha bo‘lgan tub sonlarning barchasini, yuqoridagi ko‘rinishdagi sonlarni olish maqsadida ko‘rib chiqadi.
+Endi buni algoritmimizning amallari bilan solishtiraylik: aslida, har bir $x$ uchun algoritm $x$ ni ko‘paytirish mumkin bo‘lgan barcha tub sonlarni, ya’ni $lp [x]$ gacha (uni ham qo‘shib) bo‘lgan tub sonlarning barchasini, yuqoridagi ko‘rinishdagi sonlarni olish maqsadida ko‘rib chiqadi.
 
 Demak, algoritm har bir murakkab sonni aynan bir marta ko‘rib chiqadi va shu yerda $lp []$ ning to‘g‘ri qiymatini o‘rnatadi. Isbot tugadi.
 

@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The original writes row breaks as the doubled '\\\\\\\\' left by mkdocs escaping; the translation uses the single '\\\\' that KaTeX needs, and the two '\\[...\\]' display formulas (which remark-math does not render) are written as '$$...$$'. The mathematics is unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T23:51:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every property, proof step, formula and code block with the original; nothing is missing or added, and the code is identical apart from comments.",
+      "content_sha256": "3f30a0deb657a140c618d8f25c2035f3ebdd927cbd53bde1cea801ac96ec55d1"
+    },
+    {
+      "at": "2026-11-11T23:51:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary form 'Xitoy qoldiqlari teoremasi', rewrote the unclear 'va faqat shuning uchun' sentence as 'zarur va yetarli', translated the English words inside the Euler theorem formula, and removed mkdocs attribute lists from two headings; blank lines added around display formulas and headings so they render.",
+      "content_sha256": "3f30a0deb657a140c618d8f25c2035f3ebdd927cbd53bde1cea801ac96ec55d1"
+    },
+    {
+      "at": "2026-11-11T23:51:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "passed",
+      "notes": "Display formulas differ from the original only in the row-break escaping ('\\\\\\\\' vs '\\\\') and in the delimiters of two formulas given as '\\[...\\]' in the original (not rendered by remark-math); same mathematics.",
+      "content_sha256": "3f30a0deb657a140c618d8f25c2035f3ebdd927cbd53bde1cea801ac96ec55d1"
+    }
+  ]
+}

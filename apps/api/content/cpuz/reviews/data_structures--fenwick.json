@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Only the aligned-environment line breaks differ: the original source has four backslashes where KaTeX needs two; the mathematics is identical."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T12:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the exact range expression in step 3 of the sum description, replaced the O(1) wording with the original's 'constant time', restored the original's wording of the trailing-ones definition, and restored the omitted note that the details of B2 are explained later.",
+      "content_sha256": "e761dc116960f12c6461f715d42e9ed23764b02b870791d8363ce4baeddd7f41"
+    },
+    {
+      "at": "2026-11-11T12:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed the leftover mkdocs data-toc-label attributes from two headings and tightened the sentence on trailing 1 bits.",
+      "content_sha256": "e761dc116960f12c6461f715d42e9ed23764b02b870791d8363ce4baeddd7f41"
+    },
+    {
+      "at": "2026-11-11T12:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "The aligned blocks use `\\` line breaks where the original source has four backslashes (an escaping artefact); no formula changed meaning.",
+      "content_sha256": "e761dc116960f12c6461f715d42e9ed23764b02b870791d8363ce4baeddd7f41"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T20:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Turned the display formula for the coin-flip linking bound back into the inline formula the original has; restated the m queries in the list-merging proof; removed an added justification about set insertion cost from the O(n log^2 n) example.",
+      "content_sha256": "a380c06f569169c4b1d4e9d6fe14e831ff68276a67731392799693e021c617cc"
+    },
+    {
+      "at": "2026-11-11T20:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed two leftover mkdocs data-toc-label attributes from headings; wording otherwise correct.",
+      "content_sha256": "a380c06f569169c4b1d4e9d6fe14e831ff68276a67731392799693e021c617cc"
+    },
+    {
+      "at": "2026-11-11T20:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Coin-flip Omega bound was a display formula but is inline in the original; restored inline, so formulas match.",
+      "content_sha256": "a380c06f569169c4b1d4e9d6fe14e831ff68276a67731392799693e021c617cc"
+    }
+  ]
+}

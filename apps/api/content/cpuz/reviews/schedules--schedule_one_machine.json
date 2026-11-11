@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The original has two typos in the Livshits-Kladov list (c_i(t) + d_i and e_{alpha t}); they are corrected to c_i * t + d_i and e^{alpha t}, which is the intended mathematics of the linear and exponential cases. All display formulas are unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:18:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Fixed the ordering direction: 'non-ascending' was translated as 'kamaymaslik emas, kamayish' (confusing) and now says o'smaslik tartibida for both sorting rules; identical-penalty case now says non-descending (kamaymaslik) processing time as in the original; corrected the linear and exponential formulas in the theorem.",
+      "content_sha256": "38a1d4ef5cec6afd3057fc299403a8218799b7ad69521d38595af16457059482"
+    },
+    {
+      "at": "2026-11-12T11:18:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the confusing phrase about the sorting order with plain Uzbek terms.",
+      "content_sha256": "38a1d4ef5cec6afd3057fc299403a8218799b7ad69521d38595af16457059482"
+    },
+    {
+      "at": "2026-11-12T11:18:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "The original has two typos in the Livshits-Kladov list (c_i(t) + d_i and e_{alpha t}); they are corrected to c_i * t + d_i and e^{alpha t}, which is the intended mathematics of the linear and exponential cases. All display formulas are unchanged.",
+      "content_sha256": "38a1d4ef5cec6afd3057fc299403a8218799b7ad69521d38595af16457059482"
+    }
+  ]
+}

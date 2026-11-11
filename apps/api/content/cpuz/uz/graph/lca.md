@@ -64,7 +64,7 @@ Shunday qilib, **LCA masalasi RMQ masalasiga** (oraliqda minimum topish masalasi
 
 [Segment daraxti](/algorithms/data-structures/segment-tree) yordamida $O(N)$ oldindan ishlovdan so‘ng har bir so‘rovga $O(\log N)$ vaqtda javob berish mumkin.
 
-Saqlangan qiymatlar deyarli hech qachon yangilanmasligi sababli, $O(N\log N)$ qurish vaqti bilan so‘rovlarga $O(1)$ da javob beruvchi [Sparse Table](/algorithms/data-structures/sparse-table) yaxshiroq tanlov bo‘lishi mumkin.
+Saqlangan qiymatlar deyarli hech qachon yangilanmasligi sababli, $O(N\log N)$ qurish vaqti bilan so‘rovlarga $O(1)$ da javob beruvchi [siyrak jadval](/algorithms/data-structures/sparse-table) (Sparse Table) yaxshiroq tanlov bo‘lishi mumkin.
 
 ### Implementatsiya
 
@@ -132,7 +132,7 @@ struct LCA {
 
 ```
 
-## Amaliy masalalar
+## Mashq masalalari
 
 - [SPOJ: LCA](http://www.spoj.com/problems/LCA/)
 - [SPOJ: DISQUERY](http://www.spoj.com/problems/DISQUERY/)

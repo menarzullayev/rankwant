@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T23:57:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a short rewrite with about three quarters of the article missing. Retranslated the whole article from the original: restored the history paragraph, the full divide-and-conquer argument, the proof section, the three omitted code blocks (original code, replacing a rewritten __int128 variant), the whole randomized linear-time section with both proofs, the image, the triangle generalization and the problem list; removed the added remarks about duplicate points and __int128.",
+      "content_sha256": "3b7f25eee5b23dd67fd51c99888caf1b4703f0d82eb482f53b26ce7eea4d0057"
+    },
+    {
+      "at": "2026-11-11T23:57:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Wrote the Uzbek text anew with the glossary terms (bo'lib yechish, xesh jadvali, Dirixle prinsipi, birlashtirib saralash, matematik kutilma).",
+      "content_sha256": "3b7f25eee5b23dd67fd51c99888caf1b4703f0d82eb482f53b26ce7eea4d0057"
+    },
+    {
+      "at": "2026-11-11T23:57:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code blocks and formulas now match the original, so the pending row is no longer needed.",
+      "content_sha256": "3b7f25eee5b23dd67fd51c99888caf1b4703f0d82eb482f53b26ce7eea4d0057"
+    }
+  ]
+}

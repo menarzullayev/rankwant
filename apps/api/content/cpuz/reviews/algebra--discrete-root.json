@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Rewrote the sentence about finding the primitive root so that the time of factoring phi(n) is stated as an additional term, as in the original, and kept the two-case remark on a = 0.",
+      "content_sha256": "7bace0123a7104562b7fa8e931b6e29585aa2c7939342a155f219cf558756646"
+    },
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Restored the blank lines between paragraphs, display formulas, headings and code fences, and replaced the stray '$1$' math with plain 1.",
+      "content_sha256": "7bace0123a7104562b7fa8e931b6e29585aa2c7939342a155f219cf558756646"
+    },
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "The only difference (inline '$1$') is gone; code and formulas match the original.",
+      "content_sha256": "7bace0123a7104562b7fa8e931b6e29585aa2c7939342a155f219cf558756646"
+    }
+  ]
+}

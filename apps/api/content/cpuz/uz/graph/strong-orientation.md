@@ -4,7 +4,7 @@ Yo‘naltirilmagan grafning **kuchli yo‘naltirilishi** — har bir qirraga shu
 
 ## Yechim
 
-Albatta, buni har qanday graf uchun bajarib bo‘lmaydi. Grafdagi biror [ko‘prik](/algorithms/graph/bridge-searching)ni ko‘raylik. Unga biror yo‘nalish berishga majburmiz va shundan keyin ko‘prikdan faqat bitta yo‘nalishda o‘tish mumkin bo‘ladi. Demak ko‘prikning bir uchidan ikkinchisiga ikki tomondan ham yetib borish imkoni yo‘qoladi va grafni kuchli bog‘langan qilib bo‘lmaydi.
+Albatta, buni har qanday graf uchun bajarib bo‘lmaydi. Grafdagi biror [ko‘prik](/algorithms/graph/bridge-searching)ni ko‘raylik. Unga biror yo‘nalish berishga majburmiz va shundan keyin ko‘prikdan faqat bitta yo‘nalishda o‘tish mumkin bo‘ladi. Demak ko‘prikning bir uchidan ikkinchi uchiga yetib bo‘lmaydi va grafni kuchli bog‘langan qilib bo‘lmaydi.
 
 Endi ko‘priksiz bog‘langan grafda [DFS](/algorithms/graph/depth-first-search) bajaraylik. Barcha tugunlarga tashrif buyurishimiz ravshan. Grafda ko‘prik yo‘qligi sababli, DFS daraxtining istalgan qirrasini olib tashlaganimizda ham qirraning pastki tomonidan yuqori tomoniga kamida bitta orqa qirrani o‘z ichiga olgan yo‘l orqali chiqish mumkin. Bundan DFS daraxtining istalgan tugunidan uning ildiziga yetib borish mumkinligi kelib chiqadi. DFS daraxtining ildizidan esa istalgan tugunga tushish mumkin. Demak kuchli yo‘naltirish topildi.
 
@@ -22,9 +22,9 @@ Bizga qirralarni olib tashlash emas, faqat yo‘naltirish ruxsat etilgan, ammo k
 
 ### Implementatsiya
 
-Kirishda $n$ — tugunlar soni, $m$ — qirralar soni, keyingi $m$ qatorda esa qirralar beriladi.
+Kirishda *n* — tugunlar soni, *m* — qirralar soni, keyingi *m* qatorda esa qirralar beriladi.
 
-Chiqishning birinchi qatorida kuchli bog‘langan komponentlarning eng kichik soni, ikkinchi qatorida esa $m$ ta belgidan iborat satr chiqariladi. Har bir belgi:
+Chiqishning birinchi qatorida kuchli bog‘langan komponentlarning eng kichik soni, ikkinchi qatorida esa *m* ta belgidan iborat satr chiqariladi. Har bir belgi:
 
 - `>` — kirishdagi mos qirra chapdagi tugundan o‘ngdagi tugunga qarab yo‘naltirilganini;
 - `<` — qirra teskari tomonga yo‘naltirilganini bildiradi.

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T20:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the last sentence of the original saying the vertex connectivity approach has the same complexity as the edge connectivity flow approach.",
+      "content_sha256": "ad851caed3a2427a1dd2abe96daeab99cd46fcec180f52110a1f1a2a2447e889"
+    },
+    {
+      "at": "2026-11-11T20:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary term ajratuvchi tugun for articulation point.",
+      "content_sha256": "ad851caed3a2427a1dd2abe96daeab99cd46fcec180f52110a1f1a2a2447e889"
+    },
+    {
+      "at": "2026-11-11T20:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Changed \\ne to \\neq as in the original; formulas now match.",
+      "content_sha256": "ad851caed3a2427a1dd2abe96daeab99cd46fcec180f52110a1f1a2a2447e889"
+    }
+  ]
+}

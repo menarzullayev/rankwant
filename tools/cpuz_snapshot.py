@@ -302,6 +302,38 @@ def split_fences(text: str) -> list[tuple[bool, str]]:
     return parts
 
 
+HEADING_ATTRS = re.compile(r"^(#{1,6}\s.*?)\s*\{\s*[^}#]*\}\s*$")
+JINJA = re.compile(r"\{%-?\s*(?:raw|endraw)\s*-?%\}")
+DISPLAY_BRACKETS = re.compile(r"(?<!\\)\\\[(.+?)(?<!\\)\\\]", re.S)
+
+
+def tidy(text: str) -> str:
+    """Markup our renderer reads differently from mkdocs; safe on reviewed text too.
+
+    - `\\[ … \\]` display math → `$$ … $$` (remark-math reads only dollars);
+    - `\\\\\\\\` → `\\\\` inside math: mkdocs' Markdown halves the escape before
+      MathJax sees it, remark-math does not, so the original's line break
+      became two;
+    - a heading's mkdocs attribute list without an id (`{ data-toc-label=… }`)
+      goes; an `{#id}` stays (links point at it);
+    - Jinja `{% raw %}` markers go.
+    """
+    text = JINJA.sub("", text)
+    out = []
+    for is_code, chunk in split_fences(text):
+        if not is_code:
+            chunk = DISPLAY_BRACKETS.sub(lambda m: f"$${m.group(1)}$$", chunk)
+            chunk = re.sub(
+                r"\$\$.+?\$\$|(?<![\\$])\$[^$\n]+\$",
+                lambda m: m.group(0).replace("\\\\\\\\", "\\\\"),
+                chunk,
+                flags=re.S,
+            )
+            chunk = "\n".join(HEADING_ATTRS.sub(r"\1", line) for line in chunk.split("\n"))
+        out.append(chunk)
+    return "\n".join(out)
+
+
 def normalise(text: str, links: Links) -> str:
     text = text.replace("\r\n", "\n")
     if text.startswith("---\n"):
@@ -314,7 +346,7 @@ def normalise(text: str, links: Links) -> str:
         if not is_code:
             chunk = markdown_links(html_to_markdown(chunk, links), links)
         out.append(chunk)
-    text = "\n".join(out)
+    text = tidy("\n".join(out))
     text = re.sub(r"\n{3,}", "\n\n", text).strip() + "\n"
     return text
 

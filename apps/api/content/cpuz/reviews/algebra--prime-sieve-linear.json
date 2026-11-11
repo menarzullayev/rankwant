@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T21:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Made explicit that the primes considered for x_j = i * p_j include lp[x] itself ('inclusive'), as in the original proof; the rest matched the original.",
+      "content_sha256": "a6dd03ac66f9a48a594173e67ee70b76726b569ddcb14df4a89625ceb149247b"
+    },
+    {
+      "at": "2026-11-11T21:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Language is correct and follows the glossary; no changes needed.",
+      "content_sha256": "a6dd03ac66f9a48a594173e67ee70b76726b569ddcb14df4a89625ceb149247b"
+    }
+  ]
+}

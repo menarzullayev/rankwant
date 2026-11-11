@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The two \\[ ... \\] formulas of the original are written as $$ ... $$ because remark-math does not render \\[ \\]; the mathematics is identical and the original code is restored verbatim."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T22:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation had replaced the original derivation and code with a different floor-sum exposition and invented text; re-translated from the original, restored both figures, the complexity analysis and the original count_lattices code and Fraction remarks.",
+      "content_sha256": "14d293d8388798666f537a698801ce3f696421b167e13bc43cf9a3bcccd808d4"
+    },
+    {
+      "at": "2026-11-11T22:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Wrote natural Uzbek for the whole article using glossary terms.",
+      "content_sha256": "14d293d8388798666f537a698801ce3f696421b167e13bc43cf9a3bcccd808d4"
+    },
+    {
+      "at": "2026-11-11T22:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "The two \\[ ... \\] formulas of the original are written as $$ ... $$ because remark-math does not render \\[ \\]; the mathematics is identical and the original code is restored verbatim.",
+      "content_sha256": "14d293d8388798666f537a698801ce3f696421b167e13bc43cf9a3bcccd808d4"
+    }
+  ]
+}

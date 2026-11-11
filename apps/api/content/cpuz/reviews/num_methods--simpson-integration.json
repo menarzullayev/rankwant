@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The Uzbek article was a free rewrite with invented content (why a parabola suffices, a composite error formula, Python code, adaptive Simpson, complexity). Replaced it with a faithful translation of the original: same formulas (including the original's index notation), the single C++ implementation, and the original error remark.",
+      "content_sha256": "46358eb86df55cb8de2027ab8424e4a5135e8a1f678f278202c2facb3fc5bbf1"
+    },
+    {
+      "at": "2026-11-12T10:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original; the difference listed in the allow-list was removed.",
+      "content_sha256": "46358eb86df55cb8de2027ab8424e4a5135e8a1f678f278202c2facb3fc5bbf1"
+    },
+    {
+      "at": "2026-11-12T10:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated the article into natural Uzbek (Simpson formulasi, xatolik, implementatsiya).",
+      "content_sha256": "46358eb86df55cb8de2027ab8424e4a5135e8a1f678f278202c2facb3fc5bbf1"
+    }
+  ]
+}

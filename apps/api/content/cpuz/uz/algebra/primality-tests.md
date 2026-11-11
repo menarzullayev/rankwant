@@ -66,7 +66,7 @@ Ammo bir yomon xabar bor:
 ba’zi murakkab sonlar uchun $n$ bilan o‘zaro tub barcha $a$ larda $a^{n-1} \equiv 1 \bmod n$ tenglik bajariladi; masalan, $561 = 3 \cdot 11 \cdot 17$ soni.
 Bunday sonlar *Karmaykl sonlari* deb ataladi.
 Fermat tub sonlik testi bu sonlarni faqat juda omadimiz kelib, $\gcd(a, n) \ne 1$ bo‘lgan $a$ asosini tanlasak aniqlay oladi.
-Shunga qaramay, Fermat testi juda tezligi va Karmaykl sonlari juda kam uchrashi sababli amalda hamon ishlatiladi.
+Shunga qaramay, Fermat testi juda tez ishlashi va Karmaykl sonlari juda kam uchrashi sababli amalda hamon ishlatiladi.
 Masalan, $10^9$ dan kichik atigi 646 ta shunday son mavjud.
 
 ## Miller–Rabin tub sonlik testi

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T12:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Removed text the translation had added: an extra warning paragraph, the explanation of the DSU code and the closing paragraph claiming an O(log T) bound; restored the original wording and the original code layout.",
+      "content_sha256": "ed19af01f1840a325e0bec384bde8e2fec3bf6f3ff8044d84f5fa677c21c2468"
+    },
+    {
+      "at": "2026-11-11T12:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used 'segment daraxti' and 'stek' per the glossary instead of mixed English words.",
+      "content_sha256": "ed19af01f1840a325e0bec384bde8e2fec3bf6f3ff8044d84f5fa677c21c2468"
+    },
+    {
+      "at": "2026-11-11T12:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "The invented inline formula O(log T) was removed, so formulas now match the original.",
+      "content_sha256": "ed19af01f1840a325e0bec384bde8e2fec3bf6f3ff8044d84f5fa677c21c2468"
+    }
+  ]
+}

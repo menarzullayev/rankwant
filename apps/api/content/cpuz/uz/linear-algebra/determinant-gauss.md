@@ -6,21 +6,13 @@ $N\times N$ o‘lchamli $A$ matritsa berilgan. Uning determinantini hisoblash ke
 
 Yechim [chiziqli tenglamalar sistemasini yechishdagi Gauss usuli](/algorithms/linear-algebra/linear-system-gauss) g‘oyalariga asoslanadi.
 
-Matritsaga sistemani yechishdagi kabi elementar satr amallari qo‘llanadi, ammo joriy satr tayanch $a_{ii}$ elementga to‘liq bo‘linmaydi. Bir satrdan boshqa satrning ko‘paytmasini ayirish determinant qiymatini o‘zgartirmaydi. Ikki satr o‘rni almashtirilganda esa determinant ishorasi teskarilanadi.
+Biz chiziqli tenglamalar sistemasini yechishdagi qadamlarning xuddi o‘zini bajaramiz, faqat joriy satrni $a_{ij}$ ga bo‘lishni chiqarib tashlaymiz. Bu amallar matritsa determinantining absolyut qiymatini o‘zgartirmaydi. Ammo matritsaning ikki satri o‘rni almashtirilsa, determinant ishorasi o‘zgarishi mumkin.
 
-Gauss eliminatsiyasidan keyin matritsa yuqori uchburchak ko‘rinishga keladi. Uchburchak matritsa determinanti bosh diagonaldagi elementlar ko‘paytmasiga teng. Demak, javob diagonal ko‘paytmasidan va nechta satr almashtirilganidan olinadi: almashtirishlar soni toq bo‘lsa, ishora o‘zgartiriladi.
+Matritsaga Gauss usulini qo‘llagach, diagonal matritsa hosil bo‘ladi, uning determinanti shunchaki diagonaldagi elementlarning ko‘paytmasiga teng. Ishora yuqorida aytilganidek, almashtirilgan satrlar sonidan aniqlanadi (agar son toq bo‘lsa, determinant ishorasini teskarisiga o‘zgartirish kerak). Shunday qilib, Gauss algoritmi yordamida matritsa determinantini $O(N^3)$ murakkablikda hisoblash mumkin.
 
-Joriy ustunda noldan farqli tayanch topilmasa, matritsa buzilgan va uning determinanti $0$ ga teng. Suzuvchi nuqtali sonlarda nolni bevosita emas, `EPS` aniqlik bilan tekshirish va sonli barqarorlik uchun moduli eng katta tayanchni tanlash kerak.
+Shuni ta’kidlash kerakki, agar biror paytda joriy ustunda noldan farqli katak topilmasa, algoritm to‘xtashi va 0 qaytarishi kerak.
 
-## Nima uchun ishlaydi?
-
-Har bir eliminatsiya qadami $R_j \leftarrow R_j-cR_i$ ko‘rinishida bo‘lib, determinantni o‘zgartirmaydi. Satrlar o‘rnini almashtirish determinantni $-1$ ga ko‘paytiradi. Eliminatsiya oxiridagi uchburchak matritsa uchun determinant diagonal elementlar ko‘paytmasidir. Kod har bir satr almashtirish ishorasini va har bir tayanchni `det` ichida saqlagani sabab yakuniy qiymat boshlang‘ich matritsa determinantiga teng bo‘ladi. Biror ustunda tayanch topilmasa, satrlar chiziqli bog‘liq bo‘ladi va determinant nolga teng.
-
-## Murakkablik
-
-Tashqi sikl $N$ marta ishlaydi; har qadamda tayanch qidirish $O(N)$, qolgan satr va ustunlarni yangilash $O(N^2)$ turadi. Umumiy vaqt murakkabligi $O(N^3)$. Matritsa joyida o‘zgartirilgani uchun, kirish matritsasidan tashqari, qo‘shimcha xotira sarfi $O(1)$.
-
-## C++ implementatsiyasi
+## Implementatsiya
 
 ```cpp
 const double EPS = 1E-9;
@@ -55,10 +47,6 @@ for (int i = 0; i < n; ++i) {
 
 cout << det;
 ```
-
-Har bir $i$-qadamda kod $i$-ustundagi moduli eng katta elementni topadi. Tayanch deyarli nol bo‘lsa, javob darhol nol qilinadi. Aks holda satrlar almashtiriladi, determinant ishorasi yangilanadi, tayanch javobga ko‘paytiriladi va qolgan satrlardagi joriy ustun yo‘qotiladi.
-
-Butun sonli matritsada `double` yaxlitlash xatosi nojo‘ya bo‘lsa, masala shartiga qarab aniq kasrlar, modul arifmetikasi yoki bo‘lishsiz Bareiss algoritmi kabi usullar afzal bo‘lishi mumkin.
 
 ## Mashq masalalari
 

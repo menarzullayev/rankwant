@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation shortened the proof and replaced the original implementation with a different one (extra code block, renamed helpers). Rewrote the article from the original: all proof remarks, the statements about vertical segments and the 2n checks are present, and the single original code block is restored. The original says the queue is a set<event>; the code uses set<seg>, so the text says set<seg>.",
+      "content_sha256": "895f17dfff8505166de6f34f03f1bcd46744757aee61085253e08ff150d0f3af"
+    },
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Wrote the full article in natural Uzbek with the glossary term 'supuruvchi chiziq' for sweep line; formulas now use plain O(...) as in the original.",
+      "content_sha256": "895f17dfff8505166de6f34f03f1bcd46744757aee61085253e08ff150d0f3af"
+    },
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original; the pending row is no longer needed.",
+      "content_sha256": "895f17dfff8505166de6f34f03f1bcd46744757aee61085253e08ff150d0f3af"
+    }
+  ]
+}

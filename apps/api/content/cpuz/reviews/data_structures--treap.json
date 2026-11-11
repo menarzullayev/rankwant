@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Three inline formulas write the argument lists as one formula, $(T,X)$ and $(T_1,T_2)$ instead of '$T$, $X$' with a comma outside the math; the symbols and their meaning are identical."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T23:50:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every section, operation, formula and code block with the original; all are present, and the code is identical apart from comments.",
+      "content_sha256": "9695cfd35cb2a23a2301398efbc9015a916b4b4f3e9eba230f374a897defea7d"
+    },
+    {
+      "at": "2026-11-11T23:50:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced English structure names with the glossary terms (ikkilik qidiruv daraxti, ikkilik daraxt, ikkilik uyum, bog'langan ro'yxat), fixed the broken suffix form 'reference lar', and removed the leftover mkdocs attribute list from the 'Building a Treap in O(N)' heading.",
+      "content_sha256": "9695cfd35cb2a23a2301398efbc9015a916b4b4f3e9eba230f374a897defea7d"
+    },
+    {
+      "at": "2026-11-11T23:50:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "passed",
+      "notes": "Only the argument-list grouping differs: '$(T,X)$', '$(T_1,T_2)$' and '$(T_1\\to L,L)$' are the original's '$T$, $X$' pairs written inside one pair of math delimiters; the mathematics is unchanged.",
+      "content_sha256": "9695cfd35cb2a23a2301398efbc9015a916b4b4f3e9eba230f374a897defea7d"
+    }
+  ]
+}

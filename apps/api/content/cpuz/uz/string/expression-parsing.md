@@ -41,7 +41,7 @@ Ifoda belgilarini chapdan o‘ngga ko‘rib chiqamiz.
 Joriy belgi raqam bo‘lsa, butun son qiymatini sonlar stekiga qo‘yamiz.
 Joriy belgi ochuvchi qavs bo‘lsa, uni operatorlar stekiga qo‘yamiz.
 Joriy belgi yopuvchi qavs bo‘lsa, ochuvchi qavsgacha stekdagi barcha operatorlarni bajaramiz, ya’ni qavs ichidagi barcha amallarni hisoblaymiz.
-Joriy belgi operator bo‘lsa, stek tepasida shu operator bilan teng yoki undan yuqori ustuvorlikdagi operator turgan ekan, o‘sha amalni bajaramiz; keyin yangi operatorni stekka qo‘yamiz.
+Joriy belgi operator bo‘lsa, stek tepasida shu operator bilan teng yoki undan yuqori ustuvorlikdagi operator turgan paytda, o‘sha amalni bajaramiz; keyin yangi operatorni stekka qo‘yamiz.
 
 Butun satr qayta ishlangach, stekda ayrim operatorlar qolishi mumkin; ularni ham bajarib chiqamiz.
 

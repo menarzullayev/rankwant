@@ -16,7 +16,7 @@ Har bir $v$ tugun uchun uning ost-daraxti o‘lchami $s(v)$ ni, ya’ni $v$ tugu
 Endi $v$ tugunning farzandlariga olib boruvchi barcha qirralarni qaraymiz. Agar qirra quyidagi shartni qanoatlantiruvchi $c$ tugunga olib borsa, uni **og‘ir** deb ataymiz:
 
 $$
-s(c) \ge \frac{s(v)}{2} \iff \text{$(v,c)$ qirra og‘ir}
+s(c) \ge \frac{s(v)}{2} \iff (v, c)\text{ qirra og‘ir}
 $$
 
 Boshqa barcha qirralar **yengil** deb belgilanadi.
@@ -31,7 +31,7 @@ Avvalo, algoritm hosil qilgan og‘ir yo‘llar **kesishmasligi**ni qayd etamiz.
 Ikkinchidan, daraxt ildizidan ixtiyoriy tugunga pastga tushishda yo‘l davomida **og‘ir yo‘lni ko‘pi bilan $\log n$ marta almashtirishimiz**ni ko‘rsatamiz. Yengil qirra bo‘ylab pastga tushish joriy ost-daraxt o‘lchamini yarmigacha yoki undan ham kamroq qiymatga tushiradi:
 
 $$
-s(c) < \frac{s(v)}{2} \iff \text{$(v,c)$ qirra yengil}
+s(c) < \frac{s(v)}{2} \iff (v, c)\text{ qirra yengil}
 $$
 
 Shunday qilib, ost-daraxt o‘lchami birga tushgunicha ko‘pi bilan $\log n$ ta yengil qirra orqali o‘tishimiz mumkin.
@@ -56,7 +56,7 @@ Daraxt berilgan va har bir tugunga qiymat biriktirilgan. $(a,b)$ ko‘rinishidag
 Daraxtning og‘ir-yengil dekompozitsiyasini oldindan quramiz. Har bir og‘ir yo‘l ustida [segment daraxti](/algorithms/data-structures/segment-tree) quramiz; u berilgan og‘ir yo‘lning ko‘rsatilgan kesmasida eng katta qiymat biriktirilgan tugunni $\mathcal{O}(\log n)$ vaqtda topish imkonini beradi.
 Og‘ir-yengil dekompozitsiyadagi og‘ir yo‘llar soni $n-1$ gacha yetishi mumkin bo‘lsa-da, barcha yo‘llarning umumiy o‘lchami $\mathcal{O}(n)$ bilan chegaralangan; demak, segment daraxtlarining umumiy o‘lchami ham chiziqli bo‘ladi.
 
-$(a,b)$ so‘roviga javob berish uchun istalgan qulay usul yordamida $a$ va $b$ ning [eng quyi umumiy ajdodi](https://en.wikipedia.org/wiki/Lowest_common_ancestor) $l$ ni topamiz.
+$(a,b)$ so‘roviga javob berish uchun istalgan qulay usul yordamida $a$ va $b$ ning [eng yaqin umumiy ajdodi](https://en.wikipedia.org/wiki/Lowest_common_ancestor) $l$ ni topamiz.
 Endi masala $(a,l)$ va $(b,l)$ ko‘rinishidagi ikkita so‘rovga keltirildi. Ularning har biri uchun quyidagicha ish tutamiz: pastroq tugun joylashgan og‘ir yo‘lni topamiz, shu yo‘lda so‘rov bajaramiz, yo‘lning yuqori uchiga o‘tamiz, yana qaysi og‘ir yo‘lda turganimizni aniqlab, unda ham so‘rov bajaramiz va $l$ ni o‘z ichiga olgan yo‘lga yetgunimizcha shunday davom etamiz.
 Masalan, $a$ va $l$ bir xil og‘ir yo‘lda bo‘ladigan holatda ehtiyot bo‘lish kerak: bu holda ushbu yo‘ldagi maksimum so‘rovi biror prefiksda emas, $a$ va $l$ orasidagi ichki kesmada bajarilishi kerak.
 
@@ -81,7 +81,7 @@ Daraxt berilgan, dastlab har bir qirra oq rangga bo‘yalgan. $(a,b,c)$ ko‘rin
 
 Yuqoridagi masalalarga o‘xshash ravishda, yechim og‘ir-yengil dekompozitsiyani qo‘llash va har bir og‘ir yo‘l ustida [segment daraxti](/algorithms/data-structures/segment-tree) qurishdan iborat.
 
-$(a,b)$ yo‘lidagi har bir qayta bo‘yash $(a,l)$ va $(b,l)$ ko‘rinishidagi ikkita yangilashga aylanadi; bu yerda $l$ — $a$ va $b$ tugunlarning eng quyi umumiy ajdodi.
+$(a,b)$ yo‘lidagi har bir qayta bo‘yash $(a,l)$ va $(b,l)$ ko‘rinishidagi ikkita yangilashga aylanadi; bu yerda $l$ — $a$ va $b$ tugunlarning eng yaqin umumiy ajdodi.
 $\mathcal{O}(\log n)$ ta yo‘lning har biri uchun $\mathcal{O}(\log n)$ vaqt sarflash bitta yangilash uchun $\mathcal{O}(\log^2 n)$ murakkablikni beradi.
 
 ## Implementatsiya

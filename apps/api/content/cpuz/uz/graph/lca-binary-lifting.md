@@ -20,7 +20,7 @@ Bu ma’lumot istalgan tugundan yuqoridagi istalgan ajdodga $O(\log N)$ vaqtda s
 
 Ushbu massivni daraxt bo‘ylab [DFS](/algorithms/graph/depth-first-search) yurishi yordamida hisoblash mumkin.
 
-Har bir tugun uchun unga birinchi tashrif vaqti (ya’ni DFS tugunni kashf etgan vaqt) hamda undan chiqish vaqti (ya’ni barcha bolalarga tashrif buyurilib, DFS funksiyasidan chiqilgan vaqt)ni ham eslab qolamiz.
+Har bir tugun uchun unga birinchi tashrif vaqti (ya’ni DFS tugunni kashf etgan vaqt) hamda undan chiqish vaqti (ya’ni barcha farzand tugunlarga tashrif buyurilib, DFS funksiyasidan chiqilgan vaqt)ni ham eslab qolamiz.
 
 Bu ma’lumot yordamida bir tugun boshqasining ajdodi ekanini o‘zgarmas vaqtda aniqlash mumkin.
 

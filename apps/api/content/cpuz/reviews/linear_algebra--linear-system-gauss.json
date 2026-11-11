@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Remaining differences are inline notation only: O(min(n,m) \\cdot nm) written with \\cdot for the original's dot, [A | b] for the augmented matrix and a_{ii}=0; the display systems and all code match the original."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T20:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Removed stray periods inside the two display systems, turned an invented display formula for the complexity back into the original inline O(min(n,m)...nm), restored the original claim that bit compression is 32 times faster (a '32 or 64' was added), and restored the original sentence that modulo-2 systems are solved faster as described below.",
+      "content_sha256": "e34cd09535932ccce676a6c20729e9df5a3b7941d2528961bb22caf9dabd50f7"
+    },
+    {
+      "at": "2026-11-11T20:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rephrased the sentences about modulo 2 and bit speed-up so they read as natural Uzbek and match the original statements.",
+      "content_sha256": "e34cd09535932ccce676a6c20729e9df5a3b7941d2528961bb22caf9dabd50f7"
+    },
+    {
+      "at": "2026-11-11T20:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Display formulas restored to the original text without added punctuation; only inline notation variants remain.",
+      "content_sha256": "e34cd09535932ccce676a6c20729e9df5a3b7941d2528961bb22caf9dabd50f7"
+    }
+  ]
+}

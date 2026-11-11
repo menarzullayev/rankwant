@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Fixed an unbalanced parenthesis in the Towers of Hanoi explanation and restored the inline formula 'i + 1' as written in the original.",
+      "content_sha256": "22d89831b0c77a2b82a73e14ea031a0bdac5dd0fe662c917a23ab773b05183cb"
+    },
+    {
+      "at": "2026-11-11T14:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Added the blank lines that were missing before headings and list items so the Markdown renders correctly.",
+      "content_sha256": "22d89831b0c77a2b82a73e14ea031a0bdac5dd0fe662c917a23ab773b05183cb"
+    },
+    {
+      "at": "2026-11-11T14:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Inline formula now matches the original; the pending row is no longer needed.",
+      "content_sha256": "22d89831b0c77a2b82a73e14ea031a0bdac5dd0fe662c917a23ab773b05183cb"
+    }
+  ]
+}

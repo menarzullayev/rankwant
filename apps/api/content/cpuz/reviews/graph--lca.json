@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked the Euler tour explanation, the table, complexities and the code against the original; nothing omitted or altered.",
+      "content_sha256": "05d1d3f34bb9064aa008808ef219553a3a0a52ea0dd7b986f607bad2fb839eb2"
+    },
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary term 'siyrak jadval' for the Sparse Table link and renamed the section 'Amaliy masalalar' to 'Mashq masalalari' like the other articles.",
+      "content_sha256": "05d1d3f34bb9064aa008808ef219553a3a0a52ea0dd7b986f607bad2fb839eb2"
+    }
+  ]
+}

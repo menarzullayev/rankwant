@@ -35,7 +35,7 @@ Har bir ulanish nuqtasiga kirgan barcha suv boshqa quvurlarga taqsimlanishi kera
 U sehrli ravishda yo‘qolib yoki paydo bo‘lib qolmaydi.
 Manba $s$ barcha suvning boshlanish joyi, suv esa faqat qabul qiluvchi $t$ da chiqib ketishi mumkin.
 Quyidagi rasmda oqim tarmog‘i ko‘rsatilgan.
-Har bir qirradagi birinchi qiymat dastlab $0$ bo‘lgan oqimni, ikkinchi qiymat esa sig‘imni bildiradi.
+Har bir qirradagi birinchi qiymat dastlab 0 bo‘lgan oqimni, ikkinchi qiymat esa sig‘imni bildiradi.
 
   ![Oqim tarmog‘i](/algorithms-media/graph/Flow1.png)
 
@@ -53,7 +53,7 @@ Quyidagi rasmda oqim tarmog‘idagi maksimal oqim ko‘rsatilgan.
 
 Yana bitta tushunchani ta’riflaymiz.
 Yo‘naltirilgan qirraning **qoldiq sig‘imi** uning sig‘imidan oqimni ayirish orqali olinadi.
-Agar $(u, v)$ yo‘naltirilgan qirra bo‘ylab oqim mavjud bo‘lsa, teskari qirraning sig‘imi $0$ bo‘lishini va undagi oqimni $f((v, u)) = -f((u, v))$ deb aniqlash mumkinligini qayd etish kerak.
+Agar $(u, v)$ yo‘naltirilgan qirra bo‘ylab oqim mavjud bo‘lsa, teskari qirraning sig‘imi 0 bo‘lishini va undagi oqimni $f((v, u)) = -f((u, v))$ deb aniqlash mumkinligini qayd etish kerak.
 Bu barcha teskari qirralar uchun qoldiq sig‘imini ham aniqlaydi.
 Shu qirralarning barchasidan **qoldiq tarmoq** yaratish mumkin: u ayni tugunlar va qirralarga ega, ammo sig‘im sifatida qoldiq sig‘imlardan foydalanadigan tarmoqdir.
 Ford–Fulkerson usuli quyidagicha ishlaydi.
@@ -69,36 +69,36 @@ Shunda oqimni quyidagicha oshiramiz:
 yo‘ldagi har bir $(u, v)$ qirra uchun $f((u, v)) ~\text{+=}~ C$ va $f((v, u)) ~\text{-=}~ C$ yangilashlarini bajaramiz.
 Usulni ko‘rsatish uchun misol keltiramiz.
 Yuqoridagi oqim tarmog‘idan foydalanamiz.
-Dastlab oqim $0$ ga teng.
+Dastlab oqim 0 ga teng.
 
   ![Oqim tarmog‘i](/algorithms-media/graph/Flow1.png)
 
-Qoldiq sig‘imlari mos ravishda $7$, $5$ va $8$ bo‘lgan $s - A - B - t$ yo‘lni topishimiz mumkin.
-Ularning minimumi $5$, shuning uchun bu yo‘l bo‘ylab oqimni $5$ ga oshira olamiz.
-Natijada tarmoq oqimi $5$ ga teng bo‘ladi.
+Qoldiq sig‘imlari mos ravishda 7, 5 va 8 bo‘lgan $s - A - B - t$ yo‘lni topishimiz mumkin.
+Ularning minimumi 5, shuning uchun bu yo‘l bo‘ylab oqimni 5 ga oshira olamiz.
+Natijada tarmoq oqimi 5 ga teng bo‘ladi.
 
   ![Birinchi yo‘l](/algorithms-media/graph/Flow2.png)
   ![Birinchi yo‘ldan keyingi tarmoq](/algorithms-media/graph/Flow3.png)
 
-Yana oshiruvchi yo‘l qidiramiz; bu safar qoldiq sig‘imlari $4$, $3$, $3$ va $5$ bo‘lgan $s - D - A - C - t$ yo‘lni topamiz.
-Demak, oqimni $3$ ga oshirib, tarmoq oqimini $8$ ga yetkazamiz.
+Yana oshiruvchi yo‘l qidiramiz; bu safar qoldiq sig‘imlari 4, 3, 3 va 5 bo‘lgan $s - D - A - C - t$ yo‘lni topamiz.
+Demak, oqimni 3 ga oshirib, tarmoq oqimini 8 ga yetkazamiz.
 
   ![Ikkinchi yo‘l](/algorithms-media/graph/Flow4.png)
   ![Ikkinchi yo‘ldan keyingi tarmoq](/algorithms-media/graph/Flow5.png)
 
-Bu safar qoldiq sig‘imlari $1$, $2$, $3$ va $3$ bo‘lgan $s - D - C - B - t$ yo‘lni topamiz va shu sabab oqimni $1$ ga oshiramiz.
+Bu safar qoldiq sig‘imlari 1, 2, 3 va 3 bo‘lgan $s - D - C - B - t$ yo‘lni topamiz va shu sabab oqimni 1 ga oshiramiz.
 
   ![Uchinchi yo‘l](/algorithms-media/graph/Flow6.png)
   ![Uchinchi yo‘ldan keyingi tarmoq](/algorithms-media/graph/Flow7.png)
 
-Bu safar qoldiq sig‘imlari $2$, $3$, $1$ va $2$ bo‘lgan $s - A - D - C - t$ oshiruvchi yo‘lni topamiz.
-Oqimni $1$ ga oshira olamiz.
+Bu safar qoldiq sig‘imlari 2, 3, 1 va 2 bo‘lgan $s - A - D - C - t$ oshiruvchi yo‘lni topamiz.
+Oqimni 1 ga oshira olamiz.
 Ammo bu yo‘l juda qiziq.
 Unda teskari $(A, D)$ qirra bor.
 Asl oqim tarmog‘ida $A$ dan $D$ ga hech qanday oqim yuborish mumkin emas.
-Biroq $D$ dan $A$ ga allaqachon $3$ birlik oqim yuborganimiz sabab bu mumkin bo‘ladi.
+Biroq $D$ dan $A$ ga allaqachon 3 birlik oqim yuborganimiz sabab bu mumkin bo‘ladi.
 Buning mazmuni quyidagicha:
-$D$ dan $A$ ga $3$ birlik oqim yuborish o‘rniga faqat $2$ birlik yuboramiz va buni $s$ dan $A$ ga qo‘shimcha $1$ birlik oqim yuborish bilan qoplaymiz; natijada $D - C - t$ yo‘l bo‘ylab yana $1$ birlik oqim yubora olamiz.
+$D$ dan $A$ ga 3 birlik oqim yuborish o‘rniga faqat 2 birlik yuboramiz va buni $s$ dan $A$ ga qo‘shimcha 1 birlik oqim yuborish bilan qoplaymiz; natijada $D - C - t$ yo‘l bo‘ylab yana 1 birlik oqim yubora olamiz.
 
   ![To‘rtinchi yo‘l](/algorithms-media/graph/Flow8.png)
   ![To‘rtinchi yo‘ldan keyingi tarmoq](/algorithms-media/graph/Flow9.png)
@@ -107,7 +107,7 @@ Endi $s$ va $t$ orasida oshiruvchi yo‘l topib bo‘lmaydi, shuning uchun qiyma
 Biz maksimal oqimni topdik.
 Ford–Fulkerson usuli oshiruvchi yo‘lni topish usulini belgilamasligini qayd etish kerak.
 Mumkin bo‘lgan usullar — [DFS](/algorithms/graph/depth-first-search) yoki [BFS](/algorithms/graph/breadth-first-search); ularning har ikkisi $O(E)$ vaqtda ishlaydi.
-Agar tarmoqdagi barcha sig‘imlar butun bo‘lsa, har bir oshiruvchi yo‘lda tarmoq oqimi kamida $1$ ga oshadi (batafsil [butun oqim teoremasi](#integral-theorem) bo‘limiga qarang).
+Agar tarmoqdagi barcha sig‘imlar butun bo‘lsa, har bir oshiruvchi yo‘lda tarmoq oqimi kamida 1 ga oshadi (batafsil [butun oqim teoremasi](#integral-theorem) bo‘limiga qarang).
 Shuning uchun Ford–Fulkerson murakkabligi $O(E F)$, bu yerda $F$ — tarmoqning maksimal oqimi.
 Ratsional sig‘imlar holatida algoritm ham tugaydi, ammo uning murakkabligi chegaralanmagan.
 Irratsional sig‘imlar holatida algoritm hech qachon tugamasligi va hatto maksimal oqimga yaqinlashmasligi mumkin.

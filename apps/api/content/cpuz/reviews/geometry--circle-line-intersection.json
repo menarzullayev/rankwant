@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation derived the result differently, changed the notation, split the code into two blocks and used different display formulas. Restored the original derivation, notation, formulas, single code block and practice problem.",
+      "content_sha256": "3c7e33e7bcf9050214cdd7766b850d24a560749feb8be662fa9a9622b8aac649"
+    },
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated into natural Uzbek.",
+      "content_sha256": "3c7e33e7bcf9050214cdd7766b850d24a560749feb8be662fa9a9622b8aac649"
+    },
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code block and all display formulas are the original's again.",
+      "content_sha256": "3c7e33e7bcf9050214cdd7766b850d24a560749feb8be662fa9a9622b8aac649"
+    }
+  ]
+}

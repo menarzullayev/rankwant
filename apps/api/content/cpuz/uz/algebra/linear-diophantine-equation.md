@@ -12,9 +12,11 @@ Ushbu maqolada bunday tenglamalarga oid bir nechta klassik masalani ko‘rib chi
 * barcha yechimlarni topish;
 * berilgan oraliqdagi yechimlar sonini va yechimlarning o‘zini topish;
 * $x + y$ qiymati minimal bo‘lgan yechimni topish.
+
 ## Aynigan holat
 
 Alohida ko‘rib chiqilishi kerak bo‘lgan aynigan holat — $a = b = 0$. $c = 0$ bo‘lish-bo‘lmasligiga qarab, yechimlar umuman bo‘lmasligi yoki cheksiz ko‘p bo‘lishi oson ko‘rinadi. Maqolaning qolgan qismida bu holatni e’tiborga olmaymiz.
+
 ## Analitik yechim
 
 $a \neq 0$ va $b \neq 0$ bo‘lganda $ax+by=c$ tenglamasini quyidagi tenglamalardan istalgan biri sifatida ekvivalent ravishda qarash mumkin:
@@ -29,7 +31,7 @@ Umumiylikni yo‘qotmasdan, $b \neq 0$ deb faraz qilamiz va birinchi tenglamani 
 $$x \equiv ca^{-1} \pmod b,$$
 
 bu yerda $a^{-1}$ — $a$ ning $b$ modul bo‘yicha [teskari elementi](/algorithms/algebra/module-inverse).
-$a$ va $b$ o‘zaro tub bo‘lmaganda, barcha butun $x$ lar uchun $ax$ ning $b$ modul bo‘yicha qiymatlari $g=\gcd(a, b)$ ga bo‘linadi; demak, yechim faqat $c$ ham $g$ ga bo‘lingandagina mavjud. Bu holatda tenglamani $g$ ga qisqartirish orqali yechimlardan birini topish mumkin:
+$a$ va $b$ o‘zaro tub bo‘lmaganda, barcha butun $x$ lar uchun $ax$ ning $b$ modul bo‘yicha qiymatlari $g=\gcd(a, b)$ ga bo‘linadi; demak, yechim faqat $c$ soni ham $g$ ga bo‘lingandagina mavjud. Bu holatda tenglamani $g$ ga qisqartirish orqali yechimlardan birini topish mumkin:
 
 $$(a/g) x \equiv (c/g) \pmod{b/g}.$$
 
@@ -39,6 +41,7 @@ $$\begin{cases}
 x \equiv (c/g)(a/g)^{-1}\pmod{b/g},\\
 y = \frac{c-ax}{b}.
 \end{cases}$$
+
 ## Algoritmik yechim
 
 **Bézout lemmasi** (Bézout ayniyati deb ham ataladi) quyidagi yechimni tushunishda foydali natijadir.
@@ -46,9 +49,11 @@ y = \frac{c-ax}{b}.
 > $g = \gcd(a,b)$ bo‘lsin. U holda $ax + by = g$ tenglikni qanoatlantiradigan butun $x,y$ sonlar mavjud.
 >
 > Bundan tashqari, $g$ — $ax + by$ ko‘rinishida yozilishi mumkin bo‘lgan eng kichik musbat butun son; $ax + by$ ko‘rinishidagi barcha butun sonlar $g$ ning karralisidir.
+
 Ikki noma’lumli Diofant tenglamasining bitta yechimini topish uchun [Kengaytirilgan Evklid algoritmidan](/algorithms/algebra/extended-euclid-algorithm) foydalanish mumkin. Avval $a$ va $b$ ni manfiy bo‘lmagan deb faraz qilamiz. $a$ va $b$ ga kengaytirilgan Evklid algoritmini qo‘llasak, ularning eng katta umumiy bo‘luvchisi $g$ ni hamda quyidagi tenglikni qanoatlantiradigan $x_g$ va $y_g$ sonlarni topamiz:
 
 $$a x_g + b y_g = g$$
+
 Agar $c$ soni $g = \gcd(a, b)$ ga bo‘linsa, berilgan Diofant tenglamasi yechimga ega; aks holda yechim mavjud emas. Isbot bevosita: ikki sonning chiziqli kombinatsiyasi ularning umumiy bo‘luvchisiga bo‘linadi.
 
 Endi $c$ soni $g$ ga bo‘linadi deb faraz qilamiz. U holda:
@@ -60,6 +65,7 @@ Demak, Diofant tenglamasining yechimlaridan biri:
 $$x_0 = x_g \cdot \frac{c}{g},$$
 
 $$y_0 = y_g \cdot \frac{c}{g}.$$
+
 Yuqoridagi g‘oya $a$ yoki $b$, yoxud ikkalasi ham manfiy bo‘lganda ham ishlaydi. Faqat zarur bo‘lganda $x_0$ va $y_0$ ishorasini o‘zgartirish kerak.
 
 Nihoyat, bu g‘oyani quyidagicha implementatsiya qilish mumkin (kod $a = b = 0$ holatini ko‘rib chiqmasligiga e’tibor bering):
@@ -90,6 +96,7 @@ bool find_any_solution(int a, int b, int c, int &x0, int &y0, int &g) {
     return true;
 }
 ```
+
 ## Barcha yechimlarni olish
 
 Bitta $(x_0, y_0)$ yechimdan berilgan tenglamaning barcha yechimlarini olish mumkin.
@@ -99,6 +106,7 @@ $g = \gcd(a, b)$ bo‘lsin va $x_0, y_0$ quyidagi tenglikni qanoatlantiradigan b
 $$a \cdot x_0 + b \cdot y_0 = c$$
 
 $x_0$ ga $b / g$ ni qo‘shish va ayni vaqtda $y_0$ dan $a / g$ ni ayirish tenglikni buzmasligini ko‘ramiz:
+
 $$a \cdot \left(x_0 + \frac{b}{g}\right) + b \cdot \left(y_0 - \frac{a}{g}\right) = a \cdot x_0 + b \cdot y_0 + a \cdot \frac{b}{g} - b \cdot \frac{a}{g} = c$$
 
 Bu jarayonni yana takrorlash mumkinligi ayon, demak quyidagi ko‘rinishdagi barcha sonlar:
@@ -109,6 +117,7 @@ $$y = y_0 - k \cdot \frac{a}{g}$$
 
 berilgan Diofant tenglamasining yechimlaridir.
 Tenglama chiziqli bo‘lgani uchun barcha yechimlar bir to‘g‘ri chiziqda yotadi va $g$ ning ta’rifiga ko‘ra bu berilgan Diofant tenglamasining barcha mumkin bo‘lgan yechimlari to‘plamidir.
+
 ## Berilgan oraliqdagi yechimlar sonini va yechimlarni topish
 
 Oldingi bo‘limdan yechimlarga hech qanday cheklov qo‘ymasak, ular cheksiz ko‘p bo‘lishi ravshan. Shu sababli ushbu bo‘limda $x$ va $y$ oraliqlariga cheklovlar qo‘shamiz hamda barcha yechimlarni sanash va ro‘yxatlashga harakat qilamiz.
@@ -176,13 +185,15 @@ int find_all_solutions(int a, int b, int c, int minx, int maxx, int miny, int ma
 ```
 
 $l_x$ va $r_x$ ni topganimizdan keyin barcha yechimlarni sanab chiqish ham oson. Barcha $k \ge 0$ lar uchun $x = l_x + k \cdot \frac{b}{g}$ qiymatlarini $x = r_x$ bo‘lguncha ko‘rib chiqish va $a x + b y = c$ tenglama yordamida mos $y$ qiymatlarini topish kifoya.
-## $x + y$ qiymati minimal bo‘lgan yechimni topish { data-toc-label='$x + y$ qiymati minimal bo‘lgan yechimni topish' }
+
+## $x + y$ qiymati minimal bo‘lgan yechimni topish
 
 Bu yerda $x$ va $y$ ga ham qandaydir cheklov berilishi kerak, aks holda javob manfiy cheksizlikka ketishi mumkin.
 
 G‘oya oldingi bo‘limdagiga o‘xshaydi: Diofant tenglamasining istalgan yechimini topamiz, so‘ng ayrim shartlarni qanoatlantirish uchun yechimni siljitamiz.
 
 Nihoyat, minimumni topish uchun barcha yechimlar to‘plami haqidagi bilimdan foydalanamiz:
+
 $$x' = x + k \cdot \frac{b}{g},$$
 
 $$y' = y - k \cdot \frac{a}{g}.$$
@@ -192,6 +203,7 @@ $x + y$ quyidagicha o‘zgarishiga e’tibor bering:
 $$x' + y' = x + y + k \cdot \left(\frac{b}{g} - \frac{a}{g}\right) = x + y + k \cdot \frac{b-a}{g}$$
 
 Agar $a < b$ bo‘lsa, $k$ ning eng kichik mumkin bo‘lgan qiymatini tanlashimiz kerak. Agar $a > b$ bo‘lsa, $k$ ning eng katta mumkin bo‘lgan qiymatini tanlaymiz. Agar $a = b$ bo‘lsa, barcha yechimlarda $x + y$ yig‘indisi bir xil bo‘ladi.
+
 ## Amaliy masalalar
 
 * [Spoj - Crucial Equation](http://www.spoj.com/problems/CEQU/)

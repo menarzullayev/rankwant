@@ -6,10 +6,10 @@ Bu yerda tavsiflanadigan algoritm [chuqurlik bo‘yicha qidiruvga](/algorithms/g
 
 ## Algoritm
 
-Grafning ixtiyoriy `root` tugunini tanlab, undan [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) boshlaymiz. Quyidagi, isbotlash oson bo‘lgan faktga e’tibor bering.
+Grafning ixtiyoriy $root$ tugunini tanlab, undan [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) boshlaymiz. Quyidagi, isbotlash oson bo‘lgan faktga e’tibor bering.
 
 - DFS ichida $v\ne root$ tugundan chiquvchi qirralarni ko‘rib chiqayotgan bo‘laylik. Agar joriy $(v,to)$ qirra shunday bo‘lsaki, DFS daraxtidagi $to$ tugun yoki uning hech bir avlodidan $v$ ning biror ajdodiga orqa qirra bo‘lmasa, $v$ artikulyatsiya nuqtasidir. Aks holda $v$ artikulyatsiya nuqtasi emas.
-- Endi $v=root$ bo‘lgan qolgan holatni ko‘ramiz. Ildiz tugun DFS daraxtida bittadan ko‘p farzandga ega bo‘lishi uchun va faqat shundagina artikulyatsiya nuqtasi bo‘ladi.
+- Endi $v=root$ bo‘lgan qolgan holatni ko‘ramiz. Bu tugun faqat va faqat DFS daraxtida bittadan ortiq farzandga ega bo‘lgandagina artikulyatsiya nuqtasi bo‘ladi.
 
 Endi bu faktni har bir tugun uchun samarali tekshirishni o‘rganamiz. Chuqurlik bo‘yicha qidiruv hisoblaydigan «tugunga kirish vaqti»dan foydalanamiz.
 
@@ -17,16 +17,16 @@ $tin[v]$ qiymat $v$ tugunga kirish vaqtini bildirsin. Har bir $v$ uchun yuqorida
 
 $$low[v] = \min \begin{cases} tin[v] \\ tin[p] &\text{ barcha }p\text{ uchun, agar }(v,p)\text{ orqa qirra bo‘lsa} \\ low[to] &\text{ barcha }to\text{ uchun, agar }(v,to)\text{ daraxt qirrasi bo‘lsa} \end{cases}$$
 
-$v$ tugundan yoki uning avlodlaridan $v$ ning biror ajdodiga orqa qirra mavjud bo‘lishi uchun va faqat shundagina $v$ ning shunday $to$ farzandi mavjud bo‘ladiki, $low[to] < tin[v]$. Agar $low[to] = tin[v]$ bo‘lsa, orqa qirra bevosita $v$ ga keladi; aks holda u $v$ ning ajdodlaridan biriga keladi.
+$v$ tugundan yoki uning avlodlaridan $v$ ning biror ajdodiga orqa qirra mavjud bo‘lishi uchun $v$ ning $low[to] < tin[v]$ bo‘ladigan $to$ farzandi bo‘lishi zarur va yetarli. Agar $low[to] = tin[v]$ bo‘lsa, orqa qirra bevosita $v$ ga keladi; aks holda u $v$ ning ajdodlaridan biriga keladi.
 
-Demak DFS daraxtidagi $v$ tugun uchun shunday $to$ farzand mavjud bo‘lib, $low[to] \geq tin[v]$ bo‘lsa, $v$ artikulyatsiya nuqtasidir; ildiz holati esa alohida ko‘rib chiqiladi.
+Demak, DFS daraxtidagi $v$ tugun artikulyatsiya nuqtasi bo‘lishi uchun $low[to] \geq tin[v]$ bo‘lishi zarur va yetarli.
 
 ## Implementatsiya
 
 Implementatsiya uchta holatni farqlashi kerak: DFS daraxtidagi qirra bo‘ylab pastga tushish, tugunning ajdodiga boruvchi orqa qirrani topish va tugunning otasiga qaytish. Holatlar:
 
 - $visited[to]=false$ — qirra DFS daraxtining bir qismi;
-- $visited[to]=true$ va $to\ne parent$ — qirra ajdodlardan biriga boruvchi orqa qirra;
+- $visited[to]=true$ va $to \neq parent$ — qirra ajdodlardan biriga boruvchi orqa qirra;
 - $to=parent$ — qirra DFS daraxtidagi otaga qaytadi.
 
 Buning uchun joriy tugunning ota tugunini parametr sifatida qabul qiladigan chuqurlik bo‘yicha qidiruv funksiyasi kerak.

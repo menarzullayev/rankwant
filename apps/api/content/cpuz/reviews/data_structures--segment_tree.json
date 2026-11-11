@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Function names are typeset as \\texttt{count\\_zero}, \\texttt{find\\_kth}, \\texttt{lower\\_bound} instead of \\text{count_zero} etc.; KaTeX renders the same identifier text, and all code blocks and display formulas match the original."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the original heading anchor {#counting-zero-search-kth} (it had been replaced by a toc-label, breaking the link from the k-th smallest section); fixed a garbled sentence about the maximum suffix plus prefix sum, and removed a duplicated ellipsis and an invented clause in the histogram description.",
+      "content_sha256": "2dc8f075b8c3324d2ee294f300a6c36e0f5de38f8cbe15f6da54474b95d6f83c"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary term 'segment daraxti' (and 'Fenwick daraxti', 'kechiktirib tarqatish') instead of the English 'Segment Tree' throughout the prose; translated the English toc-label; checked the rest of the text against the original with no further errors.",
+      "content_sha256": "2dc8f075b8c3324d2ee294f300a6c36e0f5de38f8cbe15f6da54474b95d6f83c"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Remaining difference is only \\texttt{...\\_...} vs \\text{..._...} for identifier names; the mathematics and code are unchanged.",
+      "content_sha256": "2dc8f075b8c3324d2ee294f300a6c36e0f5de38f8cbe15f6da54474b95d6f83c"
+    }
+  ]
+}

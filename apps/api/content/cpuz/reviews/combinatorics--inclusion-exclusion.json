@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The two eqnarray displays (probability union, fixed-point sizes) are rewritten as aligned with the alignment point moved from '&=&' to '&=' because KaTeX has no eqnarray; the equations are term-for-term the same."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the \\cdot factors dropped from five display formulas (the (1-x)^k expansion, T, the binomial-sum identity and the two Y-sums), made the 'bad solutions' and 'harmonic triple' conditions state the original (>= 9, ascending/descending cases), restored 'the first group' in the |A_k| step, and replaced a mis-stated 'exactly k, k+1, ...' sentence with the original 'sets with size greater than k'.",
+      "content_sha256": "247d03d5824bd7a4aa27d713990f0f66cc5181a0b97cd8d892dd60602d15efbc"
+    },
+    {
+      "at": "2026-11-11T14:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed a leftover mkdocs {data-toc-label} attribute, turned display formulas that the original keeps inline back into inline math, replaced an inline O(1) with the original 'constant time' wording and fixed a few awkward Uzbek phrasings.",
+      "content_sha256": "247d03d5824bd7a4aa27d713990f0f66cc5181a0b97cd8d892dd60602d15efbc"
+    },
+    {
+      "at": "2026-11-11T14:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "eqnarray blocks rewritten as aligned for KaTeX; all other display and inline formulas now match the original.",
+      "content_sha256": "247d03d5824bd7a4aa27d713990f0f66cc5181a0b97cd8d892dd60602d15efbc"
+    }
+  ]
+}

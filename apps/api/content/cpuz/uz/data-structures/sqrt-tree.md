@@ -1,31 +1,25 @@
 # Sqrt Tree
 
-$n$ ta elementdan iborat $a$ massivi va assotsiativlik xususiyatini qanoatlantiruvchi $\circ$ amali berilgan bo‘lsin, ya’ni istalgan $x$, $y$, $z$ uchun
+$n$ ta elementdan iborat $a$ massivi va assotsiativlik xususiyatini qanoatlantiruvchi $\circ$ amali berilgan: istalgan $x$, $y$, $z$ uchun $(x \circ y) \circ z = x \circ (y \circ z)$ o‘rinli.
 
-$$(x\circ y)\circ z=x\circ(y\circ z).$$
+Shunday qilib, $\gcd$, $\min$, $\max$, $+$, $\text{and}$, $\text{or}$, $\text{xor}$ va shunga o‘xshash amallar bu shartlarni qanoatlantiradi.
 
-$\gcd$, $\min$, $\max$, $+$, $\text{and}$, $\text{or}$, $\text{xor}$ kabi amallar ushbu shartni qanoatlantiradi.
+Shuningdek, bizda $q(l, r)$ so‘rovlari bor. Har bir so‘rov uchun $a_l \circ a_{l+1} \circ \dots \circ a_r$ ni hisoblashimiz kerak.
 
-Shuningdek, $q(l,r)$ so‘rovlari berilgan. Har bir so‘rov uchun
-
-$$a_l\circ a_{l+1}\circ\dots\circ a_r$$
-
-qiymatini hisoblash kerak.
-
-Sqrt Tree bunday so‘rovlarga $O(1)$ vaqtda javob beradi; oldindan hisoblash vaqti va xotira sarfi $O(n\log\log n)$.
+Sqrt Tree bunday so‘rovlarga $O(1)$ vaqtda javob beradi; oldindan hisoblash vaqti $O(n \cdot \log \log n)$, xotira sarfi ham $O(n \cdot \log \log n)$.
 
 ## Tavsif
 
-### Sqrt Decomposition qurish
+### Sqrt dekompozitsiyani qurish
 
-Avval [Sqrt Decomposition](/algorithms/data-structures/sqrt-decomposition) qilamiz. Massivni har biri $\sqrt n$ o‘lchamli $\sqrt n$ ta blokka ajratamiz. Har bir blok uchun quyidagilarni hisoblaymiz:
+Avval [sqrt dekompozitsiya](/algorithms/data-structures/sqrt-decomposition) quramiz. Massivni har biri $\sqrt n$ o‘lchamli $\sqrt n$ ta blokka ajratamiz. Har bir blok uchun quyidagilarni hisoblaymiz:
 
 1. Blok ichida yotadigan va blok boshidan boshlanadigan so‘rovlar javoblari — $\text{prefixOp}$.
 2. Blok ichida yotadigan va blok oxirida tugaydigan so‘rovlar javoblari — $\text{suffixOp}$.
 
 Bundan tashqari, yana bir massivni hisoblaymiz:
 
-3. $\text{between}_{i,j}$, $i\le j$ — $i$-blok boshidan boshlanib, $j$-blok oxirida tugaydigan so‘rov javobi. Bloklar soni $\sqrt n$ bo‘lgani uchun ushbu massiv o‘lchami $O((\sqrt n)^2)=O(n)$ bo‘ladi.
+3. $\text{between}_{i,j}$, $i\le j$ — $i$-blok boshidan boshlanib, $j$-blok oxirida tugaydigan so‘rov javobi. Bloklar soni $\sqrt n$ bo‘lgani uchun ushbu massiv o‘lchami $O(\sqrt{n}^2) = O(n)$ bo‘ladi.
 
 Misolni ko‘rib chiqamiz.
 
@@ -61,11 +55,11 @@ Biroq bitta blok ichiga to‘liq sig‘adigan so‘rovlarni bu uch massiv yordam
 
 ### Daraxt qurish
 
-Faqat bitta blok ichiga sig‘adigan so‘rovlarga javob bera olmayapmiz. **Har bir blok uchun yuqoridagi tuzilmaning o‘zini yana qursak-chi?** Buni rekursiv ravishda, blok o‘lchami 1 yoki 2 bo‘lguncha davom ettirish mumkin. Bunday bloklar javobini $O(1)$ vaqtda bevosita hisoblash oson.
+Faqat bitta blok ichiga sig‘adigan so‘rovlarga javob bera olmayapmiz. **Har bir blok uchun yuqoridagi tuzilmaning o‘zini yana qursak-chi?** Ha, buni qilish mumkin. Buni rekursiv ravishda, blok o‘lchami 1 yoki 2 bo‘lguncha davom ettirish mumkin. Bunday bloklar javobini $O(1)$ vaqtda bevosita hisoblash oson.
 
 Natijada daraxt hosil bo‘ladi. Daraxtning har bir tuguni massivning biror kesmasini ifodalaydi. Uzunligi $k$ bo‘lgan kesmani ifodalovchi tugunning $\sqrt k$ ta farzandi — har bir blok uchun bittadan — bo‘ladi. Har bir tugunda o‘zi ifodalagan kesma uchun yuqoridagi uchta massiv saqlanadi. Ildiz butun massivni ifodalaydi; uzunligi 1 yoki 2 bo‘lgan kesmalar tugunlari barglardir.
 
-Bu daraxt balandligi $O(\log\log n)$ ekanligi ravshan. Agar tugun uzunligi $k$ bo‘lgan massivni ifodalasa, uning farzandlari uzunligi $\sqrt k$ bo‘ladi. $\log(\sqrt k)=\frac{\log k}{2}$, ya’ni daraxtning har qatlamida $\log k$ ikki baravar kamayadi. Har bir massiv elementi daraxtning har bir qatlamida aynan bir marta qatnashgani uchun qurish vaqti va xotira sarfi $O(n\log\log n)$ bo‘ladi.
+Bu daraxt balandligi $O(\log\log n)$ ekanligi ravshan. Agar tugun uzunligi $k$ bo‘lgan massivni ifodalasa, uning farzandlari uzunligi $\sqrt k$ bo‘ladi. $\log(\sqrt k)=\frac{\log k}{2}$, ya’ni daraxtning har qatlamida $\log k$ ikki baravar kamayadi. Har bir massiv elementi daraxtning har bir qatlamida aynan bir marta qatnashgani uchun qurish vaqti va xotira sarfi $O(n \cdot \log \log n)$ bo‘ladi.
 
 Endi so‘rovga $O(\log\log n)$ vaqtda javob bera olamiz. Daraxt bo‘ylab uzunligi 1 yoki 2 bo‘lgan kesmaga yetguncha — u yerda javob $O(1)$ da topiladi — yoki so‘rov bir blokka to‘liq sig‘maydigan birinchi kesmaga kelguncha pastga tushamiz. Ikkinchi holatda javobni oldingi bo‘limdagi uch qismga ajratish usuli bilan topamiz.
 
@@ -73,7 +67,7 @@ Shunday qilib, bir so‘rov uchun $O(\log\log n)$ ga erishdik. Bundan ham tezroq
 
 ### So‘rov murakkabligini optimallashtirish
 
-Eng tabiiy optimallashtirishlardan biri kerakli daraxt tugunini binary search yordamida topishdir. Bu bir so‘rov murakkabligini $O(\log\log\log n)$ gacha tushiradi. Ammo bundan ham tezroq yo‘l bor.
+Eng tabiiy optimallashtirishlardan biri kerakli daraxt tugunini ikkilik qidiruv yordamida topishdir. Bu bir so‘rov murakkabligini $O(\log\log\log n)$ gacha tushiradi. Ammo bundan ham tezroq yo‘l bor.
 
 Quyidagi ikki shartni ta’minlaymiz:
 
@@ -82,15 +76,15 @@ Quyidagi ikki shartni ta’minlaymiz:
 
 Buning uchun massiv o‘lchami ikkilik darajaga aylanguncha unga bir nechta nol element qo‘shish mumkin. Ayrim blok o‘lchamlari ikkilik daraja bo‘lishi uchun ikki baravar kattalashishi mumkin, ammo ular baribir $O(\sqrt k)$ o‘lchamda qoladi va tugun ichidagi massivlarni chiziqli vaqtda qurish imkoniyati saqlanadi.
 
-Endi so‘rov uzunligi $2^k$ bo‘lgan bitta blok ichiga to‘liq sig‘ish-sig‘masligini oson tekshiramiz. So‘rov chegaralari $l$ va $r$ ni — indekslash noldan boshlanadi — ikkilik ko‘rinishda yozamiz. Masalan, $k=4$, $l=39$, $r=46$ bo‘lsin:
+Endi so‘rov o‘lchami $2^k$ bo‘lgan blok ichiga to‘liq sig‘ishini oson tekshira olamiz. So‘rovning $l$ va $r$ chegaralarini (0 dan indekslashdan foydalanamiz) ikkilik ko‘rinishda yozamiz. Masalan, $k=4, l=39, r=46$ bo‘lsin. $l$ va $r$ ning ikkilik ko‘rinishi:
 
-$$l=39_{10}=100111_2,$$
+$l = 39_{10} = 100111_2$
 
-$$r=46_{10}=101110_2.$$
+$r = 46_{10} = 101110_2$
 
-Bitta qatlamdagi kesmalar ham, ularning bloklari ham teng o‘lchamli. Misolda blok o‘lchami $2^k=2^4=16$. Bloklar butun massivni qoplaydi: birinchi blok $0$ dan $15$ gacha, ya’ni ikkilik ko‘rinishda $000000_2$ dan $001111_2$ gacha; ikkinchisi $16$ dan $31$ gacha, ya’ni $010000_2$ dan $011111_2$ gacha va hokazo. Bitta blok qamrab olgan indekslar faqat oxirgi $k$ ta bitda farq qilishi mumkin.
+Esda tuting: bitta qatlam teng o‘lchamli kesmalardan iborat, va bitta qatlamdagi bloklar ham teng o‘lchamli (bizning holda ularning o‘lchami $2^k = 2^4 = 16$). Bloklar massivni to‘liq qoplaydi, shuning uchun birinchi blok $(0 - 15)$ elementlarni ($(000000_2 - 001111_2)$ ikkilik ko‘rinishda), ikkinchisi $(16 - 31)$ elementlarni ($(010000_2 - 011111_2)$ ikkilik ko‘rinishda) qamrab oladi va hokazo. Bitta blok qamrab olgan pozitsiyalar indekslari faqat oxirgi $k$ ta bitda (bizning holda $4$ ta) farq qilishi mumkin. Bizning holda $l$ va $r$ ning eng quyi to‘rtta biti bundan mustasno, qolgan bitlari teng, demak ular bitta blokda yotadi.
 
-Bizning misolda $l$ va $r$ ning eng kichik to‘rtta bitidan boshqa bitlari teng, demak ular bitta blokda yotadi. Umuman olganda, $k$ tadan ko‘p eng kichik bit farq qilmasligini, ya’ni $l\ \text{xor}\ r$ qiymati $2^k-1$ dan oshmasligini tekshirish kifoya.
+Demak, $k$ ta eng kichik bitdan ortig‘i farq qilmasligini (ya’ni $l\ \text{xor}\ r$ qiymati $2^k-1$ dan oshmasligini) tekshirish kerak.
 
 Bu kuzatuv yordamida so‘rovga javob berish uchun mos qatlamni tez topish mumkin:
 
@@ -113,9 +107,7 @@ $a_x=val$ o‘zlashtirishini bajaradigan $\text{update}(x,val)$ so‘rovini ko�
 
 Avval bitta element o‘zgarganda daraxtda nimalar o‘zgarishini ko‘ramiz. Uzunligi $l$ bo‘lgan tugun va uning $\text{prefixOp}$, $\text{suffixOp}$, $\text{between}$ massivlarini olaylik. $\text{prefixOp}$ va $\text{suffixOp}$ dan faqat $O(\sqrt l)$ ta element — o‘zgargan element joylashgan blok ichidagilar — o‘zgaradi. $\text{between}$ da esa $O(l)$ ta element o‘zgaradi. Demak, tugunda jami $O(l)$ ta qiymat yangilanadi.
 
-Har bir $x$ element har bir qatlamda aynan bitta tugunda qatnashadi. Ildiz — 0-qatlam — uzunligi $O(n)$; 1-qatlam tugunlari uzunligi $O(\sqrt n)$; 2-qatlam tugunlari uzunligi $O(\sqrt{\sqrt n})$ va hokazo. Shu sababli bir yangilanish vaqti
-
-$$O(n+\sqrt n+\sqrt{\sqrt n}+\dots)=O(n).$$
+Har bir $x$ element har bir qatlamda aynan bitta tugunda qatnashadi. Ildiz — 0-qatlam — uzunligi $O(n)$; 1-qatlam tugunlari uzunligi $O(\sqrt n)$; 2-qatlam tugunlari uzunligi $O(\sqrt{\sqrt n})$ va hokazo. Shu sababli bir yangilanish vaqti $O(n + \sqrt{n} + \sqrt{\sqrt{n}} + \dots) = O(n)$.
 
 Bu juda sekin. Uni tezlashtirish mumkin.
 
@@ -139,19 +131,19 @@ Demak, bitta elementni yangilashning umumiy murakkabligi $O(\sqrt n)$.
 
 Sqrt Tree kesmadagi barcha elementlarga bitta qiymat o‘zlashtirish kabi amallarni ham bajara oladi. $\text{massUpdate}(x,l,r)$ barcha $l\le i\le r$ uchun $a_i=x$ degani.
 
-Buning ikki yondashuvi bor. Birinchisi $\text{massUpdate}$ ni $O(\sqrt n\log\log n)$ vaqtda bajarib, so‘rov murakkabligini $O(1)$ da saqlaydi. Ikkinchisi $\text{massUpdate}$ ni $O(\sqrt n)$ vaqtda bajaradi, ammo so‘rov murakkabligi $O(\log\log n)$ bo‘ladi.
+Buning ikki yondashuvi bor. Birinchisi $\text{massUpdate}$ ni $O(\sqrt{n}\cdot \log \log n)$ vaqtda bajarib, so‘rov murakkabligini $O(1)$ da saqlaydi. Ikkinchisi $\text{massUpdate}$ ni $O(\sqrt n)$ vaqtda bajaradi, ammo so‘rov murakkabligi $O(\log\log n)$ bo‘ladi.
 
-Segment tree dagidek lazy propagation ishlatamiz: ayrim tugunlarni _lazy_ deb belgilaymiz va ularni faqat zarur bo‘lganda push qilamiz. Segment tree dan farqli jihati shuki, tugunni push qilish qimmat va uni so‘rov paytida bajarib bo‘lmaydi. 0-qatlamdagi tugunni push qilish $O(\sqrt n)$ vaqt oladi. Shuning uchun so‘rov ichida tugunlarni push qilmaymiz; faqat joriy tugun yoki uning otasi lazy ekanini tekshirib, javobni hisoblashda bu holatni hisobga olamiz.
+Segment daraxtlaridagidek kechiktirib tarqatish (lazy propagation) ishlatamiz: ayrim tugunlarni _lazy_ deb belgilaymiz va ularni faqat zarur bo‘lganda push qilamiz. Segment daraxtlaridan farqli jihati shuki, tugunni push qilish qimmat va uni so‘rov paytida bajarib bo‘lmaydi. 0-qatlamdagi tugunni push qilish $O(\sqrt n)$ vaqt oladi. Shuning uchun so‘rov ichida tugunlarni push qilmaymiz; faqat joriy tugun yoki uning ota tuguni lazy ekanini tekshirib, javobni hisoblashda bu holatni hisobga olamiz.
 
 #### Birinchi yondashuv
 
-Bu yondashuvda faqat 1-qatlamdagi, uzunligi $O(\sqrt n)$ bo‘lgan tugunlar lazy bo‘lishi mumkin. Bunday tugun push qilinganda, o‘zi bilan birga butun ost-daraxti $O(\sqrt n\log\log n)$ vaqtda yangilanadi. $\text{massUpdate}$ quyidagicha bajariladi:
+Bu yondashuvda faqat 1-qatlamdagi, uzunligi $O(\sqrt n)$ bo‘lgan tugunlar lazy bo‘lishi mumkin. Bunday tugun push qilinganda, o‘zi bilan birga butun ost-daraxti $O(\sqrt{n}\cdot \log \log n)$ vaqtda yangilanadi. $\text{massUpdate}$ quyidagicha bajariladi:
 
 - 1-qatlam tugunlari va ularga mos bloklarni ko‘rib chiqamiz.
 - $\text{massUpdate}$ to‘liq qamrab olgan bloklarni $O(\sqrt n)$ vaqtda lazy deb belgilaymiz.
-- Qisman qamrab olingan bloklar ko‘pi bilan ikkita bo‘ladi. Ularni $O(\sqrt n\log\log n)$ vaqtda qayta quramiz; ular oldindan lazy bo‘lgan bo‘lsa, buni hisobga olamiz.
+- Qisman qamrab olingan bloklar ko‘pi bilan ikkita bo‘ladi. Ularni $O(\sqrt{n}\cdot \log \log n)$ vaqtda qayta quramiz; ular oldindan lazy bo‘lgan bo‘lsa, buni hisobga olamiz.
 - Qisman qamrab olingan bloklar uchun $\text{prefixOp}$ va $\text{suffixOp}$ ni $O(\sqrt n)$ vaqtda yangilaymiz.
-- $\text{index}$ ni $O(\sqrt n\log\log n)$ vaqtda qayta quramiz.
+- $\text{index}$ ni $O(\sqrt{n}\cdot \log \log n)$ vaqtda qayta quramiz.
 
 Lazy propagation so‘rovlarga quyidagicha ta’sir qiladi:
 
@@ -172,15 +164,11 @@ Buning evaziga $\text{massUpdate}$ tezlashadi:
 - Unindexed ost-daraxtlar uchun $\text{between}$ massivi yangilanadi.
 - Qisman qamrab olingan bloklarni ifodalovchi tugunlarga o‘tib, $\text{massUpdate}$ rekursiv chaqiriladi.
 
-Rekursiv chaqiruvda prefix yoki suffix $\text{massUpdate}$ bajariladi. Prefix va suffix yangilanishlarida ko‘pi bilan bitta farzand qisman qamrab olinadi. Demak, 1-qatlamda bitta tugun, 2-qatlamda ikkita tugun va har bir chuqurroq qatlamda ko‘pi bilan ikkita tugun ko‘riladi. Vaqt murakkabligi
-
-$$O(\sqrt n+\sqrt{\sqrt n}+\dots)=O(\sqrt n).$$
-
-Bu yondashuv segment tree dagi oraliq yangilanishiga o‘xshaydi.
+Rekursiv chaqiruvda prefix yoki suffix $\text{massUpdate}$ bajariladi. Prefix va suffix yangilanishlarida ko‘pi bilan bitta farzand qisman qamrab olinadi. Demak, 1-qatlamda bitta tugun, 2-qatlamda ikkita tugun va har bir chuqurroq qatlamda ko‘pi bilan ikkita tugun ko‘riladi. Vaqt murakkabligi $O(\sqrt{n} + \sqrt{\sqrt{n}} + \dots) = O(\sqrt{n})$. Bu yerdagi yondashuv segment daraxtidagi oraliq yangilanishiga o‘xshaydi.
 
 ## Implementatsiya
 
-Quyidagi Sqrt Tree implementatsiyasi $O(n\log\log n)$ vaqtda quriladi, so‘rovlarga $O(1)$ da javob beradi va bitta elementni $O(\sqrt n)$ da yangilaydi.
+Quyidagi Sqrt Tree implementatsiyasi $O(n \cdot \log \log n)$ vaqtda quriladi, so‘rovlarga $O(1)$ da javob beradi va bitta elementni $O(\sqrt n)$ da yangilaydi.
 
 ~~~~~cpp
 SqrtTreeItem op(const SqrtTreeItem &a, const SqrtTreeItem &b);

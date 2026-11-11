@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The only remaining difference is a plain-text illustration block whose caption words (distance covered, difference) are translated; it is not code and the numbers are identical."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T12:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the original code in the second Java block (tabs) and the original formula forms (fastDist = 2 * slowDist as inline math), removing display formulas the translation had added.",
+      "content_sha256": "f01fefce3d6c7199dc7d6e9bf35b2810eccd95b17cf343fa3f5026dd8f3ac1c9"
+    },
+    {
+      "at": "2026-11-11T12:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "The Uzbek is correct and natural; one inconsistent formatting of fast was made consistent.",
+      "content_sha256": "f01fefce3d6c7199dc7d6e9bf35b2810eccd95b17cf343fa3f5026dd8f3ac1c9"
+    },
+    {
+      "at": "2026-11-11T12:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "The illustration block keeps translated labels; all numbers match, and it contains no code.",
+      "content_sha256": "f01fefce3d6c7199dc7d6e9bf35b2810eccd95b17cf343fa3f5026dd8f3ac1c9"
+    }
+  ]
+}

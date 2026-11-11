@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The matrix rows are separated by an ordinary KaTeX row break instead of the original's triple-backslash separator; the matrix entries are identical, so the formula is the same."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T15:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "DP definition, recurrence D[i][j] = D[i-2][j] + D[i-2][j-1]*(squares(i)-j+1), base cases, final summation and both code blocks match the original.",
+      "content_sha256": "f7ddf866698dd2e65966e861aa57e2f75690dc14d414dd403ecfc8b0262a563f"
+    },
+    {
+      "at": "2026-11-11T15:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Turned the stray 'text' code block holding D[2N-1][i] * D[2N-2][K-i] into inline code as in the original, so the article has the original's two code blocks.",
+      "content_sha256": "f7ddf866698dd2e65966e861aa57e2f75690dc14d414dd403ecfc8b0262a563f"
+    },
+    {
+      "at": "2026-11-11T15:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Only the row separator difference remains.",
+      "content_sha256": "f7ddf866698dd2e65966e861aa57e2f75690dc14d414dd403ecfc8b0262a563f"
+    }
+  ]
+}

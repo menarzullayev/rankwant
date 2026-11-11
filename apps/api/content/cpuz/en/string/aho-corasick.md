@@ -251,7 +251,7 @@ initially being in the state $(v = \text{root},~ \text{mask} = 0)$, we want to r
 When we transition from one state to another using a letter, we update the mask accordingly.
 By running a [breadth first search](/algorithms/graph/breadth-first-search) we can find a path to the state $(v,~ \text{mask} = 2^n - 1)$ with the smallest length.
 
-### Finding the lexicographically smallest string of length $L$ containing $k$ strings {data-toc-label="Finding the lexicographically smallest string of length L containing k strings"}
+### Finding the lexicographically smallest string of length $L$ containing $k$ strings
 
 As in the previous problem, we calculate for each vertex the number of matches that correspond to it (that is the number of marked vertices reachable using suffix links).
 We reformulate the problem: the current state is determined by a triple of numbers $(v,~ \text{len},~ \text{cnt})$, and we want to reach from the state $(\text{root},~ 0,~ 0)$ the state $(v,~ L,~ k)$, where $v$ can be any vertex.

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the code block exactly as in the original (blank lines and spacing) and checked complexities and formulas; the text itself was faithful.",
+      "content_sha256": "4632bb33752470a9e038dd0e15ad4c6b55df25bebf74b7faa28d9b0aab7f3e46"
+    },
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed 'quyiga qarang', and split the paragraphs that had been merged so the structure matches the original.",
+      "content_sha256": "4632bb33752470a9e038dd0e15ad4c6b55df25bebf74b7faa28d9b0aab7f3e46"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:12:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Aligned the initial match segment with the original [0; 0), the condition k = length(p) with the original wording, and replaced the loose proof-by-contradiction phrasing with the original's meaning.",
+      "content_sha256": "d89a7402038ddcb76e43a1c4501bf837e1205ae0d3cb120ef9329881d2e639ae"
+    },
+    {
+      "at": "2026-11-12T11:12:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Reworded the unclear sentence about the boundary r so that it reads naturally in Uzbek.",
+      "content_sha256": "d89a7402038ddcb76e43a1c4501bf837e1205ae0d3cb120ef9329881d2e639ae"
+    },
+    {
+      "at": "2026-11-12T11:12:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "d89a7402038ddcb76e43a1c4501bf837e1205ae0d3cb120ef9329881d2e639ae"
+    }
+  ]
+}

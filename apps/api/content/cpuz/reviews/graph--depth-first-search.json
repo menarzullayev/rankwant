@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The text macro in 12 formulas (entry and exit times) had been corrupted into a tab character; restored it. The colour values 0, 1, 2 are plain text again, as in the original. Prose, applications list and proof otherwise match.",
+      "content_sha256": "05b633758c83d9c9b0fd94ac1a65c1f475acfd7facc15b5dbb944ffc66051325"
+    },
+    {
+      "at": "2026-11-12T10:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original; the difference listed in the allow-list was removed.",
+      "content_sha256": "05b633758c83d9c9b0fd94ac1a65c1f475acfd7facc15b5dbb944ffc66051325"
+    },
+    {
+      "at": "2026-11-12T10:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used glossary terms 'eng yaqin umumiy ajdod' and 'ajratuvchi tugun' and fixed the 'bo‘lishi uchun va faqat shundagina' phrasing.",
+      "content_sha256": "05b633758c83d9c9b0fd94ac1a65c1f475acfd7facc15b5dbb944ffc66051325"
+    }
+  ]
+}

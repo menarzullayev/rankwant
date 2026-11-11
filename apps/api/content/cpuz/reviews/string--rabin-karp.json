@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T20:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked prose, complexities and code against the original; nothing missing or changed.",
+      "content_sha256": "e4625e7989f9b318d204cfa86325629a67e4d18abb7e1d71a0e5e7728239c5ed"
+    },
+    {
+      "at": "2026-11-11T20:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Uzbek is correct and uses the glossary term for pattern matching; no changes needed.",
+      "content_sha256": "e4625e7989f9b318d204cfa86325629a67e4d18abb7e1d71a0e5e7728239c5ed"
+    }
+  ]
+}

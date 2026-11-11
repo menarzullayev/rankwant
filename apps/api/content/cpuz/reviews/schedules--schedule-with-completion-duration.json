@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Made the greedy step say that jobs are extracted from q in ascending order of their remaining duration until the whole segment T is filled, as in the original, instead of a vague 'jobs with smaller duration'.",
+      "content_sha256": "8ac7f1c647a306708079d985962554c734f86ec31584b9be96e6c7c64bc17fc0"
+    },
+    {
+      "at": "2026-11-11T14:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the parenthesised '(i-1)' with the original '$i-1$' notation.",
+      "content_sha256": "8ac7f1c647a306708079d985962554c734f86ec31584b9be96e6c7c64bc17fc0"
+    },
+    {
+      "at": "2026-11-11T14:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "The only difference (inline '(i-1)') is gone; the code matches the original.",
+      "content_sha256": "8ac7f1c647a306708079d985962554c734f86ec31584b9be96e6c7c64bc17fc0"
+    }
+  ]
+}

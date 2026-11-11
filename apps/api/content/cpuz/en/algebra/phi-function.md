@@ -6,8 +6,8 @@ Here are values of $\phi(n)$ for the first few positive integers:
 
 $$\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-n & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 & 21 \\\\ \hline
-\phi(n) & 1 & 1 & 2 & 2 & 4 & 2 & 6 & 4 & 6 & 4 & 10 & 4 & 12 & 6 & 8 & 8 & 16 & 6 & 18 & 8 & 12 \\\\ \hline
+n & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 & 21 \\ \hline
+\phi(n) & 1 & 1 & 2 & 2 & 4 & 2 & 6 & 4 & 6 & 4 & 10 & 4 & 12 & 6 & 8 & 8 & 16 & 6 & 18 & 8 & 12 \\ \hline
 \end{array}$$
 
 ## Properties
@@ -25,13 +25,13 @@ $$\phi(p^k) = p^k - p^{k-1}.$$
 
   - If $a$ and $b$ are relatively prime, then:
     
-    \[\phi(a b) = \phi(a) \cdot \phi(b).\]
+    $$\phi(a b) = \phi(a) \cdot \phi(b).$$
     
     This relation is not trivial to see. It follows from the [Chinese remainder theorem](/algorithms/algebra/chinese-remainder-theorem). The Chinese remainder theorem guarantees, that for each $0 \le x < a$ and each $0 \le y < b$, there exists a unique $0 \le z < a b$ with $z \equiv x \pmod{a}$ and $z \equiv y \pmod{b}$. It's not hard to show that $z$ is coprime to $a b$ if and only if $x$ is coprime to $a$ and $y$ is coprime to $b$. Therefore the amount of integers coprime to $a b$ is equal to product of the amounts of $a$ and $b$.
 
   - In general, for not coprime $a$ and $b$, the equation
 
-    \[\phi(ab) = \phi(a) \cdot \phi(b) \cdot \dfrac{d}{\phi(d)}\]
+    $$\phi(ab) = \phi(a) \cdot \phi(b) \cdot \dfrac{d}{\phi(d)}$$
 
     with $d = \gcd(a, b)$ holds.
 
@@ -39,9 +39,9 @@ Thus, using the first three properties, we can compute $\phi(n)$ through the fac
 If $n = {p_1}^{a_1} \cdot {p_2}^{a_2} \cdots {p_k}^{a_k}$, where $p_i$ are prime factors of $n$,
 
 $$\begin{align}
-\phi (n) &= \phi ({p_1}^{a_1}) \cdot \phi ({p_2}^{a_2}) \cdots  \phi ({p_k}^{a_k}) \\\\
-&= \left({p_1}^{a_1} - {p_1}^{a_1 - 1}\right) \cdot \left({p_2}^{a_2} - {p_2}^{a_2 - 1}\right) \cdots \left({p_k}^{a_k} - {p_k}^{a_k - 1}\right) \\\\
-&= p_1^{a_1} \cdot \left(1 - \frac{1}{p_1}\right) \cdot p_2^{a_2} \cdot \left(1 - \frac{1}{p_2}\right) \cdots p_k^{a_k} \cdot \left(1 - \frac{1}{p_k}\right) \\\\
+\phi (n) &= \phi ({p_1}^{a_1}) \cdot \phi ({p_2}^{a_2}) \cdots  \phi ({p_k}^{a_k}) \\
+&= \left({p_1}^{a_1} - {p_1}^{a_1 - 1}\right) \cdot \left({p_2}^{a_2} - {p_2}^{a_2 - 1}\right) \cdots \left({p_k}^{a_k} - {p_k}^{a_k - 1}\right) \\
+&= p_1^{a_1} \cdot \left(1 - \frac{1}{p_1}\right) \cdot p_2^{a_2} \cdot \left(1 - \frac{1}{p_2}\right) \cdots p_k^{a_k} \cdot \left(1 - \frac{1}{p_k}\right) \\
 &= n \cdot \left(1 - \frac{1}{p_1}\right) \cdot \left(1 - \frac{1}{p_2}\right) \cdots \left(1 - \frac{1}{p_k}\right)
 \end{align}$$
 
@@ -88,7 +88,7 @@ void phi_1_to_n(int n) {
 }
 ```
 
-### Finding the totient from $L$ to $R$ using the [segmented sieve](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve) { data-toc-label="Finding the totient from L to R using the segmented sieve" }
+### Finding the totient from $L$ to $R$ using the [segmented sieve](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve)
 
 If we need the totient of all numbers between $L$ and $R$, we can use the [segmented sieve](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve) approach.
 
@@ -147,7 +147,7 @@ Here the sum is over all positive divisors $d$ of $n$.
 For instance the divisors of 10 are 1, 2, 5 and 10.
 Hence $\phi{(1)} + \phi{(2)} + \phi{(5)} + \phi{(10)} = 1 + 1 + 4 + 4 = 10$.
 
-### Finding the totient from 1 to $n$ using the divisor sum property { data-toc-label="Finding the totient from 1 to n using the divisor sum property" }
+### Finding the totient from 1 to $n$ using the divisor sum property
 
 The divisor sum property also allows us to compute the totient of all numbers between 1 and $n$.
 This implementation is a little simpler than the previous implementation based on the Sieve of Eratosthenes, however also has a slightly worse complexity: $O(n \log n)$

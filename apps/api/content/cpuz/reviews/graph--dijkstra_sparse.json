@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T21:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The display formula O(n log n + m log n) = O(m log n) was invented by the translation (inline in the original); it is inline again. Restored the missing meaning that the first operation is improved without greatly slowing the second.",
+      "content_sha256": "edee99ca834b5840e0a3f78fa79d93e0ad7b20518bf631aa51d4c5d9d3306622"
+    },
+    {
+      "at": "2026-11-11T21:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the garbled sentence about improving the first operation into correct Uzbek.",
+      "content_sha256": "edee99ca834b5840e0a3f78fa79d93e0ad7b20518bf631aa51d4c5d9d3306622"
+    },
+    {
+      "at": "2026-11-11T21:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Display formula count and code blocks now equal the original.",
+      "content_sha256": "edee99ca834b5840e0a3f78fa79d93e0ad7b20518bf631aa51d4c5d9d3306622"
+    }
+  ]
+}

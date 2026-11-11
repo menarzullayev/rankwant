@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T12:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Rules, complexities, the policeman-and-thief setup and the code all match the original.",
+      "content_sha256": "f526e92589e61262c7ad2e42d9b04748bb0761774ec74c86a6193fe91b3585b5"
+    },
+    {
+      "at": "2026-11-11T12:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "The Uzbek is correct; no changes needed.",
+      "content_sha256": "f526e92589e61262c7ad2e42d9b04748bb0761774ec74c86a6193fe91b3585b5"
+    }
+  ]
+}

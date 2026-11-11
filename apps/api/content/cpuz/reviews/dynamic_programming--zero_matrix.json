@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Replaced 'amortizatsiyalangan O(1)' with 'o‘rtacha O(1)' as in the original ('on average') and removed a redundant sentence about k1 lying left of j that the original does not contain.",
+      "content_sha256": "57b58aa596612a774bb549793fb8c1116511d3c4344613aa4fcf3f495a16c442"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Minor wording fix for the definition of k1; the translation was otherwise accurate and natural.",
+      "content_sha256": "57b58aa596612a774bb549793fb8c1116511d3c4344613aa4fcf3f495a16c442"
+    }
+  ]
+}

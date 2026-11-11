@@ -6,7 +6,7 @@ Bizga ishlar to‘plami berilgan va har bir ishning tugash muddati hamda davomiy
 
 Yechim **ochko‘z algoritm**ga asoslanadi. Barcha ishlarni tugash muddati bo‘yicha saralaymiz va ularni kamayish tartibida ko‘rib chiqamiz. Shuningdek, ishlarni asta-sekin qo‘shib, davomiyligi eng kichik bo‘lganini chiqarib olish uchun $q$ navbatini tuzamiz; buning uchun, masalan, `set` yoki `priority_queue` ishlatish mumkin. Dastlab $q$ bo‘sh.
 
-Faraz qilaylik, $i$-ishni ko‘rib chiqyapmiz. Avval uni $q$ ga qo‘shamiz. $i$-ishning tugash muddati bilan $(i-1)$-ishning tugash muddati orasidagi vaqt oralig‘ini olaylik; uning uzunligi $T$ bo‘lsin. $q$ dan qolgan davomiyligi kichik ishlarni tartib bilan chiqarib, $T$ oralig‘i to‘lguncha bajaramiz. Muhim jihat: chiqarilgan ish $T$ tugaguncha faqat qisman bajarilsa, uni imkon qadar, ya’ni qolgan $T$ vaqt davomida bajaramiz va ishning bajarilmagan qismini yana $q$ ga qaytaramiz.
+Faraz qilaylik, $i$-ishni ko‘rib chiqyapmiz. Avval uni $q$ ga qo‘shamiz. $i$-ishning tugash muddati bilan $i-1$-ishning tugash muddati orasidagi vaqt oralig‘ini olaylik; uning uzunligi $T$ bo‘lsin. $q$ dan ishlarni qolgan davomiyligi bo‘yicha o‘sish tartibida chiqarib, butun $T$ oralig‘i to‘lguncha bajaramiz. Muhim jihat: chiqarilgan ish $T$ tugaguncha faqat qisman bajarilsa, uni imkon qadar, ya’ni qolgan $T$ vaqt davomida bajaramiz va ishning bajarilmagan qismini yana $q$ ga qaytaramiz.
 
 Algoritm yakunida optimal yechimlardan biri olinadi. Uning ishlash vaqti $O(n \log n)$.
 

@@ -35,7 +35,7 @@ for (int i = 2; i <= n; i++) {
 Bu kod avval nol va birdan tashqari barcha sonlarni tub bo‘lishi mumkin deb belgilaydi, so‘ng murakkab sonlarni elash jarayonini boshlaydi.
 Buning uchun u $2$ dan $n$ gacha bo‘lgan barcha sonlarni ko‘rib chiqadi.
 Agar joriy $i$ soni tub bo‘lsa, $i^2$ dan boshlab $i$ ga karrali barcha sonlarni murakkab deb belgilaydi.
-Bu sodda implementatsiyaga nisbatan optimallashtirishdir. Chunki $i$ ga karrali bo‘lgan barcha kichikroq sonlarda $i$ dan kichik tub ko‘paytuvchi ham bo‘lishi shart, demak ularning barchasi avvalroq elangan.
+Bu sodda usulga nisbatan allaqachon optimallashtirishdir va u joiz, chunki $i$ ga karrali bo‘lgan barcha kichikroq sonlar $i$ dan kichik tub ko‘paytuvchiga ham ega bo‘lishi shart, demak ularning barchasi avvalroq elangan.
 $i^2$ qiymati `int` turidan oson chiqib ketishi mumkinligi sababli, ikkinchi ichki sikldan oldingi qo‘shimcha tekshiruv `long long` turi yordamida bajariladi.
 Bunday implementatsiyada algoritm $O(n)$ xotira sarflaydi va $O(n \log \log n)$ amal bajaradi (keyingi bo‘limga qarang).
 
@@ -51,7 +51,7 @@ $$\sum_{\substack{p \le n, \\\ p \text{ tub}}} \frac n p = n \cdot \sum_{\substa
 Ikki mashhur faktni eslaylik:
 
 - $n$ dan kichik yoki unga teng tub sonlar soni taxminan $\frac n {\ln n}$ ga teng.
-- $k$-tub son taxminan $k \ln k$ ga teng (bu oldingi faktdan kelib chiqadi).
+- $k$-chi tub son taxminan $k \ln k$ ga teng (bu oldingi faktdan kelib chiqadi).
 
 Shunday qilib, yig‘indini quyidagicha yozish mumkin:
 
@@ -126,7 +126,7 @@ Yuqoridagi sinovda `bitset` `vector<bool>` dan biroz yomonroq natija ko‘rsatad
 
 “Faqat ildizgacha elash” optimallashtirishidan `is_prime[1...n]` massivini doimo to‘liq xotirada saqlash shart emasligi kelib chiqadi.
 Elash uchun faqat $\sqrt n$ gacha bo‘lgan tub sonlarni, ya’ni `prime[1... sqrt(n)]` ni saqlash, butun oraliqni bloklarga bo‘lish va har bir blokni alohida elash kifoya.
-$s$ blok o‘lchamini belgilovchi o‘zgarmas bo‘lsin. U holda jami $\lceil {\frac n s} \rceil$ ta blok bo‘ladi va $k$-blok ($k = 0 ... \lfloor {\frac n s} \rfloor$) $[ks; ks + s - 1]$ kesmadagi sonlarni o‘z ichiga oladi.
+$s$ blok o‘lchamini belgilovchi o‘zgarmas bo‘lsin. U holda jami $\lceil {\frac n s} \rceil$ ta blok bo‘ladi va $k$-chi blok ($k = 0 ... \lfloor {\frac n s} \rfloor$) $[ks; ks + s - 1]$ kesmadagi sonlarni o‘z ichiga oladi.
 Bloklar bilan navbatma-navbat ishlash mumkin: har bir $k$ blok uchun $1$ dan $\sqrt n$ gacha bo‘lgan barcha tub sonlarni ko‘rib chiqib, ular yordamida elaymiz.
 Dastlabki sonlarga ishlov berishda strategiyani biroz o‘zgartirish kerakligini unutmaslik lozim: birinchidan, $[1; \sqrt n]$ dagi tub sonlar o‘zlarini o‘chirib yubormasligi kerak; ikkinchidan, $0$ va $1$ sonlari tub emas deb belgilanishi kerak.
 Oxirgi blok bilan ishlaganda kerakli oxirgi $n$ soni blok oxirida joylashishi shart emasligini ham unutmaslik kerak.
@@ -180,7 +180,7 @@ Eng yaxshi natijalar $10^4$ dan $10^5$ gacha bo‘lgan blok o‘lchamlarida kuza
 
 ## Oraliqdagi tub sonlarni topish
 
-Ba’zan uzunligi kichik bo‘lgan $[L,R]$ oraliqdagi (masalan, $R - L + 1 \approx 1e7$), ammo $R$ juda katta (masalan, $1e12$) bo‘lishi mumkin bo‘lgan barcha tub sonlarni topish kerak.
+Ba’zan uzunligi kichik $[L,R]$ oraliqdagi barcha tub sonlarni topish kerak bo‘ladi (masalan, $R - L + 1 \approx 1e7$), bunda $R$ juda katta bo‘lishi mumkin (masalan, $1e12$).
 
 Bunday masalani yechish uchun segmentlangan elak g‘oyasidan foydalanish mumkin.
 Avval $\sqrt R$ gacha bo‘lgan barcha tub sonlarni hosil qilamiz va ular yordamida $[L, R]$ segmentdagi barcha murakkab sonlarni belgilaymiz.

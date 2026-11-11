@@ -78,7 +78,7 @@ For the string $s =~ \text{"abbb"}$:
 
 Before we describe the algorithm to construct a suffix automaton in linear time, we need to introduce several new concepts and simple proofs, which will be very important in understanding the construction.
 
-### End positions $endpos$ {data-toc-label="End positions"}
+### End positions $endpos$
 
 Consider any non-empty substring $t$ of the string $s$.
 We will denote with $endpos(t)$ the set of all positions in the string $s$, in which the occurrences of $t$ end. For instance, we have $endpos(\text{"bc"}) = \{2, 4\}$ for the string $\text{"abcbc"}$.
@@ -109,7 +109,7 @@ Then their sets $endpos$ either don't intersect at all, or $endpos(w)$ is a subs
 And it depends on if $u$ is a suffix of $w$ or not.
 
 $$\begin{cases}
-endpos(w) \subseteq endpos(u) & \text{if } u \text{ is a suffix of } w \\\\
+endpos(w) \subseteq endpos(u) & \text{if } u \text{ is a suffix of } w \\
 endpos(w) \cap endpos(u) = \emptyset & \text{otherwise}
 \end{cases}$$
 
@@ -138,7 +138,7 @@ It is easy to see, that this suffix is also contained in the same equivalence cl
 Because this suffix can only appear in the form of a suffix of $w$ in the string $s$ (since also the shorter suffix $u$ occurs in $s$ only in the form of a suffix of $w$).
 Consequently, according to Lemma 1, this suffix is $endpos$-equivalent to the string $w$.
 
-### Suffix links $link$ {data-toc-label="Suffix links"}
+### Suffix links $link$
 
 Consider some state $v \ne t_0$ in the automaton.
 As we know, the state $v$ corresponds to the class of strings with the same $endpos$ values.
@@ -542,7 +542,7 @@ long long get_tot_len_diff_substings() {
 
 This approach runs in  $O(length(S))$ time, but experimentally runs 20x faster than the memoized dynamic programming version on randomized strings. It requires no extra space and no recursion.
 
-### Lexicographically $k$-th substring {data-toc-label="Lexicographically k-th substring"}
+### Lexicographically $k$-th substring
 
 Given a string $S$.
 We have to answer multiple queries.

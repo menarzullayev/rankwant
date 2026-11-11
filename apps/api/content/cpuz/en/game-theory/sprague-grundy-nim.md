@@ -72,7 +72,7 @@ If $s \neq 0$, we have to prove that there is a move leading to a state with $t 
     This move reduces the size of a pile $x$ to a size $y$.
     Using elementary properties of $\oplus$, we have
     
-    \[ t = s \oplus x \oplus y = 0 \oplus x \oplus y = x \oplus y \]
+    $$ t = s \oplus x \oplus y = 0 \oplus x \oplus y = x \oplus y $$
     
     Since $y < x$, $y \oplus x$ can't be zero, so $t \neq 0$.
     That means any reachable state is a winning one (by the assumption of induction), so we are in a losing position.
@@ -86,7 +86,7 @@ If $s \neq 0$, we have to prove that there is a move leading to a state with $t 
     Therefore, $y < x$, which is all we need for a move to be legal.
     Now we have:
     
-    \[ t = s \oplus x \oplus y = s \oplus x \oplus (s \oplus x) = 0 \]
+    $$ t = s \oplus x \oplus y = s \oplus x \oplus (s \oplus x) = 0 $$
     
     This means we found a reachable losing state (by the assumption of induction) and the current state is winning.
 

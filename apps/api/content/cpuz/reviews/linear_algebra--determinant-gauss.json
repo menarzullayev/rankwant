@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:19:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Removed the sections the translation added (why it works, complexity, Bareiss remark, extra explanation of code) and restored the original statements: absolute value unchanged, diagonal matrix after elimination, O(N^3) complexity, stop with 0 when no non-zero cell is found. Code unchanged.",
+      "content_sha256": "c9f14df2eb409fcadb438a2e45a79981cdc24197c5dc7cc8aac73e4756e20a21"
+    },
+    {
+      "at": "2026-11-12T11:19:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Language of the restored text is correct Uzbek; no further changes needed.",
+      "content_sha256": "c9f14df2eb409fcadb438a2e45a79981cdc24197c5dc7cc8aac73e4756e20a21"
+    },
+    {
+      "at": "2026-11-12T11:19:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "c9f14df2eb409fcadb438a2e45a79981cdc24197c5dc7cc8aac73e4756e20a21"
+    }
+  ]
+}

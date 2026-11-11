@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:14:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Phrased the choice r = 2^m and the 'all three numbers are 64 bit' sentence as in the original so no formula is invented.",
+      "content_sha256": "f51f6eab913ed67f696889b52e29930b6d0bcbcd1ded4fbad3c047ccec5aaa28"
+    },
+    {
+      "at": "2026-11-12T11:14:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Added missing blank lines before headings, code blocks and after display formulas so the markdown renders correctly.",
+      "content_sha256": "f51f6eab913ed67f696889b52e29930b6d0bcbcd1ded4fbad3c047ccec5aaa28"
+    },
+    {
+      "at": "2026-11-12T11:14:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "f51f6eab913ed67f696889b52e29930b6d0bcbcd1ded4fbad3c047ccec5aaa28"
+    }
+  ]
+}

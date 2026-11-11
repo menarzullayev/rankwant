@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T21:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph, formula and the code with the original; nothing was omitted or changed in meaning.",
+      "content_sha256": "4b9b6bdd0e8a21060f61789d8baab0663cecfeeef76a81c1b08a5188a0ff7bae"
+    },
+    {
+      "at": "2026-11-11T21:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed an unclear sentence about the LCA in the Euler tour, rephrased an awkward sentence about O(N) preprocessing, and used the glossary term 'siyrak jadval' for the sparse table.",
+      "content_sha256": "4b9b6bdd0e8a21060f61789d8baab0663cecfeeef76a81c1b08a5188a0ff7bae"
+    }
+  ]
+}

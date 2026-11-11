@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Only the row separators of the array differ: the original has an escaped '\\\\' (mkdocs artefact), the translation uses the single '\\' that KaTeX needs; the table content is identical."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared the divisor-count and divisor-sum derivations, both tables, formulas and code with the original; nothing omitted.",
+      "content_sha256": "bea23c97f1e460e57b2b2838742f3aefcddf2f610b96da0e58c1820fbcce6b88"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'faktorizatsiya' by 'tub ko‘paytuvchilarga ajratilishi' per the glossary and rephrased one clumsy double 'mumkin' sentence.",
+      "content_sha256": "bea23c97f1e460e57b2b2838742f3aefcddf2f610b96da0e58c1820fbcce6b88"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Array row separators are '\\' instead of the original's escaped '\\\\'; same table.",
+      "content_sha256": "bea23c97f1e460e57b2b2838742f3aefcddf2f610b96da0e58c1820fbcce6b88"
+    }
+  ]
+}

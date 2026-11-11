@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The only extra inline formula is longest(link(link(last))) with its closing parenthesis restored; the original has an unbalanced parenthesis there and the meaning is the same."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Compared the whole article with the original; every section, lemma, formula and code block is present. Fixed the construction step (outcome len(p)+1 != len(q) instead of 'or vice versa'), removed the hedge 'kamida' from the cnt[v] explanation and replaced the untranslated 'proper suffix'.",
+      "content_sha256": "695e12149f4348b8c007d9257a788964a22cb1b0e2a1e42ec919893da8652bfd"
+    },
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Applied glossary terms (qism satr, tugun, onlayn, siklsiz graf), replaced the calque 'uchrashuv' with 'uchrash' for occurrences, and fixed a few awkward sentences about the number of states and the transition-adding step.",
+      "content_sha256": "695e12149f4348b8c007d9257a788964a22cb1b0e2a1e42ec919893da8652bfd"
+    },
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Inline formula longest(link(link(last))) differs from the original only by a restored closing parenthesis; no code or display formula differs.",
+      "content_sha256": "695e12149f4348b8c007d9257a788964a22cb1b0e2a1e42ec919893da8652bfd"
+    }
+  ]
+}

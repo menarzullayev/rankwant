@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:15:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a rewrite: it added an integer code block, a golden-section derivation in different form, complexity formulas, an extra warning section and reordered content. Restored the original structure, formulas, single code block and the full practice list.",
+      "content_sha256": "6222eca5f9e1501ca85e50b496d63c10f5a076863c9067ea8bbf712ea7d1edf9"
+    },
+    {
+      "at": "2026-11-12T11:15:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Re-translated the article faithfully with consistent terms (unimodal, oltin kesim, qidiruv sohasi).",
+      "content_sha256": "6222eca5f9e1501ca85e50b496d63c10f5a076863c9067ea8bbf712ea7d1edf9"
+    },
+    {
+      "at": "2026-11-12T11:15:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "6222eca5f9e1501ca85e50b496d63c10f5a076863c9067ea8bbf712ea7d1edf9"
+    }
+  ]
+}

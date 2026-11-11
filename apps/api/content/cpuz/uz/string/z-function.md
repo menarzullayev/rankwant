@@ -45,7 +45,7 @@ Samarali algoritm olish uchun $z[i]$ qiymatlarni $i = 1$ dan $n-1$ gacha ketma-k
 
 Qisqalik uchun $s$ prefiksi bilan mos keladigan qism satrlarni **mos keluvchi kesmalar** deb ataymiz. Masalan, $z[i]$ — $i$ pozitsiyada boshlanib, $i + z[i] - 1$ pozitsiyada tugaydigan mos keluvchi kesma uzunligi.
 
-Biz **eng o‘ngda tugaydigan mos keluvchi kesmaning $[l,r)$ indekslarini** saqlaymiz. Ya’ni topilgan barcha kesmalar orasidan oxiri eng o‘ngda joylashganini tanlaymiz. $r$ indeksni algoritm satrning qaysi chegarasigacha tekshirganining chegarasi deb qarash mumkin; uning o‘ngidagi qism haqida hali ma’lumot yo‘q.
+Biz **eng o‘ngda tugaydigan mos keluvchi kesmaning $[l,r)$ indekslarini** saqlaymiz. Ya’ni topilgan barcha kesmalar orasidan oxiri eng o‘ngda joylashganini tanlaymiz. $r$ indeksni algoritm $s$ satrni skanerlab yetib kelgan «chegara» deb qarash mumkin; undan o‘ngdagi hamma narsa hali noma’lum.
 
 Joriy, navbatdagi Z-funksiya qiymati hisoblanadigan indeks $i$ bo‘lsa, ikki holatdan biri yuz beradi:
 
@@ -106,7 +106,7 @@ vector<int> z_function(string s) {
 
 Butun yechim uzunligi $n$ bo‘lgan massivni — $s$ ning Z-funksiyasini — qaytaradigan funksiya ko‘rinishida berilgan.
 
-Dastlab $z$ massiv nollar bilan to‘ldiriladi. Eng o‘ngdagi joriy mos kesma $[0,0)$ deb olinadi; bu ataylab kichik, hech qanday $i$ ni o‘z ichiga olmaydigan kesma.
+Dastlab $z$ massiv nollar bilan to‘ldiriladi. Eng o‘ngdagi joriy mos kesma $[0; 0)$ deb olinadi; bu ataylab kichik, hech qanday $i$ ni o‘z ichiga olmaydigan kesma.
 
 $i = 1 \dots n-1$ sikl ichida avval $z[i]$ ning boshlang‘ich qiymatini aniqlaymiz: u nol bo‘lib qoladi yoki yuqoridagi formula bilan hisoblanadi.
 
@@ -140,7 +140,7 @@ Buning uchun algoritmning ikki holatini ko‘rib chiqamiz:
 
         Bu holda `while` sikli bir marta ham ishlamasligini isbotlaymiz.
 
-        Masalan, qarama-qarshilikdan: `while` kamida bir marta ishlasa, boshlang‘ich $z[i]=z_0$ taxmin haqiqiy moslik uzunligidan kichik bo‘lgan bo‘lardi. Ammo $s[l \dots r)$ va $s[0 \dots r-l)$ bir xil bo‘lgani uchun bu $z[i-l]$ qiymati ham aslidan kichik hisoblanganini bildiradi.
+        Buni, masalan, teskaridan faraz qilib isbotlash oson: agar `while` kamida bir marta ishlasa, boshlang‘ich $z[i]=z_0$ taxmin haqiqiy moslik uzunligidan kichik bo‘lgan bo‘lardi. Ammo $s[l \dots r)$ va $s[0 \dots r-l)$ bir xil bo‘lgani uchun bu $z[i-l]$ qiymati ham aslidan kichik hisoblanganini bildiradi.
 
         $z[i-l]$ to‘g‘ri va $r-i$ dan kichik bo‘lganligi sababli u talab qilinayotgan $z[i]$ qiymatining o‘ziga teng.
 
@@ -168,7 +168,7 @@ Chalkashmaslik uchun $t$ ni **matn satri**, $p$ ni esa **andoza** deb ataymiz. M
 
 $s = p + \diamond + t$ yangi satrni tuzamiz, ya’ni $p$ va $t$ ni birlashtirib, orasiga $p$ da ham, $t$ da ham uchramaydigan $\diamond$ ajratgich belgisini qo‘yamiz.
 
-$s$ uchun Z-funksiyani hisoblaymiz. Keyin $[0;\;\operatorname{length}(t)-1]$ oraliqdagi har bir $i$ uchun $k=z[i+\operatorname{length}(p)+1]$ qiymatni ko‘ramiz. Agar $k=\operatorname{length}(p)$ bo‘lsa, $t$ ning $i$-pozitsiyasida $p$ uchraydi; aks holda bu pozitsiyada uchrashish yo‘q.
+$s$ uchun Z-funksiyani hisoblaymiz. Keyin $[0;\;\operatorname{length}(t)-1]$ oraliqdagi har bir $i$ uchun $k=z[i+\operatorname{length}(p)+1]$ qiymatni ko‘ramiz. Agar $k$ qiymati $\operatorname{length}(p)$ ga teng bo‘lsa, $t$ ning $i$-pozitsiyasida $p$ uchraydi; aks holda bu pozitsiyada uchrashish yo‘q.
 
 Ishlash vaqti ham, xotira sarfi ham $O(\operatorname{length}(t)+\operatorname{length}(p))$.
 

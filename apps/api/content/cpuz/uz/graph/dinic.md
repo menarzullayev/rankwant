@@ -10,7 +10,7 @@ $G$ tarmog‘ining **qoldiq tarmog‘i** $G^R$ — $G$ dagi har bir $(v, u)$ qir
 - sig‘imi $c_{uv}^R = f_{vu}$ bo‘lgan $(u, v)$ qirra.
 
 Biror tarmoqning **bloklovchi oqimi** — $s$ dan $t$ gacha bo‘lgan har bir yo‘lda shu oqim tomonidan to‘yintirilgan kamida bitta qirra mavjud bo‘ladigan oqimdir. Bloklovchi oqim maksimal bo‘lishi shart emasligini unutmang.
-$G$ tarmoqning **qatlamli tarmog‘i** quyidagicha quriladi. Avval har bir $v$ tugun uchun $level[v]$ — faqat musbat sig‘imli qirralardan foydalanib $s$ dan bu tugungacha bo‘lgan eng qisqa (vaznsiz) yo‘lni hisoblaymiz. Keyin faqat $level[v] + 1 = level[u]$ shartini qanoatlantiradigan $(v, u)$ qirralarni qoldiramiz. Ravshanki, bu tarmoq asiklikdir.
+$G$ tarmog‘ining **qatlamli tarmog‘i** quyidagicha quriladi. Avval har bir $v$ tugun uchun $level[v]$ — faqat musbat sig‘imli qirralardan foydalanib $s$ dan bu tugungacha bo‘lgan eng qisqa (vaznsiz) yo‘lni hisoblaymiz. Keyin faqat $level[v] + 1 = level[u]$ shartini qanoatlantiradigan $(v, u)$ qirralarni qoldiramiz. Ravshanki, bu tarmoq siklsizdir.
 
 ## Algoritm
 
@@ -48,7 +48,7 @@ Fazalar soni $V$ dan kam, shuning uchun umumiy murakkablik $O(V^2E)$.
 
 ## Birlik tarmoqlar
 
-**Birlik tarmoq** — $s$ va $t$ dan boshqa istalgan tugun uchun **kiruvchi yoki chiquvchi qirralardan biri yagona va birlik sig‘imga ega** bo‘lgan tarmoq. Matching masalasini oqim yordamida yechish uchun quradigan tarmog‘imiz aynan shunday bo‘ladi.
+**Birlik tarmoq** — $s$ va $t$ dan boshqa istalgan tugun uchun **kiruvchi yoki chiquvchi qirralardan biri yagona va birlik sig‘imga ega** bo‘lgan tarmoq. Juftlashtirish masalasini oqim yordamida yechish uchun quradigan tarmog‘imiz aynan shunday bo‘ladi.
 
 Birlik tarmoqlarda Dinic algoritmi $O(E\sqrt{V})$ vaqtda ishlaydi. Buni isbotlaymiz.
 

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Description, set definitions, code and complexity remarks match the original.",
+      "content_sha256": "8cc86443ef7a59502bdb14985d8144a8b07c5474be75deff3136ee52ab28bb75"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used glossary terms 'vazn' (weight) and 'ikki tomonlama navbat' (deque).",
+      "content_sha256": "8cc86443ef7a59502bdb14985d8144a8b07c5474be75deff3136ee52ab28bb75"
+    }
+  ]
+}

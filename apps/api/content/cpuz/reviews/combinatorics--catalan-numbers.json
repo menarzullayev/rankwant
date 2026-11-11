@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The invented display formula was turned back into inline math as in the original; the remaining difference is (n+2) in the phrase '(n+2)-burchak', which restates 'n + 2 sides'."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The list of first Catalan numbers had become a display formula although the original has it inline; restored the original form. Everything else matches.",
+      "content_sha256": "2381be4280b58bed39b449e8384f78ed82481c107dac64ebe43be12256a3bdad"
+    },
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Uzbek is correct and natural.",
+      "content_sha256": "2381be4280b58bed39b449e8384f78ed82481c107dac64ebe43be12256a3bdad"
+    },
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Inline (n+2) only rephrases 'polygon with n + 2 sides'.",
+      "content_sha256": "2381be4280b58bed39b449e8384f78ed82481c107dac64ebe43be12256a3bdad"
+    }
+  ]
+}

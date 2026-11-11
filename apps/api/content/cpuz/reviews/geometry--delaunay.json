@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The article was a loose rewrite: restored the original's full text (duality, quad-edge functions, divide-and-conquer merge with cross edges and lcand/rcand) and removed added claims (a list of Voronoi vertex/edge correspondences and a closing paragraph on duplicates and overflow). Restored the original code verbatim, including the in_circle and delaunay routines that the translation had altered.",
+      "content_sha256": "7f7be0be29277f4faf3ed6287b34a5d24101ba92f77fc8d29c82b6a5784b6e4f"
+    },
+    {
+      "at": "2026-11-12T10:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original; the difference listed in the allow-list was removed.",
+      "content_sha256": "7f7be0be29277f4faf3ed6287b34a5d24101ba92f77fc8d29c82b6a5784b6e4f"
+    },
+    {
+      "at": "2026-11-12T10:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated the restored prose into natural Uzbek with glossary terms; the Voronoi region formula is inline as in the original.",
+      "content_sha256": "7f7be0be29277f4faf3ed6287b34a5d24101ba92f77fc8d29c82b6a5784b6e4f"
+    }
+  ]
+}

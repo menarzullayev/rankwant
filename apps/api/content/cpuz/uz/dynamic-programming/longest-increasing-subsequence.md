@@ -11,7 +11,7 @@ a[i_1] < a[i_2] < \dots < a[i_k]$$
 Ushbu maqolada masalani yechadigan bir nechta algoritmni ko‘rib chiqamiz.
 Shuningdek, shu masalaga keltirish mumkin bo‘lgan ayrim boshqa masalalarni ham muhokama qilamiz.
 
-## Dinamik dasturlash yordamida $O(n^2)$ yechim {data-toc-label="Solution in O(n^2) with dynamic programming"}
+## Dinamik dasturlash yordamida $O(n^2)$ yechim
 
 Dinamik dasturlash juda katta sinfdagi masalalarni yechishga imkon beruvchi umumiy usuldir.
 Bu yerda uni aynan ushbu masalaga qo‘llaymiz.
@@ -128,7 +128,7 @@ Joriy $d[i]$ qiymatini qaytadan hisoblab, maksimum qaysi yo‘l bilan olinganini
 
 Bu usul kodni biroz uzaytiradi, evaziga bir oz xotirani tejaydi.
 
-## Dinamik dasturlash va ikkilik qidiruv yordamida $O(n \log n)$ yechim {data-toc-label="Solution in O(n log n) with dynamic programming and binary search"}
+## Dinamik dasturlash va ikkilik qidiruv yordamida $O(n \log n)$ yechim
 
 Masala uchun tezroq yechim olish maqsadida avval $O(n^2)$ vaqtda ishlaydigan boshqa dinamik dasturlash yechimini tuzamiz, keyin uni $O(n\log n)$ gacha yaxshilaymiz.
 
@@ -246,7 +246,7 @@ $p[i]$ — $i$ elementda tugaydigan optimal qism ketma-ketlikdagi avvalgi elemen
 $a[]$ massivi bo‘ylab yurish va $d[]$ ni hisoblash jarayonida bu ikki massivni ham oson saqlash mumkin.
 Oxirida ular yordamida kerakli qism ketma-ketlikni tiklash qiyin emas.
 
-## Ma’lumotlar tuzilmalari yordamida $O(n \log n)$ yechim {data-toc-label="Solution in O(n log n) with data structures"}
+## Ma’lumotlar tuzilmalari yordamida $O(n \log n)$ yechim
 
 Eng uzun o‘suvchi qism ketma-ketlikni yuqoridagi ikkilik qidiruv usulidan tashqari oddiy ma’lumotlar tuzilmalari yordamida ham $O(n\log n)$ vaqtda topish mumkin.
 

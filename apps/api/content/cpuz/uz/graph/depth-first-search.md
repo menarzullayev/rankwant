@@ -16,8 +16,8 @@ Algoritmni rekursiv tarzda tasvirlash va amalga oshirish juda oson. Qidiruvni bi
 
 * $u$ manba tugundan grafning barcha tugunlarigacha biror yo‘lni topish.
 * $u$ manbadan barcha tugunlargacha leksikografik jihatdan birinchi yo‘lni topish.
-* Daraxtdagi bir tugun boshqa tugunning ajdodi ekanini tekshirish. Har bir qidiruv chaqiruvining boshida va oxirida tugunning kirish hamda chiqish «vaqtlarini» eslab qolamiz. Shunda istalgan $(i,j)$ tugunlar jufti uchun javobni $O(1)$ vaqtda olish mumkin: $i$ tugun $j$ ning ajdodi bo‘lishi uchun va faqat shundagina $	ext{entry}[i] < 	ext{entry}[j]$ hamda $	ext{exit}[i] > 	ext{exit}[j]$ bo‘lishi kerak.
-* Ikki tugunning eng quyi umumiy ajdodini — LCAni — topish.
+* Daraxtdagi bir tugun boshqa tugunning ajdodi ekanini tekshirish. Har bir qidiruv chaqiruvining boshida va oxirida tugunning kirish hamda chiqish «vaqtlarini» eslab qolamiz. Shunda istalgan $(i,j)$ tugunlar jufti uchun javobni $O(1)$ vaqtda olish mumkin: $i$ tugun $j$ ning ajdodi bo‘lishi uchun faqat va faqat $\text{entry}[i] < \text{entry}[j]$ hamda $\text{exit}[i] > \text{exit}[j]$ bo‘lishi kerak.
+* Ikki tugunning eng yaqin umumiy ajdodini (LCA) topish.
 * Topologik tartiblash. Har bir tugunga aynan bir marta tashrif buyurish uchun chuqurlik bo‘yicha qidiruvlar seriyasini $O(n+m)$ vaqtda bajaring. Kerakli topologik tartib tugunlarni chiqish vaqtining kamayish tartibida saralash orqali olinadi.
 * Berilgan graf siklsiz ekanini tekshirish va grafdagi sikllarni topish. Quyida aytilganidek, buning uchun har bir bog‘langan komponentdagi orqa qirralarni aniqlash mumkin.
 * Yo‘naltirilgan grafning kuchli bog‘langan komponentlarini topish. Avval grafni topologik tartiblang. Keyin grafning transpozitsiyasini tuzing va topologik tartib belgilagan ketma-ketlikda yana bir chuqurlik bo‘yicha qidiruvlar seriyasini bajaring. Har bir DFS chaqiruvi hosil qilgan komponent bitta kuchli bog‘langan komponent bo‘ladi.
@@ -25,7 +25,7 @@ Algoritmni rekursiv tarzda tasvirlash va amalga oshirish juda oson. Qidiruvni bi
 
 ## Graf qirralarini tasniflash
 
-$G$ graf qirralarini $(u,v)$ qirraning uchlari $u$ va $v$ ning kirish hamda chiqish vaqtlaridan foydalanib tasniflash mumkin. Bunday tasnif ko‘pincha [ko‘priklarni topish](/algorithms/graph/bridge-searching) va [artikulyatsiya nuqtalarini topish](/algorithms/graph/cutpoints) kabi masalalarda ishlatiladi.
+$G$ graf qirralarini $(u,v)$ qirraning uchlari $u$ va $v$ ning kirish hamda chiqish vaqtlaridan foydalanib tasniflash mumkin. Bunday tasnif ko‘pincha [ko‘priklarni topish](/algorithms/graph/bridge-searching) va [ajratuvchi tugunlarni topish](/algorithms/graph/cutpoints) kabi masalalarda ishlatiladi.
 
 DFS bajaramiz va uchragan qirralarni quyidagi qoidalar asosida tasniflaymiz.
 
@@ -36,14 +36,14 @@ Agar $v$ ga hali tashrif buyurilmagan bo‘lsa:
 Agar $v$ ga $u$ dan oldin tashrif buyurilgan bo‘lsa:
 
 * **Orqa qirra.** Agar $v$ tugun $u$ ning ajdodi bo‘lsa, $(u,v)$ orqa qirra deyiladi. $v$ ajdod bo‘lishi uchun aynan $v$ ga kirilgan, ammo undan hali chiqilmagan bo‘lishi kerak. Orqa qirra siklni yopadi: DFS rekursiyasida $v$ ajdoddan $u$ avlodgacha yo‘l bor, $u$ avloddan $v$ ajdodga esa orqa qirra mavjud. Shu sababli orqa qirralar yordamida sikllarni aniqlash mumkin.
-* **Oldinga qirra.** Agar $v$ tugun $u$ ning avlodi bo‘lsa, $(u,v)$ oldinga qirra deyiladi. Ya’ni $v$ ga allaqachon tashrif buyurib undan chiqilgan va $	ext{entry}[u] < 	ext{entry}[v]$ bo‘lsa, $(u,v)$ oldinga qirradir.
-* **Ko‘ndalang qirra.** Agar $v$ tugun $u$ ning na ajdodi, na avlodi bo‘lsa, $(u,v)$ ko‘ndalang qirra deyiladi. Boshqacha aytganda, $v$ ga tashrif buyurib undan chiqilgan va $	ext{entry}[u] > 	ext{entry}[v]$ bo‘lsa, $(u,v)$ ko‘ndalang qirradir.
+* **Oldinga qirra.** Agar $v$ tugun $u$ ning avlodi bo‘lsa, $(u,v)$ oldinga qirra deyiladi. Ya’ni $v$ ga allaqachon tashrif buyurib undan chiqilgan va $\text{entry}[u] < \text{entry}[v]$ bo‘lsa, $(u,v)$ oldinga qirradir.
+* **Ko‘ndalang qirra.** Agar $v$ tugun $u$ ning na ajdodi, na avlodi bo‘lsa, $(u,v)$ ko‘ndalang qirra deyiladi. Boshqacha aytganda, $v$ ga tashrif buyurib undan chiqilgan va $\text{entry}[u] > \text{entry}[v]$ bo‘lsa, $(u,v)$ ko‘ndalang qirradir.
 
 **Teorema.** $G$ yo‘naltirilmagan graf bo‘lsin. $G$ da DFS bajarilganda uchragan har bir qirra daraxt qirrasi yoki orqa qirra sifatida tasniflanadi; demak oldinga va ko‘ndalang qirralar faqat yo‘naltirilgan graflarda mavjud bo‘lishi mumkin.
 
-$(u,v)$ — $G$ dagi ixtiyoriy qirra bo‘lsin va umumiylikni yo‘qotmagan holda $u$ ga $v$ dan oldin tashrif buyurilgan, ya’ni $	ext{entry}[u] < 	ext{entry}[v]$ deb faraz qilaylik. DFS har bir qirrani faqat bir marta qayta ishlagani uchun $(u,v)$ qirrani qayta ishlash va tasniflashning faqat ikki usuli bor.
+$(u,v)$ — $G$ dagi ixtiyoriy qirra bo‘lsin va umumiylikni yo‘qotmagan holda $u$ ga $v$ dan oldin tashrif buyurilgan, ya’ni $\text{entry}[u] < \text{entry}[v]$ deb faraz qilaylik. DFS har bir qirrani faqat bir marta qayta ishlagani uchun $(u,v)$ qirrani qayta ishlash va tasniflashning faqat ikki usuli bor.
 
-* Qirrani birinchi marta $u$ dan $v$ ga qarab ko‘ramiz. $	ext{entry}[u] < 	ext{entry}[v]$ bo‘lgani va DFS rekursiv ishlagani sababli, chaqiruvlar stekida yuqoriga qaytib $u$ tugundan chiqishimizdan oldin $v$ tugun to‘liq ko‘rib chiqilib, undan chiqiladi. DFS $(u,v)$ qirrani ilk bor $u$ dan $v$ ga qarab ko‘rayotganda $v$ hali tashrif buyurilmagan bo‘lishi shart; aks holda $u$ va $v$ qo‘shni bo‘lgani uchun qidiruv $v$ dan chiqishdan oldin qirrani $v$ dan $u$ ga qarab ko‘rgan bo‘lardi. Demak $(u,v)$ daraxt qirrasidir.
+* Qirrani birinchi marta $u$ dan $v$ ga qarab ko‘ramiz. $\text{entry}[u] < \text{entry}[v]$ bo‘lgani va DFS rekursiv ishlagani sababli, chaqiruvlar stekida yuqoriga qaytib $u$ tugundan chiqishimizdan oldin $v$ tugun to‘liq ko‘rib chiqilib, undan chiqiladi. DFS $(u,v)$ qirrani ilk bor $u$ dan $v$ ga qarab ko‘rayotganda $v$ hali tashrif buyurilmagan bo‘lishi shart; aks holda $u$ va $v$ qo‘shni bo‘lgani uchun qidiruv $v$ dan chiqishdan oldin qirrani $v$ dan $u$ ga qarab ko‘rgan bo‘lardi. Demak $(u,v)$ daraxt qirrasidir.
 * Qirrani birinchi marta $v$ dan $u$ ga qarab ko‘ramiz. $u$ tugun $v$ dan oldin topilgan va qirralar faqat bir marta qayta ishlanganligi uchun, $(u,v)$ qirrani ilk bor $v$ dan $u$ ga qarab ko‘rishimizning yagona imkoniyati — $u$ dan $v$ ga $(u,v)$ qirrasidan foydalanmaydigan boshqa yo‘l mavjud bo‘lishidir. Shunda $u$ tugun $v$ ning ajdodiga aylanadi. $(u,v)$ qirra hali chiqilmagan $u$ ajdodga $v$ avloddan qaytib, siklni yopadi. Demak $(u,v)$ orqa qirradir.
 
 Qirrani qayta ishlashning faqat shu ikki usuli mavjud va ikkala holatning tasnifi yuqorida berildi. Shunday qilib, yo‘naltirilmagan grafda DFS uchratgan har bir qirra daraxt qirrasi yoki orqa qirra bo‘ladi; oldinga va ko‘ndalang qirralar faqat yo‘naltirilgan graflarda mavjud. Teorema isbotlandi.
@@ -65,7 +65,7 @@ void dfs(int v) {
 }
 ```
 
-Bu chuqurlik bo‘yicha qidiruvning eng sodda implementatsiyasidir. Qo‘llanishlarda aytilganidek, kirish va chiqish vaqtlarini hamda tugun rangini hisoblash foydali bo‘lishi mumkin. Hali tashrif buyurilmagan tugunlarni $0$, tashrif buyurilgan, ammo ulardan hali chiqilmagan tugunlarni $1$, tugundan chiqib bo‘linganini esa $2$ rang bilan belgilaymiz.
+Bu chuqurlik bo‘yicha qidiruvning eng sodda implementatsiyasidir. Qo‘llanishlarda aytilganidek, kirish va chiqish vaqtlarini hamda tugun rangini hisoblash foydali bo‘lishi mumkin. Hali tashrif buyurilmagan tugunlarni 0, tashrif buyurilgan, ammo ulardan hali chiqilmagan tugunlarni 1, tugundan chiqib bo‘linganini esa 2 rang bilan belgilaymiz.
 
 Quyidagi umumiy implementatsiya bu qiymatlarni ham hisoblaydi:
 

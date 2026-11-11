@@ -4,7 +4,7 @@
 
 $n$ va $k$ natural sonlari berilgan. $1$ dan $n$ gacha bo‘lgan barcha sonlar aylana bo‘ylab yozilgan. Avval birinchi sondan boshlab $k$-son sanaladi va o‘chiriladi. So‘ng keyingi sondan boshlab yana $k$ ta son sanaladi va $k$-son o‘chiriladi. Jarayon bitta son qolguncha davom etadi. Oxirgi qolgan sonni topish talab etiladi.
 
-Bu masalani I asrda **Flavius Josephus** taklif qilgan, garchi uning dastlabki ko‘rinishi torroq, ya’ni $k=2$ uchun bo‘lgan.
+Bu masalani I asrda **Flavius Josephus** taklif qilgan, garchi uning dastlabki ko‘rinishi torroq, ya’ni $k = 2$ uchun bo‘lgan.
 
 Jarayonni to‘g‘ridan-to‘g‘ri modellashtirish bilan masalani $O(n^2)$ vaqtda yechish mumkin. [Segment daraxti](/algorithms/data-structures/segment-tree) yordamida bu vaqtni $O(n \log n)$ gacha yaxshilash mumkin. Ammo bundan ham tezroq yechim izlaymiz.
 
@@ -65,11 +65,11 @@ Bu formulani tahliliy ravishda ham chiqarish mumkin. Yana pozitsiyalarni 0 dan r
 
 ## $O(k \log n)$ yechimni modellashtirish
 
-$k$ nisbatan kichik bo‘lsa, yuqoridagi $O(n)$ rekursiv yechimdan tezroq usul topish mumkin. $k$ soni $n$ dan ancha kichik bo‘lsa, bitta bosqichda $\left\lfloor \frac{n}{k} \right\rfloor$ ta sonni alohida aylanib chiqmasdan o‘chirish mumkin.
+$k$ nisbatan kichik bo‘lsa, yuqoridagi $O(n)$ rekursiv yechimdan tezroq usul topish mumkin. $k$ soni $n$ dan ancha kichik bo‘lsa, bitta bosqichda $\lfloor \frac{n}{k} \rfloor$ ta sonni alohida aylanib chiqmasdan o‘chirish mumkin.
 
-Shundan keyin $n - \left\lfloor \frac{n}{k} \right\rfloor$ ta son qoladi va $\left\lfloor \frac{n}{k} \right\rfloor \cdot k$-sondan boshlaymiz. Demak, javob indeksini shuncha surish kerak. $\left\lfloor \frac{n}{k} \right\rfloor \cdot k$ qiymati $-n \bmod k$ ga tengligini ko‘rish mumkin. Har $k$-sonni o‘chirganimiz sababli natija indeksidan oldin nechta son o‘chirilganini ham qo‘shish kerak; buni natija indeksini $k-1$ ga bo‘lib topamiz.
+Shundan keyin $n - \lfloor \frac{n}{k} \rfloor$ ta son qoladi va $\lfloor \frac{n}{k} \rfloor \cdot k$-sondan boshlaymiz. Demak, javob indeksini shuncha surish kerak. $\lfloor \frac{n}{k} \rfloor \cdot k$ qiymati $-n \bmod k$ ga tengligini ko‘rish mumkin. Har $k$-sonni o‘chirganimiz sababli natija indeksidan oldin nechta son o‘chirilganini ham qo‘shish kerak; buni natija indeksini $k-1$ ga bo‘lib topamiz.
 
-$n<k$ bo‘lgan holatni ham alohida qayta ishlash zarur. Aks holda yuqoridagi optimallashtirish cheksiz rekursiyaga olib keladi.
+$n < k$ bo‘lgan holatni ham alohida qayta ishlash zarur. Aks holda yuqoridagi optimallashtirish cheksiz rekursiyaga olib keladi.
 
 Qulaylik uchun 0 dan raqamlashdagi **amalga oshirish**:
 
@@ -92,7 +92,7 @@ int josephus(int n, int k) {
 }
 ```
 
-Algoritmning **murakkabligi**ni baholaymiz. $n<k$ holati eski yechim bilan $O(k)$ vaqtda bajariladi. Asosiy algoritmning har bir bosqichidan keyin $n$ ta son o‘rniga $n\left(1-\frac{1}{k}\right)$ ta son qoladi. Shuning uchun bosqichlar soni $x$ ni taxminan quyidagi tenglamadan topish mumkin:
+Algoritmning **murakkabligi**ni baholaymiz. $n < k$ holati eski yechim bilan $O(k)$ vaqtda bajariladi. Asosiy algoritmning har bir bosqichidan keyin $n$ ta son o‘rniga $n\left(1-\frac{1}{k}\right)$ ta son qoladi. Shuning uchun bosqichlar soni $x$ ni taxminan quyidagi tenglamadan topish mumkin:
 
 $$n\left(1-\frac{1}{k}\right)^x = 1.$$
 
@@ -108,7 +108,7 @@ $$x \approx k \ln n.$$
 
 Demak, algoritmning haqiqiy murakkabligi $O(k \log n)$.
 
-## $k=2$ uchun tahliliy yechim
+## $k = 2$ uchun tahliliy yechim
 
 Josephus Flavius taklif qilgan ayni shu xususiy holat ancha oson yechiladi.
 
@@ -124,6 +124,6 @@ Bu rekurrent bog‘lanishni kodda bevosita ishlatish mumkin. Qonuniyatni boshqa 
 
 $$J_{n,2} = 1 + 2\left(n-2^{\lfloor \log_2 n \rfloor}\right)$$
 
-## $k>2$ uchun tahliliy yechim
+## $k > 2$ uchun tahliliy yechim
 
-Masala sodda ko‘rinsa va u haqda ko‘plab maqolalar yozilgan bo‘lsa ham, $k>2$ uchun Josephus masalasining sodda tahliliy ifodasi hozirgacha topilmagan. Kichik $k$ lar uchun ayrim formulalar chiqarilgan, ammo amalda ularning barchasini qo‘llash qiyin. Masalan, Halbeisen va Hungerbuhlerning “The Josephus Problem”, shuningdek Odlyzko va Wilfning “Functional iteration and the Josephus problem” ishlariga qarang.
+Masala sodda ko‘rinsa va u haqda ko‘plab maqolalar yozilgan bo‘lsa ham, $k > 2$ uchun Josephus masalasining sodda tahliliy ifodasi hozirgacha topilmagan. Kichik $k$ lar uchun ayrim formulalar chiqarilgan, ammo ko‘rinishidan, amalda ularning barchasini qo‘llash qiyin. Masalan, Halbeisen va Hungerbuhlerning “The Josephus Problem”, shuningdek Odlyzko va Wilfning “Functional iteration and the Josephus problem” ishlariga qarang.

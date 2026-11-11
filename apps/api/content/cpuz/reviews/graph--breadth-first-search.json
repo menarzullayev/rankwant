@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T20:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph, formula, both code languages and application list with the original; nothing missing or added.",
+      "content_sha256": "dbe9ddd13ed983d9c3ab4c0d70970a82b00e931536fbc4539d2fe9b711a73d5c"
+    },
+    {
+      "at": "2026-11-11T20:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed one calque in the opening sentence about the path found by the search.",
+      "content_sha256": "dbe9ddd13ed983d9c3ab4c0d70970a82b00e931536fbc4539d2fe9b711a73d5c"
+    },
+    {
+      "at": "2026-11-11T20:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Rewrote the weights 0 or 1 as plain text as in the original; formulas now match.",
+      "content_sha256": "dbe9ddd13ed983d9c3ab4c0d70970a82b00e931536fbc4539d2fe9b711a73d5c"
+    }
+  ]
+}

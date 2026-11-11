@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T15:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Corrected the root-vertex condition (articulation point if and only if more than one DFS child), the back-edge existence statement (v has a child to with low[to] < tin[v]) and removed an added remark about the root after the low[to] >= tin[v] criterion, which the original does not state there.",
+      "content_sha256": "4316c2e49e72bf161afa74e0ff43517eea4cb652f02b335c925be1f9ac9dd09b"
+    },
+    {
+      "at": "2026-11-11T15:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the awkward 'bo‘lishi uchun va faqat shundagina' constructions with 'zarur va yetarli', wrote the root vertex as math like the original and changed the not-equal operator to its spelling in the original so the formula matches.",
+      "content_sha256": "4316c2e49e72bf161afa74e0ff43517eea4cb652f02b335c925be1f9ac9dd09b"
+    },
+    {
+      "at": "2026-11-11T15:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "The inline formula with the not-equal sign now uses the same operator spelling as the original.",
+      "content_sha256": "4316c2e49e72bf161afa74e0ff43517eea4cb652f02b335c925be1f9ac9dd09b"
+    }
+  ]
+}

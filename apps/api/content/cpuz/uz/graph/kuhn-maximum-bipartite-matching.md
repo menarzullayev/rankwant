@@ -1,26 +1,26 @@
-# Ikki bo‘lakli grafda eng katta matching uchun Kuhn algoritmi
+# Ikki bo‘lakli grafda eng katta juftlashtirish uchun Kuhn algoritmi
 
 ## Masala
 
-$n$ ta tugun va $m$ ta qirrali ikki bo‘lakli $G$ graf berilgan. Maksimal matchingni toping, ya’ni tanlangan qirralarning hech biri boshqa tanlangan qirra bilan umumiy tugunga ega bo‘lmaydigan qilib imkon qadar ko‘p qirra tanlang.
+$n$ ta tugun va $m$ ta qirrali ikki bo‘lakli $G$ graf berilgan. Eng katta juftlashtirishni toping, ya’ni tanlangan qirralarning hech biri boshqa tanlangan qirra bilan umumiy tugunga ega bo‘lmaydigan qilib imkon qadar ko‘p qirra tanlang.
 
 ## Algoritm tavsifi
 
 ### Kerakli ta’riflar
 
-* **Matching** $M$ — grafning juft-jufti bilan qo‘shni bo‘lmagan qirralari to‘plami (boshqacha aytganda, $M$ to‘plamidagi ko‘pi bilan bitta qirra grafning istalgan tuguniga tutashishi kerak).
-Matchingning **quvvati** — undagi qirralar soni.
-Matchingdagi biror qirraga tutash barcha tugunlar (ya’ni $M$ hosil qilgan qism grafda darajasi aynan bir bo‘lgan tugunlar) ushbu matching tomonidan **to‘yintirilgan** deb ataladi.
+* **Juftlashtirish** (matching) $M$ — grafning juft-jufti bilan qo‘shni bo‘lmagan qirralari to‘plami (boshqacha aytganda, $M$ to‘plamidagi ko‘pi bilan bitta qirra grafning istalgan tuguniga tutashishi kerak).
+Juftlashtirishning **quvvati** — undagi qirralar soni.
+Juftlashtirishdagi biror qirraga tutash barcha tugunlar (ya’ni $M$ hosil qilgan qism grafda darajasi aynan bir bo‘lgan tugunlar) ushbu juftlashtirish tomonidan **to‘yintirilgan** deb ataladi.
 
-* **Maksimal matching** — $G$ grafning boshqa hech bir matchingining xos qism to‘plami bo‘lmagan $M$ matching.
+* **Maksimal juftlashtirish** — $G$ grafning boshqa hech bir juftlashtirishining xos qism to‘plami bo‘lmagan $M$ juftlashtirish.
 
-* **Eng katta matching** (maksimal quvvatli matching deb ham ataladi) — mumkin bo‘lgan eng ko‘p qirrani o‘z ichiga oladigan matching. Har bir eng katta matching maksimal matchingdir.
+* **Eng katta juftlashtirish** (maksimal quvvatli juftlashtirish deb ham ataladi) — mumkin bo‘lgan eng ko‘p qirrani o‘z ichiga oladigan juftlashtirish. Har bir eng katta juftlashtirish maksimal juftlashtirishdir.
 
-* Bu yerda uzunligi $k$ bo‘lgan **yo‘l**, agar boshqacha ko‘rsatilmagan bo‘lsa, $k$ ta qirrani o‘z ichiga olgan *oddiy* yo‘lni (ya’ni takrorlangan tugun yoki qirrasiz yo‘lni) anglatadi.
+* Bu yerda uzunligi $k$ bo‘lgan **yo‘l**, agar boshqacha ko‘rsatilmagan bo‘lsa, $k$ ta qirrani o‘z ichiga olgan *oddiy* yo‘lni (ya’ni takrorlanuvchi tugun yoki qirralarni o‘z ichiga olmagan yo‘lni) anglatadi.
 
-* **Almashinuvchi yo‘l** (ikki bo‘lakli grafda, biror matchingga nisbatan) — qirralari navbatma-navbat matchingga tegishli va tegishli bo‘lmagan yo‘l.
+* **Almashinuvchi yo‘l** (ikki bo‘lakli grafda, biror juftlashtirishga nisbatan) — qirralari navbatma-navbat juftlashtirishga tegishli va tegishli bo‘lmagan yo‘l.
 
-* **Oshiruvchi yo‘l** (ikki bo‘lakli grafda, biror matchingga nisbatan) — boshlang‘ich va oxirgi tugunlari to‘yinmagan, ya’ni matchingga kirmaydigan almashinuvchi yo‘l.
+* **Oshiruvchi yo‘l** (ikki bo‘lakli grafda, biror juftlashtirishga nisbatan) — boshlang‘ich va oxirgi tugunlari to‘yinmagan, ya’ni juftlashtirishga kirmaydigan almashinuvchi yo‘l.
 
 * $A$ va $B$ to‘plamlarning $A \oplus B$ bilan belgilanuvchi **simmetrik ayirmasi** (**diz’yunkt birlashma** deb ham ataladi) — $A$ yoki $B$ ning aynan bittasiga tegishli, ammo ikkalasiga bir paytda tegishli bo‘lmagan barcha elementlar to‘plami.
 Ya’ni $A \oplus B = (A-B) \cup (B-A) = (A \cup B) - (A \cap B)$.
@@ -31,46 +31,46 @@ Bu lemma 1957-yilda fransuz matematigi **Claude Berge** tomonidan isbotlangan, g
 
 #### Bayon
 
-$M$ matching eng katta $\Leftrightarrow$ $M$ matchingga nisbatan oshiruvchi yo‘l mavjud emas.
+$M$ juftlashtirish eng katta $\Leftrightarrow$ $M$ juftlashtirishga nisbatan oshiruvchi yo‘l mavjud emas.
 
 #### Isbot
 
 Ikki tomonlama implikatsiyaning har ikki tomoni qarama-qarshilik orqali isbotlanadi.
 
-1. $M$ matching eng katta $\Rightarrow$ $M$ matchingga nisbatan oshiruvchi yo‘l mavjud emas.
+1. $M$ juftlashtirish eng katta $\Rightarrow$ $M$ juftlashtirishga nisbatan oshiruvchi yo‘l mavjud emas.
 
-    Berilgan eng katta $M$ matchingga nisbatan $P$ oshiruvchi yo‘l mavjud bo‘lsin. $P$ oshiruvchi yo‘lning uzunligi albatta toq bo‘ladi va undagi $M$ ga kirmaydigan qirralar soni $M$ ga kiradigan qirralar sonidan bittaga ko‘p bo‘ladi.
-    Asl $M$ matchingdagi $P$ ga ham kiradigan qirralardan tashqari barcha qirralarni hamda $P$ dagi $M$ ga kirmaydigan qirralarni olib, yangi $M'$ matching yaratamiz.
-    Bu yaroqli matching, chunki $P$ ning boshlang‘ich va oxirgi tugunlari $M$ tomonidan to‘yintirilmagan, qolgan tugunlar esa faqat $P \cap M$ matching tomonidan to‘yintirilgan.
-    Yangi $M'$ matching $M$ dan bitta ko‘p qirraga ega bo‘ladi, demak $M$ eng katta bo‘la olmas edi.
+    Berilgan eng katta $M$ juftlashtirishga nisbatan $P$ oshiruvchi yo‘l mavjud bo‘lsin. $P$ oshiruvchi yo‘lning uzunligi albatta toq bo‘ladi va undagi $M$ ga kirmaydigan qirralar soni $M$ ga kiradigan qirralar sonidan bittaga ko‘p bo‘ladi.
+    Asl $M$ juftlashtirishdagi $P$ ga ham kiradigan qirralardan tashqari barcha qirralarni hamda $P$ dagi $M$ ga kirmaydigan qirralarni olib, yangi $M'$ juftlashtirish yaratamiz.
+    Bu yaroqli juftlashtirish, chunki $P$ ning boshlang‘ich va oxirgi tugunlari $M$ tomonidan to‘yintirilmagan, qolgan tugunlar esa faqat $P \cap M$ juftlashtirish tomonidan to‘yintirilgan.
+    Yangi $M'$ juftlashtirish $M$ dan bitta ko‘p qirraga ega bo‘ladi, demak $M$ eng katta bo‘la olmas edi.
 
-    Formal ravishda, biror eng katta $M$ matchingga nisbatan $P$ oshiruvchi yo‘l berilsa, $M'=P\oplus M$ matching uchun $|M'|=|M|+1$, bu esa qarama-qarshilik.
+    Formal ravishda, biror eng katta $M$ juftlashtirishga nisbatan $P$ oshiruvchi yo‘l berilsa, $M'=P\oplus M$ juftlashtirish uchun $|M'|=|M|+1$, bu esa qarama-qarshilik.
 
-2. $M$ matching eng katta $\Leftarrow$ $M$ matchingga nisbatan oshiruvchi yo‘l mavjud emas.
+2. $M$ juftlashtirish eng katta $\Leftarrow$ $M$ juftlashtirishga nisbatan oshiruvchi yo‘l mavjud emas.
 
-    $M$ dan kattaroq quvvatli $M'$ matching mavjud bo‘lsin. $Q=M\oplus M'$ simmetrik ayirmani ko‘ramiz. $Q$ qism graf endi albatta matching bo‘lishi shart emas.
+    $M$ dan kattaroq quvvatli $M'$ juftlashtirish mavjud bo‘lsin. $Q=M\oplus M'$ simmetrik ayirmani ko‘ramiz. $Q$ qism graf endi albatta juftlashtirish bo‘lishi shart emas.
     $Q$ dagi istalgan tugunning darajasi ko‘pi bilan $2$, demak uning barcha bog‘langan komponentlari quyidagi uch turdan biriga kiradi:
 
     * yakkalangan tugun;
     * qirralari navbatma-navbat $M$ va $M'$ dan olingan (oddiy) yo‘l;
     * qirralari navbatma-navbat $M$ va $M'$ dan olingan juft uzunlikdagi sikl.
 
-    $M'$ ning quvvati $M$ nikidan katta bo‘lgani sababli $Q$ da $M'$ dan olingan qirralar $M$ dan olingan qirralardan ko‘proq. Dirichlet prinsipiga ko‘ra, kamida bitta bog‘langan komponent $M'$ dan $M$ ga qaraganda ko‘proq qirra olgan yo‘l bo‘ladi. Har bir bunday yo‘l almashinuvchi bo‘lgani uchun uning boshlang‘ich va oxirgi tugunlari $M$ tomonidan to‘yintirilmagan bo‘ladi; demak, u $M$ uchun oshiruvchi yo‘l. Bu farazga zid. &ensp; $\blacksquare$
+    $M'$ ning quvvati $M$ nikidan katta bo‘lgani sababli $Q$ da $M'$ dan olingan qirralar $M$ dan olingan qirralardan ko‘proq. Dirixle prinsipiga ko‘ra, kamida bitta bog‘langan komponent $M'$ dan $M$ ga qaraganda ko‘proq qirra olgan yo‘l bo‘ladi. Har bir bunday yo‘l almashinuvchi bo‘lgani uchun uning boshlang‘ich va oxirgi tugunlari $M$ tomonidan to‘yintirilmagan bo‘ladi; demak, u $M$ uchun oshiruvchi yo‘l. Bu farazga zid. &ensp; $\blacksquare$
 
 ### Kuhn algoritmi
 
 Kuhn algoritmi Berge lemmasining bevosita qo‘llanishidir. Uning mohiyati quyidagicha:
-avval bo‘sh matching olamiz. Keyin algoritm oshiruvchi yo‘l topa olar ekan, matchingni shu yo‘l bo‘ylab almashtirib yangilaymiz va oshiruvchi yo‘l qidirishni takrorlaymiz. Bunday yo‘lni topish imkonsiz bo‘lishi bilan jarayonni to‘xtatamiz — joriy matching eng katta bo‘ladi.
+avval bo‘sh juftlashtirish olamiz. Keyin algoritm oshiruvchi yo‘l topa olar ekan, juftlashtirishni shu yo‘l bo‘ylab almashtirib yangilaymiz va oshiruvchi yo‘l qidirishni takrorlaymiz. Bunday yo‘lni topish imkonsiz bo‘lishi bilan jarayonni to‘xtatamiz — joriy juftlashtirish eng katta bo‘ladi.
 Oshiruvchi yo‘llarni qanday topishni batafsil tushuntirish qoladi. Kuhn algoritmi bunday yo‘llardan istalganini [chuqurlik bo‘yicha](/algorithms/graph/depth-first-search) yoki [kenglik bo‘yicha](/algorithms/graph/breadth-first-search) qidiruv yordamida topadi. Algoritm grafning barcha tugunlarini navbat bilan ko‘rib, har biridan boshlab oshiruvchi yo‘l topishga urinadi.
 Kirish graf allaqachon ikki qismga ajratilgan deb faraz qilsak, algoritmni tavsiflash qulayroq (aslida algoritmni grafni oshkora ikki qismga ajratmasdan ham implementatsiya qilish mumkin).
-Algoritm grafning birinchi qismidagi barcha $v$ tugunlarni ko‘radi: $v=1\ldots n_1$. Agar joriy $v$ tugun joriy matching tomonidan allaqachon to‘yintirilgan bo‘lsa (ya’ni unga tutash biror qirra allaqachon tanlangan bo‘lsa), bu tugunni o‘tkazib yuboramiz. Aks holda algoritm uni to‘yintirishga urinadi va buning uchun shu tugundan boshlanuvchi oshiruvchi yo‘lni qidiradi.
+Algoritm grafning birinchi qismidagi barcha $v$ tugunlarni ko‘radi: $v=1\ldots n_1$. Agar joriy $v$ tugun joriy juftlashtirish tomonidan allaqachon to‘yintirilgan bo‘lsa (ya’ni unga tutash biror qirra allaqachon tanlangan bo‘lsa), bu tugunni o‘tkazib yuboramiz. Aks holda algoritm uni to‘yintirishga urinadi va buning uchun shu tugundan boshlanuvchi oshiruvchi yo‘lni qidiradi.
 Oshiruvchi yo‘l maxsus chuqurlik yoki kenglik bo‘yicha qidiruv yordamida topiladi (implementatsiya soddaligi uchun odatda chuqurlik bo‘yicha qidiruv ishlatiladi).
-Dastlab chuqurlik bo‘yicha qidiruv birinchi qismdagi joriy to‘yinmagan $v$ tugunda turadi. Shu tugundan chiquvchi barcha qirralarni ko‘ramiz. Joriy qirra $(v,to)$ bo‘lsin. Agar $to$ tugun matching tomonidan hali to‘yintirilmagan bo‘lsa, oshiruvchi yo‘l topishga muvaffaq bo‘ldik: u bitta $(v,to)$ qirradan iborat.
-Bu holda ushbu qirrani matchingga qo‘shib, $v$ tugundan oshiruvchi yo‘l qidirishni to‘xtatamiz. Aks holda, $to$ tugun biror $(to,p)$ qirra bilan allaqachon to‘yintirilgan bo‘lsa, shu qirra bo‘ylab o‘tamiz: demak, $(v,to),(to,p),\ldots$ qirralardan o‘tadigan oshiruvchi yo‘lni topishga urinib ko‘ramiz.
+Dastlab chuqurlik bo‘yicha qidiruv birinchi qismdagi joriy to‘yinmagan $v$ tugunda turadi. Shu tugundan chiquvchi barcha qirralarni ko‘ramiz. Joriy qirra $(v,to)$ bo‘lsin. Agar $to$ tugun juftlashtirish tomonidan hali to‘yintirilmagan bo‘lsa, oshiruvchi yo‘l topishga muvaffaq bo‘ldik: u bitta $(v,to)$ qirradan iborat.
+Bu holda ushbu qirrani juftlashtirishga qo‘shib, $v$ tugundan oshiruvchi yo‘l qidirishni to‘xtatamiz. Aks holda, $to$ tugun biror $(to,p)$ qirra bilan allaqachon to‘yintirilgan bo‘lsa, shu qirra bo‘ylab o‘tamiz: demak, $(v,to),(to,p),\ldots$ qirralardan o‘tadigan oshiruvchi yo‘lni topishga urinib ko‘ramiz.
 Buning uchun qidiruvda shunchaki $p$ tugunga o‘tamiz — endi shu tugundan oshiruvchi yo‘l topishga urinib ko‘ramiz.
 Shunday qilib, $v$ tugundan ishga tushirilgan qidiruv yo oshiruvchi yo‘l topib, $v$ tugunni to‘yintiradi, yo bunday oshiruvchi yo‘l topmaydi (demak, bu $v$ tugunni to‘yintirib bo‘lmaydi).
 
-$v=1\ldots n_1$ tugunlarning barchasi ko‘rib chiqilgach, joriy matching eng katta bo‘ladi.
+$v=1\ldots n_1$ tugunlarning barchasi ko‘rib chiqilgach, joriy juftlashtirish eng katta bo‘ladi.
 
 ### Ishlash vaqti
 
@@ -86,11 +86,11 @@ Bu birinchi qismda ikkinchisiga qaraganda kamroq tugun bo‘lishi foydaliroq eka
 Yuqoridagi algoritmning chuqurlik bo‘yicha qidiruvga asoslangan va oshkora ikki qismga ajratilgan ikki bo‘lakli grafni qabul qiladigan implementatsiyasini keltiramiz.
 Bu implementatsiya juda ixcham va ehtimol uni shu ko‘rinishda yodda saqlash kerak.
 Bu yerda $n$ — birinchi qismdagi tugunlar soni, $k$ — ikkinchi qismdagi tugunlar soni, $g[v]$ esa birinchi qismdagi $v$ tugundan chiquvchi qirralar ro‘yxati (ya’ni shu qirralar $v$ dan olib boradigan tugunlar raqamlari ro‘yxati). Ikkala qism tugunlari mustaqil raqamlangan: birinchi qism tugunlari $1\ldots n$, ikkinchi qismdagilar $1\ldots k$.
-Keyin ikkita yordamchi massiv bor: $\rm mt$ va $\rm used$. Birinchisi — $\rm mt$ — joriy matching haqidagi ma’lumotni saqlaydi. Dasturlash qulayligi uchun bu ma’lumot faqat ikkinchi qism tugunlari uchun saqlanadi: $\textrm{mt[}i\rm]$ — ikkinchi qismdagi $i$ tugun bilan qirra orqali bog‘langan birinchi qism tugunining raqami (yoki undan matching qirrasi chiqmasa $-1$). Ikkinchi $\rm used$ massiv — chuqurlik bo‘yicha qidiruvda tugunlarga “tashrif”ning odatdagi massivi (u DFS bir tugunga ikki marta kirmasligi uchun kerak).
-$\texttt{try\_kuhn}$ funksiya chuqurlik bo‘yicha qidiruvdir. Agar u $v$ tugundan oshiruvchi yo‘l topa olsa, $\rm true$ qaytaradi; bunda funksiya topilgan zanjir bo‘ylab matchingni allaqachon almashtirib bo‘lgan deb hisoblanadi.
-Funksiya ichida birinchi qismdagi $v$ tugundan chiquvchi barcha qirralar ko‘riladi va quyidagisi tekshiriladi: agar qirra to‘yinmagan $to$ tugunga olib borsa yoki $to$ to‘yintirilgan bo‘lsa-yu, $\textrm{mt[}to\rm]$ dan rekursiv boshlab oshiruvchi zanjir topish mumkin bo‘lsa, oshiruvchi yo‘l topdik deymiz. $\rm true$ natija bilan qaytishdan oldin joriy qirrani almashtiramiz: $to$ ga tutash matching qirrasini $v$ tugunga yo‘naltiramiz.
-Asosiy dastur avval joriy matching bo‘shligini bildiradi ($\rm mt$ ro‘yxat $-1$ lar bilan to‘ldiriladi). Keyin birinchi qismdagi $v$ tugun uchun $\texttt{try\_kuhn}$ chaqiriladi va avval $\rm used$ massiv nollangach, undan chuqurlik bo‘yicha qidiruv boshlanadi.
-Matching hajmini asosiy dasturdagi $\texttt{try\_kuhn}$ chaqiruvlaridan $\rm true$ qaytarganlar soni sifatida oson olish mumkinligini qayd etish kerak. Izlanayotgan eng katta matchingning o‘zi $\rm mt$ massivida saqlanadi.
+Keyin ikkita yordamchi massiv bor: $\rm mt$ va $\rm used$. Birinchisi — $\rm mt$ — joriy juftlashtirish haqidagi ma’lumotni saqlaydi. Dasturlash qulayligi uchun bu ma’lumot faqat ikkinchi qism tugunlari uchun saqlanadi: $\textrm{mt[}i\rm]$ — ikkinchi qismdagi $i$ tugun bilan qirra orqali bog‘langan birinchi qism tugunining raqami (yoki undan juftlashtirish qirrasi chiqmasa $-1$). Ikkinchi $\rm used$ massiv — chuqurlik bo‘yicha qidiruvda tugunlarga “tashrif”ning odatdagi massivi (u DFS bir tugunga ikki marta kirmasligi uchun kerak).
+$\texttt{try\_kuhn}$ funksiya chuqurlik bo‘yicha qidiruvdir. Agar u $v$ tugundan oshiruvchi yo‘l topa olsa, $\rm true$ qaytaradi; bunda funksiya topilgan zanjir bo‘ylab juftlashtirishni allaqachon almashtirib bo‘lgan deb hisoblanadi.
+Funksiya ichida birinchi qismdagi $v$ tugundan chiquvchi barcha qirralar ko‘riladi va quyidagisi tekshiriladi: agar qirra to‘yinmagan $to$ tugunga olib borsa yoki $to$ to‘yintirilgan bo‘lsa-yu, $\textrm{mt[}to\rm]$ dan rekursiv boshlab oshiruvchi zanjir topish mumkin bo‘lsa, oshiruvchi yo‘l topdik deymiz. $\rm true$ natija bilan qaytishdan oldin joriy qirrani almashtiramiz: $to$ ga tutash juftlashtirish qirrasini $v$ tugunga yo‘naltiramiz.
+Asosiy dastur avval joriy juftlashtirish bo‘shligini bildiradi ($\rm mt$ ro‘yxat $-1$ lar bilan to‘ldiriladi). Keyin birinchi qismdagi $v$ tugun uchun $\texttt{try\_kuhn}$ chaqiriladi va avval $\rm used$ massiv nollangach, undan chuqurlik bo‘yicha qidiruv boshlanadi.
+Juftlashtirish hajmini asosiy dasturdagi $\texttt{try\_kuhn}$ chaqiruvlaridan $\rm true$ qaytarganlar soni sifatida oson olish mumkinligini qayd etish kerak. Izlanayotgan eng katta juftlashtirishning o‘zi $\rm mt$ massivida saqlanadi.
 
 ```cpp
 int n, k;
@@ -128,11 +128,11 @@ Kuhn algoritmini ikki bo‘lakli ekani ma’lum, ammo qismlarga oshkora ajratili
 
 ### Yaxshilangan implementatsiya
 
-Algoritmni quyidagicha o‘zgartiramiz. Algoritmning asosiy siklidan oldin biror sodda algoritm (oddiy **evristik algoritm**) yordamida **ixtiyoriy matching** topamiz va shundan keyingina bu matchingni yaxshilaydigan $\texttt{try\_kuhn}()$ chaqiruvlari siklini bajaramiz. Natijada tasodifiy graflarda algoritm sezilarli tezroq ishlaydi, chunki ko‘pchilik graflarda evristika bilan yetarlicha katta matchingni oson topish, keyin esa odatiy Kuhn algoritmi bilan uni eng kattasigacha yaxshilash mumkin. Shu tariqa evristika yordamida joriy matchingga allaqachon kiritilgan tugunlardan chuqurlik bo‘yicha qidiruv boshlash xarajatini tejaymiz.
-Masalan, birinchi qismdagi barcha tugunlar bo‘yicha yurib, har biri uchun matchingga qo‘shish mumkin bo‘lgan ixtiyoriy qirrani topib, uni qo‘shish mumkin.
+Algoritmni quyidagicha o‘zgartiramiz. Algoritmning asosiy siklidan oldin biror sodda algoritm (oddiy **evristik algoritm**) yordamida **ixtiyoriy juftlashtirish** topamiz va shundan keyingina bu juftlashtirishni yaxshilaydigan $\texttt{try\_kuhn}()$ chaqiruvlari siklini bajaramiz. Natijada tasodifiy graflarda algoritm sezilarli tezroq ishlaydi, chunki ko‘pchilik graflarda evristika bilan yetarlicha katta juftlashtirishni oson topish, keyin esa odatiy Kuhn algoritmi bilan uni eng kattasigacha yaxshilash mumkin. Shu tariqa evristika yordamida joriy juftlashtirishga allaqachon kiritilgan tugunlardan chuqurlik bo‘yicha qidiruv boshlash xarajatini tejaymiz.
+Masalan, birinchi qismdagi barcha tugunlar bo‘yicha yurib, har biri uchun juftlashtirishga qo‘shish mumkin bo‘lgan ixtiyoriy qirrani topib, uni qo‘shish mumkin.
 Hatto shunday sodda evristika ham Kuhn algoritmini bir necha baravar tezlashtirishi mumkin.
 
-Asosiy siklni biroz o‘zgartirish kerakligini unutmang. Asosiy siklda $\texttt{try\_kuhn}$ chaqirilganda joriy tugun hali matchingga kiritilmagan deb faraz qilinadi, shuning uchun tegishli tekshiruv qo‘shish zarur.
+Asosiy siklni biroz o‘zgartirish kerakligini unutmang. Asosiy siklda $\texttt{try\_kuhn}$ chaqirilganda joriy tugun hali juftlashtirishga kiritilmagan deb faraz qilinadi, shuning uchun tegishli tekshiruv qo‘shish zarur.
 Implementatsiyada faqat $\textrm{main}()$ funksiyasidagi kod o‘zgaradi:
 
 ```cpp
@@ -161,13 +161,13 @@ int main() {
 }
 ```
 
-**Yana bir yaxshi evristika** quyidagicha. Har bir qadamda eng kichik darajali (ammo yakkalanmagan) tugunni topadi, undan ixtiyoriy qirrani tanlab matchingga qo‘shadi, keyin shu ikki tugunni ularga tutash barcha qirralar bilan birga grafdan olib tashlaydi. Bunday ochko‘z usul tasodifiy graflarda juda yaxshi ishlaydi; ko‘p hollarda hatto eng katta matchingni ham quradi (ammo unga qarshi test mavjud va unda u eng katta matchingdan ancha kichik matching topadi).
+**Yana bir yaxshi evristika** quyidagicha. Har bir qadamda eng kichik darajali (ammo yakkalanmagan) tugunni topadi, undan ixtiyoriy qirrani tanlab juftlashtirishga qo‘shadi, keyin shu ikki tugunni ularga tutash barcha qirralar bilan birga grafdan olib tashlaydi. Bunday ochko‘z usul tasodifiy graflarda juda yaxshi ishlaydi; ko‘p hollarda hatto eng katta juftlashtirishni ham quradi (ammo unga qarshi test mavjud va unda u eng katta juftlashtirishdan ancha kichik juftlashtirish topadi).
 
 ## Eslatmalar
 
 * Kuhn algoritmi **Hungarian algoritmi**da, **Kuhn–Munkres algoritmi** deb ham ataladigan algoritmda qism dastur sifatida ishlatiladi.
-* Kuhn algoritmi $O(nm)$ vaqtda ishlaydi. Odatda uni implementatsiya qilish sodda, ammo ikki bo‘lakli grafda eng katta matching masalasi uchun samaraliroq algoritmlar ham mavjud, masalan $O(\sqrt{n}m)$ vaqtda ishlaydigan **Hopcroft–Karp–Karzanov algoritmi**.
-* [Minimal tugun qoplamasi masalasi](https://en.wikipedia.org/wiki/Vertex_cover) umumiy graflar uchun NP-qiyin. Ammo [Kőnig teoremasi](https://en.wikipedia.org/wiki/K%C5%91nig%27s_theorem_(graph_theory)) ikki bo‘lakli graflarda eng katta matching quvvati minimal tugun qoplamasi quvvatiga tengligini beradi. Demak, ikki bo‘lakli graflarda minimal tugun qoplamasi masalasini polinomial vaqtda yechish uchun maksimal matching algoritmlaridan foydalanishimiz mumkin.
+* Kuhn algoritmi $O(nm)$ vaqtda ishlaydi. Odatda uni implementatsiya qilish sodda, ammo ikki bo‘lakli grafda eng katta juftlashtirish masalasi uchun samaraliroq algoritmlar ham mavjud, masalan $O(\sqrt{n}m)$ vaqtda ishlaydigan **Hopcroft–Karp–Karzanov algoritmi**.
+* [Minimal tugun qoplamasi masalasi](https://en.wikipedia.org/wiki/Vertex_cover) umumiy graflar uchun NP-qiyin. Ammo [Kőnig teoremasi](https://en.wikipedia.org/wiki/K%C5%91nig%27s_theorem_(graph_theory)) ikki bo‘lakli graflarda eng katta juftlashtirish quvvati minimal tugun qoplamasi quvvatiga tengligini beradi. Demak, ikki bo‘lakli graflarda minimal tugun qoplamasi masalasini polinomial vaqtda yechish uchun eng katta juftlashtirish algoritmlaridan foydalanishimiz mumkin.
 
 ## Mashq masalalari
 

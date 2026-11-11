@@ -1,64 +1,61 @@
 # Delaunay triangulyatsiyasi va Voronoi diagrammasi
 
-Tekislikda $\{p_i\}$ nuqtalar to‘plami berilgan bo‘lsin. Uning Voronoi diagrammasi $V(\{p_i\})$ — tekislikning $n$ ta $V_i$ sohaga bo‘linishi bo‘lib,
+Tekislikda $\{p_i\}$ nuqtalar to‘plami berilgan bo‘lsin.
+$\{p_i\}$ ning **Voronoi diagrammasi** $V(\{p_i\})$ — tekislikning $n$ ta $V_i$ sohaga bo‘linishi, bunda $V_i = \{p\in\mathbb{R}^2;\ \rho(p, p_i) = \min\ \rho(p, p_k)\}$.
+Voronoi diagrammasining kataklari ko‘pburchaklardir (cheksiz bo‘lishi ham mumkin).
+$\{p_i\}$ ning **Delaunay triangulyatsiyasi** $D(\{p_i\})$ — shunday triangulyatsiyaki, unda har bir $p_i$ nuqta har bir $T \in D(\{p_i\})$ uchburchakning tashqi chizilgan aylanasidan tashqarida yoki uning chegarasida yotadi.
 
-$$
-V_i=\{p\in\mathbb{R}^2\mid \rho(p,p_i)=\min_k\rho(p,p_k)\}.
-$$
-
-Voronoi kataklari ko‘pburchaklar bo‘lib, ayrimlari cheksiz bo‘lishi mumkin. $\{p_i\}$ ning Delaunay triangulyatsiyasi $D(\{p_i\})$ esa shunday triangulyatsiyaki, har bir $T\in D(\{p_i\})$ uchburchakning tashqi aylanasining ichida hech bir $p_i$ nuqta yotmaydi; nuqtalar aylana chegarasida yotishiga ruxsat beriladi.
-
-Barcha nuqtalar kollinear bo‘lgan degenerativ holatda Voronoi diagrammasi bog‘lanmagan bo‘lishi, odatdagi ma’nodagi Delaunay triangulyatsiyasi esa mavjud bo‘lmasligi mumkin.
+Voronoi diagrammasi bog‘lanmagan va Delaunay triangulyatsiyasi mavjud bo‘lmaydigan yoqimsiz degenerativ holat bor. Bu barcha nuqtalar kollinear bo‘lgan holatdir.
 
 ## Xossalar
 
-- Delaunay triangulyatsiyasi barcha mumkin bo‘lgan triangulyatsiyalar orasida eng kichik burchakni maksimal qiladi.
-- Nuqtalar to‘plamining minimal Evklid ostov daraxti qirralari Delaunay triangulyatsiyasi qirralarining qism to‘plamidir.
+Delaunay triangulyatsiyasi barcha mumkin bo‘lgan triangulyatsiyalar orasida eng kichik burchakni maksimal qiladi.
 
-Bu xossalar Delaunay triangulyatsiyasini sonli modellashtirish, yaqin qo‘shnilarni topish va geometrik graf qurish masalalarida foydali qiladi.
+Nuqtalar to‘plamining minimal Evklid ostov daraxti uning Delaunay triangulyatsiyasi qirralarining qism to‘plamidir.
 
 ## Duallik
 
-Nuqtalar kollinear emas va hech qaysi to‘rtta nuqta bitta aylanada yotmaydi deb faraz qilaylik. U holda Voronoi diagrammasi va Delaunay triangulyatsiyasi o‘zaro dualdir:
+Faraz qilaylik, $\{p_i\}$ kollinear emas va $\{p_i\}$ orasida hech qaysi to‘rtta nuqta bitta aylanada yotmaydi. U holda $V(\{p_i\})$ va $D(\{p_i\})$ dualdir, ya’ni ulardan birini topsak, ikkinchisini $O(n)$ da topish mumkin. Agar bunday bo‘lmasa-chi? Kollinear holatni oson qayta ishlash mumkin. Aks holda $V$ va $D'$ dualdir, bunda $D'$ — $D$ dan shunday qirralarni olib tashlash orqali hosil qilinadi, bu qirraning ikkala tomonidagi ikkita uchburchak bitta tashqi chizilgan aylanaga ega.
 
-- har bir Delaunay uchburchagiga uning tashqi aylana markazi bo‘lgan Voronoi uchi mos keladi;
-- umumiy Delaunay qirraga ega ikkita uchburchak markazlarini birlashtiruvchi Voronoi qirrasi mavjud;
-- Delaunay qobig‘idagi qirralarga cheksiz Voronoi nurlari mos keladi.
+## Delaunay va Voronoi diagrammalarini qurish
 
-Shuning uchun bittasi qurilgach, ikkinchisini $\mathcal{O}(n)$ da tiklash mumkin. To‘rtta yoki undan ortiq nuqta bitta aylanada yotsa, Delaunay triangulyatsiyasi yagona bo‘lmasligi mumkin. Bu holda bir xil tashqi aylanaga ega qo‘shni uchburchaklar orasidagi qirralarni olib tashlash orqali Voronoi diagrammasining dual grafigi olinadi.
-
-## Delaunay va Voronoi diagrammasini qurish
-
-Duallik sababli faqat bittasini tez qurish kifoya. Quyida Guibas va Stolfi taklif qilgan divide and conquer algoritmi bilan Delaunay triangulyatsiyasini $\mathcal{O}(n\log n)$ da quramiz.
+Duallik tufayli $V$ va $D$ dan faqat bittasini hisoblaydigan tez algoritm yetarli. Biz $D(\{p_i\})$ ni $O(n\log n)$ da qurishni tavsiflaymiz. Triangulyatsiya Guibas va Stolfi tomonidan taklif qilingan divide-and-conquer (bo‘lib yechish) algoritmi yordamida quriladi.
 
 ## Quad-edge ma’lumotlar tuzilmasi
 
-Triangulyatsiya `quad-edge` tuzilmasida saqlanadi. Har bir geometrik qirra to‘rtta bog‘langan yozuv bilan ifodalanadi: ikki qarama-qarshi primal yo‘nalish va ikki dual yo‘nalish.
+Algoritm davomida $D$ quad-edge ma’lumotlar tuzilmasida saqlanadi. Bu tuzilma rasmda tasvirlangan:
 
-Algoritm quyidagi amallardan foydalanadi:
+  ![Quad-Edge](/algorithms-media/geometry/quad-edge.png)
 
-1. `make_edge(a,b)` — `a` dan `b` ga izolyatsiyalangan qirra, uning teskari qirrasi va ikkita dual qirrani yaratadi.
-2. `splice(a,b)` — `a->Onext` bilan `b->Onext` ni, shuningdek dual bog‘lanishlarni almashadi. Bu amal qirralar halqalarini birlashtiradi yoki ajratadi.
-3. `delete_edge(e)` — `e` va uning teskari qirrasini tegishli halqalardan chiqarib, xotiradan o‘chiradi.
-4. `connect(a,b)` — `a->Dest` dan `b->Org` ga shunday yangi qirra yaratadiki, `a`, `b` va yangi qirra bir xil chap yuzga ega bo‘ladi.
+Algoritmda qirralar ustida quyidagi funksiyalardan foydalanamiz:
+
+  1. `make_edge(a, b)`
+    Bu funksiya `a` nuqtadan `b` nuqtaga izolyatsiyalangan qirrani, uning teskari qirrasini va ikkala dual qirrani birga yaratadi.
+  2. `splice(a, b)`
+    Bu algoritmning asosiy funksiyasi. U `a->Onext` bilan `b->Onext` ni hamda `a->Onext->Rot->Onext` bilan `b->Onext->Rot->Onext` ni almashtiradi.
+  3. `delete_edge(e)`
+    Bu funksiya `e` ni triangulyatsiyadan o‘chiradi. `e` ni o‘chirish uchun `splice(e, e->Oprev)` va `splice(e->Rev, e->Rev->Oprev)` ni chaqirish kifoya.
+  4. `connect(a, b)`
+    Bu funksiya `a->Dest` dan `b->Org` ga shunday yangi `e` qirrani yaratadiki, `a`, `b`, `e` ning hammasi bir xil chap yuzga ega bo‘ladi. Buning uchun `e = make_edge(a->Dest, b->Org)`, `splice(e, a->Lnext)` va `splice(e->Rev, b)` ni chaqiramiz.
 
 ## Algoritm
 
-Algoritm triangulyatsiyani quradi va ikkita qirrani qaytaradi: eng chap nuqtadan chiqadigan soat miliga teskari qobiq qirrasi hamda eng o‘ng nuqtadan chiqadigan soat mili yo‘nalishidagi qobiq qirrasi.
+Algoritm triangulyatsiyani hisoblaydi va ikkita quad-edge qaytaradi: eng chap uchdan chiqadigan, soat miliga teskari yo‘nalishdagi qavariq qobiq qirrasi va eng o‘ng uchdan chiqadigan, soat mili yo‘nalishidagi qavariq qobiq qirrasi.
 
-Nuqtalar avval $x$, teng bo‘lsa $y$ bo‘yicha saralanadi. $(l,r)$ oraliq uchun rekursiya bajariladi.
+Barcha nuqtalarni x bo‘yicha, $x_1 = x_2$ bo‘lsa y bo‘yicha saralaymiz. Masalani biror $(l, r)$ kesma uchun yechamiz (boshida $(l, r) = (0, n - 1)$). Agar $r - l + 1 = 2$ bo‘lsa, $(p[l], p[r])$ qirrani qo‘shamiz va qaytamiz. Agar $r - l + 1 = 3$ bo‘lsa, avval $(p[l], p[l + 1])$ va $(p[l + 1], p[r])$ qirralarni qo‘shamiz. Ularni `splice(a->Rev, b)` yordamida ham bog‘lashimiz kerak. Endi uchburchakni yopishimiz kerak. Keyingi harakatimiz $p[l], p[l + 1], p[r]$ ning orientatsiyasiga bog‘liq. Agar ular kollinear bo‘lsa, uchburchak hosil qila olmaymiz, shuning uchun shunchaki `(a, b->Rev)` ni qaytaramiz. Aks holda `connect(b, a)` ni chaqirib, yangi `c` qirrani yaratamiz. Agar nuqtalar soat miliga teskari yo‘nalishda joylashgan bo‘lsa, `(a, b->Rev)` ni qaytaramiz. Aks holda `(c->Rev, c)` ni qaytaramiz.
 
-- Ikki nuqta bo‘lsa, ular orasidagi bitta qirra yaratiladi.
-- Uch nuqta bo‘lsa, ketma-ket ikkita qirra yaratiladi va `splice` bilan bog‘lanadi. Nuqtalar kollinear bo‘lmasa, uchinchi qirra bilan uchburchak yopiladi; qaytariladigan tashqi qirralar orientatsiyaga bog‘liq.
-- Kamida to‘rtta nuqta bo‘lsa, to‘plam chap $L$ va o‘ng $R$ yarmiga bo‘linadi, ular rekursiv triangulyatsiya qilinadi va so‘ng birlashtiriladi.
-
-Birlashtirishda avval $L$ va $R$ ning pastki umumiy urinmasi topiladi va u `base` ko‘ndalang qirrasiga aylantiriladi. Keyingi ko‘ndalang qirralar pastdan yuqoriga qo‘shiladi. Har qadamda chap va o‘ng nomzodlar `lcand` va `rcand` olinadi. `in_circle` testi orqali Delaunay shartini buzadigan ichki qirralar o‘chiriladi. So‘ng ikki nomzoddan tashqi aylana bo‘yicha oldin uchraydigani tanlanib, yangi `base` qirrasi yaratiladi. Hech bir nomzod yaroqli bo‘lmaganda yuqori umumiy urinmaga yetilgan bo‘ladi.
-
-Har darajadagi birlashtirish chiziqli, rekursiya chuqurligi $\mathcal{O}(\log n)$, shu sababli umumiy murakkablik $\mathcal{O}(n\log n)$.
+Endi $r - l + 1 \ge 4$ bo‘lsin. Avval $L = (l, \frac{l + r}{2})$ va $R = (\frac{l + r}{2} + 1, r)$ ni rekursiv yechamiz. Endi bu triangulyatsiyalarni bitta triangulyatsiyaga birlashtirishimiz kerak. E’tibor bering, nuqtalarimiz saralangan, shuning uchun birlashtirish paytida L dan R ga qirralar (ular _ko‘ndalang_ qirralar deyiladi) qo‘shamiz va L dan L ga hamda R dan R ga ba’zi qirralarni olib tashlaymiz.
+Ko‘ndalang qirralar qanday tuzilishga ega? Bu qirralarning barchasi y o‘qiga parallel va bo‘linish x qiymatida o‘tkazilgan chiziqni kesib o‘tishi kerak. Bu ko‘ndalang qirralarning chiziqli tartibini aniqlaydi, shuning uchun ketma-ket ko‘ndalang qirralar, eng pastki ko‘ndalang qirra va hokazo haqida gapirish mumkin. Algoritm ko‘ndalang qirralarni o‘sish tartibida qo‘shadi. E’tibor bering, ikkita qo‘shni ko‘ndalang qirra umumiy uchga ega bo‘ladi, ular aniqlaydigan uchburchakning uchinchi tomoni esa L dan L ga yoki R dan R ga boradi. Joriy ko‘ndalang qirrani `base` deb ataymiz. `base` ning keyingisi `base` ning chap uchidan o‘ng uchining R dagi qo‘shnilaridan biriga yoki aksincha boradi.
+`base` va oldingi ko‘ndalang qirraning tashqi chizilgan aylanasini ko‘rib chiqaylik.
+Faraz qilaylik, bu aylana `base` ni vatar qilib, lekin Oy yo‘nalishida yuqoriroq joylashgan boshqa aylanalarga aylantiriladi.
+Bizning aylana bir muddat yuqoriga ko‘tariladi, lekin `base` L va R ning yuqori urinmasi bo‘lmasa, biz L yoki R ga tegishli nuqtaga duch kelamiz va u tashqi aylanasida hech qanday nuqta bo‘lmagan yangi uchburchakni hosil qiladi.
+Bu uchburchakning yangi L-R qirrasi keyingi qo‘shiladigan ko‘ndalang qirra bo‘ladi.
+Buni samarali bajarish uchun ikkita `lcand` va `rcand` qirrani hisoblaymiz: `lcand` bu jarayonda birinchi uchragan L nuqtaga, `rcand` esa birinchi uchragan R nuqtaga ishora qiladi.
+So‘ng avval uchraydiganini tanlaymiz. Boshida `base` L va R ning pastki urinmasiga ishora qiladi.
 
 ## Implementatsiya
 
-`in_circle` funksiyasining quyidagi varianti GCC/Clang dagi `__int128` turidan foydalanadi.
+E’tibor bering, `in_circle` funksiyasining implementatsiyasi GCC ga xosdir.
 
 ```cpp
 typedef long long ll;
@@ -97,7 +94,7 @@ struct pt {
     }
 };
 
-const pt inf_pt = pt((ll)1e18, (ll)1e18);
+const pt inf_pt = pt(1e18, 1e18);
 
 struct QuadEdge {
     pt origin;
@@ -167,68 +164,60 @@ bool right_of(pt p, QuadEdge* e) {
 }
 
 template <class T>
-T det3(T a1, T a2, T a3,
-       T b1, T b2, T b3,
-       T c1, T c2, T c3) {
-    return a1 * (b2 * c3 - c2 * b3)
-         - a2 * (b1 * c3 - c1 * b3)
-         + a3 * (b1 * c2 - c1 * b2);
+T det3(T a1, T a2, T a3, T b1, T b2, T b3, T c1, T c2, T c3) {
+    return a1 * (b2 * c3 - c2 * b3) - a2 * (b1 * c3 - c1 * b3) +
+           a3 * (b1 * c2 - c1 * b2);
 }
 
 bool in_circle(pt a, pt b, pt c, pt d) {
-#if defined(__SIZEOF_INT128__)
-    __int128 det = -det3<__int128>(
-        b.x, b.y, b.sqrLength(),
-        c.x, c.y, c.sqrLength(),
-        d.x, d.y, d.sqrLength());
-    det += det3<__int128>(
-        a.x, a.y, a.sqrLength(),
-        c.x, c.y, c.sqrLength(),
-        d.x, d.y, d.sqrLength());
-    det -= det3<__int128>(
-        a.x, a.y, a.sqrLength(),
-        b.x, b.y, b.sqrLength(),
-        d.x, d.y, d.sqrLength());
-    det += det3<__int128>(
-        a.x, a.y, a.sqrLength(),
-        b.x, b.y, b.sqrLength(),
-        c.x, c.y, c.sqrLength());
+// If there is __int128, calculate directly.
+// Otherwise, calculate angles.
+#if defined(__LP64__) || defined(_WIN64)
+    __int128 det = -det3<__int128>(b.x, b.y, b.sqrLength(), c.x, c.y,
+                                   c.sqrLength(), d.x, d.y, d.sqrLength());
+    det += det3<__int128>(a.x, a.y, a.sqrLength(), c.x, c.y, c.sqrLength(), d.x,
+                          d.y, d.sqrLength());
+    det -= det3<__int128>(a.x, a.y, a.sqrLength(), b.x, b.y, b.sqrLength(), d.x,
+                          d.y, d.sqrLength());
+    det += det3<__int128>(a.x, a.y, a.sqrLength(), b.x, b.y, b.sqrLength(), c.x,
+                          c.y, c.sqrLength());
     return det > 0;
 #else
     auto ang = [](pt l, pt mid, pt r) {
         ll x = mid.dot(l, r);
         ll y = mid.cross(l, r);
-        return atan2((long double)x, (long double)y);
+        long double res = atan2((long double)x, (long double)y);
+        return res;
     };
-    long double val = ang(a, b, c) + ang(c, d, a)
-                    - ang(b, c, d) - ang(d, a, b);
-    return val > 1e-8;
+    long double kek = ang(a, b, c) + ang(c, d, a) - ang(b, c, d) - ang(d, a, b);
+    if (kek > 1e-8)
+        return true;
+    else
+        return false;
 #endif
 }
 
 pair<QuadEdge*, QuadEdge*> build_tr(int l, int r, vector<pt>& p) {
     if (r - l + 1 == 2) {
         QuadEdge* res = make_edge(p[l], p[r]);
-        return {res, res->rev()};
+        return make_pair(res, res->rev());
     }
     if (r - l + 1 == 3) {
-        QuadEdge *a = make_edge(p[l], p[l + 1]);
-        QuadEdge *b = make_edge(p[l + 1], p[r]);
+        QuadEdge *a = make_edge(p[l], p[l + 1]), *b = make_edge(p[l + 1], p[r]);
         splice(a->rev(), b);
         int sg = sgn(p[l].cross(p[l + 1], p[r]));
         if (sg == 0)
-            return {a, b->rev()};
+            return make_pair(a, b->rev());
         QuadEdge* c = connect(b, a);
         if (sg == 1)
-            return {a, b->rev()};
-        return {c->rev(), c};
+            return make_pair(a, b->rev());
+        else
+            return make_pair(c->rev(), c);
     }
-
     int mid = (l + r) / 2;
     QuadEdge *ldo, *ldi, *rdo, *rdi;
     tie(ldo, ldi) = build_tr(l, mid, p);
     tie(rdi, rdo) = build_tr(mid + 1, r, p);
-
     while (true) {
         if (left_of(rdi->origin, ldi)) {
             ldi = ldi->lnext();
@@ -240,41 +229,33 @@ pair<QuadEdge*, QuadEdge*> build_tr(int l, int r, vector<pt>& p) {
         }
         break;
     }
-
     QuadEdge* basel = connect(rdi->rev(), ldi);
-    auto valid = [&basel](QuadEdge* e) {
-        return right_of(e->dest(), basel);
-    };
-
+    auto valid = [&basel](QuadEdge* e) { return right_of(e->dest(), basel); };
     if (ldi->origin == ldo->origin)
         ldo = basel->rev();
     if (rdi->origin == rdo->origin)
         rdo = basel;
-
     while (true) {
         QuadEdge* lcand = basel->rev()->onext;
         if (valid(lcand)) {
-            while (in_circle(basel->dest(), basel->origin,
-                             lcand->dest(), lcand->onext->dest())) {
+            while (in_circle(basel->dest(), basel->origin, lcand->dest(),
+                             lcand->onext->dest())) {
                 QuadEdge* t = lcand->onext;
                 delete_edge(lcand);
                 lcand = t;
             }
         }
-
         QuadEdge* rcand = basel->oprev();
         if (valid(rcand)) {
-            while (in_circle(basel->dest(), basel->origin,
-                             rcand->dest(), rcand->oprev()->dest())) {
+            while (in_circle(basel->dest(), basel->origin, rcand->dest(),
+                             rcand->oprev()->dest())) {
                 QuadEdge* t = rcand->oprev();
                 delete_edge(rcand);
                 rcand = t;
             }
         }
-
         if (!valid(lcand) && !valid(rcand))
             break;
-
         if (!valid(lcand) ||
             (valid(rcand) && in_circle(lcand->dest(), lcand->origin,
                                        rcand->origin, rcand->dest())))
@@ -282,55 +263,43 @@ pair<QuadEdge*, QuadEdge*> build_tr(int l, int r, vector<pt>& p) {
         else
             basel = connect(basel->rev(), lcand->rev());
     }
-    return {ldo, rdo};
+    return make_pair(ldo, rdo);
 }
 
 vector<tuple<pt, pt, pt>> delaunay(vector<pt> p) {
     sort(p.begin(), p.end(), [](const pt& a, const pt& b) {
         return lt(a.x, b.x) || (eq(a.x, b.x) && lt(a.y, b.y));
     });
-    p.erase(unique(p.begin(), p.end()), p.end());
-    if (p.size() < 3)
-        return {};
-
     auto res = build_tr(0, (int)p.size() - 1, p);
     QuadEdge* e = res.first;
     vector<QuadEdge*> edges = {e};
-
     while (lt(e->onext->dest().cross(e->dest(), e->origin), 0))
         e = e->onext;
-
-    vector<pt> face_points;
-    auto add = [&]() {
+    auto add = [&p, &e, &edges]() {
         QuadEdge* curr = e;
         do {
             curr->used = true;
-            face_points.push_back(curr->origin);
+            p.push_back(curr->origin);
             edges.push_back(curr->rev());
             curr = curr->lnext();
         } while (curr != e);
     };
-
-    add();                       // tashqi yuz
-    face_points.clear();
-    int ptr = 0;
-    while (ptr < (int)edges.size()) {
-        e = edges[ptr++];
-        if (!e->used)
+    add();
+    p.clear();
+    int kek = 0;
+    while (kek < (int)edges.size()) {
+        if (!(e = edges[kek++])->used)
             add();
     }
-
     vector<tuple<pt, pt, pt>> ans;
-    for (int i = 0; i + 2 < (int)face_points.size(); i += 3)
-        ans.emplace_back(face_points[i], face_points[i + 1], face_points[i + 2]);
+    for (int i = 0; i < (int)p.size(); i += 3) {
+        ans.push_back(make_tuple(p[i], p[i + 1], p[i + 2]));
+    }
     return ans;
 }
 ```
 
-Kirishda takroriy nuqtalarni olib tashlash kerak. Barcha nuqtalar kollinear bo‘lsa, uchburchaklar ro‘yxati bo‘sh bo‘ladi; bunday holat alohida qayta ishlanadi. Koordinata diapazoni katta bo‘lsa, `cross`, `dot` va aylana determinantida toshib ketishni qat’iy nazorat qilish zarur.
-
-## Mashq masalalari
-
-- [Timus 1504 — Good Manners](https://acm.timus.ru/problem.aspx?space=1&num=1504)
-- [Timus 1520 — Empire Strikes Back](https://acm.timus.ru/problem.aspx?space=1&num=1520)
-- [SGU 383 — Caravans](https://codeforces.com/problemsets/acmsguru/problem/99999/383)
+## Masalalar
+ * [TIMUS 1504 Good Manners](http://acm.timus.ru/problem.aspx?space=1&num=1504)
+ * [TIMUS 1520 Empire Strikes Back](http://acm.timus.ru/problem.aspx?space=1&num=1520)
+ * [SGU 383 Caravans](https://codeforces.com/problemsets/acmsguru/problem/99999/383)

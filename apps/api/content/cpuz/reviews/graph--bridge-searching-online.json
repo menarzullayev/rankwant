@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T20:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Repaired a TAB character that had corrupted the \\text{size} formula in the re-rooting cost estimate; all other prose, the recurrence and the code match the original.",
+      "content_sha256": "f0ca8b9ad7ccd7c64a8001cfd749c05a7bde6f3f7a101fd907a924a8627cf460"
+    },
+    {
+      "at": "2026-11-11T20:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the calque kiruvchi graf with kirish grafi in the statement about online operation.",
+      "content_sha256": "f0ca8b9ad7ccd7c64a8001cfd749c05a7bde6f3f7a101fd907a924a8627cf460"
+    }
+  ]
+}

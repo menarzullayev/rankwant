@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Five display formulas the translation had invented (f_2 pi = f_1 repeated, f = f pi, lcm/gcd, i = dj, p_1^i1 p_2^i2 p_3^i3) were put back inline as in the original; the original display f_2 pi = f_1 is kept.",
+      "content_sha256": "9e72ac05eb8b3ecd194a2101f3600c66edeed38c8b91dc16dfb5cd376ed674b2"
+    },
+    {
+      "at": "2026-11-12T11:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Uzbek text reads correctly; the 180 degrees wording was written as plain text to match the original.",
+      "content_sha256": "9e72ac05eb8b3ecd194a2101f3600c66edeed38c8b91dc16dfb5cd376ed674b2"
+    },
+    {
+      "at": "2026-11-12T11:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Display and inline formulas now match the original (d ~|~ n, \\text{lcm}, \\dots restored); gate reports no difference.",
+      "content_sha256": "9e72ac05eb8b3ecd194a2101f3600c66edeed38c8b91dc16dfb5cd376ed674b2"
+    }
+  ]
+}

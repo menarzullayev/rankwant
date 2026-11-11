@@ -5323,6 +5323,26 @@ def neg_cpuz_unreadable_is_not_green() -> tuple[bool, str]:
     return _cpuz_broken(_CPUZ_ALLOW, '"articles": [', '"articles": [[', "o'qilmadi", code_wanted=2)
 
 
+def neg_cpuz_mkdocs_leftover() -> tuple[bool, str]:
+    """An mkdocs heading attribute would be printed as text."""
+    return _cpuz_broken(
+        _CPUZ_CLEAN,
+        "# Ikkilik darajaga oshirish",
+        '# Ikkilik darajaga oshirish\n\n## Algoritm { data-toc-label="Algoritm" }',
+        "mkdocs leftovers",
+    )
+
+
+def neg_cpuz_bracket_display_math() -> tuple[bool, str]:
+    """A `\\[ … \\]` formula is left for a renderer that reads only dollars."""
+    return _cpuz_broken(
+        _CPUZ_CLEAN,
+        "# Ikkilik darajaga oshirish",
+        "# Ikkilik darajaga oshirish\n\n\\[ a^n \\]",
+        "display math",
+    )
+
+
 def neg_decisions_home_without_map() -> tuple[bool, str]:
     """The home page would lose the region map."""
     return _decision_broken(
@@ -13252,6 +13272,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sababsiz qabul tutilsin", neg_cpuz_accepted_without_reason),
             ("eskirgan ruxsat yozuvi tutilsin", neg_cpuz_stale_row),
             ("buzuq snapshot yashil bo'lmasin", neg_cpuz_unreadable_is_not_green),
+            ("mkdocs qoldig'i tutilsin", neg_cpuz_mkdocs_leftover),
+            ("\\[ formulasi tutilsin", neg_cpuz_bracket_display_math),
         ],
     ),
     (

@@ -2,7 +2,7 @@
 
 Sqrt Decomposition — ostmassiv elementlari yig‘indisini, minimum yoki maksimumni topish kabi ko‘p uchraydigan amallarni $O(\sqrt n)$ ta amal bilan bajarish imkonini beradigan usul yoki ma’lumotlar tuzilmasi. Bu sodda $O(n)$ algoritmdan ancha tez.
 
-Avval ushbu g‘oyaning eng sodda qo‘llanishlaridan biri uchun ma’lumotlar tuzilmasini ko‘rib chiqamiz. Keyin uni boshqa masalalarga qanday umumlashtirish mumkinligini, oxirida esa g‘oyaning biroz boshqacha qo‘llanishini — kiruvchi so‘rovlarni ildizli bloklarga ajratishni o‘rganamiz.
+Avval ushbu g‘oyaning eng sodda qo‘llanishlaridan biri uchun ma’lumotlar tuzilmasini ko‘rib chiqamiz. Keyin uni boshqa masalalarga qanday umumlashtirish mumkinligini, oxirida esa g‘oyaning biroz boshqacha qo‘llanishini — kiruvchi so‘rovlarni sqrt ta blokka ajratishni o‘rganamiz.
 
 ## Sqrt decomposition asosidagi ma’lumotlar tuzilmasi
 
@@ -95,13 +95,13 @@ $$ b[k] += a_{new}[i] - a_{old}[i] $$
 
 Yig‘indi o‘rniga ostmassiv minimumi yoki maksimumini topish ham mumkin. Alohida elementlarni yangilash ham talab qilinsa, $b[k]$ ni qayta hisoblash uchun $k$-blokning barcha qiymatlarini ko‘rib chiqish kerak bo‘ladi; bu $O(s)=O(\sqrt n)$ ta amal oladi.
 
-Xuddi shu yondashuv nol elementlar sonini, birinchi noldan farqli elementni, ma’lum xususiyatni qanoatlantiruvchi elementlar sonini va boshqa ko‘plab agregatlarni topishga qo‘llanadi.
+Xuddi shu yondashuv nol elementlar sonini, birinchi noldan farqli elementni, ma’lum xususiyatni qanoatlantiruvchi elementlar sonini va shu kabi boshqa masalalarga qo‘llanadi.
 
 Masalalarning yana bir turi — **oraliqdagi barcha elementlarni yangilash**: ularni oshirish yoki berilgan qiymatga almashtirish.
 
 Masalan, ikki amal mavjud bo‘lsin: $[l,r]$ dagi barcha elementlarga $\delta$ qo‘shish va $a[i]$ qiymatini so‘rash. Har bir $k$-blokning barcha elementlariga qo‘shilishi kerak bo‘lgan qiymatni $b[k]$ da saqlaymiz; dastlab $b[k]=0$. “Qo‘shish” amalida $[l,r]$ ichida to‘liq yotgan bloklar uchun $b[k]$ ga $\delta$ qo‘shamiz, chetdagi dum elementlarining $a[i]$ qiymatlarini esa bevosita oshiramiz. $i$ nuqtadagi javob $a[i]+b[i/s]$ bo‘ladi. Shunday qilib, oraliqqa qo‘shish $O(\sqrt n)$, nuqta so‘rovi esa $O(1)$ vaqtda bajariladi.
 
-Bu ikki sinfni birlashtirib, **oraliqni yangilash** va **oraliq so‘rovi**ni bir vaqtda qo‘llab-quvvatlash ham mumkin. Ikkala amal ham $O(\sqrt n)$ vaqtda bajariladi. Buning uchun odatda ikkita blok massivi — masalan, `b` va `c` — kerak bo‘ladi: biri dangasa yangilanishlarni, ikkinchisi esa so‘rov agregatlarini saqlaydi.
+Bu ikki sinfni birlashtirib, **oraliqni yangilash** va **oraliq so‘rovi**ni bir vaqtda qo‘llab-quvvatlash ham mumkin. Ikkala amal ham $O(\sqrt n)$ vaqtda bajariladi. Buning uchun ikkita `b` va `c` blok massivi kerak bo‘ladi: biri elementlar yangilanishini, ikkinchisi so‘rovlar javobini kuzatib borish uchun.
 
 Sqrt decomposition tartiblangan sonlar to‘plamini saqlashda ham ishlatiladi. Sonlarni qo‘shish va o‘chirish, son mavjudligini tekshirish hamda $k$-eng katta sonni topish kerak bo‘lsin. Sonlar o‘sish tartibida saqlanib, har birida taxminan $\sqrt n$ ta element bo‘lgan bloklarga ajratiladi. Qo‘shish yoki o‘chirishdan keyin qo‘shni bloklarning boshi va oxiri orasida elementlarni ko‘chirish orqali bloklar qayta muvozanatlanadi.
 
@@ -175,13 +175,13 @@ Masalaga qarab boshqa ma’lumotlar tuzilmasi tanlanadi va `add`/`remove`/`get_a
 
 Masalan, oraliq yig‘indisi so‘ralsa, tuzilma sifatida dastlab $0$ bo‘lgan bitta butun son yetadi. `add` tegishli pozitsiyadagi qiymatni javobga qo‘shadi, `remove` uni ayiradi, `get_answer` esa joriy butun sonni qaytaradi.
 
-Moda so‘rovlari uchun joriy oraliqda har bir son necha marta uchrashini saqlaydigan binary search tree, masalan `map<int, int>`, va chastota–son juftliklarini tartibda saqlaydigan ikkinchi daraxt, masalan `set<pair<int, int>>`, ishlatish mumkin. `add` avval sonning eski juftligini ikkinchi BSTdan o‘chiradi, birinchi tuzilmadagi chastotani oshiradi va yangi juftlikni qayta qo‘shadi. `remove` xuddi shunday ishlaydi, faqat chastotani kamaytiradi. `get_answer` ikkinchi daraxtdagi eng yaxshi juftlikni $O(1)$ vaqtda oladi.
+Moda so‘rovlari uchun joriy oraliqda har bir son necha marta uchrashini saqlaydigan ikkilik qidiruv daraxti (BST), masalan `map<int, int>`, va chastota–son juftliklarini tartibda saqlaydigan ikkinchi daraxt, masalan `set<pair<int, int>>`, ishlatish mumkin. `add` avval sonning eski juftligini ikkinchi BST dan o‘chiradi, birinchi tuzilmadagi chastotani oshiradi va yangi juftlikni qayta qo‘shadi. `remove` xuddi shunday ishlaydi, faqat chastotani kamaytiradi. `get_answer` ikkinchi daraxtdagi eng yaxshi juftlikni $O(1)$ vaqtda oladi.
 
 ### Murakkablik
 
 Barcha so‘rovlarni saralash $O(Q\log Q)$ vaqt oladi. Endi `add` va `remove` funksiyalari necha marta chaqirilishini baholaymiz.
 
-Blok uzunligi $S$ bo‘lsin. Chap chegarasi bir xil blokda bo‘lgan so‘rovlar o‘ng chegarasi bo‘yicha saralangan. Shu sababli bu blokdagi barcha so‘rovlar davomida `add(cur_r)` va `remove(cur_r)` jami $O(N)$ marta chaqiriladi. Barcha $N/S$ ta blok uchun bu $O(\frac{N}{S}N)$ chaqiruv beradi.
+Blok uzunligi $S$ bo‘lsin. Chap chegarasi bir xil blokda bo‘lgan so‘rovlar o‘ng chegarasi bo‘yicha saralangan. Shu sababli bu blokdagi barcha so‘rovlar davomida `add(cur_r)` va `remove(cur_r)` jami $O(N)$ marta chaqiriladi. Barcha bloklar uchun bu $O(\frac{N}{S}N)$ chaqiruv beradi.
 
 Ikki ketma-ket so‘rov orasida `cur_l` ko‘pi bilan $O(S)$ ga o‘zgaradi. Demak, `add(cur_l)` va `remove(cur_l)` uchun qo‘shimcha $O(SQ)$ chaqiruv bor.
 
@@ -190,7 +190,7 @@ $S\approx\sqrt N$ tanlansa, jami $O((N+Q)\sqrt N)$ ta elementar amal hosil bo‘
 ### Ishlash vaqtini yaxshilash bo‘yicha maslahatlar
 
 - Blok uzunligini aynan $\sqrt N$ olish har doim eng tez variant emas. Masalan, $\sqrt N=750$ bo‘lsa, amalda 700 yoki 800 yaxshiroq ishlashi mumkin. Muhimi, blok uzunligini runtime’da hisoblamasdan `const` qilish ma’qul: kompilyator konstanta bo‘yicha bo‘lishni yaxshi optimallashtiradi.
-- Toq bloklarda o‘ng chegarani o‘sish tartibida, juft bloklarda esa kamayish tartibida saralash mumkin. Oddiy saralash har yangi blok boshida o‘ng ko‘rsatkichni massiv oxiridan boshiga qaytaradi. “Ilon” tartibida esa bunday katta sakrashlar kerak bo‘lmaydi.
+- Toq bloklarda o‘ng chegarani o‘sish tartibida, juft bloklarda esa kamayish tartibida saralash mumkin. Bu o‘ng ko‘rsatkichning harakatini kamaytiradi, chunki oddiy saralash har yangi blok boshida o‘ng ko‘rsatkichni massiv oxiridan boshiga qaytaradi. Yaxshilangan variantda bu qaytarish endi kerak bo‘lmaydi.
 
 ```cpp
 bool cmp(pair<int, int> p, pair<int, int> q) {

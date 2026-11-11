@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The only extra inline formula is the modulus M written as $M$ where the original has plain text; the mathematics and code are unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared with the original; all sections, code blocks and the practice list are present and unchanged. No technical errors found.",
+      "content_sha256": "23e600f43ea0fdf7b72048d900985045004b2d3cd830eda086c810f7b6beaa8b"
+    },
+    {
+      "at": "2026-11-12T10:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed the unsigned-underflow sentence, the phrase about the two notations of zero, the Chinese remainder theorem term per the glossary, and a few wording issues; added missing blank lines around headings and code.",
+      "content_sha256": "23e600f43ea0fdf7b72048d900985045004b2d3cd830eda086c810f7b6beaa8b"
+    },
+    {
+      "at": "2026-11-12T10:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Inline $M$ for the modulus is notation only, same meaning as the plain-text M in the original.",
+      "content_sha256": "23e600f43ea0fdf7b72048d900985045004b2d3cd830eda086c810f7b6beaa8b"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ $x_i$ bilan ikkinchi mashinaning $i$-ishni boshlashidan oldingi **bekor turish v
 
 $$F(x) = \sum x_i \rightarrow \min$$
 
-Birinchi ish uchun $x_1 = a_1$. Ikkinchi ish birinchi mashinadan $a_1 + a_2$ vaqtda chiqadi, ikkinchi mashina esa $x_1 + b_1$ vaqtda bo‘shaydi. Shuning uchun $x_2 = \max((a_1 + a_2) - (x_1 + b_1), 0)$. Umumiy holda:
+Birinchi ish uchun $x_1 = a_1$. Ikkinchi ish birinchi mashinadan $a_1 + a_2$ vaqtda chiqadi, ikkinchi mashina esa $x_1 + b_1$ vaqtda bo‘shaydi. Shuning uchun $x_2 = \max\left((a_1 + a_2) - (x_1 + b_1), 0\right)$. Umumiy holda:
 
 $$x_k = \max\left(\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i - \sum_{i=1}^{k-1} x_i, 0 \right)$$
 

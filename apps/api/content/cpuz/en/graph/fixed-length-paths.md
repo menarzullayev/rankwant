@@ -72,7 +72,7 @@ $$L_k = \underbrace{G \odot \ldots \odot G}_{k~\text{times}} = G^{\odot k}$$
 It remains to note that we also can compute this exponentiation efficiently with [Binary exponentiation](/algorithms/algebra/binary-exp), because the modified multiplication is obviously associative.
 So also this solution has $O(n^3 \log k)$ complexity.
 
-## Generalization of the problems for paths with length up to $k$ {data-toc-label="Generalization of the problems for paths with length up to k"}
+## Generalization of the problems for paths with length up to $k$
 
 The above solutions solve the problems for a fixed $k$.
 However the solutions can be adapted for solving problems for which the paths are allowed to contain no more than $k$ edges.

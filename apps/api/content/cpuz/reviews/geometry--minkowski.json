@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The article had been rewritten with extra properties and caveats and lacked the algorithm's reordering rationale, the visualization and parts of the distance section. Restored the original structure, text, figure and code; removed the added display formulas.",
+      "content_sha256": "ce855d509bb3455c464cda58baefef8272f9c720bf5698fab55fe5a3710704d9"
+    },
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated into natural Uzbek; unified the term 'qutbiy burchak' and translated code comments.",
+      "content_sha256": "ce855d509bb3455c464cda58baefef8272f9c720bf5698fab55fe5a3710704d9"
+    },
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and display formulas match the original again.",
+      "content_sha256": "ce855d509bb3455c464cda58baefef8272f9c720bf5698fab55fe5a3710704d9"
+    }
+  ]
+}

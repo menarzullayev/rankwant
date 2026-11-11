@@ -6,9 +6,9 @@ Sizga yo‘naltirilmagan graf berilgan. Uning ikki bo‘lakli ekanini tekshiring
 
 ## Algoritm
 
-Graf faqat va faqat uning barcha sikllari juft uzunlikka ega bo‘lsa ikki bo‘lakli bo‘lishini aytadigan teorema mavjud. Ammo amalda ta’rifning boshqa ifodasidan foydalanish qulayroq: graf faqat va faqat uni ikki rangga bo‘yash mumkin bo‘lsa ikki bo‘laklidir.
-Hali tashrif buyurilmagan har bir tugundan boshlab [kenglik bo‘yicha qidiruvlar](/algorithms/graph/breadth-first-search) ketma-ketligini bajaramiz. Har bir qidiruvda boshlang‘ich tugunni 1-tomonga biriktiramiz. Biror tomonga biriktirilgan tugunning hali tashrif buyurilmagan qo‘shnisiga har safar borganda uni ikkinchi tomonga biriktiramiz.
-Biror tomonga biriktirilgan tugunning allaqachon tashrif buyurilgan qo‘shnisiga o‘tmoqchi bo‘lsak, u boshqa tomonga biriktirilganini tekshiramiz; agar u ayni tomonga biriktirilgan bo‘lsa, graf ikki bo‘lakli emas degan xulosaga kelamiz. Barcha tugunlarga tashrif buyurib, ularni tomonlarga muvaffaqiyatli biriktirsak, graf ikki bo‘lakli ekanini bilamiz va uning ajratilishini qurib bo‘lgan bo‘lamiz.
+Graf ikki bo‘lakli bo‘lishi uchun uning barcha sikllari juft uzunlikka ega bo‘lishi zarur va yetarli, deb tasdiqlaydigan teorema mavjud. Ammo amalda ta’rifning boshqa ifodasidan foydalanish qulayroq: graf ikki bo‘lakli bo‘lishi uchun uni ikki rangga bo‘yash mumkin bo‘lishi zarur va yetarli.
+
+Hali tashrif buyurilmagan har bir tugundan boshlab [kenglik bo‘yicha qidiruvlar](/algorithms/graph/breadth-first-search) ketma-ketligini bajaramiz. Har bir qidiruvda boshlang‘ich tugunni 1-tomonga biriktiramiz. Biror tomonga biriktirilgan tugunning hali tashrif buyurilmagan qo‘shnisiga har safar borganda uni ikkinchi tomonga biriktiramiz. Biror tomonga biriktirilgan tugunning allaqachon tashrif buyurilgan qo‘shnisiga o‘tmoqchi bo‘lsak, u boshqa tomonga biriktirilganini tekshiramiz; agar u o‘sha tomonga biriktirilgan bo‘lsa, graf ikki bo‘lakli emas degan xulosaga kelamiz. Barcha tugunlarga tashrif buyurib, ularni tomonlarga muvaffaqiyatli biriktirsak, graf ikki bo‘lakli ekanini bilamiz va uning ajratilishini qurib bo‘lgan bo‘lamiz.
 
 ## Implementatsiya
 

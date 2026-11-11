@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T22:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Reworded the remark about the '-1' in T1[p..q-1] so it no longer states a standalone formula the original lacks.",
+      "content_sha256": "558e8ef4bb945b031ba293ef66b1b1458a2f4dcad27c28386735d7362ec70177"
+    },
+    {
+      "at": "2026-11-11T22:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'eng quyi umumiy ajdod' with the glossary term 'eng yaqin umumiy ajdod' and used 'Eyler aylanib chiqishi' consistently for Euler tour.",
+      "content_sha256": "558e8ef4bb945b031ba293ef66b1b1458a2f4dcad27c28386735d7362ec70177"
+    },
+    {
+      "at": "2026-11-11T22:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "558e8ef4bb945b031ba293ef66b1b1458a2f4dcad27c28386735d7362ec70177"
+    }
+  ]
+}

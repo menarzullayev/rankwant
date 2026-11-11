@@ -1,12 +1,12 @@
 # Minimal ostov daraxt — Kruskal algoritmi
 
-Bizga og‘irlikli yo‘naltirilmagan graf berilgan.
+Bizga vaznli yo‘naltirilmagan graf berilgan.
 
-Bu grafning barcha tugunlarini bog‘laydigan (ya’ni ostov daraxt bo‘ladigan) va barcha mumkin bo‘lgan ostov daraxtlar orasida eng kichik og‘irlikka (ya’ni barcha qirralar og‘irliklari yig‘indisi minimal qiymatga) ega qismdaraxtni topmoqchimiz.
+Bu grafning barcha tugunlarini bog‘laydigan (ya’ni ostov daraxt bo‘ladigan) va barcha mumkin bo‘lgan ostov daraxtlar orasida eng kichik vaznga (ya’ni barcha qirralar vaznlari yig‘indisi minimal qiymatga) ega qismdaraxtni topmoqchimiz.
 
 Bunday ostov daraxt minimal ostov daraxt deb ataladi.
 
-Chapdagi rasmda og‘irlikli yo‘naltirilmagan graf, o‘ngdagi rasmda esa unga mos minimal ostov daraxt ko‘rsatilgan.
+Chapdagi rasmda vaznli yo‘naltirilmagan graf, o‘ngdagi rasmda esa unga mos minimal ostov daraxt ko‘rsatilgan.
 
 ![Tasodifiy graf](/algorithms-media/graph/MST_before.png) ![Ushbu grafning minimal ostov daraxti](/algorithms-media/graph/MST_after.png)
 
@@ -14,16 +14,16 @@ Ushbu maqolada minimal ostov daraxtlarga oid bir nechta muhim xossalar ko‘rib 
 
 ## Minimal ostov daraxt xossalari
 
-* Grafdagi barcha qirralarning og‘irliklari turlicha bo‘lsa, uning minimal ostov daraxti yagona bo‘ladi. Aks holda bir nechta minimal ostov daraxt mavjud bo‘lishi mumkin. (Muayyan algoritmlar odatda mumkin bo‘lgan minimal ostov daraxtlardan bittasini chiqaradi.)
-* Minimal ostov daraxt qirralar og‘irliklari ko‘paytmasi eng kichik bo‘lgan daraxt hamdir. (Buni barcha qirralar og‘irliklarini ularning logarifmlariga almashtirish orqali oson isbotlash mumkin.)
-* Grafning minimal ostov daraxtidagi eng katta qirra og‘irligi shu grafning barcha mumkin bo‘lgan ostov daraxtlari orasida eng kichik mumkin bo‘lgan qiymatdir. (Bu Kruskal algoritmining to‘g‘riligidan kelib chiqadi.)
-* Grafning maksimal ostov daraxtini (qirralar og‘irliklari yig‘indisi maksimal bo‘lgan ostov daraxtni) minimal ostov daraxtga o‘xshash usulda topish mumkin: barcha qirralar og‘irliklarining ishorasini teskarisiga almashtirib, minimal ostov daraxt algoritmlaridan birini qo‘llash kifoya.
+* Grafdagi barcha qirralarning vaznlari turlicha bo‘lsa, uning minimal ostov daraxti yagona bo‘ladi. Aks holda bir nechta minimal ostov daraxt mavjud bo‘lishi mumkin. (Muayyan algoritmlar odatda mumkin bo‘lgan minimal ostov daraxtlardan bittasini chiqaradi.)
+* Minimal ostov daraxt qirralar vaznlari ko‘paytmasi eng kichik bo‘lgan daraxt hamdir. (Buni barcha qirralar vaznlarini ularning logarifmlariga almashtirish orqali oson isbotlash mumkin.)
+* Grafning minimal ostov daraxtidagi eng katta qirra vazni shu grafning barcha mumkin bo‘lgan ostov daraxtlari orasida eng kichik mumkin bo‘lgan qiymatdir. (Bu Kruskal algoritmining to‘g‘riligidan kelib chiqadi.)
+* Grafning maksimal ostov daraxtini (qirralar vaznlari yig‘indisi maksimal bo‘lgan ostov daraxtni) minimal ostov daraxtga o‘xshash usulda topish mumkin: barcha qirralar vaznlarining ishorasini teskarisiga almashtirib, minimal ostov daraxt algoritmlaridan birini qo‘llash kifoya.
 
 ## Kruskal algoritmi
 
 Bu algoritm Joseph Bernard Kruskal, Jr. tomonidan 1956-yilda tavsiflangan.
 
-Kruskal algoritmi dastlab boshlang‘ich grafning barcha tugunlarini bir-biridan ajratib, bir tugunli daraxtlardan iborat o‘rmon hosil qiladi; keyin bu daraxtlarni bosqichma-bosqich birlashtiradi va har bir iteratsiyada barcha daraxtlardan istalgan ikkitasini boshlang‘ich grafning biror qirrasi bilan qo‘shadi. Algoritm bajarilishidan oldin barcha qirralar og‘irlik bo‘yicha kamaymaydigan tartibda saralanadi.
+Kruskal algoritmi dastlab boshlang‘ich grafning barcha tugunlarini bir-biridan ajratib, bir tugunli daraxtlardan iborat o‘rmon hosil qiladi; keyin bu daraxtlarni bosqichma-bosqich birlashtiradi va har bir iteratsiyada barcha daraxtlardan istalgan ikkitasini boshlang‘ich grafning biror qirrasi bilan qo‘shadi. Algoritm bajarilishidan oldin barcha qirralar vazn bo‘yicha kamaymaydigan tartibda saralanadi.
 
 Keyin birlashtirish jarayoni boshlanadi: qirralarni saralangan tartibda boshidan oxirigacha olamiz va joriy tanlangan qirraning uchlari turli qismdaraxtlarga tegishli bo‘lsa, bu qismdaraxtlarni birlashtirib, qirrani javobga qo‘shamiz. Barcha qirralar ko‘rib chiqilgach, barcha tugunlar bitta qismdaraxtga tegishli bo‘ladi va javobni olamiz.
 
@@ -103,11 +103,11 @@ Bu siklda $F$ ga kirmaydigan kamida bitta $f$ qirra mavjud bo‘ladi.
 
 $T - f + e$ qirralar to‘plami ham ostov daraxt bo‘ladi.
 
-$f$ ning og‘irligi $e$ ning og‘irligidan kichik bo‘la olmasligiga e’tibor bering, aks holda Kruskal $f$ ni oldinroq tanlagan bo‘lardi.
+$f$ ning vazni $e$ ning vaznidan kichik bo‘la olmasligiga e’tibor bering, aks holda Kruskal $f$ ni oldinroq tanlagan bo‘lardi.
 
-U kattaroq ham bo‘la olmaydi, chunki u holda $T - f + e$ ning umumiy og‘irligi $T$ nikidan kichik bo‘lardi; $T$ allaqachon minimal ostov daraxt bo‘lgani uchun buning imkoni yo‘q.
+U kattaroq ham bo‘la olmaydi, chunki u holda $T - f + e$ ning umumiy vazni $T$ nikidan kichik bo‘lardi; $T$ allaqachon minimal ostov daraxt bo‘lgani uchun buning imkoni yo‘q.
 
-Demak, $e$ va $f$ bir xil og‘irlikka ega bo‘lishi kerak.
+Demak, $e$ va $f$ bir xil vaznga ega bo‘lishi kerak.
 
 Shuning uchun $T - f + e$ ham minimal ostov daraxt va u $F + e$ dagi barcha qirralarni o‘z ichiga oladi.
 

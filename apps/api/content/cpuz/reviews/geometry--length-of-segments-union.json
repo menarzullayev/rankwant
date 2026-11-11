@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation had replaced the article with a rewritten one (invented sweep-line, correctness and merge-intervals sections plus a second code block and formulas); restored a faithful translation of the original, including Klee's 1977 remark and the O(n log n) optimality claim.",
+      "content_sha256": "49bd8d1b942ca8fa318eeb34aa3e07bbbadad2a5a673b9d8f7234a78c851ad92"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the article as a faithful Uzbek translation in natural language.",
+      "content_sha256": "49bd8d1b942ca8fa318eeb34aa3e07bbbadad2a5a673b9d8f7234a78c851ad92"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code now has one block identical to the original and the added inline formulas are gone.",
+      "content_sha256": "49bd8d1b942ca8fa318eeb34aa3e07bbbadad2a5a673b9d8f7234a78c851ad92"
+    }
+  ]
+}

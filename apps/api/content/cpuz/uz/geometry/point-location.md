@@ -1,132 +1,292 @@
-# Nuqta joylashuvini $O(\log N)$ da aniqlash
+# Nuqta joylashuvini $O(\log n)$ da aniqlash
 
-Quyidagi masalani ko‘rib chiqamiz: darajasi nol yoki bir bo‘lgan uchlari yo‘q tekis bo‘linish, ya’ni qirralari kesishmaydigan planar subdivision berilgan va ko‘p sonli so‘rovlar mavjud. Har bir so‘rov nuqta bo‘lib, nuqta qaysi yuzga tegishli ekanini aniqlash kerak. So‘rovlar oflayn ravishda har biri $\mathcal{O}(\log n)$ vaqtda bajariladi.
-
-Bunday masala Voronoi diagrammasida nuqta joylashuvini aniqlashda yoki sodda ko‘pburchakdagi ko‘p so‘rovlarni qayta ishlashda uchraydi.
+Quyidagi masalani ko‘rib chiqamiz: darajasi bir va nolga teng bo‘lgan uchlari bo‘lmagan [tekis bo‘linma](https://en.wikipedia.org/wiki/Planar_straight-line_graph) (planar subdivision) va ko‘p sonli so‘rovlar berilgan.
+Har bir so‘rov bitta nuqtadan iborat bo‘lib, bu nuqta bo‘linmaning qaysi yuziga tegishli ekanini aniqlashimiz kerak.
+Har bir so‘rovga oflayn rejimda $O(\log n)$ vaqtda javob beramiz.
+Bu masala Voronoi diagrammasida yoki biror sodda ko‘pburchakda nuqtalarning joylashuvini aniqlash kerak bo‘lganda uchrashi mumkin.
 
 ## Algoritm
 
-Har bir $p=(x_0,y_0)$ so‘rov uchun quyidagi qirrani topmoqchimiz:
+Avvalo, har bir $p\ (x_0, y_0)$ so‘rov nuqtasi uchun shunday qirrani topmoqchimizki, agar nuqta biror qirraga tegishli bo‘lsa, nuqta topilgan qirrada yotsin; aks holda bu qirra $x = x_0$ to‘g‘ri chiziqni biror yagona $(x_0, y)$ nuqtada kesib o‘tsin, bunda $y < y_0$ bo‘lsin va bu $y$ barcha shunday qirralar orasida eng kattasi bo‘lsin.
+Quyidagi rasmda ikkala holat ko‘rsatilgan.
 
-- agar nuqta biror qirrada yotsa, topilgan qirra shu qirra bo‘lishi kerak;
-- aks holda qirra $x=x_0$ vertikal chiziqni yagona $(x_0,y)$ nuqtada kesishi, $y<y_0$ bo‘lishi va shunday qirralar orasida $y$ maksimal bo‘lishi kerak.
+  ![Image of Goal](/algorithms-media/geometry/point_location_goal.png)
 
-Masalani sweep line bilan oflayn yechamiz. Qirralar uchlari va so‘rov nuqtalarining $x$ koordinatalarini o‘sish tartibida ko‘rib chiqamiz. To‘rtta turdagi hodisa yaratiladi:
+Bu masalani supuruvchi chiziq algoritmi yordamida oflayn yechamiz. So‘rov nuqtalari va qirralar uchlarining x-koordinatalari bo‘yicha o‘sish tartibida yuramiz va $s$ qirralar to‘plamini saqlab boramiz. Har bir x-koordinata uchun oldindan bir nechta hodisa qo‘shamiz.
 
-1. `add` — vertikal bo‘lmagan qirraning chap uchida;
-2. `remove` — shu qirraning o‘ng uchida;
-3. `vertical` — vertikal qirra uchun;
-4. `get` — so‘rov nuqtasi uchun.
+Hodisalar to‘rt turda bo‘ladi: _add_ (qo‘shish), _remove_ (o‘chirish), _vertical_ (vertikal), _get_ (so‘rov).
+Har bir vertikal qirra (ikkala uchining x-koordinatasi bir xil) uchun tegishli x-koordinataga bitta _vertical_ hodisa qo‘shamiz.
+Boshqa har bir qirra uchun uchlari x-koordinatalarining minimumiga bitta _add_ hodisa, maksimumiga esa bitta _remove_ hodisa qo‘shamiz.
+Nihoyat, har bir so‘rov nuqtasi uchun uning x-koordinatasiga bitta _get_ hodisa qo‘shamiz.
 
-Bir xil $x$ koordinatadagi hodisalar `vertical`, `get`, `remove`, `add` tartibida qayta ishlanadi. Degenerativ holatlarni qamrab olish uchun shu $x$ dagi barcha hodisalar bajarilgach `get` so‘rovlari ikkinchi marta tekshiriladi va ikki natijadan yaxshirog‘i olinadi.
+Har bir x-koordinata uchun hodisalarni turi bo‘yicha (_vertical_, _get_, _remove_, _add_) tartibda saralaymiz.
+Quyidagi rasmda har bir x-koordinata uchun barcha hodisalar saralangan tartibda ko‘rsatilgan.
 
-Sweep davomida ikki to‘plam saqlanadi:
+  ![Image of Events](/algorithms-media/geometry/point_location_events.png)
 
-- `t` — barcha faol vertikal bo‘lmagan qirralar;
-- `vert` — joriy $x$ dagi vertikal qirralarning $y$ intervallari.
+Supuruvchi chiziq jarayonida ikkita to‘plamni saqlaymiz.
+Vertikal bo‘lmagan barcha qirralar uchun $t$ to‘plami, vertikal qirralar uchun esa alohida $vert$ to‘plami.
+Har bir x-koordinatani qayta ishlash boshida $vert$ to‘plamini tozalaymiz.
 
-Yangi $x$ ga o‘tilganda `vert` tozalanadi. Vertikal hodisa tegishli intervalni `vert` ga qo‘shadi. `add` va `remove` hodisalari qirrani `t` ga qo‘shadi yoki undan o‘chiradi. `get` hodisasida avval nuqta biror vertikal qirrada yotishi ikkilik qidiruv bilan tekshiriladi. Aks holda `t` ichidan nuqtaning bevosita pastidagi qirra topiladi.
+Endi qayd etilgan x-koordinata uchun hodisalarni qayta ishlaymiz.
 
-### Faol qirralar tartibi
+ - Agar _vertical_ hodisa kelsa, tegishli qirra uchlarining minimal $y$-koordinatasini $vert$ ga qo‘shamiz.
+ - Agar _remove_ yoki _add_ hodisa kelsa, tegishli qirrani $t$ dan o‘chiramiz yoki unga qo‘shamiz.
+ - Nihoyat, har bir _get_ hodisa uchun $vert$ da ikkilik qidiruv bajarib, nuqta biror vertikal qirrada yotishini tekshirishimiz kerak.
+Agar nuqta hech bir vertikal qirrada yotmasa, bu so‘rov uchun javobni $t$ dan topishimiz kerak.
+Buning uchun yana ikkilik qidiruv bajaramiz.
+Ba’zi maxsus holatlarni (masalan, $(0,~0)$, $(0,~2)$, $(1, 1)$ uchburchagi va $(0,~0)$ nuqtaga so‘rov berilganda) to‘g‘ri hal qilish uchun shu x-koordinatadagi barcha hodisalar qayta ishlab bo‘lingach, barcha _get_ hodisalariga yana bir marta javob berishimiz va ikki javobdan eng yaxshisini tanlashimiz kerak.
 
-Ikki qirra $(a,b)$ va $(c,d)$ uchun biri ikkinchisidan hech qachon yuqorida emasligini, ular umumiy $x$ oralig‘ida kesishmasligini hisobga olib, orientatsiyalar orqali aniqlash mumkin. Psevdokod:
+Endi $t$ to‘plami uchun komparator tanlaymiz.
+Bu komparator ikkala qirra qoplagan har bir x-koordinata uchun bir qirra ikkinchisidan yuqorida yotmasligini tekshirishi kerak. Faraz qilaylik, bizda $(a, b)$ va $(c, d)$ ikkita qirra bor. U holda komparator (psevdokodda) quyidagicha:
 
-```text
-val = sgn((b-a) × (c-a)) + sgn((b-a) × (d-a))
-if val != 0:
-    return val > 0
-val = sgn((d-c) × (a-c)) + sgn((d-c) × (b-c))
-return val < 0
-```
+$val = sgn((b - a)\times(c - a)) + sgn((b - a)\times(d - a))$ 
+**if** $val \neq 0$ 
+**then return** $val > 0$ 
+$val = sgn((d - c)\times(a - c)) + sgn((d - c)\times(b - c))$ 
+**return** $val < 0$ 
 
-Planar subdivision qirralari ichki nuqtalarda kesishmagani sababli bu komparator butun umumiy $x$ oralig‘ida izchil tartib beradi.
+Endi har bir so‘rov uchun unga mos qirra bor.
+Yuzni qanday topamiz?
+Agar qirrani topa olmagan bo‘lsak, nuqta tashqi yuzda ekanini bildiradi.
+Agar nuqta topilgan qirraga tegishli bo‘lsa, yuz yagona emas.
+Aks holda ikkita nomzod bor — shu qirra bilan chegaralangan yuzlar.
+Qaysi biri javob ekanini qanday tekshiramiz? E’tibor bering, qirra vertikal emas.
+Shunda javob shu qirradan yuqorida joylashgan yuzdir.
+Har bir vertikal bo‘lmagan qirra uchun shunday yuzni topib olamiz.
+Har bir yuzni soat miliga teskari yo‘nalishda aylanib chiqamiz.
+Agar aylanib chiqish paytida qirradan o‘tishda x-koordinata ortgan bo‘lsa, bu yuz shu qirra uchun biz topishimiz kerak bo‘lgan yuzdir.
 
-Har bir so‘rov uchun tegishli pastki qirra topilgach, yuzni aniqlash qoladi. Qirra topilmasa, nuqta tashqi yuzda. Nuqta qirraning ustida bo‘lsa, yuz yagona emas va qirra indeksi qaytariladi. Aks holda nomzodlar qirraning ikki tomonidagi yuzlardir; kerakli yuz qirraning yuqori tomonidagi yuzdir.
+## Eslatmalar
 
-Har bir vertikal bo‘lmagan qirra uchun “yuqoridagi yuz” oldindan topiladi. Har bir yuz chegarasi soat miliga teskari aylanganda, qirra bo‘ylab $x$ koordinata ortsa, shu yuz qirraning yuqori tomonida joylashgan bo‘ladi.
-
-## Eslatma
-
-Persistent qidiruv daraxtidan foydalanilsa, har bir $x$ koordinatadagi faol qirralar to‘plamining versiyasi saqlanadi va so‘rovlarni onlayn bajarish mumkin.
+Aslida, persistent daraxtlar yordamida bu yondashuvni so‘rovlarga onlayn javob berish uchun ham qo‘llash mumkin.
 
 ## Implementatsiya
 
-Quyidagi skelet butun koordinatalar uchun mo‘ljallangan. Subdivision DCEL ko‘rinishida to‘g‘ri berilgan va tashqi yuz raqami `-1` deb olinadi. Natija `(1, face)` bo‘lsa nuqta yuz ichida, `(0, edge)` bo‘lsa qirra ustida yotadi.
+Quyidagi kod butun sonlar uchun yozilgan, ammo uni (taqqoslash usullarini va nuqta turini almashtirib) haqiqiy sonlar bilan ishlaydigan qilib osongina o‘zgartirish mumkin.
+Bu implementatsiya bo‘linma [DCEL](https://en.wikipedia.org/wiki/Doubly_connected_edge_list) ichida to‘g‘ri saqlangan va tashqi yuz $-1$ raqamiga ega deb faraz qiladi.
+Har bir so‘rov uchun nuqta $i$-raqamli yuz ichida qat’iy yotsa $(1, i)$ juftligi, nuqta $i$-raqamli qirrada yotsa $(0, i)$ juftligi qaytariladi.
 
 ```cpp
-using ll = long long;
+typedef long long ll;
+
+bool ge(const ll& a, const ll& b) { return a >= b; }
+bool le(const ll& a, const ll& b) { return a <= b; }
+bool eq(const ll& a, const ll& b) { return a == b; }
+bool gt(const ll& a, const ll& b) { return a > b; }
+bool lt(const ll& a, const ll& b) { return a < b; }
+int sgn(const ll& x) { return le(x, 0) ? eq(x, 0) ? 0 : -1 : 1; }
 
 struct pt {
     ll x, y;
+    pt() {}
+    pt(ll _x, ll _y) : x(_x), y(_y) {}
+    pt operator-(const pt& a) const { return pt(x - a.x, y - a.y); }
+    ll dot(const pt& a) const { return x * a.x + y * a.y; }
+    ll dot(const pt& a, const pt& b) const { return (a - *this).dot(b - *this); }
+    ll cross(const pt& a) const { return x * a.y - y * a.x; }
+    ll cross(const pt& a, const pt& b) const { return (a - *this).cross(b - *this); }
+    bool operator==(const pt& a) const { return a.x == x && a.y == y; }
 };
 
-pt operator-(pt a, pt b) { return {a.x-b.x, a.y-b.y}; }
-ll cross(pt a, pt b) { return a.x*b.y-a.y*b.x; }
-ll cross(pt a, pt b, pt c) { return cross(b-a, c-a); }
-int sgn(ll x) { return (x>0)-(x<0); }
-
-struct edge {
-    pt a, b;
-    int id;
-    int face_ab; // a -> b yo‘nalishda qirraning chapidagi yuz
-
-    bool vertical() const { return a.x == b.x; }
+struct Edge {
+    pt l, r;
 };
 
-bool on_segment(pt p, const edge& e) {
-    return cross(e.a, e.b, p) == 0
-        && min(e.a.x,e.b.x) <= p.x && p.x <= max(e.a.x,e.b.x)
-        && min(e.a.y,e.b.y) <= p.y && p.y <= max(e.a.y,e.b.y);
+bool edge_cmp(Edge* edge1, Edge* edge2)
+{
+    const pt a = edge1->l, b = edge1->r;
+    const pt c = edge2->l, d = edge2->r;
+    int val = sgn(a.cross(b, c)) + sgn(a.cross(b, d));
+    if (val != 0)
+        return val > 0;
+    val = sgn(c.cross(d, a)) + sgn(c.cross(d, b));
+    return val < 0;
 }
 
-// a qirra b qirradan pastdami?
-struct edge_less {
-    const vector<edge>* E;
-    bool operator()(int i, int j) const {
-        if (i == j) return false;
-        const edge &s = (*E)[i], &t = (*E)[j];
-        int val = sgn(cross(s.a, s.b, t.a))
-                + sgn(cross(s.a, s.b, t.b));
-        if (val != 0) return val > 0;
-        val = sgn(cross(t.a, t.b, s.a))
-            + sgn(cross(t.a, t.b, s.b));
-        return val < 0;
+enum EventType { DEL = 2, ADD = 3, GET = 1, VERT = 0 };
+
+struct Event {
+    EventType type;
+    int pos;
+    bool operator<(const Event& event) const { return type < event.type; }
+};
+
+vector<Edge*> sweepline(vector<Edge*> planar, vector<pt> queries)
+{
+    using pt_type = decltype(pt::x);
+
+    // collect all x-coordinates
+    auto s =
+        set<pt_type, std::function<bool(const pt_type&, const pt_type&)>>(lt);
+    for (pt p : queries)
+        s.insert(p.x);
+    for (Edge* e : planar) {
+        s.insert(e->l.x);
+        s.insert(e->r.x);
     }
+
+    // map all x-coordinates to ids
+    int cid = 0;
+    auto id =
+        map<pt_type, int, std::function<bool(const pt_type&, const pt_type&)>>(
+            lt);
+    for (auto x : s)
+        id[x] = cid++;
+
+    // create events
+    auto t = set<Edge*, decltype(*edge_cmp)>(edge_cmp);
+    auto vert_cmp = [](const pair<pt_type, int>& l,
+                       const pair<pt_type, int>& r) {
+        if (!eq(l.first, r.first))
+            return lt(l.first, r.first);
+        return l.second < r.second;
+    };
+    auto vert = set<pair<pt_type, int>, decltype(vert_cmp)>(vert_cmp);
+    vector<vector<Event>> events(cid);
+    for (int i = 0; i < (int)queries.size(); i++) {
+        int x = id[queries[i].x];
+        events[x].push_back(Event{GET, i});
+    }
+    for (int i = 0; i < (int)planar.size(); i++) {
+        int lx = id[planar[i]->l.x], rx = id[planar[i]->r.x];
+        if (lx > rx) {
+            swap(lx, rx);
+            swap(planar[i]->l, planar[i]->r);
+        }
+        if (lx == rx) {
+            events[lx].push_back(Event{VERT, i});
+        } else {
+            events[lx].push_back(Event{ADD, i});
+            events[rx].push_back(Event{DEL, i});
+        }
+    }
+
+    // perform sweep line algorithm
+    vector<Edge*> ans(queries.size(), nullptr);
+    for (int x = 0; x < cid; x++) {
+        sort(events[x].begin(), events[x].end());
+        vert.clear();
+        for (Event event : events[x]) {
+            if (event.type == DEL) {
+                t.erase(planar[event.pos]);
+            }
+            if (event.type == VERT) {
+                vert.insert(make_pair(
+                    min(planar[event.pos]->l.y, planar[event.pos]->r.y),
+                    event.pos));
+            }
+            if (event.type == ADD) {
+                t.insert(planar[event.pos]);
+            }
+            if (event.type == GET) {
+                auto jt = vert.upper_bound(
+                    make_pair(queries[event.pos].y, planar.size()));
+                if (jt != vert.begin()) {
+                    --jt;
+                    int i = jt->second;
+                    if (ge(max(planar[i]->l.y, planar[i]->r.y),
+                           queries[event.pos].y)) {
+                        ans[event.pos] = planar[i];
+                        continue;
+                    }
+                }
+                Edge* e = new Edge;
+                e->l = e->r = queries[event.pos];
+                auto it = t.upper_bound(e);
+                if (it != t.begin())
+                    ans[event.pos] = *(--it);
+                delete e;
+            }
+        }
+
+        for (Event event : events[x]) {
+            if (event.type != GET)
+                continue;
+            if (ans[event.pos] != nullptr &&
+                eq(ans[event.pos]->l.x, ans[event.pos]->r.x))
+                continue;
+
+            Edge* e = new Edge;
+            e->l = e->r = queries[event.pos];
+            auto it = t.upper_bound(e);
+            delete e;
+            if (it == t.begin())
+                e = nullptr;
+            else
+                e = *(--it);
+            if (ans[event.pos] == nullptr) {
+                ans[event.pos] = e;
+                continue;
+            }
+            if (e == nullptr)
+                continue;
+            if (e == ans[event.pos])
+                continue;
+            if (id[ans[event.pos]->r.x] == x) {
+                if (id[e->l.x] == x) {
+                    if (gt(e->l.y, ans[event.pos]->r.y))
+                        ans[event.pos] = e;
+                }
+            } else {
+                ans[event.pos] = e;
+            }
+        }
+    }
+    return ans;
+}
+
+struct DCEL {
+    struct Edge {
+        pt origin;
+        Edge* nxt = nullptr;
+        Edge* twin = nullptr;
+        int face;
+    };
+    vector<Edge*> body;
 };
-```
 
-Amaliy yechimda so‘rov qirra emasligi sababli `set::lower_bound` uchun shaffof komparator yoki maxsus vaqtinchalik “gorizontal so‘rov qirrasi” ishlatiladi. Quyidagi yordamchi funksiya qirraning berilgan $x$ dagi balandligini kasrsiz taqqoslaydi:
-
-```cpp
-// e(x) <= p.y ekanini tekshiradi; e vertikal emas.
-bool not_above(const edge& e, pt p) {
-    pt a = e.a, b = e.b;
-    if (a.x > b.x) swap(a, b);
-    // y(x) = a.y + (b.y-a.y)(x-a.x)/(b.x-a.x)
-    __int128 lhs = (__int128)(p.y-a.y) * (b.x-a.x);
-    __int128 rhs = (__int128)(b.y-a.y) * (p.x-a.x);
-    return lhs >= rhs;
+vector<pair<int, int>> point_location(DCEL planar, vector<pt> queries)
+{
+    vector<pair<int, int>> ans(queries.size());
+    vector<Edge*> planar2;
+    map<intptr_t, int> pos;
+    map<intptr_t, int> added_on;
+    int n = planar.body.size();
+    for (int i = 0; i < n; i++) {
+        if (planar.body[i]->face > planar.body[i]->twin->face)
+            continue;
+        Edge* e = new Edge;
+        e->l = planar.body[i]->origin;
+        e->r = planar.body[i]->twin->origin;
+        added_on[(intptr_t)e] = i;
+        pos[(intptr_t)e] =
+            lt(planar.body[i]->origin.x, planar.body[i]->twin->origin.x)
+                ? planar.body[i]->face
+                : planar.body[i]->twin->face;
+        planar2.push_back(e);
+    }
+    auto res = sweepline(planar2, queries);
+    for (int i = 0; i < (int)queries.size(); i++) {
+        if (res[i] == nullptr) {
+            ans[i] = make_pair(1, -1);
+            continue;
+        }
+        pt p = queries[i];
+        pt l = res[i]->l, r = res[i]->r;
+        if (eq(p.cross(l, r), 0) && le(p.dot(l, r), 0)) {
+            ans[i] = make_pair(0, added_on[(intptr_t)res[i]]);
+            continue;
+        }
+        ans[i] = make_pair(1, pos[(intptr_t)res[i]]);
+    }
+    for (auto e : planar2)
+        delete e;
+    return ans;
 }
 ```
 
-Har bir `x` guruhida bajariladigan ishning tuzilishi:
+## Masalalar
 
-```cpp
-for (auto& group : events_by_x) {
-    vertical_intervals.clear();
-
-    for (auto e : group.vertical)
-        vertical_intervals.push_back({min(E[e].a.y,E[e].b.y),
-                                      max(E[e].a.y,E[e].b.y), e});
-    sort(vertical_intervals.begin(), vertical_intervals.end());
-
-    answer_all(group.queries);       // chap tomondagi holat
-    for (int e : group.remove) active.erase(e);
-    for (int e : group.add)    active.insert(e);
-    answer_all(group.queries);       // o‘ng tomondagi holat
-}
-```
-
-`answer_all` avval `vertical_intervals` da nuqtani qoplaydigan intervalni izlaydi. Topilmasa, `active` dagi $p$ dan baland bo‘lmagan eng katta qirrani topadi. Nuqta shu qirrada bo‘lsa `(0, edge_id)` qaytariladi; aks holda qirraning yuqori yuz raqami qaytariladi. Birinchi va ikkinchi o‘tish natijalaridan qirra ustida yotishni aniqlagan natija ustun olinadi, aks holda mavjud yuz natijasi ishlatiladi.
-
-Barcha hodisalarni saralash $\mathcal{O}((n+q)\log(n+q))$ vaqt oladi. Har bir qo‘shish, o‘chirish va so‘rov $\mathcal{O}(\log n)$ bo‘lgani uchun umumiy murakkablik ham shu tartibda, xotira esa $\mathcal{O}(n+q)$.
+ * [TIMUS 1848 Fly Hunt](http://acm.timus.ru/problem.aspx?space=1&num=1848&locale=en)
+ * [UVA 12310 Point Location](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=297&page=show_problem&problem=3732)

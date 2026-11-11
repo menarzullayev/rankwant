@@ -5,6 +5,7 @@ Bul formulasi odatda CNF (conjunctive normal form — kon’yunktiv normal shakl
 2-SAT (2-satisfiability) SAT masalasining cheklangan ko‘rinishi bo‘lib, 2-SAT da har bir klauza aynan ikkita literaldan iborat.
 Quyida shunday 2-SAT masalasiga misol keltirilgan.
 Quyidagi formula rost bo‘ladigan $a, b, c$ qiymatlarini toping:
+
 $$
 (a \lor \lnot b) \land (\lnot a \lor b) \land (\lnot a \lor \lnot b) \land (a \lor \lnot c)
 $$
@@ -22,6 +23,7 @@ har bir $x$ o‘zgaruvchi uchun $v_x$ va $v_{\lnot x}$ nomli ikkita tugun bo‘l
 Qirralar implikatsiyalarga mos keladi.
 
 Misolni 2-CNF shaklida yana bir bor qaraymiz:
+
 $$
 (a \lor \lnot b) \land (\lnot a \lor b) \land (\lnot a \lor \lnot b) \land (a \lor \lnot c)
 $$

@@ -11,17 +11,13 @@ Dijkstra algoritmining murakkabligini chiqarishda ikkita omildan foydalanganimiz
 
 Eng sodda implementatsiyada bu amallar mos ravishda $O(n)$ va $O(1)$ vaqt talab qiladi. Birinchi amal $O(n)$ marta, ikkinchisi esa $O(m)$ marta bajarilgani uchun $O(n^2+m)$ murakkablik olingan edi. Bu zich graf, ya’ni $m\approx n^2$ bo‘lganda optimal.
 
-Siyrak graflarda esa $m$ qirralarning mumkin bo‘lgan maksimal $n^2$ sonidan ancha kichik bo‘ladi va birinchi had sababli bu murakkablik optimal emas. Shuning uchun birinchi amalning ishlash vaqtini yaxshilash, albatta ikkinchi amalni keskin sekinlashtirmaslik kerak.
+Siyrak graflarda esa $m$ qirralarning mumkin bo‘lgan maksimal $n^2$ sonidan ancha kichik bo‘ladi va birinchi had sababli bu murakkablik optimal emas. Shuning uchun birinchi amalning ishlash vaqtini yaxshilash kerak (albatta, ikkinchi amalni sezilarli sekinlashtirmagan holda).
 
 Buning uchun turli yordamchi ma’lumotlar tuzilmalaridan foydalanish mumkin. Eng samaralisi **Fibonacci uyumi** bo‘lib, u minimumni olish amalini $O(\log n)$, elementni yangilash amalini esa $O(1)$ vaqtda bajaradi. Natijada Dijkstra algoritmi uchun $O(n\log n+m)$ murakkablik olinadi; bu eng qisqa yo‘l qidirish masalasi uchun nazariy minimum hamdir. Demak algoritm optimal ishlaydi va Fibonacci uyumi bu nuqtayi nazardan optimal ma’lumotlar tuzilmasidir.
 
 Ikkala amalni ham $O(1)$ da bajaradigan ma’lumotlar tuzilmasi mavjud emas. Aks holda tasodifiy sonlar ro‘yxatini chiziqli vaqtda saralash mumkin bo‘lar edi, bu esa imkonsiz. Qiziq tomoni, Thorup butun sonli vaznlar uchun $O(m)$ vaqtda eng qisqa yo‘l topadigan algoritm yaratgan, ammo u butunlay boshqa g‘oyadan foydalanadi; shuning uchun yuqoridagi fikrga zid emas.
 
-Fibonacci uyumlari bu vazifa uchun optimal murakkablikni beradi, ammo ularni amalga oshirish ancha murakkab va yashirin doimiysi ham katta. Murosa sifatida minimumni chiqarish va elementni yangilash amallarining ikkalasini ham $O(\log n)$ vaqtda bajaradigan tuzilmalardan foydalanish mumkin. Shunda Dijkstra algoritmi
-
-$$O(n\log n+m\log n)=O(m\log n)$$
-
-vaqtda ishlaydi.
+Fibonacci uyumlari bu vazifa uchun optimal murakkablikni beradi, ammo ularni amalga oshirish ancha murakkab va yashirin doimiysi ham katta. Murosa sifatida minimumni chiqarish va elementni yangilash amallarining ikkalasini ham $O(\log n)$ vaqtda bajaradigan tuzilmalardan foydalanish mumkin. Shunda Dijkstra algoritmining murakkabligi $O(n\log n+m\log n)=O(m\log n)$ bo‘ladi.
 
 C++ ikkita shunday ma’lumotlar tuzilmasini beradi: `set` va `priority_queue`. Birinchisi qizil-qora daraxtga, ikkinchisi uyumga asoslangan. Shu sababli `priority_queue` odatda kichikroq yashirin doimiyga ega, biroq unda elementni olib tashlash amali yo‘q. Shu muammo uchun aylanma yo‘l ishlatiladi va natijada nazariy jihatdan $\log n$ o‘rniga biroz yomonroq $\log m$ koeffitsiyenti kelib chiqadi; asimptotik nuqtayi nazardan ular baribir bir xil.
 

@@ -1,67 +1,73 @@
-# Convex Hull Trick va Li Chao Tree
+# Convex Hull Trick va Li Chao daraxti
 
-Quyidagi masalani ko‘rib chiqamiz. $n$ ta shahar bor va siz avtomobilda $1$-shahardan $n$-shaharga borishingiz kerak. Buning uchun benzin sotib olinadi. $k$-shaharda bir litr benzin narxi $cost_k$. Dastlab bak bo‘sh, avtomobil esa har kilometrga bir litr benzin sarflaydi. Shaharlar bitta to‘g‘ri chiziqda, koordinatalari o‘sish tartibida joylashgan; $k$-shaharning koordinatasi $x_k$. Bundan tashqari, $k$-shaharga kirishda $toll_k$ to‘lanadi.
+Quyidagi masalani ko‘rib chiqamiz. $n$ ta shahar bor va siz avtomobilda $1$-shahardan $n$-shaharga borishingiz kerak. Buning uchun benzin sotib olishingiz lozim. $k$-shaharda bir litr benzin $cost_k$ turishi ma’lum. Dastlab yonilg‘i baki bo‘sh, avtomobil esa har kilometrga bir litr benzin sarflaydi. Shaharlar bitta to‘g‘ri chiziqda, o‘sish tartibida joylashgan; $k$-shaharning koordinatasi $x_k$. Bundan tashqari, $k$-shaharga kirish uchun $toll_k$ to‘lashingiz kerak. Vazifangiz — safarni eng kam mumkin bo‘lgan xarajat bilan amalga oshirish. Yechimni dinamik dasturlash orqali hisoblash mumkinligi ravshan:
 
-Safarning eng kichik xarajatini topish dinamik dasturlash bilan ifodalanadi:
+$$dp_i = toll_i+\min\limits_{j<i}(cost_j \cdot (x_i - x_j)+dp_j)$$
 
-$$
-dp_i=toll_i+\min_{j<i}\bigl(cost_j(x_i-x_j)+dp_j\bigr).
-$$
+Sodda yondashuv $O(n^2)$ murakkablik beradi; uni $O(n \log n)$ yoki $O(n \log [C \varepsilon^{-1}])$ gacha yaxshilash mumkin, bunda $C$ — mumkin bo‘lgan eng katta $|x_i|$, $\varepsilon$ esa $x_i$ qanday aniqlikda qaralishini bildiradi (butun sonlar uchun, odatda shunday bo‘ladi, $\varepsilon = 1$). Buning uchun masalani to‘plamga $k \cdot x + b$ ko‘rinishidagi chiziqli funksiyalarni qo‘shish va funksiyalarning biror $x$ nuqtadagi eng kichik qiymatini topishga keltirish mumkinligini payqash kerak. Bu yerda ikkita asosiy yondashuvdan foydalanish mumkin.
 
-Sodda yechim $\mathcal{O}(n^2)$ vaqt oladi. Uni $\mathcal{O}(n\log n)$ yoki $\mathcal{O}(n\log(C\varepsilon^{-1}))$ gacha tezlashtirish mumkin; bu yerda $C$ — mumkin bo‘lgan eng katta $|x_i|$, $\varepsilon$ esa koordinata aniqligi. Buning uchun masala $kx+b$ chiziqli funksiyalarini to‘plamga qo‘shish va berilgan $x$ nuqtada ularning minimumini topishga keltiriladi.
+## Convex hull trick
 
-Buning ikkita asosiy usuli bor.
+Bu yondashuvning g‘oyasi chiziqli funksiyalarning pastki qavariq qobig‘ini yuritishdan iborat.
+Aslida ularni chiziqli funksiyalar sifatida emas, tekislikdagi $(k;b)$ nuqtalar sifatida qarash biroz qulayroq: u holda berilgan $(x;1)$ nuqta bilan skalyar ko‘paytmasi eng kichik bo‘lgan nuqtani topishimiz kerak bo‘ladi, ya’ni shu nuqta uchun $kx+b$ minimal bo‘ladi — bu dastlabki masalaning o‘zi.
+Bunday minimum albatta ushbu nuqtalarning pastki qavariq qobig‘ida bo‘ladi, buni quyidagi rasmdan ko‘rish mumkin:
 
-## Convex Hull Trick
+  ![lower convex hull](/algorithms-media/geometry/convex_hull_trick.png)
 
-Chiziqli funksiyani tekislikdagi $(k,b)$ nuqta sifatida qaraymiz. $(x,1)$ vektor bilan skalyar ko‘paytma
+Qobiqdagi nuqtalarni va qobiq qirralarining normal vektorlarini saqlash kerak.
+$(x;1)$ so‘rovi kelganda, ular orasidagi burchaklar nuqtai nazaridan unga eng yaqin normal vektorni topish kerak bo‘ladi; shunda optimal chiziqli funksiya uning uchlaridan biriga mos keladi.
+Buni ko‘rish uchun shuni qayd etish kerakki, $(x;1)$ bilan skalyar ko‘paytmasi o‘zgarmas bo‘lgan nuqtalar $(x;1)$ ga ortogonal to‘g‘ri chiziqda yotadi; shuning uchun optimal chiziqli funksiya — qavariq qobiqqa o‘tkazilgan, $(x;1)$ ning normaliga kollinear bo‘lgan urinma qobiqqa tegadigan nuqtadagi funksiya bo‘ladi.
+Bu nuqta shunday nuqtaki, uning chap va o‘ng tomonida yotgan qirralarning normallari $(x;1)$ ga nisbatan turli tomonlarga yo‘nalgan bo‘ladi.
 
-$$
-(k,b)\cdot(x,1)=kx+b
-$$
+Bu yondashuv chiziqli funksiyalarni qo‘shish so‘rovlari $k$ bo‘yicha monoton bo‘lganda yoki oflayn ishlaganimizda, ya’ni avval barcha chiziqli funksiyalarni qo‘shib, so‘ng so‘rovlarga javob berganimizda foydali.
+Demak, shaharlar/benzin masalasini bu usul bilan yecha olmaymiz.
+Buning uchun onlayn so‘rovlarni qayta ishlash kerak bo‘lardi.
+Onlayn so‘rovlar bilan ishlashga kelganda esa ish qiyinlashadi va to‘g‘ri qavariq qobiqni amalga oshirish uchun biror to‘plam (set) ma’lumotlar tuzilmasidan foydalanishga to‘g‘ri keladi.
+Biroq onlayn yondashuv murakkabligi tufayli va ikkinchi yondashuv (Li Chao daraxti) masalani ancha sodda yechishga imkon berganligi sababli bu maqolada ko‘rib chiqilmaydi.
+Shuni ham aytib o‘tish kerakki, bu yondashuvni onlayn rejimda kvadrat ildiz dekompozitsiyasi yordamida murakkabliklarsiz ishlatish mumkin.
+Ya’ni har $\sqrt n$ ta yangi chiziqdan keyin qavariq qobiqni noldan qayta qurish kerak.
 
-bo‘ladi. Demak, berilgan $(x,1)$ uchun skalyar ko‘paytmasi eng kichik nuqtani izlaymiz. Bunday nuqta $(k,b)$ nuqtalarining pastki qavariq qobig‘ida yotadi.
-
-Qobiqning nuqtalari va qirralarining ichkariga yo‘nalgan normal vektorlari saqlanadi. $(x,1)$ so‘rovi kelganda, burchagi shu vektorga eng yaqin normal topiladi; optimal funksiya tegishli qirraning uchlaridan biriga mos keladi. Buni shunday tushuntirish mumkin: $(x,1)$ bilan bir xil skalyar ko‘paytmaga ega nuqtalar $(x,1)$ ga perpendikulyar chiziqda yotadi. Minimum qobiqka shu yo‘nalishda urinuvchi chiziq tegadigan nuqtada olinadi.
-
-Bu usul chiziqlar qiyaligi $k$ monoton tartibda qo‘shilganda yoki barcha chiziqlarni oldindan qo‘shib, so‘rovlarni keyin bajarish mumkin bo‘lgan oflayn holatda ayniqsa qulay. To‘liq onlayn holatda qobiqni muvozanatlangan to‘plam bilan yuritish ancha murakkab. Soddaroq alternativ sifatida har $\sqrt n$ ta yangi chiziqdan so‘ng qobiqni qayta qurish mumkin.
-
-Quyida kompleks sonlardan foydalanadigan yordamchi funksiyalar keltirilgan.
+Bu yondashuvni amalga oshirish uchun biror geometrik yordamchi funksiyalardan boshlash kerak; bu yerda C++ ning kompleks sonlar turidan foydalanishni tavsiya qilamiz.
 
 ```cpp
 typedef int ftype;
 typedef complex<ftype> point;
 #define x real
 #define y imag
-
+ 
 ftype dot(point a, point b) {
     return (conj(a) * b).x();
 }
-
+ 
 ftype cross(point a, point b) {
     return (conj(a) * b).y();
 }
 ```
 
-Endi chiziqlar qiyaligi faqat ortib boradi va minimum so‘raladi deb olamiz. $(k,b)$ nuqtalari `hull` vektorida, qobiq qirralarining normal vektorlari esa `vecs` vektorida saqlanadi. Yangi nuqta qo‘shilganda qobiqning oxirgi qirrasi bilan oxirgi nuqtadan yangi nuqtaga yo‘nalgan vektor orasidagi burilish tekshiriladi. Burilish noto‘g‘ri bo‘lsa, oxirgi nuqta va unga mos normal o‘chiriladi.
-
-So‘rovda `lower_bound` orqali so‘rov vektorining qaysi normal vektorlar orasiga tushishi topiladi va mos qobiq nuqtasi baholanadi.
+Bu yerda chiziqli funksiyalar qo‘shilganda ularning $k$ qiymati faqat ortib boradi va biz eng kichik qiymatlarni topmoqchimiz deb faraz qilamiz.
+Nuqtalarni $hull$ vektorida, normal vektorlarni esa $vecs$ vektorida saqlaymiz.
+Yangi nuqta qo‘shganda qavariq qobiqdagi oxirgi qirra bilan qobiqdagi oxirgi nuqtadan yangi nuqtaga yo‘nalgan vektor orasida hosil bo‘ladigan burchakka qarash kerak.
+Bu burchak soat strelkasiga teskari yo‘nalishda bo‘lishi kerak, ya’ni qobiqdagi oxirgi normal vektor (qobiq ichiga yo‘nalgan) bilan oxirgi nuqtadan yangi nuqtaga yo‘nalgan vektorning skalyar ko‘paytmasi manfiy bo‘lmasligi lozim.
+Bu shart bajarilmaguncha, qavariq qobiqdagi oxirgi nuqtani mos qirra bilan birga o‘chirib borishimiz kerak.
 
 ```cpp
 vector<point> hull, vecs;
-
+ 
 void add_line(ftype k, ftype b) {
     point nw = {k, b};
-    while (!vecs.empty() && dot(vecs.back(), nw - hull.back()) < 0) {
+    while(!vecs.empty() && dot(vecs.back(), nw - hull.back()) < 0) {
         hull.pop_back();
         vecs.pop_back();
     }
-    if (!hull.empty()) {
+    if(!hull.empty()) {
         vecs.push_back(1i * (nw - hull.back()));
     }
     hull.push_back(nw);
 }
-
+ 
+```
+Endi biror nuqtadagi minimum qiymatni olish uchun $(x;1)$ dan soat strelkasiga teskari yo‘nalgan qavariq qobiqdagi birinchi normal vektorni topamiz. Shunday qirraning chap uchi javob bo‘ladi. $a$ vektor $b$ vektordan soat strelkasiga teskari yo‘nalmaganligini tekshirish uchun ularning vektor ko‘paytmasi $[a,b]$ musbat ekanini tekshirish kerak.
+```cpp
 int get(ftype x) {
     point query = {x, 1};
     auto it = lower_bound(vecs.begin(), vecs.end(), query, [](point a, point b) {
@@ -71,71 +77,77 @@ int get(ftype x) {
 }
 ```
 
-Bu kod qiyaliklar monoton qo‘shilishini faraz qiladi. Bir xil qiyalikdagi chiziqlarda minimum uchun faqat eng kichik $b$ ga ega chiziqni saqlash kerak. Sonlar diapazoni katta bo‘lsa, `dot` va `cross` hisoblarida toshib ketishni oldini olish uchun kengroq butun turdan foydalaniladi.
-
 ## Li Chao daraxti
 
-Li Chao daraxti chiziqlarni onlayn qo‘shish va nuqtadagi minimumni topishni soddaroq qiladi. Ikki xil chiziqli funksiya eng ko‘pi bilan bir nuqtada kesishadi. Shu sababli, intervalning o‘rta nuqtasida qaysi chiziq yaxshiroq ekanini bilsak, yomonroq chiziq faqat intervalning chap yoki o‘ng yarmidan birida g‘alaba qozonishi mumkin.
+Faraz qilaylik, har ikkitasi ko‘pi bilan bir marta kesishadigan funksiyalar to‘plami berilgan. Segment daraxtining har bir tugunida biror funksiyani shunday saqlaymizki, ildizdan bargga tushganda yo‘lda uchragan funksiyalardan biri shu bargda minimum qiymatni berishi kafolatlansin. Uni qanday qurishni ko‘rib chiqamiz.
 
-Koordinatalar sohasi $[0,C)$ bo‘lsin. Segment daraxtining har bir tugunida shu tugun intervalining o‘rta nuqtasida eng yaxshi bo‘lgan chiziq saqlanadi. Yangi chiziq qo‘shilganda joriy tugundagi chiziq bilan chap uch va o‘rta nuqtadagi qiymatlar taqqoslanadi. O‘rta nuqtada yangi chiziq yaxshiroq bo‘lsa, ular almashtiriladi. Qolgan yomonroq chiziq faqat kesishish bo‘lishi mumkin bo‘lgan yarmiga rekursiv yuboriladi.
+Faraz qilaylik, biz $[l,r)$ yarim kesmaga mos tugundamiz, unda $f_{old}$ funksiya saqlanmoqda va biz $f_{new}$ funksiyani qo‘shyapmiz. Unda kesishish nuqtasi yo $[l;m)$ da, yo $[m;r)$ da bo‘ladi, bunda $m=\left\lfloor\tfrac{l+r}{2}\right\rfloor$. Buni funksiyalarning $l$ va $m$ nuqtalardagi qiymatlarini solishtirib samarali aniqlash mumkin. Agar ustun funksiya almashsa, kesishish $[l;m)$ da, aks holda $[m;r)$ da bo‘ladi. Endi kesishish bo‘lmagan kesma yarmi uchun pastroq funksiyani tanlab, uni joriy tugunga yozamiz. Bu doim $m$ nuqtada pastroq bo‘lgan funksiya bo‘lishini ko‘rish mumkin. Shundan so‘ng yuqoriroq bo‘lgan funksiya bilan kesmaning ikkinchi yarmiga rekursiv ravishda o‘tamiz. Ko‘rinib turibdiki, bu kesmaning birinchi yarmida to‘g‘rilikni saqlaydi, ikkinchisida esa to‘g‘rilik rekursiv chaqiruv davomida ta’minlanadi. Shunday qilib, funksiyalarni qo‘shish va nuqtadagi minimal qiymatni tekshirishni $O(\log [C\varepsilon^{-1}])$ vaqtda bajarish mumkin.
 
-Har bir qo‘shish bitta ildizdan barggacha yo‘l bo‘ylab tushadi, shuning uchun murakkablik $\mathcal{O}(\log C)$. Nuqtadagi so‘rov ham shu koordinataga mos ildiz-barg yo‘lidagi barcha chiziqlar qiymatining minimumini oladi va $\mathcal{O}(\log C)$ vaqt ishlaydi.
+Tugunga yangi funksiya qo‘shilganda nima bo‘layotganining tasviri:
+
+  ![Li Chao Tree vertex](/algorithms-media/geometry/li_chao_vertex.png)
+
+Endi amalga oshirishga o‘tamiz. Chiziqli funksiyalarni saqlash uchun yana kompleks sonlardan foydalanamiz.
 
 ```cpp
 typedef long long ftype;
 typedef complex<ftype> point;
 #define x real
 #define y imag
-
-const int maxn = 2e5;
-const ftype inf = 1e18;
-
+ 
 ftype dot(point a, point b) {
     return (conj(a) * b).x();
 }
+ 
+ftype f(point a,  ftype x) {
+    return dot(a, {x, 1});
+}
+```
+Funksiyalarni $line$ massivida saqlaymiz va segment daraxtining ikkilik indekslashidan foydalanamiz. Agar uni katta sonlar yoki haqiqiy sonlar uchun ishlatmoqchi bo‘lsangiz, dinamik segment daraxtidan foydalanish kerak.
+Segment daraxti standart qiymatlar bilan, masalan, $0x + \infty$ chiziqlari bilan initsializatsiya qilinishi kerak.
 
+```cpp
+const int maxn = 2e5;
+ 
 point line[4 * maxn];
-
+ 
 void add_line(point nw, int v = 1, int l = 0, int r = maxn) {
     int m = (l + r) / 2;
-    bool lef = dot(nw, {l, 1}) < dot(line[v], {l, 1});
-    bool mid = dot(nw, {m, 1}) < dot(line[v], {m, 1});
-    if (mid) {
+    bool lef = f(nw, l) < f(line[v], l);
+    bool mid = f(nw, m) < f(line[v], m);
+    if(mid) {
         swap(line[v], nw);
     }
-    if (r - l == 1) {
+    if(r - l == 1) {
         return;
-    } else if (lef != mid) {
+    } else if(lef != mid) {
         add_line(nw, 2 * v, l, m);
     } else {
         add_line(nw, 2 * v + 1, m, r);
     }
 }
-
+```
+Endi biror $x$ nuqtadagi minimumni olish uchun shu nuqtaga olib boradigan yo‘l bo‘ylab eng kichik qiymatni oddiygina tanlaymiz.
+```cpp
 ftype get(int x, int v = 1, int l = 0, int r = maxn) {
     int m = (l + r) / 2;
-    if (r - l == 1) {
-        return dot(line[v], {x, 1});
-    } else if (x < m) {
-        return min(dot(line[v], {x, 1}), get(x, 2 * v, l, m));
+    if(r - l == 1) {
+        return f(line[v], x);
+    } else if(x < m) {
+        return min(f(line[v], x), get(x, 2 * v, l, m));
     } else {
-        return min(dot(line[v], {x, 1}), get(x, 2 * v + 1, m, r));
+        return min(f(line[v], x), get(x, 2 * v + 1, m, r));
     }
 }
 ```
 
-Daraxtni ishlatishdan oldin barcha tugunlar $0x+\text{INF}$ neytral chizig‘i bilan to‘ldiriladi:
+## Mashq masalalari
 
-```cpp
-fill(line, line + 4 * maxn, point(0, inf));
-```
-
-Koordinatalar juda katta yoki siqilmagan bo‘lsa, tugunlarni ehtiyojga qarab yaratadigan dinamik Li Chao daraxti ishlatiladi. Chiziq faqat ma’lum segmentda amal qilsa, segment daraxti bo‘ylab shu oraliqqa chiziq qo‘shiladigan variant ham quriladi.
-
-Shaharlar masalasida $j$-holat quyidagi chiziqni hosil qiladi:
-
-$$
-y=cost_j\,x+(dp_j-cost_jx_j).
-$$
-
-$x_i$ da minimum so‘ralib, unga $toll_i$ qo‘shiladi. Shunday qilib kvadratik DP onlayn ravishda $\mathcal{O}(n\log C)$ da hisoblanadi.
+* [Codebreaker - TROUBLES](https://codeforces.com/gym/103536/problem/B) (bir nechta kuzatuvdan keyin Convex Hull Trick ning oddiy qo‘llanishi)
+* [CS Academy - Squared Ends](https://csacademy.com/contest/archive/task/squared-ends)
+* [Codeforces - Escape Through Leaf](http://codeforces.com/contest/932/problem/F)
+* [CodeChef - Polynomials](https://www.codechef.com/NOV17/problems/POLY)
+* [Codeforces - Kalila and Dimna in the Logging Industry](https://codeforces.com/problemset/problem/319/C)
+* [Codeforces - Product Sum](https://codeforces.com/problemset/problem/631/E)
+* [Codeforces - Bear and Bowling 4](https://codeforces.com/problemset/problem/660/F)
+* [APIO 2010 - Commando](https://dmoj.ca/problem/apio10p1)

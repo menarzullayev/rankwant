@@ -154,7 +154,7 @@ int solve(int a, int b, int m) {
 
 The complexity is $O(\sqrt{m})$ using `unordered_map`.
 
-## When $a$ and $m$ are not coprime { data-toc-label='When a and m are not coprime' }
+## When $a$ and $m$ are not coprime
 Let $g = \gcd(a, m)$, and $g > 1$. Clearly $a^x \bmod m$ for every $x \ge 1$ will be divisible by $g$.
 
 If $g \nmid b$, there is no solution for $x$.

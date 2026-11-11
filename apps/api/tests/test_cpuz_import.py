@@ -58,6 +58,9 @@ class TestImport:
         imported = Article.objects.exclude(source_ref="")
         assert imported.count() == 163
         assert not imported.filter(is_published=True).exists()
+        # The agent review (stage 2) passed every article; nothing waits.
+        assert set(imported.values_list("review_state", flat=True)) == {"reviewed"}
+        assert ArticleReview.objects.filter(stage="technical").count() >= 163
         assert set(imported.values_list("kind", flat=True)) == {Article.Kind.ALGORITHM}
         assert imported.filter(category="graph").count() == 47
         assert set(imported.values_list("level", flat=True)) == {
@@ -97,9 +100,8 @@ class TestImport:
         assert article.body.endswith("Tahrir.")
 
     def test_publishing_takes_only_reviewed_articles(self, tmp_path: Path) -> None:
-        pending = json.loads((SNAPSHOT / "mechanical-allow.json").read_text(encoding="utf-8"))
-        waiting = pending["articles"][0]["id"]
         reviewed = clean_id()
+        waiting = next(a["id"] for a in ENTRIES if a["id"] != reviewed)
         root = small_snapshot(
             tmp_path,
             [waiting, reviewed],
@@ -119,6 +121,11 @@ class TestImport:
                 # Said reviewed, but its code still waits for the mechanical check.
                 waiting: {"state": "reviewed", "log": []},
             },
+        )
+        # Its code or a formula still differs and nobody has looked yet.
+        (root / "mechanical-allow.json").write_text(
+            json.dumps({"articles": [{"id": waiting, "status": "pending", "reason": ""}]}),
+            encoding="utf-8",
         )
         report = import_library(publish=True, root=root)
         assert report.published == [reviewed]

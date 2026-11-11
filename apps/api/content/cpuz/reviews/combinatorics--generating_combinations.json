@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T23:56:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph, the proof, the formulas and all three code blocks with the original; nothing is missing or added, and code and formulas are identical.",
+      "content_sha256": "3a09aa60ea6819f4b0569550031ce2b3eca1e2a8afe5dd69511c019e4caca172"
+    },
+    {
+      "at": "2026-11-11T23:56:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'bitmaska' and 'maska' with the glossary terms 'bit niqobi' and 'niqob' throughout (about 14 occurrences) and removed the mkdocs attribute lists from two headings.",
+      "content_sha256": "3a09aa60ea6819f4b0569550031ce2b3eca1e2a8afe5dd69511c019e4caca172"
+    }
+  ]
+}

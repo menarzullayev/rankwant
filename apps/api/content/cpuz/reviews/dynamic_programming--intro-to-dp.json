@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked code, complexities, the 57 calls and 20,000 times figures, the table of classic problems and the practice lists against the original; nothing was missing or wrong.",
+      "content_sha256": "5807fe79f5238821ae7ff304f3d55e93dec57c1fe1480828e26b4f387fd1c45e"
+    },
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'asiklik graf' with the glossary term 'siklsiz graf' in the table and 'hash-jadval' with 'xesh jadvali'.",
+      "content_sha256": "5807fe79f5238821ae7ff304f3d55e93dec57c1fe1480828e26b4f387fd1c45e"
+    }
+  ]
+}

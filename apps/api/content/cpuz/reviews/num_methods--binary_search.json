@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation had been rewritten rather than translated: it replaced the original code with std::midpoint versions, added sections ('Ishonchli implementatsiya', 'Murakkablikni eslab qolish'), altered formulas and dropped parts of the original. Re-translated the whole article from the original, restoring both code blocks (including the '...' lines), all display formulas, the proof of correctness and the sentences on half-intervals, bounds and continuous search.",
+      "content_sha256": "5de043cde38a349ed5c8bb460adbc876d892747a55400b87669304725d95df5e"
+    },
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the prose as a faithful, natural Uzbek translation using glossary terms (ikkilik qidiruv, invariant, prefiks yig‘indisi) and kept the original image link and attribution.",
+      "content_sha256": "5de043cde38a349ed5c8bb460adbc876d892747a55400b87669304725d95df5e"
+    },
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code blocks and display formulas now match the original, so the allow-list row is no longer needed.",
+      "content_sha256": "5de043cde38a349ed5c8bb460adbc876d892747a55400b87669304725d95df5e"
+    }
+  ]
+}

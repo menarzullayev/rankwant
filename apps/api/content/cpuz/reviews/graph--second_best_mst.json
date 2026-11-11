@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked observation, both approaches, worked example, code and complexities against the original; all present and correct.",
+      "content_sha256": "39f79aac86305cd5b0ae5f3f99580a363d956f19148e2346b8ad01576f9199b9"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'og‘irlik' with the glossary term 'vazn' throughout; restored the English book title in the references.",
+      "content_sha256": "39f79aac86305cd5b0ae5f3f99580a363d956f19148e2346b8ad01576f9199b9"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T11:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "No omissions or mistranslations found against the English original; code, formulas, numbers and conditions match.",
+      "content_sha256": "f9fd9fe85a6c7fe6a0634f913a719e4ffa92d6d6acc3c9a6e426a4d64721eb56"
+    },
+    {
+      "at": "2026-11-12T11:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the unidiomatic 'o‘zlashtirish' with 'tayinlash' for 'assignment'.",
+      "content_sha256": "f9fd9fe85a6c7fe6a0634f913a719e4ffa92d6d6acc3c9a6e426a4d64721eb56"
+    }
+  ]
+}

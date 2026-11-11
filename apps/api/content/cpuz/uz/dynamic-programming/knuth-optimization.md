@@ -81,7 +81,7 @@ sifatida baholash mumkin. Oddiy oraliq DP ishlatilganda esa baho $O(n^3)$ bo‘l
 
 ### Amaliyotda
 
-Knuth optimallashtirishining eng ko‘p uchraydigan qo‘llanishi yuqoridagi o‘tishga ega oraliq DPdir. Asosiy qiyinchilik — xarajat funksiyasi berilgan shartlarni qanoatlantirishini isbotlash. Eng sodda holatda $C(i,j)$ xarajat funksiyasi biror $S$ massivning $S[i], S[i+1], \ldots, S[j]$ elementlari yig‘indisidan iborat bo‘ladi; aniq massiv masalaga bog‘liq. Ba’zan xarajat funksiyasi murakkabroq ham bo‘lishi mumkin.
+Knuth optimallashtirishining eng ko‘p uchraydigan qo‘llanishi yuqoridagi o‘tishga ega oraliq DPdir. Asosiy qiyinchilik — xarajat funksiyasi berilgan shartlarni qanoatlantirishini isbotlash. Eng sodda holatda $C(i,j)$ xarajat funksiyasi qandaydir massivning $S[i, i+1, ..., j]$ qism massivi elementlari yig‘indisidan iborat bo‘ladi (massiv masalaga bog‘liq). Ba’zan xarajat funksiyasi murakkabroq ham bo‘lishi mumkin.
 
 Shuni yodda tutingki, DP o‘tishi va xarajat funksiyasiga qo‘yilgan shartlardan ham muhimroq narsa — optimal bo‘linish nuqtasi haqidagi tengsizlikdir. Ayrim masalalarda, masalan optimal ikkilik qidiruv daraxti masalasida — bu optimallashtirish dastlab aynan shu masala uchun yaratilgan — o‘tish va xarajat funksiyalari kamroq ravshan bo‘lishi mumkin. Shunga qaramay, $opt(i, j-1) \leq opt(i, j) \leq opt(i+1, j)$ ekanini isbotlashning o‘zi optimallashtirishdan foydalanish uchun yetarli.
 
@@ -155,7 +155,7 @@ $$
 dp_{p}(i, j-1) \geq dp_{q}(i, j-1) \implies dp_{p}(i, j) \geq dp_{q}(i, j).
 $$
 
-$q=opt(i,j-1)$ deb olamiz. Ta’rifga ko‘ra, $dp_p(i,j-1)\geq dp_q(i,j-1)$. Shuning uchun tengsizlikni barcha $i\leq p\leq q$ uchun qo‘llasak, $opt(i,j)$ kamida $opt(i,j-1)$ ga teng ekanini kelib chiqaramiz; bu kerakli tengsizlikning birinchi yarmini isbotlaydi.
+$q=opt(i,j-1)$ deb olamiz. Ta’rifga ko‘ra, $dp_p(i,j-1)\geq dp_q(i,j-1)$. Shuning uchun tengsizlikni barcha $i\leq p\leq q$ uchun qo‘llasak, $opt(i,j)$ kamida $opt(i,j-1)$ ga teng ekanini xulosa qilamiz; bu kerakli tengsizlikning birinchi yarmini isbotlaydi.
 
 Endi $p+1 \leq q+1 \leq j-1 \leq j$ indekslari uchun QIni qo‘llasak, quyidagini olamiz:
 

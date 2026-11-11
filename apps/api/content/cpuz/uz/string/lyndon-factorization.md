@@ -35,8 +35,10 @@ Uch xil holat yuz berishi mumkin:
 
 - $s[j] = s[k]$: bu holda $s[j]$ belgisini $s_2$ ga qo‘shish uning pre-soddaligini buzmaydi.
   Shuning uchun $j$ va $k$ ko‘rsatkichlarini bittadan oshiramiz.
+
 - $s[j] > s[k]$: bu holda $s_2 + s[j]$ satri sodda bo‘ladi.
   $j$ ni oshirib, $k$ ni yana $s_2$ ning boshiga qaytaramiz; shunda keyingi belgi sodda so‘zning boshi bilan taqqoslanadi.
+
 - $s[j] < s[k]$: $s_2 + s[j]$ satri endi pre-sodda emas.
   Shuning uchun pre-sodda $s_2$ satrini uning sodda satrlariga va, ehtimol, bo‘sh bo‘lgan qoldiqqa ajratamiz.
   Sodda satrning uzunligi $j - k$ bo‘ladi.
@@ -80,7 +82,7 @@ Demak, bizni faqat **birinchi ichki `while` sikli** qiziqtiradi.
 Eng yomon holatda u nechta iteratsiya bajaradi?
 Tashqi siklning har bir iteratsiyasida aniqlanadigan sodda so‘zlar qo‘shimcha ravishda taqqoslangan qoldiqdan uzunroq ekanini ko‘rish oson.
 Shuning uchun qoldiqlar uzunliklarining yig‘indisi ham $n$ dan kichik bo‘ladi; demak, birinchi ichki `while` sikli jami ko‘pi bilan $O(n)$ ta iteratsiya bajaradi.
-Hatto belgilar taqqoslashlarining umumiy soni $4n - 3$ dan oshmaydi.
+Aslida belgilarni taqqoslashlarning umumiy soni $4n - 3$ dan oshmaydi.
 
 ## Eng kichik siklik siljitishni topish
 
@@ -88,7 +90,7 @@ $s$ satri berilgan bo‘lsin.
 $s + s$ satri uchun Lyndon faktorizatsiyasini quramiz (bu $O(n)$ vaqt oladi).
 Faktorizatsiyada boshlanish pozitsiyasi $n$ dan kichik (ya’ni $s$ ning birinchi nusxasida boshlangan) va tugash pozitsiyasi $n$ dan katta yoki unga teng (ya’ni $s$ ning ikkinchi nusxasida tugagan) bo‘lgan sodda satrni qidiramiz.
 Ta’kidlanishicha, shu sodda satrning boshlanish pozitsiyasi kerakli eng kichik siklik siljitishning boshi bo‘ladi.
-Buni Lyndon ajratish ta’rifidan foydalanib oson tekshirish mumkin.
+Buni Lyndon faktorizatsiyasi ta’rifidan foydalanib oson tekshirish mumkin.
 
 Sodda blokning boshini oson topish mumkin: tashqi siklning har bir iteratsiyasi boshida joriy pre-sodda satrning boshini ko‘rsatuvchi $i$ ko‘rsatkichini eslab qolish kifoya.
 

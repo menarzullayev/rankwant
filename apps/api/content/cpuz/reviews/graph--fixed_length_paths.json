@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T15:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Rewrote the sentence about the min-plus product so it says that min replaces the sum and the sum replaces the product as the inner operation; formulas, complexities O(n^3 log k) and the at-most-k construction match the original.",
+      "content_sha256": "112e9a784ad2bd985ea562aa67c92e53be02569b73743aeab2fa9bfee7761af3"
+    },
+    {
+      "at": "2026-11-11T15:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Merged one-sentence paragraphs back into the original structure, removed the leftover mkdocs attribute {data-toc-label=...} from a heading, and reworded G[i][j] statements as prose like the original.",
+      "content_sha256": "112e9a784ad2bd985ea562aa67c92e53be02569b73743aeab2fa9bfee7761af3"
+    },
+    {
+      "at": "2026-11-11T15:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Inline formulas G[i][j]=0 and G[i][j]=1 are now phrased as in the original, so code and formulas match it.",
+      "content_sha256": "112e9a784ad2bd985ea562aa67c92e53be02569b73743aeab2fa9bfee7761af3"
+    }
+  ]
+}

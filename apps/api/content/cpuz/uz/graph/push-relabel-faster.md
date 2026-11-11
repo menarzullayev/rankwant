@@ -10,11 +10,11 @@ Avvalgi maqolada ortiqcha oqimli tugun hech qanday maxsus qoidasiz tanlangan edi
 
 Ammo har doim **balandligi eng katta** tugunlarni tanlab, ularda `push` va `relabel` amallarini bajarsak, murakkablik yaxshilanishi ma’lum bo‘ladi.
 
-Bundan tashqari, eng katta balandlikli tugunlarni tanlash uchun hech qanday ma’lumotlar tuzilmasi kerak emas: eng katta balandlikli tugunlarni oddiy ro‘yxatda saqlaymiz va ularning barchasi qayta ishlangach (unda balandligi oldindan kichikroq tugunlar ro‘yxatga qo‘shiladi) yoki ortiqcha oqimli, balandligi kattaroq yangi tugun paydo bo‘lganda (biror tugunga `relabel` qo‘llangach) ro‘yxatni qayta hisoblaymiz.
+Bundan tashqari, eng katta balandlikli tugunlarni tanlash uchun hech qanday ma’lumotlar tuzilmasi kerak emas: eng katta balandlikli tugunlarni oddiy ro‘yxatda saqlaymiz va ularning barchasi qayta ishlangach (shunda balandligi avval pastroq bo‘lgan tugunlar ro‘yxatga qo‘shiladi) yoki ortiqcha oqimli, balandligi kattaroq yangi tugun paydo bo‘lganda (biror tugunga `relabel` qo‘llangach) ro‘yxatni qayta hisoblaymiz.
 
 Soddaligiga qaramay, bu o‘zgartirish murakkablikni ancha kamaytiradi.
 
-Aniqrog‘i, hosil bo‘lgan algoritmning murakkabligi $O(V E + V^2 \sqrt{E})$, eng yomon holatda esa $O(V^3)$.
+Aniqroq aytganda, hosil bo‘lgan algoritmning murakkabligi $O(V E + V^2 \sqrt{E})$, eng yomon holatda esa $O(V^3)$.
 
 Bu o‘zgartirish Cheriyan va Maheshwari tomonidan 1989-yilda taklif qilingan.
 

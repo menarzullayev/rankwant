@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The only code difference is that the Jinja {%raw%} / {%endraw%} markers around the initial points in the TSP example were removed; they are mkdocs template syntax and would print literally. The code statements themselves are identical."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:13:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a free rewrite with added sections, added formulas and rewritten code; restored the original structure, all four original code blocks and formulas, and removed invented content (N and T_0 derivations, parameter heuristics, new accept function and TSP state).",
+      "content_sha256": "637eea6b87e88205026ee37dedb66c9a61feb7bf13e2638c51c2e3339938f77d"
+    },
+    {
+      "at": "2026-11-12T11:13:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Re-translated the whole article faithfully from the original, with consistent terminology (holat, qo'shni holat, sovish, temperatura).",
+      "content_sha256": "637eea6b87e88205026ee37dedb66c9a61feb7bf13e2638c51c2e3339938f77d"
+    },
+    {
+      "at": "2026-11-12T11:13:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "The only code difference is that the Jinja {%raw%} / {%endraw%} markers around the initial points in the TSP example were removed; they are mkdocs template syntax and would print literally. The code statements themselves are identical.",
+      "content_sha256": "637eea6b87e88205026ee37dedb66c9a61feb7bf13e2638c51c2e3339938f77d"
+    }
+  ]
+}

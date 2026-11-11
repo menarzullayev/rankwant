@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Replaced the mistranslation of 'illustration' ('rasmiy ifoda', formal expression) with a correct reference to the figure below; restored the plain value 0 in the implementation notes.",
+      "content_sha256": "4c9c919425645f687f806f58ca05c76f75acb391e4a9e893bbc117f839f5f435"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Corrected the 'illustration' mistranslation; rest of the text is natural Uzbek.",
+      "content_sha256": "4c9c919425645f687f806f58ca05c76f75acb391e4a9e893bbc117f839f5f435"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "The only formula difference was an inline $0$ the translation had added; it is plain text again, as in the original.",
+      "content_sha256": "4c9c919425645f687f806f58ca05c76f75acb391e4a9e893bbc117f839f5f435"
+    }
+  ]
+}

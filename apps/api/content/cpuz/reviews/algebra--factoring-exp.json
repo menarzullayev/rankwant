@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T12:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Formulas, the logarithm table and all code blocks match the original.",
+      "content_sha256": "53e97b27d04ef6f3bcaa447e97dfb62d0605d8c355efb3123904638b2ea45b5d"
+    },
+    {
+      "at": "2026-11-11T12:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the odd word 'ikkilik' with the power of $2$ wording in two places and fixed the spacing around display formulas so they render as blocks.",
+      "content_sha256": "53e97b27d04ef6f3bcaa447e97dfb62d0605d8c355efb3123904638b2ea45b5d"
+    }
+  ]
+}

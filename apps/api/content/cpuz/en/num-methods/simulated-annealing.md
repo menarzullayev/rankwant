@@ -130,7 +130,7 @@ class state {
 		std::chrono::steady_clock::now().time_since_epoch().count()
 		) };
     state() {
-        points = {%raw%} {{0,0},{2,2},{0,2},{2,0},{0,1},{1,2},{2,1},{1,0}} {%endraw%};
+        points =  {{0,0},{2,2},{0,2},{2,0},{0,1},{1,2},{2,1},{1,0}} ;
     }
     state next() {
         state s_next;

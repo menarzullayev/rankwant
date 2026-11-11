@@ -24,12 +24,12 @@ A way of thinking about it is the following:
 * If there are two distinct prime divisors $n = p_1^{e_1} \cdot p_2^{e_2}$, then you can arrange all divisors in form of a tabular.
 
 $$\begin{array}{c|ccccc}
-& 1 & p_2 & p_2^2 & \dots & p_2^{e_2} \\\\\hline
-1 & 1 & p_2 & p_2^2 & \dots & p_2^{e_2} \\\\
-p_1 & p_1 & p_1 \cdot p_2 & p_1 \cdot p_2^2 & \dots & p_1 \cdot p_2^{e_2} \\\\
-p_1^2 & p_1^2 & p_1^2 \cdot p_2 & p_1^2 \cdot p_2^2 & \dots & p_1^2 \cdot p_2^{e_2} \\\\
-\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\\\
-p_1^{e_1} & p_1^{e_1} & p_1^{e_1} \cdot p_2 & p_1^{e_1} \cdot p_2^2 & \dots & p_1^{e_1} \cdot p_2^{e_2} \\\\
+& 1 & p_2 & p_2^2 & \dots & p_2^{e_2} \\\hline
+1 & 1 & p_2 & p_2^2 & \dots & p_2^{e_2} \\
+p_1 & p_1 & p_1 \cdot p_2 & p_1 \cdot p_2^2 & \dots & p_1 \cdot p_2^{e_2} \\
+p_1^2 & p_1^2 & p_1^2 \cdot p_2 & p_1^2 \cdot p_2^2 & \dots & p_1^2 \cdot p_2^{e_2} \\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+p_1^{e_1} & p_1^{e_1} & p_1^{e_1} \cdot p_2 & p_1^{e_1} \cdot p_2^2 & \dots & p_1^{e_1} \cdot p_2^{e_2} \\
 \end{array}$$
 
 So the number of divisors is trivially $(e_1 + 1) \cdot (e_2 + 1)$.

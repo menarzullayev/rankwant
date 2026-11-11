@@ -2,54 +2,37 @@
 
 ## Ta’rif
 
-Tekislikdagi $p$ va $q$ nuqtalari orasidagi masofani ularning $x$ va $y$ koordinatalari farqlarining modullari yig‘indisi sifatida aniqlash mumkin:
+Tekislikdagi $p$ va $q$ nuqtalar uchun ular orasidagi masofani $x$ va $y$ koordinatalari ayirmalari modullarining yig‘indisi sifatida aniqlash mumkin:
 
-$$
-d(p,q)=|x_p-x_q|+|y_p-y_q|.
-$$
+$$d(p,q) = |x_p - x_q| + |y_p - y_q|$$
 
-Bunday masofa **Manhattan geometriyasi** yoki **taksikab geometriyasi** deb ataladigan modelga mos keladi. Unda nuqtalar katakli shahardagi chorrahalar sifatida qaraladi va faqat ko‘chalar bo‘ylab — gorizontal yoki vertikal — yurish mumkin. Shu sababli ikki nuqta orasida bir nechta eng qisqa yo‘l bo‘lishi mumkin, biroq ularning har birining uzunligi yuqoridagi formula bilan bir xil bo‘ladi.
+Shunday aniqlangan masofa [Manhattan (taksikab) geometriyasi](https://en.wikipedia.org/wiki/Taxicab_geometry) deb ataladigan modelga mos keladi. Unda nuqtalar Manhattan kabi yaxshi rejalashtirilgan shahardagi chorrahalar sifatida qaraladi va faqat ko‘chalar bo‘ylab — gorizontal yoki vertikal — yurish mumkin, quyidagi rasmda ko‘rsatilgandek:
 
-Manhattan masofasi bilan bog‘liq bir nechta foydali algebraik o‘zgartirish va algoritmlar mavjud. Quyida ulardan ayrimlari ko‘rib chiqiladi.
+  ![Manhattan masofasi](https://upload.wikimedia.org/wikipedia/commons/0/08/Manhattan_distance.svg)
+
+Bu rasmda bir qora nuqtadan ikkinchisiga boradigan eng qisqa yo‘llardan ba’zilari ko‘rsatilgan; ularning barchasining uzunligi $12$ ga teng.
+
+Bu masofa bilan bog‘liq bir nechta qiziqarli usul va algoritmlar bor, ulardan ayrimlarini shu yerda ko‘rsatamiz.
 
 ## Manhattan masofasida eng uzoq nuqtalar jufti
 
-$n$ ta $P$ nuqta berilgan bo‘lsin. $|x_p-x_q|+|y_p-y_q|$ qiymatini maksimum qiladigan $p,q$ juftni topmoqchimiz.
+$n$ ta $P$ nuqta berilgan. Bir-biridan eng uzoq bo‘lgan $p,q$ nuqtalar juftini, ya’ni $|x_p - x_q| + |y_p - y_q|$ ni maksimal qiladigan juftni topmoqchimiz.
 
-Avval bir o‘lchamli holatni, ya’ni $y=0$ ni ko‘raylik. Asosiy kuzatuv shuki, modul ichidagi ifodaning mumkin bo‘lgan ishoralarini to‘liq ko‘rib chiqish mumkin:
+Avval bir o‘lchamli holatni, ya’ni $y=0$ ni ko‘raylik. Asosiy kuzatuv shuki, $|x_p - x_q|$ qiymati $x_p - x_q$ ga teng yoki $-x_p + x_q$ ga tengligini to‘liq ko‘rib chiqish (bruteforce) mumkin: modul ishorasini “adashtirsak”, faqat kichikroq qiymat olamiz va u javobga ta’sir qila olmaydi. Aniqroq aytganda:
 
-$$
-|x_p-x_q|=\begin{cases}
-x_p-x_q,&x_p\ge x_q,\\
--x_p+x_q,&x_p<x_q,
-\end{cases}
-=
-\max(x_p-x_q,-x_p+x_q).
-$$
+$$|x_p - x_q| = \max(x_p - x_q, -x_p + x_q)$$
 
-Masalan, $p$ koordinatasiga musbat, $q$ koordinatasiga manfiy ishora tanlansa, quyidagi ifoda olinadi:
+Shunday qilib, masalan, $x_p$ musbat ishorali bo‘ladigan $p$ ni tanlashga urinib ko‘rish mumkin, u holda $q$ manfiy ishorali bo‘lishi kerak. Bu yo‘l bilan quyidagini topamiz:
 
-$$
-\max_{p,q\in P}(x_p-x_q)
-=
-\max_{p\in P}x_p+\max_{q\in P}(-x_q).
-$$
+$$\max\limits_{p, q \in P}(x_p + (-x_q)) = \max\limits_{p \in P}(x_p) + \max\limits_{q \in P}( - x_q ).$$
 
-Muhimi, bu yerda $p$ va $q$ ni tanlash bir-biridan mustaqil bo‘lib qoldi.
+E’tibor bering, bu g‘oyani 2 (yoki undan ko‘p!) o‘lchamga ham kengaytirish mumkin. $d$ o‘lchamda ishoralarning $2^d$ ta mumkin bo‘lgan qiymatini to‘liq ko‘rib chiqish kerak. Masalan, $2$ o‘lchamda $p$ ning ikkala ishorasi musbat bo‘lsin deb olsak, quyidagini topamiz:
 
-G‘oyani ikki va undan ko‘p o‘lchamga kengaytirish mumkin. $d$ o‘lchamda koordinatalar uchun $2^d$ ta ishora niqobi mavjud. Masalan, ikki o‘lchamda ikkala koordinata uchun ham musbat ishora tanlansa,
+$$\max\limits_{p, q \in P} [(x_p + (-x_q)) + (y_p + (-y_q))] = \max\limits_{p \in P}(x_p + y_p) + \max\limits_{q \in P}(-x_q - y_q).$$
 
-$$
-\max_{p,q\in P}
-\bigl[(x_p-x_q)+(y_p-y_q)\bigr]
-=
-\max_{p\in P}(x_p+y_p)+
-\max_{q\in P}(-x_q-y_q).
-$$
+$p$ va $q$ ni bir-biridan mustaqil qilganimiz uchun ifodani maksimal qiladigan $p$ va $q$ ni topish endi oson.
 
-Har bir niqob uchun nuqtaning ishorali koordinatalari yig‘indisining minimum va maksimum qiymatini hisoblash yetarli. Ularning farqi shu niqobga mos eng katta masofadir. Barcha niqoblar bo‘yicha maksimum javobni beradi.
-
-Quyidagi kod usulni $d$ o‘lcham uchun umumlashtiradi va $O(n\cdot2^d\cdot d)$ vaqtda ishlaydi:
+Quyidagi kod buni $d$ o‘lchamga umumlashtiradi va $O(n \cdot 2^d \cdot d)$ vaqtda ishlaydi.
 
 ```cpp
 long long ans = 0;
@@ -70,108 +53,87 @@ for (int msk = 0; msk < (1 << d); msk++) {
 
 ## Nuqtalarni burish va Chebyshev masofasi
 
-Barcha haqiqiy $m,n$ sonlar uchun quyidagi ayniyat o‘rinli:
+Barcha $m, n \in \mathbb{R}$ uchun quyidagi tenglik yaxshi ma’lum:
 
-$$
-|m|+|n|=\max(|m+n|,|m-n|).
-$$
+$$|m| + |n| = \text{max}(|m + n|, |m - n|).$$
 
-Buni $m$ va $n$ ning ishoralarini alohida holatlar bo‘yicha tekshirib isbotlash mumkin.
+Buni isbotlash uchun $m$ va $n$ ning ishoralarini tahlil qilish kifoya. Bu mashq sifatida qoldiriladi.
 
-Ayniyatni Manhattan masofasi formulasiga qo‘llasak,
+Bu tenglikni Manhattan masofasi formulasiga qo‘llab, quyidagini olamiz:
 
-$$
-\begin{aligned}
-d((x_1,y_1),(x_2,y_2))
-&=|x_1-x_2|+|y_1-y_2|\\
-&=\max\bigl(
-|(x_1+y_1)-(x_2+y_2)|,\\
-&\hspace{3.6em}|(y_1-x_1)-(y_2-x_2)|
-\bigr).
-\end{aligned}
-$$
+$$d((x_1, y_1), (x_2, y_2)) = |x_1 - x_2| + |y_1 - y_2| = \text{max}(|(x_1 + y_1) - (x_2 + y_2)|, |(y_1 - x_1) - (y_2 - x_2)|).$$
 
-Oxirgi ifoda $(x_1+y_1,y_1-x_1)$ va $(x_2+y_2,y_2-x_2)$ nuqtalari orasidagi **Chebyshev masofasi**dir. Demak,
+Oldingi tenglikdagi oxirgi ifoda $(x_1 + y_1, y_1 - x_1)$ va $(x_2 + y_2, y_2 - x_2)$ nuqtalarning [Chebyshev masofasi](https://en.wikipedia.org/wiki/Chebyshev_distance)dir. Bu degani,
 
-$$
-\alpha:(x,y)\longmapsto(x+y,y-x)
-$$
+$$\alpha : (x, y) \to (x + y, y - x)$$
 
-o‘zgartirishidan keyin asl nuqtalar orasidagi Manhattan masofasi ularning tasvirlari orasidagi Chebyshev masofasiga aylanadi.
+almashtirishni qo‘llaganimizdan keyin $p$ va $q$ nuqtalar orasidagi Manhattan masofasi $\alpha(p)$ va $\alpha(q)$ orasidagi Chebyshev masofasiga aylanadi.
 
-Geometrik jihatdan, $\alpha$ markazi $(0,0)$ bo‘lgan spiral o‘xshashlikdir: tekislik soat mili yo‘nalishida $45^\circ$ ga buriladi va $\sqrt2$ marta kattalashtiriladi. Bu o‘zgartirish Manhattan sharlarini o‘qlarga parallel kvadratlarga aylantirgani uchun ko‘plab geometrik masalalarni soddalashtiradi.
+Shuningdek, $\alpha$ markazi $(0, 0)$ bo‘lgan, soat mili yo‘nalishida $45^{\circ}$ ga burish burchagi va $\sqrt{2}$ marta kattalashtirish koeffitsiyentiga ega [spiral o‘xshashlik](https://en.wikipedia.org/wiki/Spiral_similarity) (tekislikni burib, so‘ng biror $O$ markazga nisbatan kattalashtirish) ekanini payqash mumkin.
+
+Almashtirishni tasavvur qilishga yordam beradigan rasm:
+
+  ![Chebyshev almashtirishi](/algorithms-media/geometry/chebyshev-transformation.png)
 
 ## Manhattan minimal ostov daraxti
 
-Manhattan MST masalasida tekislikdagi nuqtalarni umumiy og‘irligi eng kichik bo‘lgan daraxt bilan ulash talab qilinadi. Ikki nuqtani bog‘lovchi qirra og‘irligi ularning Manhattan masofasiga teng. Soddalik uchun barcha nuqtalar turli joylarda yotadi deb faraz qilamiz.
+Manhattan MST masalasi quyidagicha: tekislikda bir nechta nuqta berilgan, barcha nuqtalarni bog‘laydigan va og‘irliklarining umumiy yig‘indisi minimal bo‘lgan qirralarni topish kerak. Ikki nuqtani bog‘lovchi qirraning og‘irligi ularning Manhattan masofasiga teng. Soddalik uchun barcha nuqtalar turli joylarda joylashgan deb faraz qilamiz.
+Bu yerda MST ni $O(n \log{n})$ da topish usulini ko‘rsatamiz: har bir nuqta uchun uning har bir oktantdagi eng yaqin qo‘shnisi topiladi (oktantlar quyidagi rasmda ko‘rsatilgan). Bu bizga $O(n)$ ta nomzod qirra beradi va quyida ko‘rsatamizki, ular MST ni o‘z ichiga olishi kafolatlanadi. Yakuniy qadam — biror standart MST algoritmini, masalan, [kesishmaydigan to‘plamlar birlashmasidan foydalanuvchi Kruskal algoritmini](https://cp-algorithms.com/graph/mst_kruskal_with_dsu.html) qo‘llash.
 
-$O(n\log n)$ yechimning g‘oyasi: har bir nuqta uchun sakkizta oktantning har biridagi eng yaqin qo‘shnini topish. Natijada atigi $O(n)$ ta nomzod qirra olinadi va ular orasida biror Manhattan MST mavjud bo‘ladi. So‘ng bu nomzodlarga oddiy Kruskal algoritmi qo‘llanadi.
+  ![8 ta oktant rasmi](/algorithms-media/geometry/manhattan-mst-octants.png)
+  *S nuqtaga nisbatan 8 ta oktant*
 
-### Nega har bir oktantdan faqat eng yaqin qo‘shni yetarli?
+Bu yerda ko‘rsatilgan algoritm birinchi marta [H. Zhou, N. Shenoy va W. Nichollos (2002)](https://ieeexplore.ieee.org/document/913303) maqolasida taqdim etilgan. Yana [J. Stolfi](https://www.academia.edu/15667173/On_computing_all_north_east_nearest_neighbors_in_the_L1_metric) tomonidan “bo‘lib tashla va hukmronlik qil” (divide and conquer) yondashuvidan foydalanadigan boshqa ma’lum algoritm ham bor; u ham juda qiziqarli bo‘lib, har bir oktantdagi eng yaqin qo‘shnini topish usulidagina farq qiladi. Ikkalasining murakkabligi bir xil, lekin bu yerda keltirilgani implementatsiya qilish uchun osonroq va doimiy ko‘paytuvchisi kichikroq.
 
-$s$ nuqtaga nisbatan bir xil oktantda joylashgan $p$ va $q$ nuqtalarni olaylik. Oktantning geometrik cheklovlaridan
+Avval nima uchun har bir oktantdagi faqat eng yaqin qo‘shnini ko‘rib chiqish yetarli ekanini tushunib olaylik. G‘oya shuki, $s$ nuqta va bir oktantdagi har qanday ikkita boshqa $p$ va $q$ nuqta uchun $d(p, q) < \max(d(s, p), d(s, q))$ ekanini ko‘rsatamiz. Bu muhim, chunki agar $s$ nuqta $p$ va $q$ ning ikkalasiga ham ulangan MST mavjud bo‘lsa, bu qirralardan birini o‘chirib, $(p,q)$ qirrani qo‘shish mumkin va bu umumiy narxni kamaytiradi. Buni isbotlash uchun umumiylikni yo‘qotmasdan $p$ va $q$ nuqtalar $R_1$ oktantda deb faraz qilamiz; u quyidagicha aniqlanadi: $x_s \leq x$ va $x_s - y_s > x -  y$, so‘ng holatlarni alohida ko‘rib chiqamiz. Quyidagi rasm bunday bo‘lishining sababi haqida tasavvur beradi.
 
-$$
-d(p,q)<\max(d(s,p),d(s,q))
-$$
+  ![yagona eng yaqin qo‘shni](/algorithms-media/geometry/manhattan-mst-uniqueness.png)
+  *Sezgi bo‘yicha, oktant chegaralanganligi sababli $p$ va $q$ nuqtalarning ikkalasi ham $s$ ga bir-biriga qaraganda yaqinroq bo‘lishi mumkin emas*
 
-kelib chiqadi. Shuning uchun biror MST da $s$ bir vaqtning o‘zida $p$ va $q$ ga ulangan bo‘lsa, og‘irroq $(s,p)$ yoki $(s,q)$ qirrani olib tashlab, uning o‘rniga $(p,q)$ qirrani qo‘shish daraxtni bog‘langan holda qoldiradi va umumiy og‘irlikni kamaytiradi. Demak, $s$ dan bir oktant ichiga MST ning ko‘pi bilan eng yaqin nuqtaga boruvchi qirrasi kerak bo‘ladi.
+Demak, asosiy savol — $n$ ta nuqtaning har biri uchun har bir oktantdagi eng yaqin qo‘shnini qanday topish.
 
-Masalan, $s$ ga nisbatan $R_1$ oktantni
+## Har bir oktantdagi eng yaqin qo‘shni $O(n \log n)$ da
 
-$$
-x_s\le x,
-\qquad
-x_s-y_s>x-y
-$$
+Soddalik uchun shimol-shimoli-sharqiy oktantga ($R_1$, yuqoridagi rasmga qarang) e’tibor qaratamiz. Boshqa barcha yo‘nalishlar kirish nuqtalarini burib, xuddi shu algoritm bilan topiladi.
 
-shartlari bilan berish mumkin. Boshqa oktantlar koordinatalarni almashtirish va ishoralarni o‘zgartirish orqali shu holatga keltiriladi.
+Biz supuruvchi chiziq (sweep-line) yondashuvidan foydalanamiz. Nuqtalarni janubi-g‘arbdan shimoli-sharqqa qarab, ya’ni $x + y$ ning kamaymaydigan tartibida ko‘rib chiqamiz. Shuningdek, hali eng yaqin qo‘shnisi topilmagan nuqtalar to‘plamini saqlaymiz va uni “faol to‘plam” deb ataymiz. Algoritmni tasavvur qilishga yordam berish uchun quyidagi rasmlarni qo‘shdik.
 
-## Har bir oktantdagi eng yaqin qo‘shnini $O(n\log n)$ da topish
+  ![manhattan-mst-sweep](/algorithms-media/geometry/manhattan-mst-sweep-line-1.png)
+  *Strelkali qora chiziq — supuruvchi chiziq yo‘nalishi. Bu chiziqdan pastdagi barcha nuqtalar faol to‘plamda, yuqoridagilari esa hali ishlov berilmagan. Yashil rangda ishlov berilayotgan nuqtaning oktantidagi nuqtalar ko‘rsatilgan. Qizil rangda qidirilayotgan oktantda bo‘lmagan nuqtalar.*
 
-Aniqlik uchun shimol-shimoli-sharqiy, ya’ni $R_1$ oktantni ko‘ramiz. Qolgan yo‘nalishlar ayni algoritmni nuqtalarni burib takrorlash orqali olinadi.
+  ![manhattan-mst-sweep](/algorithms-media/geometry/manhattan-mst-sweep-line-2.png)
+  *Bu rasmda $p$ nuqtaga ishlov berilgandan keyingi faol to‘plam ko‘rsatilgan. E’tibor bering, oldingi rasmdagi $2$ ta yashil nuqta uchun $p$ shimol-shimoli-sharqiy oktantda edi, ular o‘zlarining eng yaqin qo‘shnisini allaqachon topgani uchun endi faol to‘plamda emas.*
 
-Sweep-line nuqtalarni janubi-g‘arbdan shimoli-sharqqa, ya’ni $x+y$ ning kamaymaydigan tartibida ko‘radi. Hali shu oktantdagi eng yaqin qo‘shnisi topilmagan nuqtalar **faol to‘plam**da saqlanadi.
+Yangi $p$ nuqta qo‘shilganda, o‘z oktantida $p$ ni saqlaydigan har bir $s$ nuqta uchun $p$ ni eng yaqin qo‘shni deb xavfsiz belgilash mumkin. Bu to‘g‘ri, chunki $p$ shimol-shimoli-sharqiy oktantda bo‘lgani uchun ularning orasidagi masofa $d(p,s) = |x_p - x_s| + |y_p - y_s| = (x_p + y_p) - (x_s + y_s)$. Saralash qadami tufayli keyingi barcha nuqtalarning $x + y$ qiymati kichikroq bo‘lmaydi, shuning uchun $p$ ning masofasi eng kichik bo‘lishi kafolatlanadi. Shunda bunday barcha nuqtalarni faol to‘plamdan olib tashlaymiz va nihoyat $p$ ni faol to‘plamga qo‘shamiz.
 
-Yangi $p$ nuqta kelganda, $p$ nuqta oktantida yotadigan har bir faol $s$ uchun $p$ eng yaqin qo‘shni bo‘ladi. Haqiqatan,
+Keyingi savol: qaysi $s$ nuqtalar uchun $p$ shimol-shimoli-sharqiy oktantda yotishini samarali qanday topish mumkin? Ya’ni qaysi $s$ nuqtalar quyidagilarni qanoatlantiradi:
 
-$$
-d(p,s)=|x_p-x_s|+|y_p-y_s|
-=(x_p+y_p)-(x_s+y_s),
-$$
+- $x_s \leq x_p$
+- $x_p - y_p < x_s - y_s$
 
-chunki $p$ shimol-shimoli-sharqiy oktantda. Keyin ko‘riladigan barcha nuqtalarning $x+y$ qiymati bundan kichik bo‘lmaydi; shuning uchun ular $s$ ga yaqinroq bo‘la olmaydi. Bunday $s$ nuqtalar faol to‘plamdan o‘chiriladi, so‘ng $p$ ning o‘zi qo‘shiladi.
+Faol to‘plamdagi hech bir nuqta boshqasining $R_1$ sohasida yotmagani uchun faol to‘plamdagi ikki $q_1$ va $q_2$ nuqta uchun $x_{q_1} \neq x_{q_2}$ bo‘ladi va ularning tartibi $x_{q_1} < x_{q_2} \implies x_{q_1} - y_{q_1} \leq x_{q_2} - y_{q_2}$ ni bildiradi.
 
-$p$ nuqta $s$ ning $R_1$ oktantida bo‘lishi uchun
+Buni yuqoridagi rasmlarda $x - y$ tartibini shimoli-g‘arbdan janubi-sharqqa boradigan, ya’ni chizilganiga perpendikulyar bo‘lgan “supuruvchi chiziq” deb o‘ylab tasavvur qilishga urinib ko‘rishingiz mumkin.
 
-- $x_s\le x_p$;
-- $x_p-y_p<x_s-y_s$
+Bu degani, agar faol to‘plamni $x$ bo‘yicha tartiblangan holda saqlasak, nomzod $s$ nuqtalar ketma-ket joylashgan bo‘ladi. Shunda $x_s \leq x_p$ bo‘lgan eng katta $x$ ni topib, ikkinchi shart $x_p - y_p < x_s - y_s$ buzilgunga qadar nuqtalarni $x$ ning kamayish tartibida ko‘rib chiqamiz (aslida $x_p - y_p = x_s - y_s$ bo‘lishiga ham ruxsat berish mumkin, bu koordinatalari teng bo‘lgan nuqtalar holatini hal qiladi). E’tibor bering, ishlov berishdan keyin nuqtalarni to‘plamdan darhol o‘chirganimiz uchun bu amortizatsiyalangan $O(n \log(n))$ murakkablikka ega bo‘ladi.
+Endi shimoli-sharq yo‘nalishidagi eng yaqin nuqta bizda bor, nuqtalarni burib, jarayonni takrorlaymiz. Shu yo‘l bilan janubi-g‘arb yo‘nalishidagi eng yaqin nuqtani ham topishimizni ko‘rsatish mumkin, shuning uchun 8 marta emas, atigi 4 marta takrorlash yetarli.
 
-shartlari bajarilishi kerak.
+Xulosa qilib, biz:
 
-Faol to‘plamdagi hech bir nuqta boshqasining $R_1$ sohasida yotmaydi. Shu sababli faol nuqtalarni $x$ bo‘yicha tartiblasak, $x$ tartibi $x-y$ tartibiga ham mos keladi: agar $x_{q_1}<x_{q_2}$ bo‘lsa, unda $x_{q_1}-y_{q_1}\le x_{q_2}-y_{q_2}$. Demak, mos keluvchi $s$ lar tartiblangan to‘plamda ketma-ket joylashadi.
+- Nuqtalarni $x + y$ bo‘yicha kamaymaydigan tartibda saralaymiz;
+- Har bir nuqta uchun faol to‘plamni $x \leq x_p$ bo‘lgan eng katta $x$ li nuqtadan boshlab ko‘rib chiqamiz va $x_p - y_p \geq x_s - y_s$ bo‘lsa, siklni to‘xtatamiz. Har bir yaroqli $s$ nuqta uchun $(s,p, d(s,p))$ qirrani ro‘yxatimizga qo‘shamiz;
+- $p$ nuqtani faol to‘plamga qo‘shamiz;
+- Barcha oktantlar bo‘ylab o‘tib bo‘lgunimizcha nuqtalarni burib, takrorlaymiz.
+- MST ni olish uchun qirralar ro‘yxatiga Kruskal algoritmini qo‘llaymiz.
 
-$x_s\le x_p$ bo‘lgan eng katta $x_s$ dan boshlab, $x$ ni kamaytirib yuramiz. $x_p-y_p>x_s-y_s$ bo‘lib qolganida to‘xtash mumkin; tenglikka ruxsat berish koordinatalari teng bo‘lishi mumkin bo‘lgan holatni ham qoplaydi. Har bir faol nuqta ishlov berilgach darhol o‘chiriladi, shuning uchun barcha ichki yurishlarning jami amortizatsiyalangan qiymati $O(n)$, `map` amallari bilan umumiy murakkablik $O(n\log n)$ bo‘ladi.
-
-Bitta aylantirish asl yo‘nalish bilan birga unga qarama-qarshi yo‘nalishdagi eng yaqin qirralarni ham beradi. Shu sababli sakkiz marta emas, to‘rtta transformatsiya yetarli.
-
-Algoritmning qisqacha qadamlari:
-
-1. Nuqtalarni $x+y$ ning kamaymaydigan tartibida saralash.
-2. Har bir $p$ uchun faol to‘plamda $x_s\le x_p$ bo‘lgan eng katta $x_s$ dan boshlash va oktant sharti buzilguncha nuqtalarni ko‘rib chiqish.
-3. Har bir mos $s$ uchun $(s,p,d(s,p))$ qirrani nomzodlar ro‘yxatiga qo‘shish va $s$ ni faol to‘plamdan o‘chirish.
-4. $p$ ni faol to‘plamga qo‘shish.
-5. Koordinatalarni burib, barcha oktantlar qamrab olinguncha takrorlash.
-6. Nomzod qirralarda Kruskal algoritmini bajarish.
-
-Quyidagi implementatsiya KACTL dagi variantga asoslangan. Funksiya Kruskalga berilishi mumkin bo‘lgan `(weight, u, v)` uchliklarini qaytaradi:
+Quyida [KACTL](https://github.com/kth-competitive-programming/kactl/blob/main/content/geometry/ManhattanMST.h) dagi variantga asoslangan implementatsiyani topishingiz mumkin.
 
 ```cpp
 struct point {
     long long x, y;
 };
 
-// Returns a list of edges in the format (weight, u, v).
+// Returns a list of edges in the format (weight, u, v). 
 // Passing this list to Kruskal algorithm will give the Manhattan MST.
 vector<tuple<long long, int, int>> manhattan_mst_edges(vector<point> ps) {
     vector<int> ids(ps.size());
@@ -184,12 +146,11 @@ vector<tuple<long long, int, int>> manhattan_mst_edges(vector<point> ps) {
         map<int, int, greater<int>> active; // (xs, id)
         for (auto i : ids) {
             for (auto it = active.lower_bound(ps[i].x); it != active.end();
-                 active.erase(it++)) {
+            active.erase(it++)) {
                 int j = it->second;
                 if (ps[i].x - ps[i].y > ps[j].x - ps[j].y) break;
                 assert(ps[i].x >= ps[j].x && ps[i].y >= ps[j].y);
-                edges.push_back({(ps[i].x - ps[j].x) +
-                                 (ps[i].y - ps[j].y), i, j});
+                edges.push_back({(ps[i].x - ps[j].x) + (ps[i].y - ps[j].y), i, j});
             }
             active[ps[i].x] = i;
         }
@@ -202,12 +163,11 @@ vector<tuple<long long, int, int>> manhattan_mst_edges(vector<point> ps) {
 }
 ```
 
-Nomzodlar soni $O(n)$, ularni topish $O(n\log n)$ va Kruskal ham $O(n\log n)$ vaqt oladi. Shunday qilib, Manhattan MST ning umumiy murakkabligi $O(n\log n)$.
-
 ## Masalalar
 
-- [AtCoder Beginner Contest 178E — Dist Max](https://atcoder.jp/contests/abc178/tasks/abc178_e)
-- [Codeforces 1093G — Multidimensional Queries](https://codeforces.com/problemset/problem/1093/G)
-- [Codeforces 944F — Game with Tokens](https://codeforces.com/problemset/problem/944/F)
-- [AtCoder Code Festival 2017 D — Four Coloring](https://atcoder.jp/contests/code-festival-2017-quala/tasks/code_festival_2017_quala_d)
-- [ICPC Asia EC Regionals Online Contest 2023 — Minimum Manhattan Distance](https://codeforces.com/gym/104591/problem/J)
+- [AtCoder Beginner Contest 178E - Dist Max](https://atcoder.jp/contests/abc178/tasks/abc178_e)
+- [CodeForces 1093G - Multidimensional Queries](https://codeforces.com/contest/1093/problem/G)
+- [CodeForces 944F - Game with Tokens](https://codeforces.com/contest/944/problem/F)
+- [AtCoder Code Festival 2017D - Four Coloring](https://atcoder.jp/contests/code-festival-2017-quala/tasks/code_festival_2017_quala_d)
+- [The 2023 ICPC Asia EC Regionals Online Contest (I) - J. Minimum Manhattan Distance](https://codeforces.com/gym/104639/problem/J)
+- [Petrozavodsk Winter Training Camp 2016 Contest 4 - B. Airports](https://codeforces.com/group/eqgxxTNwgd/contest/100959/attachments)

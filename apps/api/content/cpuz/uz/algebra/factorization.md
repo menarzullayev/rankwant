@@ -145,7 +145,7 @@ Ammo amalda bu usul kamdan-kam qo‘llanadi. Ko‘paytuvchilar bir-biridan uzoql
 Shunga qaramay, bu yondashuvni optimallashtirishning ko‘plab usullari mavjud.
 $a^2$ kvadratlarni kichik o‘zgarmas son modul bo‘yicha ko‘rib, ayrim $a$ qiymatlarini tekshirish shart emasligini aniqlash mumkin, chunki ular $a^2-n$ ning kvadrat son bo‘lishiga olib kela olmaydi.
 
-## Pollardning $p - 1$ usuli { data-toc-label="Pollardning $p - 1$ usuli" }
+## Pollardning $p - 1$ usuli
 
 $n$ sonida kamida bitta shunday $p$ tub ko‘paytuvchi bo‘lish ehtimoli yuqoriki, kichik $\mathrm{B}$ uchun $p-1$ soni $\mathrm{B}$-**daraja-silliq** bo‘ladi. Agar $m$ ni bo‘ladigan har bir tub son darajasi $\mathrm{B}$ dan oshmasa, $m$ butun soni $\mathrm{B}$-daraja-silliq deyiladi. Rasmiy ravishda, $\mathrm{B} \geqslant 1$ va $m$ ixtiyoriy musbat butun son bo‘lsin. $m$ ning tub ko‘paytuvchilarga ajratilishi $m = \prod {q_i}^{e_i}$ bo‘lsin, bunda har bir $q_i$ tub va $e_i \geqslant 1$.
 U holda barcha $i$ uchun ${q_i}^{e_i} \leqslant \mathrm{B}$ bo‘lsa, $m$ soni $\mathrm{B}$-daraja-silliq deyiladi.
@@ -224,7 +224,7 @@ Bu yerda biz $\{x_i\}$ ketma-ketligining o‘zi bilan qiziqmaymiz.
 Bizni ko‘proq $\{x_i \bmod p\}$ ketma-ketligi qiziqtiradi.
 $f$ polinom funksiya va barcha qiymatlar $[0;~p)$ oraliqda bo‘lgani sababli, bu ketma-ketlik oxir-oqibat siklga kiradi.
 **Tug‘ilgan kun paradoksi** takrorlanish boshlanguncha kutiladigan elementlar soni $O(\sqrt{p})$ ekanini ko‘rsatadi.
-Agar $p$ soni $\sqrt{n}$ dan kichik bo‘lsa, takrorlanish ehtimol $O(\sqrt[4]{n})$ ichida boshlanadi.
+Agar $p$ soni $\sqrt{n}$ dan kichik bo‘lsa, takrorlanish, ehtimol, $O(\sqrt[4]{n})$ qadam ichida boshlanadi.
 Quyida $n = 2206637$, $p = 317$, $x_0 = 2$ va $f(x) = x^2 + 1$ bo‘lgan $\{x_i \bmod p\}$ ketma-ketlik tasvirlangan.
 Ketma-ketlik shaklidan algoritm nega Pollardning $\rho$ algoritmi deb atalishini juda aniq ko‘rish mumkin.
 

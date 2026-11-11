@@ -180,11 +180,7 @@ void union_sets(int a, int b) {
 }
 ```
 
-Qaysi to‘plam ikkinchisiga ulanishini oddiy tanga tashlash bilan tanlash ham xuddi shunday murakkablik beradi degan keng tarqalgan noto‘g‘ri tushuncha mavjud. Aslida bu to‘g‘ri emas. Yuqoridagi maqolada yo‘lni siqish bilan birga ishlatilgan tanga tashlab ulash usulining murakkabligi
-
-$$\Omega\left(n \frac{\log n}{\log \log n}\right)$$
-
-ekanligi taxmin qilinadi. Benchmarklarda u o‘lcham/rang bo‘yicha yoki indeks bo‘yicha ulashdan ancha yomon ishlaydi.
+Qaysi to‘plam ikkinchisiga ulanishini oddiy tanga tashlash bilan tanlash ham xuddi shunday murakkablik beradi degan keng tarqalgan noto‘g‘ri tushuncha mavjud. Aslida bu to‘g‘ri emas. Yuqoridagi maqolada yo‘lni siqish bilan birga ishlatilgan tanga tashlab ulash usulining murakkabligi $\Omega\left(n \frac{\log n}{\log \log n}\right)$ ekanligi taxmin qilinadi. Benchmarklarda u o‘lcham/rang bo‘yicha yoki indeks bo‘yicha ulashdan ancha yomon ishlaydi.
 
 ```cpp
 void union_sets(int a, int b) {
@@ -392,7 +388,7 @@ for (int i = 0; i < n; i++) {
 
 Hozir bu algoritm Arpa usuli nomi bilan tanilgan. U ushbu texnikani mustaqil ravishda topgan va ommalashtirgan AmirReza Poorakhavan sharafiga nomlangan, garchi algoritm undan oldin ham mavjud bo‘lgan bo‘lsa-da.
 
-### Offline LCAni o‘rtacha $O(\alpha(n))$ da topish {data-toc-label="Offline LCA"}
+### Offline LCAni o‘rtacha $O(\alpha(n))$ da topish
 
 Daraxtdagi eng quyi umumiy ajdodni topish algoritmi [Eng quyi umumiy ajdod — Tarjanning offline algoritmi](/algorithms/graph/lca-tarjan) maqolasida tushuntirilgan.
 
@@ -408,7 +404,7 @@ Biroq o‘lcham bo‘yicha birlashtirishga o‘xshash **vaznlash evristikasi** a
 
 Evristika shundan iboratki, har doim ikki to‘plamning kichigini kattasiga qo‘shamiz. `union_sets` da buni implementatsiya qilish oson va vaqt qo‘shilayotgan to‘plam o‘lchamiga mutanosib. `find_set` esa bunday saqlash usulida $O(1)$ vaqt oladi.
 
-Murakkablikni isbotlaymiz. Ixtiyoriy $x$ elementni mahkamlab, `union_sets` birlashtirishlarida u necha marta ko‘chirilishini sanaymiz. $x$ birinchi marta ko‘chirilganda yangi to‘plam o‘lchami kamida 2 bo‘ladi. Ikkinchi marta ko‘chirilganda kichik to‘plam kattasiga qo‘shilgani uchun natijaviy to‘plam o‘lchami kamida 4 bo‘ladi. Har safar o‘lcham kamida ikki baravar oshadi. Demak, $x$ ko‘pi bilan $\log n$ ta birlashtirishda ko‘chiriladi. Barcha elementlar bo‘yicha jami $O(n\log n)$, har bir so‘rov uchun esa qo‘shimcha $O(1)$ vaqt olinadi.
+Murakkablik $O(m+n\log n)$ ekanini $m$ ta so‘rov uchun isbotlaymiz. Ixtiyoriy $x$ elementni mahkamlab, `union_sets` birlashtirishlarida u necha marta ko‘chirilishini sanaymiz. $x$ birinchi marta ko‘chirilganda yangi to‘plam o‘lchami kamida 2 bo‘ladi. Ikkinchi marta ko‘chirilganda kichik to‘plam kattasiga qo‘shilgani uchun natijaviy to‘plam o‘lchami kamida 4 bo‘ladi. Har safar o‘lcham kamida ikki baravar oshadi. Demak, $x$ ko‘pi bilan $\log n$ ta birlashtirishda ko‘chiriladi. Barcha elementlar bo‘yicha jami $O(n\log n)$, har bir so‘rov uchun esa qo‘shimcha $O(1)$ vaqt olinadi.
 
 Implementatsiya:
 
@@ -445,9 +441,9 @@ Kichik qismlarni kattalariga qo‘shish g‘oyasi DSUga aloqasi bo‘lmagan ko�
 
 Masalan, daraxt berilgan bo‘lsin va har bir bargga son yozilgan; bir xil son bir nechta bargda uchrashi mumkin. Har bir tugun ost-daraxtidagi turli sonlar miqdorini topish kerak.
 
-[DFS](/algorithms/graph/depth-first-search) funksiyasi har bir ost-daraxtdagi sonlar to‘plamiga ko‘rsatkich qaytarsin. Joriy tugun barg bo‘lmasa, uning barcha farzandlari uchun DFS chaqirib, qaytgan to‘plamlarni birlashtiramiz. Natijaviy to‘plam o‘lchami joriy tugun javobidir. To‘plamlarni samarali birlashtirish uchun kichiklarini kattalariga qo‘shamiz. Har bir son bir to‘plamga ko‘pi bilan $O(\log n)$ marta qo‘shiladi; `set` ichidagi qo‘shish ham $O(\log n)$ bo‘lgani sababli umumiy murakkablik $O(n\log^2 n)$ bo‘ladi.
+[DFS](/algorithms/graph/depth-first-search) funksiyasi har bir ost-daraxtdagi sonlar to‘plamiga ko‘rsatkich qaytarsin. Joriy tugun barg bo‘lmasa, uning barcha farzandlari uchun DFS chaqirib, qaytgan to‘plamlarni birlashtiramiz. Natijaviy to‘plam o‘lchami joriy tugun javobidir. To‘plamlarni samarali birlashtirish uchun kichiklarini kattalariga qo‘shamiz. Har bir son to‘plamga ko‘pi bilan $O(\log n)$ marta qo‘shilgani uchun, natijada $O(n\log^2 n)$ murakkablikdagi yechim hosil bo‘ladi.
 
-### DSUni aniq daraxt tuzilmasi bilan saqlash va online ko‘priklarni topish {data-toc-label="Storing the DSU by maintaining a clear tree structure / Online bridge finding"}
+### DSUni aniq daraxt tuzilmasi bilan saqlash va online ko‘priklarni topish
 
 DSUning eng kuchli qo‘llanishlaridan biri daraxtlarni bir vaqtning o‘zida **siqilgan va siqilmagan** ko‘rinishda saqlash imkonidir.
 

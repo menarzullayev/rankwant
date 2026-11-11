@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Sharpened the proof of Kadane's algorithm: a negative prefix 'does not contribute to the sum of any subarray of which it is a prefix', segments start 'immediately after' positions where s < 0, and the hidden-constant remark now says that many of the complex matrix algorithms lose to the trivial one for all reasonable constraints.",
+      "content_sha256": "9720192a6786d848aa3c5a4dd5006bf51177ae6b3b3679feef9dc00015c71523"
+    },
+    {
+      "at": "2026-11-11T14:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the odd word 'muhim' with 'kritik' for the original 'critical' positions; the rest of the translation was accurate.",
+      "content_sha256": "9720192a6786d848aa3c5a4dd5006bf51177ae6b3b3679feef9dc00015c71523"
+    }
+  ]
+}

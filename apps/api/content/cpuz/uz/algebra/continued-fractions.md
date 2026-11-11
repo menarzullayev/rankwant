@@ -84,7 +84,7 @@ Xususan, $r = [s_0] = s_0$. Boshqa tomondan, $s_k$ ni
 $$s_k = [a_k; s_{k+1}] = a_k + \frac{1}{s_{k+1}}$$
 
 ko‘rinishida yozish mumkin. Demak, $s_k$ dan $a_k = \lfloor s_k \rfloor$ va $s_{k+1} = (s_k - a_k)^{-1}$ ni hisoblaymiz.
-$s_k=a_k$ bo‘lmasa, $a_0, a_1, \dots$ ketma-ketlik aniq aniqlangan; tenglik faqat $r$ ratsional son bo‘lganda yuz beradi.
+$s_k=a_k$ bo‘lmasa, $a_0, a_1, \dots$ ketma-ketlik yaxshi aniqlangan; tenglik faqat $r$ ratsional son bo‘lganda yuz beradi.
 
 Shunday qilib, har qanday irratsional $r$ soni uchun uzluksiz kasr ko‘rinishi yagona aniqlanadi.
 
@@ -194,7 +194,7 @@ Uzluksiz kasrlarni keyinroq batafsil o‘rganishga turtki berish uchun hozir bir
 
 Oxirgi fakt $r$ ning eng yaxshi ratsional yaqinlashuvlarini uning yarim konvergentlarini tekshirish orqali topish imkonini beradi.
 
-Quyida bu faktlarning batafsil izohi, sezgir talqini va intuitiv tushuntirishlari keltiriladi.
+Quyida bu faktlarning batafsil izohi hamda ularning bir oz sezgi va talqini keltiriladi.
 
 ## Konvergentlar
 
@@ -351,11 +351,11 @@ Stern–Brocot daraxti aslida [treap](/algorithms/data-structures/treap) ekanini
 >
 > Hozircha $A$ va $B$ irratsional hamda ularning uzluksiz kasr ko‘rinishlari Stern–Brocot daraxtidagi cheksiz pastlashni bildiradi deb faraz qilamiz.
 >
-> Yuqorida aytilganidek, bu ko‘rinishda $a_0$ pastlashdagi ketma-ket o‘ng burilishlar sonini, $a_1$ undan keyingi chap burilishlar sonini va hokazoni bildiradi. Shu sabab $a_k$ va $b_k$ ni solishtirganda, ular teng bo‘lsa, $a_{k+1}$ va $b_{k+1}$ ga o‘tamiz. Aks holda, o‘ngga pastlayotgan bo‘lsak, $a_k < b_k$ ni, chapga pastlayotgan bo‘lsak esa, $A < B$ ni aniqlash uchun $a_k > b_k$ ni tekshiramiz.
+> Yuqorida aytilganidek, bu ko‘rinishda $a_0$ pastlashdagi ketma-ket o‘ng burilishlar sonini, $a_1$ undan keyingi chap burilishlar sonini va hokazoni bildiradi. Shu sabab $a_k$ va $b_k$ ni solishtirganda, ular teng bo‘lsa, $a_{k+1}$ va $b_{k+1}$ ga o‘tamiz. Aks holda $A < B$ ekanini aniqlash uchun o‘ngga pastlayotgan bo‘lsak $a_k < b_k$ ni, chapga pastlayotgan bo‘lsak esa $a_k > b_k$ ni tekshiramiz.
 >
 > Boshqacha aytganda, irratsional $A$ va $B$ uchun $A < B$ bo‘lishi aynan $(a_0, -a_1, a_2, -a_3, \dots) < (b_0, -b_1, b_2, -b_3, \dots)$ leksikografik tengsizlikka teng kuchli.
 >
-> Endi $\infty$ ni uzluksiz kasr ko‘rinishining formal elementi sifatida ishlatib, $A-\varepsilon$ va $A+\varepsilon$ irratsional sonlarini, ya’ni $A$ dan kichik (katta), ammo boshqa istalgan haqiqiy sondan unga yaqinroq elementlarni taqlid qilish mumkin. Aniqrog‘i, $A=[a_0; a_1, \dots, a_n]$ uchun bu ikki elementdan biri $[a_0; a_1, \dots, a_n, \infty]$, ikkinchisi esa $[a_0; a_1, \dots, a_n - 1, 1, \infty]$ bilan ifodalanadi.
+> Endi $\infty$ ni uzluksiz kasr ko‘rinishining formal elementi sifatida ishlatib, $A-\varepsilon$ va $A+\varepsilon$ irratsional sonlarini, ya’ni $A$ dan kichik (katta), ammo boshqa har qanday haqiqiy sondan katta (kichik) elementlarni emulyatsiya qilish mumkin. Aniqrog‘i, $A=[a_0; a_1, \dots, a_n]$ uchun bu ikki elementdan biri $[a_0; a_1, \dots, a_n, \infty]$, ikkinchisi esa $[a_0; a_1, \dots, a_n - 1, 1, \infty]$ bilan ifodalanadi.
 >
 > Ularning qaysi biri $A-\varepsilon$, qaysi biri $A+\varepsilon$ ga mos kelishini $n$ ning juft-toqligi orqali yoki ularni irratsional sonlar sifatida solishtirib aniqlash mumkin.
 >
@@ -548,7 +548,7 @@ $$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
 >
 > $$r = \lim\limits_{k \to \infty} r_k = a_0 + \sum\limits_{i=1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}$$
 >
-> doimo aniq aniqlangan, chunki mos qator har doim yaqinlashadi. E’tiborlisi, qoldiq qator
+> doimo yaxshi aniqlangan, chunki mos qator har doim yaqinlashadi. E’tiborlisi, qoldiq qator
 >
 > $$r-r_k = \sum\limits_{i=k+1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}$$
 >

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T15:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a condensed rewrite: restored the omitted image, the discussion of the number of tangents and degenerate cases, the explanation of removing the modulus, the 8-solutions-instead-of-4 argument, the original system and answer formulas, and the two original code blocks; removed content the original does not have (z == 0 note, duplicate-removal advice, an invented dedicated formulation of the shift).",
+      "content_sha256": "ecf2cfeca7b1a8c0af56f97ad9d6f26cc6537c94b00d11722fea5ab82ff8d92a"
+    },
+    {
+      "at": "2026-11-11T15:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the article in correct Uzbek following the original sentence by sentence; renamed the problems heading and kept the Timus link.",
+      "content_sha256": "ecf2cfeca7b1a8c0af56f97ad9d6f26cc6537c94b00d11722fea5ab82ff8d92a"
+    },
+    {
+      "at": "2026-11-11T15:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Display formulas and code blocks are now the original's, so the mechanical difference is gone.",
+      "content_sha256": "ecf2cfeca7b1a8c0af56f97ad9d6f26cc6537c94b00d11722fea5ab82ff8d92a"
+    }
+  ]
+}

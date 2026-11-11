@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T23:53:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the original code block exactly (the translation had renamed variables and rewritten statements), restored the missing triangle_union image, swapped back the upper/lower segment definition, restored the index(s) < index(t) rule for coinciding segments, and removed sentences the original does not have (integral over the area, a per-segment O(n) event count, a linear-time pointer argument for polygons, the 'segment' case of polygon intersection). Also restored the original Codeforces links and 'O' notation.",
+      "content_sha256": "977c8d28552fed0674c30fc6ef6fe2ed9104d41dfe73b1462837dfbad4edb21d"
+    },
+    {
+      "at": "2026-11-11T23:53:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the section prose in clear Uzbek with the glossary term 'supuruvchi chiziq' for scanline/sweep line and fixed mistranslations ('gorizontal mantiqda hodisalar yig'amiz'); also fixed a stray control character left in a formula.",
+      "content_sha256": "977c8d28552fed0674c30fc6ef6fe2ed9104d41dfe73b1462837dfbad4edb21d"
+    },
+    {
+      "at": "2026-11-11T23:53:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original, so the pending row is no longer needed.",
+      "content_sha256": "977c8d28552fed0674c30fc6ef6fe2ed9104d41dfe73b1462837dfbad4edb21d"
+    }
+  ]
+}
