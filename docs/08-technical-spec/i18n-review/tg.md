@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2990 strings.**
+**3001 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2269,6 +2269,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `qvant.intro` | Vazifalarni bajarib Qvant to'plang. Qvant reytingga ta'sir qilmaydi — u faqat do'kon uchun. | Вазифаҳоро иҷро карда Qvant ҷамъ кунед. Qvant ба рейтинг таъсир намекунад — он танҳо барои мағоза аст. |  |
 | `qvant.signIn` | Balansni ko'rish uchun tizimga kiring. | Барои дидани баланс ворид шавед. |  |
 | `roadmaps.intro` | Noldan cho'qqigacha bosqichma-bosqich: maqola → masala → maqola. | Қадам ба қадам аз сифр то қулла: мақола → масъала → мақола. |  |
+| `roadmaps.sections` | {count} ta bo'lim | {count} қисм |  |
+| `roadmaps.progress` | {solved} / {total} yechildi | {solved} аз {total} ҳал шуд |  |
+| `roadmaps.start` | Boshlash: {step} | Оғоз: {step} |  |
+| `roadmaps.continue` | Davom ettirish: {step} | Идома: {step} |  |
+| `roadmaps.done` | Reja tugadi — barcha qadamlar yechilgan | Нақша ба охир расид — ҳамаи қадамҳо ҳал шуданд |  |
+| `roadmaps.all` | Barcha o'quv rejalari | Ҳамаи нақшаҳои таълимӣ |  |
+| `roadmaps.free` | Bepul | Ройгон |  |
+| `roadmaps.sectionNumber` | {number}-bo'lim | Қисми {number} |  |
+| `roadmaps.solved` | Yechilgan | Ҳал шуд |  |
+| `roadmaps.previous` | ← Oldingi bo'lim | ← Қисми қаблӣ |  |
+| `roadmaps.next` | Keyingi bo'lim → | Қисми навбатӣ → |  |
 | `team.intro` | RankWant — O'zbekiston va dunyo uchun sport dasturlash platformasi. Ochiq reyting, o'z judge, o'z kontent. Loyiha hozir ochiq preview bosqichida. | RankWant — платформаи барномасозии варзишӣ барои Ӯзбекистон ва ҷаҳон. Рейтинги кушод, judge-и худ, контенти худ. Лоиҳа ҳоло дар марҳилаи preview-и кушод аст. |  |
 | `problem.solvers.codeColumn` | Kod, belgi | Код, аломат |  |
 | `problem.stats.empty` | Hali urinish yo'q — statistika bo'sh. | Ҳанӯз кӯшиш нест — омор холӣ аст. |  |

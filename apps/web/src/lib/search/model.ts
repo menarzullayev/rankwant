@@ -183,7 +183,8 @@ export function hitHref(hit: SearchHit): string {
     case "learn":
       if (hit.kind === "quiz") return `/quizzes/${key}`;
       // Learning paths have one page for all of them.
-      if (hit.kind === "roadmap") return `/roadmaps#${key}`;
+      // A study plan has its own page (ADR-0060 § 2.4).
+      if (hit.kind === "roadmap") return `/roadmaps/${key}`;
       return `/learn/${key}`;
     case "news":
       if (hit.kind === "plan") return `/platform-roadmap/${key}`;

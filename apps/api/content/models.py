@@ -97,12 +97,26 @@ class ArticleProblemLink(models.Model):
 
 
 class Roadmap(models.Model):
-    """O'quv yo'li — maqola va masalalarning tartiblangan ketma-ketligi."""
+    """O'quv yo'li — maqola va masalalarning tartiblangan ketma-ketligi.
+
+    A study plan (ADR-0060 § 2.4) groups its steps into sections and has a
+    page of its own; one without sections is the plain list it always was.
+    """
+
+    class Track(models.TextChoices):
+        GENERAL = "general", "Umumiy"
+        OLYMPIAD = "olympiad", "Olimpiada"
 
     slug = models.SlugField(unique=True, max_length=120)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    locale = models.CharField(max_length=2, default="uz")
+    #: The language of `title` and `description`; three characters, as
+    #: Karakalpak is `kaa`.
+    locale = models.CharField(max_length=3, default="uz")
+    #: The other languages: `{locale: {"title": ..., "description": ...}}`.
+    #: A missing field falls back to the text above, as in ADR-0058.
+    translations = models.JSONField(default=dict, blank=True)
+    track = models.CharField(max_length=16, choices=Track.choices, default=Track.GENERAL)
     is_published = models.BooleanField(default=False, db_index=True)
     order = models.PositiveIntegerField(default=0)
 
@@ -111,6 +125,26 @@ class Roadmap(models.Model):
 
     def __str__(self) -> str:
         return self.slug
+
+
+class RoadmapSection(models.Model):
+    """A chapter of a study plan (ADR-0060 § 2.4): its own page and progress."""
+
+    roadmap = models.ForeignKey(Roadmap, on_delete=models.CASCADE, related_name="sections")
+    order = models.PositiveIntegerField()
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    #: As `Roadmap.translations`, in the roadmap's language scheme.
+    translations = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["order"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["roadmap", "order"], name="uniq_roadmap_section_order")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.roadmap_id} §{self.order}"
 
 
 class RoadmapStep(models.Model):
@@ -135,6 +169,10 @@ class RoadmapStep(models.Model):
         related_name="roadmap_steps",
     )
     is_optional = models.BooleanField(default=False)
+    #: The chapter the step is in; `None` in a plan without sections.
+    section = models.ForeignKey(
+        RoadmapSection, null=True, blank=True, on_delete=models.SET_NULL, related_name="steps"
+    )
 
     class Meta:
         ordering: ClassVar = ["order"]

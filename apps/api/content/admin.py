@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from content.models import Article, ArticleProblemLink, Roadmap, RoadmapStep
+from content.models import Article, ArticleProblemLink, Roadmap, RoadmapSection, RoadmapStep
 
 
 class ArticleProblemLinkInline(admin.TabularInline):
@@ -20,6 +20,12 @@ class ArticleAdmin(admin.ModelAdmin):
     inlines = [ArticleProblemLinkInline]
 
 
+class RoadmapSectionInline(admin.TabularInline):
+    model = RoadmapSection
+    extra = 0
+    fields = ("order", "title", "description", "translations")
+
+
 class RoadmapStepInline(admin.TabularInline):
     model = RoadmapStep
     extra = 1
@@ -32,4 +38,4 @@ class RoadmapAdmin(admin.ModelAdmin):
     list_filter = ("is_published", "locale")
     search_fields = ("slug", "title")
     prepopulated_fields = {"slug": ("title",)}
-    inlines = [RoadmapStepInline]
+    inlines = [RoadmapSectionInline, RoadmapStepInline]

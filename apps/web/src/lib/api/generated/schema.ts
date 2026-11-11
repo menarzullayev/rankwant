@@ -3580,6 +3580,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/roadmaps/{slug}/sections/{order}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * O'quv rejasi bo'limi
+         * @description One chapter of a study plan with the reader's progress (ADR-0060 § 2.4).
+         *
+         *     A plan of 1 100 problems is read a chapter at a time: the plan's own
+         *     page lists the chapters and their progress.
+         */
+        get: operations["roadmaps_sections_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/schools/": {
         parameters: {
             query?: never;
@@ -10514,6 +10537,9 @@ export interface components {
             title: string;
             description?: string;
             locale?: string;
+            track?: components["schemas"]["TrackEnum"];
+            /** @default 0 */
+            readonly section_count: number;
             /** @default 0 */
             readonly step_count: number;
             /**
@@ -10526,6 +10552,7 @@ export interface components {
             readonly solved_steps: number;
             readonly next_step: components["schemas"]["RoadmapStep"] | null;
             readonly steps: components["schemas"]["RoadmapStep"][];
+            readonly sections: components["schemas"]["RoadmapSection"][];
         };
         /** @description Ochiq o'qish — mehmon ham ko'radi. */
         RoadmapItem: {
@@ -10580,6 +10607,9 @@ export interface components {
             title: string;
             description?: string;
             locale?: string;
+            track?: components["schemas"]["TrackEnum"];
+            /** @default 0 */
+            readonly section_count: number;
             /** @default 0 */
             readonly step_count: number;
             /**
@@ -10591,6 +10621,25 @@ export interface components {
              */
             readonly solved_steps: number;
             readonly next_step: components["schemas"]["RoadmapStep"] | null;
+        };
+        /** @description A chapter with the reader's progress in it (ADR-0060 § 2.4). */
+        RoadmapSection: {
+            order: number;
+            title: string;
+            description: string;
+            locale: string;
+            step_count: number;
+            solved_steps: number;
+        };
+        /** @description One chapter's page: its steps and the chapters around it. */
+        RoadmapSectionPage: {
+            roadmap: {
+                [key: string]: unknown;
+            };
+            section: components["schemas"]["RoadmapSection"];
+            steps: components["schemas"]["SectionStep"][];
+            previous: number | null;
+            next: number | null;
         };
         RoadmapStep: {
             /** Format: int64 */
@@ -10696,6 +10745,15 @@ export interface components {
             title: string;
             locale: string;
             lessons: components["schemas"]["LessonRow"][];
+        };
+        SectionStep: {
+            order: number;
+            title: string;
+            problem: string | null;
+            article: string | null;
+            difficulty: number | null;
+            is_optional: boolean;
+            solved: boolean;
         };
         SectionText: {
             locale: components["schemas"]["ContentLocaleEnum"];
@@ -11876,6 +11934,12 @@ export interface components {
             /** Format: int64 */
             stages_played?: number;
         };
+        /**
+         * @description * `general` - Umumiy
+         *     * `olympiad` - Olimpiada
+         * @enum {string}
+         */
+        TrackEnum: "general" | "olympiad";
         Transaction: {
             readonly id: number;
             /**
@@ -17044,6 +17108,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoadmapDetail"];
+                };
+            };
+        };
+    };
+    roadmaps_sections_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoadmapSectionPage"];
                 };
             };
         };

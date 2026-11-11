@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2990 strings.**
+**3001 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2269,6 +2269,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `qvant.intro` | Vazifalarni bajarib Qvant to'plang. Qvant reytingga ta'sir qilmaydi — u faqat do'kon uchun. | Тапшырмаларды аткарып Qvant топтоңуз. Qvant рейтингге таасир этпейт — ал дүкөн үчүн гана. |  |
 | `qvant.signIn` | Balansni ko'rish uchun tizimga kiring. | Балансты көрүү үчүн системага кириңиз. |  |
 | `roadmaps.intro` | Noldan cho'qqigacha bosqichma-bosqich: maqola → masala → maqola. | Нөлдөн чокуга чейин этап-этабы менен: макала → маселе → макала. |  |
+| `roadmaps.sections` | {count} ta bo'lim | {count} бөлүм |  |
+| `roadmaps.progress` | {solved} / {total} yechildi | {total} ичинен {solved} чечилди |  |
+| `roadmaps.start` | Boshlash: {step} | Баштоо: {step} |  |
+| `roadmaps.continue` | Davom ettirish: {step} | Улантуу: {step} |  |
+| `roadmaps.done` | Reja tugadi — barcha qadamlar yechilgan | План бүттү — бардык кадамдар чечилди |  |
+| `roadmaps.all` | Barcha o'quv rejalari | Бардык окуу пландары |  |
+| `roadmaps.free` | Bepul | Акысыз |  |
+| `roadmaps.sectionNumber` | {number}-bo'lim | {number}-бөлүм |  |
+| `roadmaps.solved` | Yechilgan | Чечилди |  |
+| `roadmaps.previous` | ← Oldingi bo'lim | ← Мурунку бөлүм |  |
+| `roadmaps.next` | Keyingi bo'lim → | Кийинки бөлүм → |  |
 | `team.intro` | RankWant — O'zbekiston va dunyo uchun sport dasturlash platformasi. Ochiq reyting, o'z judge, o'z kontent. Loyiha hozir ochiq preview bosqichida. | RankWant — Өзбекстан жана дүйнө үчүн спорттук программалоо платформасы. Ачык рейтинг, өз judge, өз контент. Долбоор азыр ачык preview баскычында. |  |
 | `problem.solvers.codeColumn` | Kod, belgi | Код, белги |  |
 | `problem.stats.empty` | Hali urinish yo'q — statistika bo'sh. | Азырынча аракет жок — статистика бош. |  |

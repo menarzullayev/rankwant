@@ -70,6 +70,8 @@ const ALLOWED = [
   "difficulty__gte",
   "difficulty__lte",
   "exclude_topics",
+  // ADR-0060 § 2.3: the archive tier (official by default).
+  "tier",
 ] as const;
 
 const DEFAULT_PAGE_SIZE = 25; // core.pagination.StandardPagination bilan bir xil
@@ -146,7 +148,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
     getWithSession<{ topics: TopicSkill[] }>("/problems/skills/").catch(() => ({
       topics: [],
     })),
-    api.roadmaps().catch(() => []),
+    api.roadmaps(locale).catch(() => []),
     api.calendar().catch(() => ({ results: [] })),
     api.attempts().catch(() => ({ results: [] })),
     // «Ko'p ko'rilgan» — arxiv filtridan mustaqil, alohida so'rov.

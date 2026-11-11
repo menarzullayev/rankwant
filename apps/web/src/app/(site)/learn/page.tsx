@@ -21,7 +21,7 @@ export default async function LearnPage() {
   const locale = await getLocale();
   const [articles, roadmaps] = await Promise.all([
     api.articles(),
-    api.roadmaps(),
+    api.roadmaps(locale),
   ]);
 
   return (

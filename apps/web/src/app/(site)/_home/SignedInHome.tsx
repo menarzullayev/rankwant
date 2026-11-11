@@ -244,7 +244,7 @@ export async function SignedInHome({
     ).catch(() => null),
     getWithSession<HomeEvent[]>("/me/activity/").catch((): HomeEvent[] => []),
     // With the session, so `solved_steps` and `next_step` are this user's.
-    getWithSession<Roadmap[]>("/roadmaps/").catch(() => roadmaps),
+    getWithSession<Roadmap[]>(`/roadmaps/?lang=${locale}`).catch(() => roadmaps),
     api.statsDaily().catch((): DailyStats[] => []),
     api.presence().catch(() => null),
     top("rating_contest"),

@@ -99,7 +99,7 @@ export default async function Home() {
     api.contests(),
     api.leaderboard(),
     api.articles(),
-    api.roadmaps(),
+    api.roadmaps(locale),
   ]);
 
   // Blog va o'zgarishlar — ikkalasi ham YORDAMCHI bo'lim: biri bo'sh yoki

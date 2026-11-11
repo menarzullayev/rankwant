@@ -117,7 +117,7 @@ describe("result links", () => {
     expect(hitHref(hit({ type: "learn", kind: "article", key: "dp" }))).toBe("/learn/dp");
     expect(hitHref(hit({ type: "learn", kind: "algorithm", key: "bfs" }))).toBe("/learn/bfs");
     expect(hitHref(hit({ type: "learn", kind: "quiz", key: "q1" }))).toBe("/quizzes/q1");
-    expect(hitHref(hit({ type: "learn", kind: "roadmap", key: "yol" }))).toBe("/roadmaps#yol");
+    expect(hitHref(hit({ type: "learn", kind: "roadmap", key: "yol" }))).toBe("/roadmaps/yol");
     expect(hitHref(hit({ type: "news", kind: "post", key: "yangi" }))).toBe("/blog/yangi");
     expect(hitHref(hit({ type: "news", kind: "update", key: "12" }))).toBe("/updates/12");
   });

@@ -110,6 +110,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
+  // Study plans have a page each (ADR-0060 § 2.4); the list is not paged.
+  try {
+    for (const plan of await api.roadmaps()) {
+      entries.push(sitemapEntry(`/roadmaps/${plan.slug}`, now, "weekly", 0.6));
+    }
+  } catch {
+    // As above: one section failing leaves the rest of the map.
+  }
+
   // Updates va yo'l xaritasi yozuvlarining havolasi slug emas, `id` —
   // shuning uchun alohida tsikl. Ikkalasi ham SEO uchun ishlaydi (qaror:
   // modul marketing aktivi), ya'ni har yozuv xaritada bo'lishi kerak.
