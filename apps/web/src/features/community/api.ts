@@ -121,3 +121,14 @@ export function parseTags(text: string): string[] {
     .map((tag) => tag.trim().replace(/^#/, ""))
     .filter(Boolean);
 }
+
+// --- karma (decision 2026-11-11 ③) ---------------------------------------
+
+export type KarmaRow = {
+  user: CommentAuthor;
+  /** Votes in the asked period. */
+  points: number;
+  /** All-time karma. */
+  karma: number;
+  entries: number;
+};

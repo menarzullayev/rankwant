@@ -1362,6 +1362,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/community/karma/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Karma bo'yicha foydalanuvchilar
+         * @description People by karma: `period=all` (the users table) or `30d` (active authors).
+         */
+        get: operations["community_karma_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contests/": {
         parameters: {
             query?: never;
@@ -9045,6 +9065,12 @@ export interface components {
             readonly my_role: string;
             readonly status: string;
         };
+        KarmaRow: {
+            user: components["schemas"]["CommentAuthor"];
+            points: number;
+            karma: number;
+            entries: number;
+        };
         Language: {
             code: string;
             name: string;
@@ -15526,6 +15552,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CommunityVoteResult"];
+                };
+            };
+        };
+    };
+    community_karma_list: {
+        parameters: {
+            query?: {
+                limit?: number;
+                period?: "30d" | "all";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KarmaRow"][];
                 };
             };
         };

@@ -265,3 +265,12 @@ class StaffEntrySerializer(serializers.ModelSerializer[Entry]):
 
     def get_link(self, entry: Entry) -> str:
         return f"/blogs/{entry.pk}"
+
+
+class KarmaRowSerializer(serializers.Serializer[Any]):
+    user = CommentAuthorSerializer()
+    #: Votes in the asked period (all time, or the last 30 days).
+    points = serializers.IntegerField()
+    #: All-time karma.
+    karma = serializers.IntegerField()
+    entries = serializers.IntegerField()

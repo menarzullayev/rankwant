@@ -3252,6 +3252,28 @@ def blogs_are_open_and_moderated() -> str | None:
     return None
 
 
+def karma_is_all_time_votes() -> str | None:
+    """2026-11-11 (HITL; `docs/decisions/2026-11-11-community-details.md` ③).
+
+    Karma — post va izohlarga berilgan ovozlar yig'indisi, **abadiy** (CTO
+    tavsiyasi 180 kun edi; egasi abadiyni tanladi). Yangi mualliflar
+    ko'rinishi uchun yonida 30 kunlik «faol mualliflar» ro'yxati. Ovoz
+    yozilganda muallif ovozga ko'chiriladi — karma shu ustundan sanaladi.
+    """
+    karma = read("apps/api/community/karma.py")
+    if 'total = Vote.objects.filter(author_id=user_id).aggregate(n=Sum("value"))["n"]' not in karma:
+        return "community/karma.py: karma barcha ovozlardan sanalmaydi (abadiy emas)"
+    if "ACTIVE_WINDOW = timedelta(days=30)" not in karma:
+        return "community/karma.py: faol mualliflar oynasi 30 kun emas"
+    if '"karma": karma_of(user.pk),' not in read("apps/api/profiles/public.py"):
+        return "profiles/public.py: profilda karma ko'rsatilmaydi"
+    if "user=user, kind=kind, object_id=object_id, value=value, author_id=row.author_id" not in read(
+        "apps/api/community/services.py"
+    ):
+        return "community/services.py: ovoz muallifni saqlamaydi — karma sanalmaydi"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -5655,6 +5677,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("test generatori: 100 × 8 MiB, validator, kvota, birma-bir", test_generator_is_bounded),
     ("muhokama: yechmaganga kod yopiq, 3 shikoyat, yangi hisob 5", discussion_is_open_but_guarded),
     ("bloglar: hamma yozadi, yangi hisob 1, ovoz va shikoyat, menyuda", blogs_are_open_and_moderated),
+    ("karma: abadiy ovoz yig'indisi, 30 kunlik faol mualliflar", karma_is_all_time_votes),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

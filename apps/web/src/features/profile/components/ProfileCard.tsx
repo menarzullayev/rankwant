@@ -32,6 +32,13 @@ const ROLE_COLOR: Record<ProfileRole["code"], BadgeColor> = {
 };
 
 /** Chap ustun: kim bu odam — rasm, unvon, ism, rollar, joy, havolalar. */
+/** Green for positive karma, red for negative. */
+function karmaClass(karma: number): string {
+  return karma > 0 ? KARMA_UP : KARMA_DOWN;
+}
+const KARMA_UP = "rw-ok-ink";
+const KARMA_DOWN = "rw-bad-ink";
+
 export function ProfileCard({
   profile,
   locale,
@@ -235,6 +242,33 @@ export function ProfileCard({
                 <dd className="tabular-nums rw-strong">{profile.friend_count}</dd>
               </div>
             )}
+          </dl>
+        )}
+
+        {/* Community (decision 2026-11-11 ③): karma and the person's blog. */}
+        {(profile.karma !== 0 || profile.blog_entries > 0) && (
+          <dl className="mt-4 space-y-1.5 text-theme-sm">
+          {profile.karma !== 0 && (
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <dt className="text-theme-xs rw-faint">{t(locale, "karma.title")}</dt>
+              <dd className={`font-semibold tabular-nums ${karmaClass(profile.karma)}`}>
+                {profile.karma > 0 ? `+${profile.karma}` : profile.karma}
+              </dd>
+            </div>
+          )}
+          {profile.blog_entries > 0 && (
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <dt className="text-theme-xs rw-faint">{t(locale, "karma.entries")}</dt>
+              <dd className="tabular-nums">
+                <Link
+                  href={`/blogs?author=${encodeURIComponent(profile.username)}` as Route}
+                  className="rw-accent-ink rw-link-hover"
+                >
+                  {profile.blog_entries}
+                </Link>
+              </dd>
+            </div>
+          )}
           </dl>
         )}
 

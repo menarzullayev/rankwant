@@ -208,6 +208,10 @@ export type PublicProfile = {
   pinned: PinnedAchievement[];
   /** Coaches the user chose and who accepted (ADR-0061 § 4). */
   coach: CoachRef[];
+  /** Votes the person's entries and comments received, all time (decision 2026-11-11 ③). */
+  karma: number;
+  /** Visible blog entries. */
+  blog_entries: number;
   /** Owners of classrooms the user sits in. */
   teacher: CoachRef[];
 };

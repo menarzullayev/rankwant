@@ -4,7 +4,14 @@ import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Pager } from "@/components/ui/Pager";
-import { BLOG_TABS, EntryCard, type BlogTab, type Entry } from "@/features/community";
+import {
+  ActiveAuthors,
+  BLOG_TABS,
+  EntryCard,
+  type BlogTab,
+  type Entry,
+  type KarmaRow,
+} from "@/features/community";
 import { getLocale } from "@/i18n/server";
 import { t, type MessageKey } from "@/i18n/messages";
 import { getJson, type Paginated } from "@/lib/api";
@@ -52,9 +59,11 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
   if (tag) params.set("tag", tag);
   if (author) params.set("author", author);
 
-  const [data, tags] = await Promise.all([
+  const [data, tags, authors] = await Promise.all([
     getWithSession<Paginated<Entry>>(`/blogs/?${params}`),
     getJson<{ tag: string; count: number }[]>("/blogs/tags/").catch(() => []),
+    // Owner decision ③: karma is all time, so the last 30 days show who is active now.
+    getJson<KarmaRow[]>("/community/karma/?period=30d&limit=10").catch(() => []),
   ]);
 
   const href = (next: Partial<Search>): Route => {
@@ -141,8 +150,11 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
           />
         </Card>
 
-        {tags.length > 0 && (
-          <aside aria-labelledby="blog-tags" className="space-y-3">
+        {(tags.length > 0 || authors.length > 0) && (
+          <aside className="space-y-6">
+            <ActiveAuthors rows={authors} locale={locale} />
+            {tags.length > 0 && (
+            <section aria-labelledby="blog-tags" className="space-y-3">
             <h2 id="blog-tags" className="text-theme-sm font-semibold rw-strong">
               {t(locale, "blogs.popularTags")}
             </h2>
@@ -159,6 +171,8 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
                 </li>
               ))}
             </ul>
+            </section>
+            )}
           </aside>
         )}
       </div>

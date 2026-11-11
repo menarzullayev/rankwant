@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3307 strings.**
+**3315 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -208,6 +208,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `standings.penalty` | Jarima | Ҷарима |  |
 | `standings.frozen` | Jadval muzlatilgan | Ҷадвал яхбаста |  |
 | `leaderboard.title` | Reyting | Рейтинг |  |
+| `karma.title` | Karma bali | Карма |  |
+| `karma.entries` | Blog postlari | Навиштаҳои блог |  |
+| `karma.empty` | Hali hech kim ovoz olmagan | Ҳоло ҳеҷ кас овоз нагирифтааст |  |
+| `karma.active` | Faol mualliflar (30 kun) | Муаллифони фаъол (30 рӯз) |  |
+| `karma.points` | +{count} ovoz | +{count} овоз |  |
+| `karma.explain` | Karma — a'zoning postlari va izohlariga berilgan ovozlar yig'indisi, butun vaqt uchun. | Карма — маҷмӯи овозҳое, ки навиштаҳо ва шарҳҳои аъзо дар тамоми вақт гирифтаанд. |  |
+| `leaderboard.boards` | Jadval turi | Намуди ҷадвал |  |
+| `leaderboard.ratings` | Reytinglar | Рейтингҳо |  |
 | `leaderboard.skills` | Skills | Skills |  |
 | `leaderboard.contest` | Contests | Contests |  |
 | `nav.qvant` | Qvant | Qvant |  |

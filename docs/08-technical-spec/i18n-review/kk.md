@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3307 strings.**
+**3315 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -208,6 +208,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `standings.penalty` | Jarima | Айыппұл |  |
 | `standings.frozen` | Jadval muzlatilgan | Кесте мұздатылған |  |
 | `leaderboard.title` | Reyting | Рейтинг |  |
+| `karma.title` | Karma bali | Карма |  |
+| `karma.entries` | Blog postlari | Блог жазбалары |  |
+| `karma.empty` | Hali hech kim ovoz olmagan | Әзірге ешкім дауыс алмаған |  |
+| `karma.active` | Faol mualliflar (30 kun) | Белсенді авторлар (30 күн) |  |
+| `karma.points` | +{count} ovoz | +{count} дауыс |  |
+| `karma.explain` | Karma — a'zoning postlari va izohlariga berilgan ovozlar yig'indisi, butun vaqt uchun. | Карма — мүшенің жазбалары мен пікірлеріне берілген дауыстардың барлық уақыттағы қосындысы. |  |
+| `leaderboard.boards` | Jadval turi | Кесте түрі |  |
+| `leaderboard.ratings` | Reytinglar | Рейтингтер |  |
 | `leaderboard.skills` | Skills | Skills |  |
 | `leaderboard.contest` | Contests | Contests |  |
 | `nav.qvant` | Qvant | Qvant |  |

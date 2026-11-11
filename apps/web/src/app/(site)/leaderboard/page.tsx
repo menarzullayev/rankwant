@@ -14,8 +14,9 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { getLocale } from "@/i18n/server";
-import { fill, t } from "@/i18n/messages";
-import { api } from "@/lib/api";
+import { fill, t, type Locale } from "@/i18n/messages";
+import { KarmaTable, type KarmaRow } from "@/features/community";
+import { api, getJson } from "@/lib/api";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
 // Build vaqtida prerender qilinmaydi — CI da API ishlamaydi, va reyting
@@ -30,11 +31,28 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Birinchi uchtalik — TailAdmin jadvalida ham ko'zga tashlansin. */
 const MEDAL = ["rw-warn-ink", "rw-faint", "text-orange-400"];
 
-type Props = { searchParams: Promise<{ school?: string }> };
+type Props = { searchParams: Promise<{ school?: string; board?: string }> };
 
 export default async function LeaderboardPage({ searchParams }: Props) {
   const locale = await getLocale();
-  const { school } = await searchParams;
+  const { school, board } = await searchParams;
+  // The karma board (decision 2026-11-11 ③): people by the votes their
+  // entries and comments received.
+  if (board === "karma") {
+    const rows = await getJson<KarmaRow[]>("/community/karma/?period=all&limit=100").catch(
+      () => [],
+    );
+    return (
+      <div className="space-y-6">
+        <h1 className="text-title-sm font-bold rw-strong">{t(locale, "leaderboard.title")}</h1>
+        <BoardSwitch locale={locale} karma />
+        <p className="text-theme-sm rw-dim">{t(locale, "karma.explain")}</p>
+        <Card bodyClassName="p-0">
+          <KarmaTable rows={rows} locale={locale} />
+        </Card>
+      </div>
+    );
+  }
   // Maktab reytingi (ADR-0017) — katalogdagi maktab bo'yicha.
   // Topilmagan maktab filtri e'tiborsiz qoldiriladi — bo'sh jadval o'rniga umumiy reyting.
   const schoolRow =
@@ -65,6 +83,8 @@ export default async function LeaderboardPage({ searchParams }: Props) {
           {t(locale, "nav.ratingInfo")}
         </Link>
       </div>
+
+      <BoardSwitch locale={locale} karma={false} />
 
       <Card bodyClassName="p-0">
         <Table>
@@ -122,5 +142,23 @@ export default async function LeaderboardPage({ searchParams }: Props) {
         </Table>
       </Card>
     </div>
+  );
+}
+
+/** Ratings or karma: two boards of one users table. */
+function BoardSwitch({ locale, karma }: { locale: Locale; karma: boolean }) {
+  const tab = (active: boolean) =>
+    `-mb-px border-b-2 px-3 py-2 text-theme-sm font-medium rw-focus-ring ${
+      active ? "rw-accent-line rw-accent-ink" : "border-transparent rw-dim rw-hover-strong"
+    }`;
+  return (
+    <nav aria-label={t(locale, "leaderboard.boards")} className="flex gap-1 border-b rw-divider">
+      <Link href="/leaderboard" aria-current={karma ? undefined : "page"} className={tab(!karma)}>
+        {t(locale, "leaderboard.ratings")}
+      </Link>
+      <Link href="/leaderboard?board=karma" aria-current={karma ? "page" : undefined} className={tab(karma)}>
+        {t(locale, "karma.title")}
+      </Link>
+    </nav>
   );
 }
