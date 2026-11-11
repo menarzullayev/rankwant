@@ -5015,8 +5015,8 @@ def neg_decisions_generator_queues_ahead() -> tuple[bool, str]:
     """The next test would be queued before the last one answered."""
     return _decision_broken(
         "apps/api/problems/generation.py",
-        "    transaction.on_commit(lambda: _queue_generator(run, generator))" + "\n    return run" + "\n" + "\n" + "\ndef is_generation_result",
-        "    return run" + "\n" + "\n" + "\ndef is_generation_result",
+        "    transaction.on_commit(lambda: _queue_generator(run, generator))" + "\n    return run" + "\n" + "\n" + "\ndef _add_test",
+        "    return run" + "\n" + "\n" + "\ndef _add_test",
         "keyingi test oldingisi tugamay",
     )
 

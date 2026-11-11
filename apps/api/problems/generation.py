@@ -23,12 +23,13 @@ import math
 from datetime import timedelta
 from typing import Any
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Max, Sum
 from django.utils import timezone
 
 from core import quotas
 from core.models import User
+from core.permissions import STAFF_GROUP_OPS, has_staff_group
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import Verdict
 from problems import limits, storage
@@ -231,6 +232,12 @@ def apply_result(result: dict[str, Any]) -> GenerationRun | None:
         or parts[3] != run.stage
     ):
         return run
+    # The start guard let an author in only while the problem was a draft;
+    # a problem published meanwhile keeps the tests its review approved.
+    if run.problem.is_public and not (
+        run.started_by is not None and has_staff_group(run.started_by, STAFF_GROUP_OPS)
+    ):
+        return _fail(run, "The problem was published; its tests are fixed")
 
     verdict = str(result.get("verdict") or Verdict.IE)
     detail = str(result.get("compile_output") or "")[:2000]
@@ -268,15 +275,7 @@ def apply_result(result: dict[str, Any]) -> GenerationRun | None:
         if left is not None and run.input_size + size > left:
             return _fail(run, f"Test {number}: your plan's test storage is full")
     output_ref = storage.put_test_data(f"tests/{run.problem.slug}/gen/{run.pk}/{number}.out", out)
-    last = TestCase.objects.filter(problem=run.problem).aggregate(m=Max("order"))["m"] or 0
-    TestCase.objects.create(
-        problem=run.problem,
-        order=last + 1,
-        input_ref=run.input_ref,
-        output_ref=output_ref,
-        origin=TestCase.Origin.GENERATED,
-        group=run.group,
-    )
+    _add_test(run, output_ref)
     run.made += 1
     run.bytes_written += run.input_size + size
     run.input_ref = ""
@@ -294,6 +293,26 @@ def apply_result(result: dict[str, Any]) -> GenerationRun | None:
         return _fail(run, "The generator was removed")
     transaction.on_commit(lambda: _queue_generator(run, generator))
     return run
+
+
+def _add_test(run: GenerationRun, output_ref: str) -> TestCase:
+    """Append the test after the last one. A test uploaded by hand at the
+    same moment can take that number (`uniq_test_order`): count again."""
+    for _ in range(3):
+        last = TestCase.objects.filter(problem=run.problem).aggregate(m=Max("order"))["m"] or 0
+        try:
+            with transaction.atomic():
+                return TestCase.objects.create(
+                    problem=run.problem,
+                    order=last + 1,
+                    input_ref=run.input_ref,
+                    output_ref=output_ref,
+                    origin=TestCase.Origin.GENERATED,
+                    group=run.group,
+                )
+        except IntegrityError:
+            continue
+    raise IntegrityError(f"generation run {run.pk}: no free test number")
 
 
 def is_generation_result(result: dict[str, Any]) -> bool:

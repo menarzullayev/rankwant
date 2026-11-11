@@ -3181,8 +3181,8 @@ def test_generator_is_bounded() -> str | None:
         return "problems/generation.py: validator yasalgan kiritmani tekshirmaydi"
     if "if left is not None and left <= 0:" not in gen:
         return "problems/generation.py: test ma'lumoti kvotasi tekshirilmaydi"
-    answer = gen.split("def apply_result(", 1)[-1]
-    created = answer.find("TestCase.objects.create(")
+    answer = gen.split("def apply_result(", 1)[-1].split("def _add_test(", 1)[0]
+    created = answer.find("_add_test(run, output_ref)")
     queued = answer.find("transaction.on_commit(lambda: _queue_generator(run, generator))")
     if created < 0 or queued < created:
         return "problems/generation.py: keyingi test oldingisi tugamay navbatga qo'yiladi"

@@ -147,6 +147,46 @@ class TestChain:
         assert run.status == "failed"
         assert len(memory_judge.jobs) == 1
 
+    def test_published_meanwhile_keeps_its_tests(
+        self, user, draft, memory_judge, fake_hack_storage, django_capture_on_commit_callbacks
+    ) -> None:
+        self._start(user, draft, django_capture_on_commit_callbacks)
+        Problem.objects.filter(pk=draft.pk).update(is_public=True)
+        with django_capture_on_commit_callbacks(execute=True):
+            _answer(memory_judge, "AC", "3\n")
+            drain_results()
+        run = GenerationRun.objects.get()
+        assert run.status == "failed"
+        assert "published" in run.error
+        assert len(memory_judge.jobs) == 1
+        assert not TestCase.objects.filter(problem=draft).exists()
+
+    def test_a_hand_upload_taking_the_number_is_skipped(
+        self, user, draft, memory_judge, fake_hack_storage, django_capture_on_commit_callbacks
+    ) -> None:
+        from problems.generation import _add_test
+
+        run = self._start(user, draft, django_capture_on_commit_callbacks, lines="1\n")
+        row = GenerationRun.objects.get(pk=run["id"])
+        TestCase.objects.create(problem=draft, order=1, input_ref="a", output_ref="b")
+        real = TestCase.objects.filter
+
+        calls = {"n": 0}
+
+        def stale_filter(*args, **kwargs):
+            # The first count misses the hand-made test, as a race would.
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return real(problem_id=-1)
+            return real(*args, **kwargs)
+
+        import unittest.mock as mock
+
+        with mock.patch.object(TestCase.objects, "filter", side_effect=stale_filter):
+            test = _add_test(row, "s3://test/x.out")
+        assert test.order == 2
+        assert TestCase.objects.filter(problem=draft).count() == 2
+
     def test_a_late_answer_does_not_move_the_run(
         self, user, draft, memory_judge, fake_hack_storage, django_capture_on_commit_callbacks
     ) -> None:

@@ -200,12 +200,11 @@ export function GeneratorPanel({
     setError("");
     try {
       await postJson(`${base}generate/`, { lines, group });
-      loadRuns();
     } catch (err) {
       setError(err instanceof ApiError ? errorText(locale, err.code, err.message) : String(err));
     } finally {
       setBusy(false);
-      // A refused start may still have left a run behind: show it.
+      // Also after a refusal: a failed start may still have left a run.
       loadRuns();
     }
   }
