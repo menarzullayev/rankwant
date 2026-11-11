@@ -1044,6 +1044,143 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/coaching/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Murabbiylarim va menga kelgan so'rovlar */
+        get: operations["coaching_list"];
+        put?: never;
+        /** Murabbiy bo'lishni so'rash */
+        post: operations["coaching_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/coaching/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Shu murabbiyga kodimni ko'rsatish */
+        patch: operations["coaching_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/coaching/{id}/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** So'rovni qabul qilish */
+        post: operations["coaching_accept_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/coaching/{id}/decline/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** So'rovni rad etish */
+        post: operations["coaching_decline_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/coaching/{id}/end/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bog'lanishni tugatish */
+        post: operations["coaching_end_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/coaching/{id}/recommend/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** O'quvchiga masala tavsiya qilish */
+        post: operations["coaching_recommend_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/coaching/recommendations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Murabbiylar tavsiya qilgan masalalar */
+        get: operations["coaching_recommendations_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/coaching/students/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Murabbiy paneli: o'quvchilarim */
+        get: operations["coaching_students_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contests/": {
         parameters: {
             query?: never;
@@ -7156,6 +7293,9 @@ export interface components {
             /** Format: date-time */
             published_at?: string | null;
         };
+        Ask: {
+            coach: string;
+        };
         Assignment: {
             readonly id: number;
             title: string;
@@ -7436,6 +7576,39 @@ export interface components {
             fields?: unknown;
             path?: string;
             release?: string;
+        };
+        /** @description One link, seen by either side. */
+        CoachLink: {
+            readonly id: number;
+            readonly coach: components["schemas"]["Person"];
+            readonly student: components["schemas"]["Person"];
+            readonly status: components["schemas"]["CoachLinkStatusEnum"];
+            readonly can_view_attempts: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `pending` - Kutilmoqda
+         *     * `active` - Faol
+         *     * `rejected` - Rad etildi
+         *     * `ended` - Tugatildi
+         * @enum {string}
+         */
+        CoachLinkStatusEnum: "pending" | "active" | "rejected" | "ended";
+        CoachLinks: {
+            coaches: components["schemas"]["CoachLink"][];
+            requests: components["schemas"]["CoachLink"][];
+        };
+        CoachStudent: {
+            link: number;
+            username: string;
+            display_name: string;
+            can_view_attempts: boolean;
+            solved_count: number;
+            rating_skills: number;
+            streak: number;
+            recent: components["schemas"]["RecentAttempt"][];
+            recommended: components["schemas"]["Recommended"][];
         };
         /**
          * @description * `uz` - uz
@@ -8265,6 +8438,7 @@ export interface components {
             postal_address_native?: string;
             postal_consent?: boolean;
             hidden_fields?: unknown;
+            coach_can_view_attempts?: boolean;
             pinned_achievements?: unknown;
             ui_prefs?: unknown;
             notify_prefs?: unknown;
@@ -9539,6 +9713,9 @@ export interface components {
             join_mode?: components["schemas"]["JoinModeEnum"];
             readonly my_role?: string;
         };
+        PatchedConsent: {
+            can_view_attempts?: boolean;
+        };
         PatchedMe: {
             readonly id?: number;
             /**
@@ -9598,6 +9775,7 @@ export interface components {
             postal_address_native?: string;
             postal_consent?: boolean;
             hidden_fields?: unknown;
+            coach_can_view_attempts?: boolean;
             pinned_achievements?: unknown;
             ui_prefs?: unknown;
             notify_prefs?: unknown;
@@ -10285,6 +10463,10 @@ export interface components {
             readonly ends_at: string;
             readonly running: boolean;
         };
+        Person: {
+            username: string;
+            display_name: string;
+        };
         /**
          * @description * `plus` - Plus
          *     * `pro` - Pro
@@ -10716,6 +10898,36 @@ export interface components {
          * @enum {string}
          */
         RatingTypeEnum: "skills" | "contest" | "activity" | "challenges";
+        RecentAttempt: {
+            id: number;
+            problem: string;
+            problem_title: string;
+            language: string;
+            verdict: string;
+            in_contest: boolean;
+            /** Format: date-time */
+            created_at: string;
+        };
+        Recommend: {
+            problem: string;
+            /** @default  */
+            note: string;
+        };
+        Recommendation: {
+            id: number;
+            coach: string;
+            problem: string;
+            problem_title: string;
+            note: string;
+            solved: boolean;
+            /** Format: date-time */
+            created_at: string;
+        };
+        Recommended: {
+            problem: string;
+            problem_title: string;
+            solved: boolean;
+        };
         Register: {
             /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
             username?: string;
@@ -13751,6 +13963,205 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    coaching_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachLinks"][];
+                };
+            };
+        };
+    };
+    coaching_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Ask"];
+                "application/x-www-form-urlencoded": components["schemas"]["Ask"];
+                "multipart/form-data": components["schemas"]["Ask"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachLink"];
+                };
+            };
+        };
+    };
+    coaching_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedConsent"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedConsent"];
+                "multipart/form-data": components["schemas"]["PatchedConsent"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachLink"];
+                };
+            };
+        };
+    };
+    coaching_accept_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachLink"];
+                };
+            };
+        };
+    };
+    coaching_decline_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachLink"];
+                };
+            };
+        };
+    };
+    coaching_end_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachLink"];
+                };
+            };
+        };
+    };
+    coaching_recommend_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Recommend"];
+                "application/x-www-form-urlencoded": components["schemas"]["Recommend"];
+                "multipart/form-data": components["schemas"]["Recommend"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recommendation"];
+                };
+            };
+        };
+    };
+    coaching_recommendations_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recommendation"][];
+                };
+            };
+        };
+    };
+    coaching_students_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachStudent"][];
+                };
             };
         };
     };

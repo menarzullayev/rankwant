@@ -55,6 +55,7 @@ const PRIVACY_ROWS: { field: PrivacyField; label: MessageKey }[] = [
   { field: "website", label: "settings.website" },
   { field: "email", label: "settings.email" },
   { field: "coach", label: "settings.privacy.coach" },
+  { field: "teacher", label: "settings.privacy.teacher" },
   { field: "social", label: "settings.privacy.social" },
   { field: "online", label: "settings.privacy.online" },
   { field: "activity", label: "settings.privacy.activity" },
@@ -126,10 +127,46 @@ export function PrivacyCard() {
           );
         })}
       </ul>
+      <CoachConsent />
       <div className="mt-3">
         <Status error={action.error} done={action.done} />
       </div>
     </Card>
+  );
+}
+
+/** What a NEW coach link starts with; each coach can then be switched apart
+ *  on `/coaching` (ADR-0061 § 4). Saved at once, like a single switch. */
+function CoachConsent() {
+  const locale = useLocale();
+  const { user, reload } = useSession();
+  const [busy, setBusy] = useState(false);
+  if (!user) return null;
+  const label = t(locale, "settings.privacy.coachCode");
+  return (
+    <div className="mt-2 flex items-center justify-between gap-4 border-t rw-line pt-3">
+      <span className="min-w-0">
+        <span className="block text-theme-sm font-medium rw-strong">{label}</span>
+        <span className="block text-theme-xs rw-dim">
+          {t(locale, "settings.privacy.coachCodeHint")}
+        </span>
+      </span>
+      <FormBox
+        shape="switch"
+        checked={Boolean(user.coach_can_view_attempts)}
+        aria-label={label}
+        disabled={busy}
+        onChange={async (event) => {
+          setBusy(true);
+          try {
+            await patchJson("/me/", { coach_can_view_attempts: event.target.checked });
+            await reload();
+          } finally {
+            setBusy(false);
+          }
+        }}
+      />
+    </div>
   );
 }
 

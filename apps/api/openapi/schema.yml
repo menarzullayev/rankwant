@@ -1575,6 +1575,225 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/coaching/:
+    get:
+      operationId: coaching_list
+      summary: Murabbiylarim va menga kelgan so'rovlar
+      tags:
+      - coaching
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CoachLinks'
+          description: ''
+    post:
+      operationId: coaching_create
+      summary: Murabbiy bo'lishni so'rash
+      tags:
+      - coaching
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ask'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Ask'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Ask'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoachLink'
+          description: ''
+  /api/v1/coaching/{id}/:
+    patch:
+      operationId: coaching_partial_update
+      summary: Shu murabbiyga kodimni ko'rsatish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - coaching
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConsent'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConsent'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConsent'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoachLink'
+          description: ''
+  /api/v1/coaching/{id}/accept/:
+    post:
+      operationId: coaching_accept_create
+      summary: So'rovni qabul qilish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - coaching
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoachLink'
+          description: ''
+  /api/v1/coaching/{id}/decline/:
+    post:
+      operationId: coaching_decline_create
+      summary: So'rovni rad etish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - coaching
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoachLink'
+          description: ''
+  /api/v1/coaching/{id}/end/:
+    post:
+      operationId: coaching_end_create
+      summary: Bog'lanishni tugatish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - coaching
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoachLink'
+          description: ''
+  /api/v1/coaching/{id}/recommend/:
+    post:
+      operationId: coaching_recommend_create
+      summary: O'quvchiga masala tavsiya qilish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - coaching
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recommend'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Recommend'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Recommend'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recommendation'
+          description: ''
+  /api/v1/coaching/recommendations/:
+    get:
+      operationId: coaching_recommendations_list
+      summary: Murabbiylar tavsiya qilgan masalalar
+      tags:
+      - coaching
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recommendation'
+          description: ''
+  /api/v1/coaching/students/:
+    get:
+      operationId: coaching_students_list
+      summary: 'Murabbiy paneli: o''quvchilarim'
+      tags:
+      - coaching
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CoachStudent'
+          description: ''
   /api/v1/contests/:
     get:
       operationId: contests_list
@@ -15054,6 +15273,14 @@ components:
       - slug
       - title
       - topics
+    Ask:
+      type: object
+      properties:
+        coach:
+          type: string
+          maxLength: 150
+      required:
+      - coach
     Assignment:
       type: object
       properties:
@@ -15807,6 +16034,100 @@ components:
       required:
       - message
       - scope
+    CoachLink:
+      type: object
+      description: One link, seen by either side.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        coach:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/CoachLinkStatusEnum'
+          readOnly: true
+        can_view_attempts:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - can_view_attempts
+      - coach
+      - created_at
+      - id
+      - status
+      - student
+    CoachLinkStatusEnum:
+      enum:
+      - pending
+      - active
+      - rejected
+      - ended
+      type: string
+      description: |-
+        * `pending` - Kutilmoqda
+        * `active` - Faol
+        * `rejected` - Rad etildi
+        * `ended` - Tugatildi
+    CoachLinks:
+      type: object
+      properties:
+        coaches:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoachLink'
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoachLink'
+      required:
+      - coaches
+      - requests
+    CoachStudent:
+      type: object
+      properties:
+        link:
+          type: integer
+        username:
+          type: string
+        display_name:
+          type: string
+        can_view_attempts:
+          type: boolean
+        solved_count:
+          type: integer
+        rating_skills:
+          type: integer
+        streak:
+          type: integer
+        recent:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecentAttempt'
+        recommended:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommended'
+      required:
+      - can_view_attempts
+      - display_name
+      - link
+      - rating_skills
+      - recent
+      - recommended
+      - solved_count
+      - streak
+      - username
     ContentLocaleEnum:
       enum:
       - uz
@@ -17879,6 +18200,8 @@ components:
         postal_consent:
           type: boolean
         hidden_fields: {}
+        coach_can_view_attempts:
+          type: boolean
         pinned_achievements: {}
         ui_prefs: {}
         notify_prefs: {}
@@ -20053,6 +20376,11 @@ components:
         my_role:
           type: string
           readOnly: true
+    PatchedConsent:
+      type: object
+      properties:
+        can_view_attempts:
+          type: boolean
     PatchedMe:
       type: object
       properties:
@@ -20214,6 +20542,8 @@ components:
         postal_consent:
           type: boolean
         hidden_fields: {}
+        coach_can_view_attempts:
+          type: boolean
         pinned_achievements: {}
         ui_prefs: {}
         notify_prefs: {}
@@ -21771,6 +22101,16 @@ components:
       - plan
       - running
       - starts_at
+    Person:
+      type: object
+      properties:
+        username:
+          type: string
+        display_name:
+          type: string
+      required:
+      - display_name
+      - username
     PlanCodeEnum:
       enum:
       - plus
@@ -22790,6 +23130,83 @@ components:
         * `contest` - Contests
         * `activity` - Activity
         * `challenges` - Challenges
+    RecentAttempt:
+      type: object
+      properties:
+        id:
+          type: integer
+        problem:
+          type: string
+        problem_title:
+          type: string
+        language:
+          type: string
+        verdict:
+          type: string
+        in_contest:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - id
+      - in_contest
+      - language
+      - problem
+      - problem_title
+      - verdict
+    Recommend:
+      type: object
+      properties:
+        problem:
+          type: string
+          maxLength: 100
+        note:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - problem
+    Recommendation:
+      type: object
+      properties:
+        id:
+          type: integer
+        coach:
+          type: string
+        problem:
+          type: string
+        problem_title:
+          type: string
+        note:
+          type: string
+        solved:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - coach
+      - created_at
+      - id
+      - note
+      - problem
+      - problem_title
+      - solved
+    Recommended:
+      type: object
+      properties:
+        problem:
+          type: string
+        problem_title:
+          type: string
+        solved:
+          type: boolean
+      required:
+      - problem
+      - problem_title
+      - solved
     Register:
       type: object
       properties:

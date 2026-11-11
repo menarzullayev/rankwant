@@ -32,6 +32,8 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   // Plans on sale are open to read; paying asks for a session (ADR-0057).
   plans: "public",
   classroom: "public",
+  // A student's coaches and a coach's students (ADR-0061 § 4).
+  coaching: "user",
   contests: "public",
   // Catalogue and programme are open; lessons ask for a session and an
   // enrolment in the API, the page shows the sign-in card (ADR-0056).

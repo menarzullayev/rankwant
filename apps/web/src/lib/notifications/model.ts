@@ -100,6 +100,11 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   classroom_join_requested: { body: true },
   classroom_join_approved: { body: true },
   classroom_join_rejected: { body: true },
+  // Coach and student (ADR-0061, part 4).
+  coach_requested: { body: true },
+  coach_accepted: { body: true },
+  coach_declined: { body: true },
+  coach_recommended: { body: true },
 };
 
 /** The words of a notification in the language it is being read in.
@@ -163,6 +168,9 @@ export function notificationHref(row: Notification): string | null {
     case "studio_course":
       // A course sent back: the author's editor, where the reason applies.
       return `/studio/courses/${id}`;
+    case "coaching":
+      // Both sides of a coach link live on one page.
+      return "/coaching";
     case "classroom":
       // A join request (the teacher's queue) or an accepted one.
       return `/classroom/${id}`;

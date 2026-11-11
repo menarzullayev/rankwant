@@ -20,6 +20,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Request to join — {classroom}",
             "body": "@{user} wants to join “{classroom}”.",
         },
+        "coach_accepted": {
+            "title": "@{user} is now your coach",
+            "body": "They can now recommend problems to you.",
+        },
+        "coach_declined": {
+            "title": "@{user} declined your coaching request",
+            "body": "You can ask another coach.",
+        },
+        "coach_recommended": {
+            "title": "New recommendation — {problem}",
+            "body": "@{user} recommended the problem “{problem}” to you.",
+        },
+        "coach_requested": {
+            "title": "Coaching request — @{user}",
+            "body": "@{user} asked you to be their coach.",
+        },
         "contest_announcement": {
             "title": "“{contest}”: an announcement from the jury",
             "body": "Announcement: {text}",
@@ -123,6 +139,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "classroom_join_requested": {
             "title": "Solicitud de ingreso — {classroom}",
             "body": "@{user} quiere unirse a «{classroom}».",
+        },
+        "coach_accepted": {
+            "title": "@{user} ahora es su mentor",
+            "body": "Ya puede recomendarle problemas.",
+        },
+        "coach_declined": {
+            "title": "@{user} rechazó su solicitud de mentoría",
+            "body": "Puede pedírselo a otro mentor.",
+        },
+        "coach_recommended": {
+            "title": "Nueva recomendación — {problem}",
+            "body": "@{user} le recomendó el problema «{problem}».",
+        },
+        "coach_requested": {
+            "title": "Solicitud de mentoría — @{user}",
+            "body": "@{user} le pidió que sea su mentor.",
         },
         "contest_announcement": {
             "title": "«{contest}»: anuncio del jurado",
@@ -228,6 +260,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Qosılıw sorawı — {classroom}",
             "body": "@{user} «{classroom}» klasına qosılmaqshı.",
         },
+        "coach_accepted": {
+            "title": "@{user} murabbiyińiz boldı",
+            "body": "Endi ol sizge másele usınıs ete aladı.",
+        },
+        "coach_declined": {
+            "title": "@{user} murabbiylik sorawın biykarladı",
+            "body": "Basqa murabbiyge soraw jibere alasız.",
+        },
+        "coach_recommended": {
+            "title": "Jańa usınıs — {problem}",
+            "body": "@{user} sizge «{problem}» máselesin usınıs etti.",
+        },
+        "coach_requested": {
+            "title": "Murabbiylik sorawı — @{user}",
+            "body": "@{user} sizden murabbiyi bolıwıńızdı soradı.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: tóreshiler daǵazası",
             "body": "Daǵaza: {text}",
@@ -331,6 +379,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "classroom_join_requested": {
             "title": "Қосылу өтінімі — {classroom}",
             "body": "@{user} «{classroom}» сыныбына қосылғысы келеді.",
+        },
+        "coach_accepted": {
+            "title": "@{user} сіздің жаттықтырушыңыз болды",
+            "body": "Енді ол сізге есеп ұсына алады.",
+        },
+        "coach_declined": {
+            "title": "@{user} жаттықтырушылық сұранысын қабылдамады",
+            "body": "Басқа жаттықтырушыға сұраныс жібере аласыз.",
+        },
+        "coach_recommended": {
+            "title": "Жаңа ұсыныс — {problem}",
+            "body": "@{user} сізге «{problem}» есебін ұсынды.",
+        },
+        "coach_requested": {
+            "title": "Жаттықтырушылық сұранысы — @{user}",
+            "body": "@{user} сізден жаттықтырушысы болуды сұрады.",
         },
         "contest_announcement": {
             "title": "«{contest}»: қазылар хабарландыруы",
@@ -436,6 +500,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Кошулуу өтүнүчү — {classroom}",
             "body": "@{user} «{classroom}» классына кошулгусу келет.",
         },
+        "coach_accepted": {
+            "title": "@{user} сиздин машыктыруучуңуз болду",
+            "body": "Эми ал сизге маселе сунуштай алат.",
+        },
+        "coach_declined": {
+            "title": "@{user} машыктыруу өтүнүчүн четке какты",
+            "body": "Башка машыктыруучуга өтүнүч жөнөтө аласыз.",
+        },
+        "coach_recommended": {
+            "title": "Жаңы сунуш — {problem}",
+            "body": "@{user} сизге «{problem}» маселесин сунуштады.",
+        },
+        "coach_requested": {
+            "title": "Машыктыруу өтүнүчү — @{user}",
+            "body": "@{user} сизден машыктыруучусу болууну суранды.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: калыстардын жарыясы",
             "body": "Жарыя: {text}",
@@ -539,6 +619,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "classroom_join_requested": {
             "title": "Заявка на вступление — {classroom}",
             "body": "@{user} хочет вступить в класс «{classroom}».",
+        },
+        "coach_accepted": {
+            "title": "@{user} стал вашим наставником",
+            "body": "Теперь он может советовать вам задачи.",
+        },
+        "coach_declined": {
+            "title": "@{user} отклонил запрос на наставничество",
+            "body": "Вы можете отправить запрос другому наставнику.",
+        },
+        "coach_recommended": {
+            "title": "Новый совет — {problem}",
+            "body": "@{user} советует вам задачу «{problem}».",
+        },
+        "coach_requested": {
+            "title": "Запрос на наставничество — @{user}",
+            "body": "@{user} просит вас стать наставником.",
         },
         "contest_announcement": {
             "title": "«{contest}»: объявление жюри",
@@ -644,6 +740,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Дархости ҳамроҳшавӣ — {classroom}",
             "body": "@{user} мехоҳад ба синфи «{classroom}» ҳамроҳ шавад.",
         },
+        "coach_accepted": {
+            "title": "@{user} мураббии шумо шуд",
+            "body": "Акнун ӯ метавонад ба шумо масъала тавсия диҳад.",
+        },
+        "coach_declined": {
+            "title": "@{user} дархости мураббигиро рад кард",
+            "body": "Шумо метавонед ба мураббии дигар дархост фиристед.",
+        },
+        "coach_recommended": {
+            "title": "Тавсияи нав — {problem}",
+            "body": "@{user} ба шумо масъалаи «{problem}»-ро тавсия дод.",
+        },
+        "coach_requested": {
+            "title": "Дархости мураббигӣ — @{user}",
+            "body": "@{user} аз шумо хоҳиш кард, ки мураббияш шавед.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: эълони ҳакамон",
             "body": "Эълон: {text}",
@@ -747,6 +859,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "classroom_join_requested": {
             "title": "Katılım isteği — {classroom}",
             "body": "@{user} «{classroom}» sınıfına katılmak istiyor.",
+        },
+        "coach_accepted": {
+            "title": "@{user} artık koçunuz",
+            "body": "Artık size problem önerebilir.",
+        },
+        "coach_declined": {
+            "title": "@{user} koçluk isteğinizi reddetti",
+            "body": "Başka bir koça istek gönderebilirsiniz.",
+        },
+        "coach_recommended": {
+            "title": "Yeni öneri — {problem}",
+            "body": "@{user} size «{problem}» problemini önerdi.",
+        },
+        "coach_requested": {
+            "title": "Koçluk isteği — @{user}",
+            "body": "@{user} koçu olmanızı istedi.",
         },
         "contest_announcement": {
             "title": "“{contest}”: jüri duyurusu",
@@ -852,6 +980,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Sinfga qo'shilish so'rovi — {classroom}",
             "body": "@{user} «{classroom}» sinfiga qo'shilmoqchi.",
         },
+        "coach_accepted": {
+            "title": "@{user} murabbiyingiz bo'ldi",
+            "body": "Endi u sizga masala tavsiya qila oladi.",
+        },
+        "coach_declined": {
+            "title": "@{user} murabbiylik so'rovini rad etdi",
+            "body": "Boshqa murabbiyga so'rov yuborishingiz mumkin.",
+        },
+        "coach_recommended": {
+            "title": "Yangi tavsiya — {problem}",
+            "body": "@{user} sizga «{problem}» masalasini tavsiya qildi.",
+        },
+        "coach_requested": {
+            "title": "Murabbiylik so'rovi — @{user}",
+            "body": "@{user} sizdan murabbiy bo'lishingizni so'radi.",
+        },
         "contest_announcement": {
             "title": "«{contest}»: hakamlar e'loni",
             "body": "E'lon: {text}",
@@ -955,6 +1099,22 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "classroom_join_requested": {
             "title": "加入申请 — {classroom}",
             "body": "@{user} 想加入“{classroom}”。",
+        },
+        "coach_accepted": {
+            "title": "@{user} 已成为您的教练",
+            "body": "现在可以为您推荐题目。",
+        },
+        "coach_declined": {
+            "title": "@{user} 拒绝了您的教练请求",
+            "body": "您可以向其他教练发送请求。",
+        },
+        "coach_recommended": {
+            "title": "新推荐 — {problem}",
+            "body": "@{user} 向您推荐了题目“{problem}”。",
+        },
+        "coach_requested": {
+            "title": "教练请求 — @{user}",
+            "body": "@{user} 请您担任其教练。",
         },
         "contest_announcement": {
             "title": "“{contest}”：评委公告",

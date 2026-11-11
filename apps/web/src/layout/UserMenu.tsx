@@ -140,6 +140,19 @@ export default function UserMenu() {
               {t(locale, "studio.title")}
             </IntentLink>
           </li>
+          {/* Coach and student (ADR-0061 § 4): a person's own links, so the
+              account menu, like the studio, not the side menu. */}
+          <li role="none">
+            <IntentLink
+              href={"/coaching" as Route}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className={item}
+            >
+              <Icon name="user.group" className="size-4 shrink-0" />
+              {t(locale, "coaching.title")}
+            </IntentLink>
+          </li>
           <li role="none">
             <IntentLink
               href={"/settings/profil" as Route}

@@ -4841,6 +4841,66 @@ def neg_decisions_classroom_new_is_instant() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_coach_limit() -> tuple[bool, str]:
+    """More than three coaches."""
+    return _decision_broken(
+        "apps/api/coaching/services.py",
+        "MAX_COACHES = 3\n",
+        "MAX_COACHES = 5\n",
+        "murabbiylar chegarasi 3 emas",
+    )
+
+
+def neg_decisions_coach_consent_default() -> tuple[bool, str]:
+    """A new coach would read the code whatever the student set."""
+    return _decision_broken(
+        "apps/api/coaching/services.py",
+        "consent = bool(student.coach_can_view_attempts)",
+        "consent = True",
+        "foydalanuvchi standartidan olinmaydi",
+    )
+
+
+def neg_decisions_coach_sets_consent() -> tuple[bool, str]:
+    """The coach could switch the student's consent on."""
+    return _decision_broken(
+        "apps/api/coaching/services.py",
+        "CoachLink.objects.filter(pk=link_id, student=student)",
+        "CoachLink.objects.filter(pk=link_id)",
+        "o'quvchidan boshqa kishi o'zgartira oladi",
+    )
+
+
+def neg_decisions_coach_reads_without_consent() -> tuple[bool, str]:
+    """Any active coach would read the code."""
+    return _decision_broken(
+        "apps/api/coaching/access.py",
+        "        can_view_attempts=True,\n",
+        "",
+        "faol bog'lanish va ruxsatsiz ko'radi",
+    )
+
+
+def neg_decisions_coach_reads_live_contest() -> tuple[bool, str]:
+    """A coach would read code during the contest."""
+    return _decision_broken(
+        "apps/api/judging/views.py",
+        "    if attempt.contest is not None and attempt.contest.end_at > timezone.now():\n",
+        "    if False:\n",
+        "davom etayotgan musobaqa kodini ko'radi",
+    )
+
+
+def neg_decisions_teacher_not_hideable() -> tuple[bool, str]:
+    """The teacher row could not be hidden."""
+    return _decision_broken(
+        "apps/api/core/models.py",
+        '    "teacher",\n',
+        "",
+        "alohida yashirilmaydi",
+    )
+
+
 def neg_decisions_classroom_skips_request() -> tuple[bool, str]:
     """A classroom that asks for approval lets the student straight in."""
     return _decision_broken(
@@ -8710,6 +8770,9 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/coaching/services.py",
+    "apps/api/coaching/access.py",
+    "apps/api/profiles/public.py",
     "apps/api/courses/models.py",
     "apps/api/courses/serializers.py",
     "apps/api/courses/services.py",
@@ -13071,6 +13134,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("so'rovsiz kirilsa tutilsin", neg_decisions_classroom_skips_request),
             ("sinf o'chirilsa tutilsin", neg_decisions_classroom_deleted),
             ("yordamchi kodni ko'rsa tutilsin", neg_decisions_classroom_assistant_sees_code),
+            ("murabbiylar 3 dan ko'p bo'lsa tutilsin", neg_decisions_coach_limit),
+            ("ruxsat standartdan olinmasa tutilsin", neg_decisions_coach_consent_default),
+            ("murabbiy ruxsatni o'zgartirsa tutilsin", neg_decisions_coach_sets_consent),
+            ("ruxsatsiz kod ochilsa tutilsin", neg_decisions_coach_reads_without_consent),
+            ("musobaqada kod ochilsa tutilsin", neg_decisions_coach_reads_live_contest),
+            ("o'qituvchi yashirilmasa tutilsin", neg_decisions_teacher_not_hideable),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

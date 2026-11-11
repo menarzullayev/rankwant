@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3056 strings.**
+**3104 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -671,6 +671,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.privacy.shown` | Profilda ko'rinadi | Профильде көрінеді |  |
 | `settings.privacy.hidden` | Faqat sizga | Тек сізге |  |
 | `settings.privacy.coach` | Murabbiy | Жаттықтырушы |  |
+| `settings.privacy.teacher` | O'qituvchi | Мұғалім |  |
+| `settings.privacy.coachCode` | Yangi murabbiyga kodimni ko'rsatish | Жаңа жаттықтырушыға кодымды көрсету |  |
+| `settings.privacy.coachCodeHint` | Yangi murabbiylik so'rovi shu qiymat bilan boshlanadi; har murabbiy uchun «Murabbiylik» sahifasida alohida o'zgartiriladi. | Жаңа сұраныс осы мәнмен басталады; әр жаттықтырушы үшін «Жаттықтырушы» бетінде бөлек өзгертіледі. |  |
 | `settings.privacy.social` | Ijtimoiy havolalar | Әлеуметтік сілтемелер |  |
 | `settings.privacy.online` | Onlayn holat va oxirgi faollik | Онлайн күйі және соңғы белсенділік |  |
 | `settings.privacy.activity` | Faoliyat lentasi | Белсенділік таспасы |  |
@@ -1287,6 +1290,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `cert.issued` | Berilgan sana | Берілген күні |  |
 | `cert.holder` | Egasi | Иесі |  |
 | `profile.coach` | Murabbiy | Жаттықтырушы |  |
+| `profile.teacher` | O'qituvchi | Мұғалім |  |
 | `profile.searchPeople` | Ism yoki taxallus… | Аты немесе лақап аты… |  |
 | `profile.sortBy` | Saralash | Сұрыптау |  |
 | `profile.sortRating` | Contests reytingi bo'yicha | Contests рейтингі бойынша |  |
@@ -2826,6 +2830,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.classroom_join_approved.body` | O'qituvchi so'rovingizni qabul qildi: sinf topshiriqlari endi sizga ochiq. | Мұғалім өтініміңізді қабылдады: сынып тапсырмалары енді сізге ашық. |  |
 | `notif.msg.classroom_join_rejected.title` | So'rov rad etildi — {classroom} | Өтінім қабылданбады — {classroom} |  |
 | `notif.msg.classroom_join_rejected.body` | O'qituvchi «{classroom}» sinfiga qo'shilish so'rovingizni rad etdi. | Мұғалім «{classroom}» сыныбына қосылу өтініміңізді қабылдамады. |  |
+| `notif.msg.coach_requested.title` | Murabbiylik so'rovi — @{user} | Жаттықтырушылық сұранысы — @{user} |  |
+| `notif.msg.coach_requested.body` | @{user} sizdan murabbiy bo'lishingizni so'radi. | @{user} сізден жаттықтырушысы болуды сұрады. |  |
+| `notif.msg.coach_accepted.title` | @{user} murabbiyingiz bo'ldi | @{user} сіздің жаттықтырушыңыз болды |  |
+| `notif.msg.coach_accepted.body` | Endi u sizga masala tavsiya qila oladi. | Енді ол сізге есеп ұсына алады. |  |
+| `notif.msg.coach_declined.title` | @{user} murabbiylik so'rovini rad etdi | @{user} жаттықтырушылық сұранысын қабылдамады |  |
+| `notif.msg.coach_declined.body` | Boshqa murabbiyga so'rov yuborishingiz mumkin. | Басқа жаттықтырушыға сұраныс жібере аласыз. |  |
+| `notif.msg.coach_recommended.title` | Yangi tavsiya — {problem} | Жаңа ұсыныс — {problem} |  |
+| `notif.msg.coach_recommended.body` | @{user} sizga «{problem}» masalasini tavsiya qildi. | @{user} сізге «{problem}» есебін ұсынды. |  |
 | `admin.section.courses` | Kurslar | Курстар |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Авторлар тексеруге жіберген курстар. Баға қойыңыз, жариялаңыз немесе себебімен қайтарыңыз. |  |
 | `admin.courses.queue` | Ko'rik navbati | Тексеру кезегі |  |
@@ -3014,6 +3026,36 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.invite.approvalNote` | O'qituvchi so'rovingizni tasdiqlagach sinfga kirasiz. | Мұғалім өтініміңізді растаған соң сыныпқа кіресіз. |  |
 | `classroom.invite.pending` | So'rovingiz o'qituvchida — javobni bildirishnomada ko'rasiz. | Өтініміңіз мұғалімде — жауабы хабарламамен келеді. |  |
 | `classroom.students` | {count} o'quvchi | {count} оқушы |  |
+| `coaching.title` | Murabbiylik | Жаттықтырушы |  |
+| `coaching.intro` | O'zingiz tanlagan murabbiy sizga masala tavsiya qiladi va ruxsat bersangiz yechimlaringizni ko'radi. Murabbiy bo'lsangiz, o'quvchilaringiz ham shu yerda. | Өзіңіз таңдаған жаттықтырушы есеп ұсынады және рұқсат етсеңіз шешімдеріңізді көреді. Жаттықтырушы болсаңыз, оқушыларыңыз да осында. |  |
+| `coaching.mine` | Murabbiylarim | Жаттықтырушыларым |  |
+| `coaching.mineHint` | Murabbiy so'rovingizni qabul qilgach, sizga masala tavsiya qila oladi. Kodni ko'rish ruxsatini har murabbiyga alohida berasiz. | Жаттықтырушы сұранысыңызды қабылдаған соң сізге есеп ұсына алады. Кодты көру рұқсатын әр жаттықтырушыға бөлек бересіз. |  |
+| `coaching.askLabel` | Murabbiyning foydalanuvchi nomi | Жаттықтырушының пайдаланушы аты |  |
+| `coaching.ask` | So'rov yuborish | Сұраныс жіберу |  |
+| `coaching.limit` | {count} / {limit} murabbiy | {count} / {limit} жаттықтырушы |  |
+| `coaching.active` | Faol | Белсенді |  |
+| `coaching.pending` | Javob kutilmoqda | Жауап күтілуде |  |
+| `coaching.consent` | Kodimni ko'radi | Кодымды көреді |  |
+| `coaching.consentFor` | @{user} yechimlarim kodini ko'rsin | @{user} шешімдерімнің кодын көрсін |  |
+| `coaching.withdraw` | So'rovni qaytarib olish | Сұранысты кері қайтару |  |
+| `coaching.withdrawConfirm` | @{user} ga yuborilgan so'rov qaytarib olinsinmi? | @{user} адамына жіберілген сұраныс кері қайтарылсын ба? |  |
+| `coaching.end` | Tugatish | Аяқтау |  |
+| `coaching.endConfirm` | @{user} bilan murabbiylik tugatilsinmi? Uning tavsiyalari ro'yxatdan yo'qoladi. | @{user} жаттықтырушылығы аяқталсын ба? Оның ұсыныстары тізімнен кетеді. |  |
+| `coaching.endStudentConfirm` | @{user} bilan murabbiylik tugatilsinmi? | @{user} жаттықтырушылығы аяқталсын ба? |  |
+| `coaching.recommendations` | Murabbiy tavsiyalari | Жаттықтырушы ұсыныстары |  |
+| `coaching.recommendationsNone` | Hali tavsiya yo'q. | Әзірге ұсыныс жоқ. |  |
+| `coaching.from` | @{user} tavsiyasi | @{user} ұсынысы |  |
+| `coaching.solved` | Yechilgan | Шешілген |  |
+| `coaching.requests` | Murabbiylik so'rovlari | Жаттықтырушылық сұраныстары |  |
+| `coaching.students` | O'quvchilarim | Оқушыларым |  |
+| `coaching.stats` | Yechgan {solved} · Skills {skills} · Seriya {streak} | Шешкені {solved} · Skills {skills} · Серия {streak} |  |
+| `coaching.noConsent` | Kodni ko'rish ruxsati yo'q | Кодты көру рұқсаты жоқ |  |
+| `coaching.recommendProblem` | Masala | Есеп |  |
+| `coaching.recommendHint` | Manzil yoki raqam: a-plus-b yoki #123 | Мекенжай немесе нөмір: a-plus-b не #123 |  |
+| `coaching.note` | Izoh (ixtiyoriy) | Түсініктеме (міндетті емес) |  |
+| `coaching.recommend` | Tavsiya qilish | Ұсыну |  |
+| `coaching.askThis` | Murabbiy bo'lishini so'rash | Жаттықтырушым болуын сұрау |  |
+| `coaching.asked` | So'rov yuborildi. | Сұраныс жіберілді. |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Бұл курс табылмады немесе әлі жарияланбаған. |  |
 | `error.quota_exceeded` | Rejangiz chegarasiga yetdingiz | Тарифіңіздің шегіне жеттіңіз |  |
 | `error.classroom_full` | Sinf to'lgan — o'quvchilar chegarasiga yetildi | Сынып толы — оқушылар шегіне жетті |  |
@@ -3023,6 +3065,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.request_answered` | Bu so'rovga allaqachon javob berilgan | Бұл өтінімге жауап берілген |  |
 | `error.bad_role` | Noma'lum rol | Белгісіз рөл |  |
 | `error.code_failed` | Yangi kod yaratilmadi, qayta urinib ko'ring | Жаңа код жасалмады, қайта көріңіз |  |
+| `error.coach_not_found` | Bunday foydalanuvchi yo'q | Мұндай пайдаланушы жоқ |  |
+| `error.coach_self` | O'zingizga murabbiy bo'la olmaysiz | Өзіңізге жаттықтырушы бола алмайсыз |  |
+| `error.coach_already` | Bu murabbiyga so'rov allaqachon yuborilgan | Бұл жаттықтырушыға сұраныс жіберілген |  |
+| `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Ең көбі 3 жаттықтырушы болуы мүмкін |  |
+| `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Бұл байланыс аяқталған |  |
+| `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Есеп табылмады немесе ашық емес |  |
 | `billing.plan.plus` | Plus | Plus |  |
 | `billing.plan.pro` | Pro | Pro |  |
 | `billing.plan.judge` | Judge | Judge |  |

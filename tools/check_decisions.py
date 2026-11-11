@@ -3081,6 +3081,48 @@ def classroom_joins_and_quotas() -> str | None:
     return None
 
 
+def coaching_is_chosen_and_consented() -> str | None:
+    """2026-11-11 (HITL, 4 raund; ADR-0061 § 4): murabbiy.
+
+    ⑤ Ko'pi bilan 3 ta. ⑥ Kodni ko'rish ruxsati HAR murabbiyga alohida,
+    standarti `User.coach_can_view_attempts`; ruxsatni faqat o'quvchi
+    o'zgartiradi. Musobaqa tugaguncha murabbiy kodni ko'rmaydi (muzlatish
+    qoidalari o'z kuchida). ⑦ Profilda «Murabbiy» va «O'qituvchi» alohida,
+    ikkalasi ham yashiriladi.
+    """
+    services = read("apps/api/coaching/services.py")
+    if not re.search(r"^MAX_COACHES = 3$", services, re.M):
+        return "coaching/services.py: murabbiylar chegarasi 3 emas"
+    if "consent = bool(student.coach_can_view_attempts)" not in services:
+        return "coaching/services.py: yangi bog'lanish ruxsati foydalanuvchi standartidan olinmaydi"
+    consent = services.split("def set_consent(", 1)[-1].split("\ndef ", 1)[0]
+    if "CoachLink.objects.filter(pk=link_id, student=student)" not in consent:
+        return "coaching/services.py: kod ruxsatini o'quvchidan boshqa kishi o'zgartira oladi"
+    access = read("apps/api/coaching/access.py")
+    may = access.split("def coach_may_read(", 1)[-1].split("\ndef ", 1)[0]
+    if "status=CoachLink.Status.ACTIVE," not in may or "can_view_attempts=True," not in may:
+        return "coaching/access.py: murabbiy kodni faol bog'lanish va ruxsatsiz ko'radi"
+    views = read("apps/api/judging/views.py")
+    reads = views.split("def _coach_reads(", 1)[-1].split("\n\n\n", 1)[0]
+    if "if attempt.contest is not None and attempt.contest.end_at > timezone.now():" not in reads:
+        return "judging/views.py: murabbiy davom etayotgan musobaqa kodini ko'radi"
+    retrieve = views.split("    def retrieve(", 1)[-1].split("\n    def ", 1)[0]
+    if "or _coach_reads(request.user, attempt)" not in retrieve:
+        return "judging/views.py: murabbiy ruxsati urinish sahifasiga ulanmagan"
+    models_py = read("apps/api/core/models.py")
+    privacy = models_py.split("PRIVACY_FIELDS: tuple[str, ...] = (", 1)[-1].split("\n)\n", 1)[0]
+    if '"teacher",' not in privacy or '"coach",' not in privacy:
+        return "core/models.py: «Murabbiy» va «O'qituvchi» alohida yashirilmaydi"
+    public = read("apps/api/profiles/public.py")
+    if '"teacher": teachers(user) if visible("teacher") else [],' not in public:
+        return "profiles/public.py: profilda «O'qituvchi» alohida emas"
+    codes = read("tools/notification-codes.json")
+    for code in ("coach_requested", "coach_accepted", "coach_declined", "coach_recommended"):
+        if f'"{code}"' not in codes:
+            return f"notification-codes.json: `{code}` yo'q"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -5479,6 +5521,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kurs sertifikati, bir martalik mukofot, tasdiqlangan Qvant narxi", course_rewards_and_certificate),
     ("sinfga kurs: faqat bepul ochiladi, hisobot egasiga, kutilayotgan ish", course_given_to_a_class),
     ("sinf: tasdiq bilan qo'shilish, reja kvotasi, arxivlash", classroom_joins_and_quotas),
+    ("murabbiy: ≤3, ruxsat har biriga, musobaqada kod yopiq", coaching_is_chosen_and_consented),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

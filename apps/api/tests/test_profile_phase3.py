@@ -114,17 +114,19 @@ class TestMaktabKatalogi:
 
 @pytest.mark.django_db
 class TestMurabbiy:
-    def test_auditoriya_egasidan_va_yashiriladi(self, user: User, other_user: User) -> None:
+    def test_auditoriya_egasi_oqituvchi_va_yashiriladi(self, user: User, other_user: User) -> None:
+        # ADR-0061 § 4: a classroom owner is the student's teacher, not coach.
         room = Classroom.objects.create(name="A", slug="a", owner=other_user, join_code="X1")
         ClassroomMember.objects.create(classroom=room, user=user)
 
-        assert [row["username"] for row in profil(user)["coach"]] == ["bekzod"]
-        assert profil(other_user)["coach"] == [], "yordamchi yoki egasi o'quvchi emas"
+        assert [row["username"] for row in profil(user)["teacher"]] == ["bekzod"]
+        assert profil(user)["coach"] == []
+        assert profil(other_user)["teacher"] == [], "yordamchi yoki egasi o'quvchi emas"
 
-        user.hidden_fields = ["email", "coach"]
+        user.hidden_fields = ["email", "teacher"]
         user.save(update_fields=["hidden_fields"])
-        assert profil(user, other_user)["coach"] == []
-        assert profil(user, user)["coach"][0]["username"] == "bekzod"
+        assert profil(user, other_user)["teacher"] == []
+        assert profil(user, user)["teacher"][0]["username"] == "bekzod"
 
 
 @pytest.mark.django_db

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ClassroomHub } from "@/features/classroom";
+import { OpenRecommendations } from "@/features/coaching";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 
@@ -19,6 +20,8 @@ export default async function ClassroomPage() {
         <p className="mt-2 max-w-2xl text-theme-sm rw-dim">{t(locale, "classroom.intro")}
         </p>
       </header>
+      {/* A coach's suggestions are tasks too (ADR-0061 § 4). */}
+      <OpenRecommendations />
       <ClassroomHub />
     </div>
   );

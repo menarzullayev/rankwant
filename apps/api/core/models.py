@@ -24,8 +24,11 @@ PRIVACY_FIELDS: tuple[str, ...] = (
     "website",
     #: Onlayn holat va oxirgi faollik — ijtimoiy havolalardan alohida.
     "online",
-    #: Murabbiy — o'quvchi a'zo bo'lgan auditoriya egasi; o'quvchi yashira oladi.
+    #: Murabbiy — o'quvchi tanlagan va qabul qilgan murabbiy (ADR-0061 § 4).
     "coach",
+    #: O'qituvchi — o'quvchi a'zo bo'lgan auditoriya egasi (2026-11-11 gacha
+    #: «coach» shu edi).
+    "teacher",
     #: Ijtimoiy va tashqi profil havolalari.
     "social",
     #: Profil banneri — foydalanuvchi yuklagan rasm (ADR-0026).

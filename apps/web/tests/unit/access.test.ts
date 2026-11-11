@@ -41,6 +41,7 @@ describe("needsSignIn", () => {
       "admin",
       "billing",
       "checkout",
+      "coaching",
       "notifications",
       "onboarding",
       "settings",
