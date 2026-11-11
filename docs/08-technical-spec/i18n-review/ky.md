@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3260 strings.**
+**3307 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -223,8 +223,40 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `leaderboard.activity` | Activity | Activity |  |
 | `leaderboard.streak` | Streak | Streak |  |
 | `nav.blog` | Yangiliklar | Жаңылыктар |  |
+| `nav.blogs` | Bloglar | Блогдор |  |
 | `nav.notifications` | Bildirishnomalar | Билдирүүлөр |  |
 | `blog.title` | Yangiliklar | Жаңылыктар |  |
+| `blogs.title` | Bloglar | Блогдор |  |
+| `blogs.description` | Tajriba, yechimlar va fikrlar — a'zolar yozadi | Тажрыйба, чыгарылыштар жана ойлор — мүчөлөр жазат |  |
+| `blogs.write` | Yozish | Жазуу |  |
+| `blogs.tabsLabel` | Bloglar bo'limlari | Блог бөлүмдөрү |  |
+| `blogs.tab.new` | Yangi | Жаңы |  |
+| `blogs.tab.top` | Mashhur (7 kun) | Популярдуу (7 күн) |  |
+| `blogs.tab.following` | Kuzatayotganlarim | Жазылууларым |  |
+| `blogs.clearFilter` | Filtrni tozalash | Чыпканы тазалоо |  |
+| `blogs.empty` | Hali post yo'q | Азырынча жазуу жок |  |
+| `blogs.emptyFollowing` | Kuzatayotganlaringiz hali hech narsa yozmagan | Сиз жазылгандар азырынча эч нерсе жазышкан жок |  |
+| `blogs.emptyHint` | Birinchi bo'lib yozing yoki boshqa bo'limni oching. | Биринчи болуп жазыңыз же башка бөлүмдү ачыңыз. |  |
+| `blogs.unit` | post | жазуу |  |
+| `blogs.popularTags` | Ommabop teglar | Популярдуу тегдер |  |
+| `blogs.score` | Ovozlar | Добуштар |  |
+| `blogs.reading` | {count} daqiqa o'qish | {count} мүнөт окуу |  |
+| `blogs.comments` | {count} izoh | {count} пикир |  |
+| `blogs.views` | {count} ko'rish | {count} көрүү |  |
+| `blogs.newTitle` | Yangi post | Жаңы жазуу |  |
+| `blogs.editTitle` | Postni tahrirlash | Жазууну оңдоо |  |
+| `blogs.deleteConfirm` | Post o'chirilsinmi? Uni qaytarib bo'lmaydi. | Жазуу өчүрүлсүнбү? Аны кайтаруу мүмкүн эмес. |  |
+| `blogs.form.title` | Sarlavha | Аталышы |  |
+| `blogs.form.body` | Matn | Текст |  |
+| `blogs.form.bodyHint` | Markdown, $formula$ va ```kod``` ishlaydi | Markdown, $формула$ жана ```код``` иштейт |  |
+| `blogs.form.preview` | Ko'rish | Көрүү |  |
+| `blogs.form.write` | Yozish | Жазуу |  |
+| `blogs.form.empty` | Ko'rish uchun matn yo'q | Көрүү үчүн текст жок |  |
+| `blogs.form.count` | {count} / {max} belgi | {count} / {max} белги |  |
+| `blogs.form.tags` | Teglar | Тегдер |  |
+| `blogs.form.tagsHint` | Vergul bilan: dp, graf, olimpiada (ko'pi bilan 5) | Үтүр менен: dp, граф, олимпиада (5тен ашпайт) |  |
+| `blogs.form.save` | Saqlash | Сактоо |  |
+| `blogs.form.publish` | E'lon qilish | Жарыялоо |  |
 | `notif.title` | Bildirishnomalar | Билдирүүлөр |  |
 | `notif.unread` | O'qilmagan | Окулбаган |  |
 | `recommend.title` | Sizga tavsiya | Сизге сунуш |  |
@@ -375,6 +407,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.shop` | Do'kon | Дүкөн |  |
 | `nav.about` | Qanday ishlaydi | Кантип иштейт |  |
 | `nav.team` | Jamoa | Команда |  |
+| `nav.hint.blogs` | A'zolarning postlari va muhokamalari | Мүчөлөрдүн жазуулары жана талкуулары |  |
 | `nav.hint.problems` | Arxiv, filtr va tavsiyalar | Архив, чыпка жана сунуштар |  |
 | `nav.hint.attempts` | Barcha yuborilgan yechimlar | Бардык жөнөтүлгөн чечимдер |  |
 | `nav.hint.quizzes` | Qisqa nazariy testlar | Кыска теориялык тесттер |  |
@@ -1477,6 +1510,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `discussion.count` | {count} ta izoh | {count} пикир |  |
 | `discussion.placeholder` | Savol yoki fikr… Markdown, $formula$ va ```kod``` ishlaydi | Суроо же ой… Markdown, $формула$ жана ```код``` иштейт |  |
 | `discussion.limits` | {count} / {max} · kod bloki masalani yechmaganlarga yopiq ko'rinadi | {count} / {max} · код блогу маселени чечпегендерге жашырылат |  |
+| `discussion.limitsPlain` | {count} / {max} belgi | {count} / {max} белги |  |
 | `discussion.send` | Yuborish | Жөнөтүү |  |
 | `discussion.reply` | Javob berish | Жооп берүү |  |
 | `discussion.edit` | Tahrirlash | Оңдоо |  |
@@ -1700,6 +1734,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.platformRoadmap` | Yo'l xaritasi | Жол картасы |  |
 | `admin.section.roadmapComments` | Reja izohlari | Картага комментарийлер |  |
 | `admin.section.comments` | Izohlar | Пикирлер |  |
+| `admin.section.entries` | Blog postlari | Блог жазуулары |  |
 | `admin.section.quests` | Questlar | Квесттер |  |
 | `admin.section.shop` | Do'kon | Дүкөн |  |
 | `admin.section.users` | Foydalanuvchilar | Колдонуучулар |  |
@@ -1971,6 +2006,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.next` | Keyingi sahifa | Кийинки бет |  |
 | `admin.title.roadmapComments` | Yo'l xaritasi izohlari | Жол картасы комментарийлери |  |
 | `admin.title.comments` | Muhokama izohlari | Талкуу пикирлери |  |
+| `admin.title.entries` | Blog postlari | Блог жазуулары |  |
 | `admin.title.tournaments` | Chempionatlar | Чемпионаттар |  |
 | `admin.title.broadcast` | Umumiy e'lon | Жалпы жарыя |  |
 | `admin.title.page` | Admin | Админ |  |
@@ -2723,6 +2759,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `gate.favourite.title` | Sevimlilarga qo'shish uchun tizimga kiring | Тандалгандарга кошуу үчүн системага кириңиз |  |
 | `gate.report.title` | Xato haqida xabar berish uchun tizimga kiring | Ката жөнүндө кабарлоо үчүн системага кириңиз |  |
 | `gate.comment.title` | Izoh yozish uchun tizimga kiring | Пикир жазуу үчүн системага кириңиз |  |
+| `gate.blog.title` | Post yozish uchun tizimga kiring | Жазуу жазуу үчүн системага кириңиз |  |
 | `gate.returnNote` | Kirgach shu sahifaga qaytasiz. | Киргенден кийин ушул бетке кайтасыз. |  |
 | `session.expiredTitle` | Sessiya tugadi. | Сессия аяктады. |  |
 | `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Кайра кириңиз — ушул бетке кайтасыз, жазган кодуңуз сакталган. |  |
@@ -2912,6 +2949,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.comment_reply.body` | @{user} «{title}» dagi izohingizga javob yozdi. | @{user} «{title}» ичиндеги пикириңизге жооп жазды. |  |
 | `notif.msg.comment_mention.title` | @{user} sizni eslatdi — {title} | @{user} сизди эскерди — {title} |  |
 | `notif.msg.comment_mention.body` | @{user} «{title}» muhokamasida sizni eslatdi. | @{user} «{title}» талкуусунда сизди эскерди. |  |
+| `notif.msg.blog_entry.title` | @{user} yangi post yozdi | @{user} жаңы жазуу жазды |  |
+| `notif.msg.blog_entry.body` | @{user} «{title}» nomli yangi post yozdi. | @{user} «{title}» жазуусун жарыялады. |  |
 | `admin.section.courses` | Kurslar | Курстар |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Авторлор текшерүүгө жөнөткөн курстар. Баа коюңуз, жарыялаңыз же себеби менен кайтарыңыз. |  |
 | `admin.courses.queue` | Ko'rik navbati | Текшерүү кезеги |  |
@@ -3215,6 +3254,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.report_self` | O'zingiz ustingizdan shikoyat qila olmaysiz | Өзүңүзгө арыз бере албайсыз |  |
 | `error.report_already` | Siz allaqachon shikoyat qilgansiz | Сиз мурун эле арыз бергенсиз |  |
 | `error.discussion_closed` | Bu yerda muhokama yopiq | Бул жерде талкуу жабык |  |
+| `error.entry_tag` | Teg — harf, raqam va chiziqcha, ko'pi bilan 24 belgi | Тег — тамга, сан жана сызыкча, 24 белгиден ашпайт |  |
+| `error.entry_tags_many` | Ko'pi bilan 5 ta teg | 5 тегден ашпайт |  |
+| `error.entry_title` | Sarlavha 3–200 belgi bo'lsin | Аталышы 3–200 белги болсун |  |
+| `error.entry_body` | Matn 10–20000 belgi bo'lsin | Текст 10–20000 белги болсун |  |
+| `error.entry_daily_limit` | Bugungi postlar chegarasiga yetdingiz — ertaga davom eting | Бүгүнкү жазуу чегине жеттиңиз — эртең улантыңыз |  |
+| `error.entry_not_found` | Post topilmadi | Жазуу табылган жок |  |
+| `error.entry_not_yours` | Bu sizning postingiz emas | Бул сиздин жазууңуз эмес |  |
+| `error.entry_hidden` | Post moderatsiya tomonidan yashirilgan | Жазуу модерация тарабынан жашырылган |  |
 | `error.generation_empty` | Kamida bitta qator yozing | Жок дегенде бир сап жазыңыз |  |
 | `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Бир иштетүүдө эң көп 100 тест |  |
 | `error.generation_line_long` | Qator 1000 belgidan uzun | Сап 1000 белгиден узун |  |

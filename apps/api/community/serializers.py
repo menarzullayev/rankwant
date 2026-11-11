@@ -1,14 +1,19 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from community.models import Comment, Report
+from community.models import Comment, Entry, Report
 from community.services import BODY_MAX, visible
 from core.models import User
 from profiles.titles import TitleField
+
+#: Markdown marks dropped from an excerpt.
+MARKS_RE = re.compile(r"\]\([^)]*\)|[#*_>`~\[\]|]+")
+FENCE_RE = re.compile(r"```.*?```|~~~.*?~~~", re.S)
 
 
 class CommentAuthorSerializer(serializers.ModelSerializer[User]):
@@ -157,3 +162,106 @@ class StaffCommentSerializer(serializers.ModelSerializer[Comment]):
         """Where the comment lives on the site."""
         links: dict[int, str] = self.context.get("links", {})
         return links.get(row.pk, "")
+
+
+class EntrySerializer(serializers.ModelSerializer[Entry]):
+    """An entry in the feed; the body comes only on its own page."""
+
+    author = CommentAuthorSerializer(read_only=True, allow_null=True)
+    tags = serializers.SerializerMethodField()
+    comment_count = serializers.IntegerField(read_only=True, default=0)
+    reading_minutes = serializers.SerializerMethodField()
+    excerpt = serializers.SerializerMethodField()
+    my_vote = serializers.SerializerMethodField()
+    mine = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Entry
+        fields = [
+            "id",
+            "title",
+            "author",
+            "tags",
+            "excerpt",
+            "score",
+            "my_vote",
+            "mine",
+            "view_count",
+            "comment_count",
+            "reading_minutes",
+            "is_hidden",
+            "created_at",
+            "edited_at",
+        ]
+        read_only_fields = fields
+
+    def get_tags(self, entry: Entry) -> list[str]:
+        return entry.tag_list
+
+    def get_reading_minutes(self, entry: Entry) -> int:
+        return max(1, round(len(entry.body.split()) / 200))
+
+    def get_excerpt(self, entry: Entry) -> str:
+        """The opening of the text without Markdown marks or code."""
+        text = FENCE_RE.sub(" ", entry.body)
+        text = MARKS_RE.sub("", text)
+        text = " ".join(text.split())
+        return text[:240] + ("…" if len(text) > 240 else "")
+
+    def get_my_vote(self, entry: Entry) -> int:
+        return int(self.context.get("votes", {}).get(entry.pk, 0))
+
+    def get_mine(self, entry: Entry) -> bool:
+        viewer = self.context.get("viewer_id")
+        return viewer is not None and entry.author_id == viewer
+
+
+class EntryDetailSerializer(EntrySerializer):
+    class Meta(EntrySerializer.Meta):
+        fields = [*EntrySerializer.Meta.fields, "body"]
+        read_only_fields = fields
+
+
+class EntryWriteSerializer(serializers.Serializer[Any]):
+    title = serializers.CharField(max_length=200, trim_whitespace=True)
+    body = serializers.CharField(max_length=20000, trim_whitespace=True)
+    tags = serializers.ListField(
+        child=serializers.CharField(max_length=40), max_length=10, required=False, default=list
+    )
+
+
+class TagCountSerializer(serializers.Serializer[Any]):
+    tag = serializers.CharField()
+    count = serializers.IntegerField()
+
+
+class StaffEntrySerializer(serializers.ModelSerializer[Entry]):
+    """An entry in the moderation list, in the same shape as a comment."""
+
+    author = serializers.CharField(source="author.username", default=None, read_only=True)
+    body = serializers.CharField(source="title", read_only=True)
+    reasons = serializers.SerializerMethodField()
+    link = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Entry
+        fields = [
+            "id",
+            "link",
+            "author",
+            "body",
+            "score",
+            "report_count",
+            "reasons",
+            "is_hidden",
+            "is_deleted",
+            "created_at",
+        ]
+        read_only_fields = fields
+
+    def get_reasons(self, entry: Entry) -> list[str]:
+        reasons: dict[int, list[str]] = self.context.get("reasons", {})
+        return reasons.get(entry.pk, [])
+
+    def get_link(self, entry: Entry) -> str:
+        return f"/blogs/{entry.pk}"

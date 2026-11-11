@@ -108,6 +108,8 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   // Discussion replies and mentions (decision 2026-11-11 ⑧).
   comment_reply: { body: true },
   comment_mention: { body: true },
+  // A followed author wrote a blog entry (decision 2026-11-11 ⑧).
+  blog_entry: { body: true },
 };
 
 /** The words of a notification in the language it is being read in.
@@ -180,10 +182,13 @@ export function notificationHref(row: Notification): string | null {
     case "comment": {
       // A comment lives in its thread: the problem's discussion tab.
       const problem = row.params?.problem;
-      return typeof problem === "string"
-        ? `/problems/${encodeURIComponent(problem)}?tab=discussion#c${id}`
-        : null;
+      if (typeof problem === "string")
+        return `/problems/${encodeURIComponent(problem)}?tab=discussion#c${id}`;
+      const entry = row.params?.entry;
+      return typeof entry === "string" ? `/blogs/${encodeURIComponent(entry)}#c${id}` : null;
     }
+    case "entry":
+      return `/blogs/${id}`;
     default:
       return null;
   }

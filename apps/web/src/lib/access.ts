@@ -27,6 +27,8 @@ export const ACCESS: Readonly<Record<string, AccessLevel>> = {
   arena: "public",
   attempts: "public",
   blog: "public",
+  // Member blogs: read by anyone; writing shows the sign-in card (decision 2026-11-11).
+  blogs: "public",
   calendar: "public",
   certificates: "public",
   // Plans on sale are open to read; paying asks for a session (ADR-0057).

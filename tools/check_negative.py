@@ -5081,6 +5081,56 @@ def neg_decisions_discussion_guest_writes() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_blog_new_flood() -> tuple[bool, str]:
+    """A new account could post five entries a day."""
+    return _decision_broken(
+        "apps/api/community/blog.py",
+        "NEW_DAILY_ENTRIES = 1" + "\n",
+        "NEW_DAILY_ENTRIES = 5" + "\n",
+        "kunlik post chegarasi 1 emas",
+    )
+
+
+def neg_decisions_blog_links_free() -> tuple[bool, str]:
+    """An unconfirmed account could put links in an entry."""
+    return _decision_broken(
+        "apps/api/community/blog.py",
+        "if (LINK.search(body) or LINK.search(title)) and not user.email_verified:",
+        "if False:",
+        "postga havola email tasdiqisiz",
+    )
+
+
+def neg_decisions_blog_followers_silent() -> tuple[bool, str]:
+    """Followers would not hear about a new entry."""
+    return _decision_broken(
+        "apps/api/community/blog.py",
+        "transaction.on_commit(lambda: _tell_followers(entry, user))",
+        "pass",
+        "kuzatuvchilar yangi post haqida bilmaydi",
+    )
+
+
+def neg_decisions_blog_not_votable() -> tuple[bool, str]:
+    """Entries would take no votes or reports."""
+    return _decision_broken(
+        "apps/api/community/services.py",
+        "VOTABLE: dict[str, type[Model]] = {Kind.COMMENT: Comment, Kind.ENTRY: Entry}",
+        "VOTABLE: dict[str, type[Model]] = {Kind.COMMENT: Comment}",
+        "postga ovoz yoki shikoyat berib bo'lmaydi",
+    )
+
+
+def neg_decisions_blog_off_the_menu() -> tuple[bool, str]:
+    """The side menu would lose its blogs item."""
+    return _decision_broken(
+        "apps/web/src/layout/nav.ts",
+        '{ href: "/blogs", key: "nav.blogs", iconKey: "notification.chat" },',
+        "",
+        "yon menyuda «Bloglar» bandi yo'q",
+    )
+
+
 def neg_decisions_classroom_skips_request() -> tuple[bool, str]:
     """A classroom that asks for approval lets the student straight in."""
     return _decision_broken(
@@ -6598,7 +6648,7 @@ def neg_decisions_side_menu_stops_adapting() -> tuple[bool, str]:
     """The menu no longer reads the height of the screen."""
     return _decision_broken(
         "apps/web/src/app/theme.css",
-        "--rw-nav-spare: calc(100vh - 45.125rem);",
+        "--rw-nav-spare: calc(100vh - 46.625rem);",
         "--rw-nav-spare: 0rem;",
         "ekran balandligiga moslashmaydi",
     )
@@ -8977,6 +9027,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/community/blog.py",
+    "apps/web/src/layout/nav.ts",
     "apps/api/community/services.py",
     "apps/api/community/views.py",
     "apps/api/problems/generation.py",
@@ -13374,6 +13426,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kod yechmaganga ochilsa tutilsin", neg_decisions_discussion_code_open),
             ("musobaqa paytida muhokama ochilsa tutilsin", neg_decisions_discussion_during_contest),
             ("mehmon izoh yozsa tutilsin", neg_decisions_discussion_guest_writes),
+            ("yangi hisob 5 post yozsa tutilsin", neg_decisions_blog_new_flood),
+            ("postga tasdiqsiz havola o'tsa tutilsin", neg_decisions_blog_links_free),
+            ("kuzatuvchilar jim qolsa tutilsin", neg_decisions_blog_followers_silent),
+            ("postga ovoz berib bo'lmasa tutilsin", neg_decisions_blog_not_votable),
+            ("menyuda Bloglar yo'qolsa tutilsin", neg_decisions_blog_off_the_menu),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

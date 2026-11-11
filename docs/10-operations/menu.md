@@ -17,7 +17,7 @@ va o'zimizniki o'zgacha**. Guruhlar bitta institut binosi.
 | **Laboratoriya** | Masalalar · Urinishlar · Testlar | `/problems` `/attempts` `/quizzes` |
 | **Kutubxona** | Maqolalar · Traektoriya · Algoritmlar · Auditoriya | `/learn` `/roadmaps` `/algorithms` `/classroom` |
 | **Musobaqa** | Musobaqalar · Arena · Duel · Chempionat · Hakaton · Taqvim | `/contests` `/arena` `/duels` `/tournaments` `/hackathons` `/calendar` |
-| **Kampus** | Reyting · Yangiliklar | `/leaderboard` `/blog` |
+| **Kampus** | Reyting · Yangiliklar · Bloglar | `/leaderboard` `/blog` `/blogs` |
 | **Platforma** | Formulalar · Do'kon · Qanday ishlaydi · Jamoa | `/rating` `/qvant` `/about` `/team` |
 
 Header: qidiruv · 🔔 bildirishnoma · Qvant balans · 🔥 streak · profil.

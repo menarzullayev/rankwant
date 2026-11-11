@@ -24,6 +24,7 @@ type NavItem = {
     | "/calendar"
     | "/leaderboard"
     | "/blog"
+    | "/blogs"
     | "/updates"
     | "/platform-roadmap"
     | "/rating"
@@ -68,6 +69,8 @@ export const NAV_GROUPS: { key: string; items: NavItem[] }[] = [
     items: [
       { href: "/leaderboard", key: "nav.leaderboard", iconKey: "nav.leaderboard" },
       { href: "/blog", key: "nav.blog", iconKey: "content.article" },
+      // Members' blogs (decision 2026-11-11 ⑦): the 22nd item.
+      { href: "/blogs", key: "nav.blogs", iconKey: "notification.chat" },
       { href: "/updates", key: "nav.updates", iconKey: "notification.changelog" },
       // Yo'l xaritasi changelog yonida: ikkalasi bir savolga javob beradi —
       // "nima o'zgardi" (o'tmish) va "nima o'zgaradi" (kelajak).

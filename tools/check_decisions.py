@@ -3224,6 +3224,34 @@ def discussion_is_open_but_guarded() -> str | None:
     return None
 
 
+def blogs_are_open_and_moderated() -> str | None:
+    """2026-11-11 (HITL; `docs/decisions/2026-11-11-community-details.md` ④⑤⑥⑦⑧).
+
+    Blog postini har kim yozadi, lekin yangi hisob kuniga bitta; havola
+    email tasdiqlangach; post ham izoh kabi ovoz va shikoyat oladi (3 ta
+    shikoyat yashiradi); yon menyuda «Bloglar» bandi bor; kuzatuvchilar
+    yangi post haqida xabar oladi.
+    """
+    blog = read("apps/api/community/blog.py")
+    if not re.search(r"^NEW_DAILY_ENTRIES = 1$", blog, re.M):
+        return "community/blog.py: yangi hisobning kunlik post chegarasi 1 emas"
+    if "if (LINK.search(body) or LINK.search(title)) and not user.email_verified:" not in blog:
+        return "community/blog.py: postga havola email tasdiqisiz qo'yiladi"
+    if "transaction.on_commit(lambda: _tell_followers(entry, user))" not in blog:
+        return "community/blog.py: kuzatuvchilar yangi post haqida bilmaydi"
+    if "VOTABLE: dict[str, type[Model]] = {Kind.COMMENT: Comment, Kind.ENTRY: Entry}" not in read(
+        "apps/api/community/services.py"
+    ):
+        return "community/services.py: postga ovoz yoki shikoyat berib bo'lmaydi"
+    if 'if self.action in ("list", "retrieve", "tags"):' not in read("apps/api/community/views.py"):
+        return "community/views.py: bloglarni mehmon o'qiy olmaydi yoki kirmasdan yozadi"
+    if '{ href: "/blogs", key: "nav.blogs", iconKey: "notification.chat" },' not in read(
+        "apps/web/src/layout/nav.ts"
+    ):
+        return "layout/nav.ts: yon menyuda «Bloglar» bandi yo'q"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -4064,7 +4092,7 @@ def side_menu_keeps_its_sections() -> str | None:
     280 px olinardi, bo'limlar orasi 4-10 px, sarlavha ostida 2 px.
     """
     css = read("apps/web/src/app/theme.css")
-    if "--rw-nav-spare: calc(100vh - 45.125rem);" not in css:
+    if "--rw-nav-spare: calc(100vh - 46.625rem);" not in css:
         return "theme.css: yon menyu ekran balandligiga moslashmaydi (`--rw-nav-spare` yo'q)"
     if "@media (min-width: 1024px) and (max-height: 1100px) and (pointer: fine)" in css:
         return "theme.css: yon menyu yana pog'onali ixchamlashda - bo'limlar yopishib qoladi"
@@ -4077,7 +4105,7 @@ def rail_shell_is_flagged() -> str | None:
     """2026-11-10 (HITL, audit Q-13): `newNav` — «A · Rail + panel», telefonda drawer.
 
     Kompyuterda (`lg` dan) 260 px yon menyu o'rniga 72 px rail (5 guruh) va
-    bosilganda guruh paneli; telefonda drawer o'zgarmaydi. 21 band / 5 guruh
+    bosilganda guruh paneli; telefonda drawer o'zgarmaydi. 22 band / 5 guruh
     bitta manbadan (`nav.ts`), havolalar faqat niyatda prefetch qiladi,
     `--rw-shell-inset` rail kengligini oladi (muharrir varag'i uning ostiga
     kirmaydi). Bayroq standart o'chiq.
@@ -4097,7 +4125,7 @@ def rail_shell_is_flagged() -> str | None:
         return "AppSidebar.tsx: rail rejimida yon menyu kompyuterda ham chiqadi"
     rail = read("apps/web/src/layout/AppRail.tsx")
     if 'import { NAV_GROUPS } from "./nav";' not in rail:
-        return "AppRail.tsx: guruhlar `nav.ts` dan emas — 21 band / 5 guruh ikki manbaga bo'linadi"
+        return "AppRail.tsx: guruhlar `nav.ts` dan emas — 22 band / 5 guruh ikki manbaga bo'linadi"
     if "<Link" in rail or "<IntentLink" not in rail:
         return "AppRail.tsx: havola niyatda prefetch qilmaydi (`IntentLink` emas)"
     if 'event.key !== "Escape"' not in rail or "aria-expanded={open === g.key}" not in rail:
@@ -5626,6 +5654,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("o'qituvchi testi: sinfga, Qvant'siz, vaqt va bitta urinish serverda", teacher_quizzes_stay_in_class),
     ("test generatori: 100 × 8 MiB, validator, kvota, birma-bir", test_generator_is_bounded),
     ("muhokama: yechmaganga kod yopiq, 3 shikoyat, yangi hisob 5", discussion_is_open_but_guarded),
+    ("bloglar: hamma yozadi, yangi hisob 1, ovoz va shikoyat, menyuda", blogs_are_open_and_moderated),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

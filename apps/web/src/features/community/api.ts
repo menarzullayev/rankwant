@@ -39,8 +39,8 @@ export type ThreadPage = {
   comments: ThreadComment[];
 };
 
-/** Where a thread lives — a problem now, a blog entry later. */
-export type Target = { kind: "problem"; ref: string };
+/** Where a thread lives: a problem or a blog entry. */
+export type Target = { kind: "problem" | "entry"; ref: string };
 
 /** The marker the API puts in place of a hidden code block. */
 export const HIDDEN_CODE = "[[hidden-code]]";
@@ -74,3 +74,50 @@ export const voteComment = (id: number, value: -1 | 0 | 1) =>
 
 export const reportComment = (id: number, reason: ReportReason) =>
   postJson<unknown>(`/comments/${id}/report/`, { reason });
+
+// --- blogs (decision 2026-11-11 ④) ---------------------------------------
+
+export type Entry = {
+  id: number;
+  title: string;
+  author: CommentAuthor | null;
+  tags: string[];
+  excerpt: string;
+  score: number;
+  my_vote: number;
+  mine: boolean;
+  view_count: number;
+  comment_count: number;
+  reading_minutes: number;
+  is_hidden: boolean;
+  created_at: string;
+  edited_at: string | null;
+};
+
+export type EntryDetail = Entry & { body: string };
+
+export type EntryDraft = { title: string; body: string; tags: string[] };
+
+export const BLOG_TABS = ["new", "top", "following"] as const;
+export type BlogTab = (typeof BLOG_TABS)[number];
+
+export const writeEntry = (draft: EntryDraft) => postJson<EntryDetail>("/blogs/", draft);
+
+export const editEntry = (id: number, draft: EntryDraft) =>
+  patchJson<EntryDetail>(`/blogs/${id}/`, draft);
+
+export const deleteEntry = (id: number) => deleteJson(`/blogs/${id}/`);
+
+export const voteEntry = (id: number, value: -1 | 0 | 1) =>
+  postJson<{ score: number; my_vote: number }>(`/blogs/${id}/vote/`, { value });
+
+export const reportEntry = (id: number, reason: ReportReason) =>
+  postJson<unknown>(`/blogs/${id}/report/`, { reason });
+
+/** "dp, Graph" → ["dp", "graph"]: the server cleans them again. */
+export function parseTags(text: string): string[] {
+  return text
+    .split(",")
+    .map((tag) => tag.trim().replace(/^#/, ""))
+    .filter(Boolean);
+}

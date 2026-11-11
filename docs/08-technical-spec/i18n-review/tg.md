@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3260 strings.**
+**3307 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -223,8 +223,40 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `leaderboard.activity` | Activity | Activity |  |
 | `leaderboard.streak` | Streak | Streak |  |
 | `nav.blog` | Yangiliklar | Хабарҳо |  |
+| `nav.blogs` | Bloglar | Блогҳо |  |
 | `nav.notifications` | Bildirishnomalar | Огоҳиномаҳо |  |
 | `blog.title` | Yangiliklar | Хабарҳо |  |
+| `blogs.title` | Bloglar | Блогҳо |  |
+| `blogs.description` | Tajriba, yechimlar va fikrlar — a'zolar yozadi | Таҷриба, ҳалҳо ва фикрҳо — аъзоён менависанд |  |
+| `blogs.write` | Yozish | Навиштан |  |
+| `blogs.tabsLabel` | Bloglar bo'limlari | Бахшҳои блог |  |
+| `blogs.tab.new` | Yangi | Нав |  |
+| `blogs.tab.top` | Mashhur (7 kun) | Маъмул (7 рӯз) |  |
+| `blogs.tab.following` | Kuzatayotganlarim | Обунаҳоям |  |
+| `blogs.clearFilter` | Filtrni tozalash | Тоза кардани филтр |  |
+| `blogs.empty` | Hali post yo'q | Ҳоло навишта нест |  |
+| `blogs.emptyFollowing` | Kuzatayotganlaringiz hali hech narsa yozmagan | Касоне, ки шумо обуна шудаед, ҳанӯз чизе нанавиштаанд |  |
+| `blogs.emptyHint` | Birinchi bo'lib yozing yoki boshqa bo'limni oching. | Аввалин шуда нависед ё бахши дигарро кушоед. |  |
+| `blogs.unit` | post | навишта |  |
+| `blogs.popularTags` | Ommabop teglar | Тегҳои маъмул |  |
+| `blogs.score` | Ovozlar | Овозҳо |  |
+| `blogs.reading` | {count} daqiqa o'qish | {count} дақиқа хондан |  |
+| `blogs.comments` | {count} izoh | {count} шарҳ |  |
+| `blogs.views` | {count} ko'rish | {count} тамошо |  |
+| `blogs.newTitle` | Yangi post | Навиштаи нав |  |
+| `blogs.editTitle` | Postni tahrirlash | Таҳрири навишта |  |
+| `blogs.deleteConfirm` | Post o'chirilsinmi? Uni qaytarib bo'lmaydi. | Навишта нест карда шавад? Онро барқарор кардан мумкин нест. |  |
+| `blogs.form.title` | Sarlavha | Сарлавҳа |  |
+| `blogs.form.body` | Matn | Матн |  |
+| `blogs.form.bodyHint` | Markdown, $formula$ va ```kod``` ishlaydi | Markdown, $формула$ ва ```код``` кор мекунанд |  |
+| `blogs.form.preview` | Ko'rish | Пешнамоиш |  |
+| `blogs.form.write` | Yozish | Навиштан |  |
+| `blogs.form.empty` | Ko'rish uchun matn yo'q | Барои пешнамоиш матн нест |  |
+| `blogs.form.count` | {count} / {max} belgi | {count} / {max} аломат |  |
+| `blogs.form.tags` | Teglar | Тегҳо |  |
+| `blogs.form.tagsHint` | Vergul bilan: dp, graf, olimpiada (ko'pi bilan 5) | Бо вергул: dp, граф, олимпиада (на зиёда аз 5) |  |
+| `blogs.form.save` | Saqlash | Нигоҳ доштан |  |
+| `blogs.form.publish` | E'lon qilish | Нашр кардан |  |
 | `notif.title` | Bildirishnomalar | Огоҳиномаҳо |  |
 | `notif.unread` | O'qilmagan | Нахондашуда |  |
 | `recommend.title` | Sizga tavsiya | Тавсия ба шумо |  |
@@ -375,6 +407,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.shop` | Do'kon | Мағоза |  |
 | `nav.about` | Qanday ishlaydi | Чӣ тавр кор мекунад |  |
 | `nav.team` | Jamoa | Даста |  |
+| `nav.hint.blogs` | A'zolarning postlari va muhokamalari | Навиштаҳо ва муҳокимаҳои аъзоён |  |
 | `nav.hint.problems` | Arxiv, filtr va tavsiyalar | Бойгонӣ, филтр ва тавсияҳо |  |
 | `nav.hint.attempts` | Barcha yuborilgan yechimlar | Ҳамаи ҳалҳои фиристодашуда |  |
 | `nav.hint.quizzes` | Qisqa nazariy testlar | Тестҳои кӯтоҳи назариявӣ |  |
@@ -1477,6 +1510,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `discussion.count` | {count} ta izoh | {count} шарҳ |  |
 | `discussion.placeholder` | Savol yoki fikr… Markdown, $formula$ va ```kod``` ishlaydi | Савол ё фикр… Markdown, $формула$ ва ```код``` кор мекунанд |  |
 | `discussion.limits` | {count} / {max} · kod bloki masalani yechmaganlarga yopiq ko'rinadi | {count} / {max} · блоки код аз касоне, ки масъаларо ҳал накардаанд, пинҳон аст |  |
+| `discussion.limitsPlain` | {count} / {max} belgi | {count} / {max} аломат |  |
 | `discussion.send` | Yuborish | Фиристодан |  |
 | `discussion.reply` | Javob berish | Ҷавоб додан |  |
 | `discussion.edit` | Tahrirlash | Таҳрир |  |
@@ -1700,6 +1734,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.platformRoadmap` | Yo'l xaritasi | Харитаи роҳ |  |
 | `admin.section.roadmapComments` | Reja izohlari | Шарҳҳо ба харита |  |
 | `admin.section.comments` | Izohlar | Шарҳҳо |  |
+| `admin.section.entries` | Blog postlari | Навиштаҳои блог |  |
 | `admin.section.quests` | Questlar | Квестҳо |  |
 | `admin.section.shop` | Do'kon | Дӯкон |  |
 | `admin.section.users` | Foydalanuvchilar | Корбарандагон |  |
@@ -1971,6 +2006,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.next` | Keyingi sahifa | Саҳифаи навбатӣ |  |
 | `admin.title.roadmapComments` | Yo'l xaritasi izohlari | Шарҳҳои нақшаи роҳ |  |
 | `admin.title.comments` | Muhokama izohlari | Шарҳҳои муҳокима |  |
+| `admin.title.entries` | Blog postlari | Навиштаҳои блог |  |
 | `admin.title.tournaments` | Chempionatlar | Чемпионатҳо |  |
 | `admin.title.broadcast` | Umumiy e'lon | Эълони умумӣ |  |
 | `admin.title.page` | Admin | Мудир |  |
@@ -2723,6 +2759,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `gate.favourite.title` | Sevimlilarga qo'shish uchun tizimga kiring | Барои илова ба дӯстдоштаҳо ворид шавед |  |
 | `gate.report.title` | Xato haqida xabar berish uchun tizimga kiring | Барои хабар додан дар бораи хато ворид шавед |  |
 | `gate.comment.title` | Izoh yozish uchun tizimga kiring | Барои навиштани шарҳ ворид шавед |  |
+| `gate.blog.title` | Post yozish uchun tizimga kiring | Барои навиштан ба система ворид шавед |  |
 | `gate.returnNote` | Kirgach shu sahifaga qaytasiz. | Пас аз воридшавӣ ба ҳамин саҳифа бармегардед. |  |
 | `session.expiredTitle` | Sessiya tugadi. | Сессия ба охир расид. |  |
 | `session.expiredBody` | Qayta kiring — bu sahifaga qaytasiz, yozgan kodingiz saqlangan. | Аз нав ворид шавед — ба ҳамин саҳифа бармегардед, коди навиштаатон нигоҳ дошта шудааст. |  |
@@ -2912,6 +2949,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.comment_reply.body` | @{user} «{title}» dagi izohingizga javob yozdi. | @{user} ба шарҳи шумо дар «{title}» ҷавоб навишт. |  |
 | `notif.msg.comment_mention.title` | @{user} sizni eslatdi — {title} | @{user} шуморо ёдовар шуд — {title} |  |
 | `notif.msg.comment_mention.body` | @{user} «{title}» muhokamasida sizni eslatdi. | @{user} дар муҳокимаи «{title}» шуморо ёдовар шуд. |  |
+| `notif.msg.blog_entry.title` | @{user} yangi post yozdi | @{user} навиштаи нав навишт |  |
+| `notif.msg.blog_entry.body` | @{user} «{title}» nomli yangi post yozdi. | @{user} «{title}»-ро нашр кард. |  |
 | `admin.section.courses` | Kurslar | Курсҳо |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Курсҳое, ки муаллифон ба санҷиш фиристодаанд. Нарх гузоред, нашр кунед ё бо сабаб баргардонед. |  |
 | `admin.courses.queue` | Ko'rik navbati | Навбати санҷиш |  |
@@ -3215,6 +3254,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.report_self` | O'zingiz ustingizdan shikoyat qila olmaysiz | Аз худ шикоят карда наметавонед |  |
 | `error.report_already` | Siz allaqachon shikoyat qilgansiz | Шумо аллакай шикоят кардаед |  |
 | `error.discussion_closed` | Bu yerda muhokama yopiq | Дар ин ҷо муҳокима баста аст |  |
+| `error.entry_tag` | Teg — harf, raqam va chiziqcha, ko'pi bilan 24 belgi | Тег — ҳарф, рақам ва тире, на зиёда аз 24 аломат |  |
+| `error.entry_tags_many` | Ko'pi bilan 5 ta teg | На зиёда аз 5 тег |  |
+| `error.entry_title` | Sarlavha 3–200 belgi bo'lsin | Сарлавҳа 3–200 аломат бошад |  |
+| `error.entry_body` | Matn 10–20000 belgi bo'lsin | Матн 10–20000 аломат бошад |  |
+| `error.entry_daily_limit` | Bugungi postlar chegarasiga yetdingiz — ertaga davom eting | Ба ҳадди навиштаҳои имрӯза расидед — фардо идома диҳед |  |
+| `error.entry_not_found` | Post topilmadi | Навишта ёфт нашуд |  |
+| `error.entry_not_yours` | Bu sizning postingiz emas | Ин навиштаи шумо нест |  |
+| `error.entry_hidden` | Post moderatsiya tomonidan yashirilgan | Навишта аз ҷониби модератсия пинҳон шудааст |  |
 | `error.generation_empty` | Kamida bitta qator yozing | Ақаллан як сатр нависед |  |
 | `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Дар як иҷро ҳадди аксар 100 тест |  |
 | `error.generation_line_long` | Qator 1000 belgidan uzun | Сатр аз 1000 аломат дарозтар аст |  |

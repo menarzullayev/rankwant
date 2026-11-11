@@ -76,6 +76,7 @@ function Composer({
   submitLabel,
   onSubmit,
   onCancel,
+  codeHint,
 }: {
   initial?: string;
   busy: boolean;
@@ -84,6 +85,8 @@ function Composer({
   submitLabel: string;
   onSubmit: (body: string) => Promise<boolean>;
   onCancel?: () => void;
+  /** Problem threads warn that code is hidden from those who have not solved it. */
+  codeHint: boolean;
 }) {
   const locale = useLocale();
   const [body, setBody] = useState(initial);
@@ -107,11 +110,14 @@ function Composer({
       />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-theme-xs rw-faint">
-          {fill(t(locale, "discussion.limits"), { count: body.length, max: BODY_MAX })}
+          {fill(t(locale, codeHint ? "discussion.limits" : "discussion.limitsPlain"), {
+            count: body.length,
+            max: BODY_MAX,
+          })}
         </span>
         <span className="flex gap-2">
           {onCancel && (
-            <Button variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={onCancel}>
               {t(locale, "discussion.cancel")}
             </Button>
           )}
@@ -231,6 +237,7 @@ function CommentNode({ comment, byParent, byId, signedIn, target, onChange, onAd
 
         {mode === "edit" ? (
           <Composer
+            codeHint={target.kind === "problem"}
             initial={comment.body}
             busy={busy}
             error={error}
@@ -360,6 +367,7 @@ function CommentNode({ comment, byParent, byId, signedIn, target, onChange, onAd
 
         {mode === "reply" && (
           <Composer
+            codeHint={target.kind === "problem"}
             busy={busy}
             error={error}
             autoFocus
@@ -476,7 +484,13 @@ export function Discussion({
       </h2>
 
       {signedIn ? (
-        <Composer busy={busy} error={error} submitLabel={t(locale, "discussion.send")} onSubmit={write} />
+        <Composer
+          busy={busy}
+          error={error}
+          codeHint={target.kind === "problem"}
+          submitLabel={t(locale, "discussion.send")}
+          onSubmit={write}
+        />
       ) : (
         <GuestPrompt
           reason="comment"

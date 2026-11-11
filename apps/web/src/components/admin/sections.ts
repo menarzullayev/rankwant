@@ -26,6 +26,7 @@ export const ADMIN_SECTIONS = [
   { href: "/admin/platform-roadmap", labelKey: "admin.section.platformRoadmap" },
   { href: "/admin/roadmap-comments", labelKey: "admin.section.roadmapComments" },
   { href: "/admin/comments", labelKey: "admin.section.comments" },
+  { href: "/admin/entries", labelKey: "admin.section.entries" },
   { href: "/admin/quests", labelKey: "admin.section.quests" },
   { href: "/admin/shop", labelKey: "admin.section.shop" },
   { href: "/admin/users", labelKey: "admin.section.users" },

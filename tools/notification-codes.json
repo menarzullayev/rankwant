@@ -1,4 +1,8 @@
 {
+  "blog_entry": [
+    "title",
+    "user"
+  ],
   "classroom_join_approved": [
     "classroom"
   ],

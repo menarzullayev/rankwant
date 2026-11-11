@@ -69,6 +69,45 @@ class Comment(TimeStampedModel):
         return f"{self.target_type}:{self.target_id} #{self.pk}"
 
 
+class Entry(TimeStampedModel):
+    """A blog entry by any member (owner decision ④).
+
+    Tags are kept as `,a,b,` in one column: a tag filter is a plain
+    substring match that works the same on SQLite (tests) and PostgreSQL.
+    """
+
+    author = models.ForeignKey(
+        "core.User",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="blog_entries",
+    )
+    title = models.CharField(max_length=200)
+    body = models.TextField(help_text="Markdown")
+    tags = models.CharField(max_length=200, blank=True)
+    score = models.IntegerField(default=0)
+    view_count = models.PositiveIntegerField(default=0)
+    report_count = models.PositiveSmallIntegerField(default=0)
+    is_deleted = models.BooleanField(default=False)
+    is_hidden = models.BooleanField(default=False, db_index=True)
+    edited_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at", "-pk"]
+        indexes: ClassVar = [
+            models.Index(fields=["is_hidden", "is_deleted", "-created_at"], name="entry_feed"),
+            models.Index(fields=["author", "-created_at"], name="entry_author"),
+        ]
+
+    def __str__(self) -> str:
+        return self.title
+
+    @property
+    def tag_list(self) -> list[str]:
+        return [tag for tag in self.tags.split(",") if tag]
+
+
 class Kind(models.TextChoices):
     """What a vote or a report is about."""
 
