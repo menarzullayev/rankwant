@@ -22,7 +22,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from community import blog, services
+from community import blog, karma, services
 from community.models import Comment, Entry, Kind, Report, Target, Vote
 from community.serializers import (
     CommentSerializer,
@@ -33,6 +33,7 @@ from community.serializers import (
     EntryDetailSerializer,
     EntrySerializer,
     EntryWriteSerializer,
+    KarmaRowSerializer,
     PostCommentSerializer,
     StaffCommentSerializer,
     StaffEntrySerializer,
@@ -479,3 +480,24 @@ class StaffEntryViewSet(StaffViewSet):
     @action(detail=True, methods=["post"])
     def unhide(self, request: Request, pk: str | None = None) -> Response:
         return self._moderate(request, False)
+
+
+class KarmaTopView(APIView):
+    """People by karma: `period=all` (the users table) or `30d` (active authors)."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        summary="Karma bo'yicha foydalanuvchilar",
+        parameters=[
+            OpenApiParameter("period", str, enum=list(karma.PERIODS), required=False),
+            OpenApiParameter("limit", int, required=False),
+        ],
+        responses=KarmaRowSerializer(many=True),
+    )
+    def get(self, request: Request) -> Response:
+        period = request.query_params.get("period", "all")
+        raw = request.query_params.get("limit", "50")
+        limit = min(int(raw), 100) if raw.isdigit() and int(raw) > 0 else 50
+        rows = karma.top(period if period in karma.PERIODS else "all", limit)
+        return Response(KarmaRowSerializer(rows, many=True).data)

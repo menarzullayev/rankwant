@@ -13,6 +13,7 @@ from typing import Any
 from django.db.models import Q
 from django.utils import timezone
 
+from community.karma import entries_of, karma_of
 from core import sessions
 from core.models import User
 from profiles import titles
@@ -163,6 +164,9 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         "pinned": achievements.pinned(user),
         "coach": coaches(user) if visible("coach") else [],
         "teacher": teachers(user) if visible("teacher") else [],
+        # Votes the person's entries and comments received (decision 2026-11-11 ③).
+        "karma": karma_of(user.pk),
+        "blog_entries": entries_of(user.pk),
     }
 
 

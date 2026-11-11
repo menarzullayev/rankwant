@@ -2212,6 +2212,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/CommunityVoteResult'
           description: ''
+  /api/v1/community/karma/:
+    get:
+      operationId: community_karma_list
+      description: 'People by karma: `period=all` (the users table) or `30d` (active
+        authors).'
+      summary: Karma bo'yicha foydalanuvchilar
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: query
+        name: period
+        schema:
+          type: string
+          enum:
+          - 30d
+          - all
+      tags:
+      - community
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KarmaRow'
+          description: ''
   /api/v1/contests/:
     get:
       operationId: contests_list
@@ -19786,6 +19819,22 @@ components:
       - owner
       - slug
       - status
+    KarmaRow:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/CommentAuthor'
+        points:
+          type: integer
+        karma:
+          type: integer
+        entries:
+          type: integer
+      required:
+      - entries
+      - karma
+      - points
+      - user
     Language:
       type: object
       properties:

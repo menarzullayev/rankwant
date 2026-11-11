@@ -5131,6 +5131,46 @@ def neg_decisions_blog_off_the_menu() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_karma_decays() -> tuple[bool, str]:
+    """Karma would count only the last 180 days."""
+    return _decision_broken(
+        "apps/api/community/karma.py",
+        'total = Vote.objects.filter(author_id=user_id).aggregate(n=Sum("value"))["n"]',
+        'total = Vote.objects.filter(author_id=user_id, created_at__gte=timezone.now() - timedelta(days=180)).aggregate(n=Sum("value"))["n"]',
+        "karma barcha ovozlardan sanalmaydi",
+    )
+
+
+def neg_decisions_karma_active_window() -> tuple[bool, str]:
+    """Active authors would look at 90 days."""
+    return _decision_broken(
+        "apps/api/community/karma.py",
+        "ACTIVE_WINDOW = timedelta(days=30)",
+        "ACTIVE_WINDOW = timedelta(days=90)",
+        "faol mualliflar oynasi 30 kun emas",
+    )
+
+
+def neg_decisions_karma_off_profile() -> tuple[bool, str]:
+    """The profile would lose its karma."""
+    return _decision_broken(
+        "apps/api/profiles/public.py",
+        '"karma": karma_of(user.pk),',
+        '"karma": 0,',
+        "profilda karma ko'rsatilmaydi",
+    )
+
+
+def neg_decisions_vote_forgets_author() -> tuple[bool, str]:
+    """A vote would not keep the author, so karma could not be counted."""
+    return _decision_broken(
+        "apps/api/community/services.py",
+        "user=user, kind=kind, object_id=object_id, value=value, author_id=row.author_id",
+        "user=user, kind=kind, object_id=object_id, value=value",
+        "ovoz muallifni saqlamaydi",
+    )
+
+
 def neg_decisions_classroom_skips_request() -> tuple[bool, str]:
     """A classroom that asks for approval lets the student straight in."""
     return _decision_broken(
@@ -9027,6 +9067,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/community/karma.py",
     "apps/api/community/blog.py",
     "apps/web/src/layout/nav.ts",
     "apps/api/community/services.py",
@@ -13431,6 +13472,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kuzatuvchilar jim qolsa tutilsin", neg_decisions_blog_followers_silent),
             ("postga ovoz berib bo'lmasa tutilsin", neg_decisions_blog_not_votable),
             ("menyuda Bloglar yo'qolsa tutilsin", neg_decisions_blog_off_the_menu),
+            ("karma eskirsa tutilsin", neg_decisions_karma_decays),
+            ("faol mualliflar 90 kun bo'lsa tutilsin", neg_decisions_karma_active_window),
+            ("profilda karma yo'qolsa tutilsin", neg_decisions_karma_off_profile),
+            ("ovoz muallifsiz yozilsa tutilsin", neg_decisions_vote_forgets_author),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),
