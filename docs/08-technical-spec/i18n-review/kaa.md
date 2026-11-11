@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3442 strings.**
+**3454 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2914,6 +2914,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.jury` | Hakamlar | Tóreshiler |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Olar máselelerdi aldın ala biledi, sonıń ushın reytingsiz qatnasadı. |  |
 | `standings.dq` | DQ | DQ |  |
+| `standings.region` | Hudud | Aymaq |  |
+| `standings.allRegions` | Barcha hududlar | Barlıq aymaqlar |  |
+| `standings.regionPlace` | Hududda | Aymaqta |  |
+| `standings.overallPlace` | Umumiy o'rin | Ulıwma orın |  |
+| `standings.regionEmpty` | Bu hududdan ishtirokchi yo'q. | Bul aymaqtan qatnasıwshı joq. |  |
+| `contest.print.link` | Shartlar (PDF) | Shártler (PDF) |  |
+| `contest.print.title` | {contest} — masala shartlari | {contest} — másele shártleri |  |
+| `contest.print.back` | ← Musobaqaga qaytish | ← Jarısqa qaytıw |  |
+| `contest.print.button` | Chop etish yoki PDF | Basıp shıǵarıw yamasa PDF |  |
+| `contest.print.hint` | PDF fayl olish uchun chop etish oynasida «PDF sifatida saqlash» ni tanlang. | PDF fayl alıw ushın basıp shıǵarıw aynasında «PDF retinde saqlaw» dı tańlań. |  |
+| `contest.print.count` | {count} ta masala | {count} másele |  |
+| `contest.print.limits` | Vaqt: {time} ms · Xotira: {memory} MB | Waqıt: {time} ms · Yad: {memory} MB |  |
 | `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Jarısta jasalma intellekt járdemshilerinen (ChatGPT, Copilot hám t.b.) paydalanıwǵa tıyım salınadı. Redaktorǵa kod qoyıw hám betten shıǵıw dizimge alınadı — tóreshi kóredi. |  |
 | `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Jarıs: JI járdemshilerine tıyım salınǵan. Kod qoyıw hám betten shıǵıw dizimge alınadı. |  |
 | `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Siz bul jarıstan shetletildińiz |  |

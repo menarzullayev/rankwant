@@ -3341,6 +3341,38 @@ def olympiad_archive_keeps_personal_data_out() -> str | None:
     return None
 
 
+def contest_standings_by_region_and_print() -> str | None:
+    """2026-11-11 ② (HITL; `docs/decisions/2026-11-11-community-and-contests.md`).
+
+    Musobaqa jadvali hudud bo'yicha filtrlanadi va masala shartlari bitta
+    hujjat bo'lib chop etiladi (PDF). Hudud filtri maxfiylikni buzmaydi:
+    joylashuvini yashirgan (`hidden_fields` da `country`) ishtirokchi
+    hududiy jadvalda ham, hudud sonlarida ham yo'q — aks holda filtr uning
+    viloyatini aytib qo'yardi. Noma'lum hudud kodi rad etiladi, jadval
+    qayta qurilganda har hududning keshi ham tozalanadi. Chop etish sahifasi
+    masalani masala sahifasi bilan bir xil yo'ldan oladi (ADR-0055 ko'rinishi)
+    va qidiruv tizimiga berilmaydi.
+    """
+    regional = read("apps/api/contests/regional.py")
+    if "if not _location_public(row):" not in regional:
+        return "contests/regional.py: joylashuvini yashirgan ishtirokchi hududiy jadvalda ko'rinadi"
+    if 'if "country" not in (hidden or []):' not in regional:
+        return "contests/regional.py: hudud sonlari yashirin joylashuvni ham sanaydi"
+    views = read("apps/api/contests/views.py")
+    if "if region and region not in UZ_REGIONS:" not in views:
+        return "contests/views.py: noma'lum hudud kodi rad etilmaydi"
+    if "for key in cache_keys(contest.pk):" not in read("apps/api/contests/services.py"):
+        return "contests/services.py: jadval qayta qurilganda hududiy kesh tozalanmaydi"
+    page = read("apps/web/src/app/(site)/contests/[slug]/print/page.tsx")
+    if "robots: { index: false, follow: false }" not in page:
+        return "contests/[slug]/print/page.tsx: chop etish sahifasi qidiruvga berilgan"
+    if "getWithSession<ProblemDetail>(\n        `/problems/${entry.slug}/?lang=${locale}`," not in page:
+        return "contests/[slug]/print/page.tsx: shart masala sahifasidan boshqa yo'ldan olinadi"
+    if "const printing = PRINT.test(pathname);" not in read("apps/web/src/layout/AppShell.tsx"):
+        return "AppShell.tsx: chop etish sahifasida sayt chrome'i qoladi"
+    return None
+
+
 def cpuz_library_is_pinned_and_checked() -> str | None:
     """2026-11-11 (HITL; `docs/decisions/2026-11-11-cpuz-import.md`, ADR-0062).
 
@@ -5819,6 +5851,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("cp.uz kutubxonasi qadalgan va tekshirilgan", cpuz_library_is_pinned_and_checked),
     ("algoritm sahifasi manbani ko'rsatadi", algorithm_pages_carry_the_attribution),
     ("olimpiada arxivi shaxsiy ma'lumotni repoga olmaydi", olympiad_archive_keeps_personal_data_out),
+    ("musobaqa jadvali hudud bo'yicha, shartlar chop etiladi", contest_standings_by_region_and_print),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

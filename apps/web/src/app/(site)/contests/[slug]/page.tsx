@@ -16,8 +16,12 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { SITE_URL, jsonLd } from "@/lib/site";
+import { REGION_CODES } from "@rankwant/shared/regions";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ region?: string | string[] }>;
+};
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
 // Build vaqtida prerender qilinmaydi — CI da API ishlamaydi, va reyting
@@ -36,16 +40,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function ContestPage({ params }: Props) {
+export default async function ContestPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const locale = await getLocale();
+  // A shared link opens the regional table it was sent with; an unknown
+  // code falls back to the full one instead of an API error.
+  const asked = (await searchParams).region;
+  const region = typeof asked === "string" && REGION_CODES.includes(asked) ? asked : "";
 
   let contest;
   let standings;
   try {
     [contest, standings] = await Promise.all([
       api.contest(slug),
-      api.standings(slug),
+      api.standings(slug, region),
     ]);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
@@ -164,7 +172,19 @@ export default async function ContestPage({ params }: Props) {
       )}
 
       {problems.length > 0 && (
-        <Card title={t(locale, "contest.problems")} bodyClassName="p-0">
+        <Card
+          title={t(locale, "contest.problems")}
+          bodyClassName="p-0"
+          action={
+            <Link
+              href={`/contests/${slug}/print`}
+              className="text-theme-sm font-medium rw-accent-ink hover:underline"
+              data-print-link=""
+            >
+              {t(locale, "contest.print.link")}
+            </Link>
+          }
+        >
           <ul className="rw-divide divide-y">
             {problems.map((entry) => (
               <li key={entry.slug}>

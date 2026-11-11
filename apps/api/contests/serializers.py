@@ -108,6 +108,12 @@ class ContestDetailSerializer(ContestSerializer):
 class StandingSerializer(serializers.ModelSerializer[Standing]):
     username = serializers.CharField(source="user.username", read_only=True)
     user_title = TitleField(source="user")
+    #: The place among the region's official rows; only in a regional
+    #: table (`?region=`, contests.regional). `null` in the full one.
+    region_rank = serializers.SerializerMethodField()
+
+    def get_region_rank(self, row: Standing) -> int | None:
+        return getattr(row, "region_rank", None)
 
     class Meta:
         model = Standing
@@ -134,6 +140,7 @@ class StandingSerializer(serializers.ModelSerializer[Standing]):
             "insider_role",
             # Disqualified by the jury (part 4): «DQ», no place.
             "is_disqualified",
+            "region_rank",
         ]
 
 

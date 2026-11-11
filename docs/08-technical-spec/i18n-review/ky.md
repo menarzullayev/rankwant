@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3442 strings.**
+**3454 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2914,6 +2914,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.jury` | Hakamlar | Калыстар |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Алар маселелерди алдын ала билишет, ошондуктан рейтингсиз катышат. |  |
 | `standings.dq` | DQ | DQ |  |
+| `standings.region` | Hudud | Аймак |  |
+| `standings.allRegions` | Barcha hududlar | Бардык аймактар |  |
+| `standings.regionPlace` | Hududda | Аймакта |  |
+| `standings.overallPlace` | Umumiy o'rin | Жалпы орун |  |
+| `standings.regionEmpty` | Bu hududdan ishtirokchi yo'q. | Бул аймактан катышуучу жок. |  |
+| `contest.print.link` | Shartlar (PDF) | Шарттар (PDF) |  |
+| `contest.print.title` | {contest} — masala shartlari | {contest} — маселе шарттары |  |
+| `contest.print.back` | ← Musobaqaga qaytish | ← Мелдешке кайтуу |  |
+| `contest.print.button` | Chop etish yoki PDF | Басып чыгаруу же PDF |  |
+| `contest.print.hint` | PDF fayl olish uchun chop etish oynasida «PDF sifatida saqlash» ni tanlang. | PDF файл алуу үчүн басып чыгаруу терезесинде «PDF катары сактоо» дегенди тандаңыз. |  |
+| `contest.print.count` | {count} ta masala | {count} маселе |  |
+| `contest.print.limits` | Vaqt: {time} ms · Xotira: {memory} MB | Убакыт: {time} мс · Эс: {memory} МБ |  |
 | `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Мелдеште жасалма интеллект жардамчыларын (ChatGPT, Copilot ж.б.) колдонууга тыюу салынат. Редакторго код коюу жана барактан чыгуу катталат — калыс көрөт. |  |
 | `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Мелдеш: ЖИ жардамчыларына тыюу салынган. Код коюу жана барактан чыгуу катталат. |  |
 | `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Сиз бул мелдештен четтетилдиңиз |  |

@@ -2682,6 +2682,12 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: region
+        schema:
+          type: string
+        description: Only this Uzbekistan region (`profiles.catalog.UZ_REGIONS`);
+          each row then carries its regional place in `region_rank`.
       - in: path
         name: slug
         schema:
@@ -29359,7 +29365,12 @@ components:
           - $ref: '#/components/schemas/BlankEnum'
         is_disqualified:
           type: boolean
+        region_rank:
+          type: integer
+          nullable: true
+          readOnly: true
       required:
+      - region_rank
       - user_title
       - username
     Streak:

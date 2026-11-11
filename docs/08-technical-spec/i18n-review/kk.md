@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3442 strings.**
+**3454 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2914,6 +2914,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.jury` | Hakamlar | Қазылар |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Олар есептерді алдын ала біледі, сондықтан рейтингсіз қатысады. |  |
 | `standings.dq` | DQ | DQ |  |
+| `standings.region` | Hudud | Аймақ |  |
+| `standings.allRegions` | Barcha hududlar | Барлық аймақтар |  |
+| `standings.regionPlace` | Hududda | Аймақта |  |
+| `standings.overallPlace` | Umumiy o'rin | Жалпы орын |  |
+| `standings.regionEmpty` | Bu hududdan ishtirokchi yo'q. | Бұл аймақтан қатысушы жоқ. |  |
+| `contest.print.link` | Shartlar (PDF) | Шарттар (PDF) |  |
+| `contest.print.title` | {contest} — masala shartlari | {contest} — есеп шарттары |  |
+| `contest.print.back` | ← Musobaqaga qaytish | ← Жарысқа оралу |  |
+| `contest.print.button` | Chop etish yoki PDF | Басып шығару немесе PDF |  |
+| `contest.print.hint` | PDF fayl olish uchun chop etish oynasida «PDF sifatida saqlash» ni tanlang. | PDF файлын алу үшін басып шығару терезесінде «PDF ретінде сақтау» тармағын таңдаңыз. |  |
+| `contest.print.count` | {count} ta masala | {count} есеп |  |
+| `contest.print.limits` | Vaqt: {time} ms · Xotira: {memory} MB | Уақыт: {time} мс · Жад: {memory} МБ |  |
 | `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Жарыста жасанды интеллект көмекшілерін (ChatGPT, Copilot және т.б.) пайдалануға тыйым салынады. Редакторға код қою және беттен шығу тіркеледі — қазы көреді. |  |
 | `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Жарыс: ЖИ көмекшілеріне тыйым салынған. Код қою және беттен шығу тіркеледі. |  |
 | `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Сіз бұл жарыстан шеттетілдіңіз |  |

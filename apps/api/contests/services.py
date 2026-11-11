@@ -13,11 +13,10 @@ from django.utils import timezone
 
 from contests.insiders import insiders
 from contests.models import Contest, ContestProblem, ContestRegistration, Standing
+from contests.regional import cache_keys
 from core.cache import cache_delete
 from judging.models import Attempt
 from judging.verdicts import Verdict
-
-STANDINGS_CACHE_KEY = "standings:{contest_id}"
 
 log = logging.getLogger(__name__)
 
@@ -250,7 +249,9 @@ def _write(
             for i, row in enumerate(rows)
         ]
     )
-    cache_delete(STANDINGS_CACHE_KEY.format(contest_id=contest.pk))
+    # The full table and every regional one (contests.regional).
+    for key in cache_keys(contest.pk):
+        cache_delete(key)
     return len(rows)
 
 

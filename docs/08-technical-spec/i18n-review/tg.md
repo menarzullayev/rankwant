@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3442 strings.**
+**3454 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2914,6 +2914,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.crew.jury` | Hakamlar | Ҳакамон |  |
 | `contest.crew.note` | Ular masalalarni oldindan biladi, shuning uchun qatnashsa — reytingsiz. | Онҳо масъалаҳоро пешакӣ медонанд, бинобар ин бе рейтинг иштирок мекунанд. |  |
 | `standings.dq` | DQ | DQ |  |
+| `standings.region` | Hudud | Минтақа |  |
+| `standings.allRegions` | Barcha hududlar | Ҳамаи минтақаҳо |  |
+| `standings.regionPlace` | Hududda | Дар минтақа |  |
+| `standings.overallPlace` | Umumiy o'rin | Ҷои умумӣ |  |
+| `standings.regionEmpty` | Bu hududdan ishtirokchi yo'q. | Аз ин минтақа иштирокчӣ нест. |  |
+| `contest.print.link` | Shartlar (PDF) | Шартҳо (PDF) |  |
+| `contest.print.title` | {contest} — masala shartlari | {contest} — шартҳои масъалаҳо |  |
+| `contest.print.back` | ← Musobaqaga qaytish | ← Ба мусобиқа |  |
+| `contest.print.button` | Chop etish yoki PDF | Чоп ё PDF |  |
+| `contest.print.hint` | PDF fayl olish uchun chop etish oynasida «PDF sifatida saqlash» ni tanlang. | Барои гирифтани файли PDF дар равзанаи чоп «Ҳамчун PDF нигоҳ доштан»-ро интихоб кунед. |  |
+| `contest.print.count` | {count} ta masala | {count} масъала |  |
+| `contest.print.limits` | Vaqt: {time} ms · Xotira: {memory} MB | Вақт: {time} мс · Хотира: {memory} МБ |  |
 | `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Дар мусобиқа истифодаи ёрдамчиёни зеҳни сунъӣ (ChatGPT, Copilot ва ғ.) манъ аст. Гузоштани код дар муҳаррир ва баромадан аз саҳифа сабт мешавад — ҳакам мебинад. |  |
 | `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Мусобиқа: ёрдамчиёни ЗС манъ аст. Гузоштани код ва баромадан аз саҳифа сабт мешавад. |  |
 | `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Шумо аз ин мусобиқа хориҷ карда шудед |  |

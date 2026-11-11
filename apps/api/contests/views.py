@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 
 from contests import certificate_pdf
 from contests.models import Certificate, Clarification, Contest, ContestRegistration, Standing
+from contests.regional import cache_key, region_counts, regional_rows
 from contests.serializers import (
     CertificateSerializer,
     ClarificationAnswerSerializer,
@@ -33,11 +34,12 @@ from contests.serializers import (
     RegistrationSerializer,
     StandingSerializer,
 )
-from contests.services import STANDINGS_CACHE_KEY, start_virtual, virtual_deadline
+from contests.services import start_virtual, virtual_deadline
 from core.cache import cache_get, cache_set, edge_cacheable
 from core.models import User
 from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
+from profiles.catalog import UZ_REGIONS
 
 #: Chekka kesh oralig'i — 04-prd: standings 10–30 s da yangilansa yetarli.
 #:
@@ -96,22 +98,40 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return ContestDetailSerializer if self.action == "retrieve" else ContestSerializer
 
-    @extend_schema(responses={200: StandingSerializer(many=True)})
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "region",
+                str,
+                description="Only this Uzbekistan region (`profiles.catalog.UZ_REGIONS`); "
+                "each row then carries its regional place in `region_rank`.",
+            )
+        ],
+        responses={200: StandingSerializer(many=True)},
+    )
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def standings(self, request: Request, slug: str | None = None) -> Response:
         contest = self.get_object()
-        key = STANDINGS_CACHE_KEY.format(contest_id=contest.pk)
+        region = request.query_params.get("region", "")
+        if region and region not in UZ_REGIONS:
+            return _error("invalid_region", "Unknown region code.", status.HTTP_400_BAD_REQUEST)
+        key = cache_key(contest.pk, region)
         payload = cache_get(key)
         if payload is None:
             # Insiders sit among the others with a star and no place
             # (ADR-0055, part 2): the table follows `position`, not `rank`.
             rows = (
-                Standing.objects.filter(contest=contest)
+                regional_rows(contest, region, STANDINGS_TOP)
+                if region
+                else Standing.objects.filter(contest=contest)
                 .select_related("user")
                 .order_by("position")[:STANDINGS_TOP]
             )
             payload = {
                 "frozen": contest.is_frozen,
+                "region": region,
+                # The filter offers the regions that have participants.
+                "regions": region_counts(contest),
                 "results": StandingSerializer(rows, many=True).data,
             }
             cache_set(key, payload, STANDINGS_CACHE_S)

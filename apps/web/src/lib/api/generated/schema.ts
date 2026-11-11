@@ -13408,6 +13408,7 @@ export interface components {
             last_ac_at?: string | null;
             insider_role?: components["schemas"]["InsiderRoleEnum"] | components["schemas"]["BlankEnum"];
             is_disqualified?: boolean;
+            readonly region_rank: number | null;
         };
         /** @description The streak page (decision 2026-11-11 ④). */
         Streak: {
@@ -16300,6 +16301,8 @@ export interface operations {
                 page?: number;
                 /** @description Number of results to return per page. */
                 page_size?: number;
+                /** @description Only this Uzbekistan region (`profiles.catalog.UZ_REGIONS`); each row then carries its regional place in `region_rank`. */
+                region?: string;
             };
             header?: never;
             path: {
