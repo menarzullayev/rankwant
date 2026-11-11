@@ -14,7 +14,8 @@ $J_{n,k}$ masala javobini oldingi kichik masalalar javobi orqali ifodalovchi qon
 
 To‘g‘ridan-to‘g‘ri modellashtirish bilan, masalan, quyidagi qiymatlar jadvalini tuzish mumkin:
 
-$$\begin{array}{ccccccccccc}
+$$
+\begin{array}{ccccccccccc}
 n\setminus k & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
 2 & 2 & 1 & 2 & 1 & 2 & 1 & 2 & 1 & 2 & 1 \\
@@ -26,17 +27,24 @@ n\setminus k & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
 8 & 8 & 1 & 7 & 6 & 3 & 1 & 4 & 4 & 8 & 7 \\
 9 & 9 & 3 & 1 & 1 & 8 & 7 & 2 & 3 & 8 & 8 \\
 10 & 10 & 5 & 4 & 5 & 3 & 3 & 9 & 1 & 7 & 8 \\
-\end{array}$$
+\end{array}
+$$
 
 Jadvalda quyidagi **qonuniyat** aniq ko‘rinadi:
 
-$$J_{n,k} = \left((J_{n-1,k} + k - 1) \bmod n\right) + 1$$
+$$
+J_{n,k} = \left((J_{n-1,k} + k - 1) \bmod n\right) + 1
+$$
 
-$$J_{1,k} = 1$$
+$$
+J_{1,k} = 1
+$$
 
 Pozitsiyalarni 1 dan raqamlash formulani biroz noqulay qiladi. Ularni 0 dan raqamlasak, juda sodda formula olinadi:
 
-$$J_{n,k} = (J_{n-1,k} + k) \bmod n$$
+$$
+J_{n,k} = (J_{n-1,k} + k) \bmod n
+$$
 
 Shunday qilib, Josephus masalasini $O(n)$ amal bilan yechadigan usul topildi.
 
@@ -94,17 +102,25 @@ int josephus(int n, int k) {
 
 Algoritmning **murakkabligi**ni baholaymiz. $n < k$ holati eski yechim bilan $O(k)$ vaqtda bajariladi. Asosiy algoritmning har bir bosqichidan keyin $n$ ta son o‘rniga $n\left(1-\frac{1}{k}\right)$ ta son qoladi. Shuning uchun bosqichlar soni $x$ ni taxminan quyidagi tenglamadan topish mumkin:
 
-$$n\left(1-\frac{1}{k}\right)^x = 1.$$
+$$
+n\left(1-\frac{1}{k}\right)^x = 1.
+$$
 
 Ikki tomondan logarifm olsak:
 
-$$\ln n + x \ln\left(1-\frac{1}{k}\right) = 0,$$
+$$
+\ln n + x \ln\left(1-\frac{1}{k}\right) = 0,
+$$
 
-$$x = -\frac{\ln n}{\ln\left(1-\frac{1}{k}\right)}.$$
+$$
+x = -\frac{\ln n}{\ln\left(1-\frac{1}{k}\right)}.
+$$
 
 Logarifmni Taylor qatoriga yoyib, taxminiy baho olamiz:
 
-$$x \approx k \ln n.$$
+$$
+x \approx k \ln n.
+$$
 
 Demak, algoritmning haqiqiy murakkabligi $O(k \log n)$.
 
@@ -114,15 +130,21 @@ Josephus Flavius taklif qilgan ayni shu xususiy holat ancha oson yechiladi.
 
 $n$ juft bo‘lsa, barcha juft raqamlar o‘chiriladi va $\frac{n}{2}$ o‘lchamli masala qoladi. $n$ uchun javob $\frac{n}{2}$ uchun javobni ikkiga ko‘paytirib, pozitsiya siljishi sababli birni ayirish orqali olinadi:
 
-$$J_{2n,2} = 2J_{n,2} - 1$$
+$$
+J_{2n,2} = 2J_{n,2} - 1
+$$
 
 $n$ toq bo‘lsa, barcha juft raqamlar, so‘ng birinchi raqam o‘chiriladi va $\frac{n-1}{2}$ o‘lchamli masala qoladi. Pozitsiya siljishini hisobga olib:
 
-$$J_{2n+1,2} = 2J_{n,2} + 1$$
+$$
+J_{2n+1,2} = 2J_{n,2} + 1
+$$
 
 Bu rekurrent bog‘lanishni kodda bevosita ishlatish mumkin. Qonuniyatni boshqa ko‘rinishda ham yozish mumkin: $J_{n,2}$ barcha toq sonlar ketma-ketligidan iborat bo‘lib, $n$ ikkining darajasi bo‘lganda yana birdan boshlanadi. Bitta formula bilan:
 
-$$J_{n,2} = 1 + 2\left(n-2^{\lfloor \log_2 n \rfloor}\right)$$
+$$
+J_{n,2} = 1 + 2\left(n-2^{\lfloor \log_2 n \rfloor}\right)
+$$
 
 ## $k > 2$ uchun tahliliy yechim {#analytical-solution-for-k-2}
 

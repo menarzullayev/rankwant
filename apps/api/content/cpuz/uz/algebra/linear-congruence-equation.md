@@ -2,7 +2,9 @@
 
 Bu tenglama quyidagi ko‘rinishga ega:
 
-$$a \cdot x \equiv b \pmod n,$$
+$$
+a \cdot x \equiv b \pmod n,
+$$
 
 bunda $a$, $b$ va $n$ berilgan butun sonlar, $x$ esa noma’lum butun son.
 
@@ -13,7 +15,9 @@ $[0,n-1]$ oraliqdagi $x$ qiymatini topish talab qilinadi (ravshanki, butun sonla
 Avval $a$ va $n$ **o‘zaro tub** bo‘lgan ($\gcd(a,n)=1$) soddaroq holatni ko‘rib chiqamiz.
 Bu holda $a$ ning [teskari elementini](/algorithms/algebra/module-inverse) topib, tenglamaning ikkala tomonini unga ko‘paytirish orqali **yagona** yechimni olamiz:
 
-$$x \equiv b \cdot a ^ {- 1} \pmod n$$
+$$
+x \equiv b \cdot a ^ {- 1} \pmod n
+$$
 
 Endi $a$ va $n$ **o‘zaro tub bo‘lmagan** ($\gcd(a,n) \ne 1$) holatni qaraylik.
 Bu holda yechim har doim ham mavjud emas (masalan, $2 \cdot x \equiv 1 \pmod 4$ taqqoslamaning yechimi yo‘q).
@@ -23,7 +27,9 @@ Agar $b$ soni $g$ ga bo‘linmasa, yechim mavjud emas. Haqiqatan, istalgan $x$ u
 
 Agar $g$ soni $b$ ni bo‘lsa, tenglamaning ikkala tomonini $g$ ga bo‘lib (ya’ni $a$, $b$ va $n$ ni $g$ ga bo‘lib), yangi tenglamani olamiz:
 
-$$a^\prime \cdot x \equiv b^\prime \pmod{n^\prime}$$
+$$
+a^\prime \cdot x \equiv b^\prime \pmod{n^\prime}
+$$
 
 Bu tenglamada $a^\prime$ va $n^\prime$ allaqachon o‘zaro tub, bunday tenglama bilan qanday ishlashni esa bilamiz.
 $x$ uchun yechim sifatida $x^\prime$ ni olamiz.
@@ -32,7 +38,9 @@ $x^\prime$ dastlabki tenglamaning ham yechimi bo‘lishi ravshan.
 Biroq u **yagona yechim bo‘lmaydi**.
 Dastlabki tenglamaning aynan $g$ ta yechimi mavjudligini ko‘rsatish mumkin va ular quyidagi ko‘rinishda bo‘ladi:
 
-$$x_i \equiv (x^\prime + i\cdot n^\prime) \pmod n \quad \text{for } i = 0 \ldots g-1$$
+$$
+x_i \equiv (x^\prime + i\cdot n^\prime) \pmod n \quad \text{for } i = 0 \ldots g-1
+$$
 
 Xulosa qilib, chiziqli taqqoslamaning **yechimlari soni** yoki $g = \gcd(a,n)$ ga, yoki nolga teng.
 
@@ -40,7 +48,9 @@ Xulosa qilib, chiziqli taqqoslamaning **yechimlari soni** yoki $g = \gcd(a,n)$ g
 
 Chiziqli taqqoslamani quyidagi Diofant tenglamasiga aylantirib yozish mumkin:
 
-$$a \cdot x + n \cdot k = b,$$
+$$
+a \cdot x + n \cdot k = b,
+$$
 
 bunda $x$ va $k$ noma’lum butun sonlar.
 

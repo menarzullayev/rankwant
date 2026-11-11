@@ -4,11 +4,15 @@
 
 Tekislikda $n$ ta nuqta berilgan. Har bir $p_i$ nuqta o‘zining $(x_i,y_i)$ koordinatalari bilan aniqlanadi. Ular orasidan shunday ikkita nuqtani topish talab etiladiki, ular orasidagi masofa minimal bo‘lsin:
 
-$$ \min_{\scriptstyle i, j=0 \ldots n-1,\atop \scriptstyle i \neq j } \rho (p_i, p_j). $$
+$$
+\min_{\scriptstyle i, j=0 \ldots n-1,\atop \scriptstyle i \neq j } \rho (p_i, p_j).
+$$
 
 Odatdagi Evklid masofalarini olamiz:
 
-$$ \rho (p_i,p_j) = \sqrt{(x_i-x_j)^2 + (y_i-y_j)^2} .$$
+$$
+\rho (p_i,p_j) = \sqrt{(x_i-x_j)^2 + (y_i-y_j)^2} .
+$$
 
 Oddiy algoritm — barcha juftliklarni ko‘rib chiqib, har biri uchun masofani hisoblash — $O(n^2)$ da ishlaydi.
 
@@ -18,30 +22,42 @@ $O(n \log n)$ vaqtda ishlaydigan algoritm quyida tasvirlangan. Bu algoritmni 197
 
 Algoritmni **bo‘lib yechish** algoritmlarining umumiy sxemasi bo‘yicha quramiz: algoritm rekursiv funksiya sifatida tuziladi, unga nuqtalar to‘plami uzatiladi; bu rekursiv funksiya to‘plamni teng ikkiga bo‘ladi, har bir yarmi uchun o‘zini rekursiv chaqiradi, so‘ng javoblarni birlashtirish uchun ba’zi amallarni bajaradi. Birlashtirish amali optimal yechimning bir nuqtasi bir yarmga, ikkinchi nuqtasi esa ikkinchi yarmga tushgan holatlarni aniqlashdan iborat (bu holda har bir yarmdan qilingan rekursiv chaqiruvlar bu juftni alohida aniqlay olmaydi). Bo‘lib yechish algoritmlarida doim bo‘lgani kabi, asosiy qiyinchilik birlashtirish bosqichini samarali implementatsiya qilishda yotadi. Agar rekursiv funksiyaga $n$ ta nuqtadan iborat to‘plam uzatilsa, birlashtirish bosqichi $O(n)$ dan ortiq ishlamasligi kerak; shunda butun algoritmning asimptotikasi $T(n)$ quyidagi tenglamadan topiladi:
 
-$$T(n) = 2T(n/2) + O(n).$$
+$$
+T(n) = 2T(n/2) + O(n).
+$$
 
 Ma’lumki, bu tenglamaning yechimi $T(n) = O(n \log n).$
 
 Shunday qilib, algoritmni qurishga o‘tamiz. Kelgusida birlashtirish bosqichini samarali implementatsiya qilish uchun nuqtalar to‘plamini ularning $x$-koordinatalariga ko‘ra ikki qism to‘plamga ajratamiz: aslida, nuqtalar to‘plamini taxminan bir xil o‘lchamli ikkita qism to‘plamga ajratuvchi biror vertikal chiziq o‘tkazamiz. Bunday ajratishni quyidagicha qilish qulay: nuqtalarni standart usulda, ya’ni sonlar juftligi sifatida saralaymiz, ya’ni:
 
-$$p_i < p_j \Longleftrightarrow (x_i < x_j) \lor \Big(\left(x_i = x_j\right) \wedge \left(y_i < y_j \right) \Big) $$
+$$
+p_i < p_j \Longleftrightarrow (x_i < x_j) \lor \Big(\left(x_i = x_j\right) \wedge \left(y_i < y_j \right) \Big)
+$$
 
 So‘ng saralangandan keyingi o‘rta nuqta $p_m (m = \lfloor n/2 \rfloor)$ ni olamiz; undan oldingi barcha nuqtalar va $p_m$ ning o‘zi birinchi yarmga, undan keyingi barcha nuqtalar esa ikkinchi yarmga tegishli bo‘ladi:
 
-$$A_1 = \{p_i \ | \ i = 0 \ldots m \}$$
+$$
+A_1 = \{p_i \ | \ i = 0 \ldots m \}
+$$
 
-$$A_2 = \{p_i \ | \ i = m + 1 \ldots n-1 \}.$$
+$$
+A_2 = \{p_i \ | \ i = m + 1 \ldots n-1 \}.
+$$
 
 Endi $A_1$ va $A_2$ to‘plamlarning har biri uchun rekursiv chaqirib, ularning har biri bo‘yicha $h_1$ va $h_2$ javoblarni topamiz. Va ularning eng yaxshisini olamiz: $h = \min(h_1, h_2)$.
 
 Endi **birlashtirish bosqichi**ni bajarishimiz kerak, ya’ni orasidagi masofa $h$ dan kichik bo‘lgan va bir nuqtasi $A_1$ da, ikkinchisi $A_2$ da yotgan nuqtalar juftlarini topishga harakat qilamiz.
 Faqat vertikal chiziqdan masofasi $h$ dan kichik bo‘lgan nuqtalarni ko‘rib chiqish yetarli ekani ravshan, ya’ni bu bosqichda ko‘riladigan $B$ nuqtalar to‘plami quyidagiga teng:
 
-$$B = \{ p_i\ | \ | x_i - x_m\ | < h \}.$$
+$$
+B = \{ p_i\ | \ | x_i - x_m\ | < h \}.
+$$
 
 $B$ to‘plamdagi har bir nuqta uchun undan $h$ dan yaqinroq nuqtalarni topishga harakat qilamiz. Masalan, faqat $y$-koordinatasi undan $h$ dan ko‘p farq qilmaydigan nuqtalarni ko‘rib chiqish yetarli. Bundan tashqari, $y$-koordinatasi joriy nuqtaning $y$-koordinatasidan katta bo‘lgan nuqtalarni ko‘rib chiqishning ma’nosi yo‘q. Shunday qilib, har bir $p_i$ nuqta uchun ko‘riladigan nuqtalar to‘plami $C(p_i)$ ni quyidagicha aniqlaymiz:
 
-$$C(p_i) = \{ p_j\ |\ p_j \in B,\ \ y_i - h < y_j \le y_i \}.$$
+$$
+C(p_i) = \{ p_j\ |\ p_j \in B,\ \ y_i - h < y_j \le y_i \}.
+$$
 
 Agar $B$ to‘plam nuqtalarini $y$-koordinata bo‘yicha saralasak, $C(p_i)$ ni topish juda oson bo‘ladi: bular $p_i$ nuqtadan oldingi qatorda kelgan bir nechta nuqta.
 
@@ -181,18 +197,24 @@ Bizga $d$ minimal masofa $d$ ning yaqinlashuvi bo‘lishi kerak. Richard Lipton 
 >
 > Nuqtalarning kvadratlardagi joylashuvini $d$ ning biror aniq tanlovida, aytaylik $x$ da, tasavvur qiling. $d$ ni masofalarni tanlab olishimiz natijasida hosil bo‘lgan tasodifiy miqdor deb qarang. $d=x$ ni tanlaganimizda ma’lum bir joylashuv uchun xarajat bahosi sifatida $C(x) := \sum_{i=1}^{k(x)} n_i(x)^2$ ni aniqlaymiz. Endi $\lambda(x)$ ni $C(x) = \lambda(x) \, n$ bo‘ladigan qilib aniqlaymiz. Bunday $x$ tanlovi $n$ ta mustaqil masofani tanlab olishdan «omon qolish» ehtimoli qanday? Tanlab olinganlar orasidan bitta juftning masofasi ham $x$ dan kichik bo‘lsa, bu joylashuv kichikroq $d$ bilan almashtiriladi. Kvadrat ichida juftlarning taxminan $1/16$ qismi kichikroq masofa beradi (har bir kvadratda to‘rtta kichik kvadratni tasavvur qiling; Dirixle prinsipiga ko‘ra, kamida bitta kichik kvadratda $n_i/4$ nuqta bor), shuning uchun yakuniy $d$ ni kichraytiradigan taxminan $\sum_{i=1}^{k} {n_i/4 \choose 2} \approx \sum_{i=1}^{k} \frac{1}{16} {n_i \choose 2}$ juftlik bor. Bu taxminan $\frac{1}{32} \sum_{i=1}^{k} n_i^2 = \frac{1}{32} \lambda(x) n$ ga teng. Boshqa tomondan, tanlab olinishi mumkin bo‘lgan taxminan $\frac{1}{2} n^2$ juftlik bor. Demak, masofasi $x$ dan kichik bo‘lgan juftni tanlab olish ehtimoli kamida (taxminan)
 >
-> $$\frac{\lambda(x) \, n / 32}{n^2 / 2} = \frac{\lambda(x)/16}{n}$$
+> $$
+> \frac{\lambda(x) \, n / 32}{n^2 / 2} = \frac{\lambda(x)/16}{n}
+> $$
 >
 > bo‘ladi, shuning uchun $n$ ta urinish davomida bunday juftlardan kamida bittasi tanlanishi (va shu bilan kichikroq $d$ topilishi) ehtimoli
 >
-> $$1 - \left(1 - \frac{\lambda(x)/16}{n}\right)^n \ge 1 - e^{-\lambda(x)/16}$$
+> $$
+> 1 - \left(1 - \frac{\lambda(x)/16}{n}\right)^n \ge 1 - e^{-\lambda(x)/16}
+> $$
 >
 > bo‘ladi (biz har qanday haqiqiy $x$ soni uchun $(1 + x)^n \le e^{xn}$ ekanidan foydalandik, [Bernulli tengsizliklari](https://en.wikipedia.org/wiki/Bernoulli%27s_inequality#Related_inequalities)ga qarang). E’tibor bering, bu ehtimol $\lambda(x)$ ortishi bilan eksponensial ravishda $1$ ga intiladi. Bu $d$ yomon tanlangan bo‘lsa, $\lambda$ kichik bo‘lishini anglatadi.
 >
 >
 > Biz $\Pr(d \le x) \ge 1 - e^{-\lambda(x)/16}$ yoki unga teng ravishda $\Pr(d \ge x) \le e^{-\lambda(x)/16}$ ekanini ko‘rsatdik. Uning matematik kutilmasini baholay olish uchun $\Pr(\lambda(d) \ge \text{biror qiymat})$ ni bilishimiz kerak. $\lambda(d) \ge \lambda(x) \iff d \ge x$ ekanini payqaymiz. Buning sababi, kvadratlarni kichraytirish har bir kvadratdagi nuqtalar sonini faqat kamaytiradi (nuqtalarni boshqa kvadratlarga bo‘lib yuboradi) va bu kvadratlar yig‘indisini kamaytirishda davom etadi. Shuning uchun,
 >
-> $$\Pr(\lambda(d) \ge \lambda(x)) = \Pr(d \ge x) \le e^{-\lambda(x)/16} \implies \Pr(\lambda(d) \ge t) \le e^{-t/16} \implies \mathbb{E}[\lambda(d)] \le \int_{0}^{+\infty} e^{-t/16} \, \mathrm{d}t = 16$$
+> $$
+> \Pr(\lambda(d) \ge \lambda(x)) = \Pr(d \ge x) \le e^{-\lambda(x)/16} \implies \Pr(\lambda(d) \ge t) \le e^{-t/16} \implies \mathbb{E}[\lambda(d)] \le \int_{0}^{+\infty} e^{-t/16} \, \mathrm{d}t = 16
+> $$
 >
 > (biz $E[X] = \int_0^{+\infty} \Pr(X \ge x) \, \mathrm{d}x$ ekanidan foydalandik, [Stackexchange isboti](https://math.stackexchange.com/a/1690829)ga qarang).
 >
@@ -341,7 +363,9 @@ Bu algoritm hamma narsani bir necha marta qayta hisoblagani uchun sekin ko‘rin
 >
 > Demak, kutilgan xarajat
 >
-> $$O\!\left(n + \sum_{i=1}^{n} i \Pr(X_i = 1)\right) \le O\!\left(n + \sum_{i=1}^{n} i \frac{2}{i}\right) = O(3n) = O(n) \quad \quad \blacksquare$$
+> $$
+> O\!\left(n + \sum_{i=1}^{n} i \Pr(X_i = 1)\right) \le O\!\left(n + \sum_{i=1}^{n} i \frac{2}{i}\right) = O(3n) = O(n) \quad \quad \blacksquare
+> $$
 
 ## Umumlashtirish: minimal perimetrli uchburchakni topish {#generalization-finding-a-triangle-with-minimal-perimeter}
 

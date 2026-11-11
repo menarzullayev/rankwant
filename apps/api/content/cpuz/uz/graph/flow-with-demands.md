@@ -3,7 +3,9 @@
 Oddiy oqim tarmog‘ida qirra oqimi yuqoridan faqat $c(e)$ sig‘im, pastdan esa $0$ bilan chegaralanadi.
 Bu maqolada har bir qirradagi oqimdan ma’lum miqdorda oqim o‘tishini qo‘shimcha ravishda talab qiladigan, ya’ni oqimni pastdan **talab** funksiyasi $d(e)$ bilan chegaralaydigan oqim tarmoqlarini ko‘rib chiqamiz:
 
-$$ d(e) \le f(e) \le c(e)$$
+$$
+d(e) \le f(e) \le c(e)
+$$
 
 Demak, endi har bir qirra bo‘ylab o‘tkazishimiz shart bo‘lgan minimal oqim qiymati mavjud.
 Bu oddiy oqim masalasining umumlashmasidir, chunki barcha $e$ qirralar uchun $d(e) = 0$ deb olish oddiy oqim tarmog‘ini beradi.

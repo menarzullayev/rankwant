@@ -50,7 +50,9 @@ Tubdan farq qiladigan ikki holat mavjud:
 
 Bu ikki holatni birlashtirib, $k$-fazada barcha $(i, j)$ juftlar uchun eng qisqa yo‘l uzunligini quyidagicha qayta hisoblash mumkinligini olamiz:
 
-$$d_{\text{new}}[i][j] = min(d[i][j], d[i][k] + d[k][j])$$
+$$
+d_{\text{new}}[i][j] = min(d[i][j], d[i][k] + d[k][j])
+$$
 
 Demak, $k$-fazada bajariladigan ish — barcha tugunlar juftlarini ko‘rib chiqish va ular orasidagi eng qisqa yo‘l uzunligini qayta hisoblashdan iborat.
 

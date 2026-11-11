@@ -10,7 +10,9 @@ Let the given segment be $PQ$ i.e. the known coordinates of its ends $P_x , P_y 
 
 It is necessary to construct **the equation of a line in the plane** passing through this segment, i.e. find the coefficients $A , B , C$ in the equation of a line:
 
-$$A x + B y + C = 0.$$
+$$
+A x + B y + C = 0.
+$$
 
 Note that for the required triples $(A, B, C)$ there are **infinitely many** solutions which describe the given segment:
 you can multiply all three coefficients by an arbitrary non-zero number and get the same straight line.
@@ -18,11 +20,13 @@ Therefore, our task is to find one of these triples.
 
 It is easy to verify (by substitution of these expressions and the coordinates of the points $P$ and $Q$ into the equation of a straight line) that the following set of coefficients fits:
 
-$$\begin{align}
+$$
+\begin{align}
 A &= P_y - Q_y, \\
 B &= Q_x - P_x, \\
 C &= - A P_x - B P_y.
-\end{align}$$
+\end{align}
+$$
 
 ### Integer case {#integer-case}
 
@@ -40,7 +44,9 @@ The coefficients $A$ and $B$ will have the order of the original coordinates, th
 
 Therefore, when working with real numbers, it is desirable to produce the so-called **normalization**, this is straightforward: namely, to make the coefficients such that $A ^ 2 + B ^ 2 = 1$ . To do this, calculate the number $Z$ :
 
-$$Z = \sqrt{A ^ 2 + B ^ 2},$$
+$$
+Z = \sqrt{A ^ 2 + B ^ 2},
+$$
 
 and divide all three coefficients $A , B , C$ by it.
 
@@ -55,7 +61,9 @@ Already in the three-dimensional case there is **no simple equation** describing
 
 Consequently, in the three-dimensional and multidimensional cases we must use the **parametric method of defining a straight line** , i.e. as a point $p$ and a vector $v$ :
 
-$$p + v t, ~~~ t \in \mathbb{R}.$$
+$$
+p + v t, ~~~ t \in \mathbb{R}.
+$$
 
 Those. a straight line is all points that can be obtained from a point $p$ adding a vector $v$ with an arbitrary coefficient.
 

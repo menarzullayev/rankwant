@@ -29,35 +29,43 @@ Birinchi va ikkinchi aylanalarning radiuslarini $r_1$ va $r_2$ deb, ikkinchi ayl
 
 Masalani yechish uchun unga sof **algebraik** yondashamiz. Koordinatalar boshidan $r_1$ masofada va $v$ nuqtadan $r_2$ masofada yotuvchi $ax + by + c = 0$ ko‘rinishdagi barcha to‘g‘ri chiziqlarni topishimiz kerak. Bundan tashqari, to‘g‘ri chiziqqa normallashtirish shartini qo‘yamiz: koeffitsiyentlar kvadratlarining yig‘indisi birga teng bo‘lishi kerak (bu zarur, aks holda bitta to‘g‘ri chiziqqa $ax + by + c = 0$ ko‘rinishdagi cheksiz ko‘p tasvir mos keladi). Jami izlanayotgan $a, b, c$ lar uchun quyidagi tenglamalar sistemasini olamiz:
 
-$$\begin{align}
+$$
+\begin{align}
 a^2 + b^2 &= 1 \\
 \mid a \cdot 0 + b \cdot 0 + c \mid &= r_1 \\
 \mid a \cdot v_x + b \cdot v_y + c \mid &= r_2
-\end{align}$$
+\end{align}
+$$
 
 Modullardan qutulish uchun shuni qayd etamizki, bu sistemada modullarni ochishning faqat to‘rtta usuli bor. Modulni ochishni o‘ng tomondagi koeffitsiyent -1 ga ko‘paytirilishi mumkin deb tushunsak, bu usullarning barchasini umumiy holda ko‘rib chiqish mumkin. Boshqacha aytganda, quyidagi sistemaga o‘tamiz:
 
-$$\begin{align}
+$$
+\begin{align}
 a^2 + b^2 &= 1 \\
 c &= \pm r_1 \\
 a \cdot v_x + b \cdot v_y + c &= \pm r_2
-\end{align}$$
+\end{align}
+$$
 
 $d_1 = \pm r_1$ va $d_2 = \pm r_2$ belgilashlarini kiritsak, sistema to‘rtta yechimga ega bo‘lishi kerak degan xulosaga kelamiz:
 
-$$\begin{align}
+$$
+\begin{align}
 a^2 + b^2 &= 1 \\
 c &= d_1 \\
 a \cdot v_x + b \cdot v_y + c &= d_2
-\end{align}$$
+\end{align}
+$$
 
 Bu sistemani yechish kvadrat tenglamani yechishga keladi. Barcha murakkab hisob-kitoblarni tushirib qoldiramiz va tayyor javobni keltiramiz:
 
-$$\begin{align}
+$$
+\begin{align}
 a &= {( d_2 - d_1 ) v_x \pm v_y \sqrt{v_x^2 + v_y^2-(d_2-d_1)^2} \over {v_x^2 + v_y^2} } \\
 b &= {( d_2 - d_1 ) v_y \pm v_x \sqrt{v_x^2 + v_y^2-(d_2-d_1)^2} \over {v_x^2 + v_y^2} } \\
 c &= d_1
-\end{align}$$
+\end{align}
+$$
 
 Jami to‘rtta o‘rniga sakkizta yechim oldik. Biroq ortiqcha yechimlar qayerdan paydo bo‘lishini tushunish oson: aslida oxirgi sistemada faqat bitta yechimni (masalan, birinchisini) olish yetarli. Haqiqatan ham, $\pm r_1$ va $\pm r_2$ ni olishning geometrik ma’nosi ravshan: biz aslida to‘g‘ri chiziq har bir aylananing qaysi tomonida yotishini saralayapmiz. Shuning uchun oxirgi sistemani yechishda hosil bo‘ladigan ikki usul ortiqcha: ikki yechimdan birini tanlash yetarli (faqat, albatta, to‘rttala holatda ham bir xil yechimlar oilasini tanlash kerak).
 

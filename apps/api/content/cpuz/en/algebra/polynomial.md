@@ -173,13 +173,19 @@ Other useful functions:
 
 The very core operation is the multiplication of two polynomials. That is, given the polynomials $A$ and $B$:
 
-$$A = a_0 + a_1 x + \dots + a_n x^n$$
+$$
+A = a_0 + a_1 x + \dots + a_n x^n
+$$
 
-$$B = b_0 + b_1 x + \dots + b_m x^m$$
+$$
+B = b_0 + b_1 x + \dots + b_m x^m
+$$
 
 You have to compute polynomial $C = A \cdot B$, which is defined as
 
-$$\boxed{C = \sum\limits_{i=0}^n \sum\limits_{j=0}^m a_i b_j x^{i+j}}  = c_0 + c_1 x + \dots + c_{n+m} x^{n+m}.$$
+$$
+\boxed{C = \sum\limits_{i=0}^n \sum\limits_{j=0}^m a_i b_j x^{i+j}}  = c_0 + c_1 x + \dots + c_{n+m} x^{n+m}.
+$$
 
 It can be computed in $O(n \log n)$ via the [Fast Fourier transform](/algorithms/algebra/fft) and almost all methods here will use it as subroutine.
 
@@ -191,13 +197,17 @@ If $A(0) \neq 0$ there always exists an infinite formal power series $A^{-1}(x) 
 
 This algorithm was mentioned in [Schönhage's article](http://algo.inria.fr/seminars/sem00-01/schoenhage.pdf) and is inspired by [Graeffe's method](https://en.wikipedia.org/wiki/Graeffe's_method). It is known that for $B(x)=A(x)A(-x)$ it holds that $B(x)=B(-x)$, that is, $B(x)$ is an even polynomial. It means that it only has non-zero coefficients with even numbers and can be represented as $B(x)=T(x^2)$. Thus, we can do the following transition:
 
-$$A^{-1}(x) \equiv \frac{1}{A(x)} \equiv \frac{A(-x)}{A(x)A(-x)} \equiv \frac{A(-x)}{T(x^2)} \pmod{x^k}$$
+$$
+A^{-1}(x) \equiv \frac{1}{A(x)} \equiv \frac{A(-x)}{A(x)A(-x)} \equiv \frac{A(-x)}{T(x^2)} \pmod{x^k}
+$$
 
 Note that $T(x)$ can be computed with a single multiplication, after which we're only interested in the first half of coefficients of its inverse series. This effectively reduces the initial problem of computing $A^{-1} \pmod{x^k}$ to computing $T^{-1} \pmod{x^{\lceil k / 2 \rceil}}$.
 
 The complexity of this method can be estimated as
 
-$$T(n) = T(n/2) + O(n \log n) = O(n \log n).$$
+$$
+T(n) = T(n/2) + O(n \log n) = O(n \log n).
+$$
 
 #### Sieveking–Kung algorithm {#sievekingkung-algorithm}
 
@@ -205,19 +215,27 @@ The generic process described here is known as Hensel lifting, as it follows fro
 
 Let $B_k \equiv A^{-1} \pmod{x^a}$. The next approximation needs to follow the equation $A B_{k+1} \equiv 1 \pmod{x^{2a}}$ and may be represented as $B_{k+1} = B_k + x^a C$. From this follows the equation
 
-$$A(B_k + x^{a}C) \equiv 1 \pmod{x^{2a}}.$$
+$$
+A(B_k + x^{a}C) \equiv 1 \pmod{x^{2a}}.
+$$
 
 Let $A B_k \equiv 1 + x^a D \pmod{x^{2a}}$, then the equation above implies
 
-$$x^a(D+AC) \equiv 0 \pmod{x^{2a}} \implies D \equiv -AC \pmod{x^a} \implies C \equiv -B_k D \pmod{x^a}.$$
+$$
+x^a(D+AC) \equiv 0 \pmod{x^{2a}} \implies D \equiv -AC \pmod{x^a} \implies C \equiv -B_k D \pmod{x^a}.
+$$
 
 From this, one can obtain the final formula, which is
 
-$$x^a C \equiv -B_k x^a D  \equiv B_k(1-AB_k) \pmod{x^{2a}} \implies \boxed{B_{k+1} \equiv B_k(2-AB_k) \pmod{x^{2a}}}$$
+$$
+x^a C \equiv -B_k x^a D  \equiv B_k(1-AB_k) \pmod{x^{2a}} \implies \boxed{B_{k+1} \equiv B_k(2-AB_k) \pmod{x^{2a}}}
+$$
 
 Thus starting with $B_0 \equiv a_0^{-1} \pmod x$ we will compute the sequence $B_k$ such that $AB_k \equiv 1 \pmod{x^{2^k}}$ with the complexity
 
-$$T(n) = T(n/2) + O(n \log n) = O(n \log n).$$
+$$
+T(n) = T(n/2) + O(n \log n) = O(n \log n).
+$$
 
 The algorithm here might seem a bit more complicated than the first one, but it has a very solid and practical reasoning behind it, as well as a great generalization potential if looked from a different perspective, which would be explained further below.
 
@@ -225,34 +243,48 @@ The algorithm here might seem a bit more complicated than the first one, but it 
 
 Consider two polynomials $A(x)$ and $B(x)$ of degrees $n$ and $m$. As it was said earlier you can rewrite $A(x)$ as
 
-$$A(x) = B(x) D(x) + R(x), \deg R < \deg B.$$
+$$
+A(x) = B(x) D(x) + R(x), \deg R < \deg B.
+$$
 
 Let $n \geq m$, it would imply that $\deg D = n - m$ and the leading $n-m+1$ coefficients of $A$ don't influence $R$. It means that you can recover $D(x)$ from the largest $n-m+1$ coefficients of $A(x)$ and $B(x)$ if you consider it as a system of equations.
 
 The system of linear equations we're talking about can be written in the following form:
 
-$$\begin{bmatrix} a_n \\ \vdots \\ a_{m+1} \\ a_{m} \end{bmatrix} = \begin{bmatrix}
+$$
+\begin{bmatrix} a_n \\ \vdots \\ a_{m+1} \\ a_{m} \end{bmatrix} = \begin{bmatrix}
 b_m & \dots & 0 & 0 \\
 \vdots & \ddots & \vdots & \vdots \\
 \dots & \dots & b_m & 0 \\
 \dots & \dots & b_{m-1} & b_m
-\end{bmatrix} \begin{bmatrix}d_{n-m} \\ \vdots \\ d_1 \\ d_0\end{bmatrix}$$
+\end{bmatrix} \begin{bmatrix}d_{n-m} \\ \vdots \\ d_1 \\ d_0\end{bmatrix}
+$$
 
 From the looks of it, we can conclude that with the introduction of reversed polynomials
 
-$$A^R(x) = x^nA(x^{-1})= a_n + a_{n-1} x + \dots + a_0 x^n$$
+$$
+A^R(x) = x^nA(x^{-1})= a_n + a_{n-1} x + \dots + a_0 x^n
+$$
 
-$$B^R(x) = x^m B(x^{-1}) = b_m + b_{m-1} x + \dots + b_0 x^m$$
+$$
+B^R(x) = x^m B(x^{-1}) = b_m + b_{m-1} x + \dots + b_0 x^m
+$$
 
-$$D^R(x) = x^{n-m}D(x^{-1}) = d_{n-m} + d_{n-m-1} x + \dots + d_0 x^{n-m}$$
+$$
+D^R(x) = x^{n-m}D(x^{-1}) = d_{n-m} + d_{n-m-1} x + \dots + d_0 x^{n-m}
+$$
 
 the system may be rewritten as
 
-$$A^R(x) \equiv B^R(x) D^R(x) \pmod{x^{n-m+1}}.$$
+$$
+A^R(x) \equiv B^R(x) D^R(x) \pmod{x^{n-m+1}}.
+$$
 
 From this you can unambiguously recover all coefficients of $D(x)$:
 
-$$\boxed{D^R(x) \equiv A^R(x) (B^R(x))^{-1} \pmod{x^{n-m+1}}}$$
+$$
+\boxed{D^R(x) \equiv A^R(x) (B^R(x))^{-1} \pmod{x^{n-m+1}}}
+$$
 
 And from this, in turn, you can recover $R(x)$ as $R(x) = A(x) - B(x)D(x)$.
 
@@ -264,15 +296,21 @@ Note that the matrix above is a so-called triangular [Toeplitz matrix](https://e
 
 Let's generalize the Sieveking–Kung algorithm. Consider equation $F(P) = 0$ where $P(x)$ should be a polynomial and $F(x)$ is some polynomial-valued function defined as
 
-$$F(x) = \sum\limits_{i=0}^\infty \alpha_i (x-\beta)^i,$$
+$$
+F(x) = \sum\limits_{i=0}^\infty \alpha_i (x-\beta)^i,
+$$
 
 where $\beta$ is some constant. It can be proven that if we introduce a new formal variable $y$, we can express $F(x)$ as
 
-$$F(x) = F(y) + (x-y)F'(y) + (x-y)^2 G(x,y),$$
+$$
+F(x) = F(y) + (x-y)F'(y) + (x-y)^2 G(x,y),
+$$
 
 where $F'(x)$ is the derivative formal power series defined as
 
-$$F'(x) = \sum\limits_{i=0}^\infty (i+1)\alpha_{i+1}(x-\beta)^i,$$
+$$
+F'(x) = \sum\limits_{i=0}^\infty (i+1)\alpha_{i+1}(x-\beta)^i,
+$$
 
 and $G(x, y)$ is some formal power series of $x$ and $y$. With this result we can find the solution iteratively.
 
@@ -280,19 +318,27 @@ Let $F(Q_k) \equiv 0 \pmod{x^{a}}$. We need to find $Q_{k+1} \equiv Q_k + x^a C 
 
 Substituting $x = Q_{k+1}$ and $y=Q_k$ in the formula above, we get
 
-$$F(Q_{k+1}) \equiv F(Q_k) + (Q_{k+1} - Q_k) F'(Q_k) + (Q_{k+1} - Q_k)^2 G(x, y) \pmod x^{2a}.$$
+$$
+F(Q_{k+1}) \equiv F(Q_k) + (Q_{k+1} - Q_k) F'(Q_k) + (Q_{k+1} - Q_k)^2 G(x, y) \pmod x^{2a}.
+$$
 
 Since $Q_{k+1} - Q_k \equiv 0 \pmod{x^a}$, it also holds that $(Q_{k+1} - Q_k)^2 \equiv 0 \pmod{x^{2a}}$, thus
 
-$$0 \equiv F(Q_{k+1}) \equiv F(Q_k) + (Q_{k+1} - Q_k) F'(Q_k) \pmod{x^{2a}}.$$
+$$
+0 \equiv F(Q_{k+1}) \equiv F(Q_k) + (Q_{k+1} - Q_k) F'(Q_k) \pmod{x^{2a}}.
+$$
 
 The last formula gives us the value of $Q_{k+1}$:
 
-$$\boxed{Q_{k+1} = Q_k - \dfrac{F(Q_k)}{F'(Q_k)} \pmod{x^{2a}}}$$
+$$
+\boxed{Q_{k+1} = Q_k - \dfrac{F(Q_k)}{F'(Q_k)} \pmod{x^{2a}}}
+$$
 
 Thus, knowing how to invert polynomials and how to compute $F(Q_k)$, we can find $n$ coefficients of $P$ with the complexity
 
-$$T(n) = T(n/2) + f(n),$$
+$$
+T(n) = T(n/2) + f(n),
+$$
 
 where $f(n)$ is the time needed to compute $F(Q_k)$ and $F'(Q_k)^{-1}$ which is usually $O(n \log n)$.
 
@@ -319,27 +365,41 @@ Thus we can calculate $n$ coefficients of $\ln P(x)$ in $O(n \log n)$.
 Turns out, we can get the formula for $A^{-1}$ using Newton's method.
 For this we take the equation $A=Q^{-1}$, thus:
 
-$$F(Q) = Q^{-1} - A$$
+$$
+F(Q) = Q^{-1} - A
+$$
 
-$$F'(Q) = -Q^{-2}$$
+$$
+F'(Q) = -Q^{-2}
+$$
 
-$$\boxed{Q_{k+1} \equiv Q_k(2-AQ_k) \pmod{x^{2^{k+1}}}}$$
+$$
+\boxed{Q_{k+1} \equiv Q_k(2-AQ_k) \pmod{x^{2^{k+1}}}}
+$$
 
 ### Exponent {#exponent}
 
 Let's learn to calculate $e^{P(x)}=Q(x)$. It should hold that $\ln Q = P$, thus:
 
-$$F(Q) = \ln Q - P$$
+$$
+F(Q) = \ln Q - P
+$$
 
-$$F'(Q) = Q^{-1}$$
+$$
+F'(Q) = Q^{-1}
+$$
 
-$$\boxed{Q_{k+1} \equiv Q_k(1 + P - \ln Q_k) \pmod{x^{2^{k+1}}}}$$
+$$
+\boxed{Q_{k+1} \equiv Q_k(1 + P - \ln Q_k) \pmod{x^{2^{k+1}}}}
+$$
 
 ### $k$-th power {#k-th-power}
 
 Now we need to calculate $P^k(x)=Q$. This may be done via the following formula:
 
-$$Q = \exp\left[k \ln P(x)\right]$$
+$$
+Q = \exp\left[k \ln P(x)\right]
+$$
 
 Note though, that you can calculate the logarithms and the exponents correctly only if you can find some initial $Q_0$.
 
@@ -349,7 +409,9 @@ But the only reasonable way to do it is if $P(0)=1$ for $Q = \ln P$ so $Q(0)=0$ 
 
 Thus you can use formula above only if $P(0) = 1$. Otherwise if $P(x) = \alpha x^t T(x)$ where $T(0)=1$ you can write that:
 
-$$\boxed{P^k(x) = \alpha^kx^{kt} \exp[k \ln T(x)]}$$
+$$
+\boxed{P^k(x) = \alpha^kx^{kt} \exp[k \ln T(x)]}
+$$
 
 Note that you also can calculate some $k$-th root of a polynomial if you can calculate $\sqrt[k]{\alpha}$, for example for $\alpha=1$.
 
@@ -359,11 +421,15 @@ Note that you also can calculate some $k$-th root of a polynomial if you can cal
 
 For the particular case when you need to evaluate a polynomial in the points $x_r = z^{2r}$ you can do the following:
 
-$$A(z^{2r}) = \sum\limits_{k=0}^n a_k z^{2kr}$$
+$$
+A(z^{2r}) = \sum\limits_{k=0}^n a_k z^{2kr}
+$$
 
 Let's substitute $2kr = r^2+k^2-(r-k)^2$. Then this sum rewrites as:
 
-$$\boxed{A(z^{2r}) = z^{r^2}\sum\limits_{k=0}^n (a_k z^{k^2}) z^{-(r-k)^2}}$$
+$$
+\boxed{A(z^{2r}) = z^{r^2}\sum\limits_{k=0}^n (a_k z^{k^2}) z^{-(r-k)^2}}
+$$
 
 Which is up to the factor $z^{r^2}$ equal to the convolution of the sequences $u_k = a_k z^{k^2}$ and $v_k = z^{-k^2}$.
 
@@ -375,7 +441,9 @@ It gives us an $O(n \log n)$ algorithm when you need to compute values in powers
 
 Another observation is that $kr = \binom{k+r}{2} - \binom{k}{2} - \binom{r}{2}$. Then we have
 
-$$\boxed{A(z^r) = z^{-\binom{r}{2}}\sum\limits_{k=0}^n \left(a_k z^{-\binom{k}{2}}\right)z^{\binom{k+r}{2}}}$$
+$$
+\boxed{A(z^r) = z^{-\binom{r}{2}}\sum\limits_{k=0}^n \left(a_k z^{-\binom{k}{2}}\right)z^{\binom{k+r}{2}}}
+$$
 
 The coefficient of $x^{n+r}$ of the product of the polynomials $A_0(x) = \sum\limits_{k=0}^n a_{n-k}z^{-\binom{n-k}{2}}x^k$ and $A_1(x) = \sum\limits_{k\geq 0}z^{\binom{k}{2}}x^k$ equals $z^{\binom{r}{2}}A(z^r)$. You can use the formula $z^{\binom{k+1}{2}}=z^{\binom{k}{2}+k}$ to calculate the coefficients of $A_0(x)$ and $A_1(x)$.
 
@@ -393,7 +461,9 @@ The whole procedure will run in $O(n \log^2 n)$.
 
 There's a direct formula by Lagrange to interpolate a polynomial, given set of pairs $(x_i, y_i)$:
 
-$$\boxed{A(x) = \sum\limits_{i=1}^n y_i \prod\limits_{j \neq i}\dfrac{x-x_j}{x_i - x_j}}$$
+$$
+\boxed{A(x) = \sum\limits_{i=1}^n y_i \prod\limits_{j \neq i}\dfrac{x-x_j}{x_i - x_j}}
+$$
 
 Computing it directly is a hard thing but turns out, we may compute it in $O(n \log^2 n)$ with a divide and conquer approach:
 
@@ -439,7 +509,9 @@ Let's calculate the product $A(\mu_0)\cdots A(\mu_m)$. It will be equal to zero 
 
 For symmetry we can also multiply it with $b_m^n$ and rewrite the whole product in the following form:
 
-$$\boxed{\mathcal{R}(A, B) = b_m^n\prod\limits_{j=0}^m A(\mu_j) = b_m^n a_m^n \prod\limits_{i=0}^n \prod\limits_{j=0}^m (\mu_j - \lambda_i)= (-1)^{mn}a_n^m \prod\limits_{i=0}^n B(\lambda_i)}$$
+$$
+\boxed{\mathcal{R}(A, B) = b_m^n\prod\limits_{j=0}^m A(\mu_j) = b_m^n a_m^n \prod\limits_{i=0}^n \prod\limits_{j=0}^m (\mu_j - \lambda_i)= (-1)^{mn}a_n^m \prod\limits_{i=0}^n B(\lambda_i)}
+$$
 
 The value defined above is called the resultant of the polynomials $A(x)$ and $B(x)$. From the definition you may find the following properties:
 

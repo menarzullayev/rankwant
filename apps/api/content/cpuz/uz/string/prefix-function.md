@@ -9,7 +9,9 @@ Ta’rifga ko‘ra, $\pi[0] = 0$.
 
 Prefiks funksiyasining matematik ta’rifi quyidagicha yoziladi:
 
-$$\pi[i] = \max_ {k = 0 \dots i} \{k : s[0 \dots k-1] = s[i-(k-1) \dots i] \}$$
+$$
+\pi[i] = \max_ {k = 0 \dots i} \{k : s[0 \dots k-1] = s[i-(k-1) \dots i] \}
+$$
 
 Masalan, `abcabcd` satrining prefiks funksiyasi $[0, 0, 0, 1, 2, 3, 0]$, `aabaaab` satriniki esa $[0, 1, 0, 1, 2, 2, 3]$ ga teng.
 
@@ -47,7 +49,9 @@ Quyidagi tasvir shu qarama-qarshilikni ko‘rsatadi.
 $i$ pozitsiyadagi prefiksga teng eng uzun xos suffiks uzunligi $2$, $i+1$ pozitsiyada esa $4$ deb faraz qilingan.
 U holda $s_0 ~ s_1 ~ s_2 ~ s_3$ satri $s_{i-2} ~ s_{i-1} ~ s_i ~ s_{i+1}$ satriga teng; demak, $s_0 ~ s_1 ~ s_2$ va $s_{i-2} ~ s_{i-1} ~ s_i$ ham teng bo‘ladi va $\pi[i]$ aslida $3$ bo‘lishi kerak.
 
-$$\underbrace{\overbrace{s_0 ~ s_1}^{\pi[i] = 2} ~ s_2 ~ s_3}_{\pi[i+1] = 4} ~ \dots ~ \underbrace{s_{i-2} ~ \overbrace{s_{i-1} ~ s_{i}}^{\pi[i] = 2} ~ s_{i+1}}_{\pi[i+1] = 4}$$
+$$
+\underbrace{\overbrace{s_0 ~ s_1}^{\pi[i] = 2} ~ s_2 ~ s_3}_{\pi[i+1] = 4} ~ \dots ~ \underbrace{s_{i-2} ~ \overbrace{s_{i-1} ~ s_{i}}^{\pi[i] = 2} ~ s_{i+1}}_{\pi[i+1] = 4}
+$$
 
 Shunday qilib, keyingi pozitsiyaga o‘tganda prefiks funksiya qiymati bittaga oshishi, o‘zgarmasligi yoki biror miqdorga kamayishi mumkin.
 Bu faktning o‘ziyoq algoritm murakkabligini $O(n^2)$ gacha tushiradi, chunki bir qadamda prefiks funksiya ko‘pi bilan bittaga o‘sadi.
@@ -63,12 +67,16 @@ $i + 1$ uchun $\pi$ qiymatini hisoblaylik.
 Agar $s[i+1] = s[\pi[i]]$ bo‘lsa, $\pi[i+1] = \pi[i] + 1$ ekanini aniq ayta olamiz, chunki $i$ pozitsiyada tugaydigan, uzunligi $\pi[i]$ bo‘lgan suffiks uzunligi $\pi[i]$ bo‘lgan prefiksga tengligini allaqachon bilamiz.
 Buni yana bir misol bilan tasvirlaymiz:
 
-$$\underbrace{\overbrace{s_0 ~ s_1 ~ s_2}^{\pi[i]} ~ \overbrace{s_3}^{s_3 = s_{i+1}}}_{\pi[i+1] = \pi[i] + 1} ~ \dots ~ \underbrace{\overbrace{s_{i-2} ~ s_{i-1} ~ s_{i}}^{\pi[i]} ~ \overbrace{s_{i+1}}^{s_3 = s_{i + 1}}}_{\pi[i+1] = \pi[i] + 1}$$
+$$
+\underbrace{\overbrace{s_0 ~ s_1 ~ s_2}^{\pi[i]} ~ \overbrace{s_3}^{s_3 = s_{i+1}}}_{\pi[i+1] = \pi[i] + 1} ~ \dots ~ \underbrace{\overbrace{s_{i-2} ~ s_{i-1} ~ s_{i}}^{\pi[i]} ~ \overbrace{s_{i+1}}^{s_3 = s_{i + 1}}}_{\pi[i+1] = \pi[i] + 1}
+$$
 
 Aks holda, ya’ni $s[i+1] \neq s[\pi[i]]$ bo‘lsa, qisqaroq satrni sinab ko‘rishimiz kerak.
 Jarayonni tezlashtirish uchun darhol $j \lt \pi[i]$ bo‘lgan va $i$ pozitsiyada prefiks xossasi bajariladigan, ya’ni $s[0 \dots j-1] = s[i-j+1 \dots i]$ bo‘lgan eng katta $j$ ga o‘tmoqchimiz:
 
-$$\overbrace{\underbrace{s_0 ~ s_1}_j ~ s_2 ~ s_3}^{\pi[i]} ~ \dots ~ \overbrace{s_{i-3} ~ s_{i-2} ~ \underbrace{s_{i-1} ~ s_{i}}_j}^{\pi[i]} ~ s_{i+1}$$
+$$
+\overbrace{\underbrace{s_0 ~ s_1}_j ~ s_2 ~ s_3}^{\pi[i]} ~ \dots ~ \overbrace{s_{i-3} ~ s_{i-2} ~ \underbrace{s_{i-1} ~ s_{i}}_j}^{\pi[i]} ~ s_{i+1}
+$$
 
 Shunday $j$ topilsa, yana faqat $s[i+1]$ va $s[j]$ belgilarini taqqoslash kifoya.
 Ular teng bo‘lsa, $\pi[i+1] = j + 1$ deb olamiz.
@@ -80,7 +88,9 @@ Demak, algoritmning umumiy sxemasi tayyor.
 Faqat $j$ uchun keyingi qisqaroq uzunliklarni qanday samarali topish masalasi qoldi.
 Qayta aytamiz: $i$ pozitsiyada prefiks xossasi bajariladigan joriy $j$, ya’ni $s[0 \dots j-1] = s[i-j+1 \dots i]$ berilgan; shu xossa bajariladigan eng katta $k \lt j$ ni topish kerak.
 
-$$\overbrace{\underbrace{s_0 ~ s_1}_k ~ s_2 ~ s_3}^j ~ \dots ~ \overbrace{s_{i-3} ~ s_{i-2} ~ \underbrace{s_{i-1} ~ s_{i}}_k}^j ~s_{i+1}$$
+$$
+\overbrace{\underbrace{s_0 ~ s_1}_k ~ s_2 ~ s_3}^j ~ \dots ~ \overbrace{s_{i-3} ~ s_{i-2} ~ \underbrace{s_{i-1} ~ s_{i}}_k}^j ~s_{i+1}
+$$
 
 Tasvirdan bu qiymat ilgari hisoblangan $\pi[j-1]$ bo‘lishi ko‘rinadi.
 
@@ -235,11 +245,17 @@ Prefiks suffiksga teng, ikkisi ham shu blokni qoplaydi va ularning o‘zaro silj
 U holda butun satr bitta belgining takroridan iborat, demak uni uzunligi $1$ bo‘lgan satrgacha siqish mumkin. Bu $k = 1$ va $k$ soni $n$ ni bo‘lishini anglatadi.
 Qarama-qarshilik.
 
-$$\overbrace{s_0 ~ s_1 ~ s_2 ~ s_3}^p ~ \overbrace{s_4 ~ s_5 ~ s_6 ~ s_7}^p$$
+$$
+\overbrace{s_0 ~ s_1 ~ s_2 ~ s_3}^p ~ \overbrace{s_4 ~ s_5 ~ s_6 ~ s_7}^p
+$$
 
-$$s_0 ~ s_1 ~ s_2 ~ \underbrace{\overbrace{s_3 ~ s_4 ~ s_5 ~ s_6}^p ~ s_7}_{\pi[7] = 5}$$
+$$
+s_0 ~ s_1 ~ s_2 ~ \underbrace{\overbrace{s_3 ~ s_4 ~ s_5 ~ s_6}^p ~ s_7}_{\pi[7] = 5}
+$$
 
-$$s_4 = s_3, ~ s_5 = s_4, ~ s_6 = s_5, ~ s_7 = s_6 ~ \Rightarrow ~ s_0 = s_1 = s_2 = s_3$$
+$$
+s_4 = s_3, ~ s_5 = s_4, ~ s_6 = s_5, ~ s_7 = s_6 ~ \Rightarrow ~ s_0 = s_1 = s_2 = s_3
+$$
 
 ### Prefiks funksiya bo‘yicha avtomat qurish {#building-an-automaton-according-to-the-prefix-function}
 
@@ -247,7 +263,9 @@ Ikki satrni ajratgich orqali ulashga qaytamiz: $s$ va $t$ satrlar uchun $s + \# 
 $\#$ ajratgich bo‘lgani uchun prefiks funksiya qiymati hech qachon $|s|$ dan oshmaydi.
 Shundan faqat $s + \#$ satr va uning prefiks funksiya qiymatlarini saqlash yetarli ekani kelib chiqadi; keyingi barcha belgilar uchun qiymatlarni kelishi bilan hisoblay olamiz:
 
-$$\underbrace{s_0 ~ s_1 ~ \dots ~ s_{n-1} ~ \#}_{\text{need to store}} ~ \underbrace{t_0 ~ t_1 ~ \dots ~ t_{m-1}}_{\text{do not need to store}}$$
+$$
+\underbrace{s_0 ~ s_1 ~ \dots ~ s_{n-1} ~ \#}_{\text{need to store}} ~ \underbrace{t_0 ~ t_1 ~ \dots ~ t_{m-1}}_{\text{do not need to store}}
+$$
 
 Haqiqatan, bunday vaziyatda $t$ dan keyingi $c$ belgini va oldingi pozitsiyadagi prefiks funksiya qiymatini bilish keyingi qiymatni hisoblash uchun yetarli; $t$ ning hech qanday oldingi belgilari yoki ulardagi prefiks funksiya qiymatlari kerak emas.
 
@@ -313,12 +331,14 @@ $k \le 10^5$ son va uzunligi $\le 10^5$ bo‘lgan $s$ satr berilgan.
 $s$ satr $k$-Gray satrida necha marta uchrashishini hisoblash kerak.
 Gray satrlari quyidagicha aniqlanishini eslang:
 
-$$\begin{align}
+$$
+\begin{align}
 g_1 &= \text{"a"}\\
 g_2 &= \text{"aba"}\\
 g_3 &= \text{"abacaba"}\\
 g_4 &= \text{"abacabadabacaba"}
-\end{align}$$
+\end{align}
+$$
 
 Bunday hollarda $t$ satrni qurishning o‘zi ham imkonsiz, chunki uning uzunligi astronomik.
 $k$-Gray satri uzunligi $2^k-1$.
@@ -335,25 +355,33 @@ Keyingi barcha qiymatlar oldingilar va avtomat yordamida hisoblanadi.
 Biror $i$ uchun qiymatni hisoblashda $g_i$ satri $g_{i-1}$, alifboning $i$-belgisi va yana $g_{i-1}$ dan iboratligini eslaymiz.
 Shuning uchun avtomat avval quyidagi holatga o‘tadi:
 
-$$\text{mid} = \text{aut}[G[i-1][j]][i]$$
+$$
+\text{mid} = \text{aut}[G[i-1][j]][i]
+$$
 
-$$G[i][j] = G[i-1][\text{mid}]$$
+$$
+G[i][j] = G[i-1][\text{mid}]
+$$
 
 $K[i][j]$ qiymatlar ham oson sanaladi:
 
-$$K[i][j] = K[i-1][j] + (\text{mid} == |s|) + K[i-1][\text{mid}]$$
+$$
+K[i][j] = K[i-1][j] + (\text{mid} == |s|) + K[i-1][\text{mid}]
+$$
 
 Shu tariqa Gray satrlari masalasini va xuddi shunday ko‘plab boshqa masalalarni yechish mumkin.
 Masalan, ayni usul quyidagi masalani ham yechadi:
 $s$ satr va bir nechta $t_i$ andozalar berilgan; har bir andoza oddiy belgilar satri bo‘lib, ichida oldingi satrlarning $t_k^{\text{cnt}}$ ko‘rinishidagi rekursiv qo‘yilmalari bo‘lishi mumkin. Bu belgilash shu joyga $t_k$ satrni $\text{cnt}$ marta qo‘yish kerakligini bildiradi.
 Bunday andozalarga misol:
 
-$$\begin{align}
+$$
+\begin{align}
 t_1 &= \text{"abdeca"}\\
 t_2 &= \text{"abc"} + t_1^{30} + \text{"abd"}\\
 t_3 &= t_2^{50} + t_1^{100}\\
 t_4 &= t_2^{10} + t_3^{100}
-\end{align}$$
+\end{align}
+$$
 
 Rekursiv almashtirishlar satrni shunchalik kattalashtiradiki, uzunlik $100^{100}$ tartibiga yetishi mumkin.
 

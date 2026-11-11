@@ -12,7 +12,9 @@ Ushbu maqolada ayni maqsadda ishlatilishi mumkin bo‘lgan muqobil usul — Garn
 
 $a$ sonini **aralash asosli** ko‘rinishda ifodalashimiz mumkin:
 
-$$a = x_1 + x_2 p_1 + x_3 p_1 p_2 + \ldots + x_k p_1 \cdots p_{k-1} \text{ bunda }x_i \in [0, p_i)$$
+$$
+a = x_1 + x_2 p_1 + x_3 p_1 p_2 + \ldots + x_k p_1 \cdots p_{k-1} \text{ bunda }x_i \in [0, p_i)
+$$
 
 Aralash asosli ifoda — ikkilik yoki o‘nlik sanoq tizimi kabi odatiy sanoq tizimlarining umumlashmasi bo‘lgan pozitsion sanoq tizimidir.
 Masalan, o‘nlik sanoq tizimi asosi 10 bo‘lgan pozitsion sanoq tizimidir.
@@ -28,29 +30,39 @@ $x_i$ raqami $0$ dan $p_i-1$ gacha bo‘lgan butun sondir.
 
 $r_{ij}$ bilan $p_i$ ning $p_j$ modul bo‘yicha teskari elementini belgilaymiz:
 
-$$r_{ij} = (p_i)^{-1} \pmod{p_j}$$
+$$
+r_{ij} = (p_i)^{-1} \pmod{p_j}
+$$
 
 uni [Modul bo‘yicha teskari element](/algorithms/algebra/module-inverse) maqolasidagi algoritm bilan topish mumkin.
 
 $a$ ning aralash asosli ifodasini birinchi kongruensiyaga qo‘ysak:
 
-$$a_1 \equiv x_1 \pmod{p_1}.$$
+$$
+a_1 \equiv x_1 \pmod{p_1}.
+$$
 
 Ikkinchi tenglamaga qo‘ysak:
 
-$$a_2 \equiv x_1 + x_2 p_1 \pmod{p_2},$$
+$$
+a_2 \equiv x_1 + x_2 p_1 \pmod{p_2},
+$$
 
 $x_1$ ni ayirib, $p_1$ ga bo‘lgach, quyidagicha qayta yozish mumkin:
 
-$$\begin{array}{rclr}
+$$
+\begin{array}{rclr}
     a_2 - x_1 &\equiv& x_2 p_1 &\pmod{p_2} \\
     (a_2 - x_1) r_{12} &\equiv& x_2 &\pmod{p_2} \\
     x_2 &\equiv& (a_2 - x_1) r_{12} &\pmod{p_2}
-\end{array}$$
+\end{array}
+$$
 
 Xuddi shu tarzda:
 
-$$x_3 \equiv ((a_3 - x_1) r_{13} - x_2) r_{23} \pmod{p_3}.$$
+$$
+x_3 \equiv ((a_3 - x_1) r_{13} - x_2) r_{23} \pmod{p_3}.
+$$
 
 Endi paydo bo‘layotgan qonuniyatni aniq ko‘rish mumkin; uni quyidagi kod bilan ifodalaymiz:
 
@@ -69,7 +81,9 @@ for (int i = 0; i < k; ++i) {
 
 Shunday qilib, $x_i$ raqamlarini $O(k^2)$ vaqtda hisoblashni o‘rgandik. Endi $a$ sonini avvalgi formula yordamida topish mumkin:
 
-$$a = x_1 + x_2 \cdot p_1 + x_3 \cdot p_1 \cdot p_2 + \ldots + x_k \cdot p_1 \cdots p_{k-1}$$
+$$
+a = x_1 + x_2 \cdot p_1 + x_3 \cdot p_1 \cdot p_2 + \ldots + x_k \cdot p_1 \cdots p_{k-1}
+$$
 
 Amalda $a$ javobini deyarli albatta [ixtiyoriy aniqlikdagi arifmetika](/algorithms/algebra/big-integer) yordamida hisoblashga to‘g‘ri keladi. Ammo $x_i$ raqamlari kichik bo‘lgani uchun, odatda ularni o‘rnatilgan turlar yordamida hisoblash mumkin; shu sababli Garner algoritmi juda samarali.
 

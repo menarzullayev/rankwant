@@ -23,13 +23,15 @@ Gray kodi $g$ berilgan bo‘lsa, dastlabki $n$ sonini tiklash kerak.
 
 Eng katta razryadli bitlardan eng kichik razryadli bitlarga qarab yuramiz (eng kichik razryadli bitning indeksi 1, eng katta razryadli bitniki esa $k$ bo‘lsin). $n$ sonining $n_i$ bitlari bilan $g$ sonining $g_i$ bitlari orasidagi bog‘lanish:
 
-$$\begin{align}
+$$
+\begin{align}
   n_k &= g_k, \\
   n_{k-1} &= g_{k-1} \oplus n_k = g_k \oplus g_{k-1}, \\
   n_{k-2} &= g_{k-2} \oplus n_{k-1} = g_k \oplus g_{k-1} \oplus g_{k-2}, \\
   n_{k-3} &= g_{k-3} \oplus n_{k-2} = g_k \oplus g_{k-1} \oplus g_{k-2} \oplus g_{k-3},
   \vdots
-\end{align}$$
+\end{align}
+$$
 
 Buni kodda yozishning eng sodda usuli:
 

@@ -32,7 +32,9 @@ Bu ehtimollik testidir.
 
 Fermatning kichik teoremasiga ([Eylerning phi-funksiyasi](/algorithms/algebra/phi-function) maqolasiga ham qarang) ko‘ra, $p$ tub son va u bilan o‘zaro tub $a$ butun son uchun quyidagi tenglik o‘rinli:
 
-$$a^{p-1} \equiv 1 \bmod p$$
+$$
+a^{p-1} \equiv 1 \bmod p
+$$
 
 Umumiy holda bu teorema murakkab sonlar uchun o‘rinli emas.
 Bundan tub sonlik testi tuzish uchun foydalanish mumkin.
@@ -76,27 +78,35 @@ Miller–Rabin testi Fermat testidagi g‘oyalarni kengaytiradi.
 Toq $n$ soni uchun $n-1$ juft bo‘ladi va undan 2 ning barcha darajalarini ajratib olishimiz mumkin.
 Quyidagicha yozamiz:
 
-$$n - 1 = 2^s \cdot d,~\text{bunda}~d~\text{toq}.$$
+$$
+n - 1 = 2^s \cdot d,~\text{bunda}~d~\text{toq}.
+$$
 
 Bu Fermat kichik teoremasidagi tenglamani ko‘paytuvchilarga ajratish imkonini beradi:
 
-$$\begin{array}{rl}
+$$
+\begin{array}{rl}
 a^{n-1} \equiv 1 \bmod n &\Longleftrightarrow a^{2^s d} - 1 \equiv 0 \bmod n \\
 &\Longleftrightarrow (a^{2^{s-1} d} + 1) (a^{2^{s-1} d} - 1) \equiv 0 \bmod n \\
 &\Longleftrightarrow (a^{2^{s-1} d} + 1) (a^{2^{s-2} d} + 1) (a^{2^{s-2} d} - 1) \equiv 0 \bmod n \\
 &\quad\vdots \\
 &\Longleftrightarrow (a^{2^{s-1} d} + 1) (a^{2^{s-2} d} + 1) \cdots (a^{d} + 1) (a^{d} - 1) \equiv 0 \bmod n \\
-\end{array}$$
+\end{array}
+$$
 
 Agar $n$ tub bo‘lsa, $n$ ushbu ko‘paytuvchilardan birini bo‘lishi shart.
 Miller–Rabin tub sonlik testida aynan shu tasdiq tekshiriladi; u Fermat testidagi tasdiqning qat’iyroq ko‘rinishidir.
 $2 \le a \le n-2$ asos uchun
 
-$$a^d \equiv 1 \bmod n$$
+$$
+a^d \equiv 1 \bmod n
+$$
 
 tenglik yoki biror $0 \le r \le s - 1$ uchun
 
-$$a^{2^r d} \equiv -1 \bmod n$$
+$$
+a^{2^r d} \equiv -1 \bmod n
+$$
 
 tenglik bajarilishini tekshiramiz.
 Agar yuqoridagi tengliklarning hech birini qanoatlantirmaydigan $a$ asosini topsak, $n$ ning murakkabligi uchun *guvoh* topgan bo‘lamiz.

@@ -4,7 +4,9 @@ Binomial koeffitsiyent $\binom n k$ — $n$ ta turli elementdan ularning joylash
 
 Binomial koeffitsiyentlar $(a+b)^n$ yoyilmasidagi koeffitsiyentlar hamdir (bu binomial teorema deb ataladi):
 
-$$ (a+b)^n = \binom n 0 a^n + \binom n 1 a^{n-1} b + \binom n 2 a^{n-2} b^2 + \cdots + \binom n k a^{n-k} b^k + \cdots + \binom n n b^n $$
+$$
+(a+b)^n = \binom n 0 a^n + \binom n 1 a^{n-1} b + \binom n 2 a^{n-2} b^2 + \cdots + \binom n k a^{n-k} b^k + \cdots + \binom n n b^n
+$$
 
 Bu formula va koeffitsiyentlarni samarali hisoblash imkonini beruvchi uchburchak XVII asrda Blaise Pascal tomonidan kashf etilgan deb hisoblanadi. Biroq u XIII asrda yashagan xitoylik matematik Yang Huiga ham ma’lum bo‘lgan. Uni fors olimi Umar Xayyom kashf etgan bo‘lishi ham mumkin. Bundan tashqari, miloddan avvalgi III asrda yashagan hind matematigi Pingala ham o‘xshash natijalarni olgan. Newtonning hissasi shundaki, u formulani natural bo‘lmagan daraja ko‘rsatkichlari uchun umumlashtirgan.
 
@@ -12,13 +14,17 @@ Bu formula va koeffitsiyentlarni samarali hisoblash imkonini beruvchi uchburchak
 
 Hisoblash uchun **analitik formula**:
 
-$$ \binom n k = \frac {n!} {k!(n-k)!} $$
+$$
+\binom n k = \frac {n!} {k!(n-k)!}
+$$
 
 Bu formulani tartiblangan joylashtirishlar masalasidan (ya’ni $n$ ta turli elementdan $k$ ta turli elementni tartib bilan tanlash usullari sonidan) oson keltirib chiqarish mumkin. Avval $k$ ta elementning tartiblangan tanlovlari sonini hisoblaymiz. Birinchi elementni tanlashning $n$ ta, ikkinchisini tanlashning $n-1$ ta, uchinchisini tanlashning $n-2$ ta va hokazo usuli bor. Natijada tartiblangan joylashtirishlar soni uchun $n(n-1)(n-2)\cdots(n-k+1)=\frac{n!}{(n-k)!}$ formulasini olamiz. Har bir tartiblanmagan tanlovga aynan $k!$ ta tartiblangan tanlov mos kelishini qayd etib, tartiblanmagan tanlovlarga oson o‘tamiz ($k!$ — $k$ ta elementning mumkin bo‘lgan permutatsiyalari soni). $\frac{n!}{(n-k)!}$ ni $k!$ ga bo‘lib, yakuniy formulani olamiz.
 
 Mashhur «Pascal uchburchagi» bilan bog‘liq **rekurrent formula**:
 
-$$ \binom n k = \binom {n-1} {k-1} + \binom {n-1} k $$
+$$
+\binom n k = \binom {n-1} {k-1} + \binom {n-1} k
+$$
 
 Buni analitik formuladan osongina keltirib chiqarish mumkin.
 
@@ -30,35 +36,51 @@ Binomial koeffitsiyentlarning ko‘plab xossalari mavjud. Quyida ulardan eng sod
 
 *   Simmetriya qoidasi:
 
-    $$ \binom n k = \binom n {n-k} $$
+    $$
+    \binom n k = \binom n {n-k}
+    $$
 
 *   Ko‘paytuvchini tashqariga chiqarish:
 
-    $$ \binom n k = \frac n k \binom {n-1} {k-1} $$
+    $$
+    \binom n k = \frac n k \binom {n-1} {k-1}
+    $$
 
 *   $k$ bo‘yicha yig‘indi:
 
-    $$ \sum_{k = 0}^n \binom n k = 2 ^ n $$
+    $$
+    \sum_{k = 0}^n \binom n k = 2 ^ n
+    $$
 
 *   $n$ bo‘yicha yig‘indi:
 
-    $$ \sum_{m = 0}^n \binom m k = \binom {n + 1} {k + 1} $$
+    $$
+    \sum_{m = 0}^n \binom m k = \binom {n + 1} {k + 1}
+    $$
 
 *   $n$ va $k$ bo‘yicha yig‘indi:
 
-    $$ \sum_{k = 0}^m  \binom {n + k} k = \binom {n + m + 1} m $$
+    $$
+    \sum_{k = 0}^m  \binom {n + k} k = \binom {n + m + 1} m
+    $$
 
 *   Kvadratlar yig‘indisi:
 
-    $$ {\binom n 0}^2 + {\binom n 1}^2 + \cdots + {\binom n n}^2 = \binom {2n} n $$
+    $$
+    {\binom n 0}^2 + {\binom n 1}^2 + \cdots + {\binom n n}^2 = \binom {2n} n
+    $$
 
 *   Vaznli yig‘indi:
 
-    $$ 1 \binom n 1 + 2 \binom n 2 + \cdots + n \binom n n = n 2^{n-1} $$
+    $$
+    1 \binom n 1 + 2 \binom n 2 + \cdots + n \binom n n = n 2^{n-1}
+    $$
 
 *   [Fibonacci sonlari](/algorithms/algebra/fibonacci-numbers) bilan bog‘lanish:
 
-    $$ \binom n 0 + \binom {n-1} 1 + \cdots + \binom {n-k} k + \cdots + \binom 0 n = F_{n+1} $$
+    $$
+    \binom n 0 + \binom {n-1} 1 + \cdots + \binom {n-k} k + \cdots + \binom 0 n = F_{n+1}
+    $$
 
 ## Hisoblash usullari {#calculation}
 
@@ -129,11 +151,15 @@ Oldin muhokama qilingan Pascal uchburchagi yondashuvidan yetarlicha kichik $n$ u
 
 Binomial koeffitsiyentlar formulasi:
 
-$$\binom n k = \frac {n!} {k!(n-k)!},$$
+$$
+\binom n k = \frac {n!} {k!(n-k)!},
+$$
 
 shuning uchun uni $m>n$ bo‘lgan biror tub $m$ moduli bo‘yicha hisoblamoqchi bo‘lsak, quyidagini olamiz:
 
-$$\binom n k \equiv n! \cdot (k!)^{-1} \cdot ((n-k)!)^{-1} \mod m.$$
+$$
+\binom n k \equiv n! \cdot (k!)^{-1} \cdot ((n-k)!)^{-1} \mod m.
+$$
 
 Avval $\text{MAXN}!$ gacha bo‘lgan barcha faktoriallarni $m$ moduli bo‘yicha $O(\text{MAXN})$ vaqtda oldindan hisoblaymiz.
 
@@ -173,7 +199,9 @@ Bu sonni $c(x)$ deb belgilaymiz.
 Shuningdek, $g(x) := \frac{x!}{p^{c(x)}}$ deb olamiz.
 Shunda binomial koeffitsiyentni quyidagicha yozish mumkin:
 
-$$\binom n k = \frac {g(n) p^{c(n)}} {g(k) p^{c(k)} g(n-k) p^{c(n-k)}} = \frac {g(n)} {g(k) g(n-k)}p^{c(n) - c(k) - c(n-k)}$$
+$$
+\binom n k = \frac {g(n) p^{c(n)}} {g(k) p^{c(k)} g(n-k) p^{c(n-k)}} = \frac {g(n)} {g(k) g(n-k)}p^{c(n) - c(k) - c(n-k)}
+$$
 
 Muhim jihat shundaki, endi $g(x)$ tarkibida $p$ tub bo‘luvchisi yo‘q.
 Demak, $g(x)$ soni $m$ bilan o‘zaro tub va $g(k)$ hamda $g(n-k)$ ning modul bo‘yicha teskari elementlarini hisoblashimiz mumkin.

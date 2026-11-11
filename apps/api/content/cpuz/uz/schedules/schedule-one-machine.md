@@ -4,7 +4,9 @@ Bu masalada $n$ ta ishni bitta mashinada bajarish uchun optimal jadval topiladi.
 
 Demak, ishlarning jami jarimasi eng kichik bo‘ladigan permutatsiyasini topish kerak. Ishlar permutatsiyasini $\pi$ bilan belgilasak ($\pi_1$ birinchi, $\pi_2$ ikkinchi va hokazo bajariladi), jami jarima quyidagiga teng:
 
-$$F(\pi) = f_{\pi_1}(0) + f_{\pi_2}(t_{\pi_1}) + f_{\pi_3}(t_{\pi_1} + t_{\pi_2}) + \dots + f_{\pi_n}\left(\sum_{i=1}^{n-1} t_{\pi_i}\right)$$
+$$
+F(\pi) = f_{\pi_1}(0) + f_{\pi_2}(t_{\pi_1}) + f_{\pi_3}(t_{\pi_1} + t_{\pi_2}) + \dots + f_{\pi_n}\left(\sum_{i=1}^{n-1} t_{\pi_i}\right)
+$$
 
 ## Maxsus holatlar uchun yechimlar {#solutions-for-special-cases}
 
@@ -14,23 +16,31 @@ Avval barcha jarima funksiyalari $f_i(t) = c_i \cdot t$ ko‘rinishidagi chiziql
 
 Biror $\pi$ permutatsiyani va $i = 1 \dots n-1$ indeksni belgilaymiz. $\pi'$ permutatsiya $\pi$ dan $i$ va $i+1$ elementlarining o‘rni almashtirilishi bilan hosil bo‘lsin. Jarima qanchaga o‘zgarishini ko‘ramiz:
 
-$$F(\pi') - F(\pi) =$$
+$$
+F(\pi') - F(\pi) =
+$$
 
 O‘zgarish faqat $i$- va $(i+1)$-qo‘shiluvchilarda yuz berishi oson ko‘rinadi:
 
-$$\begin{align}
+$$
+\begin{align}
 &= c_{\pi_i'} \cdot \sum_{k = 1}^{i-1} t_{\pi_k'} + c_{\pi_{i+1}'} \cdot \sum_{k = 1}^i t_{\pi_k'} - c_{\pi_i} \cdot \sum_{k = 1}^{i-1} t_{\pi_k} - c_{\pi_{i+1}} \cdot \sum_{k = 1}^i t_{\pi_k} \\
 &= c_{\pi_{i+1}} \cdot \sum_{k = 1}^{i-1} t_{\pi_k'} + c_{\pi_i} \cdot \sum_{k = 1}^i t_{\pi_k'} - c_{\pi_i} \cdot \sum_{k = 1}^{i-1} t_{\pi_k} - c_{\pi_{i+1}} \cdot \sum_{k = 1}^i t_{\pi_k} \\
 &= c_{\pi_i} \cdot t_{\pi_{i+1}} - c_{\pi_{i+1}} \cdot t_{\pi_i}
-\end{align}$$
+\end{align}
+$$
 
 Agar $\pi$ jadval optimal bo‘lsa, undagi har qanday almashtirish jarimani oshiradi yoki o‘zgartirmaydi. Shuning uchun optimal jadval uchun quyidagi shartni yozish mumkin:
 
-$$c_{\pi_{i}} \cdot t_{\pi_{i+1}} - c_{\pi_{i+1}} \cdot t_{\pi_i} \ge 0 \quad \forall i = 1 \dots n-1$$
+$$
+c_{\pi_{i}} \cdot t_{\pi_{i+1}} - c_{\pi_{i+1}} \cdot t_{\pi_i} \ge 0 \quad \forall i = 1 \dots n-1
+$$
 
 Hadlarni qayta joylashtirsak:
 
-$$\frac{c_{\pi_i}}{t_{\pi_i}} \ge \frac{c_{\pi_{i+1}}}{t_{\pi_{i+1}}} \quad \forall i = 1 \dots n-1$$
+$$
+\frac{c_{\pi_i}}{t_{\pi_i}} \ge \frac{c_{\pi_{i+1}}}{t_{\pi_{i+1}}} \quad \forall i = 1 \dots n-1
+$$
 
 Shunday qilib, ishlarni $\frac{c_i}{t_i}$ nisbatining **o‘smaslik tartibida saralash** orqali **optimal jadval**ni olamiz.
 
@@ -40,13 +50,17 @@ Bu algoritm **almashtirish usuli** deb ataladigan yondashuv orqali qurilganini t
 
 Jarima funksiyasi quyidagi ko‘rinishda bo‘lsin:
 
-$$f_i(t) = c_i \cdot e^{\alpha \cdot t},$$
+$$
+f_i(t) = c_i \cdot e^{\alpha \cdot t},
+$$
 
 bu yerda barcha $c_i$ sonlar nomanfiy, $\alpha$ o‘zgarmas esa musbat.
 
 Almashtirish usulini qo‘llab, ishlarni quyidagi qiymatning o‘smaslik tartibida saralash kerakligini oson aniqlash mumkin:
 
-$$v_i = \frac{1 - e^{\alpha \cdot t_i}}{c_i}$$
+$$
+v_i = \frac{1 - e^{\alpha \cdot t_i}}{c_i}
+$$
 
 ### Bir xil monoton jarima funksiyasi {#identical-monotone-penalty-function}
 

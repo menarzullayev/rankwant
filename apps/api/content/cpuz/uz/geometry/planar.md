@@ -12,11 +12,15 @@ Bu bo‘limda tekis graflar haqidagi bir nechta faktni isbotsiz keltiramiz. Isbo
 
 Eyler teoremasiga ko‘ra, $n$ ta tugun, $m$ ta qirra va $f$ ta yuzga ega bog‘langan tekis grafning har qanday to‘g‘ri joylashtirilishi uchun quyidagi tenglik bajariladi:
 
-$$n - m + f = 2$$
+$$
+n - m + f = 2
+$$
 
 Umumiyroq holda, $k$ ta bog‘langan komponentli har qanday tekis graf uchun:
 
-$$n - m + f = 1 + k$$
+$$
+n - m + f = 1 + k
+$$
 
 ### Tekis grafdagi qirralar soni {#number-of-edges-of-a-planar-graph}
 

@@ -14,7 +14,9 @@ The algorithm described here was published in 1982 by Main and Lorentz.
 
 Consider the repetitions in the following example string:
 
-$$acababaee$$
+$$
+acababaee
+$$
 
 The string contains the following three repetitions:
 
@@ -24,7 +26,9 @@ The string contains the following three repetitions:
 
 Another example:
 
-$$abaaba$$
+$$
+abaaba
+$$
 
 Here there are only two repetitions
 
@@ -48,11 +52,13 @@ Also, here are some more interesting results related to the number of repetition
   - If we encode repetitions with tuples of numbers (called Crochemore triples) $(i,~ p,~ r)$ (where $i$ is the position of the beginning, $p$ the length of the repeating substring, and $r$ the number of repetitions), then all repetitions can be described with $O(n \log n)$ such triples.
   - Fibonacci strings, defined as 
     
-    $$\begin{align}
+    $$
+    \begin{align}
     t_0 &= a, \\
     t_1 &= b, \\
     t_i &= t_{i-1} + t_{i-2},
-    \end{align}$$
+    \end{align}
+    $$
     
     are "strongly" periodic.
     The number of repetitions in the Fibonacci string $f_i$, even in the compressed with Crochemore triples, is $O(f_n \log f_n)$.
@@ -74,7 +80,9 @@ The [master theorem](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_a
 
 So we want to find all such repetitions that start in the first half of the string, let's call it $u$, and end in the second half, let's call it $v$:
 
-$$s = u + v$$
+$$
+s = u + v
+$$
 
 Their lengths are approximately equal to the length of $s$ divided by two.
 
@@ -95,7 +103,9 @@ We will fixate this position $cntr$, and **look for all repetitions at this posi
 
 For example:
 
-$$c ~ \underset{cntr}{a} ~ c ~ | ~ a ~ d ~ a$$
+$$
+c ~ \underset{cntr}{a} ~ c ~ | ~ a ~ d ~ a
+$$
 
 The vertical lines divides the two halves.
 Here we fixated the position $cntr = 1$, and at this position we find the repetition $caca$.
@@ -110,7 +120,9 @@ Keep in mind that there still can be multiple such repetitions.
 
 Let's again look at a visualization, this time for the repetition $abcabc$:
 
-$$\overbrace{a}^{l_1} ~ \overbrace{\underset{cntr}{b} ~ c}^{l_2} ~ \overbrace{a}^{l_1} ~ | ~ \overbrace{b ~ c}^{l_2}$$
+$$
+\overbrace{a}^{l_1} ~ \overbrace{\underset{cntr}{b} ~ c}^{l_2} ~ \overbrace{a}^{l_1} ~ | ~ \overbrace{b ~ c}^{l_2}
+$$
 
 Here we denoted the lengths of the two pieces of the repetition with $l_1$ and $l_2$:
 $l_1$ is the length of the repetition up to the position $cntr-1$, and $l_2$ is the length of the repetition from $cntr$ to the end of the half of the repetition.
@@ -126,7 +138,7 @@ $$
   
 - Let $k_2$ be the largest number such that the $k_2$ characters starting at position $cntr$ coincide with the first $k_2$ characters in the string $v$:
 
-$$  
+$$
   u[cntr \dots cntr + k_2 - 1] = v[0 \dots k_2 - 1]
 $$
   

@@ -8,25 +8,35 @@ Chiziqlarning kesishish nuqtasini topish yoki ularning parallel ekanini aniqlash
 Agar ikkita to‘g‘ri chiziq parallel bo‘lmasa, ular kesishadi.
 Kesishish nuqtasini topish uchun quyidagi chiziqli tenglamalar sistemasini yechish kerak:
 
-$$\begin{cases} a_1 x + b_1 y + c_1 = 0 \\
+$$
+\begin{cases} a_1 x + b_1 y + c_1 = 0 \\
 a_2 x + b_2 y + c_2 = 0
-\end{cases}$$
+\end{cases}
+$$
 
 Kramer qoidasidan foydalanib, sistemaning yechimini, ya’ni chiziqlarning izlanayotgan kesishish nuqtasini darhol yozish mumkin:
 
-$$x = - \frac{\begin{vmatrix}c_1 & b_1 \cr c_2 & b_2\end{vmatrix}}{\begin{vmatrix}a_1 & b_1 \cr a_2 & b_2\end{vmatrix} } = - \frac{c_1 b_2 - c_2 b_1}{a_1 b_2 - a_2 b_1},$$
+$$
+x = - \frac{\begin{vmatrix}c_1 & b_1 \cr c_2 & b_2\end{vmatrix}}{\begin{vmatrix}a_1 & b_1 \cr a_2 & b_2\end{vmatrix} } = - \frac{c_1 b_2 - c_2 b_1}{a_1 b_2 - a_2 b_1},
+$$
 
-$$y = - \frac{\begin{vmatrix}a_1 & c_1 \cr a_2 & c_2\end{vmatrix}}{\begin{vmatrix}a_1 & b_1 \cr a_2 & b_2\end{vmatrix}} = - \frac{a_1 c_2 - a_2 c_1}{a_1 b_2 - a_2 b_1}.$$
+$$
+y = - \frac{\begin{vmatrix}a_1 & c_1 \cr a_2 & c_2\end{vmatrix}}{\begin{vmatrix}a_1 & b_1 \cr a_2 & b_2\end{vmatrix}} = - \frac{a_1 c_2 - a_2 c_1}{a_1 b_2 - a_2 b_1}.
+$$
 
 Agar maxraj $0$ ga teng bo‘lsa, ya’ni
 
-$$\begin{vmatrix}a_1 & b_1 \cr a_2 & b_2\end{vmatrix} = a_1 b_2 - a_2 b_1 = 0 $$
+$$
+\begin{vmatrix}a_1 & b_1 \cr a_2 & b_2\end{vmatrix} = a_1 b_2 - a_2 b_1 = 0
+$$
 
 u holda sistema yo yechimga ega emas (chiziqlar parallel va ustma-ust tushmaydi), yo cheksiz ko‘p yechimga ega (chiziqlar ustma-ust tushadi).
 Bu ikki holatni farqlash kerak bo‘lsa, $c$ koeffitsiyentlari $a$ va $b$ koeffitsiyentlari bilan bir xil nisbatda proporsional ekanini tekshirish lozim.
 Buning uchun quyidagi determinantlarni hisoblash yetarli; ikkalasi ham $0$ ga teng bo‘lsa, chiziqlar ustma-ust tushadi:
 
-$$\begin{vmatrix}a_1 & c_1 \cr a_2 & c_2\end{vmatrix}, \begin{vmatrix}b_1 & c_1 \cr b_2 & c_2\end{vmatrix} $$
+$$
+\begin{vmatrix}a_1 & c_1 \cr a_2 & c_2\end{vmatrix}, \begin{vmatrix}b_1 & c_1 \cr b_2 & c_2\end{vmatrix}
+$$
 
 Shuni ta’kidlaymizki, kesishish nuqtasini hisoblashning boshqa usuli [Geometriya asoslari](/algorithms/geometry/basic-geometry) maqolasida bayon etilgan.
 

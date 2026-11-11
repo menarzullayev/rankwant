@@ -10,17 +10,23 @@ Quyidagi algoritmni gollandiyalik kompyuter olimi Edsger W. Dijkstra 1959-yilda 
 
 Har bir $v$ tugun uchun $s$ dan $v$ gacha hozirgacha topilgan eng qisqa yo‘l uzunligini `d[v]` da saqlaydigan $d[]$ massivini yaratamiz. Dastlab $d[s]=0$, boshqa barcha tugunlar uchun masofa cheksizlikka teng. Implementatsiyada cheksizlik sifatida mumkin bo‘lgan istalgan yo‘l uzunligidan katta bo‘lishi kafolatlangan yetarlicha katta son tanlanadi:
 
-$$d[v]=\infty,\qquad v\ne s.$$
+$$
+d[v]=\infty,\qquad v\ne s.
+$$
 
 Bundan tashqari, har bir $v$ tugun belgilangan yoki belgilanmaganini saqlaydigan $u[]$ mantiqiy massivini yuritamiz. Dastlab barcha tugunlar belgilanmagan:
 
-$$u[v]={\rm false}.$$
+$$
+u[v]={\rm false}.
+$$
 
 Dijkstra algoritmi $n$ ta iteratsiya bajaradi. Har bir iteratsiyada hali belgilanmagan tugunlar orasidan $d[v]$ qiymati eng kichik bo‘lgan $v$ tugun tanlanadi. Birinchi iteratsiyada $s$ boshlang‘ich tugun tanlanishi ravshan.
 
 Tanlangan $v$ tugun belgilanadi. So‘ng $v$ dan **relaksatsiyalar** bajariladi: $(v,\text{to})$ ko‘rinishidagi barcha qirralar ko‘rib chiqiladi va algoritm har bir $\text{to}$ tugun uchun $d[\text{to}]$ qiymatini yaxshilashga urinadi. Joriy qirra uzunligi $len$ bo‘lsa, relaksatsiya formulasi:
 
-$$d[\text{to}]=\min(d[\text{to}],d[v]+len).$$
+$$
+d[\text{to}]=\min(d[\text{to}],d[v]+len).
+$$
 
 Barcha bunday qirralar ko‘rilgach, joriy iteratsiya tugaydi. $n$ ta iteratsiyadan keyin barcha tugunlar belgilanadi va algoritm yakunlanadi. Topilgan $d[v]$ qiymatlar $s$ dan barcha $v$ tugunlargacha bo‘lgan eng qisqa yo‘llar uzunliklari ekanini quyida isbotlaymiz.
 
@@ -34,11 +40,15 @@ Agar $v$ gacha eng qisqa yo‘ldan $v$ ni olib tashlasak, $p[v]$ da tugaydigan y
 
 $v$ tugungacha eng qisqa $P$ yo‘l:
 
-$$P=(s,\ldots,p[p[p[v]]],p[p[v]],p[v],v).$$
+$$
+P=(s,\ldots,p[p[p[v]]],p[p[v]],p[v],v).
+$$
 
 Ajdodlar massivini qurish juda oson: har bir muvaffaqiyatli relaksatsiyada, ya’ni tanlangan $v$ tugundan biror $\text{to}$ tugungacha masofa yaxshilanganda, $\text{to}$ ning ajdodini $v$ ga yangilaymiz:
 
-$$p[\text{to}]=v.$$
+$$
+p[\text{to}]=v.
+$$
 
 ## Isbot {#proof}
 
@@ -56,15 +66,21 @@ Avval $p$ uchun $d[p]=l[p]$ ekanini isbotlaymiz. Oldingi iteratsiyalardan birida
 
 Qirra vaznlari manfiy bo‘lmagani uchun $l[p]=d[p]$ qiymat $v$ gacha eng qisqa yo‘l uzunligi $l[v]$ dan katta emas. Dijkstra eng qisqa mumkin bo‘lgan yo‘ldan ham qisqaroq yo‘l topa olmasligi sababli $l[v]\le d[v]$. Shunday qilib:
 
-$$d[p]=l[p]\le l[v]\le d[v].$$
+$$
+d[p]=l[p]\le l[v]\le d[v].
+$$
 
 Boshqa tomondan, $p$ ham, $v$ ham belgilanmagan va joriy iteratsiyada $p$ emas, $v$ tanlangan. Demak:
 
-$$d[p]\ge d[v].$$
+$$
+d[p]\ge d[v].
+$$
 
 Ikki tengsizlikdan $d[p]=d[v]$ kelib chiqadi. Yuqoridagi tenglik va tengsizliklardan esa:
 
-$$d[v]=l[v].$$
+$$
+d[v]=l[v].
+$$
 
 Isbot tugadi.
 
@@ -79,7 +95,9 @@ Algoritm ishlash vaqti quyidagilardan iborat:
 
 Eng sodda implementatsiyada har bir tugun qidiruvi $O(n)$, har bir relaksatsiya esa $O(1)$ vaqt oladi. Natijaviy asimptotika:
 
-$$O(n^2+m).$$
+$$
+O(n^2+m).
+$$
 
 Bu murakkablik zich, ya’ni $m\approx n^2$ bo‘lgan graflar uchun optimal. Siyrak graflarda, $m$ qiymat mumkin bo‘lgan maksimal $n^2$ qirralardan ancha kichik bo‘lganda, masalani $O(n\log n+m)$ murakkablikda yechish mumkin. Algoritm va implementatsiya [Siyrak graflarda Dijkstra](/algorithms/graph/dijkstra-sparse) maqolasida berilgan.
 

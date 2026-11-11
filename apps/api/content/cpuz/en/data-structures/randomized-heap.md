@@ -84,19 +84,23 @@ Therefore to understand the complexity of the operations, we must look into the 
 
 We assume that the expectation $h(T)$ can be estimated from above by the logarithm of the number of vertices in the heap:
 
-$$\mathbf{E} h(T) \le \log(n+1)$$
+$$
+\mathbf{E} h(T) \le \log(n+1)
+$$
 
 This can be easily proven by induction.
 Let $L$ and $R$ be the left and the right subtrees of the root $T$, and $n_L$ and $n_R$ the number of vertices in them ($n = n_L + n_R + 1$).
 
 The following shows the induction step:
 
-$$\begin{align}
+$$
+\begin{align}
 \mathbf{E} h(T) &= 1 + \frac{\mathbf{E} h(L) + \mathbf{E} h(R)}{2} 
 \le 1 + \frac{\log(n_L + 1) + \log(n_R + 1)}{2} \\
 &= 1 + \log\sqrt{(n_L + 1)(n_R + 1)} = \log 2\sqrt{(n_L + 1)(n_R + 1)} \\
 &\le \log \frac{2\left((n_L + 1) + (n_R + 1)\right)}{2} = \log(n_L + n_R + 2) = \log(n+1)
-\end{align}$$
+\end{align}
+$$
 
 ### Exceeding the expected value {#exceeding-the-expected-value}
 
@@ -106,7 +110,9 @@ It is still possible that the paths from the root to the vertices is on average 
 
 Let us prove that the probability of exceeding the expected value is indeed very small:
 
-$${\cal P}(h(T) > (c+1) \log n) < \frac{1}{n^c}$$
+$$
+{\cal P}(h(T) > (c+1) \log n) < \frac{1}{n^c}
+$$
 
 for any positive constant $c$.
 
@@ -114,7 +120,9 @@ Here we denote by $P$ the set of paths from the root of the heap to the leaves w
 Note that for any path $p$ of length $|p|$ the probability that it will be chosen as random path is $2^{-|p|}$.
 Therefore we get:
 
-$${\cal P}(h(T) > (c+1) \log n) = \sum_{p \in P} 2^{-|p|} < \sum_{p \in P} 2^{-(c+1) \log n} = |P| n^{-(c+1)} \le n^{-c}$$
+$$
+{\cal P}(h(T) > (c+1) \log n) = \sum_{p \in P} 2^{-|p|} < \sum_{p \in P} 2^{-(c+1) \log n} = |P| n^{-(c+1)} \le n^{-c}
+$$
 
 ### Complexity of the algorithm {#complexity-of-the-algorithm}
 

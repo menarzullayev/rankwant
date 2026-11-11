@@ -33,7 +33,9 @@ It is clear, that the vertex connectivity of a graph is equal to the minimal siz
 
 The **Whitney inequalities** (1932) gives a relation between the edge connectivity $\lambda$, the vertex connectivity $\kappa$, and the minimum degree of any vertex in the graph $\delta$:
 
-$$\kappa \le \lambda \le \delta$$
+$$
+\kappa \le \lambda \le \delta
+$$
 
 Intuitively if we have a set of edges of size $\lambda$, which make the graph disconnected, we can choose one of each end point, and create a set of vertices, that also disconnect the graph.
 And this set has size $\le \lambda$.

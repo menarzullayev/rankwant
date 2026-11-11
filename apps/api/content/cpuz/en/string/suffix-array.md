@@ -9,23 +9,27 @@ A **suffix array** will contain integers that represent the **starting indexes**
 As an example look at the string $s = abaab$.
 All suffixes are as follows
 
-$$\begin{array}{ll}
+$$
+\begin{array}{ll}
 0. & abaab \\
 1. & baab \\
 2. & aab \\
 3. & ab \\
 4. & b
-\end{array}$$
+\end{array}
+$$
 
 After sorting these strings:
 
-$$\begin{array}{ll}
+$$
+\begin{array}{ll}
 2. & aab \\
 3. & ab \\
 0. & abaab \\
 4. & b \\
 1. & baab
-\end{array}$$
+\end{array}
+$$
 
 Therefore the suffix array for $s$ will be $(2,~ 3,~ 0,~ 4,~ 1)$.
 
@@ -44,16 +48,18 @@ Sorting uses $O(n \log n)$ comparisons, and since comparing two strings will add
 Strictly speaking the following algorithm will not sort the suffixes, but rather the cyclic shifts of a string.
 However we can very easily derive an algorithm for sorting suffixes from it:
 it is enough to append an arbitrary character to the end of the string which is smaller than any character from the string.
-It is common to use the symbol \$.
+It is common to use the symbol \text{\textdollar}.
 Then the order of the sorted cyclic shifts is equivalent to the order of the sorted suffixes, as demonstrated here with the string $dabbb$.
 
-$$\begin{array}{lll}
-1. & abbb\$d & abbb \\
-4. & b\$dabb & b \\
-3. & bb\$dab & bb \\
-2. & bbb\$da & bbb \\
-0. & dabbb\$ & dabbb
-\end{array}$$
+$$
+\begin{array}{lll}
+1. & abbb\text{\textdollar}d & abbb \\
+4. & b\text{\textdollar}dabb & b \\
+3. & bb\text{\textdollar}dab & bb \\
+2. & bbb\text{\textdollar}da & bbb \\
+0. & dabbb\text{\textdollar} & dabbb
+\end{array}
+$$
 
 Since we are going to sort cyclic shifts, we will consider **cyclic substrings**.
 We will use the notation $s[i \dots j]$ for the substring of $s$ even if $i > j$.
@@ -75,11 +81,13 @@ Let's look at an example.
 Consider the string $s = aaba$.
 The cyclic substrings and the corresponding arrays $p[]$ and $c[]$ are given for each iteration:
 
-$$\begin{array}{cccc}
+$$
+\begin{array}{cccc}
 0: & (a,~ a,~ b,~ a) & p = (0,~ 1,~ 3,~ 2) & c = (0,~ 0,~ 1,~ 0)\\
 1: & (aa,~ ab,~ ba,~ aa) & p = (0,~ 3,~ 1,~ 2) & c = (0,~ 1,~ 2,~ 0)\\
 2: & (aaba,~ abaa,~ baaa,~ aaab) & p = (3,~ 0,~ 1,~ 2) & c = (1,~ 2,~ 3,~ 0)\\
-\end{array}$$
+\end{array}
+$$
 
 It is worth noting that the values of $p[]$ can be different.
 For example in the $0$-th iteration the array could also be $p = (3,~ 1,~ 0,~ 2)$ or $p = (3,~ 0,~ 1,~ 2)$.
@@ -126,7 +134,8 @@ Since we perform this step $O(\log n)$ times, the complete algorithm will have a
 To do this, note that the cyclic substrings of length $2^k$ consists of two substrings of length $2^{k-1}$ which we can compare with each other in $O(1)$ using the information from the previous phase - the values of the equivalence classes $c[]$.
 Thus, for two substrings of length $2^k$ starting at position $i$ and $j$, all necessary information to compare them is contained in the pairs $(c[i],~ c[i + 2^{k-1}])$ and $(c[j],~ c[j + 2^{k-1}])$.
 
-$$\dots
+$$
+\dots
 \overbrace{
 \underbrace{s_i \dots s_{i+2^{k-1}-1}}_{\text{length} = 2^{k-1},~ \text{class} = c[i]}
 \quad
@@ -199,7 +208,7 @@ The algorithm requires $O(n \log n)$ time and $O(n)$ memory. For simplicity we u
 If it is known that the string only contains a subset of characters, e.g. only lowercase letters, then the implementation can be optimized, but the optimization factor would likely be insignificant, as the size of the alphabet only matters on the first iteration. Every other iteration depends on the number of equivalence classes, which may quickly reach $O(n)$ even if initially it was a string over the alphabet of size $2$.
 
 Also note, that this algorithm only sorts the cycle shifts.
-As mentioned at the beginning of this section we can generate the sorted order of the suffixes by appending a character that is smaller than all other characters of the string, and sorting this resulting string by cycle shifts, e.g. by sorting the cycle shifts of $s + \$$.
+As mentioned at the beginning of this section we can generate the sorted order of the suffixes by appending a character that is smaller than all other characters of the string, and sorting this resulting string by cycle shifts, e.g. by sorting the cycle shifts of $s + \text{\textdollar}$.
 This will obviously give the suffix array of $s$, however prepended with $|s|$.
 
 ```cpp
@@ -243,17 +252,21 @@ We find the largest length of a block that is placed inside a substring of this 
 Then comparing the two substrings can be replaced by comparing two overlapping blocks of length $2^k$:
 first you need to compare the two blocks starting at $i$ and $j$, and if these are equal then compare the two blocks ending in positions $i + l - 1$ and $j + l - 1$:
 
-$$\dots
+$$
+\dots
 \overbrace{\underbrace{s_i \dots s_{i+l-2^k} \dots s_{i+2^k-1}}_{2^k} \dots s_{i+l-1}}^{\text{first}}
 \dots
 \overbrace{\underbrace{s_j \dots s_{j+l-2^k} \dots s_{j+2^k-1}}_{2^k} \dots s_{j+l-1}}^{\text{second}}
-\dots$$
+\dots
+$$
 
-$$\dots
+$$
+\dots
 \overbrace{s_i \dots \underbrace{s_{i+l-2^k} \dots s_{i+2^k-1} \dots s_{i+l-1}}_{2^k}}^{\text{first}}
 \dots
 \overbrace{s_j \dots \underbrace{s_{j+l-2^k} \dots s_{j+2^k-1} \dots s_{j+l-1}}_{2^k}}^{\text{second}}
-\dots$$
+\dots
+$$
 
 Here is the implementation of the comparison.
 Note that it is assumed that the function gets called with the already calculated $k$.
@@ -373,7 +386,9 @@ Thus, all its prefixes except the first $\text{lcp}[i-1]$ one.
 Since the length of the current suffix is $n - p[i]$, $n - p[i] - \text{lcp}[i-1]$ new prefixes start at $p[i]$.
 Summing over all the suffixes, we get the final answer:
 
-$$\sum_{i=0}^{n-1} (n - p[i]) - \sum_{i=0}^{n-2} \text{lcp}[i] = \frac{n^2 + n}{2} - \sum_{i=0}^{n-2} \text{lcp}[i]$$
+$$
+\sum_{i=0}^{n-1} (n - p[i]) - \sum_{i=0}^{n-2} \text{lcp}[i] = \frac{n^2 + n}{2} - \sum_{i=0}^{n-2} \text{lcp}[i]
+$$
 
 ## Practice Problems {#practice-problems}
 

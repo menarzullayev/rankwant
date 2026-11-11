@@ -27,11 +27,15 @@ so the maximum value in this case is $f_{i-1, j-w_i} + v_i$
 
 From this we can derive the dp transition equation:
 
-$$f_{i, j} = \max(f_{i-1, j}, f_{i-1, j-w_i} + v_i)$$
+$$
+f_{i, j} = \max(f_{i-1, j}, f_{i-1, j-w_i} + v_i)
+$$
 
 Further, as $f_{i}$ is only dependent on $f_{i-1}$, we can remove the first dimension. We obtain the transition rule
 
-$$f_j \gets \max(f_j, f_{j-w_i}+v_i)$$
+$$
+f_j \gets \max(f_j, f_{j-w_i}+v_i)
+$$
 
 that should be executed in the **decreasing** order of $j$ (so that $f_{j-w_i}$ implicitly corresponds to $f_{i-1,j-w_i}$ and not $f_{i,j-w_i}$).
 
@@ -63,17 +67,23 @@ The trivial approach is, for the first $i$ items, enumerate how many times each 
 
 This yields the following transition equation:
 
-$$f_{i, j} = \max\limits_{k=0}^{\infty}(f_{i-1, j-k\cdot w_i} + k\cdot v_i)$$
+$$
+f_{i, j} = \max\limits_{k=0}^{\infty}(f_{i-1, j-k\cdot w_i} + k\cdot v_i)
+$$
 
 At the same time, it simplifies into a "flat" equation:
 
-$$f_{i, j} = \max(f_{i-1, j},f_{i, j-w_i} + v_i)$$
+$$
+f_{i, j} = \max(f_{i-1, j},f_{i, j-w_i} + v_i)
+$$
 
 The reason this works is that $f_{i, j-w_i}$ has already been updated by $f_{i, j-2\cdot w_i}$ and so on.
 
 Similar to the 0-1 knapsack, we can remove the first dimension to optimize the space complexity. This gives us the same transition rule as 0-1 knapsack.
 
-$$f_j \gets \max(f_j, f_{j-w_i}+v_i)$$
+$$
+f_j \gets \max(f_j, f_{j-w_i}+v_i)
+$$
 
 ### Implementation {#implementation}
 
@@ -99,7 +109,9 @@ Multiple knapsack is also a variant of 0-1 knapsack. The main difference is that
 
 A very simple idea is: "choose each item $k_i$ times" is equivalent to "$k_i$ of the same item is selected one by one". Thus converting it to a 0-1 knapsack model, which can be described by the transition function:
 
-$$f_{i, j} = \max_{k=0}^{k_i}(f_{i-1,j-k\cdot w_i} + k\cdot v_i)$$
+$$
+f_{i, j} = \max_{k=0}^{k_i}(f_{i-1,j-k\cdot w_i} + k\cdot v_i)
+$$
 
 The time complexity of this process is $O(W\sum\limits_{i=1}^{n}k_i)$
 
@@ -141,11 +153,15 @@ In this optimization, we aim to convert the knapsack problem into a [maximum que
 
 For convenience of description, let $g_{x, y} = f_{i, x \cdot w_i + y} ,\space g'_{x, y} = f_{i-1, x \cdot w_i + y}$. Then the transition rule can be written as:
 
-$$g_{x, y} = \max_{k=0}^{k_i}(g'_{x-k, y} + v_i \cdot k)$$
+$$
+g_{x, y} = \max_{k=0}^{k_i}(g'_{x-k, y} + v_i \cdot k)
+$$
 
 Further, let $G_{x, y} = g'_{x, y} - v_i \cdot x$. Then the transition rule can be expressed as:
 
-$$g_{x, y} \gets \max_{k=0}^{k_i}(G_{x-k, y}) + v_i \cdot x$$
+$$
+g_{x, y} \gets \max_{k=0}^{k_i}(G_{x-k, y}) + v_i \cdot x
+$$
 
 This transforms into a classic monotone queue optimization form. $G_{x, y}$ can be calculated in $O(1)$, so for a fixed $y$, we can calculate $g_{x, y}$ in $O(\lfloor \frac{W}{w_i} \rfloor)$ time.
 Therefore, the complexity of finding all $g_{x, y}$ is $O(\lfloor \frac{W}{w_i} \rfloor) \times O(w_i) = O(W)$.

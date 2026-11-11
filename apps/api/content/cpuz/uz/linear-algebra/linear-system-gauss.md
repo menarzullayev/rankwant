@@ -4,29 +4,35 @@ $m$ ta noma’lumli $n$ ta chiziqli algebraik tenglamalar sistemasi berilgan bo�
 
 Masala quyidagi sistemani yechishdan iborat:
 
-$$\begin{align}
+$$
+\begin{align}
 a_{11} x_1 + a_{12} x_2 + &\dots + a_{1m} x_m = b_1 \\
 a_{21} x_1 + a_{22} x_2 + &\dots + a_{2m} x_m = b_2\\
 &\vdots \\
 a_{n1} x_1 + a_{n2} x_2 + &\dots + a_{nm} x_m = b_n
-\end{align}$$
+\end{align}
+$$
 
 Bu yerda $a_{ij}$ ($i$ — $1$ dan $n$ gacha, $j$ — $1$ dan $m$ gacha) va $b_i$ ($i$ — $1$ dan $n$ gacha) ma’lum koeffitsiyentlar, $x_i$ lar ($i$ — $1$ dan $m$ gacha) esa noma’lumlardir.
 
 Matritsa ko‘rinishida sistema yanada ixcham yoziladi:
 
-$$Ax=b,$$
+$$
+Ax=b,
+$$
 
 bu yerda $A$ — $a_{ij}$ koeffitsiyentlardan tuzilgan $n \times m$ o‘lchamli matritsa, $b$ esa $n$ o‘lchamli ustun vektor.
 
 Maqoladagi usulni istalgan $p$ modul bo‘yicha tuzilgan sistemaga ham qo‘llash mumkin:
 
-$$\begin{align}
+$$
+\begin{align}
 a_{11} x_1 + a_{12} x_2 + &\dots + a_{1m} x_m \equiv b_1 \pmod p \\
 a_{21} x_1 + a_{22} x_2 + &\dots + a_{2m} x_m \equiv b_2 \pmod p \\
 &\vdots \\
 a_{n1} x_1 + a_{n2} x_2 + &\dots + a_{nm} x_m \equiv b_n \pmod p
-\end{align}$$
+\end{align}
+$$
 
 ## Gauss–Jordan eliminatsiyasi {#gauss}
 
