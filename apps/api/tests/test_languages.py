@@ -63,6 +63,7 @@ class TestCatalog:
             "compile_time_ms",
             "proc_self",
             "open_files",
+            "memory_overhead_kb",
         }
 
 

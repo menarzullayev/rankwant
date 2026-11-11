@@ -13,7 +13,7 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, API_ONLY, Verdict
-from problems import evaluation, sqltasks, taskkinds, testgroups
+from problems import evaluation, limits, sqltasks, taskkinds, testgroups
 from problems.models import Language, Problem, ProblemLanguage, TestCase, Validator
 
 log = logging.getLogger(__name__)
@@ -132,7 +132,7 @@ def build_standalone_job(
     # limiti unga adolatsiz bo'lishi mumkin (KEP ham shunday qiladi).
     override = ProblemLanguage.objects.filter(problem=problem, language=language).first()
     time_ms = (override.time_limit_ms if override else None) or problem.time_limit_ms
-    memory_kb = (override.memory_limit_kb if override else None) or problem.memory_limit_kb
+    memory_kb = limits.memory_limit_kb(problem, language, override)
 
     if problem.task_kind == Problem.TaskKind.FUNCTION:
         # The solver wrote a function; the judge runs programs. The author's

@@ -4067,6 +4067,31 @@ def versioning_points_are_wired() -> str | None:
     return None
 
 
+def memory_limit_is_what_the_program_holds() -> str | None:
+    """2026-11-11: MLE - faqat kernel o'ldirganda; til ustamasi chegaraga qo'shiladi (ADR-0060).
+
+    O'lchandi: judge `memory.peak >= chegara` bo'lsa MLE berardi, `memory.peak`
+    esa sahifa keshini ham sanaydi - 1 MB ushlagan, 150 MB fayl yozgan
+    dastur javobini chiqarib ham 64 MB da MLE oldi; production'da Julia A+B
+    aynan 262 144 kB da MLE olgan (2026-09-29). Til ustamasi (JVM 21 MB,
+    Julia 117 MB) masala chegarasidan olinmasin: har ish quruvchisi
+    `limits.memory_limit_kb` dan o'tadi, aks holda bitta yo'lda jim tushadi.
+    """
+    judge = read("services/judge-go/judge.go")
+    if "out.PeakKB >= int64(lim.MemoryKB)" in judge or "\tcase out.OOMKill:\n" not in judge:
+        return "judge.go: MLE sahifa keshi bilan ham beriladi - javobini chiqargan dastur MLE oladi"
+    for rel, needle in (
+        ("apps/api/judging/services.py", "limits.memory_limit_kb(problem, language, override)"),
+        ("apps/api/hacks/services.py", "limits.memory_limit_kb(problem, language, override)"),
+        ("apps/api/problems/serializers.py", "memory_limit_kb(problem, row.language, row)"),
+    ):
+        if needle not in read(rel):
+            return f"{rel}: til ustamasi chegaraga qo'shilmaydi - runtime xotirasi masala chegarasidan olinadi"
+    if '"memory_overhead_kb": spec.get("memory_overhead_kb", 0),' not in read("apps/api/problems/languages.py"):
+        return "languages.py: katalog til ustamasini bazaga yozmaydi"
+    return None
+
+
 def real_numbers_compared_in_the_judge() -> str | None:
     """2026-11-11: haqiqiy son solishtiruvi judge ichida (ADR-0060).
 
@@ -5278,6 +5303,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("faqat javob masalasida kod yurmaydi", answer_problems_run_no_code),
     ("funksiya masalasi hakam dasturi bilan yuriladi", function_problems_are_composed),
     ("haqiqiy son judge ichida solishtiriladi", real_numbers_compared_in_the_judge),
+    ("xotira chegarasi dastur ushlagan xotira", memory_limit_is_what_the_program_holds),
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),

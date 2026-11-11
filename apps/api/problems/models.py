@@ -99,6 +99,11 @@ class Language(models.Model):
     #: RLIMIT_NOFILE for this language's programs; 0 keeps the judge's 64.
     #: R and PowerShell refuse to start below ~192 (measured).
     open_files = models.PositiveIntegerField(default=0)
+    #: Memory the runtime itself takes, added to every problem's limit for
+    #: this language (ADR-0060 § 2.2): a JVM or Julia holds tens of MB before
+    #: the solution allocates a byte. Measured in the judge image on the
+    #: language matrix's A+B (`problems/languages.py`).
+    memory_overhead_kb = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
 
     def __str__(self) -> str:
