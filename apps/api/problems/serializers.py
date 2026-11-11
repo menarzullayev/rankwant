@@ -576,3 +576,13 @@ class MineProblemSerializer(serializers.ModelSerializer[Problem]):
 
     def get_hidden_count(self, problem: Problem) -> int:
         return self._count(problem, False)
+
+
+class ProblemSpeechSerializer(serializers.Serializer[Any]):
+    """The statement as the voice reads it (ADR-0064)."""
+
+    text = serializers.CharField()
+    #: Names the audio file: the same model reading the same text gives the same key.
+    key = serializers.CharField()
+    model = serializers.CharField()
+    chars = serializers.IntegerField()

@@ -5533,6 +5533,46 @@ def neg_decisions_hidden_original_named() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_voice_skips_visibility() -> tuple[bool, str]:
+    """The speech text would be read past the contest gate."""
+    return _decision_broken(
+        "apps/api/problems/views.py",
+        "problem = self.get_object()\n        parts = speech.uzbek_parts(problem)",
+        "problem = Problem.objects.get(slug=slug)\n        parts = speech.uzbek_parts(problem)",
+        "ko'rinish qoidasidan o'tmaydi",
+    )
+
+
+def neg_decisions_voice_key_ignores_model() -> tuple[bool, str]:
+    """Another model would serve the old model's audio."""
+    return _decision_broken(
+        "apps/api/problems/speech.py",
+        'hashlib.sha256(f"{model}\\n{text}".encode())',
+        'hashlib.sha256(f"{text}".encode())',
+        "modelni yoki matnni hisobga olmaydi",
+    )
+
+
+def neg_decisions_voice_formula_fails_statement() -> tuple[bool, str]:
+    """One broken formula would fail the whole statement."""
+    return _decision_broken(
+        "apps/api/problems/speech.py",
+        "except (RecursionError, IndexError, ValueError):",
+        "except KeyError:",
+        "butun shartni yiqitadi",
+    )
+
+
+def neg_decisions_voice_reads_symbols() -> tuple[bool, str]:
+    """A backslash or a dollar would reach the voice."""
+    return _decision_broken(
+        "apps/api/problems/speech.py",
+        'text = re.sub(r"[\\\\{}$^]", " ", text)',
+        "text = text",
+        "o'qilmagan belgi ovozga yetadi",
+    )
+
+
 def neg_cpuz_broken_anchor() -> tuple[bool, str]:
     """A link to a section that no heading carries."""
     return _cpuz_broken(
@@ -9489,6 +9529,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/problems/speech.py",
+    "apps/api/tests/test_speech.py",
     "apps/api/contests/staff_serializers.py",
     "docs/07-adr/0063-contest-partners-official-mirrors.md",
     "apps/api/contests/regional.py",
@@ -13958,6 +14000,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("olib tashlangan ishtirokchi ko'rinsa tutilsin", neg_decisions_olympiad_shows_removed_person),
             ("o'quvchi sahifasi indekslansa tutilsin", neg_decisions_olympiad_person_indexed),
             ("KEP izohi tushsa tutilsin", neg_decisions_olympiad_kep_note_dropped),
+            ("ovoz ko'rinishni chetlasa tutilsin", neg_decisions_voice_skips_visibility),
+            ("ovoz kaliti modelsiz bo'lsa tutilsin", neg_decisions_voice_key_ignores_model),
+            ("buzuq formula shartni yiqitsa tutilsin", neg_decisions_voice_formula_fails_statement),
+            ("ovozga belgi yetsa tutilsin", neg_decisions_voice_reads_symbols),
             ("yashirin joylashuv hududda ko'rinsa tutilsin", neg_decisions_region_shows_hidden_location),
             ("yashirin joylashuv sanalsa tutilsin", neg_decisions_region_counts_hidden_location),
             ("noma'lum hudud qabul qilinsa tutilsin", neg_decisions_region_unknown_accepted),

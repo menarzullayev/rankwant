@@ -3404,6 +3404,30 @@ def contest_partners_official_and_mirrors() -> str | None:
     return None
 
 
+def voice_text_is_spoken_and_guarded() -> str | None:
+    """2026-11-12 (HITL; `docs/decisions/2026-11-12-voice-statements.md`, ADR-0064).
+
+    Shart ovozda o'qilishidan oldin formulalar so'zga aylanadi (o'lchandi: CER 22.5 % → 5.9 %).
+    Matn masala detali bilan bir xil ko'rinishdan o'tadi — boshlanmagan musobaqa masalasining
+    ovozi yo'q. Buzuq formula butun shartni yiqitmaydi; ovozga teskari chiziq, qavs yoki dollar
+    yetmaydi. Audio nomi model + matndan: model almashsa yoki shart tahrirlansa eski fayl
+    berilmaydi.
+    """
+    views = read("apps/api/problems/views.py")
+    if "problem = self.get_object()\n        parts = speech.uzbek_parts(problem)" not in views:
+        return "problems/views.py: ovoz matni masala detalining ko'rinish qoidasidan o'tmaydi"
+    speech = read("apps/api/problems/speech.py")
+    if 'hashlib.sha256(f"{model}\\n{text}".encode())' not in speech:
+        return "problems/speech.py: audio kaliti modelni yoki matnni hisobga olmaydi"
+    if "except (RecursionError, IndexError, ValueError):" not in speech:
+        return "problems/speech.py: buzuq formula butun shartni yiqitadi"
+    if 'text = re.sub(r"[\\\\{}$^]", " ", text)' not in speech:
+        return "problems/speech.py: o'qilmagan belgi ovozga yetadi"
+    if "def speak_math(" not in speech or "darajasigacha" not in read("apps/api/tests/test_speech.py"):
+        return "problems/speech.py: formula so'zga aylantirilmaydi"
+    return None
+
+
 def cpuz_library_is_pinned_and_checked() -> str | None:
     """2026-11-11 (HITL; `docs/decisions/2026-11-11-cpuz-import.md`, ADR-0062).
 
@@ -5882,6 +5906,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("cp.uz kutubxonasi qadalgan va tekshirilgan", cpuz_library_is_pinned_and_checked),
     ("algoritm sahifasi manbani ko'rsatadi", algorithm_pages_carry_the_attribution),
     ("olimpiada arxivi shaxsiy ma'lumotni repoga olmaydi", olympiad_archive_keeps_personal_data_out),
+    ("shart ovozda: formula so'zda, ko'rinish bir xil", voice_text_is_spoken_and_guarded),
     ("musobaqa jadvali hudud bo'yicha, shartlar chop etiladi", contest_standings_by_region_and_print),
     ("hamkor, rasmiy saralash va ko'zgu musobaqa", contest_partners_official_and_mirrors),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
