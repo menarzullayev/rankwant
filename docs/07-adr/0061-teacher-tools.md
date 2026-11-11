@@ -121,6 +121,9 @@ Bundan tashqari hozirgi kod ikki joyda zaif:
   - test S3 ga yoziladi va `TestCase.Origin.GENERATED` deb belgilanadi.
 - **Judge protokoli o'zgarmaydi.** Mavjud `custom` rejim yetadi. Natijalar yangi yo'naltirish kaliti
   bilan qaytadi, aks holda bunday natija bugun tashlab yuborilardi.
+  Amalda kalit — `hack_stage` qiymati `testgen:<yurish>:<test>:<bosqich>`: judge bu maydonni o'qimay
+  qaytaradi, `judging/tasks.py` uni `problems.generation` ga yo'naltiradi. Testlar birma-bir
+  yasaladi, ya'ni bitta yurish navbatda bir vaqtda ko'pi bilan bitta ish ushlaydi.
 - **Kim ishlatadi:** muallif o'z qoralamasi uchun (studiyada) va xodim. Muallif etalon yechim va
   generatorni o'zi yuklaydi.
 - **Chegaralar:** bir yurishda ko'pi bilan 100 test; har test 8 MiB; test ma'lumoti kvotaga

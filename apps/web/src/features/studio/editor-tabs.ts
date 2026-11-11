@@ -2,7 +2,15 @@
  *  server page reads this list to validate `?tab=`, and a value exported
  *  from a `"use client"` file reaches the server only as a reference
  *  (`EDITOR_TABS.includes is not a function`, measured 2026-11-10). */
-export const EDITOR_TABS = ["statement", "tests", "editorial", "translations", "review"] as const;
+export const EDITOR_TABS = [
+  "statement",
+  "tests",
+  // The test generator (ADR-0061 § 6).
+  "generator",
+  "editorial",
+  "translations",
+  "review",
+] as const;
 export type EditorTab = (typeof EDITOR_TABS)[number];
 
 /** The tab a bare URL opens — also the only tab of a new draft. */

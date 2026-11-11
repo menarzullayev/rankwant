@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3176 strings.**
+**3207 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1958,6 +1958,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.status.public` | Nashr qilingan | Жарияланған |  |
 | `studio.tab.statement` | Shart | Шарт |  |
 | `studio.tab.tests` | Testlar | Тесттер |  |
+| `studio.tab.generator` | Test generatori | Тест генераторы |  |
+| `studio.gen.intro` | Har bir parametr qatori generatorga beriladi; uning chiqishi test kiritmasi bo'ladi. Validator bo'lsa kiritmani tekshiradi, javobni etalon yechim beradi. Testlar birma-bir yasaladi va «Testlar» bo'limiga qo'shiladi. | Әр параметр жолы генераторға беріледі; оның шығысы тест кірісі болады. Валидатор болса кірісті тексереді, жауапты эталон шешім береді. Тесттер бір-бірлеп жасалып, «Тесттер» бөліміне қосылады. |  |
+| `studio.gen.generator` | Generator dasturi | Генератор бағдарламасы |  |
+| `studio.gen.generatorHint` | Bitta qatorni stdin'dan o'qiydi va test kiritmasini stdout'ga yozadi. | stdin-нен бір жолды оқып, тест кірісін stdout-қа жазады. |  |
+| `studio.gen.reference` | Etalon yechim | Эталон шешім |  |
+| `studio.gen.referenceHint` | To'g'ri yechim: har kiritmaga javob shu dasturdan olinadi. | Дұрыс шешім: әр кіріске жауап осы бағдарламадан алынады. |  |
+| `studio.gen.validator` | Validator (ixtiyoriy) | Валидатор (міндетті емес) |  |
+| `studio.gen.validatorHint` | Kiritma masala cheklovlariga mosligini tekshiradi; mos kelmasa yurish to'xtaydi. | Кірістің есеп шектеулеріне сәйкестігін тексереді; сәйкес болмаса іске қосу тоқтайды. |  |
+| `studio.gen.saved` | Saqlangan | Сақталған |  |
+| `studio.gen.save` | Saqlash | Сақтау |  |
+| `studio.gen.lines` | Parametrlar | Параметрлер |  |
+| `studio.gen.linesHint` | Har qator — bitta test, masalan: 10 1000 yoki n=200000 seed=7. Ko'pi bilan 100 qator. | Әр жол — бір тест, мысалы: 10 1000 немесе n=200000 seed=7. Ең көбі 100 жол. |  |
+| `studio.gen.group` | Test turi | Тест түрі |  |
+| `studio.gen.group.random` | Tasodifiy | Кездейсоқ |  |
+| `studio.gen.group.boundary` | Chegara | Шекаралық |  |
+| `studio.gen.group.maximum` | Maksimal | Максималды |  |
+| `studio.gen.group.stress` | Yuklama (stress) | Стресс |  |
+| `studio.gen.group.special` | Alohida holat | Ерекше жағдай |  |
+| `studio.gen.start` | {count} ta test yasash | {count} тест жасау |  |
+| `studio.gen.status.running` | Ishlayapti | Орындалуда |  |
+| `studio.gen.status.done` | Tayyor | Дайын |  |
+| `studio.gen.status.failed` | To'xtadi | Тоқтады |  |
+| `studio.gen.progress` | {made} / {total} test | {made} / {total} тест |  |
+| `studio.gen.size` | {size} MB yozildi | {size} МБ жазылды |  |
 | `studio.tab.testsCount` | Testlar ({count}) | Тесттер ({count}) |  |
 | `studio.tab.editorial` | Yechim tahlili | Шешім талдауы |  |
 | `studio.tab.review` | Ko'rik | Тексеру |  |
@@ -3138,6 +3162,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Ең көбі 3 жаттықтырушы болуы мүмкін |  |
 | `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Бұл байланыс аяқталған |  |
 | `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Есеп табылмады немесе ашық емес |  |
+| `error.generation_empty` | Kamida bitta qator yozing | Кемінде бір жол жазыңыз |  |
+| `error.generation_too_many` | Bir yurishda ko'pi bilan 100 ta test | Бір іске қосуда ең көбі 100 тест |  |
+| `error.generation_line_long` | Qator 1000 belgidan uzun | Жол 1000 таңбадан ұзын |  |
+| `error.generation_group` | Testlar nimani tekshirishini tanlang | Тесттер нені тексеретінін таңдаңыз |  |
+| `error.generation_no_generator` | Avval generator dasturini yuklang | Алдымен генераторды жүктеңіз |  |
+| `error.generation_no_reference` | Avval etalon yechimni yuklang | Алдымен эталон шешімді жүктеңіз |  |
+| `error.generation_running` | Hozir bitta yurish ishlayapti — tugashini kuting | Іске қосу орындалуда — аяқталуын күтіңіз |  |
 | `error.quiz_taken` | Bu testni faqat bir marta topshirish mumkin | Бұл тестті тек бір рет тапсыруға болады |  |
 | `error.quiz_not_started` | Avval testni boshlang | Алдымен тестті бастаңыз |  |
 | `error.quiz_in_use` | Test sinfga berilgan yoki topshirilgan — o'chirib bo'lmaydi | Тест сыныпқа берілген немесе тапсырылған — жою мүмкін емес |  |

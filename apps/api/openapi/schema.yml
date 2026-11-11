@@ -9850,6 +9850,228 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/staff/problems/{slug}/generate/:
+    get:
+      operationId: staff_problems_generate_list
+      description: Run the generator over lines of parameters, one test each; GET
+        lists runs.
+      summary: Generator bilan testlar yasash
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGenerationRunList'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationRun'
+          description: ''
+    post:
+      operationId: staff_problems_generate_create
+      description: Run the generator over lines of parameters, one test each; GET
+        lists runs.
+      summary: Generator bilan testlar yasash
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Generate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Generate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Generate'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGenerationRunList'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationRun'
+          description: ''
+  /api/v1/staff/problems/{slug}/generator/:
+    get:
+      operationId: staff_problems_generator_retrieve
+      description: The test generator (ADR-0061 § 6).
+      summary: Test generatori yuklash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffGenerator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffGenerator'
+          description: ''
+        '204':
+          description: No response body
+    put:
+      operationId: staff_problems_generator_update
+      description: The test generator (ADR-0061 § 6).
+      summary: Test generatori yuklash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffGenerator'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffGenerator'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffGenerator'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffGenerator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffGenerator'
+          description: ''
+        '204':
+          description: No response body
+    delete:
+      operationId: staff_problems_generator_destroy
+      description: The test generator (ADR-0061 § 6).
+      summary: Test generatori yuklash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffGenerator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffGenerator'
+          description: ''
+        '204':
+          description: No response body
   /api/v1/staff/problems/{slug}/languages/:
     get:
       operationId: staff_problems_languages_list
@@ -9989,7 +10211,8 @@ paths:
         Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
 
         Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
-        masala bilan keladi va faqat xodim yuklaydi.
+        masala bilan keladi: xodim yoki qoralamaning muallifi yuklaydi
+        (ADR-0061 § 6 — generator testlariga javobni ham shu beradi).
       summary: Namuna yechim yuklash
       parameters:
       - in: path
@@ -10023,7 +10246,8 @@ paths:
         Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
 
         Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
-        masala bilan keladi va faqat xodim yuklaydi.
+        masala bilan keladi: xodim yoki qoralamaning muallifi yuklaydi
+        (ADR-0061 § 6 — generator testlariga javobni ham shu beradi).
       summary: Namuna yechim yuklash
       parameters:
       - in: path
@@ -10069,7 +10293,8 @@ paths:
         Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
 
         Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
-        masala bilan keladi va faqat xodim yuklaydi.
+        masala bilan keladi: xodim yoki qoralamaning muallifi yuklaydi
+        (ADR-0061 § 6 — generator testlariga javobni ham shu beradi).
       summary: Namuna yechim yuklash
       parameters:
       - in: path
@@ -17853,6 +18078,70 @@ components:
         * `female` - Female
         * `non_binary` - Non-binary
         * `prefer_not` - Prefer not to say
+    Generate:
+      type: object
+      properties:
+        lines:
+          type: string
+        group:
+          allOf:
+          - $ref: '#/components/schemas/GroupEnum'
+          default: random
+      required:
+      - lines
+    GenerationRun:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/GenerationRunStatusEnum'
+        group:
+          type: string
+          maxLength: 16
+        total:
+          type: integer
+          readOnly: true
+        current:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        made:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        bytes_written:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        error:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - id
+      - total
+    GenerationRunStatusEnum:
+      enum:
+      - running
+      - done
+      - failed
+      type: string
+      description: |-
+        * `running` - Ishlayapti
+        * `done` - Tayyor
+        * `failed` - To'xtadi
     GroupEnum:
       enum:
       - sample
@@ -19691,6 +19980,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Follower'
+    PaginatedGenerationRunList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenerationRun'
     PaginatedHackList:
       type: object
       required:
@@ -25480,6 +25792,24 @@ components:
         force:
           type: boolean
           default: false
+    StaffGenerator:
+      type: object
+      description: |-
+        The test generator: one line of parameters in, one test input out
+        (ADR-0061 § 6).
+      properties:
+        language:
+          type: string
+        source:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - language
+      - source
+      - updated_at
     StaffHackathon:
       type: object
       properties:

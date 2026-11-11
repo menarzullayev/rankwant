@@ -504,6 +504,8 @@ class TestCase(models.Model):
         #: hack testi keyin qo'shilgan, ya'ni eski `AC` lar uni ko'rmagan
         #: va nega qayta tekshirilgani shu ustundan ko'rinadi.
         HACK = "hack", "Hack"
+        #: Made by the problem's test generator (ADR-0061 § 6).
+        GENERATED = "gen", "Generator"
 
     class Group(models.TextChoices):
         """Testning SEMANTIK toifasi — `origin` dan butunlay boshqa o'q.
@@ -680,6 +682,70 @@ class ReferenceSolution(UpdatedModel):
 
     def __str__(self) -> str:
         return f"etalon · {self.problem.slug}"
+
+
+class TestGenerator(UpdatedModel):
+    """A program that writes one test input from one line of parameters
+    (ADR-0061 § 6, owner decision ⑬).
+
+    Each line the author writes is fed to its stdin; its stdout becomes the
+    test's input. The validator, if there is one, checks that input, and the
+    reference solution answers it. Untrusted like any other code: it runs in
+    the sandbox with a submission's limits.
+    """
+
+    problem = models.OneToOneField(Problem, on_delete=models.CASCADE, related_name="test_generator")
+    language = models.ForeignKey(Language, on_delete=models.PROTECT, related_name="+")
+    source = models.TextField()
+
+    def __str__(self) -> str:
+        return f"generator · {self.problem.slug}"
+
+
+class GenerationRun(TimeStampedModel):
+    """One run of the generator over a list of lines, one test per line.
+
+    The tests are made one at a time: a run never has more than one job in
+    the judge queue, so submissions do not wait behind it.
+    """
+
+    class Status(models.TextChoices):
+        RUNNING = "running", "Ishlayapti"
+        DONE = "done", "Tayyor"
+        FAILED = "failed", "To'xtadi"
+
+    class Stage(models.TextChoices):
+        GENERATE = "gen", "Generator"
+        ANSWER = "ref", "Etalon yechim"
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="generation_runs")
+    started_by = models.ForeignKey(
+        "core.User", null=True, on_delete=models.SET_NULL, related_name="generation_runs"
+    )
+    #: The generator's stdin, one test each.
+    lines = models.JSONField(default=list)
+    #: What the made tests check (`TestCase.Group`).
+    group = models.CharField(max_length=16, default=TestCase.Group.RANDOM)
+    status = models.CharField(
+        max_length=8, choices=Status.choices, default=Status.RUNNING, db_index=True
+    )
+    #: 0-based line the run is on, and its step.
+    current = models.PositiveIntegerField(default=0)
+    stage = models.CharField(max_length=4, choices=Stage.choices, default=Stage.GENERATE)
+    #: The current line's input, between the two steps.
+    input_ref = models.CharField(max_length=500, blank=True)
+    input_size = models.PositiveIntegerField(default=0)
+    made = models.PositiveIntegerField(default=0)
+    #: Test data written to storage; counts against the plan (`storage_mb`).
+    bytes_written = models.PositiveBigIntegerField(default=0)
+    error = models.TextField(blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug} gen {self.pk} ({self.status})"
 
 
 class ProblemTranslation(TimeStampedModel):
