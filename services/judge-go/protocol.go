@@ -89,7 +89,7 @@ type TrustedProgram struct {
 }
 
 type Checker struct {
-	// standard | interactive | scorer
+	// standard | special | interactive | scorer | real (compare.go)
 	//
 	// scorer: checker chiqishning OXIRGI qatorida 0–100 oralig'ida son
 	// qaytaradi. To'g'ri/noto'g'ri emas, sifat bahosi — NP-hard va
@@ -102,6 +102,9 @@ type Checker struct {
 	Interactor *TrustedProgram `json:"interactor,omitempty"`
 	// special va scorer uchun checker dasturi.
 	Program *TrustedProgram `json:"program,omitempty"`
+	// real: the tolerance of the numeric comparison (ADR-0060); 0 means
+	// DefaultEpsilon. Built into the judge, no program.
+	Epsilon float64 `json:"epsilon,omitempty"`
 }
 
 // IO — masala kiritish/chiqish usuli (Robocontest uslubidagi fayl nomlari).
@@ -135,7 +138,11 @@ const (
 // instead of being judged with fields this build does not know about.
 // Absent (0) is a job from before the field existed and is accepted.
 // Bump together with `JUDGE_PROTOCOL_VERSION` in apps/api/judging/provider.py.
-const ProtocolVersion = 1
+//
+// 2 (ADR-0060): the `real` checker and `checker.epsilon`. The API asks for
+// 2 only in jobs that use them, so a build that predates them refuses
+// exactly those jobs and keeps grading the rest.
+const ProtocolVersion = 2
 
 type Job struct {
 	ProtocolVersion int    `json:"protocol_version,omitempty"`

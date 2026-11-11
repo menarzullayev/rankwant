@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2978 strings.**
+**2983 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1726,6 +1726,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.value.difficulty` | Qiyinlik | Мураккабӣ |  |
 | `admin.label.value.difficultyRange` | Qiyinlik (800–3500, qadam 100) | Мураккабӣ (800–3500, қадам 100) |  |
 | `admin.label.value.scoring` | Skoring (0–100) | Скоринг (0–100) |  |
+| `admin.label.value.realTolerance` | Aniqlik (ε) | Дақиқӣ (ε) |  |
+| `admin.label.value.realNumbers` | Haqiqiy son (aniqlik bilan) | Адади ҳақиқӣ (бо дақиқӣ) |  |
 | `admin.label.value.timeLimit` | Vaqt limiti, ms | Маҳдудияти вақт, мс |  |
 | `admin.label.value.memoryLimit` | Xotira limiti, KB | Маҳдудияти хотира, КБ |  |
 | `admin.label.text.title` | Sarlavha | Сарлавҳа |  |
@@ -1849,6 +1851,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.editorialPrice` | Yechmaganlar uchun. 0 — hammaga bepul | Барои ҳал накардаҳо. 0 — барои ҳама ройгон |  |
 | `admin.help.interactorOnlyInteractive` | Faqat Interactive uchun. Bo'sh = yo'q | Танҳо барои Interactive. Холӣ = нест |  |
 | `admin.help.checkerRequired` | Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi | Барои «Махсус» ва «Скоринг». Холӣ бошад, ҳар супориш IE мегирад |  |
+| `admin.help.realToleranceOnlyReal` | Faqat «Haqiqiy son» checkerida: \|javob − hakam\| ≤ ε · max(1, \|hakam\|). Standart 1e-6 | Танҳо барои санҷиши «Адади ҳақиқӣ»: \|ҷавоб − ҳакам\| ≤ ε · max(1, \|ҳакам\|). Пешфарз 1e-6 |  |
 | `admin.help.testlibInvocation` | testlib chaqiruvi: checker <input> <output> <answer> | Даъвати testlib: checker <input> <output> <answer> |  |
 | `admin.help.parentEmptyRoot` | Bo'sh = ildiz | Холӣ = реша |  |
 | `admin.help.questCodeMatch` | Hodisaga bog'lanish uchun qvant/quests.py dagi kod bilan mos bo'lishi kerak | Барои пайваст кардани ҳодиса бояд ба коди qvant/quests.py мувофиқ бошад |  |
@@ -1941,6 +1944,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.review` | Ko'rik | Тафтиш |  |
 | `studio.tab.translations` | Tarjimalar | Тарҷумаҳо |  |
 | `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Ин масъала ҳоло бо забони {locale} нест — бо забони {shown} нишон дода мешавад. |  |
+| `problem.realToleranceHint` | Sonlar {eps} aniqlik bilan solishtiriladi: 2.0 va 2 bir xil javob | Ададҳо бо дақиқии {eps} муқоиса мешаванд: 2.0 ва 2 як ҷавобанд |  |
+| `problem.realTolerance` | Aniqlik {eps} | Дақиқӣ {eps} |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Матни масъала бо забонҳои дигар. Майдони тарҷуманашуда ба хонанда аз матни аслӣ нишон дода мешавад. |  |
 | `translation.base` | Asl til: {locale} | Забони аслӣ: {locale} |  |
 | `translation.none` | Tarjima yo'q | Тарҷума нест |  |

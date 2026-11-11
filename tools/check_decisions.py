@@ -4067,6 +4067,35 @@ def versioning_points_are_wired() -> str | None:
     return None
 
 
+def real_numbers_compared_in_the_judge() -> str | None:
+    """2026-11-11: haqiqiy son solishtiruvi judge ichida (ADR-0060).
+
+    Abramyan paketining 358 masalasi kasr son javob beradi: aniq solishtiruv
+    `2.0` va `2` ni rad etadi. Xato bu yerda JIM bo'ladi - noto'g'ri qoida
+    to'g'ri yechimga WA beradi va sabab hech qayerda ko'rinmaydi. Eski judge
+    noma'lum turni aniq solishtiruvga tushirardi, shuning uchun `real` ishi
+    2-protokolni oladi va noma'lum tur `IE` bilan rad etiladi.
+    """
+    compare = read("services/judge-go/compare.go")
+    if "math.Abs(value-jury) > eps*math.Max(1, math.Abs(jury))" not in compare:
+        return "compare.go: haqiqiy son chegarasi hakam javobiga nisbiy emas - katta sonlar asossiz WA oladi"
+    judge = read("services/judge-go/judge.go")
+    if "	if !knownChecker(job.Checker.Type) {\n" not in judge:
+        return "judge.go: noma'lum checker turi rad etilmaydi - aniq solishtiruvga jim tushadi"
+    if "		return compareAnswer(out.Stdout, test.Expected, cmp)\n" not in judge:
+        return "judge.go: `classify` ishning solishtiruvidan foydalanmaydi"
+    if '                "protocol_version": job_protocol_version(self.checker),\n' not in read(
+        "apps/api/judging/provider.py"
+    ):
+        return "provider.py: `real` ishi yangi protokolni so'ramaydi - eski judge unga jim WA beradi"
+    for rel in ("apps/api/judging/services.py", "apps/api/hacks/services.py"):
+        if "evaluation.checker_spec(problem)" not in read(rel):
+            return f"{rel}: ish checker'i `checker_spec` dan qurilmaydi - aniqlik (epsilon) yetib bormaydi"
+    if '        spec["epsilon"] = problem.real_tolerance\n' not in read("apps/api/problems/evaluation.py"):
+        return "evaluation.py: `real` masalaning aniqligi ishga yozilmaydi"
+    return None
+
+
 def evaluation_paths_are_proven() -> str | None:
     """2026-10-07: special checker, interactive va scorer haqiqiy judge'da isbotlangan.
 
@@ -5248,6 +5277,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("ikki bosqichli yurishlar hech narsa bo'lishmaydi", two_pass_runs_share_nothing),
     ("faqat javob masalasida kod yurmaydi", answer_problems_run_no_code),
     ("funksiya masalasi hakam dasturi bilan yuriladi", function_problems_are_composed),
+    ("haqiqiy son judge ichida solishtiriladi", real_numbers_compared_in_the_judge),
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),

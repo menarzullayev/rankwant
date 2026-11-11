@@ -10,7 +10,7 @@ func TestClassifyAnswerBothAcceptsStdout(t *testing.T) {
 	lim := Limits{TimeMS: 1000, MemoryKB: 262144, OutputKB: 65536}
 	test := Test{Expected: "3"}
 	out := &runOutcome{ExitCode: 0, Stdout: "3"}
-	if got := classifyAnswer(out, test, lim, t.TempDir(), IO{Mode: "both"}); got != VAC {
+	if got := classifyAnswer(out, test, lim, t.TempDir(), IO{Mode: "both"}, Compare{}); got != VAC {
 		t.Fatalf("stdout AC: got %q", got)
 	}
 }
@@ -26,7 +26,7 @@ func TestClassifyAnswerBothAcceptsOutputFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := &runOutcome{ExitCode: 0, Stdout: "wrong"}
-	if got := classifyAnswer(out, test, lim, work, IO{Mode: "both"}); got != VAC {
+	if got := classifyAnswer(out, test, lim, work, IO{Mode: "both"}, Compare{}); got != VAC {
 		t.Fatalf("file AC: got %q", got)
 	}
 }
@@ -40,7 +40,7 @@ func TestClassifyAnswerBothRejectsStaleOutputFile(t *testing.T) {
 	}
 	resetIOArtifacts(work, IO{Mode: "both"})
 	out := &runOutcome{ExitCode: 0, Stdout: "1"}
-	if got := classifyAnswer(out, test, lim, work, IO{Mode: "both"}); got != VWA {
+	if got := classifyAnswer(out, test, lim, work, IO{Mode: "both"}, Compare{}); got != VWA {
 		t.Fatalf("stale file removed: got %q", got)
 	}
 }

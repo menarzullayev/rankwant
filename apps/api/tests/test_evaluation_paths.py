@@ -66,7 +66,10 @@ class TestCombinations:
             (STDIO, "special"),
             (STDIO, "interactive"),
             (STDIO, "scorer"),
+            (STDIO, "real"),
             (BOTH, "standard"),
+            # The judge's own comparison reads output.txt too (ADR-0060).
+            (BOTH, "real"),
         ],
     )
     def test_a_pair_the_judge_implements_is_accepted(self, io_mode: str, checker: str) -> None:

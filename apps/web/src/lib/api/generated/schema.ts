@@ -7130,9 +7130,10 @@ export interface components {
          *     * `special` - Maxsus
          *     * `interactive` - Interactive
          *     * `scorer` - Skoring
+         *     * `real` - Haqiqiy son
          * @enum {string}
          */
-        CheckerTypeEnum: "standard" | "special" | "interactive" | "scorer";
+        CheckerTypeEnum: "standard" | "special" | "interactive" | "scorer" | "real";
         /** @description `is_correct` ATAYLAB yo'q — baholash serverda. */
         ChoicePublic: {
             readonly id: number;
@@ -9612,6 +9613,8 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /** Format: double */
+            real_tolerance?: number;
             /**
              * @description function: the submission is inserted into the per-language harness.
              *
@@ -10204,6 +10207,8 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /** Format: double */
+            real_tolerance?: number;
             /**
              * @description function: the submission is inserted into the per-language harness.
              *
@@ -11015,6 +11020,8 @@ export interface components {
             /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
+            /** Format: double */
+            real_tolerance?: number;
             /**
              * @description function: the submission is inserted into the per-language harness.
              *
@@ -16039,8 +16046,9 @@ export interface operations {
                  *     * `special` - Maxsus
                  *     * `interactive` - Interactive
                  *     * `scorer` - Skoring
+                 *     * `real` - Haqiqiy son
                  */
-                checker_type?: "interactive" | "scorer" | "special" | "standard";
+                checker_type?: "interactive" | "real" | "scorer" | "special" | "standard";
                 difficulty?: number;
                 difficulty__gte?: number;
                 difficulty__lte?: number;

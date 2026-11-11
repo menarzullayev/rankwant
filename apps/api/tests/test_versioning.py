@@ -34,8 +34,20 @@ def _job() -> JudgeJob:
 
 
 class TestProtocolVersion:
-    def test_every_job_carries_the_version(self) -> None:
-        assert json.loads(_job().to_json())["protocol_version"] == JUDGE_PROTOCOL_VERSION
+    def test_every_job_carries_the_version_it_needs(self) -> None:
+        # The oldest shape that carries the job (ADR-0060): a judge from
+        # before the `real` checker refuses only the jobs that use it.
+        assert json.loads(_job().to_json())["protocol_version"] == 1
+        real = JudgeJob(
+            job_id="j",
+            attempt_id=1,
+            language={},
+            source="",
+            limits={},
+            tests=[],
+            checker={"type": "real", "epsilon": 1e-6},
+        )
+        assert json.loads(real.to_json())["protocol_version"] == JUDGE_PROTOCOL_VERSION == 2
 
     def test_understood_results(self) -> None:
         assert result_is_understood({})  # a judge from before the field

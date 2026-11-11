@@ -20,6 +20,7 @@ import { inReaderAlphabet } from "@/i18n/alphabet";
 import { fill, LOCALE_NAMES, t, type Locale } from "@/i18n/messages";
 import type { ProblemDetail } from "@/lib/api";
 import { stripDuplicateStatementHeading } from "@/lib/statement-body";
+import { formatTolerance } from "@/lib/tolerance";
 
 /** Tavsif tab paneli — mavjud masala matni va metadata.
  *
@@ -69,6 +70,20 @@ export function ProblemDescription({
             {problem.time_limit_ms} ms · {Math.round(problem.memory_limit_kb / 1024)}{" "}
             MB
           </span>
+          {problem.checker_type === "real" && (
+            // ADR-0060: the solver needs to know the answer is not compared
+            // character by character, and how close is close enough.
+            <span
+              className="rw-radius-full rw-warn-soft px-2.5 py-1 text-theme-xs font-semibold rw-warn-ink tabular-nums"
+              title={fill(t(locale, "problem.realToleranceHint"), {
+                eps: formatTolerance(problem.real_tolerance),
+              })}
+            >
+              {fill(t(locale, "problem.realTolerance"), {
+                eps: formatTolerance(problem.real_tolerance),
+              })}
+            </span>
+          )}
           <StatementTextSizeControls />
           <CopyButton text={slug} size="sm" />
         </div>

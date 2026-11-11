@@ -17,7 +17,21 @@ from django.conf import settings
 #: job from a NEWER shape; the API parks a result from a newer shape instead of
 #: guessing at it. Bump together with `ProtocolVersion` in
 #: services/judge-go/protocol.go.
-JUDGE_PROTOCOL_VERSION = 1
+#:
+#: 2 (ADR-0060): the `real` checker and `checker.epsilon`.
+JUDGE_PROTOCOL_VERSION = 2
+
+
+def job_protocol_version(checker: dict[str, Any]) -> int:
+    """The oldest shape that carries everything this job uses.
+
+    A judge that predates a feature then refuses only the jobs that need it
+    (IE, visible) and keeps grading the rest — instead of the version making
+    every job unreadable to it while a deploy or a rollback is half done. A
+    `real` job judged by such a build would fall through to the exact
+    comparison and give a correct `2.0` a WA.
+    """
+    return 2 if checker.get("type") == "real" else 1
 
 
 def result_is_understood(result: dict[str, Any]) -> bool:
@@ -64,7 +78,7 @@ class JudgeJob:
         # umuman yetib bormaydi va hech qanday xato chiqmaydi.
         return json.dumps(
             {
-                "protocol_version": JUDGE_PROTOCOL_VERSION,
+                "protocol_version": job_protocol_version(self.checker),
                 "job_id": self.job_id,
                 "attempt_id": self.attempt_id,
                 "language": self.language,

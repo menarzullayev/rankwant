@@ -120,6 +120,8 @@ export type ProblemDetail = Problem & {
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: string;
+  /** `real` problems: |answer − jury| ≤ this · max(1, |jury|) (ADR-0060). */
+  real_tolerance: number;
   task_kind: string;
   /** `answer` problems: the tests a file is sent for. */
   answer_tests: number[];

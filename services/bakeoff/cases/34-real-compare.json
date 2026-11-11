@@ -1,0 +1,49 @@
+{
+  "id": "34-real-compare",
+  "title": "Haqiqiy son solishtiruvi — boshqacha yozilgan to'g'ri son qabul qilinadi",
+  "measures": "ADR-0060: `real` turi judge ichida; 2.000000 va 2, nisbiy xato 1e-6 dan kichik javob AC oladi",
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "source": "a, b = map(float, input().split())\nprint(f\"{a / b:.9f}\")\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "4 2\n",
+      "expected": "2\n"
+    },
+    {
+      "index": 2,
+      "input": "1 3\n",
+      "expected": "0.333333\n"
+    },
+    {
+      "index": 3,
+      "input": "2000000 3\n",
+      "expected": "666666.6667\n"
+    }
+  ],
+  "expect_verdict": "AC",
+  "must_hold": [
+    "2.000000000 va 2 aniq solishtiruvda WA berardi",
+    "0.333333333 hakamning 0.333333 idan 3.3e-7 farq qiladi — chegaradan ichkarida"
+  ],
+  "mode": "acm",
+  "implemented": true,
+  "checker": {
+    "type": "real",
+    "epsilon": 1e-06
+  }
+}

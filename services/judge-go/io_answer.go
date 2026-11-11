@@ -51,12 +51,12 @@ func writeTestInputFile(work string, test Test, io IO) error {
 
 // classifyAnswer applies stdout comparison and, when the job allows file I/O,
 // also accepts a matching output.txt (Robocontest-style dual acceptance).
-func classifyAnswer(out *runOutcome, test Test, lim Limits, work string, io IO) string {
+func classifyAnswer(out *runOutcome, test Test, lim Limits, work string, io IO, cmp Compare) string {
 	mode := ioMode(io)
 	if mode == "stdio" {
-		return classify(out, test, lim)
+		return classify(out, test, lim, cmp)
 	}
-	base := classify(out, test, lim)
+	base := classify(out, test, lim, cmp)
 	if base != VAC && base != VWA && base != VPE {
 		return base
 	}
@@ -69,7 +69,7 @@ func classifyAnswer(out *runOutcome, test Test, lim Limits, work string, io IO) 
 	}
 	synth := *out
 	synth.Stdout = string(data)
-	fileV := classify(&synth, test, lim)
+	fileV := classify(&synth, test, lim, cmp)
 	if mode == "file" {
 		return fileV
 	}

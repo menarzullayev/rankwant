@@ -503,6 +503,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "time_limit_ms",
             "memory_limit_kb",
             "checker_type",
+            "real_tolerance",
             "task_kind",
             "answer_tests",
             "source",

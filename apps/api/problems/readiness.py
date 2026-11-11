@@ -93,12 +93,13 @@ def has_hidden_test(problem: Problem) -> bool:
 def checker_ready(problem: Problem) -> bool:
     """S2 — the configured checker type is complete.
 
-    `standard` needs nothing. `special`/`scorer` need a checker program and
+    `standard` and `real` need nothing (the judge compares by itself).
+    `special`/`scorer` need a checker program and
     its language; `interactive` needs an interactor and its language. Without
     them every submission returns IE, so the problem cannot be graded at all.
     """
     kind = problem.checker_type
-    if kind == Problem.Checker.STANDARD:
+    if kind in (Problem.Checker.STANDARD, Problem.Checker.REAL):
         return True
     if kind == Problem.Checker.INTERACTIVE:
         source, language_id = problem.interactor_source, problem.interactor_language_id
