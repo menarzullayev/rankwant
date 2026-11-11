@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2990 strings.**
+**3001 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2269,6 +2269,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `qvant.intro` | Vazifalarni bajarib Qvant to'plang. Qvant reytingga ta'sir qilmaydi — u faqat do'kon uchun. | Wazıypalardı orınlap Qvant jıynań. Qvant reytingke tásir etpeydi — ol tek dúkan ushın. |  |
 | `qvant.signIn` | Balansni ko'rish uchun tizimga kiring. | Balanstı kóriw ushın sistemaǵa kiriń. |  |
 | `roadmaps.intro` | Noldan cho'qqigacha bosqichma-bosqich: maqola → masala → maqola. | Nólden shıńǵa shekem basqıshlap: maqala → másele → maqala. |  |
+| `roadmaps.sections` | {count} ta bo'lim | {count} bólim |  |
+| `roadmaps.progress` | {solved} / {total} yechildi | {solved} / {total} sheshildi |  |
+| `roadmaps.start` | Boshlash: {step} | Baslaw: {step} |  |
+| `roadmaps.continue` | Davom ettirish: {step} | Dawam ettiriw: {step} |  |
+| `roadmaps.done` | Reja tugadi — barcha qadamlar yechilgan | Reje tamamlandı — barlıq qádemler sheshilgen |  |
+| `roadmaps.all` | Barcha o'quv rejalari | Barlıq oqıw rejeleri |  |
+| `roadmaps.free` | Bepul | Biypul |  |
+| `roadmaps.sectionNumber` | {number}-bo'lim | {number}-bólim |  |
+| `roadmaps.solved` | Yechilgan | Sheshilgen |  |
+| `roadmaps.previous` | ← Oldingi bo'lim | ← Aldıńǵı bólim |  |
+| `roadmaps.next` | Keyingi bo'lim → | Keyingi bólim → |  |
 | `team.intro` | RankWant — O'zbekiston va dunyo uchun sport dasturlash platformasi. Ochiq reyting, o'z judge, o'z kontent. Loyiha hozir ochiq preview bosqichida. | RankWant — Ózbekstan hám dúnya ushın sportlıq programmalastırıw platforması. Ashıq reyting, óz judge, óz kontent. Proyekt házir ashıq preview basqıshında. |  |
 | `problem.solvers.codeColumn` | Kod, belgi | Kod, belgi |  |
 | `problem.stats.empty` | Hali urinish yo'q — statistika bo'sh. | Ázirge háreket joq — statistika bos. |  |

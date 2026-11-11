@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
@@ -135,7 +136,7 @@ function Roadmaps({ items, locale }: { items: Roadmap[]; locale: Locale }) {
           ? Math.round((roadmap.solved_steps / roadmap.step_count) * 100)
           : 0;
         return (
-          <Link key={roadmap.slug} href="/roadmaps" className="block">
+          <Link key={roadmap.slug} href={`/roadmaps/${roadmap.slug}` as Route} className="block">
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-theme-sm font-medium rw-strong">
                 {inReaderAlphabet(roadmap.title, roadmap.locale)}

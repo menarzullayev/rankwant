@@ -1,8 +1,15 @@
 from __future__ import annotations
 
+from typing import Any
+
 from django.db.models import Count
+from django.http import Http404
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from content.models import Article, Roadmap
 from content.serializers import (
@@ -10,9 +17,14 @@ from content.serializers import (
     ArticleListSerializer,
     RoadmapDetailSerializer,
     RoadmapListSerializer,
+    RoadmapSectionPageSerializer,
+    localized,
+    reader_locale,
+    step_title,
 )
 from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
+from problems import translations as problem_translations
 
 
 @crud_summaries(one="maqola", many="maqolalar", only=("list", "retrieve"))
@@ -43,6 +55,18 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet[Article]):
         return ArticleDetailSerializer if self.action == "retrieve" else ArticleListSerializer
 
 
+def solved_problem_ids(request: Request) -> set[int]:
+    """The reader's solved problems — every solve, the unofficial too: a study
+    plan's progress counts them (ADR-0060 § 2.3)."""
+    if not request.user.is_authenticated:
+        return set()
+    from ratings.models import UserSolvedProblem
+
+    return set(
+        UserSolvedProblem.objects.filter(user=request.user).values_list("problem_id", flat=True)
+    )
+
+
 @crud_summaries(one="o'quv yo'l xaritasi", many="o'quv yo'l xaritalari", only=("list", "retrieve"))
 class RoadmapViewSet(viewsets.ReadOnlyModelViewSet[Roadmap]):
     permission_classes = [AllowAny]
@@ -51,21 +75,79 @@ class RoadmapViewSet(viewsets.ReadOnlyModelViewSet[Roadmap]):
 
     def get_serializer_context(self):  # type: ignore[no-untyped-def]
         context = dict(super().get_serializer_context())
-        user = self.request.user
-        if user.is_authenticated:
-            from ratings.models import UserSolvedProblem
-
-            context["solved_problem_ids"] = set(
-                UserSolvedProblem.objects.filter(user=user).values_list("problem_id", flat=True)
-            )
+        context["solved_problem_ids"] = solved_problem_ids(self.request)
         return context
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
         return (
             Roadmap.objects.filter(is_published=True)
-            .prefetch_related("steps__article", "steps__problem")
-            .annotate(step_count=Count("steps"))
+            .prefetch_related("steps__article", "steps__problem", "sections")
+            .annotate(
+                step_count=Count("steps", distinct=True),
+                section_count=Count("sections", distinct=True),
+            )
         )
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return RoadmapDetailSerializer if self.action == "retrieve" else RoadmapListSerializer
+
+    @extend_schema(summary="O'quv rejasi bo'limi", responses=RoadmapSectionPageSerializer)
+    @action(detail=True, url_path=r"sections/(?P<order>[0-9]+)")
+    def section(self, request: Request, slug: str, order: str) -> Response:
+        """One chapter of a study plan with the reader's progress (ADR-0060 § 2.4).
+
+        A plan of 1 100 problems is read a chapter at a time: the plan's own
+        page lists the chapters and their progress.
+        """
+        roadmap = Roadmap.objects.filter(slug=slug, is_published=True).first()
+        if roadmap is None:
+            raise Http404
+        sections = list(roadmap.sections.all())
+        index = next((i for i, s in enumerate(sections) if s.order == int(order)), None)
+        if index is None:
+            raise Http404
+        section = sections[index]
+        locale = reader_locale({"request": request})
+        solved = solved_problem_ids(request)
+        steps = list(
+            section.steps.select_related("problem", "article")
+            .prefetch_related(
+                problem_translations.prefetch(locale, through="problem__translations")
+            )
+            .order_by("order")
+        )
+        rows: list[dict[str, Any]] = [
+            {
+                "order": step.order,
+                "title": step_title(step, locale),
+                "problem": step.problem.slug if step.problem else None,
+                "article": step.article.slug if step.article else None,
+                "difficulty": step.problem.difficulty if step.problem else None,
+                "is_optional": step.is_optional,
+                "solved": step.problem_id in solved,
+            }
+            for step in steps
+        ]
+        text = localized(
+            roadmap.locale, roadmap.title, roadmap.description, roadmap.translations, locale
+        )
+        return Response(
+            {
+                "roadmap": {"slug": roadmap.slug, "title": text["title"], "locale": text["locale"]},
+                "section": {
+                    "order": section.order,
+                    **localized(
+                        roadmap.locale,
+                        section.title,
+                        section.description,
+                        section.translations,
+                        locale,
+                    ),
+                    "step_count": len(rows),
+                    "solved_steps": sum(1 for row in rows if row["solved"]),
+                },
+                "steps": rows,
+                "previous": sections[index - 1].order if index > 0 else None,
+                "next": sections[index + 1].order if index + 1 < len(sections) else None,
+            }
+        )

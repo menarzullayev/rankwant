@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2990 strings.**
+**3001 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2269,6 +2269,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `qvant.intro` | Vazifalarni bajarib Qvant to'plang. Qvant reytingga ta'sir qilmaydi — u faqat do'kon uchun. | Тапсырмаларды орындап Qvant жинаңыз. Qvant рейтингке әсер етпейді — ол тек дүкен үшін. |  |
 | `qvant.signIn` | Balansni ko'rish uchun tizimga kiring. | Балансты көру үшін жүйеге кіріңіз. |  |
 | `roadmaps.intro` | Noldan cho'qqigacha bosqichma-bosqich: maqola → masala → maqola. | Нөлден шыңға дейін кезең-кезеңімен: мақала → есеп → мақала. |  |
+| `roadmaps.sections` | {count} ta bo'lim | {count} бөлім |  |
+| `roadmaps.progress` | {solved} / {total} yechildi | {total} ішінен {solved} шешілді |  |
+| `roadmaps.start` | Boshlash: {step} | Бастау: {step} |  |
+| `roadmaps.continue` | Davom ettirish: {step} | Жалғастыру: {step} |  |
+| `roadmaps.done` | Reja tugadi — barcha qadamlar yechilgan | Жоспар аяқталды — барлық қадам шешілді |  |
+| `roadmaps.all` | Barcha o'quv rejalari | Барлық оқу жоспарлары |  |
+| `roadmaps.free` | Bepul | Тегін |  |
+| `roadmaps.sectionNumber` | {number}-bo'lim | {number}-бөлім |  |
+| `roadmaps.solved` | Yechilgan | Шешілді |  |
+| `roadmaps.previous` | ← Oldingi bo'lim | ← Алдыңғы бөлім |  |
+| `roadmaps.next` | Keyingi bo'lim → | Келесі бөлім → |  |
 | `team.intro` | RankWant — O'zbekiston va dunyo uchun sport dasturlash platformasi. Ochiq reyting, o'z judge, o'z kontent. Loyiha hozir ochiq preview bosqichida. | RankWant — Өзбекстан мен әлем үшін спорттық бағдарламалау платформасы. Ашық рейтинг, өз judge, өз контент. Жоба қазір ашық preview кезеңінде. |  |
 | `problem.solvers.codeColumn` | Kod, belgi | Код, таңба |  |
 | `problem.stats.empty` | Hali urinish yo'q — statistika bo'sh. | Әзірге әрекет жоқ — статистика бос. |  |

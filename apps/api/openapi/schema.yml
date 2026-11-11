@@ -6101,6 +6101,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/RoadmapDetail'
           description: ''
+  /api/v1/roadmaps/{slug}/sections/{order}/:
+    get:
+      operationId: roadmaps_sections_retrieve
+      description: |-
+        One chapter of a study plan with the reader's progress (ADR-0060 § 2.4).
+
+        A plan of 1 100 problems is read a chapter at a time: the plan's own
+        page lists the chapters and their progress.
+      summary: O'quv rejasi bo'limi
+      parameters:
+      - in: path
+        name: order
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - roadmaps
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoadmapSectionPage'
+          description: ''
   /api/v1/schools/:
     get:
       operationId: schools_list
@@ -20607,7 +20641,7 @@ components:
           type: string
         locale:
           type: string
-          maxLength: 2
+          maxLength: 3
         is_published:
           type: boolean
         order:
@@ -22505,7 +22539,13 @@ components:
           type: string
         locale:
           type: string
-          maxLength: 2
+          maxLength: 3
+        track:
+          $ref: '#/components/schemas/TrackEnum'
+        section_count:
+          type: integer
+          readOnly: true
+          default: 0
         step_count:
           type: integer
           readOnly: true
@@ -22529,8 +22569,15 @@ components:
           items:
             $ref: '#/components/schemas/RoadmapStep'
           readOnly: true
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoadmapSection'
+          readOnly: true
       required:
       - next_step
+      - section_count
+      - sections
       - slug
       - solved_steps
       - step_count
@@ -22650,7 +22697,13 @@ components:
           type: string
         locale:
           type: string
-          maxLength: 2
+          maxLength: 3
+        track:
+          $ref: '#/components/schemas/TrackEnum'
+        section_count:
+          type: integer
+          readOnly: true
+          default: 0
         step_count:
           type: integer
           readOnly: true
@@ -22671,10 +22724,59 @@ components:
           readOnly: true
       required:
       - next_step
+      - section_count
       - slug
       - solved_steps
       - step_count
       - title
+    RoadmapSection:
+      type: object
+      description: A chapter with the reader's progress in it (ADR-0060 § 2.4).
+      properties:
+        order:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        locale:
+          type: string
+        step_count:
+          type: integer
+        solved_steps:
+          type: integer
+      required:
+      - description
+      - locale
+      - order
+      - solved_steps
+      - step_count
+      - title
+    RoadmapSectionPage:
+      type: object
+      description: 'One chapter''s page: its steps and the chapters around it.'
+      properties:
+        roadmap:
+          type: object
+          additionalProperties: {}
+        section:
+          $ref: '#/components/schemas/RoadmapSection'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectionStep'
+        previous:
+          type: integer
+          nullable: true
+        next:
+          type: integer
+          nullable: true
+      required:
+      - next
+      - previous
+      - roadmap
+      - section
+      - steps
     RoadmapStep:
       type: object
       properties:
@@ -22902,6 +23004,34 @@ components:
       - id
       - lessons
       - locale
+      - title
+    SectionStep:
+      type: object
+      properties:
+        order:
+          type: integer
+        title:
+          type: string
+        problem:
+          type: string
+          nullable: true
+        article:
+          type: string
+          nullable: true
+        difficulty:
+          type: integer
+          nullable: true
+        is_optional:
+          type: boolean
+        solved:
+          type: boolean
+      required:
+      - article
+      - difficulty
+      - is_optional
+      - order
+      - problem
+      - solved
       - title
     SectionText:
       type: object
@@ -24090,7 +24220,7 @@ components:
           type: string
         locale:
           type: string
-          maxLength: 2
+          maxLength: 3
         is_published:
           type: boolean
         order:
@@ -26006,6 +26136,14 @@ components:
       - display_name
       - rank
       - username
+    TrackEnum:
+      enum:
+      - general
+      - olympiad
+      type: string
+      description: |-
+        * `general` - Umumiy
+        * `olympiad` - Olimpiada
     Transaction:
       type: object
       properties:

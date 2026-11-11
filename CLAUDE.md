@@ -249,12 +249,13 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-11](docs/decisions/2026-11-11-ai-tutor.md) · AI ustoz: maslahat, yechim yo'q; 5/100/250/500; musobaqada o'chiq; adapter (API + `claude -p` zaxira), 90 kun, byudjet · `hali kod yo'q`
 - [2026-11-11](docs/decisions/2026-11-11-plan-contents.md) · Judge: mualliflik kvotasi, yopiq va GYM musobaqa; Plus: tahlillar tekin, yechim kodlari, profil nishoni · `hali kod yo'q`
 - [2026-11-11](docs/decisions/2026-11-11-teacher-tools.md) · Sinfga tasdiq bilan kirish, murabbiy, savollar banki va sinfga test, serverdagi test generatori · `hali kod yo'q`
-- [2026-11-11](docs/decisions/2026-11-11-content-and-archive.md) · Traektoriya o'quv rejasi, olimpiada arxivi, cp.uz CC BY-SA, Abramyan (ruxsat bor), norasmiy masalalar reytingsiz · `hali kod yo'q`
+- [2026-11-11](docs/decisions/2026-11-11-content-and-archive.md) · Traektoriya o'quv rejasi, olimpiada arxivi, cp.uz CC BY-SA, Abramyan (ruxsat bor), norasmiy masalalar reytingsiz · `study_plans_have_sections`
 - [2026-11-11](docs/decisions/2026-11-11-new-alphabet.md) · Yangi alifbo (O'RQ-1184): avtomatik o'giruvchi, hozirdan standart, butun platforma, qidiruvda ikkalasi bir · `alphabets_fold_as_one`
 - [2026-11-11](docs/decisions/2026-11-11-community-and-contests.md) · Muhokama, fayl yuklash, taymer, fokus; hudud filtri, PDF, hamkor/mirror; bloglar va karma; seriya, xarita · `hali kod yo'q`
 - [2026-11-11](docs/decisions/2026-11-11-problem-translations.md) · Masala tarjimalari: asosiy matn + `ProblemTranslation`, maydonma-maydon zaxira, yopiq tahlil yopiq, nashrni xodim tahrirlaydi, qidiruvda tarjima nomlari · `problem_translations_fall_back`
 - [2026-11-11](docs/decisions/2026-11-11-deploy-disk-writes.md) · Deploy diskka kamroq yozadi: compose tahriri faqat `build:` bo'limi o'zgargan obrazni quradi, `up` hamma servisga; web'da `node_modules` `.next` dan oldin · `tools/deploy_scope.py`
 - [2026-11-11](docs/decisions/2026-11-11-abramyan-import.md) · Abramyan importi: judge'da haqiqiy son solishtiruvi, 64 MB + til ustamasi, norasmiy (raqamsiz, faollik hisoblanadi), «Begin1. Nom», agent bahosi bilan nashr, production'da tungi tekshiruv · `real_numbers_compared_in_the_judge`
+- [2026-11-11](docs/decisions/2026-11-11-abramyan-verification.md) · Abramyan: tekshiruv hozir production judge'da, izi qoladi (o'chirish keyin); 150 × 4 matnni agent tekshiradi, muammolar Report'dan; 19 bo'lim → mavjud mavzular · `hali kod yo'q`
 
 ## Tekshiruvlar
 

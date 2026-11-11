@@ -47,11 +47,48 @@ export type Roadmap = {
   /** The text's language; Uzbek follows the reader's alphabet (ADR-0059). */
   locale: string;
   description: string;
+  /** `general` or `olympiad` (ADR-0060 § 2.4). */
+  track: string;
+  section_count: number;
   step_count: number;
   /** Traektoriyaning nechta masalasi yechilgan (mehmonda 0). */
   solved_steps: number;
   /** The first step this reader has not done; `null` when the path is finished. */
   next_step: RoadmapNextStep | null;
+};
+
+/** A chapter of a study plan with the reader's progress in it. */
+export type RoadmapSection = {
+  order: number;
+  title: string;
+  description: string;
+  locale: string;
+  step_count: number;
+  solved_steps: number;
+};
+
+export type RoadmapDetail = Roadmap & {
+  /** Steps outside every section — in a plan without sections, all of them. */
+  steps: RoadmapNextStep[];
+  sections: RoadmapSection[];
+};
+
+export type RoadmapSectionStep = {
+  order: number;
+  title: string;
+  problem: string | null;
+  article: string | null;
+  difficulty: number | null;
+  is_optional: boolean;
+  solved: boolean;
+};
+
+export type RoadmapSectionPage = {
+  roadmap: { slug: string; title: string; locale: string };
+  section: RoadmapSection;
+  steps: RoadmapSectionStep[];
+  previous: number | null;
+  next: number | null;
 };
 
 export type RoadmapNextStep = {

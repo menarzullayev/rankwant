@@ -187,7 +187,8 @@ export const api = {
   // O'z o'qish kontenti — ADR-0005 differensiatori. SEO uchun keshlanadi.
   articles: () => get<Paginated<Article>>("/articles/", 300),
   article: (slug: string) => get<ArticleDetail>(`/articles/${slug}/`, 300),
-  roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
+  // Titles in the reader's language (ADR-0060 § 2.4); `?lang=` keys the cache.
+  roadmaps: (locale = "uz") => get<Roadmap[]>(`/roadmaps/?lang=${locale}`, 300),
   // Progress foydalanuvchiga xos — SSR da `getWithSession` bilan olinadi.
   progress: () => get<ArchiveProgress>("/problems/progress/", 0),
   problemSolvers: (slug: string, ordering = "first") =>

@@ -1,5 +1,5 @@
 import { inReaderAlphabet } from "@/i18n/alphabet";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RoadmapsPage() {
   const locale = await getLocale();
-  const roadmaps = await api.roadmaps();
+  const roadmaps = await api.roadmaps(locale);
   return (
     <div className="space-y-6">
       <header>
@@ -28,13 +28,20 @@ export default async function RoadmapsPage() {
         {roadmaps.map((r) => (
           <li key={r.slug} id={r.slug} className="scroll-mt-24">
             <ListCard
-              href="/learn"
+              href={`/roadmaps/${r.slug}` as Route}
               title={inReaderAlphabet(r.title, r.locale)}
               summary={inReaderAlphabet(r.description, r.locale)}
               meta={
-                <Badge color="brand">
-                  {fill(t(locale, "learn.stepCount"), { count: r.step_count })}
-                </Badge>
+                <>
+                  <Badge color="brand">
+                    {fill(t(locale, "learn.stepCount"), { count: r.step_count })}
+                  </Badge>
+                  {r.section_count > 0 && (
+                    <Badge color="neutral">
+                      {fill(t(locale, "roadmaps.sections"), { count: r.section_count })}
+                    </Badge>
+                  )}
+                </>
               }
             />
           </li>

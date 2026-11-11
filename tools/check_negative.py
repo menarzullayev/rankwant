@@ -6347,6 +6347,24 @@ def neg_decisions_rejected_solution_left_running() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_plan_steps_replaced_with_sections() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/content/staff_serializers.py",
+        "        if steps is not None and instance.sections.exists():\n",
+        "        if False:\n",
+        "o'quv rejasi bo'limlari bilan",
+    )
+
+
+def neg_decisions_plan_locale_two_letters() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/content/models.py",
+        "    locale = models.CharField(max_length=3, ",
+        "    locale = models.CharField(max_length=2, ",
+        "o'quv rejasi bo'limlari bilan",
+    )
+
+
 def neg_decisions_unofficial_gets_a_number() -> tuple[bool, str]:
     return _decision_broken(
         "apps/api/problems/models.py",
@@ -9012,6 +9030,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/views.py",
     "apps/api/problems/serializers.py",
     "apps/api/problems/languages.py",
+    "apps/api/content/models.py",
+    "apps/api/content/views.py",
+    "apps/api/content/staff_serializers.py",
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
     "apps/api/contests/certificates.py",
@@ -12748,6 +12769,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("checker format farqini ko'rmasa tutilsin", neg_decisions_checker_never_sees_a_format_difference),
             ("scorer balli verdikt bo'lmasa tutilsin", neg_decisions_scorer_score_is_not_a_verdict),
             ("rad etilgan yechim to'xtatilmasa tutilsin", neg_decisions_rejected_solution_left_running),
+            ("bo'limli reja qadamlari almashsa tutilsin", neg_decisions_plan_steps_replaced_with_sections),
+            ("reja tili 2 belgi bo'lsa tutilsin", neg_decisions_plan_locale_two_letters),
             ("norasmiy masala raqam olsa tutilsin", neg_decisions_unofficial_gets_a_number),
             ("norasmiy yechim Skills'ga kirsa tutilsin", neg_decisions_unofficial_moves_skills),
             ("norasmiy yechim bosqich Qvant'ini to'lasa tutilsin", neg_decisions_unofficial_pays_milestone),

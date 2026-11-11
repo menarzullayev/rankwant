@@ -158,6 +158,12 @@ class StaffRoadmapSerializer(serializers.ModelSerializer[Roadmap]):
     @transaction.atomic
     def update(self, instance: Roadmap, validated_data: dict[str, Any]) -> Roadmap:
         steps = validated_data.pop("steps", None)
+        if steps is not None and instance.sections.exists():
+            # Replacing the steps here drops their sections (ADR-0060 § 2.4):
+            # a sectioned plan is written by its import or the Django admin.
+            raise serializers.ValidationError(
+                {"steps": "This roadmap has sections; edit its steps in the Django admin"}
+            )
         roadmap = super().update(instance, validated_data)
         if steps is not None:
             self._replace_steps(roadmap, steps)

@@ -4067,6 +4067,27 @@ def versioning_points_are_wired() -> str | None:
     return None
 
 
+def study_plans_have_sections() -> str | None:
+    """2026-11-11: o'quv rejasi Traektoriyada - bo'limlar, tarjima, sahifa (ADR-0060 § 2.4).
+
+    Egasi qarori (kontent ①): reja `content.Roadmap` ni kengaytiradi, yangi
+    menyu bandi yo'q. 1 100 qadamli reja bitta sahifada o'qilmaydi - bo'lim
+    sahifasi bor; xodim API'si bo'limli rejaning qadamlarini almashtirsa,
+    bo'lim bog'lanishi jim yo'qolardi.
+    """
+    if "    locale = models.CharField(max_length=3, " not in read("apps/api/content/models.py"):
+        return "content/models.py: reja tili 3 belgiga sig'maydi - `kaa` yozilmaydi"
+    if "    def section(self, request: Request, slug: str, order: str) -> Response:" not in read(
+        "apps/api/content/views.py"
+    ):
+        return "content/views.py: rejaning bo'lim sahifasi yo'q"
+    if "        if steps is not None and instance.sections.exists():\n" not in read(
+        "apps/api/content/staff_serializers.py"
+    ):
+        return "content/staff_serializers.py: bo'limli rejaning qadamlari xodim API'sida almashtiriladi"
+    return None
+
+
 def unofficial_problems_stay_out_of_counts() -> str | None:
     """2026-11-11: norasmiy masalalar - raqamsiz, reyting va Qvant'siz (ADR-0060 § 2.3).
 
@@ -5337,6 +5358,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("haqiqiy son judge ichida solishtiriladi", real_numbers_compared_in_the_judge),
     ("xotira chegarasi dastur ushlagan xotira", memory_limit_is_what_the_program_holds),
     ("norasmiy masalalar hisobdan tashqari", unofficial_problems_stay_out_of_counts),
+    ("o'quv rejasi bo'limlari bilan", study_plans_have_sections),
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
