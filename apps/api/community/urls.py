@@ -21,5 +21,6 @@ urlpatterns = [
         name="entry-discussion",
     ),
     path("community/karma/", views.KarmaTopView.as_view(), name="karma-top"),
+    path("me/content-reports/", views.MyContentReportsView.as_view(), name="my-content-reports"),
     path("", include(router.urls)),
 ]

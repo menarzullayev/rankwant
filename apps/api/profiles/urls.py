@@ -36,6 +36,7 @@ urlpatterns = [
         views.TeamMemberView.as_view(),
         name="team-member",
     ),
+    path("stats/regions/", views.RegionActivityView.as_view(), name="region-activity"),
     path("users/<str:username>/profile/", views.PublicProfileView.as_view(), name="user-profile"),
     path("users/<str:username>/activity/", views.ActivityView.as_view(), name="user-activity"),
     path(

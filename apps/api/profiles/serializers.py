@@ -222,3 +222,14 @@ class ActivityEventSerializer(serializers.ModelSerializer[ActivityEvent]):
     class Meta:
         model = ActivityEvent
         fields = ["id", "kind", "ref_type", "ref_id", "data", "created_at"]
+
+
+class RegionCountSerializer(serializers.Serializer[Any]):
+    code = serializers.CharField()
+    users = serializers.IntegerField()
+
+
+class RegionActivitySerializer(serializers.Serializer[Any]):
+    days = serializers.IntegerField()
+    total = serializers.IntegerField()
+    regions = RegionCountSerializer(many=True)

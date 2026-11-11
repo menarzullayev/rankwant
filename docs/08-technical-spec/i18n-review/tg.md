@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3315 strings.**
+**3349 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -208,6 +208,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `standings.penalty` | Jarima | Ҷарима |  |
 | `standings.frozen` | Jadval muzlatilgan | Ҷадвал яхбаста |  |
 | `leaderboard.title` | Reyting | Рейтинг |  |
+| `regions.title` | Hududlar bo'yicha faollik | Фаъолият аз рӯи минтақаҳо |  |
+| `regions.total` | {count} ta faol a'zo | {count} аъзои фаъол |  |
+| `regions.period` | Davr | Давра |  |
+| `regions.days` | {count} kun | {count} рӯз |  |
+| `streak.title` | Mening seriyam | Силсилаи ман |  |
+| `streak.current` | Joriy seriya | Силсилаи ҷорӣ |  |
+| `streak.longest` | Eng uzun seriya | Дарозтарин силсила |  |
+| `streak.days` | {count} kun | {count} рӯз |  |
+| `streak.todayDone` | Bugun hisoblandi — seriya davom etmoqda | Имрӯз ҳисоб шуд — силсила идома дорад |  |
+| `streak.todayOpen` | Bugun hali masala yechilmagan — seriyani saqlash uchun bitta masala yeching | Имрӯз ҳанӯз масъала ҳал нашудааст — барои нигоҳ доштани силсила як масъала ҳал кунед |  |
+| `streak.next` | {milestone} kungacha {left} kun qoldi | То {milestone} рӯз {left} рӯз монд |  |
+| `streak.freeze` | Muzlatgich | Яхкунак |  |
+| `streak.freezeUntil` | {date} gacha faol | То {date} фаъол |  |
+| `streak.freezeNone` | Muzlatgich yo'q | Яхкунак нест |  |
+| `streak.freezeHint` | Muzlatgich bir kun o'tkazib yuborsangiz seriyani saqlab qoladi. | Яхкунак силсиларо нигоҳ медорад, агар як рӯзро гузаронед. |  |
+| `streak.buyFreeze` | Muzlatgich olish — {price} Qvant | Харидани яхкунак — {price} Qvant |  |
+| `streak.milestones` | Bosqichlar | Марҳилаҳо |  |
+| `streak.reached` | Erishilgan | Расида шуд |  |
+| `streak.progress` | {count} / {milestone} kun | {count} / {milestone} рӯз |  |
+| `streak.calendar` | So'nggi 12 oy | 12 моҳи охир |  |
+| `streak.shop` | Do'konga o'tish | Ба мағоза гузаштан |  |
 | `karma.title` | Karma bali | Карма |  |
 | `karma.entries` | Blog postlari | Навиштаҳои блог |  |
 | `karma.empty` | Hali hech kim ovoz olmagan | Ҳоло ҳеҷ кас овоз нагирифтааст |  |
@@ -2980,6 +3001,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.nav.courses` | Kurslar | Курсҳо |  |
 | `studio.nav.quizzes` | Testlarim | Тестҳои ман |  |
 | `studio.nav.questions` | Savollar banki | Бонки саволҳо |  |
+| `studio.nav.reports` | Kontentim | Мундариҷаи ман |  |
+| `myContent.hint` | Masalalaringiz, postlaringiz va izohlaringizga kelgan shikoyatlar. Kim yuborgani ko'rsatilmaydi. | Шикоятҳо дар бораи масъалаҳо, навиштаҳо ва шарҳҳои шумо. Кӣ фиристодааст, нишон дода намешавад. |  |
+| `myContent.what` | Nima haqida | Дар бораи чӣ |  |
+| `myContent.reason` | Sabab | Сабаб |  |
+| `myContent.status` | Holat | Ҳолат |  |
+| `myContent.date` | Sana | Сана |  |
+| `myContent.empty` | Hozircha shikoyat yo'q | Ҳоло шикоят нест |  |
+| `myContent.kind.problem` | Masala | Масъала |  |
+| `myContent.kind.entry` | Blog posti | Навиштаи блог |  |
+| `myContent.kind.comment` | Izoh | Шарҳ |  |
+| `myContent.status.open` | Ko'rib chiqilmoqda | Дар баррасӣ |  |
+| `myContent.status.accepted` | Qabul qilindi | Қабул шуд |  |
+| `myContent.status.rejected` | Rad etildi | Рад шуд |  |
 | `studio.quizzes.intro` | O'z testingizni savollar bankidan tuzing va sinf sahifasida o'quvchilarga bering. O'qituvchi testi Qvant bermaydi. | Тестро аз бонки саволҳои худ созед ва дар саҳифаи синф ба хонандагон диҳед. Тести муаллим Qvant намедиҳад. |  |
 | `studio.quizzes.new` | Yangi test | Тести нав |  |
 | `studio.quizzes.count` | {count} / {limit} test — rejangiz chegarasi | Дар тарифи шумо {count} / {limit} тест |  |

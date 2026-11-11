@@ -43,13 +43,14 @@ export default function HeaderStatus() {
         <Icon name="shop.coin" className="size-4 rw-accent-ink" />
         {balance ?? "…"}
       </IntentLink>
-      <span
+      <IntentLink
+        href="/streak"
         className={`${pill} hidden md:flex`}
         title={`${user.streak_count} ${t(locale, "header.streak")}`}
       >
         <Icon name="ranking.streak" className="size-4 rw-warn-ink" />
         {user.streak_count}
-      </span>
+      </IntentLink>
       <NotificationBell />
     </div>
   );

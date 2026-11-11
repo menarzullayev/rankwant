@@ -274,3 +274,15 @@ class KarmaRowSerializer(serializers.Serializer[Any]):
     #: All-time karma.
     karma = serializers.IntegerField()
     entries = serializers.IntegerField()
+
+
+class ContentReportSerializer(serializers.Serializer[Any]):
+    """A report about something the reader wrote ("My content")."""
+
+    kind = serializers.ChoiceField(choices=["problem", "entry", "comment"])
+    title = serializers.CharField()
+    link = serializers.CharField()
+    reason = serializers.CharField()
+    note = serializers.CharField(allow_blank=True)
+    status = serializers.CharField()
+    created_at = serializers.DateTimeField()

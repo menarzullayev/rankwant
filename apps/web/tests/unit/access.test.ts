@@ -45,6 +45,7 @@ describe("needsSignIn", () => {
       "notifications",
       "onboarding",
       "settings",
+      "streak",
       "studio",
     ]);
   });

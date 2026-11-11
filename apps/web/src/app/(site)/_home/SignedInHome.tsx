@@ -1,5 +1,6 @@
 import type { Route } from "next";
 
+import { RegionMap } from "./RegionMap";
 import { Countdown } from "@/components/kit/TimeStamp";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
@@ -724,6 +725,8 @@ export async function SignedInHome({
           )}
         </div>
       )}
+
+      <RegionMap />
 
       <Card title={t(locale, "home.platformActivity")}>
         <div className="grid gap-6 lg:grid-cols-2">

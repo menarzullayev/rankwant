@@ -4366,6 +4366,26 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/me/content-reports/:
+    get:
+      operationId: me_content_reports_list
+      description: Reports about the reader's problems, entries and comments (decision
+        ④).
+      summary: 'Mening kontentim: kelgan shikoyatlar'
+      tags:
+      - me
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContentReport'
+          description: ''
   /api/v1/me/courses/:
     get:
       operationId: me_courses_list
@@ -7424,6 +7444,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Inventory'
+          description: ''
+  /api/v1/qvant/streak/:
+    get:
+      operationId: qvant_streak_retrieve
+      description: 'The reader''s streak: current, longest, freeze, milestones.'
+      summary: Mening seriyam
+      tags:
+      - qvant
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Streak'
           description: ''
   /api/v1/qvant/top/:
     get:
@@ -14315,6 +14352,34 @@ paths:
                 items:
                   $ref: '#/components/schemas/DailyStats'
           description: ''
+  /api/v1/stats/regions/:
+    get:
+      operationId: stats_regions_retrieve
+      description: Members active in each region over 7, 30, 90 or 365 days.
+      summary: Hududlar bo'yicha faol a'zolar
+      parameters:
+      - in: query
+        name: days
+        schema:
+          type: integer
+          enum:
+          - 30
+          - 365
+          - 7
+          - 90
+      tags:
+      - stats
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegionActivity'
+          description: ''
   /api/v1/studio/courses/:
     get:
       operationId: studio_courses_list
@@ -17956,6 +18021,43 @@ components:
         * `uz` - uz
         * `ru` - ru
         * `en` - en
+    ContentReport:
+      type: object
+      description: A report about something the reader wrote ("My content").
+      properties:
+        kind:
+          $ref: '#/components/schemas/ContentReportKindEnum'
+        title:
+          type: string
+        link:
+          type: string
+        reason:
+          type: string
+        note:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - kind
+      - link
+      - note
+      - reason
+      - status
+      - title
+    ContentReportKindEnum:
+      enum:
+      - problem
+      - entry
+      - comment
+      type: string
+      description: |-
+        * `problem` - problem
+        * `entry` - entry
+        * `comment` - comment
     Contest:
       type: object
       properties:
@@ -25699,6 +25801,31 @@ components:
       - problem
       - problem_title
       - solved
+    RegionActivity:
+      type: object
+      properties:
+        days:
+          type: integer
+        total:
+          type: integer
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegionCount'
+      required:
+      - days
+      - regions
+      - total
+    RegionCount:
+      type: object
+      properties:
+        code:
+          type: string
+        users:
+          type: integer
+      required:
+      - code
+      - users
     Register:
       type: object
       properties:
@@ -28570,6 +28697,45 @@ components:
       required:
       - user_title
       - username
+    Streak:
+      type: object
+      description: The streak page (decision 2026-11-11 ④).
+      properties:
+        current:
+          type: integer
+        longest:
+          type: integer
+        active_today:
+          type: boolean
+        freeze_until:
+          type: string
+          format: date
+          nullable: true
+        milestones:
+          type: array
+          items:
+            type: integer
+        freeze:
+          allOf:
+          - $ref: '#/components/schemas/StreakFreeze'
+          nullable: true
+      required:
+      - active_today
+      - current
+      - freeze
+      - freeze_until
+      - longest
+      - milestones
+    StreakFreeze:
+      type: object
+      properties:
+        code:
+          type: string
+        price:
+          type: integer
+      required:
+      - code
+      - price
     StudioCourse:
       type: object
       description: 'The studio''s course: settings, texts, tree and review state.'

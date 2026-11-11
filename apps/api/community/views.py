@@ -29,6 +29,7 @@ from community.serializers import (
     CommunityReportSerializer,
     CommunityVoteResultSerializer,
     CommunityVoteSerializer,
+    ContentReportSerializer,
     EditCommentSerializer,
     EntryDetailSerializer,
     EntrySerializer,
@@ -501,3 +502,18 @@ class KarmaTopView(APIView):
         limit = min(int(raw), 100) if raw.isdigit() and int(raw) > 0 else 50
         rows = karma.top(period if period in karma.PERIODS else "all", limit)
         return Response(KarmaRowSerializer(rows, many=True).data)
+
+
+class MyContentReportsView(APIView):
+    """Reports about the reader's problems, entries and comments (decision ④)."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        summary="Mening kontentim: kelgan shikoyatlar",
+        responses=ContentReportSerializer(many=True),
+    )
+    def get(self, request: Request) -> Response:
+        from community.mine import reports_about
+
+        return Response(ContentReportSerializer(reports_about(_user(request).pk), many=True).data)

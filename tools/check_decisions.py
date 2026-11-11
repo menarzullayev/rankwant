@@ -3274,6 +3274,25 @@ def karma_is_all_time_votes() -> str | None:
     return None
 
 
+def streak_page_and_region_map() -> str | None:
+    """2026-11-11 (HITL; `docs/decisions/2026-11-11-community-and-contests.md` ④).
+
+    Seriya sahifasi 3/7/14/30/100/365 bosqichlari bilan; bosh sahifada
+    hududlar xaritasi 7/30/90/365 kunlik; «Mening kontentim» muallifga kelgan
+    shikoyatlarni ko'rsatadi, lekin shikoyatchini **aytmaydi**.
+    """
+    if "STREAK_MILESTONES = (3, 7, 14, 30, 100, 365)" not in read("apps/api/qvant/views.py"):
+        return "qvant/views.py: seriya bosqichlari 3/7/14/30/100/365 emas"
+    if "PERIODS = (7, 30, 90, 365)" not in read("apps/api/profiles/regions.py"):
+        return "profiles/regions.py: hudud xaritasi davrlari 7/30/90/365 emas"
+    mine = read("apps/api/community/mine.py") + read("apps/api/problems/reports.py")
+    if '"reporter"' in mine or "row.reporter" in mine or "row.user" in mine:
+        return "community/mine.py: «Mening kontentim» shikoyatchini oshkor qiladi"
+    if "      <RegionMap />" not in read("apps/web/src/app/(site)/page.tsx"):
+        return "app/(site)/page.tsx: bosh sahifada hududlar xaritasi yo'q"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -5678,6 +5697,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("muhokama: yechmaganga kod yopiq, 3 shikoyat, yangi hisob 5", discussion_is_open_but_guarded),
     ("bloglar: hamma yozadi, yangi hisob 1, ovoz va shikoyat, menyuda", blogs_are_open_and_moderated),
     ("karma: abadiy ovoz yig'indisi, 30 kunlik faol mualliflar", karma_is_all_time_votes),
+    ("seriya bosqichlari, hudud xaritasi, kontentim anonim", streak_page_and_region_map),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),
