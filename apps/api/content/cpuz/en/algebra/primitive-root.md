@@ -1,6 +1,6 @@
-# Primitive Root
+# Primitive Root {#primitive-root}
 
-## Definition
+## Definition {#definition}
 
 In modular arithmetic, a number $g$ is called a `primitive root modulo n` if every number coprime to $n$ is congruent to a power of $g$ modulo $n$. Mathematically, $g$ is a `primitive root modulo n` if and only if for any integer $a$ such that $\gcd(a, n) = 1$, there exists an integer $k$ such that:
 
@@ -10,7 +10,7 @@ $k$ is then called the `index` or `discrete logarithm` of $a$ to the base $g$ mo
 
 In particular, for the case where $n$ is a prime, the powers of primitive root runs through all numbers from $1$ to $n-1$.
 
-## Existence
+## Existence {#existence}
 
 Primitive root modulo $n$ exists if and only if:
 
@@ -20,13 +20,13 @@ Primitive root modulo $n$ exists if and only if:
 
 This theorem was proved by Gauss in 1801.
 
-## Relation with the Euler function
+## Relation with the Euler function {#relation-with-the-euler-function}
 
 Let $g$ be a primitive root modulo $n$. Then we can show that the smallest number $k$ for which $g^k \equiv 1 \pmod n$ is equal $\phi (n)$. Moreover, the reverse is also true, and this fact will be used in this article to find a primitive root.
 
 Furthermore, the number of primitive roots modulo $n$, if there are any, is equal to $\phi (\phi (n) )$.
 
-## Algorithm for finding a primitive root
+## Algorithm for finding a primitive root {#algorithm-for-finding-a-primitive-root}
 
 A naive algorithm is to consider all numbers in range $[1, n-1]$. And then check if each one is a primitive root, by calculating all its power to see if they are all different. This algorithm has complexity $O(g \cdot n)$, which would be too slow. In this section, we propose a faster algorithm using several well-known theorems.
 
@@ -52,7 +52,7 @@ Now we have a complete algorithm for finding the primitive root:
 
 Shoup (1990, 1992) proved, assuming the [generalized Riemann hypothesis](http://en.wikipedia.org/wiki/Generalized_Riemann_hypothesis), that $g$ is $O(\log^6 p)$.
 
-## Implementation
+## Implementation {#implementation}
 
 The following code assumes that the modulo `p` is a prime number. To make it works for any value of `p`, we must add calculation of $\phi (p)$. 
 

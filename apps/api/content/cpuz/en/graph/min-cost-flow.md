@@ -1,4 +1,4 @@
-# Minimum-cost flow - Successive shortest path algorithm
+# Minimum-cost flow - Successive shortest path algorithm {#minimum-cost-flow-successive-shortest-path-algorithm}
 
 Given a network $G$ consisting of $n$ vertices and $m$ edges.
 For each edge (generally speaking, oriented edges, but see below), the capacity (a non-negative integer) and the cost per unit of flow along this edge (some integer) are given.
@@ -13,11 +13,11 @@ This is called the **minimum-cost maximum-flow problem**.
 
 Both these problems can be solved effectively with the algorithm of successive shortest paths.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 This algorithm is very similar to the [Edmonds-Karp](/algorithms/graph/edmonds-karp) for computing the maximum flow.
 
-### Simplest case
+### Simplest case {#simplest-case}
 
 First we only consider the simplest case, where the graph is oriented, and there is at most one edge between any pair of vertices (e.g. if $(i, j)$ is an edge in the graph, then $(j, i)$ cannot be part in it as well).
 
@@ -44,7 +44,7 @@ If at some point the flow reaches the value $K$, then we stop the algorithm (not
 It is not difficult to see, that if we set $K$ to infinity, then the algorithm will find the minimum-cost maximum-flow.
 So both variations of the problem can be solved by the same algorithm.
 
-### Undirected graphs / multigraphs
+### Undirected graphs / multigraphs {#undirected-graphs-multigraphs}
 
 The case of an undirected graph or a multigraph doesn't differ conceptually from the algorithm above.
 The algorithm will also work on these graphs.
@@ -62,7 +62,7 @@ Since we have multiple edges, we have to store the edge number for the reversed 
 
 There are no other obstructions with undirected graphs or multigraphs.
 
-### Complexity
+### Complexity {#complexity}
 
 The algorithm here is generally exponential in the size of the input. To be more specific, in the worst case it may push only as much as $1$ unit of flow on each iteration, taking $O(F)$ iterations to find a minimum-cost flow of size $F$, making a total runtime to be $O(F \cdot T)$, where $T$ is the time required to find the shortest path from source to sink.
 
@@ -70,7 +70,7 @@ If [Bellman-Ford](/algorithms/graph/bellman-ford) algorithm is used for this, it
 
 The modified Dijkstra's algorithm uses so-called potentials from [Johnson's algorithm](https://en.wikipedia.org/wiki/Johnson%27s_algorithm). It is possible to combine the ideas of this algorithm and Dinic's algorithm to reduce the number of iterations from $F$ to $\min(F, nC)$, where $C$ is the maximum cost found among edges. You may read further about potentials and their combination with Dinic algorithm [here](https://codeforces.com/blog/entry/105658).
 
-## Implementation
+## Implementation {#implementation}
 
 Here is an implementation using the [SPFA algorithm](/algorithms/graph/bellman-ford) for the simplest case.
 
@@ -155,7 +155,7 @@ int min_cost_flow(int N, vector<Edge> edges, int K, int s, int t) {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [CSES - Task Assignment](https://cses.fi/problemset/task/2129)
 * [CSES - Grid Puzzle II](https://cses.fi/problemset/task/2131)

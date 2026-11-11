@@ -1,4 +1,4 @@
-# Chiziqli elak
+# Chiziqli elak {#linear-sieve}
 
 $n$ soni berilgan. $[2;n]$ kesmadagi barcha tub sonlarni topish kerak.
 
@@ -12,7 +12,7 @@ Shuning uchun ushbu algoritmdan faqat taxminan $10^7$ tartibidagi va undan katta
 
 Algoritm Paul Pritchardga tegishli. U Pritchardning 1987-yildagi ishida keltirilgan 3.3-algoritmning bir ko‘rinishidir (manbalar maqola oxirida berilgan).
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Maqsadimiz $[2; n]$ kesmadagi har bir $i$ son uchun uning **eng kichik tub bo‘luvchisi** $lp [i]$ ni hisoblash.
 
@@ -34,7 +34,7 @@ Shu ko‘rinishdagi barcha sonlar uchun $lp [x_j] = p_j$ deb belgilaymiz.
 
 Algoritmning to‘g‘riligi va ishlash vaqti isboti implementatsiyadan keyin keltirilgan.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 const int N = 10000000;
@@ -55,7 +55,7 @@ for (int i=2; i <= N; ++i) {
 }
 ```
 
-## To‘g‘rilik isboti
+## To‘g‘rilik isboti {#correctness-proof}
 
 Algoritm barcha $lp []$ qiymatlarini to‘g‘ri o‘rnatishini va har bir qiymat aynan bir marta o‘rnatilishini isbotlashimiz kerak. Shunda algoritm chiziqli vaqtda ishlaydi, chunki uning qolgan barcha amallari, ravshanki, $O(n)$ vaqtda bajariladi.
 
@@ -71,7 +71,7 @@ Endi buni algoritmimizning amallari bilan solishtiraylik: aslida, har bir $x$ uc
 
 Demak, algoritm har bir murakkab sonni aynan bir marta ko‘rib chiqadi va shu yerda $lp []$ ning to‘g‘ri qiymatini o‘rnatadi. Isbot tugadi.
 
-## Ishlash vaqti va xotira
+## Ishlash vaqti va xotira {#runtime-and-memory}
 
 $O(n)$ ishlash vaqti klassik Eratosfen elagining $O(n \log \log n)$ vaqtidan yaxshiroq bo‘lsa-da, ular orasidagi farq unchalik katta emas.
 Amalda chiziqli elak Eratosfen elagining odatiy implementatsiyasi bilan taxminan bir xil tezlikda ishlaydi.
@@ -82,6 +82,6 @@ Biroq uning asosiy afzalligi shuki, algoritm $lp []$ massivini hisoblaydi; bu ma
 
 Barcha sonlarning faktorizatsiyasini bilish ayrim masalalarda juda foydali va bu algoritm ularni chiziqli vaqtda topish imkonini beradigan sanoqli algoritmlardan biridir.
 
-## Manbalar
+## Manbalar {#references}
 
 - Paul Pritchard, **Linear Prime-Number Sieves: a Family Tree**, Science of Computer Programming, 9-jild (1987), 17–35-betlar.

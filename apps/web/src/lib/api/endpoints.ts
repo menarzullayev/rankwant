@@ -48,6 +48,8 @@ import type {
 import type {
   Article,
   ArticleDetail,
+  GlossaryEntry,
+  LibraryEntry,
   Post,
   PostDetail,
   Quiz,
@@ -236,6 +238,12 @@ export const api = {
     ),
   calendar: () => get<{ results: CalendarEvent[] }>("/calendar/", 60),
   algorithms: () => get<Paginated<Article>>("/articles/?kind=algorithm", 300),
+  // The library in one answer, titles in the reader's language (ADR-0062).
+  algorithmLibrary: (locale: string) =>
+    get<LibraryEntry[]>(`/articles/library/?lang=${locale}`, 300),
+  algorithmGlossary: () => get<GlossaryEntry[]>("/articles/glossary/", 3600),
+  algorithm: (slug: string, locale: string) =>
+    get<ArticleDetail>(`/articles/${slug}/?lang=${locale}`, 300),
   ratingHistory: (username: string) =>
     get<Paginated<RatingChange>>(`/users/${username}/rating-history/`, 30),
   solved: (username: string) =>

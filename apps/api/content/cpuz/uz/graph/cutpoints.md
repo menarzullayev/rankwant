@@ -1,10 +1,10 @@
-# Grafdagi artikulyatsiya nuqtalarini $O(N+M)$ vaqtda topish
+# Grafdagi artikulyatsiya nuqtalarini $O(N+M)$ vaqtda topish {#finding-articulation-points-in-a-graph-in-onm}
 
 Bizga yo‘naltirilmagan graf berilgan. O‘zi va unga tutash qirralar olib tashlanganda graf uzilib qoladigan, aniqroq aytganda grafdagi bog‘langan komponentlar sonini oshiradigan tugun **artikulyatsiya nuqtasi** yoki **kesuvchi tugun** deb ataladi. Vazifa berilgan grafdagi barcha artikulyatsiya nuqtalarini topishdan iborat.
 
 Bu yerda tavsiflanadigan algoritm [chuqurlik bo‘yicha qidiruvga](/algorithms/graph/depth-first-search) asoslanadi va $O(N+M)$ murakkablikka ega; bu yerda $N$ — tugunlar, $M$ esa qirralar soni.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Grafning ixtiyoriy $root$ tugunini tanlab, undan [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) boshlaymiz. Quyidagi, isbotlash oson bo‘lgan faktga e’tibor bering.
 
@@ -21,7 +21,7 @@ $v$ tugundan yoki uning avlodlaridan $v$ ning biror ajdodiga orqa qirra mavjud b
 
 Demak, DFS daraxtidagi $v$ tugun artikulyatsiya nuqtasi bo‘lishi uchun $low[to] \geq tin[v]$ bo‘lishi zarur va yetarli.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Implementatsiya uchta holatni farqlashi kerak: DFS daraxtidagi qirra bo‘ylab pastga tushish, tugunning ajdodiga boruvchi orqa qirrani topish va tugunning otasiga qaytish. Holatlar:
 
@@ -74,7 +74,7 @@ Asosiy funksiya `find_cutpoints` bo‘lib, u zarur boshlang‘ich qiymatlarni o�
 
 `IS_CUTPOINT(a)` — $a$ tugun artikulyatsiya nuqtasi ekanini qayta ishlaydigan funksiya; masalan, u tugunni ekranga chiqarishi mumkin. Ehtiyot bo‘ling: bir tugun uchun bu funksiya bir necha marta chaqirilishi mumkin.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [UVA #10199 "Tourist Guide"](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=13&page=show_problem&problem=1140) [qiyinlik: oson]
 - [UVA #315 "Network"](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=5&page=show_problem&problem=251) [qiyinlik: oson]

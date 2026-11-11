@@ -1,6 +1,6 @@
-# Manhattan Distance
+# Manhattan Distance {#manhattan-distance}
 	
-## Definition
+## Definition {#definition}
 For points $p$ and $q$ on a plane, we can define the distance between them as the sum of the differences between their $x$ and $y$ coordinates: 
 
 $$d(p,q) = |x_p - x_q| + |y_p - y_q|$$
@@ -13,7 +13,7 @@ This images show some of the smallest paths from one black point to the other, a
 
 There are some interesting tricks and algorithms that can be done with this distance, and we will show some of them here.
 
-## Farthest pair of points in Manhattan distance
+## Farthest pair of points in Manhattan distance {#farthest-pair-of-points-in-manhattan-distance}
 
 Given $n$ points $P$, we want to find the pair of points $p,q$ that are farther apart, that is, maximize $|x_p - x_q| + |y_p - y_q|$.
 
@@ -50,7 +50,7 @@ for (int msk = 0; msk < (1 << d); msk++) {
 }
 ```
 
-## Rotating the points and Chebyshev distance
+## Rotating the points and Chebyshev distance {#rotating-the-points-and-chebyshev-distance}
 
 It's well known that, for all $m, n \in \mathbb{R}$,
 
@@ -74,7 +74,7 @@ Here's an image to help visualizing the transformation:
 
   ![Chebyshev transformation](/algorithms-media/geometry/chebyshev-transformation.png)
 
-## Manhattan Minimum Spanning Tree
+## Manhattan Minimum Spanning Tree {#manhattan-minimum-spanning-tree}
 
 The Manhattan MST problem consists of, given some points in the plane, find the edges that connect all the points and have a minimum total sum of weights. The weight of an edge that connects two points is their Manhattan distance. For simplicity, we assume that all points have different locations.
 Here we show a way of finding the MST in $O(n \log{n})$ by finding for each point its nearest neighbor in each octant, as represented by the image below. This will give us $O(n)$ candidate edges, which, as we show below, will guarantee that they contain the MST. The final step is then using some standard MST, for example, [Kruskal algorithm using disjoint set union](https://cp-algorithms.com/graph/mst_kruskal_with_dsu.html).
@@ -91,7 +91,7 @@ First, let's understand why it is enough to consider only the nearest neighbor i
 
 Therefore, the main question is how to find the nearest neighbor in each octant for every single of the $n$ points.
 
-## Nearest Neighbor in each Octant in O(n log n)
+## Nearest Neighbor in each Octant in O(n log n) {#nearest-neighbor-in-each-octant-in-on-log-n}
 
 For simplicity we focus on the NNE octant ($R_1$ in the image above). All other directions can be found with the same algorithm by rotating the input.
 
@@ -162,7 +162,7 @@ vector<tuple<long long, int, int>> manhattan_mst_edges(vector<point> ps) {
 }
 ```
 
-## Problems
+## Problems {#problems}
  * [AtCoder Beginner Contest 178E - Dist Max](https://atcoder.jp/contests/abc178/tasks/abc178_e)
  * [CodeForces 1093G - Multidimensional Queries](https://codeforces.com/contest/1093/problem/G)
  * [CodeForces 944F - Game with Tokens](https://codeforces.com/contest/944/problem/F)

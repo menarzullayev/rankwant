@@ -1,10 +1,10 @@
-# Aho–Corasick algoritmi
+# Aho–Corasick algoritmi {#aho-corasick-algorithm}
 
 Aho–Corasick algoritmi matn ichidan bir vaqtning o‘zida bir nechta shablonni tez qidirish imkonini beradi. Shablon satrlar to‘plami **lug‘at** deb ham ataladi. Lug‘atdagi satrlarning jami uzunligini $m$, alifbo hajmini esa $k$ bilan belgilaymiz. Algoritm trie asosida $O(mk)$ vaqtda chekli holatlar avtomatini quradi va keyin shu avtomat yordamida matnni qayta ishlaydi.
 
 Algoritm Alfred Aho va Margaret Corasick tomonidan 1975-yilda taklif qilingan.
 
-## Trie qurish
+## Trie qurish {#construction-of-the-trie}
 
 ![“Java”, “Rad”, “Rand”, “Rau”, “Raum” va “Rose” so‘zlari asosidagi trie](https://upload.wikimedia.org/wikipedia/commons/e/e2/Trie.svg)
 
@@ -60,7 +60,7 @@ Bu implementatsiya, ravshanki, chiziqli vaqtda ishlaydi. Har bir tugunda $k$ ta 
 
 Har bir tugundagi massiv o‘rniga map ishlatib, xotira sarfini $O(m)$ gacha kamaytirish mumkin. Biroq bunda vaqt murakkabligi $O(m\log k)$ gacha oshadi.
 
-## Avtomat qurish
+## Avtomat qurish {#construction-of-an-automaton}
 
 Berilgan satrlar to‘plami uchun trieni qurib bo‘ldik, deb faraz qilaylik. Endi unga boshqa tomondan qaraymiz. Har qanday tugunga mos satr to‘plamdagi bir yoki bir nechta satrning prefiksi bo‘ladi; demak, triedagi har bir tugunni to‘plamdagi bir yoki bir nechta satr ichidagi holat sifatida talqin qilish mumkin.
 
@@ -146,7 +146,7 @@ Suffiks havolalari va o‘tishlar memoizatsiya qilingani tufayli, barcha suffiks
 
 G‘oyaning tasviriy tushuntirishi uchun [Stanford slaydlari](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Slides02.pdf)ning 103-slaydiga qarang.
 
-### BFS asosidagi qurish
+### BFS asosidagi qurish {#bfs-based-construction}
 
 O‘tishlar va suffiks havolalarini `go` hamda `get_link` funksiyalarining rekursiv chaqiruvlari bilan hisoblash o‘rniga, ularni ildizdan boshlab pastdan yuqoriga, aniqrog‘i BFS tartibida qurish mumkin. Lug‘at faqat bitta satrdan iborat bo‘lsa, bunda bizga tanish Knuth–Morris–Pratt algoritmi hosil bo‘ladi.
 
@@ -161,9 +161,9 @@ Hozir $v$ tugunda turib, $c$ belgisini ko‘rib chiqayotgan bo‘laylik. Asosan 
 
 Shu tariqa, har bir tugun va belgi juftligi uchun $O(1)$ vaqt sarflab, $O(nk)$ umumiy vaqtga erishamiz. Bu yerdagi asosiy ortiqcha xarajat — birinchi holatda $u$ dan juda ko‘p o‘tishlarni nusxalashimiz; ikkinchi holatdagi o‘tishlar esa trie qirralarini tashkil qiladi va barcha tugunlar bo‘yicha jami $n$ ta bo‘ladi. $go[u][c]$ qiymatlarini nusxalamaslik uchun persistent massivdan foydalanish mumkin: dastlab $go[u]$ ni $go[v]$ ga nusxalaymiz, keyin faqat o‘tishi farq qiladigan belgilar qiymatini yangilaymiz. Bu $O(n\log k)$ algoritmni beradi.
 
-## Qo‘llanishlar
+## Qo‘llanishlar {#applications}
 
-### Berilgan to‘plamdagi barcha satrlarni matndan topish
+### Berilgan to‘plamdagi barcha satrlarni matndan topish {#find-all-strings-from-a-given-set-in-a-text}
 
 Bizga satrlar to‘plami va matn berilgan. To‘plamdagi barcha satrlarning matndagi barcha uchrashuvlarini $O(\text{len}+\text{ans})$ vaqtda chiqarish kerak; bu yerda $\text{len}$ — matn uzunligi, $\text{ans}$ esa javob hajmi.
 
@@ -177,21 +177,21 @@ Buni suffiks havolalari orqali erishiladigan eng yaqin $\text{output}$ tugunni h
 
 Agar uchrashuv indekslarini topish emas, faqat ularning sonini hisoblash kerak bo‘lsa, har bir $v$ tugun uchun suffiks havolalari yo‘lidagi belgilangan tugunlar sonini oldindan hisoblash mumkin. Buni jami $O(n)$ vaqtda bajarib, keyin barcha mosliklar sonini $O(\text{len})$ vaqtda yig‘ish mumkin.
 
-### Berilgan satrlarning hech birini o‘z ichiga olmaydigan, berilgan uzunlikdagi leksikografik eng kichik satrni topish
+### Berilgan satrlarning hech birini o‘z ichiga olmaydigan, berilgan uzunlikdagi leksikografik eng kichik satrni topish {#finding-the-lexicographically-smallest-string-of-a-given-length-that-doesnt-match-any-given-strings}
 
 Bizga satrlar to‘plami va $L$ uzunlik berilgan. Uzunligi $L$ bo‘lgan, berilgan satrlarning hech birini o‘z ichiga olmaydigan satrlar ichidan leksikografik eng kichigini topish kerak.
 
 Satrlar to‘plami uchun avtomat quramiz. $\text{output}$ tugunlar to‘plamdagi biror satr mos kelgan holatlar ekanini eslaylik. Bu masalada mosliklardan qochishimiz kerakligi sababli, bunday holatlarga kirish mumkin emas. Boshqa barcha tugunlarga kirish mumkin. Demak, avtomatdan barcha “yomon” tugunlarni o‘chirib, qolgan avtomat grafida uzunligi $L$ bo‘lgan leksikografik eng kichik yo‘lni topamiz. Masalani, masalan, [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) yordamida $O(L)$ vaqtda yechish mumkin.
 
-### Berilgan barcha satrlarni o‘z ichiga oladigan eng qisqa satrni topish
+### Berilgan barcha satrlarni o‘z ichiga oladigan eng qisqa satrni topish {#finding-the-shortest-string-containing-all-given-strings}
 
 Bu yerda ham xuddi shu g‘oyalardan foydalanamiz. Har bir tugunda ayni holatda mos keladigan satrlarni bildiruvchi niqob saqlaymiz. Shunda masalani quyidagicha qayta ifodalash mumkin: dastlab $(v=\text{root},\,\text{mask}=0)$ holatda turib, $(v,\,\text{mask}=2^n-1)$ holatga yetish kerak; bu yerda $n$ — to‘plamdagi satrlar soni. Bir holatdan boshqasiga harf bilan o‘tganda niqobni mos ravishda yangilaymiz. [Kenglik bo‘yicha qidiruv](/algorithms/graph/breadth-first-search) yordamida $(v,\,\text{mask}=2^n-1)$ holatiga olib boradigan eng qisqa yo‘lni topish mumkin.
 
-### Berilgan $k$ ta satrni o‘z ichiga oladigan, uzunligi $L$ bo‘lgan leksikografik eng kichik satrni topish
+### Berilgan $k$ ta satrni o‘z ichiga oladigan, uzunligi $L$ bo‘lgan leksikografik eng kichik satrni topish {#finding-the-lexicographically-smallest-string-of-length-l-containing-k-strings}
 
 Oldingi masaladagidek, har bir tugun uchun unga mos mosliklar sonini, ya’ni suffiks havolalari orqali erishiladigan belgilangan tugunlar sonini hisoblaymiz. Masalani qayta ifodalaymiz: joriy holat $(v,\,\text{len},\,\text{cnt})$ uchligi bilan aniqlanadi va $(\text{root},0,0)$ holatdan $v$ ixtiyoriy tugun bo‘lishi mumkin bo‘lgan $(v,L,k)$ holatga yetish kerak. Bunday yo‘lni chuqurlik bo‘yicha qidiruv yordamida topish mumkin. Qidiruv qirralarni tabiiy tartibda ko‘rib chiqsa, topilgan yo‘l avtomatik ravishda leksikografik eng kichik bo‘ladi.
 
-## Masalalar
+## Masalalar {#problems}
 
 * [UVA #11590 — Prefix Lookup](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2637)
 * [UVA #11171 — SMS](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2112)
@@ -200,6 +200,6 @@ Oldingi masaladagidek, har bir tugun uchun unga mos mosliklar sonini, ya’ni su
 * [Codeforces — Frequency of String](https://codeforces.com/problemset/problem/963/D)
 * [CodeChef — TWOSTRS](https://www.codechef.com/MAY20A/problems/TWOSTRS)
 
-## Manbalar
+## Manbalar {#references}
 
 * [Stanford CS166 — Aho–Corasick Automata](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Slides02.pdf) ([qisqartirilgan versiya](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Small02.pdf))

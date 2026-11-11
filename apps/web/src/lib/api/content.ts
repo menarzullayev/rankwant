@@ -26,6 +26,60 @@ export type Article = {
   topics: string[];
   reading_minutes: number;
   problem_count: number;
+  /** The algorithms library (ADR-0062): its section, level and order; empty
+   *  on our own articles. */
+  category: string;
+  subcategory: string;
+  level: ArticleLevel;
+  order: number;
+};
+
+export type ArticleLevel = "beginner" | "intermediate" | "advanced" | "";
+
+/** A practice problem on another judge. */
+export type ExternalLink = { platform: string; title: string; url: string; note: string };
+
+/** The original an imported article is adapted from (CC BY-SA attribution). */
+export type ArticleSource = {
+  title: string;
+  url: string;
+  commit: string;
+  license: string;
+  translator: string;
+  import_commit: string;
+};
+
+/** A problem here for practice: an editor's pick, the same problem as an
+ *  external link, or one chosen by topic and difficulty (ADR-0062 § 2.5). */
+export type PracticeProblem = {
+  slug: string;
+  title: string;
+  code: number | null;
+  difficulty: number;
+  via: "pick" | "source" | "topic";
+};
+
+/** A term of the algorithms library's glossary. */
+export type GlossaryEntry = {
+  slug: string;
+  term: string;
+  english: string;
+  aliases: string[];
+  note: string;
+};
+
+/** One line of the algorithms catalogue. */
+export type LibraryEntry = {
+  slug: string;
+  title: string;
+  /** The title's language: the original's (`en`) for an English reader. */
+  locale: string;
+  summary: string;
+  category: string;
+  subcategory: string;
+  level: ArticleLevel;
+  order: number;
+  reading_minutes: number;
 };
 
 export type LinkedProblem = {
@@ -39,6 +93,16 @@ export type ArticleDetail = Article & {
   body: string;
   author: string | null;
   problems: LinkedProblem[];
+  idea: string;
+  complexity: string;
+  uses: string;
+  external_links: ExternalLink[];
+  /** The CC BY-SA attribution; `null` on our own articles. */
+  attribution: ArticleSource | null;
+  review: { state: string; changes: number } | null;
+  practice_here: PracticeProblem[];
+  /** The body is the English original itself, not our translation. */
+  original: boolean;
 };
 
 export type Roadmap = {

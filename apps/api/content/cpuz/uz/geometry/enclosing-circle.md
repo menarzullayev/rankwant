@@ -1,4 +1,4 @@
-# Eng kichik qamrab oluvchi aylana
+# Eng kichik qamrab oluvchi aylana {#minimum-enclosing-circle}
 
 Quyidagi masalani ko‘rib chiqamiz:
 
@@ -24,7 +24,7 @@ Quyidagi mulohazalarni yaxshiroq tushunish uchun masala yechimi yagona ekanini d
 >
 > Shu bilan birga, ikkita MEC bor deb faraz qilib, ularning kesishmasi (u $p_1,\dots,p_n$ nuqtalarni allaqachon o‘z ichiga oladi) boshlang‘ich aylanalarnikidan kichikroq diametrga ega bo‘lishi kerakligini va shu sababli uni kichikroq aylana bilan qoplash mumkinligini ham ko‘rish mumkin.
 
-## Welzl algoritmi
+## Welzl algoritmi {#welzls-algorithm}
 
 Qisqalik uchun $\operatorname{mec}(p_1,\dots,p_n)$ orqali $\{p_1,\dots,p_n\}$ to‘plamining MEC sini, $P_i = \{p_1,\dots,p_i\}$ orqali esa birinchi $i$ ta nuqta to‘plamini belgilaymiz.
 
@@ -81,7 +81,7 @@ mec enclosing_circle(vector<point> &p) {
 
 Kutish mumkinki, $p_i$ nuqta $2$ yoki $3$ nuqtaning MEC si ichida ekanini $O(1)$ vaqtda tekshirish mumkin (buni keyinroq muhokama qilamiz). Biroq shunda ham, yuqoridagi algoritm faqat ichma-ich sikllar tufayli eng yomon holatda $O(n^3)$ vaqt oladigandek ko‘rinadi. Xo‘sh, nega biz chiziqli kutilgan ishlash vaqtini da’vo qildik? Keling, aniqlaymiz!
 
-### Murakkablik tahlili
+### Murakkablik tahlili {#complexity-analysis}
 
 Eng ichki sikl ($k$ bo‘yicha) uchun uning kutilgan ishlash vaqti, shubhasiz, $O(j)$ amal. $j$ bo‘yicha sikl-chi?
 
@@ -95,7 +95,7 @@ $$
 
 Aynan shu tarzda tashqi sikl ham kutilgan $O(n)$ vaqtda ishlashini isbotlash mumkin.
 
-### Nuqta $2$ yoki $3$ nuqtaning MEC sida ekanini tekshirish
+### Nuqta $2$ yoki $3$ nuqtaning MEC sida ekanini tekshirish {#checking-that-a-point-is-in-the-mec-of-2-or-3-points}
 
 Endi `point` va `mec` ning implementatsiya tafsilotlarini aniqlaymiz. Bu masalada nuqtalar uchun sinf sifatida [std::complex](https://codeforces.com/blog/entry/22175) dan foydalanish ayniqsa qulay bo‘lib chiqadi:
 
@@ -108,7 +108,7 @@ Eslatib o‘tamiz, kompleks son — $x+yi$ ko‘rinishdagi son, bunda $i^2=-1$ v
 
 Juda chuqur kirmasdan, ushbu masala uchun eng muhim xossani qayd etamiz: ikki kompleks sonni ko‘paytirish ularning qutbiy burchaklarini ($Ox$ o‘qidan soat strelkasiga teskari yo‘nalishda hisoblanadi) qo‘shadi, qo‘shma kompleks sonni olish esa (ya’ni $z=x+yi$ ni $\overline{z} = x-yi$ ga almashtirish) qutbiy burchakni $-1$ ga ko‘paytiradi. Bu $z$ nuqta $2$ yoki $3$ aniq nuqtaning MEC si ichida yotish-yotmasligi uchun juda sodda mezonlar tuzishga imkon beradi.
 
-#### $2$ nuqtaning MEC si
+#### $2$ nuqtaning MEC si {#mec-of-2-points}
 
 $2$ ta $a$ va $b$ nuqta uchun ularning MEC si — markazi $\frac{a+b}{2}$ va radiusi $\frac{|a-b|}{2}$ bo‘lgan aylana, boshqacha aytganda $ab$ diametr bo‘lgan aylana. $z$ shu aylana ichida ekanini tekshirish uchun $za$ va $zb$ orasidagi burchak o‘tkir emasligini tekshirish kifoya.
 
@@ -124,7 +124,7 @@ $$
 
 son musbat haqiqiy koordinataga ega emasligini tekshirish kerak (bu qutbiy burchagi $-90^\circ$ va $90^\circ$ orasida bo‘lgan nuqtalarga mos keladi).
 
-#### $3$ nuqtaning MEC si
+#### $3$ nuqtaning MEC si {#mec-of-3-points}
 
 $abc$ uchburchakka $z$ ni qo‘shsak, u to‘rtburchakka aylanadi. Quyidagi ifodani ko‘rib chiqamiz:
 
@@ -157,7 +157,7 @@ Boshqacha aytganda, agar $\angle bca$ musbat bo‘lsa, aylana ichidagi nuqtalar 
 
 **Eslatma**: $I_1$ ni olish uchun to‘rtta kompleks sonni ko‘paytirganimiz sababli, oraliq koeffitsientlar $O(A^4)$ gacha katta bo‘lishi mumkin; bu yerda $A$ — kirishdagi eng katta koordinata moduli. Yaxshi tomoni shundaki, kirish butun sonlardan iborat bo‘lsa, yuqoridagi ikkala tekshiruvni ham to‘liq butun sonlarda bajarish mumkin.
 
-#### Implementatsiya
+#### Implementatsiya {#implementation}
 
 Endi tekshiruvni amalda implementatsiya qilish uchun avval MEC ni qanday ifodalashni hal qilishimiz kerak. Bizning mezonlarimiz to‘g‘ridan-to‘g‘ri nuqtalar bilan ishlagani uchun, buning tabiiy va samarali yo‘li MEC ni uni aniqlaydigan nuqtalar jufti yoki uchligi ko‘rinishida bevosita ifodalashdir:
 
@@ -197,7 +197,7 @@ bool inside(mec const& C, point p) {
 
 Endi masalani Library Checker ga yuborib, hamma narsa ishlashiga ishonch hosil qilishimiz mumkin: [#308668](https://judge.yosupo.jp/submission/308668).
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [Library Checker - Minimum Enclosing Circle](https://judge.yosupo.jp/problem/minimum_enclosing_circle)
 - [BOI 2002 - Aliens](https://www.spoj.com/problems/ALIENS)

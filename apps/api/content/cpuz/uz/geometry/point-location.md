@@ -1,11 +1,11 @@
-# Nuqta joylashuvini $O(\log n)$ da aniqlash
+# Nuqta joylashuvini $O(\log n)$ da aniqlash {#point-location-in-olog-n}
 
 Quyidagi masalani ko‘rib chiqamiz: darajasi bir va nolga teng bo‘lgan uchlari bo‘lmagan [tekis bo‘linma](https://en.wikipedia.org/wiki/Planar_straight-line_graph) (planar subdivision) va ko‘p sonli so‘rovlar berilgan.
 Har bir so‘rov bitta nuqtadan iborat bo‘lib, bu nuqta bo‘linmaning qaysi yuziga tegishli ekanini aniqlashimiz kerak.
 Har bir so‘rovga oflayn rejimda $O(\log n)$ vaqtda javob beramiz.
 Bu masala Voronoi diagrammasida yoki biror sodda ko‘pburchakda nuqtalarning joylashuvini aniqlash kerak bo‘lganda uchrashi mumkin.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Avvalo, har bir $p\ (x_0, y_0)$ so‘rov nuqtasi uchun shunday qirrani topmoqchimizki, agar nuqta biror qirraga tegishli bo‘lsa, nuqta topilgan qirrada yotsin; aks holda bu qirra $x = x_0$ to‘g‘ri chiziqni biror yagona $(x_0, y)$ nuqtada kesib o‘tsin, bunda $y < y_0$ bo‘lsin va bu $y$ barcha shunday qirralar orasida eng kattasi bo‘lsin.
 Quyidagi rasmda ikkala holat ko‘rsatilgan.
@@ -57,11 +57,11 @@ Har bir vertikal bo‘lmagan qirra uchun shunday yuzni topib olamiz.
 Har bir yuzni soat miliga teskari yo‘nalishda aylanib chiqamiz.
 Agar aylanib chiqish paytida qirradan o‘tishda x-koordinata ortgan bo‘lsa, bu yuz shu qirra uchun biz topishimiz kerak bo‘lgan yuzdir.
 
-## Eslatmalar
+## Eslatmalar {#notes}
 
 Aslida, persistent daraxtlar yordamida bu yondashuvni so‘rovlarga onlayn javob berish uchun ham qo‘llash mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyidagi kod butun sonlar uchun yozilgan, ammo uni (taqqoslash usullarini va nuqta turini almashtirib) haqiqiy sonlar bilan ishlaydigan qilib osongina o‘zgartirish mumkin.
 Bu implementatsiya bo‘linma [DCEL](https://en.wikipedia.org/wiki/Doubly_connected_edge_list) ichida to‘g‘ri saqlangan va tashqi yuz $-1$ raqamiga ega deb faraz qiladi.
@@ -286,7 +286,7 @@ vector<pair<int, int>> point_location(DCEL planar, vector<pt> queries)
 }
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
  * [TIMUS 1848 Fly Hunt](http://acm.timus.ru/problem.aspx?space=1&num=1848&locale=en)
  * [UVA 12310 Point Location](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=297&page=show_problem&problem=3732)

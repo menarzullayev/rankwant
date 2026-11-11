@@ -1,4 +1,4 @@
-# Floyd–Warshall algoritmi
+# Floyd–Warshall algoritmi {#floyd-warshall-algorithm}
 
 Bizga $n$ ta tugunga ega yo‘naltirilgan yoki yo‘naltirilmagan vaznli $G$ grafi berilgan.
 
@@ -20,7 +20,7 @@ Bu algoritm Robert Floyd va Stephen Warshallning 1962-yilda bir vaqtda chop etil
 
 Biroq Bernard Roy 1959-yildayoq mohiyatan xuddi shu algoritmni chop etgan, ammo uning nashri e’tibordan chetda qolgan.
 
-## Algoritm tavsifi
+## Algoritm tavsifi {#description-of-the-algorithm}
 
 Algoritmning asosiy g‘oyasi — istalgan ikki tugun orasidagi eng qisqa yo‘lni topish jarayonini ketma-ket bir nechta fazaga bo‘lish.
 
@@ -62,7 +62,7 @@ Darhaqiqat, istalgan $k$-fazada masofalar matritsasidagi yo‘llarning masofasin
 
 Ushbu algoritmning vaqt murakkabligi, ravshanki, $O(n^3)$.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 $d[][]$ — avval tushuntirilganidek, $0$-faza bo‘yicha to‘ldirilgan $n \times n$ o‘lchamli ikki o‘lchovli massiv bo‘lsin.
 
@@ -101,7 +101,7 @@ for (int k = 0; k < n; ++k) {
 }
 ```
 
-## Eng qisqa yo‘ldagi tugunlar ketma-ketligini tiklash
+## Eng qisqa yo‘ldagi tugunlar ketma-ketligini tiklash {#retrieving-the-sequence-of-vertices-in-the-shortest-path}
 
 Istalgan ikki tugun orasidagi eng qisqa yo‘lni tugunlar ketma-ketligi ko‘rinishida tiklash imkonini beradigan qo‘shimcha ma’lumotni saqlash oson.
 
@@ -113,7 +113,7 @@ Endi faqat $i$ bilan $p[i][j]$ orasidagi hamda $p[i][j]$ bilan $j$ orasidagi eng
 
 Bu eng qisqa yo‘lni tiklaydigan sodda rekursiv algoritmga olib keladi.
 
-## Haqiqiy sonli vaznlar holati
+## Haqiqiy sonli vaznlar holati {#the-case-of-real-weights}
 
 Qirra vaznlari butun emas, balki haqiqiy sonlar bo‘lsa, suzuvchi nuqtali turlar bilan ishlashda yuz beradigan xatolarni hisobga olish kerak.
 
@@ -128,7 +128,7 @@ if (d[i][k] + d[k][j] < d[i][j] - EPS)
     d[i][j] = d[i][k] + d[k][j];
 ```
 
-## Manfiy sikllar holati
+## Manfiy sikllar holati {#the-case-of-negative-cycles}
 
 Formal jihatdan Floyd–Warshall algoritmi manfiy vaznli sikl yoki sikllarni o‘z ichiga olgan graflarga qo‘llanmaydi.
 
@@ -150,7 +150,7 @@ Shuning uchun eng kichik masofani biror qiymat (masalan, $-\text{INF}$) bilan ch
 
 Grafda manfiy sikllarni topish haqida batafsil ma’lumot uchun alohida [Grafda manfiy siklni topish](/algorithms/graph/finding-negative-cycle-in-graph) maqolasiga qarang.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [UVA: Page Hopping](https://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=762)
 - [SPOJ: Possible Friends](http://www.spoj.com/problems/SOCIALNE/)

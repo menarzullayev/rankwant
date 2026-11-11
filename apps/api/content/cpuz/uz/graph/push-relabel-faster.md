@@ -1,8 +1,8 @@
-# Maksimal oqim — yaxshilangan push–relabel usuli
+# Maksimal oqim — yaxshilangan push–relabel usuli {#maximum-flow-push-relabel-method-improved}
 
 Yaxshiroq ishlash vaqtiga erishish uchun [push–relabel usuli](/algorithms/graph/push-relabel)ni o‘zgartiramiz.
 
-## Tavsif
+## Tavsif {#description}
 
 O‘zgartirish nihoyatda sodda:
 
@@ -18,7 +18,7 @@ Aniqroq aytganda, hosil bo‘lgan algoritmning murakkabligi $O(V E + V^2 \sqrt{E
 
 Bu o‘zgartirish Cheriyan va Maheshwari tomonidan 1989-yilda taklif qilingan.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 const int inf = 1000000000;

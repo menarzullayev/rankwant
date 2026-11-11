@@ -1,4 +1,4 @@
-# Sparse Table
+# Sparse Table {#sparse-table}
 
 Sparse Table is a data structure, that allows answering range queries.
 It can answer most range queries in $O(\log n)$, but its true power is answering range minimum queries (or equivalent range maximum queries).
@@ -8,7 +8,7 @@ The only drawback of this data structure is, that it can only be used on _immuta
 This means, that the array cannot be changed between two queries.
 If any element in the array changes, the complete data structure has to be recomputed.
 
-## Intuition
+## Intuition {#intuition}
 
 Any non-negative number can be uniquely represented as a sum of decreasing powers of two.
 This is just a variant of the binary representation of a number.
@@ -22,7 +22,7 @@ And also here the union consists of at most $\lceil \log_2(\text{length of inter
 The main idea behind Sparse Tables is to precompute all answers for range queries with power of two length.
 Afterwards a different range query can be answered by splitting the range into ranges with power of two lengths, looking up the precomputed answers, and combining them to receive a complete answer.
 
-## Precomputation
+## Precomputation {#precomputation}
 
 We will use a 2-dimensional array for storing the answers to the precomputed queries.
 $\text{st}[i][j]$ will store the answer for the range $[j, j + 2^i - 1]$ of length $2^i$.
@@ -51,7 +51,7 @@ For range sum queries it will compute the sum, for range minimum queries it will
 
 The time complexity of the precomputation is $O(\text{N} \log \text{N})$.
 
-## Range Sum Queries
+## Range Sum Queries {#range-sum-queries}
 
 For this type of queries, we want to find the sum of all values in a range.
 Therefore the natural definition of the function $f$ is $f(x, y) = x + y$.
@@ -82,7 +82,7 @@ for (int i = K; i >= 0; i--) {
 
 Time complexity for a Range Sum Query is $O(K) = O(\log \text{MAXN})$.
 
-## Range Minimum Queries (RMQ)
+## Range Minimum Queries (RMQ) {#range-minimum-queries-rmq}
 
 These are the queries where the Sparse Table shines.
 When computing the minimum of a range, it doesn't matter if we process a value in the range once or twice.
@@ -138,7 +138,7 @@ int minimum = min(st[i][L], st[i][R - (1 << i) + 1]);
 
 Time complexity for a Range Minimum Query is $O(1)$.
 
-## Similar data structures supporting more types of queries
+## Similar data structures supporting more types of queries {#similar-data-structures-supporting-more-types-of-queries}
 
 One of the main weakness of the $O(1)$ approach discussed in the previous section is, that this approach only supports queries of [idempotent functions](https://en.wikipedia.org/wiki/Idempotence).
 I.e. it works great for range minimum queries, but it is not possible to answer range sum queries using this approach.
@@ -147,7 +147,7 @@ There are similar data structures that can handle any type of associative functi
 One of them is called [Disjoint Sparse Table](https://discuss.codechef.com/questions/117696/tutorial-disjoint-sparse-table).
 Another one would be the [Sqrt Tree](/algorithms/data-structures/sqrt-tree).
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ - RMQSQ](http://www.spoj.com/problems/RMQSQ/)
 * [SPOJ - THRBL](http://www.spoj.com/problems/THRBL/)

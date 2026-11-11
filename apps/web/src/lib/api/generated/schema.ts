@@ -245,6 +245,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/articles/glossary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The algorithms library's glossary (ADR-0062 § 3), from the snapshot. */
+        get: operations["articles_glossary_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/articles/library/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description The whole algorithms library in one answer (ADR-0062 § 5.3).
+         *
+         *     163 lines, so the catalogue groups and filters them without paging.
+         *     The reader's language gives the titles: the originals' in English.
+         */
+        get: operations["articles_library_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/attempts/": {
         parameters: {
             query?: never;
@@ -7931,10 +7970,23 @@ export interface components {
             readonly problem_count: number;
             /** Format: date-time */
             published_at?: string | null;
+            category?: string;
+            subcategory?: string;
+            level?: components["schemas"]["ArticleLevelEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: int64 */
+            order?: number;
             /** @description Markdown + LaTeX */
             body: string;
             readonly author: string;
             readonly problems: components["schemas"]["LinkedProblem"][];
+            idea?: string;
+            complexity?: string;
+            uses?: string;
+            readonly external_links: components["schemas"]["ExternalLink"][];
+            readonly attribution: components["schemas"]["ArticleSource"] | null;
+            readonly review: components["schemas"]["ArticleReviewSummary"] | null;
+            readonly practice_here: components["schemas"]["PracticeProblem"][];
+            readonly original: boolean;
         };
         /**
          * @description * `article` - Maqola
@@ -7942,6 +7994,13 @@ export interface components {
          * @enum {string}
          */
         ArticleKindEnum: "article" | "algorithm";
+        /**
+         * @description * `beginner` - Boshlang'ich
+         *     * `intermediate` - O'rta
+         *     * `advanced` - Yuqori
+         * @enum {string}
+         */
+        ArticleLevelEnum: "beginner" | "intermediate" | "advanced";
         ArticleList: {
             slug: string;
             kind?: components["schemas"]["ArticleKindEnum"];
@@ -7957,6 +8016,26 @@ export interface components {
             readonly problem_count: number;
             /** Format: date-time */
             published_at?: string | null;
+            category?: string;
+            subcategory?: string;
+            level?: components["schemas"]["ArticleLevelEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: int64 */
+            order?: number;
+        };
+        /** @description What the review did: the state and the number of logged changes. */
+        ArticleReviewSummary: {
+            state: string;
+            changes: number;
+        };
+        /** @description The original an imported article is adapted from (CC BY-SA attribution). */
+        ArticleSource: {
+            title: string;
+            /** Format: uri */
+            url: string;
+            commit: string;
+            license: string;
+            translator: string;
+            import_commit: string;
         };
         Ask: {
             coach: string;
@@ -8813,6 +8892,13 @@ export interface components {
             kind: components["schemas"]["ExternalProfileKindEnum"];
             handle: string;
         };
+        ExternalLink: {
+            platform?: string;
+            title: string;
+            /** Format: uri */
+            url: string;
+            note?: string;
+        };
         ExternalOut: {
             kind: components["schemas"]["ExternalProfileKindEnum"];
             handle: string;
@@ -8902,6 +8988,14 @@ export interface components {
          * @enum {string}
          */
         GenerationRunStatusEnum: "running" | "done" | "failed";
+        /** @description One term of the library's glossary. */
+        GlossaryEntry: {
+            slug: string;
+            term: string;
+            english: string;
+            aliases: string[];
+            note: string;
+        };
         /**
          * @description * `sample` - Namuna
          *     * `minimal` - Minimal
@@ -9221,6 +9315,20 @@ export interface components {
          * @enum {string}
          */
         LevelEnum: "debug" | "info" | "warn" | "error";
+        /** @description One line of the algorithms catalogue (ADR-0062 § 5.3). */
+        LibraryEntry: {
+            slug: string;
+            title: string;
+            locale?: string;
+            summary?: string;
+            category?: string;
+            subcategory?: string;
+            level?: components["schemas"]["ArticleLevelEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: int64 */
+            order?: number;
+            /** Format: int64 */
+            reading_minutes?: number;
+        };
         LinkedProblem: {
             readonly slug: string;
             readonly title: string;
@@ -11560,6 +11668,13 @@ export interface components {
             /** Format: date-time */
             published_at?: string | null;
         };
+        PracticeProblem: {
+            slug: string;
+            title: string;
+            code: number | null;
+            difficulty: number;
+            via: components["schemas"]["ViaEnum"];
+        };
         /** @description `/presence/` — who was here today. */
         Presence: {
             today: number;
@@ -13756,6 +13871,13 @@ export interface components {
          * @enum {string}
          */
         VerdictEnum: "PENDING" | "RUNNING" | "AC" | "WA" | "TLE" | "MLE" | "OLE" | "RE" | "RE_SIGNAL" | "RE_EXIT" | "CE" | "PE" | "HACKED" | "PARTIAL" | "IE" | "WRONG_TEST" | "SKIPPED" | "COMPILE_TIMEOUT" | "IDLENESS" | "SECURITY_VIOLATION" | "CHECKER_ERROR" | "TESTING_ABORTED" | "RATE_LIMITED" | "DENIAL_OF_JUDGEMENT";
+        /**
+         * @description * `pick` - pick
+         *     * `source` - source
+         *     * `topic` - topic
+         * @enum {string}
+         */
+        ViaEnum: "pick" | "source" | "topic";
         VideoPart: {
             number: number;
             etag: string;
@@ -14029,11 +14151,18 @@ export interface operations {
     articles_list: {
         parameters: {
             query?: {
+                category?: string;
                 /**
                  * @description * `article` - Maqola
                  *     * `algorithm` - Algoritm
                  */
                 kind?: "algorithm" | "article";
+                /**
+                 * @description * `beginner` - Boshlang'ich
+                 *     * `intermediate` - O'rta
+                 *     * `advanced` - Yuqori
+                 */
+                level?: "advanced" | "beginner" | "intermediate";
                 locale?: string;
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
@@ -14076,6 +14205,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ArticleDetail"];
+                };
+            };
+        };
+    };
+    articles_glossary_list: {
+        parameters: {
+            query?: {
+                category?: string;
+                /**
+                 * @description * `article` - Maqola
+                 *     * `algorithm` - Algoritm
+                 */
+                kind?: "algorithm" | "article";
+                /**
+                 * @description * `beginner` - Boshlang'ich
+                 *     * `intermediate` - O'rta
+                 *     * `advanced` - Yuqori
+                 */
+                level?: "advanced" | "beginner" | "intermediate";
+                locale?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                topics__slug?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GlossaryEntry"][];
+                };
+            };
+        };
+    };
+    articles_library_list: {
+        parameters: {
+            query?: {
+                category?: string;
+                /**
+                 * @description * `article` - Maqola
+                 *     * `algorithm` - Algoritm
+                 */
+                kind?: "algorithm" | "article";
+                /**
+                 * @description * `beginner` - Boshlang'ich
+                 *     * `intermediate` - O'rta
+                 *     * `advanced` - Yuqori
+                 */
+                level?: "advanced" | "beginner" | "intermediate";
+                locale?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                topics__slug?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LibraryEntry"][];
                 };
             };
         };

@@ -1,10 +1,10 @@
-# Eng yaqin umumiy ajdod — $O(N)$ oldindan ishlov bilan $O(\sqrt{N})$ va $O(\log N)$
+# Eng yaqin umumiy ajdod — $O(N)$ oldindan ishlov bilan $O(\sqrt{N})$ va $O(\log N)$ {#lowest-common-ancestor-osqrtn-and-olog-n-with-on-preprocessing}
 
 Bizga $G$ daraxti berilgan. Har bir $(v_1, v_2)$ so‘rov uchun ularning eng yaqin umumiy ajdodini (yoki eng quyi umumiy ajdodini), ya’ni ildizdan $v_1$ gacha yo‘lda ham, ildizdan $v_2$ gacha yo‘lda ham yotadigan va imkon qadar quyida joylashgan $v$ tugunni topish kerak. Boshqacha aytganda, kerakli $v$ tugun $v_1$ va $v_2$ ning eng quyi ajdodidir. Ularning eng yaqin umumiy ajdodi $v_1$ bilan $v_2$ orasidagi eng qisqa yo‘lda yotishi ravshan.
 
 Shuningdek, $v_1$ tugun $v_2$ ning ajdodi bo‘lsa, $v_1$ ularning eng yaqin umumiy ajdodi bo‘ladi.
 
-### Algoritm g‘oyasi
+### Algoritm g‘oyasi {#the-idea-of-the-algorithm}
 
 So‘rovlarga javob berishdan oldin daraxtga **oldindan ishlov berish** kerak.
 
@@ -66,7 +66,7 @@ Shunday qilib, **LCA masalasi RMQ masalasiga** (oraliqda minimum topish masalasi
 
 Saqlangan qiymatlar deyarli hech qachon yangilanmasligi sababli, $O(N\log N)$ qurish vaqti bilan so‘rovlarga $O(1)$ da javob beruvchi [siyrak jadval](/algorithms/data-structures/sparse-table) (Sparse Table) yaxshiroq tanlov bo‘lishi mumkin.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Quyidagi LCA implementatsiyasida segment daraxtidan foydalanilgan.
 
@@ -132,7 +132,7 @@ struct LCA {
 
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ: LCA](http://www.spoj.com/problems/LCA/)
 - [SPOJ: DISQUERY](http://www.spoj.com/problems/DISQUERY/)

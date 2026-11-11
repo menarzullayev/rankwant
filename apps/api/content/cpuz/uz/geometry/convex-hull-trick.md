@@ -1,4 +1,4 @@
-# Convex Hull Trick va Li Chao daraxti
+# Convex Hull Trick va Li Chao daraxti {#convex-hull-trick-and-li-chao-tree}
 
 Quyidagi masalani ko‘rib chiqamiz. $n$ ta shahar bor va siz avtomobilda $1$-shahardan $n$-shaharga borishingiz kerak. Buning uchun benzin sotib olishingiz lozim. $k$-shaharda bir litr benzin $cost_k$ turishi ma’lum. Dastlab yonilg‘i baki bo‘sh, avtomobil esa har kilometrga bir litr benzin sarflaydi. Shaharlar bitta to‘g‘ri chiziqda, o‘sish tartibida joylashgan; $k$-shaharning koordinatasi $x_k$. Bundan tashqari, $k$-shaharga kirish uchun $toll_k$ to‘lashingiz kerak. Vazifangiz — safarni eng kam mumkin bo‘lgan xarajat bilan amalga oshirish. Yechimni dinamik dasturlash orqali hisoblash mumkinligi ravshan:
 
@@ -6,7 +6,7 @@ $$dp_i = toll_i+\min\limits_{j<i}(cost_j \cdot (x_i - x_j)+dp_j)$$
 
 Sodda yondashuv $O(n^2)$ murakkablik beradi; uni $O(n \log n)$ yoki $O(n \log [C \varepsilon^{-1}])$ gacha yaxshilash mumkin, bunda $C$ — mumkin bo‘lgan eng katta $|x_i|$, $\varepsilon$ esa $x_i$ qanday aniqlikda qaralishini bildiradi (butun sonlar uchun, odatda shunday bo‘ladi, $\varepsilon = 1$). Buning uchun masalani to‘plamga $k \cdot x + b$ ko‘rinishidagi chiziqli funksiyalarni qo‘shish va funksiyalarning biror $x$ nuqtadagi eng kichik qiymatini topishga keltirish mumkinligini payqash kerak. Bu yerda ikkita asosiy yondashuvdan foydalanish mumkin.
 
-## Convex hull trick
+## Convex hull trick {#convex-hull-trick}
 
 Bu yondashuvning g‘oyasi chiziqli funksiyalarning pastki qavariq qobig‘ini yuritishdan iborat.
 Aslida ularni chiziqli funksiyalar sifatida emas, tekislikdagi $(k;b)$ nuqtalar sifatida qarash biroz qulayroq: u holda berilgan $(x;1)$ nuqta bilan skalyar ko‘paytmasi eng kichik bo‘lgan nuqtani topishimiz kerak bo‘ladi, ya’ni shu nuqta uchun $kx+b$ minimal bo‘ladi — bu dastlabki masalaning o‘zi.
@@ -77,7 +77,7 @@ int get(ftype x) {
 }
 ```
 
-## Li Chao daraxti
+## Li Chao daraxti {#li-chao-tree}
 
 Faraz qilaylik, har ikkitasi ko‘pi bilan bir marta kesishadigan funksiyalar to‘plami berilgan. Segment daraxtining har bir tugunida biror funksiyani shunday saqlaymizki, ildizdan bargga tushganda yo‘lda uchragan funksiyalardan biri shu bargda minimum qiymatni berishi kafolatlansin. Uni qanday qurishni ko‘rib chiqamiz.
 
@@ -141,7 +141,7 @@ ftype get(int x, int v = 1, int l = 0, int r = maxn) {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#problems}
 
 * [Codebreaker - TROUBLES](https://codeforces.com/gym/103536/problem/B) (bir nechta kuzatuvdan keyin Convex Hull Trick ning oddiy qo‘llanishi)
 * [CS Academy - Squared Ends](https://csacademy.com/contest/archive/task/squared-ends)

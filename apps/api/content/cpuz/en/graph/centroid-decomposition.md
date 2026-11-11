@@ -1,14 +1,14 @@
-# Centroid Decomposition
+# Centroid Decomposition {#centroid-decomposition}
 
 Prerequisite knowledge: [Depth First Search (DFS)](/algorithms/graph/depth-first-search), [Divide and Conquer](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm), [Trees](https://en.wikipedia.org/wiki/Tree_(graph_theory)>).
 
-## Introduction
+## Introduction {#introduction}
 
 **Centroid Decomposition** is a divide-and-conquer technique on trees. It is used to solve various problems that involve paths in a tree, such as counting paths with certain properties, finding distances, or answering queries on tree paths.
 
 The key idea is to recursively decompose a tree by finding its **centroid**. This special vertex when removed splits the tree into components, each containing at most half of the original tree's vertices. This guarantees a logarithmic depth of recursion, leading to efficient algorithms.
 
-## Properties and Definition of a Centroid
+## Properties and Definition of a Centroid {#properties-and-definition-of-a-centroid}
 
 Let's first understand what a centroid is. A **centroid** of a tree is a vertex whose removal results in no subtree having more than $\frac{N}{2}$ vertices, where $N$ is the total number of vertices in the tree.
 
@@ -16,7 +16,7 @@ Let's first understand what a centroid is. A **centroid** of a tree is a vertex 
 
 For any given tree with $N$ vertices, either one or two centroids exist. If there are two centroids, they must, as well, be adjacent.
 
-### Existence and Uniqueness
+### Existence and Uniqueness {#existence-and-uniqueness}
 
 **Theorem**: Every tree has at least one centroid, and at most two centroids. If there are two centroids, they must be adjacent.
 
@@ -29,14 +29,14 @@ For any given tree with $N$ vertices, either one or two centroids exist. If ther
 >
 > _Uniqueness_: Suppose there are two centroids $u$ and $v$. Consider the path between them. When we remove $u$, vertex $v$ must be in a component with at most $\frac{N}{2}$ vertices. Similarly, when we remove $v$, vertex $u$ must be in a component with at most $\frac{N}{2}$ vertices. This is only possible if $u$ and $v$ are adjacent; otherwise, removing either would place the other in a component with more than $\frac{N}{2}$ vertices. This contradicts our initial statement of both centroids being in a component with at most $\frac{N}{2}$ vertices. Furthermore, if two centroids exist, they must split the tree into two components of exactly $\frac{N}{2}$ vertices each, which is only possible when $N$ is even.
 
-## Properties and Definition of Centroid Decomposition
+## Properties and Definition of Centroid Decomposition {#properties-and-definition-of-centroid-decomposition}
 
 "Decomposing" the tree then essentially means recursively finding centroids and breaking the tree into subtrees based on the centroid's components. Such a recursive decomposition of the tree into its components creates a unique set of properties:
 
 1. **Decomposition depth**: The depth is $O(\log N)$ because each level at least halves the component size.
 2. **Path coverage**: Every path in the tree passes through the centroid of some component in the decomposition.
 
-### Decomposition Depth
+### Decomposition Depth {#decomposition-depth}
 
 **Theorem**: The depth, or number of steps, when using centroid decomposition on any given tree is $O(\log N)$.
 
@@ -57,7 +57,7 @@ For any given tree with $N$ vertices, either one or two centroids exist. If ther
 
 **Consequence**: Since each vertex participates in at most $O(\log N)$ levels of decomposition, and we process each vertex once at each level, algorithms using centroid decomposition typically have a time complexity factor of $O(\log N)$ multiplied by the work done per vertex per level.
 
-### Path Coverage
+### Path Coverage {#path-coverage}
 
 **Theorem**: Every path in the original tree passes through the centroid of some component in the decomposition.
 
@@ -78,7 +78,7 @@ For any given tree with $N$ vertices, either one or two centroids exist. If ther
 
 **Consequence**: This property is fundamental to the correctness of centroid decomposition algorithms. It ensures that when we process all paths through each centroid, we cover all possible paths in the tree exactly once at some level of the decomposition. This is why centroid decomposition can solve path-related problems efficiently: every path is considered exactly once, at the level where it first encounters a centroid.
 
-## Finding a Centroid
+## Finding a Centroid {#finding-a-centroid}
 
 To find a centroid of a tree efficiently:
 
@@ -92,7 +92,7 @@ Time complexity: $O(N)$.
 
 Space complexity: $O(N)$.
 
-## Algorithm Description
+## Algorithm Description {#algorithm-description}
 
 When using centroid decomposition, the general flow works as follows:
 
@@ -107,7 +107,7 @@ This creates a **centroid tree**. Each node in this tree represents a centroid f
 
 For example, in the above image, we have a centroid tree. Each node at each level of the tree is a centroid of that component (e.g. the root is the centroid of the entire tree, the left most child of the root is the centroid of the left most subtree of the root, etc.).
 
-## Implementation
+## Implementation {#implementation}
 
 Here's an implementation of centroid decomposition solving a specific problem: **counting all paths in the tree with length exactly $K$**.
 
@@ -191,7 +191,7 @@ void decompose(int v) {
 
 This template can be adapted to solve different problems using centroid decomposition. In this specific case, it solves the problem of counting all paths of length $K$. The strategy is: for each centroid, count paths passing through it by finding pairs of vertices in different subtrees at distances $d_1$ and $d_2$ their sum is $K$ (i.e. a path passing through the centroid consists of a vertex in one subtree at distance $d_1$ from the centroid and a vertex in another subtree at distance $d_2$ where $d_1 + d_2 = K$). For each distance $d$ in the current subtree, the code counts how many vertices are at distance $K - d$ in previous subtrees. The optimization skips distances beyond $K$ to avoid unnecessary recursion.
 
-### Building the Centroid Tree
+### Building the Centroid Tree {#building-the-centroid-tree}
 
 If you need to build an explicit centroid tree structure (useful for answering queries):
 
@@ -215,7 +215,7 @@ int decompose(int v, int p = -1) {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [CSES - Finding a Centroid](https://cses.fi/problemset/task/2079) [difficulty: easy]
 - [CSES - Fixed-Length Paths II](https://cses.fi/problemset/task/2081) [difficulty: easy]

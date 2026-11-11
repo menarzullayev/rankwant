@@ -1,4 +1,4 @@
-# Lowest Common Ancestor - Binary Lifting
+# Lowest Common Ancestor - Binary Lifting {#lowest-common-ancestor-binary-lifting}
 
 Let $G$ be a tree.
 For every query of the form `(u, v)` we want to find the lowest common ancestor of the nodes `u` and `v`, i.e. we want to find a node `w` that lies on the path from `u` to the root node, that lies on the path from `v` to the root node, and if there are multiple nodes we pick the one that is farthest away from the root node.
@@ -7,7 +7,7 @@ In particular if `u` is an ancestor of `v`, then `u` is their lowest common ance
 
 The algorithm described in this article will need $O(N \log N)$ for preprocessing the tree, and then $O(\log N)$ for each LCA query.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 For each node we will precompute its ancestor above it, its ancestor two nodes above, its ancestor four above, etc.
 Let's store them in the array `up`, i.e. `up[i][j]` is the `2^j`-th ancestor above the node `i` with `i=1...N`, `j=0...ceil(log(N))`.
@@ -35,7 +35,7 @@ Now, obviously, the answer to LCA will be `up[u][0]` - i.e., the smallest node a
 So answering a LCA query will iterate `i` from `ceil(log(N))` to `0` and checks in each iteration if one node is the ancestor of the other.
 Consequently each query can be answered in $O(\log N)$.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 int n, l;
@@ -87,7 +87,7 @@ void preprocess(int root) {
     dfs(root, root);
 }
 ```
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [LeetCode -  Kth Ancestor of a Tree Node](https://leetcode.com/problems/kth-ancestor-of-a-tree-node)
 * [Codechef - Longest Good Segment](https://www.codechef.com/problems/LGSEG)

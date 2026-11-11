@@ -1,14 +1,14 @@
-# Centroid dekompozitsiyasi
+# Centroid dekompozitsiyasi {#centroid-decomposition}
 
 Oldindan bilish tavsiya etiladi: [chuqurlik bo‘yicha qidiruv (DFS)](/algorithms/graph/depth-first-search), [bo‘lib yechish](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm), [daraxtlar](https://en.wikipedia.org/wiki/Tree_(graph_theory)>).
 
-## Kirish
+## Kirish {#introduction}
 
 **Centroid dekompozitsiyasi** — daraxtlarda qo‘llanadigan bo‘lib yechish usuli. U daraxtdagi yo‘llar bilan bog‘liq turli masalalarni, masalan, ma’lum xossalarga ega yo‘llarni sanash, masofalarni topish yoki daraxt yo‘llari bo‘yicha so‘rovlarga javob berishni yechishda ishlatiladi.
 
 Asosiy g‘oya — daraxtning **centroid**ini topib, daraxtni rekursiv ravishda ajratish. Ushbu maxsus tugun olib tashlanganda daraxt komponentlarga bo‘linadi va ularning har biri asl daraxt tugunlarining ko‘pi bilan yarmini o‘z ichiga oladi. Bu rekursiya chuqurligining logarifmik bo‘lishini kafolatlaydi va samarali algoritmlarga olib keladi.
 
-## Centroidning ta’rifi va xossalari
+## Centroidning ta’rifi va xossalari {#properties-and-definition-of-a-centroid}
 
 Avval centroid nima ekanini tushunib olaylik. Daraxtning **centroidi** — olib tashlanganda hosil bo‘ladigan ost-daraxtlarning hech birida $\frac{N}{2}$ tadan ortiq tugun qolmaydigan tugun; bu yerda $N$ — daraxtdagi tugunlarning umumiy soni.
 
@@ -16,7 +16,7 @@ Avval centroid nima ekanini tushunib olaylik. Daraxtning **centroidi** — olib 
 
 $N$ ta tugunli istalgan daraxtda bitta yoki ikkita centroid mavjud. Agar ikkita centroid bo‘lsa, ular o‘zaro qo‘shni bo‘lishi shart.
 
-### Mavjudlik va yagonalik
+### Mavjudlik va yagonalik {#existence-and-uniqueness}
 
 **Teorema**: Har bir daraxtda kamida bitta va ko‘pi bilan ikkita centroid mavjud. Agar ikkita centroid bo‘lsa, ular o‘zaro qo‘shni bo‘lishi kerak.
 
@@ -28,14 +28,14 @@ $N$ ta tugunli istalgan daraxtda bitta yoki ikkita centroid mavjud. Agar ikkita 
 >
 > _Yagonalik_: Ikkita centroid $u$ va $v$ mavjud deb faraz qilaylik. Ular orasidagi yo‘lni qaraymiz. $u$ olib tashlanganida $v$ ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda bo‘lishi kerak. Xuddi shunday, $v$ olib tashlanganida $u$ ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda bo‘lishi kerak. Bu faqat $u$ va $v$ qo‘shni bo‘lgandagina mumkin; aks holda ulardan birini olib tashlash ikkinchisini $\frac{N}{2}$ tadan ortiq tugunli komponentda qoldirardi. Bu ikkala centroid ham ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda joylashadi degan boshlang‘ich bayonotimizga zid. Bundan tashqari, agar ikkita centroid mavjud bo‘lsa, ular daraxtni har biri aynan $\frac{N}{2}$ ta tugundan iborat ikkita komponentga ajratishi kerak; bu faqat $N$ juft bo‘lganda mumkin.
 
-## Centroid dekompozitsiyasining ta’rifi va xossalari
+## Centroid dekompozitsiyasining ta’rifi va xossalari {#properties-and-definition-of-centroid-decomposition}
 
 Daraxtni “dekompozitsiya qilish” mohiyatan centroidlarni rekursiv topish va centroid hosil qilgan komponentlar asosida daraxtni ost-daraxtlarga ajratishni anglatadi. Daraxtning komponentlariga bunday rekursiv ajratilishi o‘ziga xos xossalar to‘plamini hosil qiladi:
 
 1. **Dekompozitsiya chuqurligi**: chuqurlik $O(\log N)$, chunki har bir sathda komponent o‘lchami kamida ikki baravar kamayadi.
 2. **Yo‘llarni qamrab olish**: asl daraxtdagi har bir yo‘l dekompozitsiyadagi biror komponent centroididan o‘tadi.
 
-### Dekompozitsiya chuqurligi
+### Dekompozitsiya chuqurligi {#decomposition-depth}
 
 **Teorema**: Istalgan daraxtda centroid dekompozitsiyasidan foydalanilganda chuqurlik, ya’ni qadamlar soni, $O(\log N)$ bo‘ladi.
 
@@ -56,7 +56,7 @@ Daraxtni “dekompozitsiya qilish” mohiyatan centroidlarni rekursiv topish va 
 
 **Natija**: Har bir tugun dekompozitsiyaning ko‘pi bilan $O(\log N)$ ta sathida qatnashadi va biz har bir sathda har bir tugunga bir marta ishlov beramiz. Shu sababli centroid dekompozitsiyasidan foydalanuvchi algoritmlarning vaqt murakkabligida odatda har bir sathda har bir tugun uchun bajariladigan ishga ko‘paytirilgan $O(\log N)$ koeffitsient paydo bo‘ladi.
 
-### Yo‘llarni qamrab olish
+### Yo‘llarni qamrab olish {#path-coverage}
 
 **Teorema**: Asl daraxtdagi har bir yo‘l dekompozitsiyadagi biror komponent centroididan o‘tadi.
 
@@ -77,7 +77,7 @@ Daraxtni “dekompozitsiya qilish” mohiyatan centroidlarni rekursiv topish va 
 
 **Natija**: Ushbu xossa centroid dekompozitsiyasi algoritmlarining to‘g‘riligi uchun asosiy ahamiyatga ega. U har bir centroiddan o‘tuvchi barcha yo‘llarga ishlov berganimizda daraxtdagi barcha mumkin bo‘lgan yo‘llarni dekompozitsiyaning biror sathida aynan bir marta qamrab olishimizni kafolatlaydi. Centroid dekompozitsiyasi yo‘llar bilan bog‘liq masalalarni aynan shuning uchun samarali yecha oladi: har bir yo‘l centroid bilan birinchi marta uchrashadigan sathda aynan bir marta qaraladi.
 
-## Centroidni topish
+## Centroidni topish {#finding-a-centroid}
 
 Daraxt centroidini samarali topish uchun:
 
@@ -91,7 +91,7 @@ Vaqt murakkabligi: $O(N)$.
 
 Xotira murakkabligi: $O(N)$.
 
-## Algoritm tavsifi
+## Algoritm tavsifi {#algorithm-description}
 
 Centroid dekompozitsiyasidan foydalanganda umumiy jarayon quyidagicha:
 
@@ -106,7 +106,7 @@ Bu **centroid daraxti**ni hosil qiladi. Ushbu daraxtdagi har bir tugun dekompozi
 
 Masalan, yuqoridagi rasmda centroid daraxti ko‘rsatilgan. Daraxtning har bir sathidagi har bir tugun tegishli komponentning centroididir (masalan, ildiz butun daraxtning centroidi, ildizning eng chapdagi farzandi esa ildizning eng chap ost-daraxti centroidi va hokazo).
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida muayyan masalani — **daraxtdagi uzunligi aynan $K$ bo‘lgan barcha yo‘llarni sanash** masalasini — yechadigan centroid dekompozitsiyasi implementatsiyasi keltirilgan.
 
@@ -188,7 +188,7 @@ void decompose(int v) {
 Ushbu shablonni centroid dekompozitsiyasidan foydalanuvchi boshqa masalalarga moslashtirish mumkin. Bu aniq holatda u uzunligi $K$ bo‘lgan barcha yo‘llarni sanash masalasini yechadi. Strategiya quyidagicha: har bir centroid uchun turli ost-daraxtlarda joylashgan va centroidgacha masofalari $d_1$ hamda $d_2$ bo‘lib, yig‘indisi $K$ ga teng tugunlar juftlarini topish orqali centroiddan o‘tuvchi yo‘llarni sanaymiz (ya’ni centroiddan o‘tuvchi yo‘l bir ost-daraxtdagi centroiddan $d_1$ masofadagi tugun va boshqa ost-daraxtdagi centroiddan $d_2$ masofadagi tugundan tuziladi, bunda $d_1+d_2=K$).
 Joriy ost-daraxtdagi har bir $d$ masofa uchun kod avvalgi ost-daraxtlarda $K-d$ masofada nechta tugun borligini sanaydi. Optimallashtirish keraksiz rekursiyaning oldini olish uchun $K$ dan katta masofalarni tashlab yuboradi.
 
-### Centroid daraxtini qurish
+### Centroid daraxtini qurish {#building-the-centroid-tree}
 
 Agar aniq centroid daraxti tuzilmasini qurish kerak bo‘lsa — masalan, so‘rovlarga javob berish uchun — quyidagidan foydalanish mumkin:
 
@@ -212,7 +212,7 @@ int decompose(int v, int p = -1) {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [CSES - Finding a Centroid](https://cses.fi/problemset/task/2079) [qiyinlik: oson]
 - [CSES - Fixed-Length Paths II](https://cses.fi/problemset/task/2081) [qiyinlik: oson]

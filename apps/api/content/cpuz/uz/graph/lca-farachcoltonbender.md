@@ -1,4 +1,4 @@
-# Eng yaqin umumiy ajdod — Farach–Colton va Bender algoritmi
+# Eng yaqin umumiy ajdod — Farach–Colton va Bender algoritmi {#lowest-common-ancestor-farach-colton-and-bender-algorithm}
 
 $G$ daraxt bo‘lsin.
 
@@ -12,7 +12,7 @@ Ushbu maqolada tavsiflanadigan algoritm Farach–Colton va Bender tomonidan ishl
 
 U asimptotik jihatdan optimal.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 LCA masalasini RMQ masalasiga klassik keltirishdan foydalanamiz.
 
@@ -112,7 +112,7 @@ Shunday qilib, har bir blok ichidagi oraliq minimum so‘rovlarini ham, bloklar 
 
 Bu oldindan hisoblangan ma’lumotlar bilan har bir so‘rovga ko‘pi bilan to‘rtta tayyor qiymat yordamida $O(1)$ vaqtda javob berish mumkin: `l` ni o‘z ichiga oluvchi blok minimumi, `r` ni o‘z ichiga oluvchi blok minimumi va ular orasidagi bloklarni qoplovchi ustma-ust ikkita kesmaning minimumlari.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 int n;

@@ -2,6 +2,7 @@
   "_comment": "One set of cases for both converters: packages/shared/src/alphabet.ts and apps/api/core/alphabet.py (ADR-0059). `back` is what toOld gives for `new` when it differs from `old` or the case is one-way.",
   "cases": [
     {"old": "O'zbekiston", "new": "Özbekiston", "back": "Oʻzbekiston"},
+    {"old": "## Qidiruv {#search-chain}", "new": "## Qidiruv {#search-chain}"},
     {"old": "g'alaba", "new": "ğalaba", "back": "gʻalaba"},
     {"old": "Shart", "new": "Şart", "back": "Shart"},
     {"old": "SHART", "new": "ŞART", "back": "SHART"},

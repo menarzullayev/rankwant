@@ -1,8 +1,8 @@
-# Maximum flow - Ford-Fulkerson and Edmonds-Karp
+# Maximum flow - Ford-Fulkerson and Edmonds-Karp {#maximum-flow-ford-fulkerson-and-edmonds-karp}
 
 The Edmonds-Karp algorithm is an implementation of the Ford-Fulkerson method for computing a maximal flow in a flow network.
 
-## Flow network
+## Flow network {#flow-network}
 
 First let's define what a **flow network**, a **flow**, and a **maximum flow** is.
 
@@ -51,7 +51,7 @@ The following image shows the maximal flow in the flow network.
 
   ![Maximal flow](/algorithms-media/graph/Flow9.png)
 
-## Ford-Fulkerson method
+## Ford-Fulkerson method {#ford-fulkerson-method}
 
 Let's define one more thing.
 A **residual capacity** of a directed edge is the capacity minus the flow.
@@ -118,7 +118,7 @@ Therefore, the complexity of Ford-Fulkerson is $O(E F)$, where $F$ is the maxima
 In the case of rational capacities, the algorithm will also terminate, but the complexity is not bounded.
 In the case of irrational capacities, the algorithm might never terminate, and might not even converge to the maximal flow.
 
-## Edmonds-Karp algorithm
+## Edmonds-Karp algorithm {#edmonds-karp-algorithm}
 
 Edmonds-Karp algorithm is just an implementation of the Ford-Fulkerson method that uses [BFS](/algorithms/graph/breadth-first-search) for finding augmenting paths.
 The algorithm was first published by Yefim Dinitz in 1970, and later independently published by Jack Edmonds and Richard Karp in 1972.
@@ -128,7 +128,7 @@ The algorithm runs in $O(V E^2)$ time, even for irrational capacities.
 The intuition is, that every time we find an augmenting path one of the edges becomes saturated, and the distance from the edge to $s$ will be longer if it appears later again in an augmenting path.
 The length of the simple paths is bounded by $V$.
 
-### Implementation
+### Implementation {#implementation}
 
 The matrix `capacity` stores the capacity for every pair of vertices.
 `adj` is the adjacency list of the **undirected graph**, since we also have to use the reversed of directed edges when we are looking for augmenting paths.
@@ -191,7 +191,7 @@ int maxflow(int s, int t) {
 
 The theorem says, that if every capacity in the network is an integer, then the size of the maximum flow is an integer, and there is a maximum flow such that the flow in each edge is an integer as well. In particular, Ford-Fulkerson method finds such a flow.
 
-## Max-flow min-cut theorem
+## Max-flow min-cut theorem {#max-flow-min-cut-theorem}
 
 A **$s$-$t$-cut** is a partition of the vertices of a flow network into two sets, such that a set includes the source $s$ and the other one includes the sink $t$.
 The capacity of a $s$-$t$-cut is defined as the sum of capacities of the edges from the source side to the sink side.
@@ -213,7 +213,7 @@ One possible minimum cut is the following:
 the set of all the vertices that can be reached from $s$ in the residual graph (using edges with positive residual capacity), and the set of all the other vertices.
 This partition can be easily found using [DFS](/algorithms/graph/depth-first-search) starting at $s$.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 - [Codeforces - Array and Operations](https://codeforces.com/contest/498/problem/c)
 - [Codeforces - Red-Blue Graph](https://codeforces.com/contest/1288/problem/f)
 - [CSES - Download Speed](https://cses.fi/problemset/task/1694)

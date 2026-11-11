@@ -1,4 +1,4 @@
-# Simpson formulasi bilan integrallash
+# Simpson formulasi bilan integrallash {#integration-by-simpsons-formula}
 
 Quyidagi aniq integralning qiymatini hisoblashimiz kerak:
 
@@ -6,7 +6,7 @@ $$\int_a ^ b f (x) dx$$
 
 Bu yerda tavsiflangan yechim **Thomas Simpson**ning dissertatsiyalaridan birida 1743-yilda e’lon qilingan.
 
-## Simpson formulasi
+## Simpson formulasi {#simpsons-formula}
 
 $n$ biror natural son bo‘lsin. Integrallash kesmasi $[a, b]$ ni $2n$ ta teng qismga bo‘lamiz:
 
@@ -27,7 +27,7 @@ Bu qiymatlarni barcha kesmalar bo‘yicha qo‘shib, yakuniy **Simpson formulasi
 
 $$\int_a ^ b f (x) dx \approx \left(f (x_0) + 4 f (x_1) + 2 f (x_2) + 4f(x_3) + 2 f(x_4) + \ldots + 4 f(x_{2N-1}) + f(x_{2N}) \right)\frac {h} {3} $$
 
-## Xatolik
+## Xatolik {#error}
 
 Integralni Simpson formulasi bilan yaqinlashtirishdagi xatolik quyidagiga teng:
 
@@ -37,7 +37,7 @@ bu yerda $\xi$ — $a$ va $b$ orasidagi biror son.
 
 Xatolik asimptotik jihatdan $(b-a)^5$ ga proporsional. Biroq yuqoridagi mulohazalar $(b-a)^4$ ga proporsional xatolikni ko‘rsatadi. Simpson qoidasi qo‘shimcha bir tartibga yutadi, chunki integral ostidagi funksiya hisoblanadigan nuqtalar $[a, b]$ kesmada simmetrik taqsimlangan.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Bu yerda $f(x)$ — foydalanuvchi tomonidan aniqlangan biror funksiya.
 
@@ -56,6 +56,6 @@ double simpson_integration(double a, double b){
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Latin American Regionals 2012 - Environment Protection](https://matcomgrader.com/problem/9335/environment-protection/)

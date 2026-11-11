@@ -1,10 +1,10 @@
-# Sparse Table
+# Sparse Table {#sparse-table}
 
 Sparse Table (siyrak jadval) — oraliq so‘rovlariga javob berishga imkon beruvchi ma’lumotlar tuzilmasi. U aksariyat oraliq so‘rovlariga $O(\log n)$ vaqtda javob bera oladi, ammo uning haqiqiy kuchi oraliq minimumi so‘rovlarida yoki ularga ekvivalent bo‘lgan oraliq maksimumi so‘rovlarida namoyon bo‘ladi. Bunday so‘rovlar uchun javobni $O(1)$ vaqtda hisoblash mumkin.
 
 Ushbu ma’lumotlar tuzilmasining yagona asosiy kamchiligi — undan faqat _o‘zgarmas_ massivlarda foydalanish mumkin. Ya’ni ikki so‘rov orasida massivni o‘zgartirib bo‘lmaydi. Massivning biror elementi o‘zgarsa, butun tuzilmani qaytadan hisoblash kerak.
 
-## Intuitsiya
+## Intuitsiya {#intuition}
 
 Har qanday manfiy bo‘lmagan sonni kamayib boruvchi ikkilik darajalar yig‘indisi ko‘rinishida yagona usulda ifodalash mumkin. Bu sonning ikkilik yozuvini boshqa shaklda ifodalash, xolos. Masalan, $13 = (1101)_2 = 8 + 4 + 1$. $x$ soni uchun qo‘shiluvchilar soni ko‘pi bilan $\lceil \log_2 x \rceil$ ta bo‘ladi.
 
@@ -13,7 +13,7 @@ $[2, 14] = [2, 9] \cup [10, 13] \cup [14, 14]$; bu yerda umumiy oraliq uzunligi 
 
 Sparse Table g‘oyasi ikkilik darajaga teng uzunlikdagi barcha oraliq so‘rovlari javoblarini oldindan hisoblashdan iborat. Keyin boshqa bir so‘rov oralig‘ini ikkilik darajali uzunliklarga ega oraliqlarga ajratamiz, oldindan hisoblangan javoblarni olamiz va ularni birlashtirib yakuniy javobni topamiz.
 
-## Oldindan hisoblash
+## Oldindan hisoblash {#precomputation}
 
 Oldindan hisoblangan so‘rovlar javoblarini saqlash uchun ikki o‘lchamli massivdan foydalanamiz. $\text{st}[i][j]$ uzunligi $2^i$ bo‘lgan $[j, j + 2^i - 1]$ oralig‘i javobini saqlaydi.
 
@@ -41,7 +41,7 @@ $f$ funksiyasi so‘rov turiga bog‘liq. Oraliq yig‘indisi so‘rovlari uchun
 
 Oldindan hisoblashning vaqt murakkabligi $O(\text{N} \log \text{N})$.
 
-## Oraliq yig‘indisi so‘rovlari
+## Oraliq yig‘indisi so‘rovlari {#range-sum-queries}
 
 Bu turdagi so‘rovlarda berilgan oraliqdagi barcha qiymatlar yig‘indisini topmoqchimiz. Shuning uchun $f$ funksiyasining tabiiy ta’rifi $f(x, y) = x + y$ bo‘ladi.
 
@@ -71,7 +71,7 @@ for (int i = K; i >= 0; i--) {
 
 Oraliq yig‘indisi so‘rovining vaqt murakkabligi $O(K) = O(\log \text{MAXN})$.
 
-## Oraliq minimumi so‘rovlari (RMQ)
+## Oraliq minimumi so‘rovlari (RMQ) {#range-minimum-queries-rmq}
 
 Sparse Table aynan shu turdagi so‘rovlarda eng samarali ishlaydi.
 
@@ -128,13 +128,13 @@ int minimum = min(st[i][L], st[i][R - (1 << i) + 1]);
 
 Oraliq minimumi so‘rovining vaqt murakkabligi $O(1)$.
 
-## Ko‘proq turdagi so‘rovlarni qo‘llab-quvvatlovchi o‘xshash tuzilmalar
+## Ko‘proq turdagi so‘rovlarni qo‘llab-quvvatlovchi o‘xshash tuzilmalar {#similar-data-structures-supporting-more-types-of-queries}
 
 Oldingi bo‘limdagi $O(1)$ yondashuvning asosiy cheklovlaridan biri — u faqat [idempotent funksiyalar](https://en.wikipedia.org/wiki/Idempotence) so‘rovlarini qo‘llab-quvvatlaydi. Masalan, oraliq minimumi uchun juda yaxshi ishlaydi, ammo shu yondashuv bilan oraliq yig‘indisi so‘roviga javob berib bo‘lmaydi.
 
 Istalgan assotsiativ funksiya bilan ishlay oladigan va oraliq so‘rovlariga $O(1)$ vaqtda javob beradigan o‘xshash ma’lumotlar tuzilmalari mavjud. Ulardan biri [Disjoint Sparse Table](https://discuss.codechef.com/questions/117696/tutorial-disjoint-sparse-table) deb ataladi. Yana biri — [Sqrt Tree](/algorithms/data-structures/sqrt-tree).
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [SPOJ - RMQSQ](http://www.spoj.com/problems/RMQSQ/)
 * [SPOJ - THRBL](http://www.spoj.com/problems/THRBL/)

@@ -1,6 +1,6 @@
-# Belgilangan graflarni sanash
+# Belgilangan graflarni sanash {#counting-labeled-graphs}
 
-## Belgilangan graflar
+## Belgilangan graflar {#labeled-graphs}
 
 Grafdagi tugunlar soni $n$ bo‘lsin.
 
@@ -12,7 +12,7 @@ Har bir belgilangan graf o‘z qirralari bilan yagona aniqlanadi, shuning uchun 
 
 $$G_n = 2^{\frac{n(n-1)}{2}}$$
 
-## Bog‘langan belgilangan graflar
+## Bog‘langan belgilangan graflar {#connected-labeled-graphs}
 
 Endi graf bog‘langan bo‘lishi kerak degan qo‘shimcha cheklov qo‘yamiz.
 
@@ -34,7 +34,7 @@ Nihoyat, bog‘langan graflar soni:
 
 $$C_n = G_n - \frac{1}{n} \sum_{k=1}^{n-1} k \binom{n}{k} C_k G_{n-k}$$
 
-## $k$ ta bog‘langan komponentli belgilangan graflar
+## $k$ ta bog‘langan komponentli belgilangan graflar {#labeled-graphs-with-k-connected-components}
 
 Oldingi bo‘limdagi formulaga asoslanib, $n$ ta tugun va $k$ ta bog‘langan komponentga ega belgilangan graflar sonini sanashni o‘rganamiz.
 

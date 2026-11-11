@@ -1,4 +1,4 @@
-# MEX (minimal excluded) of a sequence
+# MEX (minimal excluded) of a sequence {#mex-minimal-excluded-of-a-sequence}
 
 Given an array $A$ of size $N$. You have to find the minimal non-negative element that is not present in the array. That number is commonly called the **MEX** (minimal excluded).
 
@@ -15,7 +15,7 @@ Notice, that the MEX of an array of size $N$ can never be bigger than $N$ itself
 The easiest approach is to create a set of all elements in the array $A$, so that we can quickly check if a number is part of the array or not.
 Then we can check all numbers from $0$ to $N$, if the current number is not present in the set, return it.
 
-## Implementation
+## Implementation {#implementation}
 
 The following algorithm runs in $O(N \log N)$ time.
 
@@ -62,7 +62,7 @@ This approach is fast, but only works well if you have to compute the MEX once.
 If you need to compute the MEX over and over, e.g. because your array keeps changing, then it is not effective.
 For that, we need something better.
 
-## MEX with array updates
+## MEX with array updates {#mex-with-array-updates}
 
 In the problem you need to change individual numbers in the array, and compute the new MEX of the array after each such update.
 
@@ -111,7 +111,7 @@ public:
 };
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [AtCoder: Neq Min](https://atcoder.jp/contests/hhkb2020/tasks/hhkb2020_c)
 - [Codeforces: Informatics in MAC](https://codeforces.com/contest/1935/problem/B)

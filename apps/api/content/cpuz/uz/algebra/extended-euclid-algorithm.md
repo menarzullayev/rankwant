@@ -1,4 +1,4 @@
-# Kengaytirilgan Evklid algoritmi
+# Kengaytirilgan Evklid algoritmi {#extended-euclidean-algorithm}
 
 [Evklid algoritmi](/algorithms/algebra/euclid-algorithm) ikkita manfiy bo‘lmagan $a$ va $b$ butun sonning faqat eng katta umumiy bo‘luvchisini (EKUB) hisoblasa, uning kengaytirilgan varianti EKUBni $a$ va $b$ orqali ifodalash usulini, ya’ni quyidagi tenglikni qanoatlantiradigan $x$ va $y$ koeffitsiyentlarni ham topadi:
 
@@ -9,7 +9,7 @@ $$a \cdot x + b \cdot y = \gcd(a, b)$$
 Bu masalaning umumiyroq ko‘rinishi [Chiziqli Diofant tenglamalari](/algorithms/algebra/linear-diophantine-equation) haqidagi maqolada muhokama qilinadi.
 U aynan shu algoritmga tayanadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Ushbu bo‘limda $a$ va $b$ ning EKUBini $g$ bilan belgilaymiz.
 
@@ -47,7 +47,7 @@ x = y_1 \\
 y = x_1 - y_1 \cdot \left\lfloor \frac{a}{b} \right\rfloor
 \end{cases} $$
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 int gcd(int a, int b, int& x, int& y) {
@@ -67,7 +67,7 @@ int gcd(int a, int b, int& x, int& y) {
 Yuqoridagi rekursiv funksiya EKUBni qaytaradi hamda koeffitsiyentlar qiymatini funksiyaga havola orqali uzatilgan `x` va `y` ga yozadi.
 Kengaytirilgan Evklid algoritmining bu implementatsiyasi manfiy butun sonlar uchun ham to‘g‘ri natija beradi.
 
-## Iterativ variant
+## Iterativ variant {#iterative-version}
 
 Kengaytirilgan Evklid algoritmini iterativ tarzda ham yozish mumkin.
 U rekursiyadan foydalanmagani uchun kod rekursiv variantdan biroz tezroq ishlaydi.
@@ -119,7 +119,7 @@ Bu talab qilingan koeffitsiyentlarni topganimizni anglatadi.
 Kodni yana optimallashtirib, `a1` va `b1` o‘zgaruvchilarini olib tashlash va shunchaki `a` hamda `b` ni qayta ishlatish mumkin.
 Biroq shunday qilsangiz, invariantlar yordamida asoslash imkonini yo‘qotasiz.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [UVA - 10104 - Euclid Problem](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1045)
 * [GYM - (J) Once Upon A Time](http://codeforces.com/gym/100963)

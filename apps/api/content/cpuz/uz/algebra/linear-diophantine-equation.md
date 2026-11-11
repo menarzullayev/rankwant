@@ -1,4 +1,4 @@
-# Chiziqli Diofant tenglamasi
+# Chiziqli Diofant tenglamasi {#linear-diophantine-equation}
 
 Chiziqli Diofant tenglamasi (ikki o‘zgaruvchili) umumiy holda quyidagi ko‘rinishdagi tenglamadir:
 
@@ -13,11 +13,11 @@ Ushbu maqolada bunday tenglamalarga oid bir nechta klassik masalani ko‘rib chi
 * berilgan oraliqdagi yechimlar sonini va yechimlarning o‘zini topish;
 * $x + y$ qiymati minimal bo‘lgan yechimni topish.
 
-## Aynigan holat
+## Aynigan holat {#the-degenerate-case}
 
 Alohida ko‘rib chiqilishi kerak bo‘lgan aynigan holat — $a = b = 0$. $c = 0$ bo‘lish-bo‘lmasligiga qarab, yechimlar umuman bo‘lmasligi yoki cheksiz ko‘p bo‘lishi oson ko‘rinadi. Maqolaning qolgan qismida bu holatni e’tiborga olmaymiz.
 
-## Analitik yechim
+## Analitik yechim {#analytic-solution}
 
 $a \neq 0$ va $b \neq 0$ bo‘lganda $ax+by=c$ tenglamasini quyidagi tenglamalardan istalgan biri sifatida ekvivalent ravishda qarash mumkin:
 
@@ -42,7 +42,7 @@ x \equiv (c/g)(a/g)^{-1}\pmod{b/g},\\
 y = \frac{c-ax}{b}.
 \end{cases}$$
 
-## Algoritmik yechim
+## Algoritmik yechim {#algorithmic-solution}
 
 **Bézout lemmasi** (Bézout ayniyati deb ham ataladi) quyidagi yechimni tushunishda foydali natijadir.
 
@@ -97,7 +97,7 @@ bool find_any_solution(int a, int b, int c, int &x0, int &y0, int &g) {
 }
 ```
 
-## Barcha yechimlarni olish
+## Barcha yechimlarni olish {#getting-all-solutions}
 
 Bitta $(x_0, y_0)$ yechimdan berilgan tenglamaning barcha yechimlarini olish mumkin.
 
@@ -118,7 +118,7 @@ $$y = y_0 - k \cdot \frac{a}{g}$$
 berilgan Diofant tenglamasining yechimlaridir.
 Tenglama chiziqli bo‘lgani uchun barcha yechimlar bir to‘g‘ri chiziqda yotadi va $g$ ning ta’rifiga ko‘ra bu berilgan Diofant tenglamasining barcha mumkin bo‘lgan yechimlari to‘plamidir.
 
-## Berilgan oraliqdagi yechimlar sonini va yechimlarni topish
+## Berilgan oraliqdagi yechimlar sonini va yechimlarni topish {#finding-the-number-of-solutions-and-the-solutions-in-a-given-interval}
 
 Oldingi bo‘limdan yechimlarga hech qanday cheklov qo‘ymasak, ular cheksiz ko‘p bo‘lishi ravshan. Shu sababli ushbu bo‘limda $x$ va $y$ oraliqlariga cheklovlar qo‘shamiz hamda barcha yechimlarni sanash va ro‘yxatlashga harakat qilamiz.
 
@@ -186,7 +186,7 @@ int find_all_solutions(int a, int b, int c, int minx, int maxx, int miny, int ma
 
 $l_x$ va $r_x$ ni topganimizdan keyin barcha yechimlarni sanab chiqish ham oson. Barcha $k \ge 0$ lar uchun $x = l_x + k \cdot \frac{b}{g}$ qiymatlarini $x = r_x$ bo‘lguncha ko‘rib chiqish va $a x + b y = c$ tenglama yordamida mos $y$ qiymatlarini topish kifoya.
 
-## $x + y$ qiymati minimal bo‘lgan yechimni topish
+## $x + y$ qiymati minimal bo‘lgan yechimni topish {#find-the-solution-with-minimum-value-of-x-y}
 
 Bu yerda $x$ va $y$ ga ham qandaydir cheklov berilishi kerak, aks holda javob manfiy cheksizlikka ketishi mumkin.
 
@@ -204,7 +204,7 @@ $$x' + y' = x + y + k \cdot \left(\frac{b}{g} - \frac{a}{g}\right) = x + y + k \
 
 Agar $a < b$ bo‘lsa, $k$ ning eng kichik mumkin bo‘lgan qiymatini tanlashimiz kerak. Agar $a > b$ bo‘lsa, $k$ ning eng katta mumkin bo‘lgan qiymatini tanlaymiz. Agar $a = b$ bo‘lsa, barcha yechimlarda $x + y$ yig‘indisi bir xil bo‘ladi.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [Spoj - Crucial Equation](http://www.spoj.com/problems/CEQU/)
 * [SGU 106](http://codeforces.com/problemsets/acmsguru/problem/99999/106)

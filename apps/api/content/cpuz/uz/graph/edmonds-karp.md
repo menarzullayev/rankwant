@@ -1,8 +1,8 @@
-# Maksimal oqim — Ford–Fulkerson va Edmonds–Karp
+# Maksimal oqim — Ford–Fulkerson va Edmonds–Karp {#maximum-flow-ford-fulkerson-and-edmonds-karp}
 
 Edmonds–Karp algoritmi oqim tarmog‘ida maksimal oqimni hisoblash uchun Ford–Fulkerson usulining implementatsiyasidir.
 
-## Oqim tarmog‘i
+## Oqim tarmog‘i {#flow-network}
 
 Avval **oqim tarmog‘i**, **oqim** va **maksimal oqim** nima ekanini ta’riflaymiz.
 
@@ -49,7 +49,7 @@ Quyidagi rasmda oqim tarmog‘idagi maksimal oqim ko‘rsatilgan.
 
   ![Maksimal oqim](/algorithms-media/graph/Flow9.png)
 
-## Ford–Fulkerson usuli
+## Ford–Fulkerson usuli {#ford-fulkerson-method}
 
 Yana bitta tushunchani ta’riflaymiz.
 Yo‘naltirilgan qirraning **qoldiq sig‘imi** uning sig‘imidan oqimni ayirish orqali olinadi.
@@ -112,7 +112,7 @@ Shuning uchun Ford–Fulkerson murakkabligi $O(E F)$, bu yerda $F$ — tarmoqnin
 Ratsional sig‘imlar holatida algoritm ham tugaydi, ammo uning murakkabligi chegaralanmagan.
 Irratsional sig‘imlar holatida algoritm hech qachon tugamasligi va hatto maksimal oqimga yaqinlashmasligi mumkin.
 
-## Edmonds–Karp algoritmi
+## Edmonds–Karp algoritmi {#edmonds-karp-algorithm}
 
 Edmonds–Karp algoritmi oshiruvchi yo‘llarni topish uchun [BFS](/algorithms/graph/breadth-first-search) ishlatadigan Ford–Fulkerson usulining implementatsiyasidir.
 Algoritmni ilk bor 1970-yilda Yefim Dinitz e’lon qilgan, keyin esa 1972-yilda Jack Edmonds va Richard Karp uni mustaqil ravishda e’lon qilgan.
@@ -121,7 +121,7 @@ Algoritm hatto irratsional sig‘imlar uchun ham $O(V E^2)$ vaqtda ishlaydi.
 Intuitiv tushuntirish shuki, har safar oshiruvchi yo‘l topilganda qirralardan biri to‘yinadi va agar u keyinchalik yana oshiruvchi yo‘lda paydo bo‘lsa, shu qirragacha bo‘lgan $s$ dan masofa kattaroq bo‘ladi.
 Oddiy yo‘llarning uzunligi $V$ bilan chegaralangan.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 `capacity` matritsasi har bir tugunlar jufti uchun sig‘imni saqlaydi.
 `adj` — **yo‘naltirilmagan graf**ning qo‘shnilik ro‘yxati, chunki oshiruvchi yo‘llarni qidirishda yo‘naltirilgan qirralarning teskarisidan ham foydalanishimiz kerak.
@@ -180,7 +180,7 @@ int maxflow(int s, int t) {
 
 Teorema shuni aytadiki, agar tarmoqdagi har bir sig‘im butun bo‘lsa, maksimal oqim miqdori ham butun bo‘ladi va har bir qirradagi oqimi butun bo‘lgan maksimal oqim mavjud. Xususan, Ford–Fulkerson usuli shunday oqimni topadi.
 
-## Maksimal oqim — minimal kesim teoremasi
+## Maksimal oqim — minimal kesim teoremasi {#max-flow-min-cut-theorem}
 
 **$s$-$t$ kesim** — oqim tarmog‘i tugunlarini ikki to‘plamga ajratish bo‘lib, to‘plamlardan biri manba $s$ ni, boshqasi qabul qiluvchi $t$ ni o‘z ichiga oladi.
 $s$-$t$ kesimining sig‘imi manba tomondan qabul qiluvchi tomonga yo‘nalgan qirralar sig‘imlari yig‘indisi sifatida aniqlanadi.
@@ -200,7 +200,7 @@ Mumkin bo‘lgan minimal kesimlardan biri quyidagicha:
 qoldiq grafda $s$ dan musbat qoldiq sig‘imli qirralar orqali erishish mumkin bo‘lgan barcha tugunlar to‘plami va qolgan barcha tugunlar to‘plami.
 Bu ajratishni $s$ dan boshlanadigan [DFS](/algorithms/graph/depth-first-search) yordamida oson topish mumkin.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [Codeforces - Array and Operations](https://codeforces.com/contest/498/problem/c)
 - [Codeforces - Red-Blue Graph](https://codeforces.com/contest/1288/problem/f)

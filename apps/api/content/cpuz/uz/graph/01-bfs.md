@@ -1,4 +1,4 @@
-# 0–1 BFS
+# 0–1 BFS {#0-1-bfs}
 
 Ma’lumki, **og‘irliksiz grafda** bitta boshlang‘ich tugundan qolgan barcha tugunlargacha eng qisqa yo‘llarni [kenglik bo‘yicha qidiruv](/algorithms/graph/breadth-first-search) yordamida $O(|E|)$ vaqtda topish mumkin; bunda masofa — boshlang‘ich tugundan boshqa tugungacha o‘tish uchun kerak bo‘ladigan qirralarning eng kam sonidir.
 
@@ -10,7 +10,7 @@ Biroq og‘irliklar yanada cheklangan bo‘lsa, ko‘pincha bundan yaxshiroq nat
 
 Ushbu maqolada har bir qirraning og‘irligi $0$ yoki $1$ bo‘lganda, BFS yordamida SSSP (bitta manbadan eng qisqa yo‘llar) masalasini $O(|E|)$ vaqtda qanday yechish mumkinligini ko‘rsatamiz.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Algoritmni Dijkstra algoritmini sinchiklab o‘rganish va maxsus grafimiz qanday oqibatlarga olib kelishini tahlil qilish orqali hosil qilishimiz mumkin.
 
@@ -79,7 +79,7 @@ while (!q.empty()) {
 }
 ```
 
-## Dial algoritmi
+## Dial algoritmi {#dials-algorithm}
 
 Qirralar og‘irliklarining bundan ham kattaroq bo‘lishiga ruxsat bersak, bu g‘oyani yanada umumlashtirish mumkin.
 
@@ -89,7 +89,7 @@ Shuning uchun navbatdagi tugunlar uchun $k + 1$ ta savatcha saqlashimiz mumkin; 
 
 Bu umumlashtirish **Dial algoritmi** deb ataladi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [Labyrinth](https://codeforces.com/contest/1063/problem/B)
 - [KATHTHI](http://www.spoj.com/problems/KATHTHI/)

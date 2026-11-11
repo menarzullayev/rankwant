@@ -1,10 +1,10 @@
-# Finding common tangents to two circles
+# Finding common tangents to two circles {#finding-common-tangents-to-two-circles}
 
 Given two circles. It is required to find all their common tangents, i.e. all such lines that touch both circles simultaneously.
 
 The described algorithm will also work in the case when one (or both) circles degenerate into points. Thus, this algorithm can also be used to find tangents to a circle passing through a given point.
 
-## The number of common tangents
+## The number of common tangents {#the-number-of-common-tangents}
 The number of common tangents to two circles can be **0,1,2,3,4** and **infinite**.
 Look at the images for different cases.
 
@@ -20,7 +20,7 @@ Moreover, the algorithm described below will work in the case when one or both c
 
 Summing up, we will always look for **four tangents** for all cases except infinite tangents case (The infinite tangents case needs to be handled separately and it is not discussed here). In degenerate cases, some of tangents will coincide, but nevertheless, these cases will also fit into the big picture.
 
-## Algorithm
+## Algorithm {#algorithm}
 For the sake of simplicity of the algorithm, we will assume, without losing generality, that the center of the first circle has coordinates $(0, 0)$. (If this is not the case, then this can be achieved by simply shifting the whole picture, and after finding a solution, by shifting the obtained straight lines back.)
 
 Denote $r_1$ and $r_2$ the radii of the first and second circles, and by $(v_x,v_y)$ the coordinates of the center of the second circle and point $v$ different from origin. (Note: we are not considering the case in which both the circles are same).
@@ -115,6 +115,6 @@ vector<line> tangents (circle a, circle b) {
 }
 ```
 
-## Problems
+## Problems {#problems}
 
 [TIMUS 1163 Chapaev](https://acm.timus.ru/problem.aspx?space=1&num=1163)

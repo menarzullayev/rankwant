@@ -1,14 +1,14 @@
-# Sqrt Decomposition
+# Sqrt Decomposition {#sqrt-decomposition}
 
 Sqrt Decomposition — ostmassiv elementlari yig‘indisini, minimum yoki maksimumni topish kabi ko‘p uchraydigan amallarni $O(\sqrt n)$ ta amal bilan bajarish imkonini beradigan usul yoki ma’lumotlar tuzilmasi. Bu sodda $O(n)$ algoritmdan ancha tez.
 
 Avval ushbu g‘oyaning eng sodda qo‘llanishlaridan biri uchun ma’lumotlar tuzilmasini ko‘rib chiqamiz. Keyin uni boshqa masalalarga qanday umumlashtirish mumkinligini, oxirida esa g‘oyaning biroz boshqacha qo‘llanishini — kiruvchi so‘rovlarni sqrt ta blokka ajratishni o‘rganamiz.
 
-## Sqrt decomposition asosidagi ma’lumotlar tuzilmasi
+## Sqrt decomposition asosidagi ma’lumotlar tuzilmasi {#sqrt-decomposition-based-data-structure}
 
 $a[0 \dots n-1]$ massiv berilgan. Ixtiyoriy $l$ va $r$ uchun $a[l \dots r]$ elementlar yig‘indisini $O(\sqrt n)$ ta amal bilan topadigan tuzilma qurish talab qilinsin.
 
-### Tavsif
+### Tavsif {#description}
 
 Sqrt decompositionning asosiy g‘oyasi — oldindan hisoblash. $a$ massivini uzunligi taxminan $\sqrt n$ bo‘lgan bloklarga ajratamiz va har bir $i$-blok elementlari yig‘indisini $b[i]$ da oldindan hisoblaymiz.
 
@@ -36,7 +36,7 @@ _Eslatma: $k=p$ bo‘lsa, ya’ni $l$ va $r$ bitta blokda yotsa, yuqoridagi form
 
 Har bir dum uzunligi $s$ dan oshmaydi, yig‘indiga kiradigan to‘liq bloklar soni ham $s$ dan oshmaydi. $s\approx\sqrt n$ tanlangani sababli $[l,r]$ yig‘indisini hisoblash uchun jami $O(\sqrt n)$ ta amal yetadi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Eng sodda implementatsiyadan boshlaymiz:
 
@@ -87,7 +87,7 @@ else {
 }
 ```
 
-## Boshqa masalalar
+## Boshqa masalalar {#other-problems}
 
 Hozirgacha uzluksiz ostmassiv elementlari yig‘indisini topdik. Masalani **massivning alohida elementlarini yangilash** amali bilan kengaytirish mumkin. $a[i]$ o‘zgarsa, u tegishli bo‘lgan $k=i/s$ blokning $b[k]$ qiymatini bitta amal bilan yangilash kifoya:
 
@@ -105,7 +105,7 @@ Bu ikki sinfni birlashtirib, **oraliqni yangilash** va **oraliq so‘rovi**ni bi
 
 Sqrt decomposition tartiblangan sonlar to‘plamini saqlashda ham ishlatiladi. Sonlarni qo‘shish va o‘chirish, son mavjudligini tekshirish hamda $k$-eng katta sonni topish kerak bo‘lsin. Sonlar o‘sish tartibida saqlanib, har birida taxminan $\sqrt n$ ta element bo‘lgan bloklarga ajratiladi. Qo‘shish yoki o‘chirishdan keyin qo‘shni bloklarning boshi va oxiri orasida elementlarni ko‘chirish orqali bloklar qayta muvozanatlanadi.
 
-## Mo algoritmi
+## Mo algoritmi {#mos-algorithm}
 
 Sqrt decompositionga yaqin boshqa bir g‘oya $Q$ ta oraliq so‘roviga offline tartibda $O((N+Q)\sqrt N)$ vaqtda javob berishga imkon beradi.
 
@@ -119,7 +119,7 @@ Bitta ma’lumotlar tuzilmasi joriy oraliq haqidagi ma’lumotni saqlaydi. Dastl
 
 So‘rovlarga asl tartibda emas, qayta saralangan tartibda javob berilgani uchun bu usul faqat offline so‘rovlar uchun qo‘llanadi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Mo algoritmida joriy oraliqqa indeks qo‘shish va undan indeks olib tashlash uchun ikkita funksiya ishlatiladi.
 
@@ -177,7 +177,7 @@ Masalan, oraliq yig‘indisi so‘ralsa, tuzilma sifatida dastlab $0$ bo‘lgan 
 
 Moda so‘rovlari uchun joriy oraliqda har bir son necha marta uchrashini saqlaydigan ikkilik qidiruv daraxti (BST), masalan `map<int, int>`, va chastota–son juftliklarini tartibda saqlaydigan ikkinchi daraxt, masalan `set<pair<int, int>>`, ishlatish mumkin. `add` avval sonning eski juftligini ikkinchi BST dan o‘chiradi, birinchi tuzilmadagi chastotani oshiradi va yangi juftlikni qayta qo‘shadi. `remove` xuddi shunday ishlaydi, faqat chastotani kamaytiradi. `get_answer` ikkinchi daraxtdagi eng yaxshi juftlikni $O(1)$ vaqtda oladi.
 
-### Murakkablik
+### Murakkablik {#complexity}
 
 Barcha so‘rovlarni saralash $O(Q\log Q)$ vaqt oladi. Endi `add` va `remove` funksiyalari necha marta chaqirilishini baholaymiz.
 
@@ -187,7 +187,7 @@ Ikki ketma-ket so‘rov orasida `cur_l` ko‘pi bilan $O(S)$ ga o‘zgaradi. Dem
 
 $S\approx\sqrt N$ tanlansa, jami $O((N+Q)\sqrt N)$ ta elementar amal hosil bo‘ladi. `add` va `remove` ning har biri $O(F)$ bo‘lsa, umumiy murakkablik $O((N+Q)F\sqrt N)$ ga teng.
 
-### Ishlash vaqtini yaxshilash bo‘yicha maslahatlar
+### Ishlash vaqtini yaxshilash bo‘yicha maslahatlar {#tips-for-improving-runtime}
 
 - Blok uzunligini aynan $\sqrt N$ olish har doim eng tez variant emas. Masalan, $\sqrt N=750$ bo‘lsa, amalda 700 yoki 800 yaxshiroq ishlashi mumkin. Muhimi, blok uzunligini runtime’da hisoblamasdan `const` qilish ma’qul: kompilyator konstanta bo‘yicha bo‘lishni yaxshi optimallashtiradi.
 - Toq bloklarda o‘ng chegarani o‘sish tartibida, juft bloklarda esa kamayish tartibida saralash mumkin. Bu o‘ng ko‘rsatkichning harakatini kamaytiradi, chunki oddiy saralash har yangi blok boshida o‘ng ko‘rsatkichni massiv oxiridan boshiga qaytaradi. Yaxshilangan variantda bu qaytarish endi kerak bo‘lmaydi.
@@ -202,7 +202,7 @@ bool cmp(pair<int, int> p, pair<int, int> q) {
 
 Yanada tezroq saralash yondashuvi haqida [bu yerda](https://codeforces.com/blog/entry/61203) o‘qishingiz mumkin.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [Codeforces - Kuriyama Mirai's Stones](https://codeforces.com/problemset/problem/433/B)
 - [Codeforces - Another Problem about Beautiful Pairs](https://codeforces.com/contest/2197/problem/D)

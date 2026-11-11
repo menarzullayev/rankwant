@@ -1,4 +1,4 @@
-# 2-SAT
+# 2-SAT {#2-sat}
 
 SAT (Boolean satisfiability problem — Bul ifodasining qanoatlanuvchanlik masalasi) — berilgan Bul formulasini rost qiladigan tarzda o‘zgaruvchilarga Bul qiymatlarini tayinlash masalasi.
 Bul formulasi odatda CNF (conjunctive normal form — kon’yunktiv normal shakl)da beriladi: u bir nechta klauzalarning kon’yunksiyasidan iborat, har bir klauza esa literallarning (o‘zgaruvchilar yoki ularning inkorlari) diz’yunksiyasidir.
@@ -13,7 +13,7 @@ $$
 SAT NP-to‘liq masala bo‘lib, uning samarali yechimi ma’lum emas.
 Biroq 2-SAT masalasini $O(n + m)$ vaqtda samarali yechish mumkin; bu yerda $n$ — o‘zgaruvchilar soni, $m$ esa klauzalar soni.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Avval masalani boshqa ko‘rinishga — **implikativ normal shakl** deb ataladigan shaklga — o‘tkazishimiz kerak.
 $a \lor b$ ifoda $\lnot a \Rightarrow b \land \lnot b \Rightarrow a$ ifodaga teng kuchli ekaniga e’tibor bering (ikki o‘zgaruvchidan biri yolg‘on bo‘lsa, ikkinchisi rost bo‘lishi shart).
@@ -84,7 +84,7 @@ Demak, har qanday $x$ o‘zgaruvchi uchun $x$ va $\lnot x$ tugunlari turli kuchl
 Yuqorida ushbu algoritmning to‘g‘riligi ko‘rsatildi.
 Shu bilan birga, yechim mavjudligining yuqorida keltirilgan mezonini ham isbotladik.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Endi butun algoritmni implementatsiya qilishimiz mumkin.
 Avval implikatsiyalar grafini quramiz va barcha kuchli bog‘langan komponentlarni topamiz.
@@ -168,7 +168,7 @@ struct TwoSatSolver {
 };
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [Codeforces: The Door Problem](http://codeforces.com/contest/776/problem/D)
 - [Kattis: Illumination](https://open.kattis.com/problems/illumination)

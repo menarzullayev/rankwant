@@ -1,4 +1,4 @@
-# Muvozanatlangan uchlik sanoq tizimi
+# Muvozanatlangan uchlik sanoq tizimi {#balanced-ternary}
 
 !["Muvozanatlangan uchlik tizimidan foydalanuvchi Setun kompyuteri"](https://earltcampbell.files.wordpress.com/2014/12/setun.jpeg?w=300)
 
@@ -33,7 +33,7 @@ Bu tizim manfiy qiymatlarni oldiga minus belgisi qo‘ymasdan yozish imkonini be
 
 Manfiy son `Z` bilan, musbat son esa `1` bilan boshlanishiga e’tibor bering.
 
-## O‘girish algoritmi
+## O‘girish algoritmi {#conversion-algorithm}
 
 Berilgan sonni avval odatiy uchlik sanoq tizimida vaqtincha ifodalash orqali **muvozanatlangan uchlik** tizimiga o‘tkazish oson. Son odatiy uchlik ko‘rinishda bo‘lganda, uning raqamlari `0`, `1` yoki `2` bo‘ladi. Eng kichik razryaddan boshlab yurib, barcha `0` va `1` larni o‘zgarishsiz qoldirishimiz mumkin,
 ammo `2` ni `Z` ga aylantirib, keyingi raqamga `1` qo‘shish kerak. `3` raqamlari ham xuddi shu qoida bo‘yicha `0` ga aylantirilishi kerak —
@@ -71,6 +71,6 @@ Pozitsion og‘irliklarni qo‘shib, uni o‘nlik tizimga qaytaramiz:
 
 $$ 100Z10 = 243 \cdot 1 + 81 \cdot 0 + 27 \cdot 0 + 9 \cdot (-1) + 3 \cdot 1 + 1 \cdot 0 = 237_{10} $$
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Topcoder SRM 604, Div1-250](http://community.topcoder.com/stat?c=problem_statement&pm=12917&rd=15837)

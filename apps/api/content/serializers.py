@@ -6,7 +6,16 @@ from typing import Any
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from content.models import Article, ArticleProblemLink, Roadmap, RoadmapSection, RoadmapStep
+from content.models import (
+    Article,
+    ArticleExternalLink,
+    ArticleProblemLink,
+    ArticleReview,
+    Roadmap,
+    RoadmapSection,
+    RoadmapStep,
+)
+from content.practice import practice_here
 from problems import translations as problem_translations
 from problems.models import Problem, Topic
 
@@ -62,15 +71,139 @@ class ArticleListSerializer(serializers.ModelSerializer[Article]):
             "reading_minutes",
             "problem_count",
             "published_at",
+            # The algorithms library (ADR-0062): its section and level.
+            "category",
+            "subcategory",
+            "level",
+            "order",
         ]
+
+
+class ExternalLinkSerializer(serializers.ModelSerializer[ArticleExternalLink]):
+    class Meta:
+        model = ArticleExternalLink
+        fields = ["platform", "title", "url", "note"]
+
+
+class ArticleSourceSerializer(serializers.Serializer[Any]):
+    """The original an imported article is adapted from (CC BY-SA attribution)."""
+
+    title = serializers.CharField()
+    url = serializers.URLField()
+    commit = serializers.CharField()
+    license = serializers.CharField()
+    translator = serializers.CharField()
+    import_commit = serializers.CharField()
+
+
+class ArticleReviewSummarySerializer(serializers.Serializer[Any]):
+    """What the review did: the state and the number of logged changes."""
+
+    state = serializers.CharField()
+    changes = serializers.IntegerField()
+
+
+class PracticeProblemSerializer(serializers.Serializer[Any]):
+    slug = serializers.CharField()
+    title = serializers.CharField()
+    code = serializers.IntegerField(allow_null=True)
+    difficulty = serializers.IntegerField()
+    #: `pick` — an editor's choice; `source` — the same problem as an external
+    #: link; `topic` — chosen by topic and difficulty (ADR-0062 § 2.5).
+    via = serializers.ChoiceField(choices=["pick", "source", "topic"])
 
 
 class ArticleDetailSerializer(ArticleListSerializer):
     problems = LinkedProblemSerializer(source="problem_links", many=True, read_only=True)
     author = serializers.CharField(source="author.username", read_only=True, default=None)
+    external_links = ExternalLinkSerializer(many=True, read_only=True)
+    attribution = serializers.SerializerMethodField()
+    review = serializers.SerializerMethodField()
+    practice_here = serializers.SerializerMethodField()
+    #: True when `body` is the English original itself, not our translation.
+    original = serializers.SerializerMethodField()
 
     class Meta(ArticleListSerializer.Meta):
-        fields = [*ArticleListSerializer.Meta.fields, "body", "author", "problems"]
+        fields = [
+            *ArticleListSerializer.Meta.fields,
+            "body",
+            "author",
+            "problems",
+            "idea",
+            "complexity",
+            "uses",
+            "external_links",
+            "attribution",
+            "review",
+            "practice_here",
+            "original",
+        ]
+
+    @extend_schema_field(ArticleSourceSerializer(allow_null=True))
+    def get_attribution(self, article: Article) -> dict[str, str] | None:
+        if not article.source_ref:
+            return None
+        return {
+            "title": article.source_title,
+            "url": article.source_url,
+            "commit": article.source_commit,
+            "license": article.source_license,
+            "translator": article.translator,
+            "import_commit": article.import_commit,
+        }
+
+    @extend_schema_field(ArticleReviewSummarySerializer(allow_null=True))
+    def get_review(self, article: Article) -> dict[str, Any] | None:
+        if not article.source_ref:
+            return None
+        changes = sum(
+            1
+            for row in article.reviews.all()
+            if row.stage != ArticleReview.Stage.IMPORT and row.decision == "fixed"
+        )
+        return {"state": article.review_state, "changes": changes}
+
+    @extend_schema_field(PracticeProblemSerializer(many=True))
+    def get_practice_here(self, article: Article) -> list[dict[str, Any]]:
+        return practice_here(article)
+
+    def _translation(self, article: Article) -> Any:
+        locale = reader_locale(self.context)
+        if locale == article.locale:
+            return None
+        return next((row for row in article.translations.all() if row.locale == locale), None)
+
+    @extend_schema_field(serializers.BooleanField())
+    def get_original(self, article: Article) -> bool:
+        return self._translation(article) is not None and bool(article.source_ref)
+
+    def to_representation(self, instance: Article) -> dict[str, Any]:
+        data = super().to_representation(instance)
+        row = self._translation(instance)
+        if row is not None:
+            # The reader's language: for the library, the original it was
+            # translated from (ADR-0062 § 2.4).
+            data.update(title=row.title, body=row.body, locale=row.locale)
+        return data
+
+
+class LibraryEntrySerializer(serializers.ModelSerializer[Article]):
+    """One line of the algorithms catalogue (ADR-0062 § 5.3)."""
+
+    class Meta:
+        model = Article
+        fields = [
+            "slug",
+            "title",
+            # The title's language: the original's for an English reader.
+            "locale",
+            "summary",
+            "category",
+            "subcategory",
+            "level",
+            "order",
+            "reading_minutes",
+        ]
 
 
 class RoadmapStepSerializer(serializers.ModelSerializer[RoadmapStep]):
@@ -233,3 +366,13 @@ class RoadmapSectionPageSerializer(serializers.Serializer[RoadmapSection]):
     steps = SectionStepSerializer(many=True)
     previous = serializers.IntegerField(allow_null=True)
     next = serializers.IntegerField(allow_null=True)
+
+
+class GlossaryEntrySerializer(serializers.Serializer[Any]):
+    """One term of the library's glossary."""
+
+    slug = serializers.CharField()
+    term = serializers.CharField()
+    english = serializers.CharField()
+    aliases = serializers.ListField(child=serializers.CharField())
+    note = serializers.CharField(allow_blank=True)

@@ -1,11 +1,11 @@
-# Ifodani tahlil qilish
+# Ifodani tahlil qilish {#expression-parsing}
 
 Sonlar va turli operatorlardan iborat matematik ifodani saqlovchi satr berilgan.
 Satr uzunligi $n$ bo‘lsa, uning qiymatini $O(n)$ vaqtda hisoblash kerak.
 
 Bu yerda muhokama qilinadigan algoritm ifodani bevosita yoki bilvosita **teskari polyak yozuvi**ga o‘giradi va hosil bo‘lgan ifodani hisoblaydi.
 
-## Teskari polyak yozuvi
+## Teskari polyak yozuvi {#reverse-polish-notation}
 
 Teskari polyak yozuvi — matematik ifodalarni operatorlari operandlardan keyin joylashadigan shaklda yozish usuli.
 Masalan, quyidagi ifoda
@@ -26,7 +26,7 @@ Oxirida stekda aynan bitta element qoladi; u ifoda qiymatidir.
 
 Ravshanki, bunday hisoblash $O(n)$ vaqtda ishlaydi.
 
-## Sodda ifodalarni tahlil qilish
+## Sodda ifodalarni tahlil qilish {#parsing-of-simple-expressions}
 
 Hozircha soddalashtirilgan masalani ko‘ramiz:
 barcha operatorlar **binar**, ya’ni ikkita argument oladi, va barchasi **chapdan assotsiativ**, ya’ni ustuvorliklar teng bo‘lsa, amallar chapdan o‘ngga bajariladi.
@@ -117,7 +117,7 @@ int evaluate(string& s) {
 Shunday qilib, ifoda qiymatini $O(n)$ vaqtda hisoblashni o‘rgandik; bunda teskari polyak yozuvidan bilvosita foydalandik.
 Yuqoridagi implementatsiyani ozgina o‘zgartirib, ifodaning teskari polyak yozuvidagi aniq ko‘rinishini ham olish mumkin.
 
-## Unar operatorlar
+## Unar operatorlar {#unary-operators}
 
 Endi ifodada **unar** operatorlar, ya’ni bitta argument oladigan operatorlar ham bor deb faraz qilaylik.
 Unar plyus va unar minus bunga odatiy misol.
@@ -133,7 +133,7 @@ Unar operator ustuvorligini barcha binar operatorlar ustuvorligidan yuqori tanla
 
 Yana ayrim unar operatorlar, masalan unar plyus va unar minus, aslida **o‘ngdan assotsiativ** ekanini hisobga olish kerak.
 
-## O‘ngdan assotsiativlik
+## O‘ngdan assotsiativlik {#right-associativity}
 
 O‘ngdan assotsiativlik ustuvorliklar teng bo‘lganda operatorlar o‘ngdan chapga hisoblanishini anglatadi.
 

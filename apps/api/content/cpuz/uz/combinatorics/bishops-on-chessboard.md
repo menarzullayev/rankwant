@@ -1,8 +1,8 @@
-# Shaxmat taxtasiga fillarni joylashtirish
+# Shaxmat taxtasiga fillarni joylashtirish {#placing-bishops-on-a-chessboard}
 
 $N\times N$ o‘lchamli shaxmat taxtasiga hech qaysi ikkita fil bir-biriga hujum qilmaydigan qilib $K$ ta filni joylashtirish usullari sonini toping.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Bu masalani dinamik dasturlash yordamida yechish mumkin.
 
@@ -46,7 +46,7 @@ Qora va oq diagonallarga qo‘yilgan fillar bir-biriga hech qachon hujum qilmayd
 
 Har bir `i` uchun javobga `D[2N-1][i] * D[2N-2][K-i]` qiymatini qo‘shamiz.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 int bishop_placements(int N, int K)

@@ -1,8 +1,8 @@
-# Kuchli yo‘naltirish
+# Kuchli yo‘naltirish {#strong-orientation}
 
 Yo‘naltirilmagan grafning **kuchli yo‘naltirilishi** — har bir qirraga shunday yo‘nalish berishki, natijadagi graf [kuchli bog‘langan](/algorithms/graph/strongly-connected-components) bo‘lsin. Ya’ni qirralar yo‘naltirilgandan so‘ng, yo‘naltirilgan qirralar bo‘ylab istalgan tugundan istalgan boshqa tugunga yetib borish mumkin bo‘lishi kerak.
 
-## Yechim
+## Yechim {#solution}
 
 Albatta, buni har qanday graf uchun bajarib bo‘lmaydi. Grafdagi biror [ko‘prik](/algorithms/graph/bridge-searching)ni ko‘raylik. Unga biror yo‘nalish berishga majburmiz va shundan keyin ko‘prikdan faqat bitta yo‘nalishda o‘tish mumkin bo‘ladi. Demak ko‘prikning bir uchidan ikkinchi uchiga yetib bo‘lmaydi va grafni kuchli bog‘langan qilib bo‘lmaydi.
 
@@ -12,7 +12,7 @@ Boshqacha aytganda, ko‘priksiz bog‘langan grafni kuchli yo‘naltirish uchun
 
 Aynan ko‘priksiz bog‘langan graflargina kuchli yo‘naltirishga ega bo‘lishi haqidagi natija **Robbins teoremasi** deb ataladi.
 
-## Masalaning kengaytmasi
+## Masalaning kengaytmasi {#problem-extension}
 
 Endi kuchli bog‘langan komponentlar soni imkon qadar kichik bo‘ladigan graf yo‘naltirilishini topish masalasini ko‘ramiz.
 
@@ -20,7 +20,7 @@ Har bir bog‘langan komponentni alohida ko‘rib chiqish mumkin. Faqat ko‘pri
 
 Bizga qirralarni olib tashlash emas, faqat yo‘naltirish ruxsat etilgan, ammo ko‘priklarni istalgan tomonga yo‘naltirish mumkin. Buning eng sodda usuli — yuqorida tavsiflangan algoritmni hech qanday o‘zgartirishsiz har bir dastlabki bog‘langan komponentda bajarish.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Kirishda *n* — tugunlar soni, *m* — qirralar soni, keyingi *m* qatorda esa qirralar beriladi.
 
@@ -86,6 +86,6 @@ int main() {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [26th Polish OI - Osiedla](https://szkopul.edu.pl/problemset/problem/nldsb4EW1YuZykBlf4lcZL1Y/site/)

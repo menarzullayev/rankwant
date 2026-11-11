@@ -1,9 +1,9 @@
-# Ma’lumotlar tuzilmasidan $O(T(n)\log n)$ vaqtda o‘chirish
+# Ma’lumotlar tuzilmasidan $O(T(n)\log n)$ vaqtda o‘chirish {#deleting-from-a-data-structure-in-otnlog-n}
 
 Faraz qilaylik, sizda elementlarni **haqiqiy** $O(T(n))$ vaqtda qo‘shishga imkon beradigan ma’lumotlar tuzilmasi bor.
 Ushbu maqolada o‘chirishni offline rejimda $O(T(n)\log n)$ vaqtda bajarishga imkon beradigan usul tasvirlanadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Har bir element ma’lumotlar tuzilmasida qo‘shilish va o‘chirilish orasidagi bir necha vaqt oralig‘ida “tirik” bo‘ladi.
 Keling, so‘rovlar ustida segment daraxti quraylik.
@@ -16,12 +16,12 @@ Tugundan chiqayotganda qo‘shishlarni bekor qilishimiz (undo) kerak.
 E’tibor bering: agar tuzilmani $O(T(n))$ vaqtda o‘zgartira olsak, o‘zgarishlar stekini saqlab, o‘zgarishlarni ham $O(T(n))$ vaqtda orqaga qaytara (rollback qila) olamiz.
 E’tibor bering: rollbacklar amortizatsion murakkablikni buzadi.
 
-## Izohlar
+## Izohlar {#notes}
 
 Biror narsa tirik bo‘lgan oraliqlar ustida segment daraxti qurish g‘oyasi faqat ma’lumotlar tuzilmalari masalalarida emas, boshqa masalalarda ham qo‘llanishi mumkin.
 Quyidagi masalalarga qarang.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Bu implementatsiya [dinamik bog‘langanlik](https://en.wikipedia.org/wiki/Dynamic_connectivity) masalasi uchun.
 U qirra qo‘sha oladi, qirrani o‘chira oladi va bog‘langan komponentlar sonini hisoblay oladi.
@@ -145,7 +145,7 @@ struct QueryTree {
 };
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
 - [Codeforces - Connect and Disconnect](https://codeforces.com/gym/100551/problem/A)
 - [Codeforces - Addition on Segments](https://codeforces.com/contest/981/problem/E)

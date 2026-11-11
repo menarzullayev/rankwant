@@ -1,6 +1,6 @@
-# Minimal kesim — Stoer–Wagner algoritmi
+# Minimal kesim — Stoer–Wagner algoritmi {#minimum-cut-stoer-wagner-algorithm}
 
-## Masala ta’rifi
+## Masala ta’rifi {#problem-statement}
 
 $n$ ta tugun va $m$ ta qirrali yo‘naltirilmagan vaznli $G$ graf berilgan. $C$ kesim — tugunlarning bo‘sh bo‘lmagan va barcha tugunlarni ham o‘z ichiga olmaydigan xos qism to‘plami (amalda kesim tugunlarni ikkita bo‘sh bo‘lmagan to‘plamga ajratadi: $C$ ga tegishli tugunlar va qolgan barcha tugunlar). Kesim vazni kesimdan o‘tuvchi, ya’ni aynan bitta uchi $C$ da bo‘lgan qirralar vaznlari yig‘indisidir:
 
@@ -14,7 +14,7 @@ Ba’zan bu masala “global minimal kesim” deb ataladi — manba va qabul qil
 Bu masalani maksimal oqim algoritmi yordamida yechish mumkin bo‘lsa-da (barcha mumkin bo‘lgan manba va qabul qiluvchi juftlari uchun uni $O(n^2)$ marta ishga tushirib), quyida Mechthild Stoer va Frank Wagner 1994-yilda taklif qilgan ancha sodda va tez algoritmni tavsiflaymiz.
 Umumiy holda sirtmoqlar va parallel qirralarga ruxsat beriladi, ammo sirtmoqlar natijaga mutlaqo ta’sir qilmaydi, parallel qirralarni esa har doim ularning yig‘indi vazniga ega bitta qirra bilan almashtirish mumkin. Shuning uchun soddalik uchun kirish grafida sirtmoq va parallel qirralar yo‘q deb faraz qilamiz.
 
-## Algoritm tavsifi
+## Algoritm tavsifi {#description-of-the-algorithm}
 
 Algoritmning **asosiy g‘oyasi** juda sodda. Quyidagi jarayonni iterativ takrorlaymiz: biror $s$ va $t$ tugunlar jufti orasidagi minimal kesimni topamiz, keyin shu ikki tugunni bittaga birlashtiramiz (ularning qo‘shnilik ro‘yxatlarini ulaymiz). Oxir-oqibat, $n-1$ ta iteratsiyadan so‘ng graf bitta tugungacha siqiladi va jarayon to‘xtaydi. Shundan so‘ng javob topilgan $n-1$ ta kesimning minimumidir.
 Haqiqatan, har bir $i$-bosqichda $s_i$ va $t_i$ tugunlar orasida topilgan minimal $C_i$ kesim yo izlanayotgan global minimal kesim bo‘lib chiqadi, yo aksincha $s_i$ va $t_i$ ni turli to‘plamlarga joylashtirish foydasiz bo‘ladi; demak, bu ikki tugunni bittaga birlashtirish bilan hech narsani yomonlashtirmaymiz.
@@ -31,7 +31,7 @@ Keyin topilgan minimal kesimni joriy javob bilan solishtiramiz; agar u kichikroq
 Murakkab ma’lumotlar tuzilmalaridan foydalanmasak, eng muhim qism $w$ qiymati eng katta tugunni topishdir. Buni $O(n)$ vaqtda bajarsak, har biri $n-1$ ta iteratsiyali $n-1$ ta faza mavjud bo‘lgani sababli algoritmning yakuniy **murakkabligi** $O(n^3)$ bo‘ladi.
 $w$ qiymati eng katta tugunni topish uchun **Fibonacci heap** ishlatsak (u kalit qiymatini amortizatsiyalangan $O(1)$ vaqtda oshirish va maksimumni amortizatsiyalangan $O(\log n)$ vaqtda chiqarish imkonini beradi), bitta fazada $A$ to‘plamiga oid barcha amallar $O(m + n \log n)$ vaqtda bajariladi. Bu holatda algoritmning yakuniy murakkabligi $O(nm + n^2 \log n)$.
 
-## Stoer–Wagner teoremasining isboti
+## Stoer–Wagner teoremasining isboti {#proof-of-the-stoer-wagner-theorem}
 
 Teorema bayonini eslaymiz. Har safar $A$ to‘plamiga unga eng kuchli bog‘langan tugunni qo‘shib, barcha tugunlarni bittadan qo‘shsak, oxiridan oldin qo‘shilgan tugunni $s$, oxirgi qo‘shilganini $t$ deb belgilaymiz. Unda minimal $s$-$t$ kesim faqat bitta — $t$ tugundan iborat.
 
@@ -75,7 +75,7 @@ ya’ni kerakli natijani olamiz.
 
 Biz $w(v,A_v) \le w(C_v)$ munosabatini isbotladik va yuqorida aytilganidek, butun teorema undan kelib chiqadi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Eng sodda va tushunarli implementatsiyada (murakkabligi $O(n^3)$) graf qo‘shnilik matritsasi ko‘rinishida beriladi. Javob `best_cost` va `best_cut` o‘zgaruvchilarida saqlanadi (minimal kesim narxi va unga kiradigan tugunlar).
 Har bir tugun uchun `exist` massivi u hali mavjudmi yoki boshqa tugun bilan birlashtirilganmi, shuni saqlaydi. Har bir siqilgan $i$ tugun uchun `v[i]` ro‘yxati shu $i$ tugunga siqilgan asl tugunlar raqamlarini saqlaydi.
@@ -124,7 +124,7 @@ void mincut() {
 }
 ```
 
-## Adabiyotlar
+## Adabiyotlar {#literature}
 
 - [Mechthild Stoer, Frank Wagner. A Simple Min-Cut Algorithm. Journal of the ACM, 44(4):585-591, 1997](https://dl.acm.org/doi/10.1145/263867.263872)
 - [Kurt Mehlhorn, Christian Uhrig. The minimum cut algorithm of Stoer and Wagner [1995]](https://www.researchgate.net/publication/2483703_The_minimum_cut_algorithm_of_Stoer_and_Wagner)

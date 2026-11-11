@@ -1,4 +1,4 @@
-# Balanced Ternary
+# Balanced Ternary {#balanced-ternary}
 
 !["Setun computer using Balanced Ternary system"](https://earltcampbell.files.wordpress.com/2014/12/setun.jpeg?w=300)
 
@@ -34,7 +34,7 @@ This system allows you to write negative values without leading minus sign: you 
 
 Note that a negative number starts with `Z` and positive with `1`.
 
-## Conversion algorithm
+## Conversion algorithm {#conversion-algorithm}
 
 It is easy to represent a given number in **balanced ternary** via temporary representing it in normal ternary number system. When value is
 in standard ternary, its digits are either `0` or `1` or `2`. Iterating from the lowest digit we can safely skip any `0`s and `1`s,
@@ -73,6 +73,6 @@ Let us convert it back to the decimal system by adding the weighted positional v
 
 $$ 100Z10 = 243 \cdot 1 + 81 \cdot 0 + 27 \cdot 0 + 9 \cdot (-1) + 3 \cdot 1 + 1 \cdot 0 = 237_{10} $$
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Topcoder SRM 604, Div1-250](http://community.topcoder.com/stat?c=problem_statement&pm=12917&rd=15837)

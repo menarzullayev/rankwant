@@ -1,19 +1,19 @@
-# Knapsack Problem
+# Knapsack Problem {#knapsack-problem}
 Prerequisite knowledge: [Introduction to Dynamic Programming](https://cp-algorithms.com/dynamic_programming/intro-to-dp.html)
 
-## Introduction
+## Introduction {#introduction}
 Consider the following example:
 
-### [[USACO07 Dec] Charm Bracelet](https://www.acmicpc.net/problem/6144) 
+### [[USACO07 Dec] Charm Bracelet](https://www.acmicpc.net/problem/6144) {#usaco07-dec-charm-bracelethttpswwwacmicpcnetproblem6144}
 There are $n$ distinct items and a knapsack of capacity $W$. Each item has 2 attributes, weight ($w_{i}$) and value ($v_{i}$). 
 You have to select a subset of items to put into the knapsack such that the total weight does not exceed the capacity $W$ and the total value is maximized.
 
 In the example above, each object has only two possible states (taken or not taken),
 corresponding to binary 0 and 1. Thus, this type of problem is called "0-1 knapsack problem".
 
-## 0-1 Knapsack
+## 0-1 Knapsack {#0-1-knapsack}
 
-### Explanation
+### Explanation {#explanation}
 
 In the example above, the input to the problem is the following: the weight of $i^{th}$ item $w_{i}$, the value of $i^{th}$ item $v_{i}$, and the total capacity of the knapsack $W$.
 
@@ -37,7 +37,7 @@ that should be executed in the **decreasing** order of $j$ (so that $f_{j-w_i}$ 
 
 **It is important to understand this transition rule, because most of the transitions for knapsack problems are derived in a similar way.**
 
-### Implementation
+### Implementation {#implementation}
 
 The algorithm described can be implemented in $O(nW)$ as:
 
@@ -49,7 +49,7 @@ for (int i = 1; i <= n; i++)
 
 Again, note the order of execution. It should be strictly followed to ensure the following invariant: Right before the pair $(i, j)$ is processed, $f_k$ corresponds to $f_{i,k}$ for $k > j$, but to $f_{i-1,k}$ for $k < j$. This ensures that $f_{j-w_i}$ is taken from the $(i-1)$-th step, rather than from the $i$-th one.
 
-## Complete Knapsack
+## Complete Knapsack {#complete-knapsack}
 
 The complete knapsack model is similar to the 0-1 knapsack, the only difference from the 0-1 knapsack is that an item can be selected an unlimited number of times instead of only once.
 
@@ -57,7 +57,7 @@ We can refer to the idea of 0-1 knapsack to define the state: $f_{i, j}$, the ma
 
 It should be noted that although the state definition is similar to that of a 0-1 knapsack, its transition rule is different from that of a 0-1 knapsack.
 
-### Explanation
+### Explanation {#explanation}
 
 The trivial approach is, for the first $i$ items, enumerate how many times each item is to be taken. The time complexity of this is $O(n^2W)$.
 
@@ -75,7 +75,7 @@ Similar to the 0-1 knapsack, we can remove the first dimension to optimize the s
 
 $$f_j \gets \max(f_j, f_{j-w_i}+v_i)$$
 
-### Implementation
+### Implementation {#implementation}
 
 The algorithm described can be implemented in $O(nW)$ as:
 
@@ -91,11 +91,11 @@ Observing the code carefully, we see that for the currently processed item $i$ a
 when $j\geqslant w_{i}$, $f_{i,j}$ will be affected by $f_{i,j-w_{i}}$. 
 This is equivalent to being able to put item $i$ into the backpack multiple times, which is consistent with the complete knapsack problem and not the 0-1 knapsack problem.
 
-## Multiple Knapsack
+## Multiple Knapsack {#multiple-knapsack}
 
 Multiple knapsack is also a variant of 0-1 knapsack. The main difference is that there are $k_i$ of each item instead of just $1$.
 
-### Explanation
+### Explanation {#explanation}
 
 A very simple idea is: "choose each item $k_i$ times" is equivalent to "$k_i$ of the same item is selected one by one". Thus converting it to a 0-1 knapsack model, which can be described by the transition function:
 
@@ -103,7 +103,7 @@ $$f_{i, j} = \max_{k=0}^{k_i}(f_{i-1,j-k\cdot w_i} + k\cdot v_i)$$
 
 The time complexity of this process is $O(W\sum\limits_{i=1}^{n}k_i)$
 
-### Binary Grouping Optimization
+### Binary Grouping Optimization {#binary-grouping-optimization}
 
 We still consider converting the multiple knapsack model into a 0-1 knapsack model for optimization. The time complexity $O(Wn)$ can not be further optimized with the approach above, so we focus on $O(\sum k_i)$ component.
 
@@ -117,7 +117,7 @@ Through the above splitting method, it is possible to obtain any sum of $\leq k_
 
 This optimization gives us a time complexity of $O(W\sum\limits_{i=1}^{n}\log k_i)$.
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 index = 0;
@@ -135,7 +135,7 @@ for (int i = 1; i <= n; i++) {
 }
 ```
 
-### Monotone Queue Optimization
+### Monotone Queue Optimization {#monotone-queue-optimization}
 
 In this optimization, we aim to convert the knapsack problem into a [maximum queue](https://cp-algorithms.com/data_structures/stack_queue_modification.html) one.
 
@@ -151,7 +151,7 @@ This transforms into a classic monotone queue optimization form. $G_{x, y}$ can 
 Therefore, the complexity of finding all $g_{x, y}$ is $O(\lfloor \frac{W}{w_i} \rfloor) \times O(w_i) = O(W)$.
 In this way, the total complexity of the algorithm is reduced to $O(nW)$. 
 
-## Mixed Knapsack
+## Mixed Knapsack {#mixed-knapsack}
 
 The mixed knapsack problem involves a combination of the three problems described above. That is, some items can only be taken once, some can be taken infinitely, and some can be taken at most $k$ times.
 
@@ -168,7 +168,7 @@ for (each item) {
 }
 ```
 
-## Practise Problems
+## Practise Problems {#practise-problems}
 
 - [Atcoder: Knapsack-1](https://atcoder.jp/contests/dp/tasks/dp_d)
 - [Atcoder: Knapsack-2](https://atcoder.jp/contests/dp/tasks/dp_e)

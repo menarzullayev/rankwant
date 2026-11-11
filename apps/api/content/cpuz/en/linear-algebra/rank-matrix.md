@@ -1,4 +1,4 @@
-# Finding the rank of a matrix
+# Finding the rank of a matrix {#finding-the-rank-of-a-matrix}
 
 **The rank of a matrix** is the largest number of linearly independent rows/columns of the matrix. The rank is not only defined  for square matrices.
 
@@ -7,16 +7,16 @@ The rank of a matrix can also be defined as the largest order of any non-zero mi
 Let the matrix be rectangular and have size $N \times M$.
 Note that if the matrix is square and its determinant is non-zero, then the rank is $N$ ($=M$); otherwise it will be less. Generally, the rank of a matrix does not exceed $\min (N, M)$.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 You can search for the rank using [Gaussian elimination](/algorithms/linear-algebra/linear-system-gauss). We will perform the same operations as when solving the system or finding its determinant. But if at any step in the $i$-th column there are no rows with an non-empty entry among those that we didn't selected already, then we skip this step.
 Otherwise, if we have found a row with a non-zero element in the $i$-th column during the $i$-th step, then we mark this row as a selected one, increase the rank by one (initially the rank is set equal to $0$), and perform the usual operations of taking this row away from the rest.
 
-## Complexity
+## Complexity {#complexity}
 
 This algorithm runs in $\mathcal{O}(n^3)$.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 const double EPS = 1E-9;
@@ -50,5 +50,5 @@ int compute_rank(vector<vector<double>> A) {
     return rank;
 }
 ```
-## Problems
+## Problems {#problems}
  * [TIMUS1041 Nikifor](http://acm.timus.ru/problem.aspx?space=1&num=1041)

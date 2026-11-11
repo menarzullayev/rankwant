@@ -1,10 +1,10 @@
-# Yarim tekisliklar kesishmasi
+# Yarim tekisliklar kesishmasi {#half-plane-intersection}
 
 Ushbu maqolada yarim tekisliklar to‘plamining kesishmasini hisoblash masalasini ko‘rib chiqamiz. Bunday kesishmani qavariq soha/ko‘pburchak sifatida qulay ifodalash mumkin: uning ichidagi har bir nuqta barcha yarim tekisliklar ichida ham yotadi, va aynan shu ko‘pburchakni topish yoki qurish kerak. Masala haqida dastlabki tasavvur beramiz, Sort-and-Incremental algoritmi deb ataladigan $O(N \log N)$ yondashuvni tavsiflaymiz va bu usulning ayrim namunaviy qo‘llanishlarini keltiramiz.
 
 O‘quvchidan asosiy geometrik primitivlar va amallarni (nuqtalar, vektorlar, to‘g‘ri chiziqlar kesishishi) bilish qat’iy tavsiya etiladi. Bundan tashqari, [Qavariq qobiq](/algorithms/geometry/convex-hull) yoki [Convex Hull Trick](/algorithms/geometry/convex-hull-trick) haqidagi bilimlar maqoladagi tushunchalarni yaxshiroq anglashga yordam beradi, ammo bular hech qanday ma’noda majburiy shart emas.
 
-## Dastlabki izohlar va ta’riflar
+## Dastlabki izohlar va ta’riflar {#initial-clarifications-and-definitions}
 
 Butun maqola davomida (boshqacha aytilmasa) quyidagi farazlarni qabul qilamiz:
 
@@ -17,19 +17,19 @@ Butun maqola davomida (boshqacha aytilmasa) quyidagi farazlarni qabul qilamiz:
 
 $y \geq 2x - 2$ yarim tekisligini $P = (1, 0)$ nuqta va $PQ = Q - P = (1, 2)$ yo‘nalish vektori bilan ifodalash mumkin.
 
-## Qo‘pol kuch usuli — $O(N^3)$
+## Qo‘pol kuch usuli — $O(N^3)$ {#brute-force-approach-on3}
 
 Eng sodda va ravshan yechimlardan biri — barcha yarim tekisliklar juftlari chiziqlarining kesishish nuqtasini hisoblash va har bir nuqta uchun u boshqa barcha yarim tekisliklar ichida yotishini tekshirishdir. Kesishish nuqtalari $O(N^2)$ ta bo‘lgani va ularning har biri uchun $O(N)$ ta yarim tekislikni tekshirish kerakligi sababli, umumiy vaqt murakkabligi $O(N^3)$. Kesishma sohasining o‘zini, masalan, barcha yarim tekisliklarga kiritilgan kesishish nuqtalari to‘plamiga Qavariq qobiq algoritmini qo‘llab tiklash mumkin.
 
 Bu usul nima uchun ishlashini tushunish ancha oson: natijaviy qavariq ko‘pburchakning uchlari yarim tekislik chiziqlarining kesishish nuqtalaridir va ularning har biri, shubhasiz, barcha yarim tekisliklarga tegishli. Bu usulning asosiy afzalligi — kesishma bo‘shmi yoki yo‘qligini tekshirish kerak bo‘lganda uni tushunish, eslab qolish va shu zahotiyoq yozish oson. Biroq u dahshatli darajada sekin va ko‘pchilik masalalar uchun yaroqsiz, shuning uchun tezroq narsa kerak.
 
-## Inkremental usul — $O(N^2)$
+## Inkremental usul — $O(N^2)$ {#incremental-approach-on2}
 
 Yana bir oddiy yondashuv — yarim tekisliklar kesishmasini bittadan qo‘shib, bosqichma-bosqich qurish. Bu usul mohiyatan qavariq ko‘pburchakni to‘g‘ri chiziq bilan $N$ marta kesish va har bir bosqichda ortiqcha yarim tekisliklarni olib tashlashga teng. Buning uchun qavariq ko‘pburchakni kesmalar ro‘yxati sifatida ifodalash va uni yarim tekislik bilan kesish uchun kesmalarning yarim tekislik chizig‘i bilan kesishish nuqtalarini topish kifoya (chiziq ko‘pburchakni haqiqatan kesib o‘tsa, faqat ikkita kesishish nuqtasi bo‘ladi), so‘ng oradagi barcha kesmalarni yarim tekislikka mos yangi kesma bilan almashtiramiz. Bunday amal chiziqli vaqtda bajarilishi mumkin bo‘lgani uchun katta chegaralovchi to‘rtburchakdan boshlab, uni har bir yarim tekislik bilan kesib borish mumkin va umumiy vaqt murakkabligi $O(N^2)$ bo‘ladi.
 
 Bu usul to‘g‘ri yo‘nalishdagi katta qadam, ammo har bir bosqichda $O(N)$ ta yarim tekislik bo‘ylab yurish isrofgarchilikdek tuyuladi. Quyida ayrim mohirona kuzatishlar yordamida bu inkremental yondashuvdagi g‘oyalarni qayta ishlatib, $O(N \log N)$ algoritm yaratish mumkinligini ko‘ramiz.
 
-## Sort-and-Incremental algoritmi — $O(N \log N)$
+## Sort-and-Incremental algoritmi — $O(N \log N)$ {#sort-and-incremental-algorithm-on-log-n}
 
 Bu algoritmning to‘g‘ri hujjatlashtirilgan birinchi manbasi sifatida topa olganimiz — Zeyuan Zhu ning 2006-yilgi Xitoy jamoaviy tanlov musobaqasi uchun yozilgan [New Algorithm for Half-plane Intersection and its Practical Value](http://people.csail.mit.edu/zeyuan/publications.htm) nomli dissertatsiyasi. Quyida tavsiflanadigan yondashuv shu algoritmga asoslangan, ammo kesishmaning pastki va yuqori yarmlari uchun ikkita alohida kesishmani hisoblash o‘rniga, uni deque (ikki tomonlama navbat) yordamida bir o‘tishda butunlay quramiz.
 
@@ -69,7 +69,7 @@ Xulosa qilsak, to‘liq algoritm taxminan quyidagicha ko‘rinadi:
 
 Jami $O(N \log N)$ vaqt murakkabligiga erishdik. Saralash aniq to‘siq bo‘lgani uchun, yarim tekisliklar burchaklari bo‘yicha oldindan saralab berilgan maxsus holatda (bunday holatga qavariq ko‘pburchakni aniqlaydigan yarim tekisliklarni olish misol bo‘ladi) algoritmni chiziqli vaqtda ishlaydigan qilish mumkin.
 
-### To‘g‘ridan-to‘g‘ri implementatsiya
+### To‘g‘ridan-to‘g‘ri implementatsiya {#direct-implementation}
 
 Quyida algoritmning namunaviy, to‘g‘ridan-to‘g‘ri implementatsiyasi keltirilgan; ko‘pchilik qismlar izohlar bilan tushuntirilgan:
 
@@ -218,23 +218,23 @@ vector<Point> hp_intersect(vector<Halfplane>& H) {
 }
 ```
 
-### Implementatsiya muhokamasi
+### Implementatsiya muhokamasi {#implementation-discussion}
 
 Shuni alohida ta’kidlash kerakki, agar bir nechta yarim tekislik aynan bitta nuqtada kesishsa, bu algoritm yakuniy ko‘pburchakda takrorlangan qo‘shni nuqtalarni qaytarishi mumkin. Biroq bu kesishma bo‘shmi yoki yo‘qmi degan masalani to‘g‘ri baholashga hech qanday ta’sir qilmaydi va ko‘pburchak yuziga ham umuman ta’sir etmaydi. Keyin bajarmoqchi bo‘lgan vazifalaringizga qarab bu takrorlarni olib tashlashni xohlashingiz mumkin. Buni std::unique yordamida juda osonlik bilan qilish mumkin. Yuzi nolga teng kesishmalar (masalan, bitta nuqta, chiziq yoki kesmadan iborat kesishmalar) to‘g‘ri hisoblanishi uchun algoritm bajarilishi davomida takrorlangan nuqtalarni saqlab qolishni xohlaymiz. O‘quvchiga kesishma bitta nuqta yoki chiziqqa aylanadigan ayrim kichik qo‘lda tuzilgan holatlarni sinab ko‘rishni tavsiya qilaman.
 
 Yana bir gapirish kerak bo‘lgan narsa — yarim tekisliklar chiziqli cheklov ko‘rinishida berilsa (masalan, $ax + by + c \leq 0$) nima qilish kerak. Bu holda ikki variant bor. Algoritmni bunday ifodalash bilan ishlash uchun tegishli o‘zgartirishlar bilan implementatsiya qilishingiz mumkin (aslida o‘zingizning yarim tekislik strukturangizni yaratish; agar convex hull trick bilan tanish bo‘lsangiz, bu ancha oson bo‘ladi), yoki har bir chiziqning istalgan 2 ta nuqtasini olib, chiziqlarni biz maqolada ishlatgan ko‘rinishga o‘tkazishingiz mumkin. Umuman olganda, qo‘shimcha aniqlik muammolarining oldini olish uchun masalada berilgan ko‘rinish bilan ishlash tavsiya etiladi.
 
-## Masalalar, vazifalar va qo‘llanishlar
+## Masalalar, vazifalar va qo‘llanishlar {#problems-tasks-and-applications}
 
 Yarim tekisliklar kesishmasi yordamida yechiladigan ko‘plab masalalarni uning yordamisiz ham, lekin (odatda) murakkabroq yoki kamroq uchraydigan yondashuvlar bilan yechish mumkin. Odatda yarim tekisliklar kesishmasi ko‘pburchaklar (asosan qavariq), tekislikdagi ko‘rinuvchanlik va ikki o‘lchovli chiziqli dasturlash bilan bog‘liq masalalarda uchraydi. Quyida shu usul bilan yechiladigan ayrim namunaviy vazifalar keltirilgan:
 
-### Qavariq ko‘pburchaklar kesishmasi
+### Qavariq ko‘pburchaklar kesishmasi {#convex-polygon-intersection}
 
 Yarim tekisliklar kesishmasining klassik qo‘llanishlaridan biri: $N$ ta ko‘pburchak berilgan, ularning barchasi ichida bo‘lgan sohani hisoblash kerak.
 
 Yarim tekisliklar to‘plamining kesishmasi qavariq ko‘pburchak bo‘lgani uchun, qavariq ko‘pburchakni ham yarim tekisliklar to‘plami sifatida ifodalash mumkin (ko‘pburchakning har bir tomoni yarim tekislikning kesmasidir). Har bir ko‘pburchak uchun shu yarim tekisliklarni hosil qilib, butun to‘plamning kesishmasini hisoblang. Umumiy vaqt murakkabligi $O(S \log S)$, bu yerda $S$ — barcha ko‘pburchaklar tomonlarining umumiy soni. Masalani nazariy jihatdan $N$ ta yarim tekisliklar to‘plamini uyum yordamida birlashtirib, so‘ng saralash qadamisiz algoritmni ishga tushirib, $O(S \log N)$ da ham yechish mumkin, ammo bunday yechimning doimiy ko‘paytuvchisi oddiy saralashdan ancha yomon va faqat juda kichik $N$ uchun ozgina tezlik beradi.
 
-### Tekislikda ko‘rinuvchanlik
+### Tekislikda ko‘rinuvchanlik {#visibility-in-the-plane}
 
 “Tekislikdagi biror nuqta(lar)dan ba’zi kesmalar ko‘rinadimi yoki yo‘qmi aniqlang” kabi talab qilinadigan masalalarni odatda yarim tekisliklar kesishmasi masalasi sifatida ifodalash mumkin. Misol uchun, quyidagi vazifani olaylik: biror sodda (albatta qavariq bo‘lmagan) ko‘pburchak berilgan; ko‘pburchak ichida shunday nuqta borligini aniqlang, bu nuqtadan ko‘pburchakning butun chegarasini ko‘rish mumkin bo‘lsin. Bu [ko‘pburchak yadrosini](https://en.wikipedia.org/wiki/Star-shaped_polygon) topish deb ham ataladi va ko‘pburchakning har bir tomonini yarim tekislik sifatida olib, so‘ng uning kesishmasini hisoblash orqali oddiy yarim tekisliklar kesishmasi bilan yechish mumkin.
 
@@ -243,7 +243,7 @@ tekislikda $p_1, p_2\ \dots \ p_n$ nuqtalardan iborat $p$ to‘plam berilgan; $p
 
 Bunday masalani quyidagini payqash orqali yechish mumkin: biror $p_i$ nuqtani $p_j$ ning chap tomonida ko‘ra olish $p_i$ dan $p_j$ gacha kesmaning o‘ng tomonini ko‘ra olish bilan bir xil (yoki unga teng kuchli ravishda, $p_j$ dan $p_i$ gacha kesmaning chap tomonini ko‘ra olish). Shuni hisobga olib, har bir $p_i p_{i+1}$ kesma uchun (yoki tanlagan yo‘nalishingizga qarab $p_{i+1} p_i$) yarim tekislik yaratib, butun to‘plam kesishmasi bo‘shmi yoki yo‘qligini tekshirish kifoya.
 
-### Ikkilik qidiruv bilan yarim tekisliklar kesishmasi
+### Ikkilik qidiruv bilan yarim tekisliklar kesishmasi {#half-plane-intersection-with-binary-search}
 
 Yana bir keng tarqalgan qo‘llanish — yarim tekisliklar kesishmasini ikkilik qidiruv jarayonining predikatini tekshirish vositasi sifatida ishlatish. Quyida shunday masalaga misol keltirilgan; u ham yuqorida eslatilgan ma’ruzada Artem Vasilyev tomonidan keltirilgan: **qavariq** $P$ ko‘pburchak berilgan; uning ichiga chizish mumkin bo‘lgan eng katta aylanani toping.
 
@@ -251,15 +251,15 @@ Qandaydir yopiq ko‘rinishdagi yechim, noqulay formulalar yoki tushunarsiz algo
 
 Shubhasiz, agar $r$ radiusli aylana chizish mumkin bo‘lsa, $r$ dan kichik radiusli istalgan boshqa aylanani ham chizish mumkin. Shuning uchun $r$ radius bo‘yicha ikkilik qidiruv o‘tkazib, har bir qadamni yarim tekisliklar kesishmasi yordamida tekshirishimiz mumkin. Shuningdek, qavariq ko‘pburchak yarim tekisliklari allaqachon burchak bo‘yicha saralangan, shuning uchun algoritmda saralash qadamini o‘tkazib yuborish mumkin. Shunday qilib, jami $O(NK)$ vaqt murakkabligini olamiz, bu yerda $N$ — ko‘pburchak uchlari soni, $K$ — ikkilik qidiruv iteratsiyalari soni (haqiqiy qiymat mumkin bo‘lgan javoblar oralig‘i va kerakli aniqlikka bog‘liq bo‘ladi).
 
-### Ikki o‘lchovli chiziqli dasturlash
+### Ikki o‘lchovli chiziqli dasturlash {#two-dimensional-linear-programming}
 
 Yarim tekisliklar kesishmasining yana bir qo‘llanishi — ikki o‘zgaruvchili chiziqli dasturlash. Ikki o‘zgaruvchi uchun barcha chiziqli cheklovlarni $Ax + By + C \leq 0$ ko‘rinishida ifodalash mumkin (tengsizlik belgisi har xil bo‘lishi mumkin). Shubhasiz, bular shunchaki yarim tekisliklar, shuning uchun chiziqli cheklovlar to‘plami uchun yaroqli yechim mavjudligini yarim tekisliklar kesishmasi yordamida tekshirish mumkin. Bundan tashqari, berilgan chiziqli cheklovlar to‘plami uchun yaroqli yechimlar sohasini (ya’ni yarim tekisliklar kesishmasini) hisoblash va so‘ng cheklovlar ostida biror chiziqli $f(x, y)$ funksiyani maksimallashtirish/minimallashtirishga oid ko‘plab so‘rovlarga ikkilik qidiruv yordamida (convex hull trickka juda o‘xshash) har bir so‘rov uchun $O(\log N)$ da javob berish mumkin.
 
 Shuni ham aytib o‘tish kerakki, chiziqli cheklovlar to‘plami yaroqli yechimga ega yoki ega emasligini tekshiradigan hamda berilgan cheklovlar ostida biror chiziqli funksiyani maksimallashtiradigan/minimallashtiradigan ancha sodda randomizatsiyalangan algoritm ham mavjud. Bu randomizatsiyalangan algoritmni ham Artem Vasilyev yuqorida eslatilgan ma’ruzada yaxshi tushuntirgan. O‘quvchi qiziqsa, u haqida qo‘shimcha manbalar: [CG - Lecture 4, parts 4 and 5](https://youtu.be/5dfc355t2y4) va [Petr Mitrichev blogi (quyidagi mashq masalalari ro‘yxatidagi eng qiyin masalaning yechimini o‘z ichiga oladi)](https://petr-mitrichev.blogspot.com/2016/07/a-half-plane-week.html).
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
-### Klassik masalalar, bevosita qo‘llash
+### Klassik masalalar, bevosita qo‘llash {#classic-problems-direct-application}
 
 * [Codechef - Animesh decides to settle down](https://www.codechef.com/problems/CHN02)
 * [POJ - How I mathematician Wonder What You Are!](http://poj.org/problem?id=3130)
@@ -268,7 +268,7 @@ Shuni ham aytib o‘tish kerakki, chiziqli cheklovlar to‘plami yaroqli yechimg
 * [POJ - Art Gallery](http://poj.org/problem?id=1279)
 * [POJ - Uyuw's Concert](http://poj.org/problem?id=2451)
 
-### Qiyinroq masalalar
+### Qiyinroq masalalar {#harder-problems}
 
 * [POJ - Most Distant Point from the Sea - Medium](http://poj.org/problem?id=3525)
 * [Baekjoon - Jeju's Island - Same as above but seemingly stronger test cases](https://www.acmicpc.net/problem/3903)
@@ -279,25 +279,25 @@ Shuni ham aytib o‘tish kerakki, chiziqli cheklovlar to‘plami yaroqli yechimg
 * [Codeforces - Jungle Outpost (alternative link, problem J) - Hard](https://codeforces.com/gym/101309/attachments?mobile=false)
 * [Yandex - Asymmetry Value (need virtual contest to see, problem F) - Very Hard](https://contest.yandex.com/contest/2540/enter/)
 
-### Qo‘shimcha masalalar
+### Qo‘shimcha masalalar {#additional-problems}
 
 * 40th Petrozavodsk Programming Camp, Winter 2021 - Day 1: Jagiellonian U Contest, Grand Prix of Krakow - Problem B: (Almost) Fair Cake-Cutting. Maqola yozilgan paytda bu masala yopiq edi va faqat Programming Camp ishtirokchilari uchun ochiq edi.
 
-## Havolalar, bibliografiya va boshqa manbalar
+## Havolalar, bibliografiya va boshqa manbalar {#references-bibliography-and-other-sources}
 
-### Asosiy manbalar
+### Asosiy manbalar {#main-sources}
 
 * [New Algorithm for Half-plane Intersection and its Practical Value.](http://people.csail.mit.edu/zeyuan/publications.htm) Algoritmning asl maqolasi.
 * [Artem Vasilyev's Brazilian ICPC Summer School 2020 lecture.](https://youtu.be/WKyZSitpm6M?t=6463) Yarim tekisliklar kesishmasi haqidagi ajoyib ma’ruza. Boshqa geometriya mavzularini ham qamrab oladi.
 
-### Yaxshi bloglar (xitoy tilida)
+### Yaxshi bloglar (xitoy tilida) {#good-blogs-chinese}
 
 * [Fundamentals of Computational Geometry - Intersection of Half-planes.](https://zhuanlan.zhihu.com/p/83499723)
 * [Detailed introduction to the half-plane intersection algorithm.](https://blog.csdn.net/qq_40861916/article/details/83541403)
 * [Summary of Half-plane intersection problems.](https://blog.csdn.net/qq_40482358/article/details/87921815)
 * [Sorting incremental method of half-plane intersection.](https://blog.csdn.net/u012061345/article/details/23872929)
 
-### Randomizatsiyalangan algoritm
+### Randomizatsiyalangan algoritm {#randomized-algorithm}
 
 * [Linear Programming and Half-Plane intersection - Parts 4 and 5.](https://youtu.be/5dfc355t2y4)
 * [Petr Mitrichev's Blog: A half-plane week.](https://petr-mitrichev.blogspot.com/2016/07/a-half-plane-week.html)

@@ -1,4 +1,4 @@
-# Ko‘priklarni onlayn topish
+# Ko‘priklarni onlayn topish {#finding-bridges-online}
 
 Bizga yo‘naltirilmagan graf berilgan. Olib tashlanganda grafni uzib qo‘yadigan, aniqroq aytganda bog‘langan komponentlar sonini oshiradigan qirra **ko‘prik** deb ataladi. Vazifamiz berilgan grafdagi barcha ko‘priklarni topishdir.
 
@@ -12,7 +12,7 @@ Barcha ko‘priklar ro‘yxatini yuritish, shuningdek 2-qirra-bog‘langan kompo
 
 Quyida tavsiflanadigan algoritm $O(n\log n+m)$ vaqtda ishlaydi; bu yerda $m$ — qo‘shilgan qirralar soni. Algoritm [kesishmaydigan to‘plamlar birlashmasi — DSU](/algorithms/data-structures/disjoint-set-union) tuzilmasiga asoslanadi. Biroq ushbu maqoladagi implementatsiya rang bo‘yicha birlashtirishsiz soddalashtirilgan DSUdan foydalangani sababli $O(n\log n+m\log n)$ vaqt sarflaydi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Avval $k$-qirra-bog‘langan komponent tushunchasini ta’riflaymiz: bu $k$ tadan kam qirra olib tashlanganda ham bog‘langan bo‘lib qoladigan bog‘langan komponentdir.
 
@@ -28,7 +28,7 @@ Navbatdagi $(a,b)$ qirra qo‘shilganda uch xil holat yuz berishi mumkin:
 
 Demak, butun masala 2-qirra-bog‘langan komponentlar o‘rmonida shu amallarni samarali bajarishga keltiriladi.
 
-## O‘rmonni saqlash uchun ma’lumotlar tuzilmalari
+## O‘rmonni saqlash uchun ma’lumotlar tuzilmalari {#data-structures-for-storing-the-forest}
 
 Bizga kerak bo‘ladigan yagona ma’lumotlar tuzilmasi — [DSU](/algorithms/data-structures/disjoint-set-union). Aslida uning ikkita nusxasini yuritamiz: bittasi bog‘langan komponentlarni, ikkinchisi 2-qirra-bog‘langan komponentlarni saqlaydi. Bundan tashqari, 2-qirra-bog‘langan komponentlar o‘rmonidagi daraxtlar tuzilmasini ota ko‘rsatkichlari bilan ifodalaymiz: har bir 2-qirra-bog‘langan komponent daraxtdagi ajdodining indeksini `par[]` da saqlaydi.
 
@@ -56,7 +56,7 @@ Endi kerak bo‘ladigan amallarni ketma-ket ko‘rib chiqamiz.
 
   2-qirra-bog‘langan komponentlar DSUsini rang bo‘yicha birlashtirishsiz amalga oshiramiz, shu sababli har bir so‘rov uchun o‘rtacha $O(\log n)$ murakkablik olinadi. Har so‘rovga o‘rtacha $O(1)$ erishish uchun sikl tugunlarini rang bo‘yicha birlashtirish va `par[]` ni shunga mos tayinlash kerak bo‘lardi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida butun algoritmning yakuniy implementatsiyasi keltirilgan. Yuqorida aytilganidek, soddalik uchun 2-qirra-bog‘langan komponentlar DSUsi rang bo‘yicha birlashtirishsiz yozilgan; shu sababli natijaviy o‘rtacha murakkablik $O(\log n)$ bo‘ladi.
 

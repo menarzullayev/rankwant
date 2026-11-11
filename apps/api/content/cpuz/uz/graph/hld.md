@@ -1,15 +1,15 @@
-# Og‘ir-yengil dekompozitsiya
+# Og‘ir-yengil dekompozitsiya {#heavy-light-decomposition}
 
 **Og‘ir-yengil dekompozitsiya** — **daraxtdagi so‘rovlar**ga kelib taqaladigan ko‘plab masalalarni samarali yechish imkonini beruvchi ancha umumiy usul.
 
-## Tavsif
+## Tavsif {#description}
 
 Ixtiyoriy ildiz tanlangan, $n$ ta tugundan iborat $G$ daraxti berilgan bo‘lsin.
 
 Ushbu daraxt dekompozitsiyasining mohiyati — daraxtni bir nechta **yo‘llarga ajratish**, bunda istalgan $v$ tugundan ildizgacha ko‘pi bilan $\log n$ ta yo‘l bo‘ylab yurib yetish mumkin bo‘ladi. Bundan tashqari, bu yo‘llarning hech biri boshqasi bilan kesishmasligi kerak.
 Agar istalgan daraxt uchun shunday dekompozitsiyani topsak, *“$a$ dan $b$ gacha yo‘lda biror narsani hisoblash”* ko‘rinishidagi ayrim so‘rovlarni *“$k$-yo‘lning $[l,r]$ kesmasida biror narsani hisoblash”* ko‘rinishidagi bir nechta so‘rovga keltirishimiz mumkinligi ravshan.
 
-### Qurish algoritmi
+### Qurish algoritmi {#construction-algorithm}
 
 Har bir $v$ tugun uchun uning ost-daraxti o‘lchami $s(v)$ ni, ya’ni $v$ tugunning o‘zini ham hisobga olgan holda uning ost-daraxtidagi tugunlar sonini hisoblaymiz.
 
@@ -24,7 +24,7 @@ Bitta tugundan pastga ko‘pi bilan bitta og‘ir qirra chiqishi ravshan. Aks ho
 
 Endi daraxtni kesishmaydigan yo‘llarga ajratamiz. Pastga qarab hech qanday og‘ir qirra chiqmaydigan barcha tugunlarni qaraymiz. Har bir shunday tugundan daraxt ildiziga yetgunimizcha yoki yengil qirra orqali o‘tgunimizcha yuqoriga yuramiz. Natijada nol yoki undan ortiq og‘ir qirra va bitta yengil qirradan tuzilgan bir nechta yo‘l hosil bo‘ladi. Uchi ildizda bo‘lgan yo‘l bundan mustasno: unda yengil qirra bo‘lmaydi. Ularni **og‘ir yo‘llar** deb ataymiz — bular og‘ir-yengil dekompozitsiyaning kerakli yo‘llaridir.
 
-### To‘g‘rilik isboti
+### To‘g‘rilik isboti {#proof-of-correctness}
 
 Avvalo, algoritm hosil qilgan og‘ir yo‘llar **kesishmasligi**ni qayd etamiz. Haqiqatan, agar ikki shunday yo‘lning umumiy qirrasi bo‘lsa, bu bitta tugundan ikkita og‘ir qirra chiqishini anglatardi, bu esa mumkin emas.
 
@@ -42,14 +42,14 @@ Quyidagi rasm namunaviy daraxtning dekompozitsiyasini ko‘rsatadi. Og‘ir qirr
 
   ![Og‘ir-yengil dekompozitsiya rasmi](/algorithms-media/graph/hld.png)
 
-## Namunaviy masalalar
+## Namunaviy masalalar {#sample-problems}
 
 Masalalarni yechishda ba’zan og‘ir-yengil dekompozitsiyani qirralari kesishmaydigan yo‘llar emas, balki **tugunlari kesishmaydigan** yo‘llar to‘plami sifatida qarash qulayroq. Buning uchun har bir og‘ir yo‘lning oxirgi qirrasi yengil bo‘lsa, uni yo‘ldan chiqarib tashlash kifoya. Hech qanday xossa buzilmaydi va endi har bir tugun aynan bitta og‘ir yo‘lga tegishli bo‘ladi.
 
 Quyida og‘ir-yengil dekompozitsiya yordamida yechish mumkin bo‘lgan bir nechta odatiy masalani ko‘rib chiqamiz.
 **Yo‘ldagi sonlar yig‘indisi** masalasiga alohida e’tibor berish kerak, chunki bu soddaroq usullar bilan ham yechish mumkin bo‘lgan masalaga misoldir.
 
-### Ikki tugun orasidagi yo‘lda maksimum qiymat
+### Ikki tugun orasidagi yo‘lda maksimum qiymat {#maximum-value-on-the-path-between-two-vertices}
 
 Daraxt berilgan va har bir tugunga qiymat biriktirilgan. $(a,b)$ ko‘rinishidagi so‘rovlar beriladi, bu yerda $a$ va $b$ — daraxtning ikki tuguni; $a$ va $b$ orasidagi yo‘lda biriktirilgan qiymatlarning maksimumini topish talab qilinadi.
 
@@ -64,7 +64,7 @@ $(a,l)$ va $(b,l)$ qism-so‘rovlarining har biriga javob berish $\mathcal{O}(\l
 Shuning uchun bitta $(a,b)$ so‘rov $\mathcal{O}(\log^2 n)$ vaqt oladi.
 Agar har bir og‘ir yo‘lning barcha prefikslari maksimumlarini qo‘shimcha ravishda hisoblab saqlasak, $\mathcal{O}(\log n)$ yechimga ega bo‘lamiz, chunki barcha maksimum so‘rovlari — ajdod $l$ ga yetgandagi ko‘pi bilan bitta so‘rovdan tashqari — prefikslar bo‘yicha bajariladi.
 
-### Ikki tugun orasidagi yo‘ldagi sonlar yig‘indisi
+### Ikki tugun orasidagi yo‘ldagi sonlar yig‘indisi {#sum-of-the-numbers-on-the-path-between-two-vertices}
 
 Daraxt berilgan va har bir tugunga qiymat biriktirilgan. $(a,b)$ ko‘rinishidagi so‘rovlar beriladi, bu yerda $a$ va $b$ — daraxtning ikki tuguni; $a$ va $b$ orasidagi yo‘lda joylashgan qiymatlar yig‘indisini topish talab qilinadi. Masalaning bir variantida, bundan tashqari, bir yoki bir nechta tugunga biriktirilgan sonni o‘zgartiradigan yangilash amallari ham bo‘lishi mumkin.
 
@@ -75,7 +75,7 @@ Bu masalaga tubdan boshqacha yondashuv ham bor: daraxtning [Euler aylanib chiqis
 
 Bu ikkala usul ham bitta so‘rov uchun $\mathcal{O}(\log n)$ vaqt oladigan nisbatan sodda yechimlarni beradi.
 
-### Ikki tugun orasidagi yo‘l qirralarini qayta bo‘yash
+### Ikki tugun orasidagi yo‘l qirralarini qayta bo‘yash {#repainting-the-edges-of-the-path-between-two-vertices}
 
 Daraxt berilgan, dastlab har bir qirra oq rangga bo‘yalgan. $(a,b,c)$ ko‘rinishidagi yangilashlar beriladi, bu yerda $a$ va $b$ — ikkita tugun, $c$ esa rang; yangilash $a$ dan $b$ gacha bo‘lgan yo‘ldagi barcha qirralarni $c$ rangga qayta bo‘yashni buyuradi. Barcha qayta bo‘yashlardan so‘ng har bir rangdagi qirralar sonini chiqarish talab qilinadi.
 
@@ -84,7 +84,7 @@ Yuqoridagi masalalarga o‘xshash ravishda, yechim og‘ir-yengil dekompozitsiya
 $(a,b)$ yo‘lidagi har bir qayta bo‘yash $(a,l)$ va $(b,l)$ ko‘rinishidagi ikkita yangilashga aylanadi; bu yerda $l$ — $a$ va $b$ tugunlarning eng yaqin umumiy ajdodi.
 $\mathcal{O}(\log n)$ ta yo‘lning har biri uchun $\mathcal{O}(\log n)$ vaqt sarflash bitta yangilash uchun $\mathcal{O}(\log^2 n)$ murakkablikni beradi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Yuqorida muhokama qilingan yondashuvning ayrim qismlarini samaradorlikni yo‘qotmasdan implementatsiyani soddalashtiradigan tarzda o‘zgartirish mumkin.
 
@@ -159,7 +159,7 @@ int query(int a, int b) {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ - QTREE - Query on a tree](https://www.spoj.com/problems/QTREE/)
 - [CSES - Path Queries II](https://cses.fi/problemset/task/2134)

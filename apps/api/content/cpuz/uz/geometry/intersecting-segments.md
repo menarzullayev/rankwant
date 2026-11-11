@@ -1,11 +1,11 @@
-# Kesishuvchi kesmalar juftini topish
+# Kesishuvchi kesmalar juftini topish {#search-for-a-pair-of-intersecting-segments}
 
 Tekislikda $n$ ta kesma berilgan. Ulardan kamida ikkitasi bir-biri bilan kesishishini tekshirish talab qilinadi.
 Javob "ha" bo‘lsa, kesishuvchi shu juftni chiqarish kerak; bir nechta javob orasidan istalgan bittasini tanlash yetarli.
 
 Sodda yechim algoritmi barcha kesmalar juftini $O(n^2)$ vaqtda ko‘rib chiqib, har bir juft uchun ularning kesishish-kesishmasligini tekshirishdan iborat. Ushbu maqolada **supuruvchi chiziq algoritmi**ga asoslangan, ishlash vaqti $O(n \log n)$ bo‘lgan algoritm bayon qilinadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Aqlan $x = -\infty$ vertikal chiziqni chizamiz va uni o‘ng tomonga siljita boshlaymiz.
 Harakat davomida bu chiziq kesmalarga duch keladi va kesma chiziqni kesib o‘tadigan har bir vaqtda u chiziq bilan aynan bitta nuqtada kesishadi (vertikal kesmalar yo‘q deb hisoblaymiz).
@@ -50,7 +50,7 @@ Shunday qilib, butun algoritm kesmalar juftining kesishishi bo‘yicha $2n$ tada
 
 Natijada **algoritmning asimptotik ishlash vaqti** $O(n \log n)$ bo‘ladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Tasvirlangan algoritmning to‘liq implementatsiyasini keltiramiz:
 
@@ -166,5 +166,5 @@ Shuningdek, oldingi va keyingi elementlarga iteratorlarni qaytaradigan (yoki ula
 
 `EPS` konstantasi ikki haqiqiy sonni solishtirishdagi xatolikni bildiradi (u asosan ikki kesmaning kesishishini tekshirishda ishlatiladi).
 
-## Mashq masalalari
+## Mashq masalalari {#problems}
  * [TIMUS 1469 No Smoking!](https://acm.timus.ru/problem.aspx?space=1&num=1469)

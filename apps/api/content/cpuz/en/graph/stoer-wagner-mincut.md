@@ -1,6 +1,6 @@
-# Minimum cut - Stoer-Wagner algorithm
+# Minimum cut - Stoer-Wagner algorithm {#minimum-cut-stoer-wagner-algorithm}
 
-## Problem statement
+## Problem statement {#problem-statement}
 
 Given an undirected weighted graph $G$ with $n$ vertices and $m$ edges. A cut $C$ is a non-empty proper subset of the vertices (effectively, a cut is a partition of the vertices into two non-empty sets: the ones belonging to $C$ and all the others). The weight of a cut is the sum of the weights of the edges crossing the cut, i.e. the edges that have exactly one endpoint in $C$:
 
@@ -16,7 +16,7 @@ Although this problem can be solved with a maximum flow algorithm (by running it
 
 In general, loops and multiple edges are allowed, although loops obviously do not influence the result in any way, and multiple edges can always be replaced by a single edge with their combined weight. Therefore, for simplicity, we will assume that the input graph contains no loops or multiple edges.
 
-## Description of the algorithm
+## Description of the algorithm {#description-of-the-algorithm}
 
 The **basic idea** of the algorithm is very simple. We iteratively repeat the following process: find the minimum cut between some pair of vertices $s$ and $t$, and then merge these two vertices into one (connecting their adjacency lists). Eventually, after $n-1$ iterations, the graph will be compressed into a single vertex and the process stops. After that, the answer is the minimum among all $n-1$ cuts found. Indeed, at every $i$-th stage, the found minimum cut $C_i$ between the vertices $s_i$ and $t_i$ either turns out to be the desired global minimum cut, or, on the contrary, it is disadvantageous to put $s_i$ and $t_i$ into different sets, so we do not worsen anything by merging these two vertices into one.
 
@@ -34,7 +34,7 @@ If we do not use any sophisticated data structures, the most critical part is fi
 
 If we use **Fibonacci heaps** for finding the vertex with the largest value of $w$ (which allow increasing the value of a key in $O(1)$ amortized and extracting the maximum in $O(\log n)$ amortized), then all operations related to the set $A$ in one phase are performed in $O(m + n \log n)$. The resulting complexity of the algorithm in this case is $O(n m + n^2 \log n)$.
 
-## Proof of the Stoer-Wagner theorem
+## Proof of the Stoer-Wagner theorem {#proof-of-the-stoer-wagner-theorem}
 
 Let us recall the statement of this theorem. If we add all the vertices to the set $A$ one by one, every time adding the vertex most strongly connected to this set, then denote the second-to-last added vertex by $s$ and the last one by $t$. Then the minimum $s$-$t$ cut consists of a single vertex — $t$.
 
@@ -80,7 +80,7 @@ as required.
 
 We have proven the relation $w(v,A_v) \le w(C_v)$, and, as mentioned above, the whole theorem follows from it.
 
-## Implementation
+## Implementation {#implementation}
 
 For the simplest and clearest implementation (with $O(n^3)$ complexity), the graph is represented as an adjacency matrix. The answer is stored in the variables `best_cost` and `best_cut` (the cost of the minimum cut and the vertices contained in it).
 
@@ -132,7 +132,7 @@ void mincut() {
 }
 ```
 
-## Literature
+## Literature {#literature}
 
 - [Mechthild Stoer, Frank Wagner. A Simple Min-Cut Algorithm. Journal of the ACM, 44(4):585-591, 1997](https://dl.acm.org/doi/10.1145/263867.263872)
 - [Kurt Mehlhorn, Christian Uhrig. The minimum cut algorithm of Stoer and Wagner [1995]](https://www.researchgate.net/publication/2483703_The_minimum_cut_algorithm_of_Stoer_and_Wagner)

@@ -1,6 +1,6 @@
-# Qism niqoblarni sanab chiqish
+# Qism niqoblarni sanab chiqish {#submask-enumeration}
 
-## Berilgan niqobning barcha qism niqoblarini sanab chiqish
+## Berilgan niqobning barcha qism niqoblarini sanab chiqish {#enumerating-all-submasks-of-a-given-mask}
 
 $m$ bit niqobi berilgan bo‘lsin. Uning barcha qism niqoblari, ya’ni faqat $m$ niqobida mavjud bitlar o‘rnatilgan $s$ niqoblari bo‘ylab samarali yurish kerak.
 
@@ -39,7 +39,7 @@ Shunday qilib, bu algoritm har bir iteratsiyada atigi ikkita amal bajarib, beril
 
 $s = 0$ bo‘lgan hol alohida e’tibor talab qiladi. $s-1$ bajarilgach, barcha bitlari o‘rnatilgan niqob (-1 ning bitli ifodasi) hosil bo‘ladi, `(s-1) & m` dan keyin esa $s$ yana $m$ ga teng bo‘ladi. Shu sababli $s = 0$ niqobiga ehtiyot bo‘ling: agar sikl nolda tugamasa, algoritm cheksiz siklga kirib qolishi mumkin.
 
-## Barcha niqoblar va ularning qism niqoblari bo‘ylab yurish. Murakkablik $O(3^n)$
+## Barcha niqoblar va ularning qism niqoblari bo‘ylab yurish. Murakkablik $O(3^n)$ {#iterating-through-all-masks-with-their-submasks-complexity-o3n}
 
 Ko‘plab masalalarda, ayniqsa bit niqobi bo‘yicha dinamik dasturlash ishlatiladigan masalalarda, barcha bit niqoblar bo‘ylab va har bir niqob uchun uning barcha qism niqoblari bo‘ylab yurish talab qilinadi:
 
@@ -65,7 +65,7 @@ $$\sum_{k=0}^n \binom{n}{k} \cdot 2^k$$
 
 Bu sonni hisoblash uchun yuqoridagi yig‘indi binom teoremasi bo‘yicha $(1+2)^n$ yoyilmasiga teng ekaniga e’tibor bering. Demak, isbotlash talab qilinganidek, $3^n$ ta kombinatsiya bor.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Atcoder - Close Group](https://atcoder.jp/contests/abc187/tasks/abc187_f)
 * [Codeforces - Nuclear Fusion](http://codeforces.com/problemset/problem/71/E)

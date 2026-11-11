@@ -1,11 +1,11 @@
-# Point location in $O(log n)$
+# Point location in $O(log n)$ {#point-location-in-olog-n}
 
 Consider the following problem: you are given a [planar subdivision](https://en.wikipedia.org/wiki/Planar_straight-line_graph) without any vertices of degree one and zero, and a lot of queries.
 Each query is a point, for which we should determine the face of the subdivision it belongs to.
 We will answer each query in $O(\log n)$ offline. 
 This problem may arise when you need to locate some points in a Voronoi diagram or in some simple polygon.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Firstly, for each query point $p\ (x_0, y_0)$ we want to find such an edge that if the point belongs to any edge, the point lies on the edge we found, otherwise this edge must intersect the line $x = x_0$ at some unique point $(x_0, y)$ where $y < y_0$ and this $y$ is maximum among all such edges.
 The following image shows both cases.
@@ -57,11 +57,11 @@ Let's find such a face for each non-vertical edge.
 Consider a counter-clockwise traversal of each face.
 If during this traversal we increased x-coordinate while passing through the edge, then this face is the face we need to find for this edge.
 
-## Notes
+## Notes {#notes}
 
 Actually, with persistent trees this approach can be used to answer the queries online.
 
-## Implementation
+## Implementation {#implementation}
 
 The following code is implemented for integers, but it can be easily modified to work with doubles (by changing the compare methods and the point type).
 This implementation assumes that the subdivision is correctly stored inside a [DCEL](https://en.wikipedia.org/wiki/Doubly_connected_edge_list) and the outer face is numbered $-1$. 
@@ -286,6 +286,6 @@ vector<pair<int, int>> point_location(DCEL planar, vector<pt> queries)
 }
 ```
 
-## Problems
+## Problems {#problems}
  * [TIMUS 1848 Fly Hunt](http://acm.timus.ru/problem.aspx?space=1&num=1848&locale=en)
  * [UVA 12310 Point Location](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=297&page=show_problem&problem=3732)

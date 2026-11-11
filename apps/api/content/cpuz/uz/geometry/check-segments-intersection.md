@@ -1,18 +1,18 @@
-# Ikki kesma kesishishini tekshirish
+# Ikki kesma kesishishini tekshirish {#check-if-two-segments-intersect}
 
 Sizga $(a, b)$ va $(c, d)$ kesmalar berilgan.
 Ularning kesishishini tekshirish kerak.
 Albatta, ularning kesishish nuqtasini topib, u bo‘sh emasligini tekshirish mumkin, lekin butun koordinatali kesmalar uchun buni butun sonlarda bajarib bo‘lmaydi.
 Bu yerda tasvirlangan yondashuv butun sonlarda ishlay oladi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Avvalo, kesmalar bitta to‘g‘ri chiziqning qismlari bo‘lgan holni ko‘rib chiqamiz.
 Bu holda ularning $Ox$ va $Oy$ o‘qlaridagi proyeksiyalari kesishishini tekshirish yetarli.
 Boshqa holda $a$ va $b$ nuqtalar $(c, d)$ to‘g‘ri chiziqning bir tomonida yotmasligi, $c$ va $d$ nuqtalar esa $(a, b)$ to‘g‘ri chiziqning bir tomonida yotmasligi kerak.
 Buni bir necha vektor ko‘paytma yordamida tekshirish mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Berilgan algoritm butun koordinatali nuqtalar uchun amalga oshirilgan. Albatta, uni `double` bilan ishlaydigan qilib osongina o‘zgartirish mumkin.
 
@@ -44,6 +44,6 @@ bool check_inter(const pt& a, const pt& b, const pt& c, const pt& d) {
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [CSES - Line Segment Intersection](https://cses.fi/problemset/task/2190)

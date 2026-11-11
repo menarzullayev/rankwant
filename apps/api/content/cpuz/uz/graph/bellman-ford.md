@@ -1,4 +1,4 @@
-# Bellman–Ford algoritmi
+# Bellman–Ford algoritmi {#bellman-ford-algorithm}
 
 **Manfiy og‘irlikli qirralar mavjud bo‘lganda bitta boshlang‘ich tugundan eng qisqa yo‘llar**
 
@@ -10,7 +10,7 @@ Algoritm ikki amerikalik olim — Richard Bellman va Lester Ford nomi bilan atal
 
 Bellman esa 1958-yilda aynan eng qisqa yo‘lni topish masalasiga bag‘ishlangan maqola chop etgan va unda algoritmni hozir biz biladigan ko‘rinishda aniq ifodalagan.
 
-## Algoritm tavsifi
+## Algoritm tavsifi {#description-of-the-algorithm}
 
 Grafda manfiy og‘irlikli sikl yo‘q deb faraz qilamiz. Manfiy og‘irlikli sikl mavjud bo‘lgan holat quyida alohida bo‘limda ko‘rib chiqiladi.
 
@@ -20,11 +20,11 @@ Algoritm bir necha fazadan iborat. Har bir fazada grafning barcha qirralari ko�
 
 Grafda manfiy og‘irlikli sikllar yo‘q deb hisoblaganimizda, eng qisqa yo‘llarning barcha uzunliklarini to‘g‘ri hisoblash uchun algoritmning $n-1$ ta fazasi yetarli bo‘lishi ta’kidlanadi. Yetib borib bo‘lmaydigan tugunlar uchun $d[ ]$ masofa $\infty$ ga tengligicha qoladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Ko‘plab boshqa graf algoritmlaridan farqli ravishda, Bellman–Ford algoritmi uchun grafni $n$ ta qirralar ro‘yxati (har bir tugundan chiquvchi qirralar ro‘yxati) yordamida emas, balki barcha qirralarning bitta umumiy ro‘yxati orqali ifodalash qulayroq. Implementatsiyani qirralarni ifodalovchi $\rm edge$ tuzilmasidan boshlaymiz. Algoritm kirishida $n$, $m$ sonlari, qirralarning $e$ ro‘yxati va boshlang‘ich $v$ tugun beriladi. Barcha tugunlar $0$ dan $n - 1$ gacha raqamlangan.
 
-### Eng sodda implementatsiya
+### Eng sodda implementatsiya {#the-simplest-implementation}
 
 $\rm INF$ o‘zgarmasi “cheksizlik” sonini bildiradi — u barcha mumkin bo‘lgan yo‘l uzunliklaridan kattaroq bo‘ladigan qilib tanlanishi kerak.
 
@@ -50,7 +50,7 @@ void solve()
 
 `if (d[e.a] < INF)` tekshiruvi faqat grafda manfiy og‘irlikli qirralar mavjud bo‘lsa kerak bo‘ladi: bunday tekshiruvsiz hali yo‘l topilmagan tugunlardan ham relaksatsiya bajarilib, $\infty - 1$, $\infty - 2$ va hokazo ko‘rinishdagi noto‘g‘ri masofalar hosil bo‘lishi mumkin.
 
-### Yaxshiroq implementatsiya
+### Yaxshiroq implementatsiya {#a-better-implementation}
 
 Bu algoritmni biroz tezlashtirish mumkin: ko‘pincha javobni bir necha fazadayoq olamiz, qolgan fazalarda esa foydali ish bajarilmaydi va barcha qirralarni bekorga ko‘rib chiqamiz. Shuning uchun joriy fazada biror qiymat o‘zgargan-o‘zgarmaganini bildiruvchi bayroq saqlaymiz; agar biror fazada hech narsa o‘zgarmasa, algoritmni to‘xtatish mumkin.
 
@@ -79,7 +79,7 @@ void solve()
 }
 ```
 
-### Yo‘lni tiklash
+### Yo‘lni tiklash {#retrieving-path}
 
 Endi algoritmni nafaqat eng qisqa yo‘llar uzunligini topadigan, balki eng qisqa yo‘llarning o‘zini ham tiklaydigan qilib qanday o‘zgartirish mumkinligini ko‘rib chiqamiz.
 
@@ -125,7 +125,7 @@ void solve()
 
 Bu yerda $t$ tugundan boshlab, ajdodi bo‘lmagan boshlang‘ich tugunga yetguncha ajdodlar bo‘yicha yuramiz va yo‘ldagi barcha tugunlarni $\rm path$ ro‘yxatiga saqlaymiz. Ushbu ro‘yxat $v$ dan $t$ gacha eng qisqa yo‘lni teskari tartibda ifodalaydi, shuning uchun $\rm path$ ustida $\rm reverse()$ funksiyasini chaqirib, keyin yo‘lni chiqaramiz.
 
-## Algoritmning isboti
+## Algoritmning isboti {#the-proof-of-the-algorithm}
 
 Avvalo, yetib borib bo‘lmaydigan barcha $u$ tugunlar uchun algoritm to‘g‘ri ishlashiga e’tibor bering: $d[u]$ belgisi cheksizlikka tengligicha qoladi (chunki Bellman–Ford algoritmi boshlang‘ich $v$ tugundan yetib borish mumkin bo‘lgan barcha tugunlargacha biror yo‘l topadi, qolgan tugunlar uchun esa relaksatsiya hech qachon bajarilmaydi).
 
@@ -141,7 +141,7 @@ Ushbu mulohazani $k$ marta takrorlasak, $k$-faza tugagach $p_k = a$ tugungacha m
 
 Nihoyat, istalgan eng qisqa yo‘l $n - 1$ tadan ortiq qirraga ega bo‘la olmasligini qayd etish kerak. Demak, algoritmning $(n-1)$-fazagacha ishlashi yetarli. Shundan keyin hech qanday relaksatsiya biror tugungacha masofani yaxshilay olmasligi kafolatlanadi.
 
-## Manfiy sikl mavjud bo‘lgan holat
+## Manfiy sikl mavjud bo‘lgan holat {#the-case-of-a-negative-cycle}
 
 Yuqorida hamma joyda grafda manfiy sikl yo‘q deb hisobladik (aniqrog‘i, bizni boshlang‘ich $v$ tugundan yetib borish mumkin bo‘lgan manfiy sikl qiziqtiradi; yetib borib bo‘lmaydigan sikllar yuqoridagi algoritm ishiga ta’sir qilmaydi).
 
@@ -155,7 +155,7 @@ Bundan tashqari, shunday sikl topilsa, Bellman–Ford algoritmini siklni undagi 
 
 Shu tariqa, manfiy siklda yotishi kafolatlangan $y$ tugunga kelamiz. Endi shu tugundan ajdodlar bo‘yicha yurib, yana ayni $y$ tugunga qaytguncha davom etamiz (bu albatta sodir bo‘ladi, chunki manfiy og‘irlikli sikldagi relaksatsiyalar aylana bo‘ylab yuz beradi).
 
-### Implementatsiya:
+### Implementatsiya: {#implementation}
 
 ```cpp
 void solve()
@@ -206,7 +206,7 @@ Yuqoridagi implementatsiya biror boshlang‘ich $v$ tugundan yetib boriladigan m
 
 Bu mavzu haqida batafsil ma’lumot uchun alohida [Grafda manfiy siklni topish](/algorithms/graph/finding-negative-cycle-in-graph) maqolasiga qarang.
 
-## Shortest Path Faster Algorithm (SPFA)
+## Shortest Path Faster Algorithm (SPFA) {#shortest-path-faster-algorithm-spfa}
 
 SPFA — Bellman–Ford algoritmining barcha relaksatsiya urinishlari ham muvaffaqiyatli bo‘lavermasligidan foydalanadigan yaxshilangan ko‘rinishi.
 
@@ -259,7 +259,7 @@ bool spfa(int s, vector<int>& d) {
 }
 ```
 
-## Onlayn hakamlardagi tegishli masalalar
+## Onlayn hakamlardagi tegishli masalalar {#related-problems-in-online-judges}
 
 Bellman–Ford algoritmi yordamida yechilishi mumkin bo‘lgan masalalar ro‘yxati:
 

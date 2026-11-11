@@ -4,7 +4,7 @@ tags:
 e_maxx_link: ternary_search
 ---	
 
-# Ternary Search
+# Ternary Search {#ternary-search}
 
 We are given a function $f(x)$ which is unimodal on an interval $[l, r]$. By unimodal function, we mean one of two behaviors of the function: 
 
@@ -17,7 +17,7 @@ The second scenario is completely symmetrical to the first.
 
 The task is to find the maximum of function $f(x)$ on the interval $[l, r]$.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Consider any 2 points $m_1$, and $m_2$ in this interval: $l < m_1 < m_2 < r$. We evaluate the function at $m_1$ and $m_2$, i.e. find the values of $f(m_1)$ and $f(m_2)$. Now, we get one of three options:
 
@@ -43,7 +43,7 @@ $$m_2 = r - \frac{(r - l)}{3}$$
 
 If $m_1$ and $m_2$ are chosen to be closer to each other, the convergence rate will increase slightly.
 
-### Run time analysis
+### Run time analysis {#run-time-analysis}
 
 $$T(n) = T({2n}/{3}) + O(1) = \Theta(\log n)$$
 
@@ -51,13 +51,13 @@ It can be visualized as follows: every time after evaluating the function at poi
 
 Applying [Master's Theorem](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms)), we get the desired complexity estimate.
 
-### The case of the integer arguments
+### The case of the integer arguments {#the-case-of-the-integer-arguments}
 
 If $f(x)$ takes integer parameter, the interval $[l, r]$ becomes discrete. Since we did not impose any restrictions on the choice of points $m_1$ and $m_2$, the correctness of the algorithm is not affected. $m_1$ and $m_2$ can still be chosen to divide $[l, r]$ into 3 approximately equal parts.
 
 The difference occurs in the stopping criterion of the algorithm. Ternary search will have to stop when $(r - l) < 3$, because in that case we can no longer select $m_1$ and $m_2$ to be different from each other as well as from $l$ and $r$, and this can cause an infinite loop. Once $(r - l) < 3$, the remaining pool of candidate points $(l, l + 1, \ldots, r)$ needs to be checked to find the point which produces the maximum value $f(x)$.
 
-### Golden section search
+### Golden section search {#golden-section-search}
 
 In some cases computing $f(x)$ may be quite slow, but reducing the number of iterations is infeasible due to precision issues. Fortunately, it is possible to compute $f(x)$ only once at each iteration (except the first one).
 
@@ -71,7 +71,7 @@ $\varphi^2 - \varphi - 1 = 0$
 
 This is a well-known golden section equation. Solving it yields $\frac{1 \pm \sqrt{5}}{2}$. Since $\varphi$ must be positive, we obtain $\varphi = \frac{1 + \sqrt{5}}{2}$. By applying the same logic to the case when we set $r = m_2$ and want $m_2'$ to coincide with $m_1$, we obtain the same value of $\varphi$ as well. So, if we choose $m_1 = l + \frac{r - l}{1 + \varphi}$ and $m_2 = r - \frac{r - l}{1 + \varphi}$, on each iteration we can re-use one of the values $f(x)$ computed on the previous iteration.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 double ternary_search(double l, double r) {
@@ -94,7 +94,7 @@ Here `eps` is in fact the absolute error (not taking into account errors due to 
 
 Instead of the criterion `r - l > eps`, we can select a constant number of iterations as a stopping criterion. The number of iterations should be chosen to ensure the required accuracy. Typically, in most programming challenges the error limit is ${10}^{-6}$ and thus 200 - 300 iterations are sufficient. Also, the number of iterations doesn't depend on the values of $l$ and $r$, so the number of iterations corresponds to the required relative error.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [Codeforces - New Bakery](https://codeforces.com/problemset/problem/1978/B)
 - [Codechef - Race time](https://www.codechef.com/problems/AMCS03)

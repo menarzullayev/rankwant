@@ -1,14 +1,14 @@
-# Tekis graf yuzlarini topish
+# Tekis graf yuzlarini topish {#finding-faces-of-a-planar-graph}
 
 $n$ ta tugun va $m$ ta qirraga ega $G$ graf berilgan bo‘lsin. Uni tekislikda ikki qirra faqat umumiy tugunda (agar u mavjud bo‘lsa) kesishadigan qilib chizish mumkin. Bunday graflar **tekis** (planar) deyiladi. Endi bizga tekis graf uning to‘g‘ri chiziqli joylashtirilishi bilan birga berilgan deylik. Bu har bir $v$ tugun uchun unga mos $(x, y)$ nuqta berilganini va barcha qirralar shu nuqtalar orasidagi kesmalar ko‘rinishida kesishmasdan chizilganini bildiradi (bunday joylashtirish doim mavjud). Bu kesmalar tekislikni yuz deb ataladigan bir nechta sohaga bo‘ladi. Yuzlardan aynan bittasi chegaralanmagan. Bu yuz **tashqi** yuz deyiladi, qolganlari esa **ichki** yuzlardir.
 
 Ushbu maqolada tekis grafning ham ichki, ham tashqi yuzlarini topish bilan shug‘ullanamiz. Graf bog‘langan deb faraz qilamiz.
 
-## Tekis graflar haqida ba’zi faktlar
+## Tekis graflar haqida ba’zi faktlar {#some-facts-about-planar-graphs}
 
 Bu bo‘limda tekis graflar haqidagi bir nechta faktni isbotsiz keltiramiz. Isbotlar bilan qiziqqan o‘quvchilar [R. Diestelning «Graph Theory»](https://www.math.uni-hamburg.de/home/diestel/books/graph.theory/preview/Ch4.pdf) kitobiga (shuningdek, shu kitobga asoslangan [planarlik bo‘yicha video darslarga](https://www.youtube.com/@DiestelGraphTheory)) yoki boshqa biror kitobga murojaat qilishi mumkin.
 
-### Eyler teoremasi
+### Eyler teoremasi {#eulers-theorem}
 
 Eyler teoremasiga ko‘ra, $n$ ta tugun, $m$ ta qirra va $f$ ta yuzga ega bog‘langan tekis grafning har qanday to‘g‘ri joylashtirilishi uchun quyidagi tenglik bajariladi:
 
@@ -18,44 +18,44 @@ Umumiyroq holda, $k$ ta bog‘langan komponentli har qanday tekis graf uchun:
 
 $$n - m + f = 1 + k$$
 
-### Tekis grafdagi qirralar soni
+### Tekis grafdagi qirralar soni {#number-of-edges-of-a-planar-graph}
 
 Agar $n \ge 3$ bo‘lsa, $n$ ta tugunli tekis grafdagi qirralarning maksimal soni $3n - 6$ ga teng. Bu songa har bir yuzi uchburchak bilan chegaralangan istalgan bog‘langan tekis grafda erishiladi. Murakkablik nuqtayi nazaridan bu fakt har qanday tekis graf uchun $m = O(n)$ ekanini bildiradi.
 
-### Tekis grafdagi yuzlar soni
+### Tekis grafdagi yuzlar soni {#number-of-faces-of-a-planar-graph}
 
 Yuqoridagi faktning bevosita natijasi sifatida, agar $n \ge 3$ bo‘lsa, $n$ ta tugunli tekis grafdagi yuzlarning maksimal soni $2n - 4$ ga teng.
 
-### Tekis grafdagi minimal tugun darajasi
+### Tekis grafdagi minimal tugun darajasi {#minimum-vertex-degree-in-a-planar-graph}
 
 Har bir tekis grafda darajasi 5 yoki undan kichik bo‘lgan tugun mavjud.
 
-## Algoritm
+## Algoritm {#the-algorithm}
 
 Avval har bir tugun uchun unga qo‘shni qirralarni qutb burchagi bo‘yicha saralaymiz.
 Endi grafni quyidagicha aylanib chiqamiz. Faraz qilaylik, biz $u$ tugunga $(v, u)$ qirra orqali kirdik va $(u, w)$ qirra $u$ ning saralangan qo‘shnilik ro‘yxatida $(v, u)$ dan keyingi qirra bo‘lsin. Unda keyingi tugun $w$ bo‘ladi. Ma’lum bo‘lishicha, agar bu aylanishni biror $(v, u)$ qirradan boshlasak, $(v, u)$ ga qo‘shni yuzlardan aynan birini aylanib chiqamiz; qaysi yuz ekani birinchi qadamimiz $u$ dan $v$ ga yoki $v$ dan $u$ ga qarab qilinishiga bog‘liq.
 
 Endi algoritm ancha ravshan. Grafning barcha qirralari bo‘ylab yurib, oldingi aylanishlarning birortasida ko‘rilmagan har bir qirra uchun aylanishni boshlashimiz kerak. Shu yo‘l bilan har bir yuz aynan bir marta topiladi, har bir qirra esa ikki marta (har bir yo‘nalishda bir martadan) o‘tiladi.
 
-### Keyingi qirrani topish
+### Keyingi qirrani topish {#finding-the-next-edge}
 
 Aylanish vaqtida soat miliga teskari tartibdagi keyingi qirrani topishimiz kerak. Keyingi qirrani topishning eng ravshan usuli — burchak bo‘yicha ikkilik qidiruv. Biroq har bir tugun uchun qo‘shni qirralarning soat miliga teskari tartibi ma’lum bo‘lgani uchun, keyingi qirralarni oldindan hisoblab, xesh jadvalida saqlashimiz mumkin. Agar qirralar burchak bo‘yicha allaqachon saralangan bo‘lsa, bu holda barcha yuzlarni topish murakkabligi chiziqli bo‘ladi.
 
-### Tashqi yuzni topish
+### Tashqi yuzni topish {#finding-the-outer-face}
 
 Algoritm har bir ichki yuzni soat mili bo‘ylab, tashqi yuzni esa soat miliga teskari tartibda aylanib chiqishini ko‘rish qiyin emas, shuning uchun tashqi yuzni har bir yuzning aylanish tartibini tekshirib topish mumkin.
 
-### Murakkablik
+### Murakkablik {#complexity}
 
 Algoritmning murakkabligi saralash sababli $O(m \log m)$ ekani ancha ravshan, $m = O(n)$ bo‘lgani uchun esa u aslida $O(n \log n)$ dir. Yuqorida aytilganidek, saralashsiz murakkablik $O(n)$ bo‘ladi.
 
-## Graf bog‘lanmagan bo‘lsa-chi?
+## Graf bog‘lanmagan bo‘lsa-chi? {#what-if-the-graph-isnt-connected}
 
 Dastlabki qarashda bog‘lanmagan grafning yuzlarini topish unchalik qiyin emasdek tuyulishi mumkin, chunki har bir bog‘langan komponent uchun xuddi shu algoritmni ishga tushirish mumkin. Biroq komponentlar bir-birining ichida joylashgan bo‘lishi va **teshiklar** hosil qilishi mumkin (quyidagi rasmga qarang). Bu holda biror komponentning ichki yuzi boshqa komponentlarning tashqi yuziga aylanadi va murakkab, bog‘lanmagan chegaraga ega bo‘ladi. Bunday holatlar bilan ishlash ancha qiyin; mumkin bo‘lgan yondashuvlardan biri — ichma-ich joylashgan komponentlarni [nuqtaning joylashuvini aniqlash](/algorithms/geometry/point-location) algoritmlari yordamida aniqlash.
 
   ![Teshikli tekis graf](/algorithms-media/geometry/planar_hole.png)
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyidagi implementatsiya har bir yuz uchun tugunlar vektorini qaytaradi, tashqi yuz birinchi turadi.
 Ichki yuzlar soat miliga teskari tartibda, tashqi yuz esa soat mili bo‘ylab tartibda qaytariladi.
@@ -145,13 +145,13 @@ std::vector<std::vector<size_t>> find_faces(std::vector<Point> vertices, std::ve
 }
 ```
 
-## Kesmalardan tekis graf qurish
+## Kesmalardan tekis graf qurish {#building-planar-graph-from-line-segments}
 
 Ba’zan graf sizga aniq berilmaydi, balki tekislikdagi kesmalar to‘plami sifatida beriladi va haqiqiy graf shu kesmalarning kesishishidan hosil bo‘ladi (quyidagi rasmga qarang). Bu holda grafni o‘zingiz qurishingiz kerak. Buning eng oson yo‘li quyidagicha. Biror kesmani tanlaymiz va uni qolgan barcha kesmalar bilan kesishtiramiz. So‘ng barcha kesishish nuqtalarini kesmaning ikki uchi bilan birga leksikografik tartibda saralab, grafga tugun sifatida qo‘shamiz. Shuningdek, leksikografik tartibda har ikki qo‘shni tugunni qirra bilan bog‘laymiz. Bu amalni barcha kesmalar uchun bajargach, graf hosil bo‘ladi. Albatta, ikkita bir xil kesishish nuqtasi doim bitta tugunga mos kelishini ta’minlashimiz kerak. Buning eng oson yo‘li — nuqtalarni koordinatalari bo‘yicha map da saqlash va koordinatalari kichik songa (masalan, $10^{-9}$ dan kam) farq qiladigan nuqtalarni teng deb hisoblash. Bu algoritm $O(n^2 \log n)$ vaqtda ishlaydi.
 
   ![Bilvosita berilgan graf](/algorithms-media/geometry/planar_implicit.png)
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 using dbl = long double;
@@ -343,7 +343,7 @@ std::pair<std::vector<Point>, std::vector<std::vector<size_t>>> build_graph(std:
 }
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
  * [TIMUS 1664 Pipeline Transportation](https://acm.timus.ru/problem.aspx?space=1&num=1664)
  * [TIMUS 1681 Brother Bear's Garden](https://acm.timus.ru/problem.aspx?space=1&num=1681)

@@ -1,4 +1,4 @@
-# Z-function and its calculation
+# Z-function and its calculation {#z-function-and-its-calculation}
 
 Suppose we are given a string $s$ of length $n$. The **Z-function** for this string is an array of length $n$ where the $i$-th element is equal to the greatest number of characters starting from the position $i$ that coincide with the first characters of $s$.
 
@@ -10,7 +10,7 @@ The first element of Z-function, $z[0]$, is generally not well defined. In this 
 
 This article presents an algorithm for calculating the Z-function in $O(n)$ time, as well as various of its applications.
 
-## Examples
+## Examples {#examples}
 
 For example, here are the values of the Z-function computed for different strings:
 
@@ -18,7 +18,7 @@ For example, here are the values of the Z-function computed for different string
 * "aaabaab" - $[0, 2, 1, 0, 2, 1, 0]$
 * "abacaba" - $[0, 0, 1, 0, 3, 0, 1]$
 
-## Trivial algorithm
+## Trivial algorithm {#trivial-algorithm}
 
 Formal definition can be represented in the following elementary $O(n^2)$ implementation.
 
@@ -39,7 +39,7 @@ We just iterate through every position $i$ and update $z[i]$ for each one of the
 
 Of course, this is not an efficient implementation. We will now show the construction of an efficient implementation.
 
-## Efficient algorithm to compute the Z-function
+## Efficient algorithm to compute the Z-function {#efficient-algorithm-to-compute-the-z-function}
 
 To obtain an efficient algorithm we will compute the values of $z[i]$ in turn from $i = 1$ to $n - 1$ but at the same time, when computing a new value, we'll try to make the best use possible of the previously computed values.
 
@@ -77,7 +77,7 @@ Thus, the whole algorithm is split in two cases, which differ only in **the init
 
 The algorithm turns out to be very simple. Despite the fact that on each iteration the trivial algorithm is run, we have made significant progress, having an algorithm that runs in linear time. Later on we will prove that the running time is linear.
 
-## Implementation
+## Implementation {#implementation}
 
 Implementation turns out to be rather concise:
 
@@ -102,7 +102,7 @@ vector<int> z_function(string s) {
 }
 ```
 
-### Comments on this implementation
+### Comments on this implementation {#comments-on-this-implementation}
 
 The whole solution is given as a function which returns an array of length $n$ -- the Z-function of $s$.
 
@@ -114,7 +114,7 @@ Thereafter, the trivial algorithm attempts to increase the value of $z[i]$ as mu
 
 In the end, if it's required (that is, if $i + z[i] > r$), we update the rightmost match segment $[l, r)$.
 
-## Asymptotic behavior of the algorithm
+## Asymptotic behavior of the algorithm {#asymptotic-behavior-of-the-algorithm}
 
 We will prove that the above algorithm has a running time that is linear in the length of the string -- thus, it's $O(n)$.
 
@@ -156,13 +156,13 @@ So, we have proved that each iteration of the inner loop make the $r$ pointer ad
 
 As the rest of the algorithm obviously works in $O(n)$, we have proved that the whole algorithm for computing Z-functions runs in linear time.
 
-## Applications
+## Applications {#applications}
 
 We will now consider some uses of Z-functions for specific tasks.
 
 These applications will be largely similar to applications of [prefix function](/algorithms/string/prefix-function).
 
-### Search the substring
+### Search the substring {#search-the-substring}
 
 To avoid confusion, we call $t$ the **string of text**, and $p$ the **pattern**. The problem is: find all occurrences of the pattern $p$ inside the text $t$.
 
@@ -172,7 +172,7 @@ Compute the Z-function for $s$. Then, for any $i$ in the interval $[0; \; \opera
 
 The running time (and memory consumption) is $O(\operatorname{length}(t) + \operatorname{length}(p))$.
 
-### Number of distinct substrings in a string
+### Number of distinct substrings in a string {#number-of-distinct-substrings-in-a-string}
 
 Given a string $s$ of length $n$, count the number of distinct substrings of $s$.
 
@@ -188,7 +188,7 @@ Consequently, the running time of this solution is $O(n^2)$ for a string of leng
 
 It's worth noting that in exactly the same way we can recalculate, still in $O(n)$ time, the number of distinct substrings when appending a character in the beginning of the string, as well as when removing it (from the end or the beginning).
 
-### String compression
+### String compression {#string-compression}
 
 Given a string $s$ of length $n$. Find its shortest "compressed" representation, that is: find a string $t$ of shortest length such that $s$ can be represented as a concatenation of one or more copies of $t$.
 
@@ -196,7 +196,7 @@ A solution is: compute the Z-function of $s$, loop through all $i$ such that $i$
 
 The proof for this fact is the same as the solution which uses the [prefix function](/algorithms/string/prefix-function).
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [CSES - Finding Borders](https://cses.fi/problemset/task/1732)
 * [eolymp - Blocks of string](https://www.eolymp.com/en/problems/1309)

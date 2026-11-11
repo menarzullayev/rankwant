@@ -1,14 +1,14 @@
-# Grafda bog‘langan komponentlarni topish
+# Grafda bog‘langan komponentlarni topish {#search-for-connected-components-in-a-graph}
 
 $n$ ta tugun va $m$ ta qirraga ega yo‘naltirilmagan $G$ graf berilgan. Undagi barcha bog‘langan komponentlarni, ya’ni har bir guruh ichida istalgan tugundan istalgan boshqa tugunga yetib borish mumkin bo‘lgan, turli guruhlar orasida esa hech qanday yo‘l mavjud bo‘lmagan tugunlar guruhlarini topish talab etiladi.
 
-## Masalani yechish algoritmi
+## Masalani yechish algoritmi {#an-algorithm-for-solving-the-problem}
 
 * Masalani yechish uchun chuqurlik bo‘yicha qidiruv yoki kenglik bo‘yicha qidiruvdan foydalanish mumkin.
 * Aslida DFSning bir qator ishga tushirishlarini bajaramiz. Birinchi ishga tushirish birinchi tugundan boshlanadi va birinchi bog‘langan komponentdagi barcha tugunlar aylanib chiqiladi, ya’ni topiladi. Keyin qolgan tugunlar orasidan hali tashrif buyurilmagan birinchi tugunni topib, undan chuqurlik bo‘yicha qidiruvni boshlaymiz va shu tariqa ikkinchi bog‘langan komponentni topamiz. Barcha tugunlarga tashrif buyurilguncha shu jarayon davom etadi.
 * Algoritmning umumiy asimptotik ishlash vaqti $O(n+m)$. Haqiqatan, algoritm bir tugunni ikki marta qayta ishlamaydi; demak har bir qirra aynan ikki marta — qirraning har bir uchidan bittadan — ko‘riladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 int n;
@@ -44,7 +44,7 @@ void find_comps() {
 * Graf qo‘shnilik ro‘yxati ko‘rinishida saqlanadi, ya’ni `adj[v]` da `v` tugundan qirra boradigan tugunlar ro‘yxati turadi.
 * `comp` vektori joriy bog‘langan komponentdagi tugunlar ro‘yxatini saqlaydi.
 
-## Kodning iterativ implementatsiyasi
+## Kodning iterativ implementatsiyasi {#iterative-implementation-of-the-code}
 
 Juda chuqur rekursiv funksiyalar odatda muammo tug‘diradi. Har bir rekursiv chaqiruv stekda oz miqdorda xotira talab qiladi, dasturlarda esa odatda stek uchun ajratilgan joy cheklangan. Shu sababli millionlab tugunli bog‘langan grafda rekursiv DFS bajarganda stek toshib ketishi mumkin.
 
@@ -88,7 +88,7 @@ void find_comps() {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [SPOJ: CT23E](http://www.spoj.com/problems/CT23E/)
 - [CODECHEF: GERALD07](https://www.codechef.com/MARCH14/problems/GERALD07)

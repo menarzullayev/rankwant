@@ -1,10 +1,10 @@
-# Kirchhoff teoremasi: ostov daraxtlar sonini topish
+# Kirchhoff teoremasi: ostov daraxtlar sonini topish {#kirchhoffs-theorem-finding-the-number-of-spanning-trees}
 
 Masala: sizga qo‘shnilik matritsasi yordamida ifodalangan bog‘langan yo‘naltirilmagan graf (unda parallel qirralar bo‘lishi mumkin) berilgan. Ushbu grafning turli ostov daraxtlari sonini toping.
 
 Quyidagi formula Kirchhoff tomonidan 1847-yilda isbotlangan.
 
-## Kirchhoffning matritsaviy daraxt teoremasi
+## Kirchhoffning matritsaviy daraxt teoremasi {#kirchhoffs-matrix-tree-theorem}
 
 $A$ grafning qo‘shnilik matritsasi bo‘lsin: $A_{u,v}$ — $u$ va $v$ orasidagi qirralar soni.
 
@@ -22,7 +22,7 @@ Matritsa determinantini [Gauss usuli](/algorithms/linear-algebra/determinant-gau
 
 Bu teoremaning isboti ancha murakkab va bu yerda keltirilmaydi; isbotning umumiy ko‘rinishi hamda parallel qirralarsiz va yo‘naltirilgan graflar uchun teorema variantlari haqida [Wikipedia](https://en.wikipedia.org/wiki/Kirchhoff%27s_theorem)dan o‘qishingiz mumkin.
 
-## Kirchhoffning elektr zanjiri qonunlari bilan bog‘lanish
+## Kirchhoffning elektr zanjiri qonunlari bilan bog‘lanish {#relation-to-kirchhoffs-circuit-laws}
 
 Kirchhoffning matritsaviy daraxt teoremasi va elektr zanjirlari uchun Kirchhoff qonunlari o‘zaro chiroyli tarzda bog‘langan. Om qonuni va Kirchhoffning birinchi qonuni yordamida zanjirning $i$ va $j$ nuqtalari orasidagi $R_{ij}$ qarshilik quyidagiga tengligini ko‘rsatish mumkin:
 
@@ -34,7 +34,7 @@ $T^j$ — $j$-satr va $j$-ustuni olib tashlangan matritsa, $T^{(i,j)}$ esa $i$ v
 
 Kirchhoff teoremasi ushbu formulaga geometrik ma’no beradi.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [CODECHEF: Roads in Stars](https://www.codechef.com/problems/STARROAD)
 - [SPOJ: Maze](http://www.spoj.com/problems/KPMAZE/)

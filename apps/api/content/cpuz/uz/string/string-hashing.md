@@ -1,4 +1,4 @@
-# Satrlarni xeshlash
+# Satrlarni xeshlash {#string-hashing}
 
 Xeshlash algoritmlari juda ko‘p masalalarni yechishda foydali.
 Biz satrlarni samarali taqqoslash masalasini yechmoqchimiz.
@@ -24,7 +24,7 @@ Xeshlashdan foydalanish 100% deterministik to‘g‘ri natijani kafolatlamaydi, 
 Biroq masalalarning juda katta qismida buni e’tiborsiz qoldirish mumkin, chunki turli satrlar xeshlarining kolliziya ehtimoli juda kichik.
 Ushbu maqolada kolliziya ehtimolini qanday juda past saqlash mumkinligini ham ko‘rib chiqamiz.
 
-## Satr xeshini hisoblash
+## Satr xeshini hisoblash {#calculation-of-the-hash-of-a-string}
 
 Uzunligi $n$ bo‘lgan $s$ satr xeshini aniqlashning yaxshi va keng tarqalgan usuli quyidagicha:
 
@@ -67,9 +67,9 @@ long long compute_hash(string const& s) {
 
 $p$ darajalarini oldindan hisoblash unumdorlikni oshirishi mumkin.
 
-## Misol masalalar
+## Misol masalalar {#example-tasks}
 
-### Satrlar massividagi takroriy satrlarni topish
+### Satrlar massividagi takroriy satrlarni topish {#search-for-duplicate-strings-in-an-array-of-strings}
 
 Masala: har birining uzunligi $m$ dan oshmaydigan $n$ ta $s_i$ satr berilgan. Barcha takroriy satrlarni topish va ularni guruhlarga ajratish kerak.
 Satrlarni saralashga asoslangan oddiy algoritmning vaqt murakkabligi $O(n m \log n)$ bo‘ladi: saralash $O(n \log n)$ ta taqqoslash talab qiladi, har bir taqqoslash esa $O(m)$ vaqt oladi.
@@ -95,7 +95,7 @@ vector<vector<int>> group_identical_strings(vector<string> const& s) {
 }
 ```
 
-### Berilgan satr qism satrlarining xeshini tez hisoblash
+### Berilgan satr qism satrlarining xeshini tez hisoblash {#fast-hash-calculation-of-substrings-of-given-string}
 
 Masala: $s$ satr hamda $i$ va $j$ indekslar berilgan. $s[i \dots j]$ qism satrining xeshini topish kerak.
 
@@ -121,7 +121,7 @@ Faraz qilaylik, ikkita qism satr xeshidan biri $p^i$ ga, ikkinchisi $p^j$ ga ko�
 Agar $i < j$ bo‘lsa, birinchi xeshni $p^{j-i}$ ga; aks holda ikkinchi xeshni $p^{i-j}$ ga ko‘paytiramiz.
 Natijada ikkala xesh ham $p$ ning bir xil darajasiga — $i$ va $j$ ning maksimumiga — ko‘paytirilgan bo‘ladi va ularni hech qanday bo‘lishsiz oson taqqoslash mumkin.
 
-## Xeshlashning qo‘llanishlari
+## Xeshlashning qo‘llanishlari {#applications-of-hashing}
 
 Xeshlashning odatiy qo‘llanishlari:
 
@@ -129,7 +129,7 @@ Xeshlashning odatiy qo‘llanishlari:
 * satrdagi turli qism satrlar sonini $O(n^2)$ vaqtda hisoblash (pastga qarang);
 * palindrom qism satrlar sonini hisoblash.
 
-### Satrdagi turli qism satrlar sonini aniqlash
+### Satrdagi turli qism satrlar sonini aniqlash {#determine-the-number-of-different-substrings-in-a-string}
 
 Masala: faqat kichik ingliz harflaridan iborat, uzunligi $n$ bo‘lgan $s$ satr berilgan. Undagi turli qism satrlar sonini topish kerak.
 Bu masalani yechish uchun qism satr uzunligi $l = 1 \dots n$ bo‘yicha yuramiz.
@@ -170,7 +170,7 @@ int count_unique_substrings(string const& s) {
 Bu masala uchun $O(n^2)$ eng yaxshi mumkin bo‘lgan murakkablik emasligini e’tiborga oling.
 $O(n \log n)$ yechim [suffiks massivlari](/algorithms/string/suffix-array) haqidagi maqolada tasvirlangan; [suffiks daraxti](/algorithms/string/suffix-tree-ukkonen) yoki [suffiks avtomati](/algorithms/string/suffix-automaton) yordamida esa uni $O(n)$ vaqtda ham hisoblash mumkin.
 
-## Kolliziya ehtimolini kamaytirish
+## Kolliziya ehtimolini kamaytirish {#improve-no-collision-probability}
 
 Ko‘pincha yuqoridagi polinomial xeshning o‘zi yetarli bo‘ladi va testlarda kolliziya yuz bermaydi.
 Kolliziya ehtimoli atigi $\approx \frac{1}{m}$ ekanini eslang.
@@ -186,7 +186,7 @@ Har bir satr uchun ikkita turli xeshni (ikki xil $p$ va/yoki ikki xil $m$ bilan)
 Agar ikkala xesh funksiyada ham $m$ taxminan $10^9$ bo‘lsa, bu deyarli $m \approx 10^{18}$ bo‘lgan bitta xesh funksiyaga teng.
 $10^6$ ta satrni o‘zaro taqqoslaganda, kamida bitta kolliziya ehtimoli endi $\approx 10^{-6}$ gacha kamayadi.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [Good Substrings - Codeforces](https://codeforces.com/contest/271/problem/D)
 * [A Needle in the Haystack - SPOJ](http://www.spoj.com/problems/NHAY/)

@@ -1,4 +1,4 @@
-# Chuqurlik bo‘yicha qidiruv (DFS)
+# Chuqurlik bo‘yicha qidiruv (DFS) {#depth-first-search}
 
 Chuqurlik bo‘yicha qidiruv graflarning asosiy algoritmlaridan biridir.
 
@@ -6,13 +6,13 @@ Chuqurlik bo‘yicha qidiruv $u$ manba tugundan har bir tugungacha grafdagi leks
 
 Algoritm $O(m+n)$ vaqtda ishlaydi; bu yerda $n$ — tugunlar, $m$ esa qirralar soni.
 
-## Algoritm tavsifi
+## Algoritm tavsifi {#description-of-the-algorithm}
 
 DFS g‘oyasi graf ichiga imkon qadar chuqur kirish va tashrif buyurilmagan qo‘shnisi qolmagan tugunga yetganda orqaga qaytishdan iborat.
 
 Algoritmni rekursiv tarzda tasvirlash va amalga oshirish juda oson. Qidiruvni bitta tugundan boshlaymiz. Tugunga tashrif buyurgach, ilgari tashrif buyurilmagan har bir qo‘shni tugun uchun yana DFS bajariladi. Shu tariqa boshlang‘ich tugundan yetib borish mumkin bo‘lgan barcha tugunlarga tashrif buyuramiz. Tafsilotlar implementatsiyada ko‘rsatilgan.
 
-## Chuqurlik bo‘yicha qidiruvning qo‘llanishlari
+## Chuqurlik bo‘yicha qidiruvning qo‘llanishlari {#applications-of-depth-first-search}
 
 * $u$ manba tugundan grafning barcha tugunlarigacha biror yo‘lni topish.
 * $u$ manbadan barcha tugunlargacha leksikografik jihatdan birinchi yo‘lni topish.
@@ -23,7 +23,7 @@ Algoritmni rekursiv tarzda tasvirlash va amalga oshirish juda oson. Qidiruvni bi
 * Yo‘naltirilgan grafning kuchli bog‘langan komponentlarini topish. Avval grafni topologik tartiblang. Keyin grafning transpozitsiyasini tuzing va topologik tartib belgilagan ketma-ketlikda yana bir chuqurlik bo‘yicha qidiruvlar seriyasini bajaring. Har bir DFS chaqiruvi hosil qilgan komponent bitta kuchli bog‘langan komponent bo‘ladi.
 * Yo‘naltirilmagan grafdagi ko‘priklarni topish. Avval chuqurlik bo‘yicha qidiruvlar seriyasini bajarib, har bir qirrani undan o‘tgan yo‘nalishimiz bo‘yicha yo‘naltirish orqali berilgan grafni yo‘naltirilgan grafga aylantiring. Keyin shu yo‘naltirilgan grafning kuchli bog‘langan komponentlarini toping. Uchlari turli kuchli bog‘langan komponentlarga tegishli qirralar ko‘prik bo‘ladi.
 
-## Graf qirralarini tasniflash
+## Graf qirralarini tasniflash {#classification-of-edges-of-a-graph}
 
 $G$ graf qirralarini $(u,v)$ qirraning uchlari $u$ va $v$ ning kirish hamda chiqish vaqtlaridan foydalanib tasniflash mumkin. Bunday tasnif ko‘pincha [ko‘priklarni topish](/algorithms/graph/bridge-searching) va [ajratuvchi tugunlarni topish](/algorithms/graph/cutpoints) kabi masalalarda ishlatiladi.
 
@@ -48,7 +48,7 @@ $(u,v)$ — $G$ dagi ixtiyoriy qirra bo‘lsin va umumiylikni yo‘qotmagan hold
 
 Qirrani qayta ishlashning faqat shu ikki usuli mavjud va ikkala holatning tasnifi yuqorida berildi. Shunday qilib, yo‘naltirilmagan grafda DFS uchratgan har bir qirra daraxt qirrasi yoki orqa qirra bo‘ladi; oldinga va ko‘ndalang qirralar faqat yo‘naltirilgan graflarda mavjud. Teorema isbotlandi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 vector<vector<int>> adj; // graph represented as an adjacency list
@@ -89,7 +89,7 @@ void dfs(int v) {
 }
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [SPOJ: ABCPATH](http://www.spoj.com/problems/ABCPATH/)
 * [SPOJ: EAGLE1](http://www.spoj.com/problems/EAGLE1/)

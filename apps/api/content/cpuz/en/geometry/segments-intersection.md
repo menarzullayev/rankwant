@@ -1,9 +1,9 @@
-# Finding intersection of two segments
+# Finding intersection of two segments {#finding-intersection-of-two-segments}
 
 You are given two segments AB and CD, described as pairs of their endpoints. Each segment can be a single point if its endpoints are the same. 
 You have to find the intersection of these segments, which can be empty (if the segments don't intersect), a single point or a segment (if the given segments overlap).
 
-## Solution
+## Solution {#solution}
 
 We can find the intersection point of segments in the same way as [the intersection of lines](/algorithms/geometry/lines-intersection): 
 reconstruct line equations from the segments' endpoints and check whether they are parallel. 
@@ -23,7 +23,7 @@ If both segments are single points, these points have to be identical, and it ma
 In the beginning of the algorithm let's add a bounding box check - it is necessary for the case when the segments belong to the same line, 
 and (being a lightweight check) it allows the algorithm to work faster on average on random tests.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is the implementation, including all helper functions for lines and segments processing.
 

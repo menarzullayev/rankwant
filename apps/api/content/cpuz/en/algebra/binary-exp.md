@@ -1,4 +1,4 @@
-# Binary Exponentiation
+# Binary Exponentiation {#binary-exponentiation}
 
 Binary exponentiation (also known as exponentiation by squaring) is a trick which allows to calculate $a^n$, where $n$ is a non-negative integer, using only $O(\log n)$ multiplications (instead of $O(n)$ multiplications required by the naive approach).
 
@@ -10,7 +10,7 @@ $$(X \cdot Y) \cdot Z = X \cdot (Y \cdot Z)$$
 Most obviously this applies to modular multiplication, to multiplication of matrices and
 to other problems which we will discuss below.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Raising $a$ to the power of $n$ is expressed naively as multiplication by $a$ done $n - 1$ times:
 $a^{n} = a \cdot a \cdot \ldots \cdot a$. However, this approach is not practical for large $a$ or $n$.
@@ -48,7 +48,7 @@ $$a^n = \begin{cases}
 \left(a^{\frac{n - 1}{2}}\right)^2 \cdot a &\text{if } n > 0 \text{ and } n \text{ odd}\\
 \end{cases}$$
 
-## Implementation
+## Implementation {#implementation}
 
 First the recursive approach, which is a direct translation of the recursive formula:
 
@@ -81,9 +81,9 @@ long long binpow(long long a, long long b) {
 }
 ```
 
-## Applications
+## Applications {#applications}
 
-### Effective computation of large exponents modulo a number
+### Effective computation of large exponents modulo a number {#effective-computation-of-large-exponents-modulo-a-number}
 
 **Problem:**
 Compute $x^n \bmod m$.
@@ -111,7 +111,7 @@ It's possible to speed this algorithm for large $b >> m$.
 If $m$ is a positive number and $\gcd(x, m) = 1$, then  $x^n \equiv x^{n \bmod (m-1)} \pmod{m}$ for prime $m$, and $x^n \equiv x^{n \bmod{\phi(m)}} \pmod{m}$ for composite $m$.
 This follows directly from Fermat's little theorem and Euler's theorem, see the article about [Modular Inverses](/algorithms/algebra/module-inverse#fermat-euler) for more details.
 
-### Effective computation of Fibonacci numbers
+### Effective computation of Fibonacci numbers {#effective-computation-of-fibonacci-numbers}
 
 **Problem:** Compute $n$-th Fibonacci number $F_n$.
 
@@ -123,7 +123,7 @@ the transition from $F_i$ and $F_{i+1}$ to $F_{i+1}$ and $F_{i+2}$.
 For example, applying this transformation to the pair $F_0$ and $F_1$ would change it into $F_1$ and $F_2$.
 Therefore, we can raise this transformation matrix to the $n$-th power to find $F_n$ in time complexity $O(\log n)$.
 
-### Applying a permutation $k$ times
+### Applying a permutation $k$ times {#applying-a-permutation-k-times}
 
 **Problem:** You are given a sequence of length $n$. Apply to it a given permutation $k$ times.
 
@@ -152,7 +152,7 @@ vector<int> permute(vector<int> sequence, vector<int> permutation, long long k) 
 
 **Note:** This task can be solved more efficiently in linear time by building the permutation graph and considering each cycle independently. You could then compute $k$ modulo the size of the cycle and find the final position for each number which is part of this cycle.
 
-### Fast application of a set of geometric operations to a set of points
+### Fast application of a set of geometric operations to a set of points {#fast-application-of-a-set-of-geometric-operations-to-a-set-of-points}
 
 **Problem:** Given $n$ points $p_i$, apply $m$ transformations to each of these points. Each transformation can be a shift, a scaling or a rotation around a given axis by a given angle. There is also a "loop" operation which applies a given list of transformations $k$ times ("loop" operations can be nested). You should apply all transformations faster than $O(n \cdot length)$, where $length$ is the total number of transformations to be applied (after unrolling "loop" operations).
 
@@ -215,7 +215,7 @@ $$\begin{pmatrix}
 
 Now, once every transformation is described as a matrix, the sequence of transformations can be described as a product of these matrices, and a "loop" of $k$ repetitions can be described as the matrix raised to the power of $k$ (which can be calculated using binary exponentiation in $O(\log{k})$). This way, the matrix which represents all transformations can be calculated first in $O(m \log{k})$, and then it can be applied to each of the $n$ points in $O(n)$ for a total complexity of $O(n + m \log{k})$.
 
-### Number of paths of length $k$ in a graph
+### Number of paths of length $k$ in a graph {#number-of-paths-of-length-k-in-a-graph}
 
 **Problem:** Given a directed unweighted graph of $n$ vertices, find the number of paths of length $k$ from any vertex $u$ to any other vertex $v$.
 
@@ -226,7 +226,7 @@ Instead of the usual operation of multiplying two matrices, a modified one shoul
 instead of multiplication, both values are added, and instead of a summation, a minimum is taken.
 That is: $result_{ij} = \min\limits_{1\ \leq\ k\ \leq\ n}(a_{ik} + b_{kj})$.
 
-### Variation of binary exponentiation: multiplying two numbers modulo $m$
+### Variation of binary exponentiation: multiplying two numbers modulo $m$ {#variation-of-binary-exponentiation-multiplying-two-numbers-modulo-m}
 
 **Problem:** Multiply two numbers $a$ and $b$ modulo $m$. $a$ and $b$ fit in the built-in data types, but their product is too big to fit in a 64-bit integer. The idea is to compute $a \cdot b \pmod m$ without using bignum arithmetics.
 
@@ -240,7 +240,7 @@ $$a \cdot b = \begin{cases}
 
 **Note:** You can solve this task in a different way by using floating-point operations. First compute the expression $\frac{a \cdot b}{m}$ using floating-point numbers and cast it to an unsigned integer $q$. Subtract $q \cdot m$ from $a \cdot b$ using unsigned integer arithmetics and take it modulo $m$ to find the answer. This solution looks rather unreliable, but it is very fast, and very easy to implement. See [here](https://cs.stackexchange.com/questions/77016/modular-multiplication) for more information.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [UVa 1230 - MODEX](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=3671)
 * [UVa 374 - Big Mod](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=310)

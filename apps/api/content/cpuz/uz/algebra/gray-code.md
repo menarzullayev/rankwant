@@ -1,4 +1,4 @@
-# Gray kodi
+# Gray kodi {#gray-code}
 
 Gray kodi — ketma-ket ikkita qiymat faqat bitta bitda farq qiladigan ikkilik sanoq tizimi.
 
@@ -7,7 +7,7 @@ Masalan, $G(3) = (010)_2$ va $G(4) = (110)_2$ aynan bitta — eng chapdagi bitda
 
 Bu kodni Frank Gray 1953-yilda ixtiro qilgan.
 
-## Gray kodini topish
+## Gray kodini topish {#finding-gray-code}
 
 $n$ sonining bitlari va $G(n)$ sonining bitlarini ko‘rib chiqamiz. $G(n)$ ning $i$-biti faqat $n$ ning $i$-biti 1 va $i + 1$-biti 0 bo‘lganda yoki aksincha ($i$-biti 0 va $i + 1$-biti 1 bo‘lganda) 1 ga teng bo‘lishiga e’tibor bering. Shunday qilib, $G(n) = n \oplus (n >> 1)$:
 
@@ -17,7 +17,7 @@ int g (int n) {
 }
 ```
 
-## Gray kodining teskarisini topish
+## Gray kodining teskarisini topish {#finding-inverse-gray-code}
 
 Gray kodi $g$ berilgan bo‘lsa, dastlabki $n$ sonini tiklash kerak.
 
@@ -42,7 +42,7 @@ int rev_g (int g) {
 }
 ```
 
-## Amaliy qo‘llanishlar
+## Amaliy qo‘llanishlar {#practical-applications}
 Gray kodlarining ba’zan ancha kutilmagan foydali qo‘llanishlari bor:
 
 *   $n$ bitli Gray kodi giperkubda Hamilton siklini hosil qiladi; bunda har bir bit bitta o‘lchamga mos keladi.
@@ -61,6 +61,6 @@ Gray kodlarining ba’zan ancha kutilmagan foydali qo‘llanishlari bor:
     agar $n$ juft bo‘lsa esa: $f \to r \to t \to f \to r \to t \to ...$.
 *   Gray kodlari genetik algoritmlar nazariyasida ham ishlatiladi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 *   [Gray Code &nbsp;&nbsp;&nbsp;&nbsp; [Qiyinlik: oson]](https://cses.fi/problemset/task/2205)
 *   [SGU #249 **"Matrix"** &nbsp;&nbsp;&nbsp;&nbsp; [Qiyinlik: o‘rta]](http://codeforces.com/problemsets/acmsguru/problem/99999/249)

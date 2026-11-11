@@ -1,10 +1,10 @@
-# Dijkstra algoritmi
+# Dijkstra algoritmi {#dijkstra-algorithm}
 
 $n$ ta tugun va $m$ ta qirraga ega vaznli yo‘naltirilgan yoki yo‘naltirilmagan graf berilgan. Barcha qirralarning vaznlari manfiy emas. Shuningdek, $s$ boshlang‘ich tugun berilgan. Ushbu maqolada $s$ boshlang‘ich tugundan boshqa barcha tugunlargacha bo‘lgan eng qisqa yo‘llarning uzunliklarini topish va eng qisqa yo‘llarning o‘zini chiqarish masalasi ko‘rib chiqiladi.
 
 Bu masala **bitta manbadan eng qisqa yo‘llar masalasi** deb ham ataladi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Quyidagi algoritmni gollandiyalik kompyuter olimi Edsger W. Dijkstra 1959-yilda bayon qilgan.
 
@@ -26,7 +26,7 @@ Barcha bunday qirralar ko‘rilgach, joriy iteratsiya tugaydi. $n$ ta iteratsiya
 
 Agar ayrim tugunlarga $s$ dan yetib bo‘lmasa, ular uchun $d[v]$ qiymat cheksizligicha qoladi. Algoritmning oxirgi iteratsiyalari bunday tugunlarni tanlashi mumkin, ammo ular uchun foydali ish bajarilmaydi. Shu sababli tanlangan tugungacha masofa cheksiz bo‘lishi bilanoq algoritmni to‘xtatish mumkin.
 
-### Eng qisqa yo‘llarni tiklash
+### Eng qisqa yo‘llarni tiklash {#restoring-shortest-paths}
 
 Ko‘pincha faqat eng qisqa yo‘l uzunligi emas, yo‘lning o‘zi ham kerak bo‘ladi. $s$ dan istalgan tugungacha eng qisqa yo‘lni tiklash uchun yetarli ma’lumotni qanday saqlashni ko‘ramiz. $p[]$ ajdodlar massivini yuritamiz; har bir $v\ne s$ uchun $p[v]$ — $s$ dan $v$ gacha bo‘lgan eng qisqa yo‘ldagi oxiridan oldingi tugun.
 
@@ -40,7 +40,7 @@ Ajdodlar massivini qurish juda oson: har bir muvaffaqiyatli relaksatsiyada, ya�
 
 $$p[\text{to}]=v.$$
 
-## Isbot
+## Isbot {#proof}
 
 Dijkstra algoritmining to‘g‘riligi quyidagi asosiy tasdiqqa tayangan:
 
@@ -68,7 +68,7 @@ $$d[v]=l[v].$$
 
 Isbot tugadi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Dijkstra algoritmi $n$ ta iteratsiya bajaradi. Har iteratsiyada $d[v]$ qiymati eng kichik bo‘lgan belgilanmagan $v$ tugun topiladi, belgilanadi va undan chiquvchi barcha $(v,\text{to})$ qirralar bo‘yicha $d[\text{to}]$ ni yaxshilashga uriniladi.
 
@@ -134,12 +134,12 @@ vector<int> restore_path(int s, int t, vector<int> const& p) {
 }
 ```
 
-## Manbalar
+## Manbalar {#references}
 
 * Edsger Dijkstra. *A note on two problems in connexion with graphs* [1959].
 * Thomas Cormen, Charles Leiserson, Ronald Rivest, Clifford Stein. *Introduction to Algorithms* [2005].
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Timus - Ivan's Car](http://acm.timus.ru/problem.aspx?space=1&num=1930) [qiyinlik: o‘rta]
 * [Timus - Sightseeing Trip](http://acm.timus.ru/problem.aspx?space=1&num=1004)

@@ -1,4 +1,4 @@
-# Finding Bridges Online
+# Finding Bridges Online {#finding-bridges-online}
 
 We are given an undirected graph.
 A bridge is an edge whose removal makes the graph disconnected (or, more precisely, increases the number of connected components).
@@ -24,7 +24,7 @@ The algorithm described below works in $O(n \log n + m)$ time, where $m$ is the 
 The algorithm is based on the data structure [Disjoint Set Union](/algorithms/data-structures/disjoint-set-union).
 However the implementation in this article takes $O(n \log n + m \log n)$ time, because it uses the simplified version of the DSU without Union by Rank.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 First let's define a $k$-edge-connected component:
 it is a connected component that remains connected whenever you remove fewer than $k$ edges.
@@ -55,7 +55,7 @@ When adding the next edge $(a, b)$ there can occur three situations:
 
 Consequently the whole task is reduced to the effective implementation of all these operations over the forest of 2-edge-connected components.
 
-## Data Structures for storing the forest
+## Data Structures for storing the forest {#data-structures-for-storing-the-forest}
 
 The only data structure that we need is [Disjoint Set Union](/algorithms/data-structures/disjoint-set-union).
 In fact we will make two copies of this structure:
@@ -121,7 +121,7 @@ We will now consistently disassemble every operation that we need to learn to im
     We will implement the DSU of the 2-edge-connected components without the Union by rank optimization, therefore we will get the complexity $O(\log n)$ on average per query.
     To achieve the complexity $O(1)$ on average per query, we need to combine the vertices of the cycle according to Union by rank, and then assign `par[]` accordingly.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is the final implementation of the whole algorithm.
 

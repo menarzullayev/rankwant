@@ -1,4 +1,4 @@
-# Eng katta umumiy bo‘luvchini hisoblash uchun Evklid algoritmi
+# Eng katta umumiy bo‘luvchini hisoblash uchun Evklid algoritmi {#euclidean-algorithm-for-computing-the-greatest-common-divisor}
 
 Ikkita manfiy bo‘lmagan $a$ va $b$ butun son berilgan. Ularning **EKUB**ini (eng katta umumiy bo‘luvchisini), ya’ni $a$ va $b$ ning ikkalasiga ham bo‘linadigan eng katta sonni topishimiz kerak.
 U odatda $\gcd(a, b)$ bilan belgilanadi. Matematik jihatdan quyidagicha ta’riflanadi:
@@ -13,7 +13,7 @@ Quyida ko‘rib chiqiladigan Evklid algoritmi ikkita $a$ va $b$ sonning eng katt
 
 Algoritm birinchi marta Evklidning “Negizlar” asarida (taxminan miloddan avvalgi 300-yilda) bayon qilingan, ammo uning kelib chiqishi bundan ham qadimgi bo‘lishi mumkin.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Dastlab Evklid algoritmi quyidagicha ifodalangan: sonlardan biri nol bo‘lguncha kattasidan kichigini ayirish. Haqiqatan ham, agar $g$ soni $a$ va $b$ ni bo‘lsa, u $a-b$ ni ham bo‘ladi. Aksincha, agar $g$ soni $a-b$ va $b$ ni bo‘lsa, u $a = b + (a-b)$ ni ham bo‘ladi; demak, $\{a, b\}$ va $\{b,a-b\}$ to‘plamlarining umumiy bo‘luvchilari to‘plami bir xil.
 
@@ -54,7 +54,7 @@ int gcd (int a, int b) {
 
 C++17 dan boshlab `gcd` C++ da [standart funksiya](https://en.cppreference.com/w/cpp/numeric/gcd) sifatida implementatsiya qilinganiga e’tibor bering.
 
-## Vaqt murakkabligi
+## Vaqt murakkabligi {#time-complexity}
 
 Algoritmning ishlash vaqti Evklid algoritmi bilan Fibonacci ketma-ketligi orasidagi hayratlanarli bog‘lanishni o‘rnatuvchi Lamé teoremasi yordamida baholanadi:
 
@@ -67,7 +67,7 @@ Fibonacci sonlari eksponensial o‘sgani sababli, Evklid algoritmi $O(\log \min(
 Murakkablikni boshqacha baholash uchun $a \geq b$ bo‘lganda $a \bmod b$ qiymati $a$ dan kamida $2$ marta kichik ekanini payqash mumkin; demak, algoritmning har bir iteratsiyasida kattaroq son kamida ikki baravar kamayadi.
 Bu mulohazani $a_1,\dots,a_n \leq C$ sonlar to‘plamining EKUBini hisoblash holatiga qo‘llasak, umumiy ishlash vaqtini $O(n \log C)$ emas, $O(n + \log C)$ deb baholash mumkin, chunki algoritmning har bir trivial bo‘lmagan iteratsiyasi joriy EKUB nomzodini kamida $2$ baravar kamaytiradi.
 
-## Eng kichik umumiy karrali
+## Eng kichik umumiy karrali {#least-common-multiple}
 
 Odatda **EKUK** deb belgilanadigan eng kichik umumiy karralini hisoblash quyidagi sodda formula yordamida EKUBni hisoblashga keltiriladi:
 
@@ -83,7 +83,7 @@ int lcm (int a, int b) {
 }
 ```
 
-## Ikkilik EKUB
+## Ikkilik EKUB {#binary-gcd}
 
 Ikkilik EKUB algoritmi odatiy Evklid algoritmining optimallashtirilgan variantidir.
 
@@ -117,7 +117,7 @@ int gcd(int a, int b) {
 Bunday optimallashtirish odatda zarur emasligiga va ko‘pchilik dasturlash tillarining standart kutubxonalarida EKUB funksiyasi allaqachon mavjudligiga e’tibor bering.
 Masalan, C++17 da `numeric` sarlavha faylida `std::gcd` funksiyasi mavjud.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [CSAcademy - Greatest Common Divisor](https://csacademy.com/contest/archive/task/gcd/)
 - [Codeforces 1916B - Two Divisors](https://codeforces.com/contest/1916/problem/B)

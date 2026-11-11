@@ -1,4 +1,4 @@
-# Ketma-ketlikning MEX qiymati (eng kichik mavjud bo‘lmagan son)
+# Ketma-ketlikning MEX qiymati (eng kichik mavjud bo‘lmagan son) {#mex-minimal-excluded-of-a-sequence}
 
 Hajmi $N$ bo‘lgan $A$ massiv berilgan. Massivda uchramaydigan eng kichik nomanfiy sonni topish kerak. Bu son odatda **MEX** (*minimal excluded*, ya’ni eng kichik chiqarib tashlangan son) deb ataladi.
 
@@ -14,7 +14,7 @@ Hajmi $N$ bo‘lgan massivning MEX qiymati hech qachon $N$ dan katta bo‘la olm
 
 Eng sodda usul — $A$ massividagi barcha elementlardan to‘plam tuzish. Shunda biror son massivda bor-yo‘qligini tez tekshirish mumkin. Keyin $0$ dan $N$ gacha bo‘lgan sonlarni ko‘rib chiqamiz va to‘plamda yo‘q birinchi sonni qaytaramiz.
 
-## Amalga oshirish
+## Amalga oshirish {#implementation}
 
 Quyidagi algoritm $O(N \log N)$ vaqtda ishlaydi.
 
@@ -58,7 +58,7 @@ int mex(vector<int> const& A) {
 
 Bu usul tez, lekin MEX qiymatini faqat bir marta hisoblash kerak bo‘lgandagina yaxshi ishlaydi. Massiv o‘zgarib turgani sababli MEX’ni qayta-qayta hisoblash talab etilsa, bu usul samarasiz bo‘ladi. Bunday vaziyat uchun kuchliroq tuzilma kerak.
 
-## Massiv yangilanishlarida MEX
+## Massiv yangilanishlarida MEX {#mex-with-array-updates}
 
 Bu variantda massivdagi ayrim sonlar o‘zgartiriladi va har bir yangilanishdan so‘ng yangi MEX qiymatini hisoblash kerak.
 
@@ -100,7 +100,7 @@ public:
 };
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [AtCoder: Neq Min](https://atcoder.jp/contests/hhkb2020/tasks/hhkb2020_c)
 - [Codeforces: Informatics in MAC](https://codeforces.com/contest/1935/problem/B)

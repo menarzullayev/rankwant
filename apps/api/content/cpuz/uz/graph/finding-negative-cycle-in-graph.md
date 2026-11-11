@@ -1,4 +1,4 @@
-# Grafda manfiy siklni topish
+# Grafda manfiy siklni topish {#finding-a-negative-cycle-in-the-graph}
 
 Sizga $N$ ta tugun va $M$ ta qirraga ega yo‘naltirilgan vaznli $G$ grafi berilgan. Agar mavjud bo‘lsa, undagi istalgan manfiy vaznli siklni toping.
 
@@ -6,7 +6,7 @@ Masalaning boshqa ifodasida ular orasida istalgancha kichik vaznli yo‘l mavjud
 
 Masalaning bu ikki variantini turli algoritmlar yordamida yechish qulay, shuning uchun bu yerda ikkalasini ham muhokama qilamiz.
 
-## Bellman–Ford algoritmidan foydalanish
+## Bellman–Ford algoritmidan foydalanish {#using-bellman-ford-algorithm}
 
 Bellman–Ford algoritmi grafda manfiy vaznli sikl mavjud yoki yo‘qligini tekshirish va mavjud bo‘lsa, shunday sikllardan birini topish imkonini beradi.
 
@@ -20,7 +20,7 @@ Buning uchun barcha $d[i]$ masofalarni cheksizlikka emas, nolga tenglash kerak �
 
 Bellman–Ford algoritmining $N$ ta iteratsiyasini bajaring. Oxirgi iteratsiyada hech qanday o‘zgarish bo‘lmasa, grafda manfiy vaznli sikl yo‘q. Aks holda masofasi o‘zgargan biror tugunni olib, sikl topilguncha uning ajdodlari bo‘yicha yuring. Topilgan sikl kerakli manfiy vaznli sikl bo‘ladi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 struct Edge {
@@ -69,7 +69,7 @@ void solve() {
 }
 ```
 
-## Floyd–Warshall algoritmidan foydalanish
+## Floyd–Warshall algoritmidan foydalanish {#using-floyd-warshall-algorithm}
 
 Floyd–Warshall algoritmi masalaning ikkinchi variantini — ular orasida eng qisqa yo‘l mavjud bo‘lmagan (ya’ni istalgancha kichik vaznli yo‘l mavjud bo‘lgan) barcha $(i, j)$ tugunlar juftlarini topishni — yechish imkonini beradi.
 
@@ -93,7 +93,7 @@ U holda $i$ dan $j$ gacha yo‘lning vaznini istalgancha kichik qilish mumkin.
 
 Buni `-INF` bilan belgilaymiz.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 for (int i = 0; i < n; ++i) {
@@ -106,7 +106,7 @@ for (int i = 0; i < n; ++i) {
 }
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [UVA: Wormholes](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=499)
 - [SPOJ: Alice in Amsterdam, I mean Wonderland](http://www.spoj.com/problems/UCV2013B/)

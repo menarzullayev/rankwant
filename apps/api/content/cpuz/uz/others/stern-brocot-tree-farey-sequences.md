@@ -1,6 +1,6 @@
-# Stern–Brocot daraxti va Farey ketma-ketliklari
+# Stern–Brocot daraxti va Farey ketma-ketliklari {#the-stern-brocot-tree-and-farey-sequences}
 
-## Stern–Brocot daraxti
+## Stern–Brocot daraxti {#stern-brocot-tree}
 
 Stern–Brocot daraxti barcha musbat kasrlar to‘plamini ifodalovchi nafis tuzilmadir. Uni 1858-yilda nemis matematigi Moritz Stern va 1861-yilda fransuz soatsozi Achille Brocot bir-biridan mustaqil ravishda kashf etgan. Ayrim manbalarda esa bu kashfiyot qadimgi yunon matematigi Eratosthenga tegishli deb ko‘rsatiladi.
 
@@ -30,7 +30,7 @@ Bu xossalarni isbotlashdan oldin Stern–Brocot daraxtini ro‘yxat emas, haqiqi
 
   ![Stern–Brocot daraxti](https://upload.wikimedia.org/wikipedia/commons/3/37/SternBrocotTree.svg)
 
-## Isbotlar
+## Isbotlar {#proofs}
 
 **Tartib.** Tartiblanganlikni isbotlash oson. Ikki kasrning medianti har doim ularning orasida yotadi:
 
@@ -108,7 +108,7 @@ natijani olamiz.
 
 Har bir iteratsiyada $a,b,c,d$ sonlaridan kamida bittasi ortadi. Demak, $\frac{x}{y}$ ni qidirish jarayoni $x+y$ tadan ko‘p iteratsiya davom eta olmaydi. Bu unga boradigan yo‘l cheksiz degan farazga zid. Shunday qilib, $\frac{x}{y}$ daraxtda albatta mavjud.
 
-## Daraxtni qurish algoritmi
+## Daraxtni qurish algoritmi {#tree-building-algorithm}
 
 Stern–Brocot daraxtining istalgan ost-daraxtini qurish uchun chap va o‘ng ajdodlarni bilish yetarli. Birinchi sathda ular mos ravishda $\frac{0}{1}$ va $\frac{1}{0}$. Ularning mediantini hisoblab, bir sath pastga tushamiz: chap ost-daraxtda mediant o‘ng ajdodning, o‘ng ost-daraxtda esa chap ajdodning o‘rnini egallaydi.
 
@@ -125,11 +125,11 @@ void build(int a = 0, int b = 1, int c = 1, int d = 0, int level = 1) {
 }
 ```
 
-## Kasrni qidirish algoritmi
+## Kasrni qidirish algoritmi {#fraction-search-algorithm}
 
 Barcha kasrlar daraxtda mavjudligi isbotida qidiruv algoritmi allaqachon tasvirlandi, ammo uni yana takrorlaymiz. Bu ikkilik qidiruv algoritmidir. Dastlab daraxt ildizida turib, maqsad kasrni joriy kasr bilan solishtiramiz. Ular teng bo‘lsa, jarayon tugaydi. Maqsad kichik bo‘lsa chap farzandga, aks holda o‘ng farzandga o‘tamiz.
 
-### Sodda qidiruv
+### Sodda qidiruv {#naive-search}
 
 Quyidagi kod $\frac{p}{q}$ kasrga olib boruvchi yo‘lni mos ravishda chap va o‘ng farzandga o‘tishni bildiradigan `'L'` va `'R'` belgilar ketma-ketligi sifatida qaytaradi. Bunday belgilar ketma-ketligi har bir musbat kasrni yagona aniqlaydi va Stern–Brocot sanoq tizimi deb ataladi.
 
@@ -157,7 +157,7 @@ Stern–Brocot sanoq tizimida irratsional sonlar cheksiz belgilar ketma-ketligig
 
 $\frac{p}{q}$ kasr uchun hosil bo‘ladigan ketma-ketlik uzunligi $O(p+q)$ gacha yetishi mumkin; masalan, $\frac{p}{1}$ ko‘rinishidagi kasrda. Shu sababli yuqoridagi algoritmni **ishlatmaslik kerak (bunday murakkablik maqbul bo‘lgan hollar bundan mustasno)**.
 
-### Logarifmik qidiruv
+### Logarifmik qidiruv {#logarithmic-search}
 
 Yaxshiyamki, algoritmni $O(\log(p+q))$ murakkablikni kafolatlaydigan qilib yaxshilash mumkin. Joriy chegara kasrlar $\frac{p_L}{q_L}$ va $\frac{p_R}{q_R}$ bo‘lsa, o‘ngga $a$ qadam yurish $\frac{p_L+a p_R}{q_L+a q_R}$ kasrga, chapga $a$ qadam yurish esa $\frac{a p_L+p_R}{a q_L+q_R}$ kasrga olib kelishini ko‘ramiz.
 
@@ -199,7 +199,7 @@ Amalda ko‘pincha $\frac{p}{q}$ oldindan ma’lum bo‘lmaydi, ammo aniq $\frac
 
 Bunda joriy $\frac{p_{k-1}}{q_{k-1}}$ va $\frac{p_k}{q_k}$ chegaralarni saqlab, har bir $a_k$ ni ikkilik qidiruv bilan topish orqali Stern–Brocot daraxtidagi qidiruvni taqlid qilish mumkin. Algoritm texnikroq bo‘ladi va masala $a_k$ ni tezroq, masalan, ma’lum ifodaning `floor` qiymati orqali topishga imkon bermasa, murakkabligi $O(\log^2(x+y))$ gacha yetishi mumkin.
 
-## Farey ketma-ketligi
+## Farey ketma-ketligi {#farey-sequence}
 
 $n$-tartibli Farey ketma-ketligi — maxrajlari $n$ dan oshmaydigan, $0$ bilan $1$ orasidagi kasrlarning saralangan ketma-ketligi.
 
@@ -209,7 +209,7 @@ Farey ketma-ketliklarining o‘ziga xos ko‘plab qiziqarli xossalari bor, ammo 
 
 Stern–Brocot daraxtini qurish algoritmidan Farey ketma-ketliklari algoritmi kelib chiqadi. $\frac{0}{1}, \frac{1}{0}$ kasrlar ro‘yxatidan boshlaymiz. Har bir keyingi iteratsiyada mediantni faqat uning maxraji $n$ dan oshmasa qo‘shamiz. Bir payt ro‘yxat o‘zgarishdan to‘xtaydi va kerakli Farey ketma-ketligi hosil bo‘ladi.
 
-### Farey ketma-ketligining uzunligi
+### Farey ketma-ketligining uzunligi {#length-of-a-farey-sequence}
 
 $n$-tartibli Farey ketma-ketligi $n-1$-tartibli ketma-ketlikning barcha elementlarini, shuningdek maxraji $n$ bo‘lgan barcha qisqarmas kasrlarni o‘z ichiga oladi. Keyingilar soni aynan Eyler funksiyasi $\varphi(n)$ ga teng. Demak, $n$-tartibli Farey ketma-ketligining $L_n$ uzunligi:
 

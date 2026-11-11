@@ -1,4 +1,4 @@
-# Kenglik bo‘yicha qidiruv (BFS)
+# Kenglik bo‘yicha qidiruv (BFS) {#breadth-first-search}
 
 Kenglik bo‘yicha qidiruv graflarda qo‘llanadigan asosiy va eng muhim qidiruv algoritmlaridan biridir.
 
@@ -6,7 +6,7 @@ Algoritm ishlash usuli tufayli kenglik bo‘yicha qidiruv istalgan tugungacha to
 
 Algoritm $O(n + m)$ vaqtda ishlaydi; bu yerda $n$ — tugunlar soni, $m$ esa qirralar soni.
 
-## Algoritm tavsifi
+## Algoritm tavsifi {#description-of-the-algorithm}
 
 Algoritm kirishda vaznsiz graf va boshlang‘ich $s$ tugunning identifikatorini qabul qiladi. Kiruvchi graf yo‘naltirilgan ham, yo‘naltirilmagan ham bo‘lishi mumkin — buning algoritm uchun farqi yo‘q.
 
@@ -20,7 +20,7 @@ Natijada navbat bo‘shagan paytda «olov halqasi» $s$ manbadan yetib borish mu
 
 Eng qisqa yo‘llarning uzunliklarini ham hisoblash mumkin; buning uchun `d[]` yo‘l uzunliklari massivini yuritish kifoya. Shuningdek, barcha eng qisqa yo‘llarni tiklash uchun ma’lumot saqlash mumkin: buning uchun har bir tugunga qaysi tugundan kelganimizni saqlovchi `p[]` «ota» massivini yuritish kerak.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Tavsiflangan algoritmning C++ va Java kodlarini yozamiz.
 
@@ -114,7 +114,7 @@ if (!used[u]) {
 }
 ```
 
-## BFSning qo‘llanishlari
+## BFSning qo‘llanishlari {#applications-of-bfs}
 
 * Vaznsiz grafda bir manbadan boshqa tugunlargacha bo‘lgan eng qisqa yo‘llarni topish.
 * Yo‘naltirilmagan grafning barcha bog‘langan komponentlarini $O(n+m)$ vaqtda topish. Buning uchun avvalgi ishga tushirishlarda tashrif buyurilgan tugunlardan tashqari har bir tugundan BFS boshlaymiz. Ya’ni har yangi bog‘langan komponent uchun odatiy BFS bajaramiz, ammo `used[]` massivini har safar nollamaymiz. Umumiy ishlash vaqti baribir $O(n+m)$ bo‘lib qoladi. `used[]` ni nollamasdan grafda bir nechta BFS bajarish **kenglik bo‘yicha qidiruvlar seriyasi** deb ataladi.
@@ -125,7 +125,7 @@ if (!used[u]) {
 * Berilgan $(a,b)$ tugunlar jufti orasidagi istalgan eng qisqa yo‘lda yotadigan barcha tugunlarni topish. Yana $a$ va $b$ dan ikkita BFS bajaring va mos ravishda $d_a[]$ hamda $d_b[]$ masofalar massivlarini oling. Har bir $v$ tugun uchun mezon: $d_a[v] + d_b[v] = d_a[b]$.
 * Vaznsiz grafda $s$ manbadan $t$ maqsadgacha bo‘lgan juft uzunlikdagi eng qisqa yurishni topish. Buning uchun tugunlari $(v,c)$ holatlardan iborat yordamchi graf tuzamiz; bu yerda $v$ — joriy tugun, $c = 0$ yoki $c = 1$ esa joriy uzunlik pariteti. Asl grafdagi har bir $(u,v)$ qirra yangi grafda $((u,0),(v,1))$ va $((u,1),(v,0))$ qirralarga aylanadi. Shundan so‘ng $(s,0)$ boshlang‘ich tugundan $(t,0)$ yakuniy tugungacha eng qisqa yurishni topish uchun BFS bajaramiz. **Eslatma:** bu bandda «yo‘l» emas, aynan «yurish» atamasi ishlatilgan, chunki topilgan yurish uzunligini juft qilish uchun unda tugunlar takrorlanishi mumkin. Yo‘naltirilgan grafda juft uzunlikdagi eng qisqa oddiy yo‘lni topish masalasi NP-to‘liq; yo‘naltirilmagan grafda esa u [chiziqli vaqtda yechilishi mumkin](https://onlinelibrary.wiley.com/doi/abs/10.1002/net.3230140403), biroq buning uchun ancha murakkab yondashuv talab qilinadi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [SPOJ: AKBAR](http://spoj.com/problems/AKBAR)
 * [SPOJ: NAKANJ](http://www.spoj.com/problems/NAKANJ/)

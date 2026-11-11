@@ -1,4 +1,4 @@
-# Eng uzun o‘suvchi qism ketma-ketlik
+# Eng uzun o‘suvchi qism ketma-ketlik {#longest-increasing-subsequence}
 
 $n$ ta sondan iborat $a[0 \dots n-1]$ massivi berilgan.
 Vazifa — $a$ massivining eng uzun qat’iy o‘suvchi qism ketma-ketligini topish.
@@ -11,14 +11,14 @@ a[i_1] < a[i_2] < \dots < a[i_k]$$
 Ushbu maqolada masalani yechadigan bir nechta algoritmni ko‘rib chiqamiz.
 Shuningdek, shu masalaga keltirish mumkin bo‘lgan ayrim boshqa masalalarni ham muhokama qilamiz.
 
-## Dinamik dasturlash yordamida $O(n^2)$ yechim
+## Dinamik dasturlash yordamida $O(n^2)$ yechim {#solution-in-on2-with-dynamic-programming}
 
 Dinamik dasturlash juda katta sinfdagi masalalarni yechishga imkon beruvchi umumiy usuldir.
 Bu yerda uni aynan ushbu masalaga qo‘llaymiz.
 
 Avval faqat eng uzun o‘suvchi qism ketma-ketlikning **uzunligini** topamiz, keyin esa qism ketma-ketlikning o‘zini tiklashni o‘rganamiz.
 
-### Uzunlikni topish
+### Uzunlikni topish {#finding-the-length}
 
 $d[0\dots n-1]$ massivini ta’riflaymiz; $d[i]$ — $i$ indeksdagi element bilan tugaydigan eng uzun o‘suvchi qism ketma-ketlik uzunligi.
 
@@ -51,7 +51,7 @@ Bu ikki holatni birlashtirsak, $d[i]$ uchun yakuniy formulani olamiz:
 
 $$d[i] = \max\left(1, \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)\right)$$
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Quyidagi implementatsiya yuqorida tavsiflangan algoritm yordamida eng uzun o‘suvchi qism ketma-ketlik uzunligini hisoblaydi.
 
@@ -73,7 +73,7 @@ int lis(vector<int> const& a) {
 }
 ```
 
-### Qism ketma-ketlikni tiklash
+### Qism ketma-ketlikni tiklash {#restoring-the-subsequence}
 
 Hozirgacha faqat qism ketma-ketlik uzunligini topishni o‘rgandik, uning o‘zini topishni emas.
 Qism ketma-ketlikni tiklash uchun $d[]$ bilan birga hisoblanadigan qo‘shimcha $p[0\dots n-1]$ yordamchi massivini yaratamiz.
@@ -83,7 +83,7 @@ Ma’lum ma’noda $p[]$ massivi ajdodlarga ko‘rsatadi.
 
 Qism ketma-ketlikni tiklash uchun $d[i]$ maksimal bo‘lgan $i$ indeksdan boshlaymiz va butun qism ketma-ketlik tiklanmaguncha, ya’ni $d[i]=1$ bo‘lgan elementga yetguncha ajdodlar bo‘ylab yuramiz.
 
-### Tiklash implementatsiyasi
+### Tiklash implementatsiyasi {#implementation-of-restoring}
 
 Oldingi bo‘limdagi kodni biroz o‘zgartiramiz.
 $d[]$ bilan birga $p[]$ massivini hisoblaymiz, keyin qism ketma-ketlikni tiklaymiz.
@@ -121,14 +121,14 @@ vector<int> lis(vector<int> const& a) {
 }
 ```
 
-### Qism ketma-ketlikni tiklashning muqobil usuli
+### Qism ketma-ketlikni tiklashning muqobil usuli {#alternative-way-of-restoring-the-subsequence}
 
 Qism ketma-ketlikni yordamchi $p[]$ massivi ishlatmasdan ham tiklash mumkin.
 Joriy $d[i]$ qiymatini qaytadan hisoblab, maksimum qaysi yo‘l bilan olinganini aniqlash kifoya.
 
 Bu usul kodni biroz uzaytiradi, evaziga bir oz xotirani tejaydi.
 
-## Dinamik dasturlash va ikkilik qidiruv yordamida $O(n \log n)$ yechim
+## Dinamik dasturlash va ikkilik qidiruv yordamida $O(n \log n)$ yechim {#solution-in-on-log-n-with-dynamic-programming-and-binary-search}
 
 Masala uchun tezroq yechim olish maqsadida avval $O(n^2)$ vaqtda ishlaydigan boshqa dinamik dasturlash yechimini tuzamiz, keyin uni $O(n\log n)$ gacha yaxshilaymiz.
 
@@ -211,7 +211,7 @@ Endi ikkita muhim kuzatuv qilamiz.
 Demak, $d[]$ massividagi kerakli elementni [ikkilik qidiruv](/algorithms/num-methods/binary-search) yordamida $O(\log n)$ vaqtda topish mumkin.
 Amalda $d[]$ massividagi $a[i]$ dan qat’iy katta bo‘lgan birinchi sonni topamiz va uni yuqoridagi implementatsiyadagi kabi yangilashga urinib ko‘ramiz.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Natijada quyidagi yaxshilangan $O(n\log n)$ implementatsiyani olamiz:
 
@@ -236,7 +236,7 @@ int lis(vector<int> const& a) {
 }
 ```
 
-### Qism ketma-ketlikni tiklash
+### Qism ketma-ketlikni tiklash {#restoring-the-subsequence}
 
 Bu yondashuvda ham qism ketma-ketlikni tiklash mumkin.
 Bu safar ikkita yordamchi massivni saqlash kerak.
@@ -246,7 +246,7 @@ $p[i]$ — $i$ elementda tugaydigan optimal qism ketma-ketlikdagi avvalgi elemen
 $a[]$ massivi bo‘ylab yurish va $d[]$ ni hisoblash jarayonida bu ikki massivni ham oson saqlash mumkin.
 Oxirida ular yordamida kerakli qism ketma-ketlikni tiklash qiyin emas.
 
-## Ma’lumotlar tuzilmalari yordamida $O(n \log n)$ yechim
+## Ma’lumotlar tuzilmalari yordamida $O(n \log n)$ yechim {#solution-in-on-log-n-with-data-structures}
 
 Eng uzun o‘suvchi qism ketma-ketlikni yuqoridagi ikkilik qidiruv usulidan tashqari oddiy ma’lumotlar tuzilmalari yordamida ham $O(n\log n)$ vaqtda topish mumkin.
 
@@ -273,11 +273,11 @@ Boshqa tomondan, bu usulning **afzalliklari** ham bor.
 Unda dinamik dasturlash yechimining nozik xossalari haqida o‘ylash shart emas.
 Shuningdek, yondashuv masalani juda oson umumlashtirish imkonini beradi; quyidagi bo‘limga qarang.
 
-## Bog‘liq masalalar
+## Bog‘liq masalalar {#related-tasks}
 
 Quyida eng uzun o‘suvchi qism ketma-ketlik masalasiga yaqin bo‘lgan bir nechta masala keltirilgan.
 
-### Eng uzun kamaymaydigan qism ketma-ketlik
+### Eng uzun kamaymaydigan qism ketma-ketlik {#longest-non-decreasing-subsequence}
 
 Bu deyarli aynan o‘sha masala.
 Faqat endi qism ketma-ketlikda teng sonlardan foydalanishga ruxsat beriladi.
@@ -285,7 +285,7 @@ Faqat endi qism ketma-ketlikda teng sonlardan foydalanishga ruxsat beriladi.
 Yechim ham deyarli bir xil.
 Faqat tengsizlik belgilarini o‘zgartirish va ikkilik qidiruvga kichik tuzatish kiritish kerak.
 
-### Eng uzun o‘suvchi qism ketma-ketliklar soni
+### Eng uzun o‘suvchi qism ketma-ketliklar soni {#number-of-longest-increasing-subsequences}
 
 Birinchi ko‘rib chiqilgan usuldan — $O(n^2)$ variantidan yoki ma’lumotlar tuzilmalari ishlatiladigan variantdan — foydalanish mumkin.
 Faqat $d[i]$ qiymatiga ega, ya’ni $a[i]$ da tugaydigan eng uzun o‘suvchi qism ketma-ketliklarni nechta usul bilan hosil qilish mumkinligini ham saqlash kerak.
@@ -297,7 +297,7 @@ Segment daraxti yordamida bu yondashuvni ham $O(n\log n)$ vaqtda amalga oshirish
 
 Bu masalada ikkilik qidiruv yondashuvidan foydalanib bo‘lmaydi.
 
-### Ketma-ketlikni qoplaydigan o‘smaydigan qism ketma-ketliklarning eng kichik soni
+### Ketma-ketlikni qoplaydigan o‘smaydigan qism ketma-ketliklarning eng kichik soni {#smallest-number-of-non-increasing-subsequences-covering-a-sequence}
 
 $n$ ta $a[0\dots n-1]$ sondan iborat massiv berilgan. Har bir rangga tegishli sonlar o‘smaydigan qism ketma-ketlik hosil qiladigan qilib, sonlarni eng kam sondagi rang bilan bo‘yash kerak.
 
@@ -325,7 +325,7 @@ Demak, $y=x$.
 Ketma-ketlikni kerakli qism ketma-ketliklarga ochko‘z usulda ajratish mumkin.
 Chapdan o‘ngga yurib, joriy sonni oxirgi elementi joriy sondan katta yoki teng bo‘lgan qism ketma-ketliklar orasida oxirgi elementi eng kichik bo‘lganiga qo‘shamiz.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [ACMSGURU - "North-East"](http://codeforces.com/problemsets/acmsguru/problem/99999/521)
 - [Codeforces - LCIS](http://codeforces.com/problemset/problem/10/D)

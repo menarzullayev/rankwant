@@ -1,8 +1,8 @@
-# Determinantni Gauss usuli bilan hisoblash
+# Determinantni Gauss usuli bilan hisoblash {#calculating-the-determinant-of-a-matrix-by-gauss}
 
 $N\times N$ o‘lchamli $A$ matritsa berilgan. Uning determinantini hisoblash kerak.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Yechim [chiziqli tenglamalar sistemasini yechishdagi Gauss usuli](/algorithms/linear-algebra/linear-system-gauss) g‘oyalariga asoslanadi.
 
@@ -12,7 +12,7 @@ Matritsaga Gauss usulini qo‘llagach, diagonal matritsa hosil bo‘ladi, uning 
 
 Shuni ta’kidlash kerakki, agar biror paytda joriy ustunda noldan farqli katak topilmasa, algoritm to‘xtashi va 0 qaytarishi kerak.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 const double EPS = 1E-9;
@@ -48,6 +48,6 @@ for (int i = 0; i < n; ++i) {
 cout << det;
 ```
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [Codeforces 167E — Wizards and Bets](http://codeforces.com/contest/167/problem/E)

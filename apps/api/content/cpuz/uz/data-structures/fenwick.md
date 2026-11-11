@@ -1,4 +1,4 @@
-# Fenwick daraxti
+# Fenwick daraxti {#fenwick-tree}
 
 $f$ — qandaydir **guruh amali**, ya’ni ayniyat elementi va teskari elementlari mavjud bo‘lgan to‘plamdagi ikki argumentli assotsiativ funksiya, $A$ esa uzunligi $N$ bo‘lgan butun sonlar massivi bo‘lsin.
 
@@ -16,9 +16,9 @@ $A_l*A_{l+1}*\dots*A_r=A_l+A_{l+1}+\dots+A_r$.
 
 Fenwick daraxti **Binary Indexed Tree**, qisqacha **BIT** deb ham ataladi. Uni Peter M. Fenwick 1994-yilda “A new data structure for cumulative frequency tables” nomli maqolasida birinchi bo‘lib tavsiflagan.
 
-## Tavsif
+## Tavsif {#description}
 
-### Umumiy ko‘rinish
+### Umumiy ko‘rinish {#overview}
 
 Soddalik uchun bundan buyon $f(x,y)=x+y$ deb olamiz.
 
@@ -59,7 +59,7 @@ def increase(int i, int delta):
 
 Fenwick daraxtining asosiy hiylasi shundaki, $g$ maxsus tanlanib, ikkala amal ham $O(\log N)$ vaqtda bajariladi.
 
-### $g(i)$ funksiyasining ta’rifi
+### $g(i)$ funksiyasining ta’rifi {#definition-of-gi}
 
 $g(i)$ ni hisoblash uchun $i$ sonining ikkilik yozuvidagi oxirgi ketma-ket barcha $1$ bitlarni $0$ ga almashtiramiz.
 
@@ -104,9 +104,9 @@ Quyidagi rasm Fenwick daraxtini daraxt sifatida talqin qilish usullaridan birini
 
   ![Binary Indexed Tree](/algorithms-media/data-structures/binary_indexed_tree.png)
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
-### Bir o‘lchamli massivda yig‘indini topish
+### Bir o‘lchamli massivda yig‘indini topish {#finding-sum-in-one-dimensional-array}
 
 Quyida yig‘indi so‘rovlari va bitta elementni yangilash uchun Fenwick daraxti implementatsiyasi berilgan.
 
@@ -146,7 +146,7 @@ struct FenwickTree {
 };
 ```
 
-### Chiziqli vaqtda qurish
+### Chiziqli vaqtda qurish {#linear-construction}
 
 Yuqoridagi konstruktor $O(N\log N)$ vaqt talab qiladi. Uni $O(N)$ gacha yaxshilash mumkin.
 
@@ -162,7 +162,7 @@ FenwickTree(vector<int> const &a) : FenwickTree(a.size()){
 }
 ```
 
-### Bir o‘lchamli massivda $[0,r]$ minimumini topish
+### Bir o‘lchamli massivda $[0,r]$ minimumini topish {#finding-minimum-of-0-r-in-one-dimensional-array}
 
 Fenwick daraxti orqali umumiy $[l,r]$ minimumini oddiy usulda topib bo‘lmaydi, chunki ushbu variant faqat $[0,r]$ turidagi so‘rovlarga javob beradi. Bundan tashqari, har bir `update` da yangi qiymat joriy qiymatdan kichik bo‘lishi kerak.
 
@@ -199,7 +199,7 @@ struct FenwickTreeMin {
 
 Ixtiyoriy oraliq minimum so‘rovlari va ixtiyoriy yangilashlarni qo‘llab-quvvatlaydigan Fenwick daraxtini ham qurish mumkin. [Efficient Range Minimum Queries using Binary Indexed Trees](http://ioinformatics.org/oi/pdf/v9_2015_39_44.pdf) maqolasida shunday usul tavsiflangan. Unda massiv ustida tuzilishi biroz boshqacha bo‘lgan ikkinchi Binary Indexed Tree ham saqlanadi, chunki bitta daraxt barcha element qiymatlarini yetarli darajada ifodalay olmaydi. Implementatsiya odatiy yig‘indi Fenwick daraxtiga qaraganda ancha murakkab.
 
-### Ikki o‘lchamli massivda yig‘indini topish
+### Ikki o‘lchamli massivda yig‘indini topish {#finding-sum-in-two-dimensional-array}
 
 Fenwick daraxtini ko‘p o‘lchamli massivlar uchun umumlashtirish juda oson. Ikki o‘lchamli holatda ikkala koordinata bo‘ylab bir xil bitli “sakrashlar” bajariladi.
 
@@ -225,7 +225,7 @@ struct FenwickTree2D {
 };
 ```
 
-### Birga asoslangan indekslash
+### Birga asoslangan indekslash {#one-based-indexing-approach}
 
 Bu yondashuvda $T[]$ va $g()$ ning ta’rifi biroz o‘zgaradi. Endi $T[i]$ $[g(i)+1; i]$ oralig‘ining yig‘indisini saqlasin. Shunda psevdokod quyidagicha ko‘rinadi:
 
@@ -295,7 +295,7 @@ struct FenwickTreeOneBasedIndexing {
 };
 ```
 
-## Oraliq amallari
+## Oraliq amallari {#range-operations}
 
 Fenwick daraxti quyidagi uch turdagi oraliq amallarini qo‘llab-quvvatlashi mumkin:
 
@@ -303,11 +303,11 @@ Fenwick daraxti quyidagi uch turdagi oraliq amallarini qo‘llab-quvvatlashi mum
 2. oraliq yangilashi va nuqtaviy so‘rov;
 3. oraliq yangilashi va oraliq so‘rovi.
 
-### 1. Nuqtaviy yangilash va oraliq so‘rovi
+### 1. Nuqtaviy yangilash va oraliq so‘rovi {#1-point-update-and-range-query}
 
 Bu yuqorida tushuntirilgan odatiy Fenwick daraxtidir: bitta element o‘zgartiriladi va istalgan oraliq yig‘indisi ikki prefiks yig‘indisining ayirmasi orqali olinadi.
 
-### 2. Oraliq yangilashi va nuqtaviy so‘rov
+### 2. Oraliq yangilashi va nuqtaviy so‘rov {#2-range-update-and-point-query}
 
 Sodda hiyla yordamida teskari amallarni ham bajarish mumkin: butun oraliqni oshirish va bitta nuqtadagi qiymatni so‘rash.
 
@@ -342,7 +342,7 @@ int point_query(int idx) {
 
 Albatta, bitta $A[i]$ nuqtani ham `range_add(i, i, val)` orqali oshirish mumkin.
 
-### 3. Oraliq yangilashi va oraliq so‘rovi
+### 3. Oraliq yangilashi va oraliq so‘rovi {#3-range-update-and-range-query}
 
 Ham oraliq yangilash, ham oraliq yig‘indi so‘rovini qo‘llab-quvvatlash uchun dastlab nollardan iborat ikkita BIT — $B_1[]$ va $B_2[]$ — saqlaymiz.
 
@@ -408,7 +408,7 @@ def range_sum(l, r):
     return prefix_sum(r) - prefix_sum(l-1)
 ```
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [UVA 12086 — Potentiometers](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=3238)
 - [LOJ 1112 — Curious Robin Hood](http://www.lightoj.com/volume_showproblem.php?problem=1112)
@@ -447,7 +447,7 @@ def range_sum(l, r):
 - [CSES — Forest Queries II](https://cses.fi/problemset/task/1739/)
 - [Latin American Regionals 2017 — Fundraising](http://matcomgrader.com/problem/9346/fundraising/)
 
-## Boshqa manbalar
+## Boshqa manbalar {#other-sources}
 
 - [Wikipedia’dagi Fenwick tree maqolasi](http://en.wikipedia.org/wiki/Fenwick_tree)
 - [TopCoder’dagi Binary Indexed Trees qo‘llanmasi](https://www.topcoder.com/community/data-science/data-science-tutorials/binary-indexed-trees/)

@@ -1,4 +1,4 @@
-# Determinantni Kraut usuli bilan $O(N^3)$ vaqtda hisoblash
+# Determinantni Kraut usuli bilan $O(N^3)$ vaqtda hisoblash {#calculating-the-determinant-using-kraut-method-in-on3}
 
 Ushbu maqolada Kraut usuli yordamida matritsa determinantini $O(N^3)$ vaqtda topish bayon qilinadi.
 
@@ -22,7 +22,7 @@ $A$ matritsa, $N$ esa uning o‘lchami bo‘lsin. $L$ va $U$ matritsalarning ele
       L_{ij} = \frac{1}{U_{jj}} \left(A_{ij} - \sum_{k=1}^{j-1} L_{ik} \cdot U_{kj} \right).
       $$
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```java
 static BigInteger det (BigDecimal a [][], int n) {

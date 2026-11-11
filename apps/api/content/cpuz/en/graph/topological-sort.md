@@ -1,4 +1,4 @@
-# Topological Sorting
+# Topological Sorting {#topological-sorting}
 
 You are given a directed graph with $n$ vertices and $m$ edges.
 You have to find an **order of the vertices**, so that every edge leads from the vertex with a smaller index to a vertex with a larger one.
@@ -22,7 +22,7 @@ The algorithm described in this article also shows by construction, that every a
 
 A common problem in which topological sorting occurs is the following. There are $n$ variables with unknown values. For some variables, we know that one of them is less than the other. You have to check whether these constraints are contradictory, and if not, output the variables in ascending order (if several answers are possible, output any of them). It is easy to notice that this is exactly the problem of finding the topological order of a graph with $n$ vertices.
 
-## The Algorithm
+## The Algorithm {#the-algorithm}
 
 To solve this problem, we will use [depth-first search](/algorithms/graph/depth-first-search).
 
@@ -43,7 +43,7 @@ These explanations can also be presented in terms of exit times of the DFS algor
 The exit time for vertex $v$ is the time at which the function call $\text{dfs}(v)$ finished (the times can be numbered from $0$ to $n-1$).
 It is easy to understand that exit time of any vertex $v$ is always greater than the exit time of any vertex reachable from it (since they were visited either before the call $\text{dfs}(v)$ or during it). Thus, the desired topological ordering are the vertices in descending order of their exit times.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is an implementation which assumes that the graph is acyclic, i.e. the desired topological ordering exists. If necessary, you can easily check that the graph is acyclic, as described in the article on [depth-first search](/algorithms/graph/depth-first-search).
 
@@ -77,7 +77,7 @@ void topological_sort() {
 
 The main function of the solution is `topological_sort`, which initializes DFS variables, launches DFS and receives the answer in the vector `ans`. It is worth noting that when the graph is not acyclic, `topological_sort` result would still be somewhat meaningful in a sense that if a vertex $u$ is reachable from vertex $v$, but not vice versa, the vertex $v$ will always come first in the resulting array. This property of the provided implementation is used in [Kosaraju's algorithm](/algorithms/graph/strongly-connected-components) to extract strongly connected components and their topological sorting in a directed graph with cycles.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [SPOJ TOPOSORT - Topological Sorting [difficulty: easy]](http://www.spoj.com/problems/TOPOSORT/)
 - [UVA 10305 - Ordering Tasks [difficulty: easy]](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=1246)

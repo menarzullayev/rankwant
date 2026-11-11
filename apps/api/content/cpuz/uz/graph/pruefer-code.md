@@ -1,4 +1,4 @@
-# Prüfer kodi
+# Prüfer kodi {#prufer-code}
 
 Ushbu maqolada belgilangan daraxtni sonlar ketma-ketligiga yagona usulda kodlash imkonini beruvchi **Prüfer kodi** (yoki Prüfer ketma-ketligi) deb ataluvchi tushunchani ko‘rib chiqamiz.
 
@@ -8,7 +8,7 @@ Shuningdek, graf bog‘langan bo‘lishi uchun unga qirralar qo‘shish usullari
 
 **Eslatma:** bitta tugundan iborat daraxtlarni ko‘rib chiqmaymiz — bu bir nechta tasdiqlar o‘zaro zid keladigan maxsus holatdir.
 
-## Prüfer kodi
+## Prüfer kodi {#prufer-code}
 
 Prüfer kodi $n$ ta tugunli belgilangan daraxtni $[0; n-1]$ oraliqdagi $n - 2$ ta butun son ketma-ketligi yordamida kodlash usulidir.
 
@@ -18,7 +18,7 @@ Ko‘rinishning o‘ziga xosligi sababli Prüfer kodidan daraxtni saqlash va u b
 
 Uning ixtirochisi Heinz Prüfer ushbu kodni 1918-yilda Cayley formulasining isboti sifatida taklif qilgan.
 
-### Berilgan daraxt uchun Prüfer kodini qurish
+### Berilgan daraxt uchun Prüfer kodini qurish {#building-the-prufer-code-for-a-given-tree}
 
 Prüfer kodi quyidagicha quriladi.
 
@@ -69,7 +69,7 @@ Biroq bu qurishni chiziqli vaqtda ham implementatsiya qilish mumkin.
 
 Bunday yondashuv keyingi bo‘limda tavsiflanadi.
 
-### Berilgan daraxt uchun Prüfer kodini chiziqli vaqtda qurish
+### Berilgan daraxt uchun Prüfer kodini chiziqli vaqtda qurish {#building-the-prufer-code-for-a-given-tree-in-linear-time}
 
 Algoritmning mohiyati biz olib tashlamoqchi bo‘lgan joriy barg tugunga doimo ishora qilib turadigan **harakatlanuvchi ko‘rsatkich**dan foydalanishdir.
 
@@ -163,12 +163,12 @@ Agar `next` tugun ham barg bo‘lsa va `ptr` dan kichik bo‘lsa, uni joriy barg
 
 Bu kodning murakkabligi $O(n)$ ekanini oson ko‘rish mumkin.
 
-### Prüfer kodining ayrim xossalari
+### Prüfer kodining ayrim xossalari {#some-properties-of-the-prufer-code}
 
 - Prüfer kodi qurilgach, ikkita tugun qoladi. Ulardan biri eng katta raqamli $n-1$ tugun, ammo ikkinchi tugun haqida boshqa hech narsa aytib bo‘lmaydi.
 - Har bir tugun Prüfer kodida aniq belgilangan miqdorda — uning darajasidan bir marta kam — uchraydi. Buni oson tekshirish mumkin, chunki uning belgisi kodga yozilgan har safar darajasi kamayadi va daraja $1$ ga yetgach, tugun olib tashlanadi. Qolgan ikki tugun uchun ham bu xossa to‘g‘ri.
 
-### Prüfer kodi yordamida daraxtni tiklash
+### Prüfer kodi yordamida daraxtni tiklash {#restoring-the-tree-using-the-prufer-code}
 
 Daraxtni tiklash uchun avvalgi bo‘limda muhokama qilingan xossaning o‘ziga e’tibor qaratish kifoya.
 
@@ -224,7 +224,7 @@ vector<pair<int, int>> pruefer_decode(vector<int> const& code) {
 }
 ```
 
-### Prüfer kodi yordamida daraxtni chiziqli vaqtda tiklash
+### Prüfer kodi yordamida daraxtni chiziqli vaqtda tiklash {#restoring-the-tree-using-the-prufer-code-in-linear-time}
 
 Daraxtni chiziqli vaqtda olish uchun Prüfer kodini chiziqli vaqtda qurishda ishlatilgan usulning o‘zini qo‘llash mumkin.
 
@@ -262,7 +262,7 @@ vector<pair<int, int>> pruefer_decode(vector<int> const& code) {
 }
 ```
 
-### Daraxtlar va Prüfer kodlari orasidagi biyeksiya
+### Daraxtlar va Prüfer kodlari orasidagi biyeksiya {#bijection-between-trees-and-prufer-codes}
 
 Har bir daraxt uchun unga mos Prüfer kodi mavjud.
 
@@ -272,7 +272,7 @@ Bundan har bir Prüfer kodi (ya’ni $[0; n - 1]$ oraliqdagi $n-2$ ta son ketma-
 
 Shuning uchun barcha daraxtlar va barcha Prüfer kodlari orasida biyeksiya (**bir-biriga bir qiymatli moslik**) mavjud.
 
-## Cayley formulasi
+## Cayley formulasi {#cayleys-formula}
 
 Cayley formulasiga ko‘ra, $n$ ta tugunli **to‘liq belgilangan grafdagi ostov daraxtlar soni** quyidagiga teng:
 
@@ -288,7 +288,7 @@ Bunday turli Prüfer kodlari soni $n^{n-2}$ ga teng.
 
 Bunday har bir daraxt $n$ ta tugunli to‘liq grafning ostov daraxti bo‘lgani sababli, ostov daraxtlar soni ham $n^{n-2}$.
 
-## Grafni bog‘langan qilish usullari soni
+## Grafni bog‘langan qilish usullari soni {#number-of-ways-to-make-a-graph-connected}
 
 Prüfer kodlari tushunchasi bundan ham kuchliroq.
 
@@ -352,7 +352,7 @@ $$s_1 \cdot s_2 \cdots s_k \cdot (s_1 + s_2 + \dots + s_k)^{k-2} = s_1 \cdot s_2
 
 Tasodifan, bu formula $k = 1$ uchun ham to‘g‘ri.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 - [UVA #10843 - Anne's game](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=20&page=show_problem&problem=1784)
 - [Timus #1069 - Prufer Code](http://acm.timus.ru/problem.aspx?space=1&num=1069)

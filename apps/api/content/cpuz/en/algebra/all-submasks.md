@@ -1,6 +1,6 @@
-# Submask Enumeration
+# Submask Enumeration {#submask-enumeration}
 
-## Enumerating all submasks of a given mask
+## Enumerating all submasks of a given mask {#enumerating-all-submasks-of-a-given-mask}
 
 Given a bitmask $m$, you want to efficiently iterate through all of its submasks, that is, masks $s$ in which only bits that were included in mask $m$ are set.
 
@@ -38,7 +38,7 @@ Thus, this algorithm generates all submasks of this mask in descending order, pe
 
 A special case is when $s = 0$. After executing $s-1$ we get a mask where all bits are set (bit representation of -1), and after `(s-1) & m` we will have that $s$ will be equal to $m$. Therefore, with the mask $s = 0$ be careful — if the loop does not end at zero, the algorithm may enter an infinite loop.
 
-## Iterating through all masks with their submasks. Complexity $O(3^n)$
+## Iterating through all masks with their submasks. Complexity $O(3^n)$ {#iterating-through-all-masks-with-their-submasks-complexity-o3n}
 
 In many problems, especially those that use bitmask dynamic programming, you want to iterate through all bitmasks and for each mask, iterate through all of its submasks:
 
@@ -64,7 +64,7 @@ $$\sum_{k=0}^n \binom{n}{k} \cdot 2^k$$
 
 To calculate this number, note that the sum above is equal to the expansion of $(1+2)^n$ using the binomial theorem. Therefore, we have $3^n$ combinations, as we wanted to prove.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Atcoder - Close Group](https://atcoder.jp/contests/abc187/tasks/abc187_f)
 * [Codeforces - Nuclear Fusion](http://codeforces.com/problemset/problem/71/E)

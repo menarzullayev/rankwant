@@ -1,8 +1,8 @@
-# Circle-Line Intersection
+# Circle-Line Intersection {#circle-line-intersection}
 
 Given the coordinates of the center of a circle and its radius, and the equation of a line, you're required to find the points of intersection.
 
-## Solution
+## Solution {#solution}
 
 Instead of solving the system of two equations, we will approach the problem geometrically. This way we get a more accurate solution from the point of view of numerical stability.
 
@@ -39,7 +39,7 @@ b_x &= x_0 - B \cdot m, b_y = y_0 + A \cdot m
 
 Had we solved the original system of equations using algebraic methods, we would likely get an answer in a different form with a larger error. The geometric method described here is more graphic and more accurate.
 
-## Implementation
+## Implementation {#implementation}
 
 As indicated at the outset, we assume that the circle is centered at the origin, and therefore the input to the program is the radius $r$ of the circle and the parameters $A$, $B$ and $C$ of the equation of the line.
 
@@ -65,6 +65,6 @@ else {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [CODECHEF: ANDOOR](https://www.codechef.com/problems/ANDOOR)

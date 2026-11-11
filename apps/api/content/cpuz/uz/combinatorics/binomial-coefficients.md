@@ -1,4 +1,4 @@
-# Binomial koeffitsiyentlar
+# Binomial koeffitsiyentlar {#binomial-coefficients}
 
 Binomial koeffitsiyent $\binom n k$ — $n$ ta turli elementdan ularning joylashish tartibini hisobga olmasdan $k$ ta elementli to‘plam tanlash usullari soni (ya’ni tartiblanmagan to‘plamlar soni).
 
@@ -8,7 +8,7 @@ $$ (a+b)^n = \binom n 0 a^n + \binom n 1 a^{n-1} b + \binom n 2 a^{n-2} b^2 + \c
 
 Bu formula va koeffitsiyentlarni samarali hisoblash imkonini beruvchi uchburchak XVII asrda Blaise Pascal tomonidan kashf etilgan deb hisoblanadi. Biroq u XIII asrda yashagan xitoylik matematik Yang Huiga ham ma’lum bo‘lgan. Uni fors olimi Umar Xayyom kashf etgan bo‘lishi ham mumkin. Bundan tashqari, miloddan avvalgi III asrda yashagan hind matematigi Pingala ham o‘xshash natijalarni olgan. Newtonning hissasi shundaki, u formulani natural bo‘lmagan daraja ko‘rsatkichlari uchun umumlashtirgan.
 
-## Hisoblash
+## Hisoblash {#calculation}
 
 Hisoblash uchun **analitik formula**:
 
@@ -24,7 +24,7 @@ Buni analitik formuladan osongina keltirib chiqarish mumkin.
 
 $n \lt k$ bo‘lganda $\binom n k$ ning qiymati nol deb qabul qilinishiga e’tibor bering.
 
-## Xossalar
+## Xossalar {#properties}
 
 Binomial koeffitsiyentlarning ko‘plab xossalari mavjud. Quyida ulardan eng sodda xossalar keltirilgan:
 
@@ -60,9 +60,9 @@ Binomial koeffitsiyentlarning ko‘plab xossalari mavjud. Quyida ulardan eng sod
 
     $$ \binom n 0 + \binom {n-1} 1 + \cdots + \binom {n-k} k + \cdots + \binom 0 n = F_{n+1} $$
 
-## Hisoblash usullari
+## Hisoblash usullari {#calculation}
 
-### Analitik formula yordamida bevosita hisoblash
+### Analitik formula yordamida bevosita hisoblash {#straightforward-calculation-using-analytical-formula}
 
 Birinchi, bevosita formula kodda juda oson yoziladi, ammo bu usul $n$ va $k$ ning nisbatan kichik qiymatlaridayoq toshib ketishga moyil. Hatto javobning o‘zi biror ma’lumot turiga to‘liq sig‘sa ham, oraliq faktoriallarni hisoblash toshib ketishga olib kelishi mumkin. Shu sababli bu usul ko‘pincha faqat [uzun arifmetika](/algorithms/algebra/big-integer) bilan ishlatilishi mumkin:
 
@@ -77,7 +77,7 @@ int C(int n, int k) {
 }
 ```
 
-### Yaxshilangan amalga oshirish
+### Yaxshilangan amalga oshirish {#improved-implementation}
 
 Yuqoridagi amalga oshirishda surat va maxraj bir xil miqdordagi ($k$ ta) ko‘paytuvchiga ega va ularning har biri kamida 1 ga tengligiga e’tibor bering. Shuning uchun kasrni har biri haqiqiy qiymatli bo‘lgan $k$ ta kasr ko‘paytmasi bilan almashtirishimiz mumkin. Biroq har bir qadamda joriy javobni navbatdagi kasrga ko‘paytirgandan keyin natija baribir butun son bo‘lib qoladi (bu ko‘paytuvchini tashqariga chiqarish xossasidan kelib chiqadi).
 
@@ -94,7 +94,7 @@ int C(int n, int k) {
 
 Bu yerda yig‘ilib borgan xatolar sababli suzuvchi nuqtali son haqiqiy qiymatdan biroz kichik bo‘lishi mumkinligini (masalan, $3$ o‘rniga $2.99999$) hisobga olib, uni ehtiyotkorlik bilan butun songa o‘tkazamiz.
 
-### Pascal uchburchagi
+### Pascal uchburchagi {#pascals-triangle}
 
 Rekurrent munosabatdan foydalanib, binomial koeffitsiyentlar jadvalini — Pascal uchburchagini — qurish va javobni undan olish mumkin. Ushbu usulning afzalligi shundaki, oraliq natijalar hech qachon javobdan oshmaydi va jadvalning har bir yangi elementini hisoblash uchun faqat bitta qo‘shish amali kerak. Kamchiligi esa, agar butun jadval emas, faqat bitta qiymat kerak bo‘lsa, katta $n$ va $k$ uchun sekin ishlashidir. Chunki $\binom n k$ ni hisoblash uchun barcha $\binom i j, 1 \le i \le n, 1 \le j \le n$ qiymatlar jadvalini yoki hech bo‘lmaganda $1 \le j \le \min (i, 2k)$ gacha bo‘lgan qismini qurish kerak. Vaqt murakkabligini $\mathcal{O}(n^2)$ deb hisoblash mumkin.
 
@@ -113,19 +113,19 @@ for (int n = 1; n <= maxn; ++n) {
 
 Agar qiymatlarning butun jadvali kerak bo‘lmasa, uning faqat oxirgi ikkita satrini — joriy $n$-satr va oldingi $n-1$-satrni — saqlash kifoya.
 
-### $O(1)$ da hisoblash
+### $O(1)$ da hisoblash {#calculation-in-o1}
 
 Nihoyat, ayrim holatlarda barcha faktoriallarni oldindan hisoblab, keyin kerakli binomial koeffitsiyentni faqat ikkita bo‘lish amali bilan olish foydali. Bu [uzun arifmetika](/algorithms/algebra/big-integer) ishlatilganda va xotira butun Pascal uchburchagini oldindan hisoblashga yetmaganda qulay bo‘lishi mumkin.
 
-## Binomial koeffitsiyentlarni $m$ moduli bo‘yicha hisoblash
+## Binomial koeffitsiyentlarni $m$ moduli bo‘yicha hisoblash {#computing-binomial-coefficients-modulo-m}
 
 Binomial koeffitsiyentlarni biror $m$ moduli bo‘yicha hisoblash masalasi juda ko‘p uchraydi.
 
-### Kichik $n$ uchun binomial koeffitsiyent
+### Kichik $n$ uchun binomial koeffitsiyent {#binomial-coefficient-for-small-n}
 
 Oldin muhokama qilingan Pascal uchburchagi yondashuvidan yetarlicha kichik $n$ uchun barcha $\binom{n}{k}\bmod m$ qiymatlarini hisoblashda foydalanish mumkin, chunki uning vaqt murakkabligi $\mathcal{O}(n^2)$. Bu yondashuv istalgan modul bilan ishlaydi, chunki unda faqat qo‘shish amallari qo‘llanadi.
 
-### Katta tub modul bo‘yicha binomial koeffitsiyent
+### Katta tub modul bo‘yicha binomial koeffitsiyent {#binomial-coefficient-modulo-large-prime}
 
 Binomial koeffitsiyentlar formulasi:
 
@@ -152,7 +152,7 @@ long long binomial_coefficient(int n, int k) {
 }
 ```
 
-Agar barcha faktoriallarning teskarilarini teskari elementni hisoblashning odatiy usuli bilan $O(\text{MAXN}\log m)$ vaqtda oldindan hisoblasak, binomial koeffitsiyentni hatto $O(1)$ vaqtda hisoblashimiz mumkin. Yoki $(x!)^{-1}\equiv((x-1)!)^{-1}\cdot x^{-1}$ taqqoslamadan va [barcha teskari elementlarni](/algorithms/algebra/module-inverse#mod-inv-all-num) $O(n)$ da hisoblash usulidan foydalanib, oldindan hisoblashni $O(\text{MAXN})$ vaqtda bajarish mumkin.
+Agar barcha faktoriallarning teskarilarini teskari elementni hisoblashning odatiy usuli bilan $O(\text{MAXN}\log m)$ vaqtda oldindan hisoblasak, binomial koeffitsiyentni hatto $O(1)$ vaqtda hisoblashimiz mumkin. Yoki $(x!)^{-1}\equiv((x-1)!)^{-1}\cdot x^{-1}$ taqqoslamadan va [barcha teskari elementlarni](/algorithms/algebra/module-inverse#finding-the-modular-inverse-using-euclidean-division) $O(n)$ da hisoblash usulidan foydalanib, oldindan hisoblashni $O(\text{MAXN})$ vaqtda bajarish mumkin.
 
 ```cpp
 long long binomial_coefficient(int n, int k) {
@@ -183,7 +183,7 @@ Yoki barcha teskari elementlar va $p$ ning barcha darajalarini oldindan hisoblab
 
 Agar $c(n)-c(k)-c(n-k)\ge b$ bo‘lsa, $p^b~|~p^{c(n)-c(k)-c(n-k)}$ bo‘ladi va binomial koeffitsiyent $0$ ga tengligiga e’tibor bering.
 
-### Ixtiyoriy modul bo‘yicha binomial koeffitsiyent
+### Ixtiyoriy modul bo‘yicha binomial koeffitsiyent {#binomial-coefficient-modulo-an-arbitrary-number}
 
 Endi binomial koeffitsiyentni ixtiyoriy $m$ moduli bo‘yicha hisoblaymiz.
 
@@ -192,7 +192,7 @@ Har bir $i$ uchun binomial koeffitsiyentni $p_i^{e_i}$ moduli bo‘yicha hisobla
 Natijada $h$ ta turli taqqoslama olamiz.
 Barcha $p_i^{e_i}$ modullar o‘zaro tub bo‘lgani sababli, [Xitoy qoldiqlari teoremasi](/algorithms/algebra/chinese-remainder-theorem) yordamida binomial koeffitsiyentni modullar ko‘paytmasi bo‘yicha, ya’ni kerakli $m$ moduli bo‘yicha hisoblashimiz mumkin.
 
-### Katta $n$ va kichik modul uchun binomial koeffitsiyent
+### Katta $n$ va kichik modul uchun binomial koeffitsiyent {#binomial-coefficient-for-large-n-and-small-modulo}
 
 $n$ juda katta bo‘lganda, yuqorida muhokama qilingan $\mathcal{O}(n)$ algoritmlar amaliy bo‘lmay qoladi. Biroq $m$ modul kichik bo‘lsa, $\binom{n}{k}\bmod m$ ni hisoblashning boshqa usullari mavjud.
 
@@ -205,7 +205,7 @@ Agar $m$ tub bo‘lmasa, ammo kvadratlardan holi bo‘lsa, $m$ ning tub bo‘luv
 
 Agar $m$ kvadratlardan holi bo‘lmasa, Lucas teoremasi o‘rniga uning [tub son darajalari uchun umumlashmasi](https://web.archive.org/web/20170202003812/http://www.dms.umontreal.ca/~andrew/PDF/BinCoeff.pdf) qo‘llanishi mumkin.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 * [Codechef - Number of ways](https://www.codechef.com/LTIME24/problems/NWAYS/)
 * [Codeforces - Curious Array](http://codeforces.com/problemset/problem/407/C)
@@ -225,7 +225,7 @@ Agar $m$ kvadratlardan holi bo‘lmasa, Lucas teoremasi o‘rniga uning [tub son
 * [CodeChef - Long Sandwich](https://www.codechef.com/MAY17/problems/SANDWICH/)
 * [Codeforces - Placing Jinas](https://codeforces.com/problemset/problem/1696/E)
 
-## Manbalar
+## Manbalar {#references}
 
 * [Blog fishi.devtail.io](https://fishi.devtail.io/weblog/2015/06/25/computing-large-binomial-coefficients-modulo-prime-non-prime/)
 * [Question on Mathematics StackExchange](https://math.stackexchange.com/questions/95491/n-choose-k-bmod-m-using-chinese-remainder-theorem)

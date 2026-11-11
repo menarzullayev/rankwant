@@ -1,16 +1,16 @@
-# Kiritish–chiqarish prinsipi
+# Kiritish–chiqarish prinsipi {#the-inclusion-exclusion-principle}
 
 Kiritish–chiqarish prinsipi — to‘plam o‘lchamini yoki murakkab hodisalar ehtimolini hisoblashning muhim kombinatorik usuli. U alohida to‘plamlarning o‘lchamlarini ularning birlashmasi o‘lchami bilan bog‘laydi.
 
-## Ta’rif
+## Ta’rif {#statement}
 
-### Og‘zaki formula
+### Og‘zaki formula {#the-verbal-formula}
 
 Kiritish–chiqarish prinsipini quyidagicha ifodalash mumkin:
 
 Bir nechta to‘plam birlashmasining o‘lchamini hisoblash uchun avval barcha to‘plamlarning o‘lchamlarini **alohida-alohida qo‘shish**, so‘ng barcha **juft** kesishmalar o‘lchamlarini ayirish, barcha **uchtalik** kesishmalar o‘lchamlarini yana qo‘shish, barcha **to‘rttalik** kesishmalar o‘lchamlarini ayirish va shu tarzda **barcha** to‘plamlar kesishmasigacha davom etish kerak.
 
-### To‘plamlar orqali ifoda
+### To‘plamlar orqali ifoda {#the-formulation-in-terms-of-sets}
 
 Yuqoridagi ta’rifni matematik ko‘rinishda quyidagicha yozish mumkin:
 
@@ -20,7 +20,7 @@ Yanada ixcham ko‘rinishi:
 
 $$\left|\bigcup_{i=1}^n A_i\right|=\sum_{\emptyset\ne J\subseteq\{1,2,\ldots,n\}}(-1)^{|J|-1}{\Biggl|}\bigcap_{j\in J}A_j{\Biggr|}$$
 
-### Venn diagrammasi orqali ifoda
+### Venn diagrammasi orqali ifoda {#the-formulation-using-venn-diagrams}
 
 Diagrammada uchta $A$, $B$ va $C$ to‘plam ko‘rsatilgan bo‘lsin:
 
@@ -32,7 +32,7 @@ $$S(A\cup B\cup C)=S(A)+S(B)+S(C)-S(A\cap B)-S(A\cap C)-S(B\cap C)+S(A\cap B\cap
 
 Bu formula $n$ ta to‘plam birlashmasiga ham umumlashtiriladi.
 
-### Ehtimollar nazariyasi orqali ifoda
+### Ehtimollar nazariyasi orqali ifoda {#the-formulation-in-terms-of-probability-theory}
 
 $A_i$ $(i = 1,2...n)$ hodisalar, ${\cal P}(A_i)$ esa $A_i$ hodisaning yuz berish ehtimoli bo‘lsin. Ularning birlashmasi ehtimoli, ya’ni kamida bitta hodisa yuz berish ehtimoli:
 
@@ -45,7 +45,7 @@ Ixcham ko‘rinishi:
 
 $${\cal P}\left(\bigcup_{i=1}^n A_i\right)=\sum_{\emptyset\ne J\subseteq\{1,2,\ldots,n\}}(-1)^{|J|-1}\,{\cal P}{\Biggl(}\bigcap_{j\in J}A_j{\Biggr)}$$
 
-## Isbot
+## Isbot {#proof}
 
 Isbot uchun to‘plamlar nazariyasidagi matematik ifodadan foydalanish qulay:
 
@@ -72,7 +72,7 @@ $$(1-x)^k=\binom{k}{0}-\binom{k}{1}\cdot x+\binom{k}{2}\cdot x^2-\binom{k}{3}\cd
 
 $x=1$ bo‘lganda bu ifoda $T$ ga deyarli teng. Faqat unda qo‘shimcha $\binom{k}{0}=1$ hadi bor va qolgan qism $-1$ ga ko‘paytirilgan. Bu bizni $(1 - 1)^k = 1 - T$ ga olib keladi. Demak, $T = 1 - (1 - 1)^k = 1$, isbotlash talab qilingan narsa shu edi. Element aynan bir marta hisoblanadi.
 
-## Aynan $r$ ta to‘plamga tegishli elementlar sonini hisoblashga umumlashtirish
+## Aynan $r$ ta to‘plamga tegishli elementlar sonini hisoblashga umumlashtirish {#generalization-for-calculating-number-of-elements-in-exactly-r-sets}
 
 Kiritish–chiqarish prinsipini hech bir to‘plamga tegishli bo‘lmagan elementlar sonini hisoblash uchun quyidagicha yozish mumkin:
 
@@ -88,7 +88,7 @@ $$\left|\bigcap_{i\in B}A_i\cap\bigcap_{j\notin B}\overline{A_j}\right|=\sum_{m=
 
 Chap tomondagi to‘plamlar turli $B$ lar uchun kesishmaydi, shuning uchun ularni bevosita qo‘shish mumkin. Bundan tashqari, har qanday $X$ to‘plam qatnashganida doimo $(-1)^{m-r}$ koeffitsiyentiga ega bo‘ladi va u aynan $\dbinom mr$ ta $B$ to‘plam uchun qatnashadi.
 
-## Masalalarni yechishda qo‘llanishi
+## Masalalarni yechishda qo‘llanishi {#usage-when-solving-problems}
 
 Kiritish–chiqarish prinsipini uning qo‘llanishlarini o‘rganmasdan tushunish qiyin.
 
@@ -96,7 +96,7 @@ Avval prinsipning qo‘llanishini ko‘rsatadigan qog‘ozda yechiladigan uchta 
 
 “Usullar **sonini** toping” turidagi masalalarga alohida e’tibor berish kerak: ular har doim ham eksponensial emas, ba’zan polinomial yechimga olib keladi.
 
-### Permutatsiyalarga oid sodda masala
+### Permutatsiyalarga oid sodda masala {#a-simple-task-on-permutations}
 
 **Masala.** $0$ dan $9$ gacha bo‘lgan sonlarning birinchi elementi $1$ dan katta va oxirgi elementi $8$ dan kichik bo‘lgan permutatsiyalari sonini toping.
 
@@ -112,7 +112,7 @@ $$2\cdot9!+2\cdot9!-2\cdot2\cdot8!$$
 
 ni olamiz. “Yaxshi” permutatsiyalar sonini topish uchun bu qiymatni jami $10!$ dan ayirish qoladi.
 
-### (0, 1, 2) ketma-ketliklariga oid sodda masala
+### (0, 1, 2) ketma-ketliklariga oid sodda masala {#a-simple-task-on-0-1-2-sequences}
 
 **Masala.** Faqat $0$, $1$, $2$ sonlaridan tuzilgan, har bir son **kamida bir marta** qatnashadigan uzunligi $n$ bo‘lgan ketma-ketliklar sonini toping.
 
@@ -170,7 +170,7 @@ Yuqoridagidek, yuqori indeksi manfiy bo‘lgan binomial koeffitsiyentlarni nol d
 
 Bu masalani dinamik dasturlash yoki hosil qiluvchi funksiyalar bilan ham yechish mumkin. Binomial koeffitsiyent kabi matematik amallar doimiy vaqtda bajariladi deb olinsa, kiritish–chiqarish javobi $O(d)$ vaqtda hisoblanadi, sodda dinamik dasturlash esa $O(ds)$ vaqt oladi.
 
-### Berilgan oraliqdagi o‘zaro tub sonlar soni
+### Berilgan oraliqdagi o‘zaro tub sonlar soni {#the-number-of-relative-primes-in-a-given-interval}
 
 **Masala.** $n$ va $r$ sonlari berilgan. $[1;r]$ oraliqda $n$ bilan o‘zaro tub, ya’ni eng katta umumiy bo‘luvchisi $1$ bo‘lgan butun sonlar sonini toping.
 
@@ -223,7 +223,7 @@ int solve (int n, int r) {
 
 Yechimning asimptotik murakkabligi $O(\sqrt n)$.
 
-### Berilgan oraliqda berilgan sonlardan kamida bittasiga karrali sonlar miqdori
+### Berilgan oraliqda berilgan sonlardan kamida bittasiga karrali sonlar miqdori {#the-number-of-integers-in-a-given-interval-which-are-multiple-of-at-least-one-of-the-given-numbers}
 
 $n$ ta $a_i$ son va $r$ soni berilgan. $[1;r]$ oraliqda $a_i$ lardan kamida bittasiga karrali bo‘lgan butun sonlar sonini topish kerak.
 
@@ -232,7 +232,7 @@ Yechim algoritmi oldingi masaladagiga deyarli bir xil: $a_i$ sonlar uchun kiriti
 $a_i$ sonlarning barcha $2^n$ ta qism to‘plamini ko‘rib chiqamiz. Har biri uchun $O(n\log r)$ amal bilan EKUKni topib, oraliqdagi shu EKUKka karrali sonlar miqdorini qo‘shamiz yoki ayiramiz. Umumiy murakkablik $O(2^n\cdot n\cdot\log r)$.
 
 
-### Berilgan andozalarni qanoatlantiradigan satrlar soni
+### Berilgan andozalarni qanoatlantiradigan satrlar soni {#the-number-of-strings-that-satisfy-a-given-pattern}
 
 Bir xil uzunlikdagi $n$ ta satr andozasi berilgan. Har bir andoza faqat harflar (`a...z`) va savol belgilaridan iborat. Bundan tashqari, $k$ soni berilgan.
 
@@ -285,7 +285,7 @@ Demak, bu masala uchun ham $O(2^k\cdot k)$ murakkablikdagi yechim olamiz:
 
 $$ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\cdot\binom{|Y|-1}{|Y|-k}\cdot f(Y)$$
 
-### Bir katakdan boshqasiga borish usullari soni
+### Bir katakdan boshqasiga borish usullari soni {#the-number-of-ways-of-going-from-a-cell-to-another}
 
 $n\times m$ maydon berilgan va uning $k$ ta katagi o‘tib bo‘lmaydigan devor. Robot dastlab pastki chapdagi $(1,1)$ katakda turadi. U faqat o‘ngga yoki yuqoriga harakatlana oladi va barcha to‘siqlardan qochib, $(n,m)$ katakka yetishi kerak. Buni bajarish usullari sonini topish talab qilinadi.
 
@@ -315,7 +315,7 @@ Bir muddat to‘siqlarni unutib, `0`-katakdan `i`-katakka boradigan barcha yo‘
 
 $O(k)$ ta to‘siqning har biri uchun $d[i]$ ni $O(k)$ vaqtda hisoblash mumkin. Demak, yechimning umumiy murakkabligi $O(k^2)$.
 
-### O‘zaro tub to‘rttaliklar soni
+### O‘zaro tub to‘rttaliklar soni {#the-number-of-coprime-quadruples}
 
 $n$ ta $a_1,a_2,\ldots,a_n$ son berilgan. Umumiy eng katta bo‘luvchisi $1$ ga teng bo‘ladigan to‘rtta sonni tanlash usullari sonini topish kerak.
 
@@ -331,7 +331,7 @@ $f(d)$ ni hisoblash uchun (oldingi masalada aytilganidek) $d$ ga karrali element
 
 Shunday qilib, kiritish–chiqarish formulasida avval bir tub songa bo‘linadigan to‘rttaliklar sonini qo‘shamiz, ikki tub son ko‘paytmasiga bo‘linadiganlarini ayiramiz, uchta tub son ko‘paytmasiga bo‘linadiganlarini qo‘shamiz va hokazo.
 
-### Garmonik uchliklar soni
+### Garmonik uchliklar soni {#the-number-of-harmonic-triplets}
 
 $n\le10^6$ soni berilgan. Quyidagi shartlardan birini qanoatlantiradigan $2 \le a < b < c \le n$ uchliklar sonini topish kerak:
 
@@ -395,7 +395,7 @@ long long solve() {
 
 $n$ gacha bo‘lgan deyarli har bir son uchun ichki siklda $n/i$ ta iteratsiya bajarilganligi sababli yechimning asimptotik murakkabligi $O(n\log n)$.
 
-### Qo‘zg‘almas nuqtasiz permutatsiyalar soni — derangementlar
+### Qo‘zg‘almas nuqtasiz permutatsiyalar soni — derangementlar {#the-number-of-permutations-without-fixed-points-derangements}
 
 Uzunligi $n$ bo‘lgan, hech bir $i$ soni $i$-o‘rinda turmaydigan, ya’ni qo‘zg‘almas nuqtasi bo‘lmagan permutatsiyalar soni quyidagiga tengligini isbotlaymiz:
 
@@ -436,7 +436,7 @@ Qavs ichidagi yig‘indi $e^{-1}$ ning Taylor qatoridagi dastlabki $n+1$ ta hadd
 
 Shunga o‘xshash masalani ham shu usul bilan yechish mumkin: qo‘zg‘almas nuqtalar permutatsiyaning barcha elementlari orasida emas, faqat dastlabki $m$ ta element orasida bo‘lmasligi talab qilinsin. Hosil bo‘ladigan formula yuqoridagi aniq formulaga o‘xshaydi, ammo yig‘indi $n$ gacha emas, $m$ gacha davom etadi.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 
 Kiritish–chiqarish prinsipi yordamida yechiladigan masalalar:
 

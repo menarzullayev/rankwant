@@ -1,4 +1,4 @@
-# Garner algoritmi
+# Garner algoritmi {#garners-algorithm}
 
 [Xitoy qoldiqlar teoremasi](/algorithms/algebra/chinese-remainder-theorem)ning natijalaridan biri shuki, katta sonlarni kichik butun sonlar massivi yordamida ifodalashimiz mumkin.
 Masalan, $p$ dastlabki $1000$ ta tub sonning ko‘paytmasi bo‘lsin. $p$ taxminan $3000$ xonali son.
@@ -8,7 +8,7 @@ Usullardan biri Xitoy qoldiqlar teoremasi haqidagi maqolada muhokama qilingan.
 
 Ushbu maqolada ayni maqsadda ishlatilishi mumkin bo‘lgan muqobil usul — Garner algoritmini ko‘rib chiqamiz.
 
-## Aralash asosli ifoda
+## Aralash asosli ifoda {#mixed-radix-representation}
 
 $a$ sonini **aralash asosli** ko‘rinishda ifodalashimiz mumkin:
 
@@ -20,7 +20,7 @@ Har bir son $0$ dan $9$ gacha bo‘lgan $d_1d_2d_3\dots d_n$ raqamlar satri bila
 Umumiy holda, asosi $b$ bo‘lgan pozitsion sanoq tizimida $d_1d_2d_3\dots d_n$ raqamlar satri $d_1b^{n-1}+d_2b^{n-2}+\cdots+d_nb^0$ sonini ifodalaydi.
 Aralash asosli tizimda esa bitta asos bo‘lmaydi. Asos pozitsiyadan pozitsiyaga o‘zgaradi.
 
-## Garner algoritmi
+## Garner algoritmi {#garners-algorithm}
 
 Garner algoritmi $x_1,\ldots,x_k$ raqamlarini hisoblaydi.
 Bu raqamlar nisbatan kichikligiga e’tibor bering.
@@ -73,7 +73,7 @@ $$a = x_1 + x_2 \cdot p_1 + x_3 \cdot p_1 \cdot p_2 + \ldots + x_k \cdot p_1 \cd
 
 Amalda $a$ javobini deyarli albatta [ixtiyoriy aniqlikdagi arifmetika](/algorithms/algebra/big-integer) yordamida hisoblashga to‘g‘ri keladi. Ammo $x_i$ raqamlari kichik bo‘lgani uchun, odatda ularni o‘rnatilgan turlar yordamida hisoblash mumkin; shu sababli Garner algoritmi juda samarali.
 
-## Garner algoritmining implementatsiyasi
+## Garner algoritmining implementatsiyasi {#implementation-of-garners-algorithm}
 
 Bu algoritmni Java tilida implementatsiya qilish qulay, chunki unda `BigInteger` sinfi orqali katta sonlar uchun o‘rnatilgan qo‘llab-quvvatlash mavjud.
 Bu yerda katta sonlarni kongruensiyalar to‘plami ko‘rinishida saqlay oladigan implementatsiyani keltiramiz.

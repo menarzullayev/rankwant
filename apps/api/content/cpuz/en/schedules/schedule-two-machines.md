@@ -1,4 +1,4 @@
-# Scheduling jobs on two machines
+# Scheduling jobs on two machines {#scheduling-jobs-on-two-machines}
 
 This task is about finding an optimal schedule for $n$ jobs on two machines.
 Every item must first be processed on the first machine, and afterwards on the second one.
@@ -11,7 +11,7 @@ This solution that is discussed here is called Johnson's rule (named after S. M.
 
 It is worth noting, that the task becomes NP-complete, if we have more than two machines.
 
-## Construction of the algorithm
+## Construction of the algorithm {#construction-of-the-algorithm}
 
 Note first, that we can assume that the order of jobs for the first and the second machine have to coincide.
 In fact, since the jobs for the second machine become available after processing them at the first, and if there are several jobs available for the second machine, than the processing time will be equal to the sum of their $b_i$, regardless of their order.
@@ -72,7 +72,7 @@ Thus we can sort the jobs by $\min(a_i, b_i)$, and if the processing time of the
 
 One way or another, it turns out that by Johnson's rule we can solve the problem by sorting the jobs, and thus receive a time complexity of $O(n \log n)$.
 
-## Implementation
+## Implementation {#implementation}
 
 Here we implement the second variation of the described algorithm.
 

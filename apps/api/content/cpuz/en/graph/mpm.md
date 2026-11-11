@@ -1,8 +1,8 @@
-# Maximum flow - MPM algorithm
+# Maximum flow - MPM algorithm {#maximum-flow-mpm-algorithm}
 
 MPM (Malhotra, Pramodh-Kumar and Maheshwari) algorithm solves the maximum flow problem in $O(V^3)$. This algorithm is similar to [Dinic's algorithm](/algorithms/graph/dinic).
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Like Dinic's algorithm, MPM runs in phases, during each phase we find the blocking flow in the layered network of the residual network of $G$.
 The main difference from Dinic's is how we find the blocking flow.
@@ -31,7 +31,7 @@ Each phase works in $O(V^2)$ because there are at most $V$ iterations (because a
 Summing, we get $O(V^2 + E) = O(V^2)$.
 Since there are less than $V$ phases (see the proof [here](/algorithms/graph/dinic)), MPM works in $O(V^3)$ total.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 struct MPM{

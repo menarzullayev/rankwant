@@ -1,4 +1,4 @@
-# Delaunay triangulyatsiyasi va Voronoi diagrammasi
+# Delaunay triangulyatsiyasi va Voronoi diagrammasi {#delaunay-triangulation-and-voronoi-diagram}
 
 Tekislikda $\{p_i\}$ nuqtalar to‘plami berilgan bo‘lsin.
 $\{p_i\}$ ning **Voronoi diagrammasi** $V(\{p_i\})$ — tekislikning $n$ ta $V_i$ sohaga bo‘linishi, bunda $V_i = \{p\in\mathbb{R}^2;\ \rho(p, p_i) = \min\ \rho(p, p_k)\}$.
@@ -7,21 +7,21 @@ $\{p_i\}$ ning **Delaunay triangulyatsiyasi** $D(\{p_i\})$ — shunday trianguly
 
 Voronoi diagrammasi bog‘lanmagan va Delaunay triangulyatsiyasi mavjud bo‘lmaydigan yoqimsiz degenerativ holat bor. Bu barcha nuqtalar kollinear bo‘lgan holatdir.
 
-## Xossalar
+## Xossalar {#properties}
 
 Delaunay triangulyatsiyasi barcha mumkin bo‘lgan triangulyatsiyalar orasida eng kichik burchakni maksimal qiladi.
 
 Nuqtalar to‘plamining minimal Evklid ostov daraxti uning Delaunay triangulyatsiyasi qirralarining qism to‘plamidir.
 
-## Duallik
+## Duallik {#duality}
 
 Faraz qilaylik, $\{p_i\}$ kollinear emas va $\{p_i\}$ orasida hech qaysi to‘rtta nuqta bitta aylanada yotmaydi. U holda $V(\{p_i\})$ va $D(\{p_i\})$ dualdir, ya’ni ulardan birini topsak, ikkinchisini $O(n)$ da topish mumkin. Agar bunday bo‘lmasa-chi? Kollinear holatni oson qayta ishlash mumkin. Aks holda $V$ va $D'$ dualdir, bunda $D'$ — $D$ dan shunday qirralarni olib tashlash orqali hosil qilinadi, bu qirraning ikkala tomonidagi ikkita uchburchak bitta tashqi chizilgan aylanaga ega.
 
-## Delaunay va Voronoi diagrammalarini qurish
+## Delaunay va Voronoi diagrammalarini qurish {#building-delaunay-and-voronoi}
 
 Duallik tufayli $V$ va $D$ dan faqat bittasini hisoblaydigan tez algoritm yetarli. Biz $D(\{p_i\})$ ni $O(n\log n)$ da qurishni tavsiflaymiz. Triangulyatsiya Guibas va Stolfi tomonidan taklif qilingan divide-and-conquer (bo‘lib yechish) algoritmi yordamida quriladi.
 
-## Quad-edge ma’lumotlar tuzilmasi
+## Quad-edge ma’lumotlar tuzilmasi {#quad-edge-data-structure}
 
 Algoritm davomida $D$ quad-edge ma’lumotlar tuzilmasida saqlanadi. Bu tuzilma rasmda tasvirlangan:
 
@@ -38,7 +38,7 @@ Algoritmda qirralar ustida quyidagi funksiyalardan foydalanamiz:
   4. `connect(a, b)`
     Bu funksiya `a->Dest` dan `b->Org` ga shunday yangi `e` qirrani yaratadiki, `a`, `b`, `e` ning hammasi bir xil chap yuzga ega bo‘ladi. Buning uchun `e = make_edge(a->Dest, b->Org)`, `splice(e, a->Lnext)` va `splice(e->Rev, b)` ni chaqiramiz.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Algoritm triangulyatsiyani hisoblaydi va ikkita quad-edge qaytaradi: eng chap uchdan chiqadigan, soat miliga teskari yo‘nalishdagi qavariq qobiq qirrasi va eng o‘ng uchdan chiqadigan, soat mili yo‘nalishidagi qavariq qobiq qirrasi.
 
@@ -53,7 +53,7 @@ Bu uchburchakning yangi L-R qirrasi keyingi qo‘shiladigan ko‘ndalang qirra b
 Buni samarali bajarish uchun ikkita `lcand` va `rcand` qirrani hisoblaymiz: `lcand` bu jarayonda birinchi uchragan L nuqtaga, `rcand` esa birinchi uchragan R nuqtaga ishora qiladi.
 So‘ng avval uchraydiganini tanlaymiz. Boshida `base` L va R ning pastki urinmasiga ishora qiladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 E’tibor bering, `in_circle` funksiyasining implementatsiyasi GCC ga xosdir.
 
@@ -299,7 +299,7 @@ vector<tuple<pt, pt, pt>> delaunay(vector<pt> p) {
 }
 ```
 
-## Masalalar
+## Masalalar {#problems}
  * [TIMUS 1504 Good Manners](http://acm.timus.ru/problem.aspx?space=1&num=1504)
  * [TIMUS 1520 Empire Strikes Back](http://acm.timus.ru/problem.aspx?space=1&num=1520)
  * [SGU 383 Caravans](https://codeforces.com/problemsets/acmsguru/problem/99999/383)

@@ -1,8 +1,8 @@
-# Xitoy qoldiqlar teoremasi
+# Xitoy qoldiqlar teoremasi {#chinese-remainder-theorem}
 
 Xitoy qoldiqlar teoremasini (maqolaning qolgan qismida XQT deb yuritamiz) xitoylik matematik Sun Zi kashf qilgan.
 
-## Ifodalanishi
+## Ifodalanishi {#formulation}
 
 $m = m_1 \cdot m_2 \cdots m_k$ bo‘lsin, bu yerda $m_i$ lar juft-jufti bilan o‘zaro tub. $m_i$ lardan tashqari quyidagi kongruensiyalar sistemasi ham berilgan:
 
@@ -25,7 +25,7 @@ $$\left\{\begin{array}{rcl}
 kongruensiyalar sistemasi $105$ modul bo‘yicha $23$ yechimga ega, chunki $23 \bmod{3} = 2$, $23 \bmod{5} = 3$ va $23 \bmod{7} = 2$.
 Barcha yechimlarni $k \in \mathbb{Z}$ uchun $23 + 105\cdot k$ ko‘rinishida yozish mumkin.
 
-### Natija
+### Natija {#corollary}
 
 XQTdan quyidagi tenglama
 
@@ -41,7 +41,7 @@ $$\left\{\begin{array}{rcl}
 
 (Yuqoridagidek, $m = m_1 m_2 \cdots m_k$ va $m_i$ lar juft-jufti bilan o‘zaro tub deb faraz qilamiz.)
 
-## Ikki modul uchun yechim
+## Ikki modul uchun yechim {#solution-for-two-moduli}
 
 O‘zaro tub $m_1,m_2$ uchun ikki tenglamali sistemani ko‘rib chiqamiz:
 
@@ -79,15 +79,15 @@ Ikki xil $x$ va $y$ yechim mavjud deb faraz qilamiz.
 $x \equiv a_i \pmod{m_i}$ va $y \equiv a_i \pmod{m_i}$ bo‘lgani sababli, $x-y \equiv 0 \pmod{m_i}$; bundan $x-y \equiv 0 \pmod{m_1m_2}$, yoki teng kuchli ravishda $x \equiv y \pmod{m_1m_2}$ kelib chiqadi.
 Demak, $x$ va $y$ aslida bitta yechimdir.
 
-## Umumiy hol uchun yechim
+## Umumiy hol uchun yechim {#solution-for-general-case}
 
-### Induktiv yechim
+### Induktiv yechim {#inductive-solution}
 
 $m_1m_2$ soni $m_3$ bilan o‘zaro tub bo‘lgani sababli, istalgan sondagi modullar uchun ikki modulga oid yechimni induktiv ravishda takroran qo‘llashimiz mumkin.
 Avval dastlabki ikki kongruensiyadan foydalanib $b_2 := a \pmod{m_1m_2}$ ni hisoblaymiz,
 so‘ng $a \equiv b_2 \pmod{m_1m_2}$ va $a \equiv a_3 \pmod{m_3}$ kongruensiyalaridan foydalanib $b_3 := a \pmod{m_1m_2m_3}$ ni hisoblaymiz va hokazo.
 
-### Bevosita qurish
+### Bevosita qurish {#direct-construction}
 
 Lagrange interpolyatsiyasiga o‘xshash bevosita konstruksiya ham mumkin.
 
@@ -105,7 +105,7 @@ a & \equiv & \sum_{j=1}^k a_j M_j N_j & \pmod{m_i} \\
   & \equiv & a_i                      & \pmod{m_i}
 \end{array}$$
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 struct Congruence {
@@ -128,7 +128,7 @@ long long chinese_remainder_theorem(vector<Congruence> const& congruences) {
 }
 ```
 
-## O‘zaro tub bo‘lmagan modullar uchun yechim
+## O‘zaro tub bo‘lmagan modullar uchun yechim {#solution-for-not-coprime-moduli}
 
 Yuqorida aytilganidek, oldingi algoritm faqat o‘zaro tub $m_1, m_2, \dots m_k$ modullar uchun ishlaydi.
 
@@ -190,7 +190,7 @@ $$\left\{\begin{align}
 
 Uning yechimi $53 \pmod{60}$; haqiqatan ham $53 \bmod{10}=3$ va $53 \bmod{12}=5$.
 
-## Garner algoritmi
+## Garner algoritmi {#garners-algorithm}
 
 XQTning yana bir natijasi shuki, katta sonlarni kichik butun sonlar massivi yordamida ifodalashimiz mumkin.
 Juda katta sonlar bilan ko‘p hisoblashlar bajarish (masalan, 1000 xonali sonlarni bo‘lish) qimmat bo‘lishi mumkin; buning o‘rniga bir nechta o‘zaro tub modul tanlab, katta sonni kongruensiyalar sistemasi sifatida ifodalash va barcha amallarni shu sistema ustida bajarish mumkin.
@@ -204,7 +204,7 @@ $$a = x_1 + x_2 m_1 + x_3 m_1 m_2 + \ldots + x_k m_1 \cdots m_{k-1} \text{ with 
 Alohida [Garner algoritmi](/algorithms/algebra/garners-algorithm) maqolasida muhokama qilingan Garner algoritmi $x_i$ koeffitsiyentlarni hisoblaydi.
 Shu koeffitsiyentlar yordamida to‘liq sonni qayta tiklash mumkin.
 
-## Mashq masalalari:
+## Mashq masalalari: {#practice-problems}
 
 * [Google Code Jam - Golf Gophers](https://github.com/google/coding-competitions-archive/blob/main/codejam/2019/round_1a/golf_gophers/statement.pdf)
 * [Hackerrank - Number of sequences](https://www.hackerrank.com/contests/w22/challenges/number-of-sequences)

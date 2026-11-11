@@ -1,10 +1,10 @@
-# Geometriya asoslari
+# Geometriya asoslari {#basic-geometry}
 
 Ushbu maqolada butun analitik geometriyaning asosini tashkil qiladigan Evklid fazosidagi nuqtalar ustida bajariladigan asosiy amallarni ko‘rib chiqamiz.
 Har bir $\mathbf r$ nuqta uchun $\mathbf 0$ dan $\mathbf r$ ga yo‘nalgan $\vec{\mathbf r}$ vektorni qaraymiz.
 Keyinchalik $\mathbf r$ va $\vec{\mathbf r}$ ni farqlamaymiz va **nuqta** atamasini **vektor** atamasining sinonimi sifatida ishlatamiz.
 
-## Chiziqli amallar
+## Chiziqli amallar {#linear-operations}
 
 Ikki o‘lchamli ham, uch o‘lchamli ham nuqtalar chiziqli fazo tashkil qiladi; bu ular uchun nuqtalar yig‘indisi va nuqtani biror songa ko‘paytirish amallari aniqlanganini bildiradi. Ikki o‘lchamli holat uchun ularning asosiy implementatsiyalari quyidagicha:
 
@@ -100,9 +100,9 @@ point3d operator*(ftype a, point3d b) {
 
 Bu yerda `ftype` koordinatalar uchun ishlatiladigan biror tur bo‘lib, odatda `int`, `double` yoki `long long` bo‘ladi.
 
-## Skalyar ko‘paytma
+## Skalyar ko‘paytma {#dot-product}
 
-### Ta’rif
+### Ta’rif {#definition}
 $\mathbf a$ va $\mathbf b$ vektorlarning skalyar ko‘paytmasi $\mathbf a \cdot \mathbf b$ ni ikki teng kuchli usulda ta’riflash mumkin.
 Geometrik jihatdan u birinchi vektor uzunligining ikkinchi vektorning birinchi vektorga proyeksiyasi uzunligiga ko‘paytmasidir.
 Quyidagi rasmdan ko‘rinib turibdiki, bu proyeksiya aynan $|\mathbf a| \cos \theta$ ga teng, bunda $\theta$ — $\mathbf a$ va $\mathbf b$ orasidagi burchak. Demak, $\mathbf a\cdot  \mathbf b = |\mathbf a| \cos \theta \cdot |\mathbf b|$.
@@ -144,7 +144,7 @@ ftype dot(point3d a, point3d b) {
 
 Masalalarni yechishda skalyar ko‘paytmani hisoblash uchun algebraik ta’rifdan foydalanish kerak, lekin uni qo‘llash uchun geometrik ta’rif va xossalarni yodda tutish lozim.
 
-### Xossalar
+### Xossalar {#properties}
 
 Skalyar ko‘paytma orqali ko‘plab geometrik xossalarni aniqlash mumkin.
 Masalan:
@@ -182,9 +182,9 @@ Quyidagi rasmda $\mathbf a$ vektor va u bilan bir xil skalyar ko‘paytmaga ega 
 E’tibor bering, bu natija 2D da to‘g‘ri chiziqni $\mathbf r\cdot \mathbf n=C$ yoki $(\mathbf r - \mathbf r_0)\cdot \mathbf n=0$ ko‘rinishda aniqlash imkonini beradi; bunda $\mathbf n$ — chiziqqa ortogonal vektor, $\mathbf r_0$ — chiziqda allaqachon mavjud istalgan vektor va $C = \mathbf r_0\cdot \mathbf n$.
 Xuddi shu tarzda 3D da tekislikni aniqlash mumkin.
 
-## Vektor ko‘paytma
+## Vektor ko‘paytma {#cross-product}
 
-### Ta’rif
+### Ta’rif {#definition}
 
 Quyidagi rasmdagidek parallelepipedga birlashtirilgan 3D fazodagi uchta $\mathbf a$, $\mathbf b$ va $\mathbf c$ vektor berilgan deylik:
 
@@ -256,7 +256,7 @@ ftype cross(point2d a, point2d b) {
 }
 ```
 
-### Xossalar
+### Xossalar {#properties}
 
 Vektor ko‘paytmaga kelsak, u faqat va faqat $\mathbf a$ va $\mathbf b$ vektorlar kollinear bo‘lganda (ular umumiy to‘g‘ri chiziq hosil qiladi, ya’ni parallel) nol vektorga teng.
 Aralash ko‘paytma uchun ham xuddi shunday: u faqat va faqat $\mathbf a$, $\mathbf b$ va $\mathbf c$ vektorlar komplanar bo‘lganda (ular umumiy tekislik hosil qiladi) nolga teng.
@@ -270,9 +270,9 @@ Tekislikni esa uchta $\mathbf a$, $\mathbf b$ va $\mathbf c$ nuqta orqali $(\mat
 Va, albatta, undan ko‘pburchaklar yuzini hisoblash uchun foydalanish mumkin; bu boshqa maqolada tasvirlangan.
 3D fazoda xuddi shu maqsadda aralash ko‘paytmadan foydalanish mumkin.
 
-## Mashqlar
+## Mashqlar {#exercises}
 
-### Chiziqlarning kesishishi
+### Chiziqlarning kesishishi {#line-intersection}
 
 2D da to‘g‘ri chiziqni aniqlashning ko‘plab usullari bor va ularni birlashtirishdan tortinmaslik kerak.
 Masalan, ikkita to‘g‘ri chiziq berilgan va ularning kesishish nuqtalarini topmoqchimiz.
@@ -289,7 +289,7 @@ point2d intersect(point2d a1, point2d d1, point2d a2, point2d d2) {
 }
 ```
 
-### Tekisliklarning kesishishi
+### Tekisliklarning kesishishi {#planes-intersection}
 
 Biroq ba’zan geometrik mulohazalardan foydalanish qiyin bo‘lishi mumkin.
 Masalan, boshlang‘ich nuqtalari $\mathbf a_i$ va yo‘nalishlari $\mathbf d_i$ bilan aniqlangan uchta tekislik berilgan va ularning kesishish nuqtasini topmoqchisiz.

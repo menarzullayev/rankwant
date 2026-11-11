@@ -1,6 +1,6 @@
-# Modular Multiplicative Inverse
+# Modular Multiplicative Inverse {#modular-multiplicative-inverse}
 
-## Definition
+## Definition {#definition}
 
 A [modular multiplicative inverse](http://en.wikipedia.org/wiki/Modular_multiplicative_inverse) of an integer $a$ is an integer $x$ such that $a \cdot x$ is congruent to $1$ modular some modulus $m$.
 To write it in a formal way: we want to find an integer $x$ so that 
@@ -15,7 +15,7 @@ It can be proven that the modular inverse exists if and only if $a$ and $m$ are 
 
 In this article, we present two methods for finding the modular inverse in case it exists, and one method for finding the modular inverse for all numbers in linear time.
 
-## Finding the Modular Inverse using Extended Euclidean algorithm
+## Finding the Modular Inverse using Extended Euclidean algorithm {#finding-the-modular-inverse-using-extended-euclidean-algorithm}
 
 Consider the following equation (with unknown $x$ and $y$):
 
@@ -48,7 +48,7 @@ else {
 Notice that the way we modify `x`.
 The resulting `x` from the extended Euclidean algorithm may be negative, so `x % m` might also be negative, and we first have to add `m` to make it positive.
 
-## Finding the Modular Inverse using Binary Exponentiation
+## Finding the Modular Inverse using Binary Exponentiation {#fermat-euler}
 
 Another method for finding modular inverse is to use Euler's theorem, which states that the following congruence is true if $a$ and $m$ are relatively prime:
 
@@ -70,7 +70,7 @@ From these results, we can easily find the modular inverse using the [binary exp
 
 Even though this method is easier to understand than the method described in previous paragraph, in the case when $m$ is not a prime number, we need to calculate Euler phi function, which involves factorization of $m$, which might be very hard. If the prime factorization of $m$ is known, then the complexity of this method is $O(\log m)$.
 
-## Finding the modular inverse for prime moduli using Euclidean Division
+## Finding the modular inverse for prime moduli using Euclidean Division {#finding-the-modular-inverse-using-euclidean-division}
 
 Given a prime modulus $m > a$ (or we can apply modulo to make it smaller in 1 step), according to [Euclidean Division](https://en.wikipedia.org/wiki/Euclidean_division)
 
@@ -111,7 +111,7 @@ for(int a = 2; a < m; ++a)
     inv[a] = m - (long long)(m/a) * inv[m%a] % m;
 ```
 
-## Finding the modular inverse for array of numbers modulo $m$
+## Finding the modular inverse for array of numbers modulo $m$ {#finding-the-modular-inverse-for-array-of-numbers-modulo-m}
 
 Suppose we are given an array and we want to find modular inverse for all numbers in it (all of them are invertible).
 Instead of computing the inverse for every number, we can expand the fraction by the prefix product (excluding itself) and suffix product (excluding itself), and end up only computing a single inverse instead.
@@ -147,7 +147,7 @@ std::vector<int> invs(const std::vector<int> &a, int m) {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [UVa 11904 - One Unit Machine](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=3055)
 * [Hackerrank - Longest Increasing Subsequence Arrays](https://www.hackerrank.com/contests/world-codesprint-5/challenges/longest-increasing-subsequence-arrays)

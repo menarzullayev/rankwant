@@ -1,11 +1,11 @@
-# Paint the edges of the tree
+# Paint the edges of the tree {#paint-the-edges-of-the-tree}
 
 This is a fairly common task. Given a tree $G$ with $N$ vertices. There are two types of queries: the first one is to paint an edge, the second one is to query the number of colored edges between two vertices.
 
 Here we will describe a fairly simple solution (using a [segment tree](/algorithms/data-structures/segment-tree)) that will answer each query in $O(\log N)$ time.
 The preprocessing step will take $O(N)$ time.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 First, we need to find the [LCA](/algorithms/graph/lca) to reduce each query of the second kind $(i,j)$ into two queries $(l,i)$ and $(l,j)$, where $l$ is the LCA of $i$ and $j$.
 The answer of the query $(i,j)$ will be the sum of both subqueries.
@@ -38,7 +38,7 @@ The sum query in the segment tree is executed in $O(\log N)$.
 Answering the **first type of query** (painting an edge) is even easier - we just need to update $T1$ and $T2$, namely to perform a single update of the element that corresponds to our edge (finding the edge in the list, again, is possible in $O(1)$, if you perform this search during preprocessing).
 A single modification in the segment tree is performed in $O(\log N)$.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is the full implementation of the solution, including LCA computation:
 

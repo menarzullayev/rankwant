@@ -1,10 +1,10 @@
-# Discrete Root
+# Discrete Root {#discrete-root}
 
 The problem of finding a discrete root is defined as follows. Given a prime $n$ and two integers $a$ and $k$, find all $x$ for which:
 
 $x^k \equiv a \pmod n$
 
-## The algorithm
+## The algorithm {#the-algorithm}
 
 We will solve this problem by reducing it to the [discrete logarithm problem](/algorithms/algebra/discrete-log).
 
@@ -28,7 +28,7 @@ Now we have one unknown $y$, which is a discrete logarithm problem. The solution
 
 Having found one solution $y_0$, one of solutions of discrete root problem will be $x_0 = g^{y_0} \pmod n$.
 
-## Finding all solutions from one known solution
+## Finding all solutions from one known solution {#finding-all-solutions-from-one-known-solution}
 
 To solve the given problem in full, we need to find all solutions knowing one of them: $x_0 = g^{y_0} \pmod n$.
 
@@ -46,7 +46,7 @@ $x = g^{y_0 + i \frac {\phi (n)}{gcd(k, \phi (n))}} \pmod n \forall i \in Z$.
 
 This is the final formula for all solutions of the discrete root problem.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is a full implementation, including procedures for finding the primitive root, discrete log and finding and printing all solutions.
 
@@ -137,6 +137,6 @@ int main() {
 }
 ```
 
-## Practice problems
+## Practice problems {#practice-problems}
 
 * [Codeforces - Lunar New Year and a Recursive Sequence](https://codeforces.com/contest/1106/problem/F)

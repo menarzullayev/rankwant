@@ -1,12 +1,12 @@
-# Eng katta nollardan iborat ostmatritsani topish
+# Eng katta nollardan iborat ostmatritsani topish {#finding-the-largest-zero-submatrix}
 
 `n` ta qator va `m` ta ustundan iborat matritsa berilgan. Faqat nollardan tashkil topgan eng katta ostmatritsani toping. Ostmatritsa deganda matritsaning to‘g‘ri to‘rtburchak shaklidagi sohasi tushuniladi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Matritsa elementlarini `a[i][j]` deb belgilaymiz; bu yerda `i = 0...n - 1`, `j = 0... m - 1`. Soddalik uchun noldan farqli barcha elementlarni `1` ga teng deb hisoblaymiz.
 
-### 1-qadam: yordamchi dinamika
+### 1-qadam: yordamchi dinamika {#step-1-auxiliary-dynamic}
 
 Avval quyidagi yordamchi qiymatlarni hisoblaymiz: `d[i][j]` — `a[i][j]` katagining tepasida 1 joylashgan eng yaqin qator. Aniqroq aytganda, `d[i][j]` — `j`-ustunda elementi `1` ga teng bo‘lgan, `0` dan `i - 1` gacha bo‘lgan eng katta qator raqami.
 
@@ -23,7 +23,7 @@ for (int i = 0; i < n; ++i) {
 }
 ```
 
-### 2-qadam: masalani yechish
+### 2-qadam: masalani yechish {#step-2-problem-solving}
 
 Qatorlarni ko‘rib chiqib, ostmatritsaning barcha mumkin bo‘lgan chap va o‘ng chegaralarini sinash orqali masalani $O(n m^2)$ vaqtda yechish mumkin. To‘g‘ri to‘rtburchakning pastki chegarasi joriy qator bo‘ladi, yuqori chegarani esa `d[i][j]` yordamida topamiz. Ammo bundan ham yaxshiroq natijaga erishib, yechim murakkabligini sezilarli darajada kamaytirish mumkin.
 
@@ -47,7 +47,7 @@ Har bir qatorda stekka aniq `m` ta element qo‘shiladi, demak undan chiqarishla
 
 Shuningdek, kirish ma’lumotlari — `a[][]` matritsasi — hisobga olinmasa, algoritm $O(m)$ xotira sarflashini ta’kidlash kerak.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 ```cpp
 int zero_matrix(vector<vector<int>> a) {

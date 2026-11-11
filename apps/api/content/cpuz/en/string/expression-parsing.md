@@ -1,11 +1,11 @@
-# Expression parsing
+# Expression parsing {#expression-parsing}
 
 A string containing a mathematical expression containing numbers and various operators is given.
 We have to compute the value of it in $O(n)$, where $n$ is the length of the string.
 
 The algorithm discussed here translates an expression into the so-called **reverse Polish notation** (explicitly or implicitly), and evaluates this expression.
 
-## Reverse Polish notation
+## Reverse Polish notation {#reverse-polish-notation}
 
 The reverse Polish notation is a form of writing mathematical expressions, in which the operators are located after their operands.
 For example the following expression
@@ -26,7 +26,7 @@ In the end there will be exactly one element left in the stack, which will be th
 
 Obviously this simple evaluation runs in $O(n)$ time.
 
-## Parsing of simple expressions
+## Parsing of simple expressions {#parsing-of-simple-expressions}
 
 For the time being we only consider a simplified problem:
 we assume that all operators are **binary** (i.e. they take two arguments), and all are **left-associative** (if the priorities are equal, they get executed from left to right).
@@ -117,7 +117,7 @@ int evaluate(string& s) {
 Thus we learned how to calculate the value of an expression in $O(n)$, at the same time we implicitly used the reverse Polish notation.
 By slightly modifying the above implementation it is also possible to obtain the expression in reverse Polish notation in an explicit form.
 
-## Unary operators
+## Unary operators {#unary-operators}
 
 Now suppose that the expression also contains **unary** operators (operators that take one argument).
 The unary plus and unary minus are common examples of such operators.
@@ -133,7 +133,7 @@ And we need to chose the priority of a unary operator higher than all of the bin
 
 In addition it should be noted, that some unary operators (e.g. unary plus and unary minus) are actually **right-associative**.
 
-## Right-associativity
+## Right-associativity {#right-associativity}
 
 Right-associative means, that whenever the priorities are equal, the operators must be evaluated from right to left.
 

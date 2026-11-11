@@ -1,4 +1,4 @@
-# Catalan Numbers
+# Catalan Numbers {#catalan-numbers}
 Catalan numbers is a number sequence, which is found useful in a number of combinatorial problems, often involving recursively-defined objects.
 
 This sequence was named after the Belgian mathematician [Catalan](https://en.wikipedia.org/wiki/Eug%C3%A8ne_Charles_Catalan), who lived in the 19th century. (In fact it was known before to Euler, who lived a century before Catalan).
@@ -7,7 +7,7 @@ The first few Catalan numbers $C_n$ (starting from zero):
 
  $1, 1, 2, 5, 14, 42, 132, 429, 1430, \ldots$
 
-### Application in some combinatorial problems
+### Application in some combinatorial problems {#application-in-some-combinatorial-problems}
 
 The Catalan number $C_n$ is the solution for
 
@@ -22,11 +22,11 @@ The Catalan number $C_n$ is the solution for
 - The number of [non-crossing partitions](https://en.wikipedia.org/wiki/Noncrossing_partition) of a set of $n$ elements.
 - The number of ways to cover the ladder $1 \ldots n$ using $n$ rectangles (The ladder consists of $n$ columns, where $i^{th}$ column has a height $i$).
 
-## Calculations
+## Calculations {#calculations}
 
 There are two formulas for the Catalan numbers: **Recursive and Analytical**. Since, we believe that all the mentioned above problems are equivalent (have the same solution), for the proof of the formulas below we will choose the task which it is easiest to do.
 
-### Recursive formula
+### Recursive formula {#recursive-formula}
  
 $$C_0 = C_1 = 1$$
 
@@ -40,7 +40,7 @@ You can also think it in this manner. By definition, $C_n$ denotes number of cor
 
 $( ) ( ( ) )$ can be divided into $( )$ and $( ( ) )$, but cannot be divided into $( ) ($ and $( ) )$. Again summing over all admissible $k's$, we get the recurrence relation on $C_n$.
 
-#### C++ implementation 
+#### C++ implementation {#c-implementation}
 
 ```cpp
 const int MOD = ....
@@ -60,7 +60,7 @@ void init() {
 }
 ```
 
-### Analytical formula
+### Analytical formula {#analytical-formula}
 
 $$C_n = \frac{1}{n + 1} {\binom{2n}{n}}$$
 
@@ -74,12 +74,12 @@ The number of monotonic paths in the lattice $(n - 1) \times (n + 1)$ are $\bino
 
 $$C_n = \binom{2n}{n} - \binom{2n}{n-1} = \frac{1}{n + 1} \binom{2n}{n} , {n} \geq 0$$
 
-## Reference
+## Reference {#reference}
 
 - [Catalan Number by Tom Davis](http://www.geometer.org/mathcircles/catalan.pdf)
 - [Catalan Numbers and Catalan Convolution](https://codeforces.com/blog/entry/87585)
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 - [Codechef - PANSTACK](https://www.codechef.com/APRIL12/problems/PANSTACK/)
 - [Spoj - Skyline](http://www.spoj.com/problems/SKYLINE/)
 - [UVA - Safe Salutations](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=932)

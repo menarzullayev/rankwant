@@ -1,4 +1,4 @@
-# Finding repetitions
+# Finding repetitions {#finding-repetitions}
 
 Given a string $s$ of length $n$.
 
@@ -10,7 +10,7 @@ Or a simplified task: find **any** repetition or find the **longest** repetition
 
 The algorithm described here was published in 1982 by Main and Lorentz.
 
-## Example
+## Example {#example}
 
 Consider the repetitions in the following example string:
 
@@ -31,7 +31,7 @@ Here there are only two repetitions
 - $s[0 \dots 5] = abaaba$
 - $s[2 \dots 3] = aa$
 
-## Number of repetitions
+## Number of repetitions {#number-of-repetitions}
 
 In general there can be up to $O(n^2)$ repetitions in a string of length $n$.
 An obvious example is a string consisting of $n$ times the same letter, in this case any substring of even length is a repetition.
@@ -58,7 +58,7 @@ Also, here are some more interesting results related to the number of repetition
     The number of repetitions in the Fibonacci string $f_i$, even in the compressed with Crochemore triples, is $O(f_n \log f_n)$.
     The number of primitive repetitions is also $O(f_n \log f_n)$.
 
-## Main-Lorentz algorithm
+## Main-Lorentz algorithm {#main-lorentz-algorithm}
 
 The idea behind the Main-Lorentz algorithm is **divide-and-conquer**.
 
@@ -70,7 +70,7 @@ This is the essential part of the Main-Lorentz algorithm, and we will discuss it
 The complexity of divide-and-conquer algorithms is well researched.
 The [master theorem](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms)) says, that we will end up with an $O(n \log n)$ algorithm, if we can compute the crossing repetitions in $O(n)$ time.
 
-### Search for crossing repetitions
+### Search for crossing repetitions {#search-for-crossing-repetitions}
 
 So we want to find all such repetitions that start in the first half of the string, let's call it $u$, and end in the second half, let's call it $v$:
 
@@ -103,7 +103,7 @@ Here we fixated the position $cntr = 1$, and at this position we find the repeti
 It is clear, that if we fixate the position $cntr$, we simultaneously fixate the length of the possible repetitions: $l = |u| - cntr$.
 Once we know how to find these repetitions, we will iterate over all possible values for $cntr$ from $0$ to $|u|-1$, and find all left crossover repetitions of length $l = |u|,~ |u|-1,~ \dots, 1$.
 
-### Criterion for left crossing repetitions
+### Criterion for left crossing repetitions {#criterion-for-left-crossing-repetitions}
 
 Now, how can we find all such repetitions for a fixated $cntr$?
 Keep in mind that there still can be multiple such repetitions.
@@ -165,7 +165,7 @@ Luckily we can compute them in $O(1)$ using the [Z-function](/algorithms/string/
 
 So this is enough to find all left crossing repetitions.
 
-### Right crossing repetitions
+### Right crossing repetitions {#right-crossing-repetitions}
 
 For computing the right crossing repetitions we act similarly:
 we define the center $cntr$ as the character corresponding to the last character in the string $u$.
@@ -177,7 +177,7 @@ Thus we can find the values $k_1$ and $k_2$ by computing the Z-function for the 
 
 After that we can find the repetitions by looking at all positions $cntr$, and use the same criterion as we had for left crossing repetitions.
 
-### Implementation
+### Implementation {#implementation}
 
 The implementation of the Main-Lorentz algorithm finds all repetitions in form of peculiar tuples of size four: $(cntr,~ l,~ k_1,~ k_2)$ in $O(n \log n)$ time.
 If you only want to find the number of repetitions in a string, or only want to find the longest repetition in a string, this information is enough and the runtime will still be $O(n \log n)$.

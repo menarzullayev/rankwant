@@ -1,4 +1,4 @@
-# Eylerning phi-funksiyasi
+# Eylerning phi-funksiyasi {#eulers-totient-function}
 
 Eylerning totient funksiyasi, **phi-funksiya** $\phi (n)$ deb ham ataladi, 1 dan $n$ gacha bo‘lgan va $n$ bilan o‘zaro tub bo‘lgan butun sonlar sonini hisoblaydi. Ikki sonning eng katta umumiy bo‘luvchisi $1$ ga teng bo‘lsa, ular o‘zaro tub deyiladi ($1$ istalgan son bilan o‘zaro tub deb hisoblanadi).
 
@@ -10,7 +10,7 @@ n & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 
 \phi(n) & 1 & 1 & 2 & 2 & 4 & 2 & 6 & 4 & 6 & 4 & 10 & 4 & 12 & 6 & 8 & 8 & 16 & 6 & 18 & 8 & 12 \\ \hline
 \end{array}$$
 
-## Xossalari
+## Xossalari {#properties}
 
 Eylerning totient funksiyasini istalgan son uchun hisoblashga quyidagi xossalar yetarli:
 
@@ -45,7 +45,7 @@ $$\begin{align}
 &= n \cdot \left(1 - \frac{1}{p_1}\right) \cdot \left(1 - \frac{1}{p_2}\right) \cdots \left(1 - \frac{1}{p_k}\right)
 \end{align}$$
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyidagi implementatsiya $O(\sqrt{n})$ vaqtda faktorizatsiyadan foydalanadi:
 
@@ -87,7 +87,7 @@ void phi_1_to_n(int n) {
 }
 ```
 
-### [Segmentlangan elak](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve) yordamida $L$ dan $R$ gacha totientlarni topish
+### [Segmentlangan elak](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve) yordamida $L$ dan $R$ gacha totientlarni topish {#finding-the-totient-from-l-to-r-using-the-segmented-sievealgorithmsalgebrasieve-of-eratosthenessegmented-sieve}
 
 Agar $L$ dan $R$ gacha bo‘lgan barcha sonlarning totient qiymati kerak bo‘lsa, [segmentlangan elak](/algorithms/algebra/sieve-of-eratosthenes#segmented-sieve) yondashuvidan foydalanishimiz mumkin.
 Algoritm avval [chiziqli elak](/algorithms/algebra/prime-sieve-linear) yordamida $O(\sqrt{R})$ vaqt va xotirada $\sqrt{R}$ gacha bo‘lgan barcha tub sonlarni oldindan hisoblaydi. Keyin $[L,R]$ oraliqdagi har bir son uchun shu tub sonlar bo‘ylab yurib, faktorizatsiyaga asoslangan $\phi$ formulasini qo‘llaydi. Har bir sonning hali faktorizatsiya qilinmagan qismini kuzatish uchun qoldiqlar massivini saqlaymiz. Agar barcha kichik tub sonlar ko‘rib chiqilgandan keyin qoldiq 1 dan katta bo‘lib qolsa, bu $\sqrt{R}$ dan katta tub ko‘paytuvchi mavjudligini bildiradi; u oxirgi o‘tishda qayta ishlanadi.
@@ -144,7 +144,7 @@ Bu yerda yig‘indi $n$ ning barcha musbat bo‘luvchilari $d$ bo‘yicha olinad
 Masalan, 10 ning bo‘luvchilari 1, 2, 5 va 10.
 Shuning uchun $\phi{(1)} + \phi{(2)} + \phi{(5)} + \phi{(10)} = 1 + 1 + 4 + 4 = 10$.
 
-### Bo‘luvchilar yig‘indisi xossasi yordamida 1 dan $n$ gacha totientlarni topish
+### Bo‘luvchilar yig‘indisi xossasi yordamida 1 dan $n$ gacha totientlarni topish {#finding-the-totient-from-1-to-n-using-the-divisor-sum-property}
 
 Bo‘luvchilar yig‘indisi xossasi 1 dan $n$ gacha bo‘lgan barcha sonlarning totient qiymatini hisoblashga ham imkon beradi.
 Bu implementatsiya Eratosfen elagiga asoslangan oldingi implementatsiyadan biroz sodda, biroq murakkabligi ham sal yomonroq: $O(n \log n)$.
@@ -180,13 +180,13 @@ $$a^n \equiv a^{n \bmod \phi(m)} \pmod m$$
 
 Bu juda katta $n$ uchun $x^n \bmod m$ ni hisoblash imkonini beradi; ayniqsa $n$ boshqa bir hisoblashning natijasi bo‘lsa, uni modul bo‘yicha hisoblash mumkin bo‘ladi.
 
-### Guruhlar nazariyasi
+### Guruhlar nazariyasi {#group-theory}
 
 $\phi(n)$ — $(\mathbb Z / n\mathbb Z)^\times$ [modul $n$ bo‘yicha multiplikativ guruhining tartibi](https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n), ya’ni birliklar guruhining (multiplikativ teskari elementga ega elementlar guruhining) o‘lchamidir. Multiplikativ teskari elementga ega elementlar aynan $n$ bilan o‘zaro tub bo‘lgan elementlardir.
 $a$ elementning $n$ modul bo‘yicha [multiplikativ tartibi](https://en.wikipedia.org/wiki/Multiplicative_order), $\operatorname{ord}_n(a)$ bilan belgilanadi va $a^k \equiv 1 \pmod n$ bo‘ladigan eng kichik $k>0$ ga teng. $\operatorname{ord}_n(a)$ — $a$ hosil qilgan qismguruhning o‘lchami; shuning uchun Lagrange teoremasiga ko‘ra, istalgan $a$ ning multiplikativ tartibi $\phi(n)$ ni bo‘lishi kerak.
 Agar $a$ ning multiplikativ tartibi mumkin bo‘lgan eng katta qiymat — $\phi(n)$ ga teng bo‘lsa, $a$ [primitiv ildiz](/algorithms/algebra/primitive-root) bo‘ladi va guruh ta’rifga ko‘ra siklikdir.
 
-## Umumlashtirish
+## Umumlashtirish {#generalization}
 
 Oxirgi ekvivalentlikning kamroq mashhur bir ko‘rinishi bor; u $x$ va $m$ o‘zaro tub bo‘lmagan holatda ham $x^n \bmod m$ ni samarali hisoblash imkonini beradi.
 Istalgan $x$, $m$ va $n \geq \log_2 m$ uchun:
@@ -218,7 +218,7 @@ $\phi(m) \ge \log_2 m \ge k$ bo‘lgani sababli, bizga kerak bo‘lgan ancha sod
 
 $$ x^n \equiv x^{\phi(m)} x^{(n - \phi(m)) \bmod \phi(m)} \bmod m \equiv x^{\phi(m)+[n \bmod \phi(m)]} \mod m.$$
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [SPOJ #4141 "Euler Totient Function" [Qiyinlik: juda oson]](http://www.spoj.com/problems/ETF/)
 * [UVA #10179 "Irreducible Basic Fractions" [Qiyinlik: oson]](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1120)

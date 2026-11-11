@@ -1,6 +1,6 @@
-# Suffix Array
+# Suffix Array {#suffix-array}
 
-## Definition
+## Definition {#definition}
 
 Let $s$ be a string of length $n$. The $i$-th suffix of $s$ is the substring $s[i \ldots n - 1]$.
 
@@ -31,15 +31,15 @@ Therefore the suffix array for $s$ will be $(2,~ 3,~ 0,~ 4,~ 1)$.
 
 As a data structure it is widely used in areas such as data compression, bioinformatics and, in general, in any area that deals with strings and string matching problems.
 
-## Construction
+## Construction {#construction}
 
-### $O(n^2 \log n)$ approach
+### $O(n^2 \log n)$ approach {#on2-log-n-approach}
 
 This is the most naive approach.
 Get all the suffixes and sort them using quicksort or mergesort and simultaneously retain their original indices.
 Sorting uses $O(n \log n)$ comparisons, and since comparing two strings will additionally take $O(n)$ time, we get the final complexity of $O(n^2 \log n)$.
 
-### $O(n \log n)$ approach
+### $O(n \log n)$ approach {#on-log-n-approach}
 
 Strictly speaking the following algorithm will not sort the suffixes, but rather the cyclic shifts of a string.
 However we can very easily derive an algorithm for sorting suffixes from it:
@@ -211,13 +211,13 @@ vector<int> suffix_array_construction(string s) {
 }
 ```
 
-## Applications
+## Applications {#applications}
 
-### Finding the smallest cyclic shift
+### Finding the smallest cyclic shift {#finding-the-smallest-cyclic-shift}
 
 The algorithm above sorts all cyclic shifts (without appending a character to the string), and therefore $p[0]$ gives the position of the smallest cyclic shift. 
 
-### Finding a substring in a string
+### Finding a substring in a string {#finding-a-substring-in-a-string}
 
 The task is to find a string $s$ inside some text $t$ online - we know the text $t$ beforehand, but not the string $s$.
 We can create the suffix array for the text $t$ in $O(|t| \log |t|)$ time.
@@ -228,7 +228,7 @@ Comparing the current suffix and the substring $s$ within the binary search can 
 Also notice that if the substring occurs multiple times in $t$, then all occurrences will be next to each other in $p$.
 Therefore the number of occurrences can be found with a second binary search, and all occurrences can be printed easily.
 
-### Comparing two substrings of a string
+### Comparing two substrings of a string {#comparing-two-substrings-of-a-string}
 
 We want to be able to compare two substrings of the same length of a given string $s$ in $O(1)$ time, i.e. checking if the first substring is smaller than the second one.
 
@@ -268,7 +268,7 @@ int compare(int i, int j, int l, int k) {
 }
 ```
 
-### Longest common prefix of two substrings with additional memory
+### Longest common prefix of two substrings with additional memory {#longest-common-prefix-of-two-substrings-with-additional-memory}
 
 For a given string $s$ we want to compute the longest common prefix (**LCP**)  of two arbitrary suffixes with position $i$ and $j$.
 
@@ -297,7 +297,7 @@ int lcp(int i, int j) {
 
 Here `log_n` denotes a constant that is equal to the logarithm of $n$ in base $2$ rounded down.
 
-### Longest common prefix of two substrings without additional memory
+### Longest common prefix of two substrings without additional memory {#longest-common-prefix-of-two-substrings-without-additional-memory}
 
 We have the same task as in the previous section.
 We have compute the longest common prefix (**LCP**) for two suffixes of a string $s$.
@@ -359,7 +359,7 @@ vector<int> lcp_construction(string const& s, vector<int> const& p) {
 It is easy to see, that we decrease $k$ at most $O(n)$ times (each iteration at most once, except for $\text{rank}[i] == n-1$, where we directly reset it to $0$), and the LCP between two strings is at most $n-1$, we will also increase $k$ only $O(n)$ times.
 Therefore the algorithm runs in $O(n)$ time.
 
-### Number of different substrings
+### Number of different substrings {#number-of-different-substrings}
 
 We preprocess the string $s$ by computing the suffix array and the LCP array.
 Using this information we can compute the number of different substrings in the string.
@@ -375,7 +375,7 @@ Summing over all the suffixes, we get the final answer:
 
 $$\sum_{i=0}^{n-1} (n - p[i]) - \sum_{i=0}^{n-2} \text{lcp}[i] = \frac{n^2 + n}{2} - \sum_{i=0}^{n-2} \text{lcp}[i]$$
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Uva 760 - DNA Sequencing](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=701)
 * [Uva 1223 - Editor](http://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=3664)

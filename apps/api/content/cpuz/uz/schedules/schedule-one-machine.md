@@ -1,4 +1,4 @@
-# Ishlarni bitta mashinada rejalashtirish
+# Ishlarni bitta mashinada rejalashtirish {#scheduling-jobs-on-one-machine}
 
 Bu masalada $n$ ta ishni bitta mashinada bajarish uchun optimal jadval topiladi. $i$-ishni bajarish $t_i$ vaqt oladi, ammo ish boshlanishidan oldin $t$ soniya kutilsa, $f_i(t)$ jarima to‘lanadi.
 
@@ -6,9 +6,9 @@ Demak, ishlarning jami jarimasi eng kichik bo‘ladigan permutatsiyasini topish 
 
 $$F(\pi) = f_{\pi_1}(0) + f_{\pi_2}(t_{\pi_1}) + f_{\pi_3}(t_{\pi_1} + t_{\pi_2}) + \dots + f_{\pi_n}\left(\sum_{i=1}^{n-1} t_{\pi_i}\right)$$
 
-## Maxsus holatlar uchun yechimlar
+## Maxsus holatlar uchun yechimlar {#solutions-for-special-cases}
 
-### Chiziqli jarima funksiyalari
+### Chiziqli jarima funksiyalari {#linear-penalty-functions}
 
 Avval barcha jarima funksiyalari $f_i(t) = c_i \cdot t$ ko‘rinishidagi chiziqli funksiya bo‘lgan holatni yechamiz; bu yerda $c_i$ — nomanfiy son. Bu funksiyalarda o‘zgarmas had yo‘qligiga e’tibor bering. Agar o‘zgarmas hadlar bo‘lsa, ularning barchasini alohida yig‘ib, masalani ularsiz yechish mumkin.
 
@@ -36,7 +36,7 @@ Shunday qilib, ishlarni $\frac{c_i}{t_i}$ nisbatining **o‘smaslik tartibida sa
 
 Bu algoritm **almashtirish usuli** deb ataladigan yondashuv orqali qurilganini ta’kidlash kerak: ikkita qo‘shni elementning o‘rni almashtirildi, jarima o‘zgarishi hisoblandi va undan optimal tartibni topish qoidasi chiqarildi.
 
-### Eksponensial jarima funksiyasi
+### Eksponensial jarima funksiyasi {#exponential-penalty-function}
 
 Jarima funksiyasi quyidagi ko‘rinishda bo‘lsin:
 
@@ -48,13 +48,13 @@ Almashtirish usulini qo‘llab, ishlarni quyidagi qiymatning o‘smaslik tartibi
 
 $$v_i = \frac{1 - e^{\alpha \cdot t_i}}{c_i}$$
 
-### Bir xil monoton jarima funksiyasi
+### Bir xil monoton jarima funksiyasi {#identical-monotone-penalty-function}
 
 Bu holatda barcha $f_i(t)$ funksiyalar bir xil va monoton o‘suvchi bo‘ladi.
 
 Bunda optimal permutatsiya ishlarni bajarilish vaqti $t_i$ ning kamaymaslik tartibida joylashtirishdan iborat ekani ravshan.
 
-## Livshits–Kladov teoremasi
+## Livshits–Kladov teoremasi {#the-livshits-kladov-theorem}
 
 Livshits–Kladov teoremasi almashtirish usuli faqat yuqorida sanalgan uch holatda qo‘llanishini belgilaydi:
 

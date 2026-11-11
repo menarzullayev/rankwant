@@ -1,17 +1,17 @@
-# Vertical decomposition
+# Vertical decomposition {#vertical-decomposition}
 
-## Overview
+## Overview {#overview}
 Vertical decomposition is a powerful technique used in various geometry problems. The general idea is to cut the plane into several vertical stripes
 with some "good" properties and solve the problem for these stripes independently. We will illustrate the idea on some examples.
 
-## Area of the union of triangles
+## Area of the union of triangles {#area-of-the-union-of-triangles}
 Suppose that there are $n$ triangles on a plane and we are to find the area of their union. The problem would be easy if the triangles didn't intersect, so
 let's get rid of these intersections by dividing the plane into vertical stripes by drawing vertical lines through all vertices and all points of intersection of
 sides of different triangles. There may be $O(n^2)$ such lines so we obtained $O(n^2)$ stripes. Now consider some vertical stripe. Each non-vertical segment either crosses it from left to right or doesn't cross at all.
 Also, no two segments intersect strictly inside the stripe. It means that the part of the union of triangles that lies inside this stripe is composed of disjoint trapezoids with bases lying on the sides of the stripe.
 This property allows us to compute the area inside each stripe with a following scanline algorithm. Each segment crossing the stripe is either upper or lower, depending on whether the interior of the corresponding triangle
 is above or below the segment. We can visualize each upper segment as an opening bracket and each lower segment as a closing bracket and decompose the stripe into trapezoids by decomposing the bracket sequence into smaller correct bracket sequences. This algorithm requires $O(n^3\log n)$ time and $O(n^2)$ memory.
-### Optimization 1
+### Optimization 1 {#optimization-1}
 Firstly we will reduce the runtime to $O(n^2\log n)$. Instead of generating trapezoids for each stripe let's fix some triangle side (segment $s = (s_0, s_1)$) and find the set of stripes where this segment is a side of some trapezoid. Note that in this case we only have to find the stripes where the balance of brackets below (or above, in case of a lower segment) $s$ is zero. It means that instead of running vertical scanline for each stripe we can run a horizontal scanline for all parts of other segments which affect the balance of brackets with respect to $s$.
 For simplicity we will show how to do this for an upper segment, the algorithm for lower segments is similar. Consider some other non-vertical segment $t = (t_0, t_1)$ and find the intersection $[x_1, x_2]$ of projections of $s$ and $t$ on $Ox$. If this intersection is empty or consists of one point, $t$ can be discarded since $s$ and $t$ do not intersect the interior of the same stripe. Otherwise consider the intersection $I$ of $s$ and $t$. There are three cases.
 
@@ -38,14 +38,14 @@ Here is a graphic representation of the three cases.
 Finally we should remark on processing all the additions of $1$ or $-1$ on all stripes in $[x_1, x_2]$. For each addition of $w$ on $[x_1, x_2]$ we can create events $(x_1, w),\ (x_2, -w)$
 and process all these events with a sweep line.
 
-### Optimization 2
+### Optimization 2 {#optimization-2}
 Note that if we apply the previous optimization, we no longer have to find all stripes explicitly. This reduces the memory consumption to $O(n)$.
 
-## Intersection of convex polygons
+## Intersection of convex polygons {#intersection-of-convex-polygons}
 Another usage of vertical decomposition is to compute the intersection of two convex polygons in linear time. Suppose the plane is split into vertical stripes by vertical lines passing through each
 vertex of each polygon. Then if we consider one of the input polygons and some stripe, their intersection is either a trapezoid, a triangle or a point. Therefore we can simply intersect these shapes for each vertical stripe and merge these intersections into a single polygon.
 
-## Implementation
+## Implementation {#implementation}
 
 Below is the code that calculates area of the union of a set of triangles in $O(n^2\log n)$ time and $O(n)$ memory.
 
@@ -231,6 +231,6 @@ dbl union_area(vector<tuple<pt, pt, pt> > triangles){
 
 ```
 
-## Problems
+## Problems {#problems}
  * [Codeforces 62C Inquisition](https://codeforces.com/contest/62/problem/C)
  * [Codeforces 107E Darts](https://codeforces.com/contest/107/problem/E)

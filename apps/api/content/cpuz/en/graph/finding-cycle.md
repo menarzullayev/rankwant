@@ -1,15 +1,15 @@
-# Checking a graph for acyclicity and finding a cycle in $O(M)$
+# Checking a graph for acyclicity and finding a cycle in $O(M)$ {#checking-a-graph-for-acyclicity-and-finding-a-cycle-in-om}
 
 Consider a directed or undirected graph without loops and multiple edges. We have to check whether it is acyclic, and if it is not, then find any cycle.
 
 We can solve this problem by using [Depth First Search](/algorithms/graph/depth-first-search) in $O(M)$ where $M$ is number of edges.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 We will run a series of DFS in the graph. Initially all vertices are colored white (0). From each unvisited (white) vertex, start the DFS, mark it gray (1) while entering and mark it black (2) on exit. If DFS moves to a gray vertex, then we have found a cycle (if the graph is undirected, the edge to parent is not considered).
 The cycle itself can be reconstructed using parent array.
 
-## Implementation
+## Implementation {#implementation}
 
 Here is an implementation for directed graph.
 
@@ -121,7 +121,7 @@ void find_cycle() {
     }
 }
 ```
-### Practice problems:
+### Practice problems: {#practice-problems}
 
 - [AtCoder : Reachability in Functional Graph](https://atcoder.jp/contests/abc357/tasks/abc357_e)
 - [CSES : Round Trip](https://cses.fi/problemset/task/1669)

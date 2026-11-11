@@ -1,12 +1,12 @@
-# Kuhn's Algorithm for Maximum Bipartite Matching
+# Kuhn's Algorithm for Maximum Bipartite Matching {#kuhns-algorithm-for-maximum-bipartite-matching}
 
-## Problem
+## Problem {#problem}
 You are given a bipartite graph $G$ containing $n$ vertices and $m$ edges. Find the maximum matching, i.e., select as many edges as possible so 
 that no selected edge shares a vertex with any other selected edge.
 
-## Algorithm Description
+## Algorithm Description {#algorithm-description}
 
-### Required Definitions
+### Required Definitions {#required-definitions}
 
 * A **matching** $M$ is a set of pairwise non-adjacent edges of a graph (in other words, no more than one edge from the set should be incident to any vertex of the graph $M$). 
 The **cardinality** of a matching is the number of edges in it.
@@ -27,15 +27,15 @@ they do not belong in the matching.
 * The **symmetric difference** (also known as the **disjunctive union**) of sets $A$ and $B$, represented by $A \oplus B$, is the set of all elements that belong to exactly one of $A$ or $B$, but not to both. 
 That is, $A \oplus B = (A - B) \cup (B - A) = (A \cup B) - (A \cap B)$.
 
-### Berge's lemma
+### Berge's lemma {#berges-lemma}
 
 This lemma was proven by the French mathematician **Claude Berge** in 1957, although it already was observed by the Danish mathematician **Julius Petersen** in 1891 and 
 the Hungarian mathematician **Denés Kőnig** in 1931.
 
-#### Formulation 
+#### Formulation {#formulation}
 A matching $M$ is maximum $\Leftrightarrow$ there is no augmenting path relative to the matching $M$.
 
-#### Proof
+#### Proof {#proof}
 
 Both sides of the bi-implication will be proven by contradiction.
 
@@ -61,7 +61,7 @@ Both sides of the bi-implication will be proven by contradiction.
     more edges from $M'$ than $M$. Because any such path is alternating, it will have initial and final vertices unsaturated by $M$, making it an augmenting path for $M$, 
     which contradicts the premise. &ensp; $\blacksquare$
   
-### Kuhn's algorithm
+### Kuhn's algorithm {#kuhns-algorithm}
   
 Kuhn's algorithm is a direct application of Berge's lemma. It is essentially described as follows: 
 
@@ -89,7 +89,7 @@ So, this traversal, launched from the vertex $v$, will either find an augmenting
 
 After all the vertices $v = 1 \ldots n_1$ have been scanned, the current matching will be maximum.
   
-### Running time
+### Running time {#running-time}
 
 Kuhn's algorithm can be thought of as a series of $n$ depth/breadth-first traversal runs on the entire graph. Therefore, the whole algorithm is executed in time $O(nm)$, which
 in the worst case is $O(n^3)$.
@@ -100,9 +100,9 @@ time $O(n_1m)$, where $n_1$ is the number of vertices of the first part. In the 
 This shows that it is more profitable when the first part contains fewer vertices than the second. On very unbalanced graphs (when $n_1$ and $n_2$ are very different), 
 this translates into a significant difference in runtimes.
 
-## Implementation
+## Implementation {#implementation}
 
-### Standard implementation
+### Standard implementation {#standard-implementation}
 Let us present here an implementation of the above algorithm based on depth-first traversal and accepting a bipartite graph in the form of a graph explicitly split into two parts.
 This implementation is very concise, and perhaps it should be remembered in this form.
 
@@ -167,7 +167,7 @@ has not been given. In this case, it will be necessary to abandon the convenient
 an array of lists $g$ is now specified not only for the vertices of the first part, but for all the vertices of the graph (of course, now the vertices of both parts are numbered 
 in a common numbering - from $1$ to $n$). Arrays $\rm mt$ and are $\rm used$ are now also defined for the vertices of both parts, and, accordingly, they need to be kept in this state.
 
-### Improved implementation
+### Improved implementation {#improved-implementation}
 
 Let us modify the algorithm as follows. Before the main loop of the algorithm, we will find an **arbitrary matching** by some simple algorithm (a simple **heuristic algorithm**), 
 and only then we will execute a loop with calls to the $\textrm{try_kuhn}()$ function, which will improve this matching. As a result, the algorithm will work noticeably faster on 
@@ -214,14 +214,14 @@ int main() {
 then remove both these vertices with all incident edges from the graph. Such greed works very well on random graphs; in many cases it even builds the maximum matching (although 
 there is a test case against it, on which it will find a matching that is much smaller than the maximum).
 
-## Notes
+## Notes {#notes}
 
 * Kuhn's algorithm is a subroutine in the **Hungarian algorithm**, also known as the **Kuhn-Munkres algorithm**.
 * Kuhn's algorithm runs in $O(nm)$ time. It is generally simple to implement, however, more efficient algorithms exist for the maximum bipartite matching problem - such as the 
     **Hopcroft-Karp-Karzanov algorithm**, which runs in $O(\sqrt{n}m)$ time.
 * The [minimum vertex cover problem](https://en.wikipedia.org/wiki/Vertex_cover) is NP-hard for general graphs.  However, [Kőnig's theorem](https://en.wikipedia.org/wiki/K%C5%91nig%27s_theorem_(graph_theory)) gives that, for bipartite graphs, the cardinality of the maximum matching equals the cardinality of the minimum vertex cover.  Hence, we can use maximum bipartite matching algorithms to solve the minimum vertex cover problem in polynomial time for bipartite graphs.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [Kattis - Gopher II](https://open.kattis.com/problems/gopher2)
 * [Kattis - Borders](https://open.kattis.com/problems/borders)

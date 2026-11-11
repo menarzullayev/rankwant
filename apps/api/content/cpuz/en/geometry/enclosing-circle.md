@@ -1,4 +1,4 @@
-# Minimum Enclosing Circle
+# Minimum Enclosing Circle {#minimum-enclosing-circle}
 
 Consider the following problem:
 
@@ -24,7 +24,7 @@ To better understand the reasoning below, we should immediately note that the so
 >
 > Alternatively, we can also assume that there are two MECs, and then notice that their intersection (which contains the points $p_1,\dots,p_n$ already) must have a smaller diameter than initial circles, and thus can be covered with a smaller circle.
 
-## Welzl's algorithm
+## Welzl's algorithm {#welzls-algorithm}
 
 For brevity, let's denote $\operatorname{mec}(p_1,\dots,p_n)$ to be the MEC of $\{p_1,\dots,p_n\}$, and let $P_i = \{p_1,\dots,p_i\}$.
 
@@ -81,7 +81,7 @@ mec enclosing_circle(vector<point> &p) {
 
 Now, it is to be expected that checking that a point $p_i$ is inside the MEC of $2$ or $3$ points can be done in $O(1)$ (we will discuss this later on). But even then, the algorithm above looks as if it would take $O(n^3)$ in the worst case just because of all the nested loops. So, how come we claimed the linear expected runtime? Let's figure out!
 
-### Complexity analysis
+### Complexity analysis {#complexity-analysis}
 
 For the inner-most loop (over $k$), clearly its expected runtime is $O(j)$ operations. What about the loop over $j$?
 
@@ -95,7 +95,7 @@ $$
 
 In exactly same fashion we can now also prove that the outermost loop has expected runtime of $O(n)$.
 
-### Checking that a point is in the MEC of 2 or 3 points
+### Checking that a point is in the MEC of 2 or 3 points {#checking-that-a-point-is-in-the-mec-of-2-or-3-points}
 
 Let's now figure out the implementation detail of `point` and `mec`. In this problem, it turns out to be particularly useful to use [std::complex](https://codeforces.com/blog/entry/22175) as a class for points:
 
@@ -108,7 +108,7 @@ As a reminder, a complex number is a number of type $x+yi$, where $i^2=-1$ and $
 
 Without going in too much detail, we will note the most important property for this particular task: Multiplying two complex numbers adds up their polar angles (counted from $Ox$ counter-clockwise), and taking a conjugate (i.e. changing $z=x+yi$ into $\overline{z} = x-yi$) multiplies the polar angle with $-1$. This allows us to formulate some very simple criteria for whether a point $z$ is inside the MEC of $2$ or $3$ specific points.
 
-#### MEC of 2 points
+#### MEC of 2 points {#mec-of-2-points}
 
 For $2$ points $a$ and $b$, their MEC is simply the circle centered at $\frac{a+b}{2}$ with the radius $\frac{|a-b|}{2}$, in other words the circle that has $ab$ as a diameter. To check if $z$ is inside this circle we simply need to check that the angle between $za$ and $zb$ is not acute.
 
@@ -124,7 +124,7 @@ $$
 
 doesn't have a positive real coordinate (corresponding to points that have a polar angle between $-90^\circ$ and $90^\circ$).
 
-#### MEC of 3 points
+#### MEC of 3 points {#mec-of-3-points}
 
 Adding $z$ to the triangle $abc$ will make it a quadrilateral. Consider the following expression:
 
@@ -157,7 +157,7 @@ In other words, if $\angle bca$ is positive, points inside the circle will have 
 
 **Note**: As we multiply four complex numbers to get $I_1$, the intermediate coefficients can be as large as $O(A^4)$, where $A$ is the largest coordinate magnitude in the input. On the bright side, if the input is integer, both checks above can be done fully in integers.
 
-#### Implementation
+#### Implementation {#implementation}
 
 Now, to actually implement the check, we should first decide how to represent the MEC. As our criteria work with the points directly, a natural and efficient way to do this is to say that MEC is directly represented as a pair or triple of points that defines it:
 
@@ -197,7 +197,7 @@ bool inside(mec const& C, point p) {
 
 Now, we can finally ensure that everything works by submitting the problem to the Library Checker: [#308668](https://judge.yosupo.jp/submission/308668).
 
-## Practice problems
+## Practice problems {#practice-problems}
 
 - [Library Checker - Minimum Enclosing Circle](https://judge.yosupo.jp/problem/minimum_enclosing_circle)
 - [BOI 2002 - Aliens](https://www.spoj.com/problems/ALIENS)

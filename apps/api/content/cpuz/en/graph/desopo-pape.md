@@ -1,4 +1,4 @@
-# D´Esopo-Pape algorithm
+# D´Esopo-Pape algorithm {#d-esopo-pape-algorithm}
 
 Given a graph with $n$ vertices and $m$ edges with weights $w_i$ and a starting vertex $v_0$.
 The task is to find the shortest path from the vertex $v_0$ to every other vertex.
@@ -6,7 +6,7 @@ The task is to find the shortest path from the vertex $v_0$ to every other verte
 The algorithm from D´Esopo-Pape will work faster than [Dijkstra's algorithm](/algorithms/graph/dijkstra) and the [Bellman-Ford algorithm](/algorithms/graph/bellman-ford) in most cases, and will also work for negative edges.
 However not for negative cycles.
 
-## Description
+## Description {#description}
 
 Let the array $d$ contain the shortest path lengths, i.e. $d_i$ is the current length of the shortest path from the vertex $v_0$ to the vertex $i$.
 Initially this array is filled with infinity for every vertex, except $d_{v_0} = 0$.
@@ -38,7 +38,7 @@ Since $v$ is already in $M_1$, we don't need to insert it into $M_1$ and the que
 
 And of course, with each update in the array $d$ we also have to update the corresponding element in the array $p$.
 
-## Implementation
+## Implementation {#implementation}
 
 We will use an array $m$ to store in which set each vertex is currently.
 
@@ -81,7 +81,7 @@ void shortest_paths(int v0, vector<int>& d, vector<int>& p) {
 }
 ```
 
-## Complexity
+## Complexity {#complexity}
 
 The algorithm usually performs quite fast - in most cases, even faster than Dijkstra's algorithm.
 However there exist cases for which the algorithm takes exponential time, making it unsuitable in the worst-case. See discussions on [Stack Overflow](https://stackoverflow.com/a/67642821) and [Codeforces](https://codeforces.com/blog/entry/3793) for reference.

@@ -1,4 +1,4 @@
-# Eratosfen elagi
+# Eratosfen elagi {#sieve-of-eratosthenes}
 
 Eratosfen elagi — $[1;n]$ kesmadagi barcha tub sonlarni $O(n \log \log n)$ amal yordamida topish algoritmi.
 Algoritm juda sodda:
@@ -18,7 +18,7 @@ agar son kichikroq tub sonlarning hech biriga bo‘linmasa, u tub bo‘ladi.
 Tub sonlarni o‘sish tartibida ko‘rib chiqayotganimiz sababli, kamida bitta tub songa bo‘linadigan barcha sonlarni avvalroq murakkab deb belgilagan bo‘lamiz.
 Demak, biror katakka kelganimizda u belgilanmagan bo‘lsa, u hech qanday kichikroq tub songa bo‘linmaydi va shuning uchun tub bo‘lishi shart.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 int n;
@@ -39,7 +39,7 @@ Bu sodda usulga nisbatan allaqachon optimallashtirishdir va u joiz, chunki $i$ g
 $i^2$ qiymati `int` turidan oson chiqib ketishi mumkinligi sababli, ikkinchi ichki sikldan oldingi qo‘shimcha tekshiruv `long long` turi yordamida bajariladi.
 Bunday implementatsiyada algoritm $O(n)$ xotira sarflaydi va $O(n \log \log n)$ amal bajaradi (keyingi bo‘limga qarang).
 
-## Asimptotik tahlil
+## Asimptotik tahlil {#asymptotic-analysis}
 
 Tub sonlarning taqsimoti haqida hech narsa bilmasdan ham $O(n \log n)$ ishlash vaqtini oson isbotlash mumkin: `is_prime` tekshiruvini e’tiborga olmasak, ichki sikl $i = 2, 3, 4, \dots$ uchun (ko‘pi bilan) $n/i$ marta bajariladi. Shunda ichki sikldagi jami amallar soni $n(1/2 + 1/3 + 1/4 + \cdots)$ kabi garmonik yig‘indiga teng bo‘lib, u $O(n \log n)$ bilan chegaralanadi.
 Endi algoritmning ishlash vaqti $O(n \log \log n)$ ekanini isbotlaymiz.
@@ -73,7 +73,7 @@ $$\sum_{\substack{p \le n, \\\ p\ is\ prime}} \frac n p \approx n \ln \ln n + o(
 
 Bundan qat’iyroq isbotni (doimiy ko‘paytuvchilar aniqligigacha yetadigan yanada aniq bahoni) Hardy va Wrightning “An Introduction to the Theory of Numbers” kitobidan (349-bet) topish mumkin.
 
-## Eratosfen elagining turli optimallashtirishlari
+## Eratosfen elagining turli optimallashtirishlari {#different-optimizations-of-the-sieve-of-eratosthenes}
 
 Algoritmning eng katta kamchiligi shuki, u xotira bo‘ylab ko‘p marta “yuradi” va har safar alohida elementlar bilan ishlaydi.
 Bu kesh nuqtayi nazaridan unchalik qulay emas.
@@ -82,7 +82,7 @@ Shu sababli $O(n \log \log n)$ ichida yashiringan doimiy koeffitsiyent nisbatan 
 Bundan tashqari, katta $n$ uchun sarflanadigan xotira ham cheklovchi omil bo‘ladi.
 Quyida keltirilgan usullar bajariladigan amallar sonini ham, sarflanadigan xotirani ham sezilarli kamaytirish imkonini beradi.
 
-### Faqat ildizgacha elash
+### Faqat ildizgacha elash {#sieving-till-root}
 
 Ko‘rinib turibdiki, $n$ gacha bo‘lgan barcha tub sonlarni topish uchun elashni faqat $\sqrt n$ dan oshmaydigan tub sonlar yordamida bajarish kifoya.
 
@@ -100,13 +100,13 @@ for (int i = 2; i * i <= n; i++) {
 
 Bu optimallashtirish murakkablikka ta’sir qilmaydi (haqiqatan, yuqoridagi isbotni takrorlasak, $n \ln \ln \sqrt n + o(n)$ bahoni olamiz; logarifm xossalariga ko‘ra u asimptotik jihatdan avvalgisi bilan bir xil), ammo amallar soni sezilarli kamayadi.
 
-### Faqat toq sonlar bilan elash
+### Faqat toq sonlar bilan elash {#sieving-by-the-odd-numbers-only}
 
 Barcha juft sonlar (2 dan tashqari) murakkab bo‘lgani uchun, juft sonlarni umuman tekshirmasligimiz mumkin. Buning o‘rniga faqat toq sonlar bilan ishlaymiz.
 
 Birinchidan, bu kerakli xotirani ikki baravar kamaytiradi. Ikkinchidan, algoritm bajaradigan amallar sonini ham taxminan ikki baravar kamaytiradi.
 
-### Xotira sarfi va amallar tezligi
+### Xotira sarfi va amallar tezligi {#memory-consumption-and-speed-of-operations}
 
 Shuni ta’kidlash kerakki, Eratosfen elagining yuqoridagi ikkala implementatsiyasi ham `vector<bool>` ma’lumotlar tuzilmasidan foydalangani sababli $n$ bit xotira ishlatadi.
 `vector<bool>` oddiy `bool` qiymatlar ketma-ketligini saqlaydigan odatiy konteyner emas (aksariyat kompyuter arxitekturalarida bitta `bool` bir bayt xotira egallaydi).
@@ -178,7 +178,7 @@ Boshqa tomondan, har bir blok va $[1; \sqrt{n}]$ dagi har bir tub son juftligi u
 Shuning uchun $S$ o‘zgarmasini tanlashda muvozanatni saqlash zarur.
 Eng yaxshi natijalar $10^4$ dan $10^5$ gacha bo‘lgan blok o‘lchamlarida kuzatilgan.
 
-## Oraliqdagi tub sonlarni topish
+## Oraliqdagi tub sonlarni topish {#find-primes-in-range}
 
 Ba’zan uzunligi kichik $[L,R]$ oraliqdagi barcha tub sonlarni topish kerak bo‘ladi (masalan, $R - L + 1 \approx 1e7$), bunda $R$ juda katta bo‘lishi mumkin (masalan, $1e12$).
 
@@ -227,13 +227,13 @@ vector<char> segmentedSieveNoPreGen(long long L, long long R) {
 
 Albatta, bu usulning murakkabligi yomonroq: $O((R - L + 1) \log (R) + \sqrt R)$. Shunga qaramay, u amalda juda tez ishlaydi.
 
-## Chiziqli vaqtli modifikatsiya
+## Chiziqli vaqtli modifikatsiya {#linear-time-modification}
 
 Algoritmni shunday o‘zgartirish mumkinki, uning vaqt murakkabligi chiziqli bo‘ladi.
 Bu yondashuv [Chiziqli elak](/algorithms/algebra/prime-sieve-linear) maqolasida tasvirlangan.
 Biroq bu algoritmning ham o‘z kamchiliklari bor.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Leetcode — To‘rtta bo‘luvchi](https://leetcode.com/problems/four-divisors/)
 * [Leetcode — Tub sonlarni sanash](https://leetcode.com/problems/count-primes/)

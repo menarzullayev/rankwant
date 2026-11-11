@@ -1,4 +1,4 @@
-# Diskret logarifm
+# Diskret logarifm {#discrete-logarithm}
 
 Diskret logarifm — berilgan $a$, $b$ va $m$ butun sonlar uchun
 
@@ -9,7 +9,7 @@ tenglamani qanoatlantiradigan $x$ butun sonidir.
 Diskret logarifm har doim ham mavjud bo‘lavermaydi. Masalan, $2^x \equiv 3 \pmod 7$ tenglamaning yechimi yo‘q. Diskret logarifm mavjudligini aniqlaydigan sodda shart yo‘q.
 Ushbu maqolada 1971-yilda Shanks taklif qilgan, diskret logarifmni $O(\sqrt m)$ vaqtda hisoblaydigan **Baby-step giant-step** algoritmini tavsiflaymiz. Bu **o‘rtada uchrashish** (**meet-in-the-middle**) algoritmidir, chunki masalani ikki yarmiga ajratish usulidan foydalanadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Quyidagi tenglamani ko‘rib chiqamiz:
 
@@ -40,7 +40,7 @@ Masalani o‘rtada uchrashish usuli bilan quyidagicha yechamiz:
 * Barcha mumkin bo‘lgan $p$ lar uchun $f_1$ ni hisoblaymiz. Qiymat-argument juftliklari massivini saralaymiz.
 * Barcha mumkin bo‘lgan $q$ lar uchun $f_2$ ni hisoblaymiz va saralangan massivdan mos $p$ ni ikkilik qidiruv bilan izlaymiz.
 
-## Murakkablik
+## Murakkablik {#complexity}
 
 $f_1(p)$ ni [ikkilik darajaga oshirish algoritmi](/algorithms/algebra/binary-exp) yordamida $O(\log m)$ vaqtda hisoblaymiz. $f_2(q)$ uchun ham xuddi shunday.
 
@@ -60,9 +60,9 @@ Shunda algoritmning murakkabligi:
 
 $$O(\sqrt m\log m).$$
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
-### Eng sodda implementatsiya
+### Eng sodda implementatsiya {#the-simplest-implementation}
 
 Quyidagi kodda `powmod` funksiyasi $a^b\pmod m$ ni hisoblaydi, `solve` esa masalaning biror to‘g‘ri yechimini topadi.
 Agar yechim bo‘lmasa $-1$, aks holda mumkin bo‘lgan yechimlardan bittasini qaytaradi.
@@ -112,7 +112,7 @@ Bu holatda bu yetarli, chunki biz faqat mumkin bo‘lgan bitta yechimni qaytarmo
 Barcha mumkin bo‘lgan yechimlarni qaytarish kerak bo‘lsa, `map<int, int>` ni, masalan, `map<int, vector<int>>` ga almashtirish kerak.
 Ikkinchi qadamni ham shunga mos ravishda o‘zgartirish lozim.
 
-## Yaxshilangan implementatsiya
+## Yaxshilangan implementatsiya {#improved-implementation}
 
 Mumkin bo‘lgan yaxshilanishlardan biri — ikkilik darajaga oshirishdan voz kechish.
 Buni $q$ har safar oshirilganda $a$ ga ko‘paytiriladigan bir o‘zgaruvchi va $p$ har safar oshirilganda $a^n$ ga ko‘paytiriladigan ikkinchi o‘zgaruvchini saqlash orqali bajarish mumkin.
@@ -149,7 +149,7 @@ int solve(int a, int b, int m) {
 
 `unordered_map` ishlatilganda murakkablik $O(\sqrt m)$ bo‘ladi.
 
-## $a$ va $m$ o‘zaro tub bo‘lmaganda
+## $a$ va $m$ o‘zaro tub bo‘lmaganda {#when-a-and-m-are-not-coprime}
 
 $g=\gcd(a,m)$ va $g>1$ bo‘lsin. Ravshanki, har qanday $x\ge1$ uchun $a^x\bmod m$ soni $g$ ga bo‘linadi.
 
@@ -203,7 +203,7 @@ int solve(int a, int b, int m) {
 ```
 Dastlab $a$ va $m$ ni o‘zaro tub holga keltirish $O(\log^2m)$ vaqtda bajarilgani sababli, umumiy vaqt murakkabligi avvalgidek $O(\sqrt m)$ bo‘lib qoladi.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [Spoj - Power Modulo Inverted](http://www.spoj.com/problems/MOD/)
 * [Topcoder - SplittingFoxes3](https://community.topcoder.com/stat?c=problem_statement&pm=14386&rd=16801)
@@ -211,7 +211,7 @@ Dastlab $a$ va $m$ ni o‘zaro tub holga keltirish $O(\log^2m)$ vaqtda bajarilga
 * [Hard Equation](https://codeforces.com/gym/101853/problem/G) ($0^0$ aniqlanmagan deb faraz qiling)
 * [CodeChef - Chef and Modular Sequence](https://www.codechef.com/problems/CHEFMOD)
 
-## Manbalar
+## Manbalar {#references}
 
 * [Wikipedia - Baby-step giant-step](https://en.wikipedia.org/wiki/Baby-step_giant-step)
 * [Mathematics StackExchange’da Zanderning javobi](https://math.stackexchange.com/a/133054)

@@ -1,6 +1,6 @@
-# The Stern-Brocot tree and Farey sequences
+# The Stern-Brocot tree and Farey sequences {#the-stern-brocot-tree-and-farey-sequences}
 
-## Stern-Brocot tree
+## Stern-Brocot tree {#stern-brocot-tree}
 
 The Stern-Brocot tree is an elegant construction to represent the set of all positive fractions. It was independently discovered by German mathematician Moritz Stern in 1858 and by French watchmaker Achille Brocot in 1861. However, some sources attribute the discovery to ancient Greek mathematician Eratosthenes.
 
@@ -30,7 +30,7 @@ Before proving these properties, let us actually show a visualization of the Ste
 
   ![Stern-Brocot tree](https://upload.wikimedia.org/wikipedia/commons/3/37/SternBrocotTree.svg)
 
-## Proofs
+## Proofs {#proofs}
 
 **Ordering.** Proving ordering is simple. We note that the mediant of two fractions is always in-between the fractions
 
@@ -108,7 +108,7 @@ $$
 
 And given that at every iteration at least one of $a,b,c,d$ will increase, the fraction searching process will contain no more than $x+y$ iterations. This contradicts the assumption that the path to $\frac{x}{y}$ was infinite and hence $\frac{x}{y}$ must be part of the tree.
 
-## Tree Building Algorithm
+## Tree Building Algorithm {#tree-building-algorithm}
 
 To build any subtree of the Stern-Brocot tree, it suffices to know the left and right ancestor. On the first level, the left and right ancestors are $\frac{0}{1}$ and $\frac{1}{0}$ respectively. Using these, we calculate the mediant and proceed one level deeper, with the mediant replacing the right ancestor in the left subtree, and vice versa.
 
@@ -125,11 +125,11 @@ void build(int a = 0, int b = 1, int c = 1, int d = 0, int level = 1) {
 }
 ```
 
-## Fraction Search Algorithm
+## Fraction Search Algorithm {#fraction-search-algorithm}
 
 The search algorithm was already described in the proof that all fractions appear in the tree, but we will repeat it here. The algorithm is a binary search algorithm. Initially we stand at the root of the tree and we compare our target with the current fraction. If they are the same we are done and stop the process. If our target is smaller we move to the left child, otherwise we move to the right child.
 
-### Naive search
+### Naive search {#naive-search}
 
 Here is an implementation that returns the path to a given fraction $\frac{p}{q}$ as a sequence of `'L'` and `'R'` characters, meaning traversal to the left and right child respectively. This sequence of characters uniquely defines all positive fractions and is called the Stern-Brocot number system.
 
@@ -157,7 +157,7 @@ Irrational numbers in the Stern-Brocot number system corresponds to infinite seq
 
 Note that for a fraction $\frac{p}{q}$, the length of the resulting sequence could be as large as $O(p+q)$, for example when the fraction is of form $\frac{p}{1}$. This means that the algorithm above **should not be used, unless this is an acceptable complexity**! 
 
-### Logarithmic search
+### Logarithmic search {#logarithmic-search}
 
 Fortunately, it is possible to enhance the algorithm above to guarantee $O(\log (p+q))$ complexity. For this we should note that if the current boundary fractions are $\frac{p_L}{q_L}$ and $\frac{p_R}{q_R}$, then by doing $a$ steps to the right we move to the fraction $\frac{p_L + a p_R}{q_L + a q_R}$, and by doing $a$ steps to the left, we move to the fraction $\frac{a p_L + p_R}{a q_L + q_R}$. 
 
@@ -199,7 +199,7 @@ On practice, it is often the case that $\frac{p}{q}$ is not known in advance, bu
 
 Knowing this, we can emulate the search on Stern-Brocot tree by maintaining the current boundaries $\frac{p_{k-1}}{q_{k-1}}$ and $\frac{p_k}{q_k}$, and finding each $a_k$ via binary search. The algorithm then is a bit more technical and potentially have a complexity of $O(\log^2(x+y))$, unless the problem formulation allows you to find $a_k$ faster (for example, using `floor` of some known expression).
 
-## Farey Sequence
+## Farey Sequence {#farey-sequence}
 
 The Farey sequence of order $n$ is the sorted sequence of fractions between $0$ and $1$ whose denominators do not exceed $n$.
 
@@ -209,7 +209,7 @@ The Farey sequences have many interesting properties on their own, but the conne
 
 From the algorithm for building the Stern-Brocot tree, we get an algorithm for the Farey sequences. Start with the list of fractions $\frac{0}{1}, \frac{1}{0}$. At every subsequent iteration, insert the mediant only if the denominator does not exceed $n$. At some point the list will stop changing and the desired Farey sequence will have been found.
 
-### Length of a Farey Sequence
+### Length of a Farey Sequence {#length-of-a-farey-sequence}
 
 A Farey sequence of order $n$ contains all elements of the Farey sequence of order $n-1$ as well as all irreducible fractions with denominator $n$, but the latter is just the totient $\varphi(n)$. So the length $L_n$ of the Farey sequence of order $n$ is
 

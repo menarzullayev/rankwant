@@ -1,4 +1,4 @@
-# Tasodifiylashtirilgan uyum
+# Tasodifiylashtirilgan uyum {#randomized-heap}
 
 Tasodifiylashtirilgan uyum — tasodifiylashtirish yordamida barcha amallarni kutilgan logarifmik vaqtda bajarishga imkon beradigan uyum.
 
@@ -16,7 +16,7 @@ Uyumning odatiy amallari quyidagilar:
 
 Tasodifiylashtirilgan uyum juda sodda implementatsiya bilan bu amallarning barchasini kutilgan $O(\log n)$ vaqtda bajaradi.
 
-## Ma’lumotlar tuzilmasi
+## Ma’lumotlar tuzilmasi {#data-structure}
 
 Ikkilik uyumning tuzilishini darhol quyidagicha ifodalash mumkin:
 
@@ -30,7 +30,7 @@ struct Tree {
 
 Har bir tugunda bitta qiymat saqlanadi. Bundan tashqari, chap va o‘ng farzandlarga ko‘rsatkichlar mavjud; tegishli farzand bo‘lmasa, ko‘rsatkich `null` qiymatiga teng bo‘ladi.
 
-## Amallar
+## Amallar {#operations}
 
 Barcha amallarni bitta asosiy amalga — ikkita uyumni bitta uyumga **birlashtirish** amaliga keltirish mumkinligini ko‘rish qiyin emas.
 
@@ -63,13 +63,13 @@ Avval uyumlardan biri bo‘sh ekani tekshiriladi. Ulardan biri bo‘sh bo‘lsa,
 
 Aks holda, zarur bo‘lsa `t1` va `t2` almashtirilib, ildizidagi qiymati kichikroq bo‘lgan uyum `t1` qilinadi. `t1` ning chap farzandini `t2` bilan birlashtirmoqchimiz; farzandlardan birini tasodifiy tanlash uchun avval `t1` ning chap va o‘ng farzandlarini tasodifiy ravishda almashtiramiz, keyin rekursiv birlashtirishni bajaramiz.
 
-## Murakkablik
+## Murakkablik {#complexity}
 
 $h(T)$ tasodifiy miqdorni kiritamiz. U $T$ uyumning ildizidan barggacha tasodifiy tanlangan yo‘lning uzunligini, ya’ni qirralar sonini bildiradi.
 
 `merge` algoritmi $O(h(T_1) + h(T_2))$ qadam bajarishi ravshan. Shuning uchun amallarning murakkabligini tushunish uchun $h(T)$ tasodifiy miqdorni o‘rganishimiz kerak.
 
-### Kutilgan qiymat
+### Kutilgan qiymat {#expected-value}
 
 $h(T)$ ning matematik kutilmasi uyumdagi tugunlar soni logarifmi bilan yuqoridan baholanadi:
 
@@ -86,7 +86,7 @@ $$\begin{align}
 &\le \log \frac{2\left((n_L + 1) + (n_R + 1)\right)}{2} = \log(n_L + n_R + 2) = \log(n+1)
 \end{align}$$
 
-### Kutilgan qiymatdan oshib ketish
+### Kutilgan qiymatdan oshib ketish {#exceeding-the-expected-value}
 
 Faqat kutilgan qiymatning o‘zi eng yomon holat haqida yetarli ma’lumot bermaydi. Muayyan daraxtda ildizdan tugunlargacha bo‘lgan yo‘llar o‘rtacha $\log(n+1)$ dan ancha katta bo‘lishi nazariy jihatdan mumkin.
 
@@ -100,7 +100,7 @@ $P$ bilan uyum ildizidan barglargacha bo‘lgan va uzunligi $(c+1)\log n$ dan ka
 
 $${\cal P}(h(T) > (c+1) \log n) = \sum_{p \in P} 2^{-|p|} < \sum_{p \in P} 2^{-(c+1) \log n} = |P| n^{-(c+1)} \le n^{-c}$$
 
-### Algoritm murakkabligi
+### Algoritm murakkabligi {#complexity-of-the-algorithm}
 
 Demak, `merge` algoritmi va u orqali ifodalangan boshqa barcha amallar o‘rtacha $O(\log n)$ vaqtda bajariladi.
 

@@ -1,4 +1,4 @@
-# Rabin-Karp Algorithm for string matching
+# Rabin-Karp Algorithm for string matching {#rabin-karp-algorithm-for-string-matching}
 
 This algorithm is based on the concept of hashing, so if you are not familiar with string hashing, refer to the [string hashing](/algorithms/string/string-hashing) article.
  
@@ -12,7 +12,7 @@ Now, we can compare a substring of length $|s|$ with $s$ in constant time using 
 So, compare each substring of length $|s|$ with the pattern. This will take a total of $O(|t|)$ time.
 Hence the final complexity of the algorithm is $O(|t| + |s|)$: $O(|s|)$ is required for calculating the hash of the pattern and $O(|t|)$ for comparing each substring of length $|s|$ with the pattern.
 
-## Implementation
+## Implementation {#implementation}
 ```cpp
 vector<int> rabin_karp(string const& s, string const& t) {
     const int p = 31; 
@@ -41,7 +41,7 @@ vector<int> rabin_karp(string const& s, string const& t) {
 }
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ - Pattern Find](http://www.spoj.com/problems/NAJPF/)
 * [Codeforces - Good Substrings](http://codeforces.com/problemset/problem/271/D)

@@ -1,11 +1,11 @@
-# Edge connectivity / Vertex connectivity
+# Edge connectivity / Vertex connectivity {#edge-connectivity-vertex-connectivity}
 
-## Definition
+## Definition {#definition}
 
 Given an undirected graph $G$ with $n$ vertices and $m$ edges.
 Both the edge connectivity and the vertex connectivity are characteristics describing the graph.
 
-### Edge connectivity
+### Edge connectivity {#edge-connectivity}
 
 The **edge connectivity** $\lambda$ of the graph $G$ is the minimum number of edges that need to be deleted, such that the graph $G$ gets disconnected.
 
@@ -15,7 +15,7 @@ We say that a set $S$ of edges **separates** the vertices $s$ and $t$, if, after
 
 It is clear, that the edge connectivity of a graph is equal to the minimum size of such a set separating two vertices $s$ and $t$, taken among all possible pairs $(s, t)$.
 
-### Vertex connectivity
+### Vertex connectivity {#vertex-connectivity}
 
 The **vertex connectivity** $\kappa$ of the graph $G$ is the minimum number of vertices that need to be deleted, such that the graph $G$ gets disconnected.
 
@@ -27,9 +27,9 @@ We say that a set $T$ of vertices **separates** the vertices $s$ and $t$, if, af
 
 It is clear, that the vertex connectivity of a graph is equal to the minimal size of such a set separating two vertices $s$ and $t$, taken among all possible pairs $(s, t)$.
 
-## Properties
+## Properties {#properties}
 
-### The Whitney inequalities
+### The Whitney inequalities {#the-whitney-inequalities}
 
 The **Whitney inequalities** (1932) gives a relation between the edge connectivity $\lambda$, the vertex connectivity $\kappa$, and the minimum degree of any vertex in the graph $\delta$:
 
@@ -48,13 +48,13 @@ The graph will consists of $2(\delta + 1)$ vertices, the first $\delta + 1$ vert
 In addition we connect the two cliques with $\lambda$ edges, such that it uses $\lambda$ different vertices in the first clique, and only $\kappa$ vertices in the second clique.
 The resulting graph will have the three characteristics.
 
-### The Ford-Fulkerson theorem
+### The Ford-Fulkerson theorem {#the-ford-fulkerson-theorem}
 
 The **Ford-Fulkerson theorem** implies, that the biggest number of edge-disjoint paths connecting two vertices, is equal to the smallest number of edges separating these vertices.
 
-## Computing the values
+## Computing the values {#computing-the-values}
 
-### Edge connectivity using maximum flow
+### Edge connectivity using maximum flow {#edge-connectivity-using-maximum-flow}
 
 This method is based on the Ford-Fulkerson theorem.
 
@@ -67,14 +67,14 @@ The complexity for the algorithm using [Edmonds-Karp](/algorithms/graph/edmonds-
 But we should note, that this includes a hidden factor, since it is practically impossible to create a graph such that the maximum flow algorithm will be slow for all sources and sinks.
 Especially the algorithm will run pretty fast for random graphs.
 
-### Special algorithm for edge connectivity 
+### Special algorithm for edge connectivity {#special-algorithm-for-edge-connectivity}
 
 The task of finding the edge connectivity is equal to the task of finding the **global minimum cut**.
 
 Special algorithms have been developed for this task.
 One of them is the [Stoer-Wagner algorithm](/algorithms/graph/stoer-wagner-mincut), which works in $O(V^3)$ or $O(V E + V^2 \log V)$ time.
 
-### Vertex connectivity
+### Vertex connectivity {#vertex-connectivity}
 
 Again we iterate over all pairs of vertices $s$ and $t$, and for each pair we find the minimum number of vertices that separates $s$ and $t$.
 

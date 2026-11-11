@@ -1,9 +1,9 @@
-# Minimum stack / Minimum queue
+# Minimum stack / Minimum queue {#minimum-stack-minimum-queue}
 
 In this article we will consider three problems: 
 first we will modify a stack in a way that allows us to find the smallest element of the stack in $O(1)$, then we will do the same thing with a queue, and finally we will use these data structures to find the minimum in all subarrays of a fixed length in an array in $O(n)$
 
-## Stack modification
+## Stack modification {#stack-modification}
 
 We want to modify the stack data structure in such a way, that it is possible to find the smallest element in the stack in $O(1)$ time, while maintaining the same asymptotic behavior for adding and removing elements from the stack.
 Quick reminder, on a stack we only add and remove elements on one end.
@@ -37,7 +37,7 @@ st.pop();
 int minimum = st.top().second;
 ```
 
-## Queue modification (method 1)
+## Queue modification (method 1) {#queue-modification-method-1}
 
 Now we want to achieve the same operations with a queue, i.e. we want to add elements at the end and remove them from the front.
 
@@ -81,7 +81,7 @@ if (!q.empty() && q.front() == remove_element)
 
 It is clear that on average all these operation only take $O(1)$ time (because every element can only be pushed and popped once).
 
-## Queue modification (method 2)
+## Queue modification (method 2) {#queue-modification-method-2}
 
 This is a modification of method 1.
 We want to be able to remove elements without knowing which element we have to remove.
@@ -114,7 +114,7 @@ if (!q.empty() && q.front().second == cnt_removed)
 cnt_removed++;
 ```
 
-## Queue modification (method 3)
+## Queue modification (method 3) {#queue-modification-method-3}
 
 Here we consider another way of modifying a queue to find the minimum in $O(1)$.
 This way is somewhat more complicated to implement, but this time we actually store all elements.
@@ -165,7 +165,7 @@ int remove_element = s2.top().first;
 s2.pop();
 ```
 
-## Finding the minimum for all subarrays of fixed length
+## Finding the minimum for all subarrays of fixed length {#finding-the-minimum-for-all-subarrays-of-fixed-length}
 
 Suppose we are given an array $A$ of length $N$ and a given $M \le N$.
 We have to find the minimum of each subarray of length $M$ in this array, i.e. we have to find:
@@ -179,7 +179,7 @@ The solutions should be clear:
 we add the first $M$ element of the array, find and output its minimum, then add the next element to the queue and remove the first element of the array, find and output its minimum, etc. 
 Since all operations with the queue are performed in constant time on average, the complexity of the whole algorithm will be $O(n)$.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [Queries with Fixed Length](https://www.hackerrank.com/challenges/queries-with-fixed-length/problem)
 * [Sliding Window Minimum](https://cses.fi/problemset/task/3221)
 * [Binary Land](https://www.codechef.com/MAY20A/problems/BINLAND)

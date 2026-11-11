@@ -1,16 +1,16 @@
-# Second Best Minimum Spanning Tree
+# Second Best Minimum Spanning Tree {#second-best-minimum-spanning-tree}
 
 A Minimum Spanning Tree $T$ is a tree for the given graph $G$ which spans over all vertices of the given graph and has the minimum weight sum of all the edges, from all the possible spanning trees.
 A second best MST $T'$ is a spanning tree, that has the second minimum weight sum of all the edges, from all the possible spanning trees of the graph $G$.
 
-## Observation
+## Observation {#observation}
 
 Let $T$ be the Minimum Spanning Tree of a graph $G$.
 It can be observed, that the second best Minimum Spanning Tree differs from $T$ by only one edge replacement. (For a proof of this statement refer to problem 23-1 [here](http://www-bcf.usc.edu/~shanghua/teaching/Spring2010/public_html/files/HW2_Solutions_A.pdf)).
 
 So we need to find an edge $e_{new}$ which is in not in $T$, and replace it with an edge in $T$ (let it be $e_{old}$) such that the new graph $T' = (T \cup \{e_{new}\}) \setminus \{e_{old}\}$ is a spanning tree and the weight difference ($e_{new} - e_{old}$) is minimum.
 
-## Using Kruskal's Algorithm
+## Using Kruskal's Algorithm {#using-kruskals-algorithm}
 
 We can use Kruskal's algorithm to find the MST first, and then just try to remove a single edge from it and replace it with another.
 
@@ -23,7 +23,7 @@ Note: we don’t need to sort the edges again in for Step 3.
 
 So, the overall time complexity will be $O(E \log V + E + V E)$ = $O(V E)$.
 
-## Modeling into a Lowest Common Ancestor (LCA) problem
+## Modeling into a Lowest Common Ancestor (LCA) problem {#modeling-into-a-lowest-common-ancestor-lca-problem}
 
 In the previous approach we tried all possibilities of removing one edge of the MST.
 Here we will do the exact opposite.
@@ -65,7 +65,7 @@ By removing the edge we get a new spanning tree, that has a weight difference of
 After doing this also with all other edges that are not part of the initial MST, we can see that this spanning tree was also the second best spanning tree overall.
 Choosing the edge with weight 14 will increase the weight of the tree by 7, choosing the edge with weight 27 increases it by 14, choosing the edge with weight 28 increases it by 21, and choosing the edge with weight 39 will increase the tree by 5.
 
-## Implementation
+## Implementation {#implementation}
 ```cpp
 struct edge {
     int s, e, w, id;
@@ -185,10 +185,10 @@ int main(void) {
 }
 ```
 
-## References
+## References {#references}
 
 1. Competitive Programming-3, by Steven Halim
 2. [web.mit.edu](http://web.mit.edu/6.263/www/quiz1-f05-sol.pdf)
 
-## Problems
+## Problems {#problems}
 * [Codeforces - Minimum spanning tree for each edge](https://codeforces.com/problemset/problem/609/E)

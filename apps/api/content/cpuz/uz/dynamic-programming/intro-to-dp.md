@@ -1,4 +1,4 @@
-# Dinamik dasturlashga kirish
+# Dinamik dasturlashga kirish {#introduction-to-dynamic-programming}
 
 Dinamik dasturlashning mohiyati — bir xil hisob-kitobni qayta-qayta bajarmaslik. Dinamik dasturlash masalalari ko‘pincha tabiiy ravishda rekursiya yordamida yechiladi. Bunday hollarda avval rekursiv yechimni yozib, keyin takrorlanadigan holatlarning javoblarini qidiruv jadvalida saqlash eng oson yo‘ldir. Bu jarayon memoizatsiyali yuqoridan pastga dinamik dasturlash deb ataladi. Inglizchadagi “memoization” so‘zi “memo” — qayd yozish ma’nosidan kelib chiqqan; uni “memorization” — yodlash bilan adashtirmaslik kerak.
 
@@ -14,7 +14,7 @@ int f(int n) {
 
 Bu rekursiv funksiyaning ishlash vaqti eksponensial — taxminan $O(2^n)$, chunki bitta funksiya chaqiruvi, ya’ni $f(n)$, hajmi deyarli bir xil bo‘lgan ikkita chaqiruvni — $f(n-1)$ va $f(n-2)$ ni keltirib chiqaradi.
 
-## Fibonacci hisobini dinamik dasturlash bilan tezlashtirish (memoizatsiya)
+## Fibonacci hisobini dinamik dasturlash bilan tezlashtirish (memoizatsiya) {#speeding-up-fibonacci-with-dynamic-programming-memoization}
 
 Hozirgi rekursiv funksiyamiz Fibonacci sonlarini eksponensial vaqtda hisoblaydi. Shu sababli masala haddan tashqari og‘irlashib ketishidan oldin faqat kichik kirish qiymatlarini qayta ishlay olamiz. Masalan, $f(29)$ ni hisoblash *1 milliondan ortiq* funksiya chaqiruviga olib keladi!
 
@@ -77,7 +77,7 @@ Holatlarni ikkilik qidiruv daraxtida, ya’ni C++ dagi `map` da saqlash texnik j
 
 Bu yondashuv yuqoridan pastga deb ataladi: funksiyani so‘ralgan qiymat bilan chaqiramiz, hisoblash yuqoridan — so‘rov qiymatidan — pastga, rekursiyaning bazaviy holatlariga qarab boradi va yo‘lda memoizatsiya yordamida qisqa yo‘llardan foydalanadi.
 
-## Pastdan yuqoriga dinamik dasturlash
+## Pastdan yuqoriga dinamik dasturlash {#bottom-up-dynamic-programming}
 
 Hozirgacha faqat memoizatsiyali yuqoridan pastga dinamik dasturlashni ko‘rdik. Biroq masalalarni pastdan yuqoriga dinamik dasturlash bilan ham yechish mumkin. Pastdan yuqoriga yondashuv yuqoridan pastga yondashuvning aksi: hisoblash rekursiyaning bazaviy holatlaridan boshlanadi va tobora kattaroq qiymatlarga kengaytiriladi.
 
@@ -120,7 +120,7 @@ Dinamik dasturlashning asoslari shundan iborat: oldin bajargan ishingizni takror
 
 Dinamik dasturlashni yaxshiroq o‘rganish usullaridan biri — klassik misollarni o‘rganishdir.
 
-## Klassik dinamik dasturlash masalalari
+## Klassik dinamik dasturlash masalalari {#classic-dynamic-programming-problems}
 | Nomi                                           | Tavsif/misol                                                                                                                                                                                                            |
 | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [0-1 ryukzak](/algorithms/dynamic-programming/knapsack)                                   | Vaznlari $w_i$, qiymatlari $v_i$ bo‘lgan $N$ ta buyum va maksimal vazni $W$ bo‘lgan ryukzak berilgan. $1 \le k \le N$ bo‘lganda, $\sum_{i=1}^{k} w_i \le W$ shartini saqlagan holda buyumlarning $k$ elementli qism to‘plami uchun $\sum_{i=1}^{k} v_i$ ning eng katta qiymatini toping.                  |
@@ -133,14 +133,14 @@ Dinamik dasturlashni yaxshiroq o‘rganish usullaridan biri — klassik misollar
 | Tayoqni kesish                                    | Uzunligi $n$ birlik bo‘lgan tayoq va `cuts[i]` kesish nuqtasini bildiradigan butun sonlar massivi berilgan. Bitta kesish narxi kesilayotgan tayoq bo‘lagining uzunligiga teng. Barcha kesishlarning eng kichik umumiy narxini toping. |
 | Tahrirlash masofasi                                  | Ikki satr orasidagi tahrirlash masofasi — bir satrni ikkinchisiga aylantirish uchun zarur bo‘lgan amallar sonining minimumi. Amallar: qo‘shish, o‘chirish va almashtirish.                                                         |
 
-## Bog‘liq mavzular
+## Bog‘liq mavzular {#related-topics}
 * [Bitmaskli dinamik dasturlash](/algorithms/dynamic-programming/profile-dynamics)
 * Raqamlar bo‘yicha dinamik dasturlash
 * Daraxtlarda dinamik dasturlash
 
 Albatta, eng muhim usul — amaliyot qilish.
 
-## Amaliy masalalar
+## Amaliy masalalar {#practice-problems}
 * [LeetCode - 1137. N-th Tribonacci Number](https://leetcode.com/problems/n-th-tribonacci-number/description/)
 * [LeetCode - 118. Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/description/)
 * [LeetCode - 1025. Divisor Game](https://leetcode.com/problems/divisor-game/description/)
@@ -150,6 +150,6 @@ Albatta, eng muhim usul — amaliyot qilish.
 * [LeetCode - 221. Maximal Square](https://leetcode.com/problems/maximal-square/description/)
 * [LeetCode - 1039. Minimum Score Triangulation of Polygon](https://leetcode.com/problems/minimum-score-triangulation-of-polygon/description/)
 
-## DP musobaqalari
+## DP musobaqalari {#dp-contests}
 * [Atcoder - Educational DP Contest](https://atcoder.jp/contests/dp/tasks)
 * [CSES - Dynamic Programming](https://cses.fi/problemset/list/)

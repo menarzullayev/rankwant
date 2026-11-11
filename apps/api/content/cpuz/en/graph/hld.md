@@ -1,8 +1,8 @@
-# Heavy-light decomposition
+# Heavy-light decomposition {#heavy-light-decomposition}
 
 **Heavy-light decomposition** is a fairly general technique that allows us to effectively solve many problems that come down to **queries on a tree** .
 
-## Description
+## Description {#description}
 
 Let there be a tree $G$ of $n$ vertices, with an arbitrary root.
 
@@ -10,7 +10,7 @@ The essence of this tree decomposition is to **split the tree into several paths
 
 It is clear that if we find such a decomposition for any tree, it will allow us to reduce certain single queries of the form *“calculate something on the path from $a$ to $b$”* to several queries of the type *”calculate something on the segment $[l, r]$ of the $k^{th}$ path”*.
 
-### Construction algorithm
+### Construction algorithm {#construction-algorithm}
 
 We calculate for each vertex $v$ the size of its subtree  $s(v)$, i.e. the number of vertices in the subtree of the vertex $v$ including itself.
 
@@ -26,7 +26,7 @@ It is obvious that at most one heavy edge can emanate from one vertex downward, 
 
 Now we will decompose the tree into disjoint paths. Consider all the vertices from which no heavy edges come down. We will go up from each such vertex until we reach the root of the tree or go through a light edge. As a result, we will get several paths which are made up of zero or more heavy edges plus one light edge. The path which has an end at the root is an exception to this and will not have a light edge. Let these be called **heavy paths** - these are the desired paths of heavy-light decomposition.
 
-### Proof of correctness
+### Proof of correctness {#proof-of-correctness}
 
 First, we note that the heavy paths obtained by the algorithm will be **disjoint** . In fact, if two such paths have a common edge, it would imply that there are two heavy edges coming out of one vertex, which is impossible.
 
@@ -44,7 +44,7 @@ The following image illustrates the decomposition of a sample tree. The heavy ed
 
   ![Image of HLD](/algorithms-media/graph/hld.png)
 
-## Sample problems
+## Sample problems {#sample-problems}
 
 When solving problems, it is sometimes more convenient to consider the heavy-light decomposition as a set of **vertex disjoint** paths (rather than edge disjoint paths). To do this, it suffices to exclude the last edge from each heavy path if it is a light edge, then no properties are violated, but now each vertex belongs to exactly one heavy path.
 
@@ -52,7 +52,7 @@ Below we will look at some typical tasks that can be solved with the help of hea
 
 Separately, it is worth paying attention to the problem of the **sum of numbers on the path**, since this is an example of a problem that can be solved by simpler techniques.
 
-### Maximum value on the path between two vertices
+### Maximum value on the path between two vertices {#maximum-value-on-the-path-between-two-vertices}
 
 Given a tree, each vertex is assigned a value. There are queries of the form $(a, b)$, where $a$ and $b$ are two vertices in the tree, and it is required to find the maximum value on the path between the vertices $a$ and $b$.
 
@@ -67,7 +67,7 @@ Hence, one query $(a, b)$ takes $\mathcal{O}(\log^2 n)$ time.
 
 If you additionally calculate and store maximums of all prefixes for each heavy path, then you get a $\mathcal{O}(\log n)$ solution because all maximum queries are on prefixes except at most once when we reach the ancestor $l$.
 
-###  Sum of the numbers on the path between two vertices
+###  Sum of the numbers on the path between two vertices {#sum-of-the-numbers-on-the-path-between-two-vertices}
 
 Given a tree, each vertex is assigned a value. There are queries of the form $(a, b)$, where $a$ and $b$ are two vertices in the tree, and it is required to find the sum of the values on the path between the vertices $a$ and $b$. A variant of this task is possible where additionally there are update operations that change the number assigned to one or more vertices.
 
@@ -79,7 +79,7 @@ There is a fundamentally different approach to this problem - to consider the [E
 
 Both of these methods provide relatively simple solutions taking $\mathcal{O}(\log n)$ for one query.
 
-### Repainting the edges of the path between two vertices
+### Repainting the edges of the path between two vertices {#repainting-the-edges-of-the-path-between-two-vertices}
 
 Given a tree, each edge is initially painted white. There are updates of the form $(a, b, c)$, where $a$ and $b$ are two vertices and $c$ is a color, which instructs that all the edges on the path from $a$ to $b$ must be repainted with color $c$. After all repaintings, it is required to report how many edges of each color were obtained.
 
@@ -88,7 +88,7 @@ Similar to the above problems, the solution is to simply apply heavy-light decom
 Each repainting on the path $(a, b)$ will turn into two updates $(a, l)$ and $(b, l)$, where $l$ is the lowest common ancestor of the vertices $a$ and $b$.   
 $\mathcal{O}(\log n)$ per path for $\mathcal{O}(\log n)$ paths leads to a complexity of $\mathcal{O}(\log^2 n)$ per update.
 
-## Implementation
+## Implementation {#implementation}
 
 Certain parts of the above discussed approach can be modified to make implementation easier without losing efficiency.
 
@@ -166,7 +166,7 @@ int query(int a, int b) {
 }
 ```
 
-## Practice problems
+## Practice problems {#practice-problems}
 
 - [SPOJ - QTREE - Query on a tree](https://www.spoj.com/problems/QTREE/)
 - [CSES - Path Queries II](https://cses.fi/problemset/task/2134)

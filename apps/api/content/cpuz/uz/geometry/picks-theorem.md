@@ -1,8 +1,8 @@
-# Pick teoremasi
+# Pick teoremasi {#picks-theorem}
 
 O‘zini o‘zi kesmaydigan ko‘pburchak, agar uning barcha uchlari tekislikdagi biror butun koordinatali to‘rda butun koordinatalarga ega bo‘lsa, **panjaraviy** deyiladi. Pick teoremasi bunday ko‘pburchakning yuzini uning chegarasida yotgan nuqtalar soni va qat’iy ichida yotgan nuqtalar soni orqali hisoblash imkonini beradi.
 
-## Formula
+## Formula {#formula}
 
 Yuzi noldan farqli biror panjaraviy ko‘pburchak berilgan bo‘lsin.
 
@@ -16,7 +16,7 @@ Xususan, agar ko‘pburchak uchun $I$ va $B$ qiymatlari berilgan bo‘lsa, uchla
 
 Bu formulani 1899-yilda avstriyalik matematik Georg Aleksandr Pick kashf etgan va isbotlagan.
 
-## Isbot
+## Isbot {#proof}
 
 Isbot bir necha bosqichda, sodda ko‘pburchaklardan ixtiyoriy ko‘pburchaklarga qarab olib boriladi:
 
@@ -30,7 +30,7 @@ Isbot bir necha bosqichda, sodda ko‘pburchaklardan ixtiyoriy ko‘pburchaklarg
 
 - Ixtiyoriy ko‘pburchak: buni isbotlash uchun uni triangulyatsiya qilamiz, ya’ni uchlari butun koordinatali uchburchaklarga bo‘lamiz. Keyin esa uchburchakka ko‘pburchak qo‘shilganda Pick teoremasi o‘z kuchini saqlashini isbotlash mumkin. Shunday qilib, Pick formulasini ixtiyoriy ko‘pburchak uchun isbotladik.
 
-## Yuqori o‘lchamlarga umumlashtirish
+## Yuqori o‘lchamlarga umumlashtirish {#generalization-to-higher-dimensions}
 
 Afsuski, bu sodda va go‘zal formulani yuqori o‘lchamlarga umumlashtirib bo‘lmaydi.
 
@@ -45,6 +45,6 @@ bu yerda $k$ istalgan natural son bo‘lishi mumkin. U holda har qanday $k$ uchu
 
 Biroq yuqori o‘lchamlar uchun baribir **Ehrhart ko‘phadlari** yordamida umumlashtirish mavjud, lekin ular ancha murakkab va nafaqat ichkaridagi nuqtalarga, balki ko‘pyoqlining chegarasiga ham bog‘liq.
 
-## Qo‘shimcha manbalar
+## Qo‘shimcha manbalar {#extra-resources}
 
 Pick teoremasining bir nechta sodda misollari va oddiy isbotini [bu yerda](http://www.geometer.org/mathcircles/pick.pdf) topish mumkin.

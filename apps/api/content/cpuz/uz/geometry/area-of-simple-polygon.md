@@ -1,8 +1,8 @@
-# Sodda ko‘pburchak yuzini $O(N)$ vaqtda topish
+# Sodda ko‘pburchak yuzini $O(N)$ vaqtda topish {#finding-area-of-simple-polygon-in-on}
 
 Sodda ko‘pburchak (ya’ni o‘zini kesmaydigan, qavariq bo‘lishi shart bo‘lmagan ko‘pburchak) berilgan bo‘lsin. Uning uchlari bo‘yicha yuzini hisoblash talab qilinadi.
 
-## 1-usul
+## 1-usul {#method-1}
 
 Buni barcha qirralar bo‘ylab yurib, har bir qirra va x o‘qi bilan chegaralangan trapesiya yuzlarini qo‘shish orqali oson bajarish mumkin. Ortiqcha yuz kamayishi uchun yuz ishora bilan olinishi kerak. Demak, formula quyidagicha:
 
@@ -22,7 +22,7 @@ double area(const vector<point>& fig) {
 }
 ```
 
-## 2-usul
+## 2-usul {#method-2}
 
 Ixtiyoriy $O$ nuqtani tanlab, barcha qirralar bo‘ylab yuramiz va har bir qirra hamda $O$ nuqta hosil qilgan uchburchakning yo‘nalgan yuzini qo‘shamiz. Bu yerda ham yuz ishorasi tufayli ortiqcha yuz kamayadi.
 

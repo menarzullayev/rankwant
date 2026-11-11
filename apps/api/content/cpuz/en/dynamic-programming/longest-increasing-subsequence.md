@@ -1,4 +1,4 @@
-# Longest increasing subsequence
+# Longest increasing subsequence {#longest-increasing-subsequence}
 
 We are given an array with $n$ numbers: $a[0 \dots n-1]$.
 The task is to find the longest, strictly increasing, subsequence in $a$.
@@ -11,14 +11,14 @@ a[i_1] < a[i_2] < \dots < a[i_k]$$
 In this article we discuss multiple algorithms for solving this task.
 Also we will discuss some other problems, that can be reduced to this problem.
 
-## Solution in $O(n^2)$ with dynamic programming
+## Solution in $O(n^2)$ with dynamic programming {#solution-in-on2-with-dynamic-programming}
 
 Dynamic programming is a very general technique that allows to solve a huge class of problems.
 Here we apply the technique for our specific task.
 
 First we will search only for the **length** of the longest increasing subsequence, and only later learn how to restore the subsequence itself.
 
-### Finding the length
+### Finding the length {#finding-the-length}
 
 To accomplish this task, we define an array $d[0 \dots n-1]$, where $d[i]$ is the length of the longest increasing subsequence that ends in the element at index $i$.
 
@@ -53,7 +53,7 @@ If we combine these two cases we get the final answer for $d[i]$:
 
 $$d[i] = \max\left(1, \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)\right)$$
 
-### Implementation
+### Implementation {#implementation}
 
 Here is an implementation of the algorithm described above, which computes the length of the longest increasing subsequence.
 
@@ -76,7 +76,7 @@ int lis(vector<int> const& a) {
 }
 ```
 
-### Restoring the subsequence
+### Restoring the subsequence {#restoring-the-subsequence}
 
 So far we only learned how to find the length of the subsequence, but not how to find the subsequence itself.
 
@@ -87,7 +87,7 @@ This auxiliary array $p[]$ points in some sense to the ancestors.
 
 Then to derive the subsequence, we just start at the index $i$ with the maximal $d[i]$, and follow the ancestors until we deduced the entire subsequence, i.e. until we reach the element with $d[i] = 1$.
 
-### Implementation of restoring
+### Implementation of restoring {#implementation-of-restoring}
 
 We will change the code from the previous sections a little bit.
 We will compute the array $p[]$ alongside $d[]$, and afterwards compute the subsequence.
@@ -126,14 +126,14 @@ vector<int> lis(vector<int> const& a) {
 }
 ```
 
-### Alternative way of restoring the subsequence
+### Alternative way of restoring the subsequence {#alternative-way-of-restoring-the-subsequence}
 
 It is also possible to restore the subsequence without the auxiliary array $p[]$.
 We can simply recalculate the current value of $d[i]$ and also see how the maximum was reached.
 
 This method leads to a slightly longer code, but in return we save some memory.
 
-## Solution in $O(n \log n)$ with dynamic programming and binary search
+## Solution in $O(n \log n)$ with dynamic programming and binary search {#solution-in-on-log-n-with-dynamic-programming-and-binary-search}
 
 In order to obtain a faster solution for the problem, we construct a different dynamic programming solution that runs in $O(n^2)$, and then later improve it to $O(n \log n)$.
 
@@ -218,7 +218,7 @@ We now make two important observations.
 Thus we can find this element in the array $d[]$ using [binary search](/algorithms/num-methods/binary-search) in $O(\log n)$.
 In fact we can simply look in the array $d[]$ for the first number that is strictly greater than $a[i]$, and we try to update this element in the same way as the above implementation.
 
-### Implementation
+### Implementation {#implementation}
 
 This gives us the improved $O(n \log n)$ implementation:
 
@@ -244,7 +244,7 @@ int lis(vector<int> const& a) {
 }
 ```
 
-### Restoring the subsequence
+### Restoring the subsequence {#restoring-the-subsequence}
 
 It is also possible to restore the subsequence using this approach.
 This time we have to maintain two auxiliary arrays.
@@ -255,7 +255,7 @@ $p[i]$ will be the index of the previous element for the optimal subsequence end
 It's easy to maintain these two arrays in the course of iteration over the array $a[]$ alongside the computations of $d[]$.
 And at the end it is not difficult to restore the desired subsequence using these arrays.
 
-## Solution in $O(n \log n)$ with data structures
+## Solution in $O(n \log n)$ with data structures {#solution-in-on-log-n-with-data-structures}
 
 Instead of the above method for computing the longest increasing subsequence in $O(n \log n)$ we can also solve the problem in a different way: using some simple data structures.
 
@@ -282,11 +282,11 @@ On the other hand this method has also some **advantages**:
 with this method you don't have to think about any tricky properties in the dynamic programming solution.
 And this approach allows us to generalize the problem very easily (see below).
 
-## Related tasks
+## Related tasks {#related-tasks}
 
 Here are several problems that are closely related to the problem of finding the longest increasing subsequence.
 
-### Longest non-decreasing subsequence
+### Longest non-decreasing subsequence {#longest-non-decreasing-subsequence}
 
 This is in fact nearly the same problem.
 Only now it is allowed to use identical numbers in the subsequence.
@@ -294,7 +294,7 @@ Only now it is allowed to use identical numbers in the subsequence.
 The solution is essentially also nearly the same.
 We just have to change the inequality signs, and make a slight modification to the binary search.
 
-### Number of longest increasing subsequences
+### Number of longest increasing subsequences {#number-of-longest-increasing-subsequences}
 
 We can use the first discussed method, either the $O(n^2)$ version or the version using data structures.
 We only have to additionally store in how many ways we can obtain longest increasing subsequences ending in the values $d[i]$.
@@ -306,7 +306,7 @@ Using a Segment tree this approach can also be implemented in $O(n \log n)$.
 
 It is not possible to use the binary search approach for this task.
 
-### Smallest number of non-increasing subsequences covering a sequence
+### Smallest number of non-increasing subsequences covering a sequence {#smallest-number-of-non-increasing-subsequences-covering-a-sequence}
 
 For a given array with $n$ numbers $a[0 \dots n - 1]$ we have to colorize the numbers in the smallest number of colors, so that each color forms a non-increasing subsequence.
 
@@ -335,7 +335,7 @@ Thus it follows that $y = x$.
 The desired partition of the sequence into subsequences can be done greedily.
 I.e. go from left to right and assign the current number or that subsequence ending with the minimal number which is greater than or equal to the current one.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 - [ACMSGURU - "North-East"](http://codeforces.com/problemsets/acmsguru/problem/99999/521)
 - [Codeforces - LCIS](http://codeforces.com/problemset/problem/10/D)

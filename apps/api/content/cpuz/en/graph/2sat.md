@@ -1,4 +1,4 @@
-# 2-SAT 
+# 2-SAT {#2-sat}
 
 SAT (Boolean satisfiability problem) is the problem of assigning Boolean values to variables to satisfy a given Boolean formula.
 The Boolean formula will usually be given in CNF (conjunctive normal form), which is a conjunction of multiple clauses, where each clause is a disjunction of literals (variables or negation of variables).
@@ -11,7 +11,7 @@ $$(a \lor \lnot b) \land (\lnot a \lor b) \land (\lnot a \lor \lnot b) \land (a 
 SAT is NP-complete, there is no known efficient solution for it.
 However 2SAT can be solved efficiently in $O(n + m)$ where $n$ is the number of variables and $m$ is the number of clauses.
 
-## Algorithm:
+## Algorithm: {#algorithm}
 
 First we need to convert the problem to a different form, the so-called implicative normal form.
 Note that the expression $a \lor b$ is equivalent to $\lnot a \Rightarrow b \land \lnot b \Rightarrow a$ (if one of the two variables is false, then the other one must be true).
@@ -82,7 +82,7 @@ So we have constructed an algorithm that finds the required values of variables 
 Above showed the correctness of this algorithm.
 Consequently we simultaneously proved the above criterion for the existence of a solution.
 
-## Implementation:
+## Implementation: {#implementation}
 
 Now we can implement the entire algorithm.
 First we construct the graph of implications and find all strongly connected components.
@@ -173,7 +173,7 @@ struct TwoSatSolver {
 };
 ```
 
-## Practice Problems
+## Practice Problems {#practice-problems}
  * [Codeforces: The Door Problem](http://codeforces.com/contest/776/problem/D)
  * [Kattis: Illumination](https://open.kattis.com/problems/illumination)
  * [UVA: Rectangles](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=3081)

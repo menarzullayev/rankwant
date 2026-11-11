@@ -1,16 +1,16 @@
-# Vertikal dekompozitsiya
+# Vertikal dekompozitsiya {#vertical-decomposition}
 
-## Umumiy ko‘rinish
+## Umumiy ko‘rinish {#overview}
 
 Vertikal dekompozitsiya ko‘plab geometrik masalalarda ishlatiladigan kuchli usuldir. Umumiy g‘oya tekislikni ayrim “qulay” xossalarga ega vertikal polosalarga ajratish va har bir polosa uchun masalani mustaqil yechishdan iborat. Quyida bu g‘oya bir nechta misolda ko‘rsatiladi.
 
-## Uchburchaklar birlashmasining yuzi
+## Uchburchaklar birlashmasining yuzi {#area-of-the-union-of-triangles}
 
 Tekislikda $n$ ta uchburchak berilgan va ularning birlashmasi yuzini topish kerak bo‘lsin. Uchburchaklar kesishmaganida masala oson bo‘lardi. Kesishishlardan xalos bo‘lish uchun barcha uchlar va turli uchburchaklar tomonlarining kesishish nuqtalari orqali vertikal chiziqlar o‘tkazib, tekislikni vertikal polosalarga ajratamiz. Bunday chiziqlar $O(n^2)$ ta bo‘lishi mumkin, demak $O(n^2)$ ta polosa hosil bo‘ladi. Endi biror vertikal polosani ko‘rib chiqamiz. Har bir vertikal bo‘lmagan kesma polosani chapdan o‘ngga to‘liq kesib o‘tadi yoki umuman kesib o‘tmaydi. Bundan tashqari, polosa ichida (uning chegaralarida emas) hech qanday ikkita kesma kesishmaydi. Demak, uchburchaklar birlashmasining shu polosa ichida yotgan qismi asoslari polosaning yon tomonlarida yotadigan o‘zaro kesishmaydigan trapetsiyalardan iborat.
 
 Bu xossa har bir polosa ichidagi yuzni quyidagi supuruvchi chiziq (scanline) algoritmi bilan hisoblashga imkon beradi. Polosani kesib o‘tuvchi har bir kesma yoki yuqori, yoki pastki bo‘ladi: bu mos uchburchakning ichi kesmadan yuqorida yoki pastda joylashganiga bog‘liq. Har bir yuqori kesmani ochuvchi qavs, har bir pastki kesmani yopuvchi qavs deb tasavvur qilish mumkin va qavslar ketma-ketligini kichikroq to‘g‘ri qavs ketma-ketliklariga ajratish orqali polosani trapetsiyalarga ajratamiz. Bu algoritm $O(n^3\log n)$ vaqt va $O(n^2)$ xotira talab qiladi.
 
-### 1-optimizatsiya
+### 1-optimizatsiya {#optimization-1}
 
 Avval ishlash vaqtini $O(n^2\log n)$ gacha kamaytiramiz. Har bir polosa uchun trapetsiyalarni alohida hosil qilish o‘rniga, biror uchburchak tomonini (ya’ni $s=(s_0,s_1)$ kesmani) tanlab, bu kesma qaysi polosalarda biror trapetsiyaning tomoni bo‘lishini topamiz. E’tibor bering, bu holda faqat $s$ ning pastidagi (pastki kesma bo‘lsa — ustidagi) qavslar balansi nolga teng bo‘lgan polosalarni topish kerak. Demak, har bir polosa uchun vertikal supuruvchi chiziq yurgizish o‘rniga, $s$ ga nisbatan qavslar balansiga ta’sir qiladigan boshqa kesmalarning barcha qismlari bo‘yicha bitta gorizontal supuruvchi chiziq yurgizishimiz mumkin.
 
@@ -36,15 +36,15 @@ Uch holatning grafik tasviri:
 
 Nihoyat, $[x_1,x_2]$ dagi barcha polosalarga $1$ yoki $-1$ qo‘shishlarni qayta ishlash haqida to‘xtalib o‘tamiz. $[x_1,x_2]$ ga har bir $w$ qo‘shish uchun $(x_1,w),\ (x_2,-w)$ hodisalarini yaratib, barcha hodisalarni supuruvchi chiziq bilan qayta ishlash mumkin.
 
-### 2-optimizatsiya
+### 2-optimizatsiya {#optimization-2}
 
 Agar oldingi optimizatsiyani qo‘llasak, barcha polosalarni oshkora topishimiz shart emas. Bu xotira sarfini $O(n)$ gacha kamaytiradi.
 
-## Qavariq ko‘pburchaklar kesishmasi
+## Qavariq ko‘pburchaklar kesishmasi {#intersection-of-convex-polygons}
 
 Vertikal dekompozitsiyaning yana bir qo‘llanishi — ikkita qavariq ko‘pburchakning kesishmasini chiziqli vaqtda hisoblash. Tekislik har bir ko‘pburchakning har bir uchidan o‘tuvchi vertikal chiziqlar bilan vertikal polosalarga ajratilgan deylik. U holda kirish ko‘pburchaklaridan birini va biror polosani olsak, ularning kesishmasi trapetsiya, uchburchak yoki nuqta bo‘ladi. Demak, har bir vertikal polosa uchun shu shakllarning kesishmasini oddiygina topib, bu kesishmalarni bitta ko‘pburchakka birlashtirishimiz mumkin.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyidagi kod uchburchaklar birlashmasi yuzini $O(n^2\log n)$ vaqt va $O(n)$ xotirada hisoblaydi.
 
@@ -230,7 +230,7 @@ dbl union_area(vector<tuple<pt, pt, pt> > triangles){
 
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
 - [Codeforces 62C — Inquisition](https://codeforces.com/contest/62/problem/C)
 - [Codeforces 107E — Darts](https://codeforces.com/contest/107/problem/E)

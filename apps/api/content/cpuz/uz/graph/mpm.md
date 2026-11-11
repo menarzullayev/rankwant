@@ -1,8 +1,8 @@
-# Maksimal oqim — MPM algoritmi
+# Maksimal oqim — MPM algoritmi {#maximum-flow-mpm-algorithm}
 
 MPM (Malhotra, Pramodh-Kumar va Maheshwari) algoritmi maksimal oqim masalasini $O(V^3)$ vaqtda yechadi. Bu algoritm [Dinic algoritmi](/algorithms/graph/dinic)ga o‘xshaydi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Dinic algoritmi kabi MPM ham fazalarda ishlaydi; har bir fazada $G$ ning qoldiq tarmog‘i uchun qatlamli tarmoqdagi bloklovchi oqimni topamiz.
 Dinic algoritmidan asosiy farqi — bloklovchi oqimni qanday topishimizda.
@@ -30,7 +30,7 @@ Har bir faza $O(V^2)$ vaqtda ishlaydi: ko‘pi bilan $V$ ta iteratsiya mavjud (c
 Yig‘ib, $O(V^2 + E) = O(V^2)$ ni olamiz.
 Fazalar soni $V$ dan kam bo‘lgani sababli (isbot [bu yerda](/algorithms/graph/dinic)), MPM jami $O(V^3)$ vaqtda ishlaydi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 struct MPM{

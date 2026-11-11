@@ -1,11 +1,11 @@
-# Search for a pair of intersecting segments
+# Search for a pair of intersecting segments {#search-for-a-pair-of-intersecting-segments}
 
 Given $n$ line segments on the plane. It is required to check whether at least two of them intersect with each other.
 If the answer is yes, then print this pair of intersecting segments; it is enough to choose any of them among several answers.
 
 The naive solution algorithm is to iterate over all pairs of segments in $O(n^2)$ and check for each pair whether they intersect or not. This article describes an algorithm with the runtime time $O(n \log n)$, which is based on the **sweep line algorithm**.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Let's draw a vertical line $x = -\infty$ mentally and start moving this line to the right.
 In the course of its movement, this line will meet with segments, and at each time a segment intersects with our line it intersects in exactly one point (we will assume that there are no vertical segments).
@@ -50,7 +50,7 @@ Thus, the entire algorithm will perform no more than $2n$ tests on the intersect
 
 The final **asymptotic behavior of the algorithm** is thus $O(n \log n)$.
 
-## Implementation
+## Implementation {#implementation}
 
 We present the full implementation of the described algorithm:
 
@@ -166,5 +166,5 @@ Two auxiliary functions `prev()` and `next()` are also introduced, which return 
 
 The constant `EPS` denotes the error of comparing two real numbers (it is mainly used when checking two segments for intersection).
 
-## Problems
+## Problems {#problems}
  * [TIMUS 1469 No Smoking!](https://acm.timus.ru/problem.aspx?space=1&num=1469)

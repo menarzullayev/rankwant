@@ -1,4 +1,4 @@
-# Suffiks avtomati
+# Suffiks avtomati {#suffix-automaton}
 
 **Suffiks avtomati** satrlarga oid ko‘plab masalalarni yechish imkonini beradigan kuchli ma’lumotlar tuzilmasidir.
 
@@ -12,7 +12,7 @@ Bundan tashqari, uni $O(n)$ vaqtda ham qurish mumkin (alifbo o‘lchami $k$ ni o
 
 Suffiks avtomati o‘lchamining chiziqliligi birinchi marta 1983-yilda Blumer va boshqalar tomonidan aniqlangan, 1985-yilda esa Crochemore hamda Blumer uni qurishning birinchi chiziqli algoritmlarini taqdim etgan.
 
-## Suffiks avtomatining ta’rifi
+## Suffiks avtomatining ta’rifi {#definition-of-a-suffix-automaton}
 
 Berilgan $s$ satri uchun suffiks avtomati — $s$ satrining barcha suffikslarini qabul qiladigan minimal **DFA** (deterministik chekli avtomat / deterministik chekli holatlar mashinasi).
 
@@ -31,7 +31,7 @@ Boshqacha aytganda:
 
  - Suffiks avtomati yuqoridagi shartlarni qanoatlantiradigan barcha avtomatlar orasida eng kam sondagi tugunga ega.
 
-### Qism satr xossasi
+### Qism satr xossasi {#substring-property}
 
 Suffiks avtomatining eng sodda va eng muhim xossasi shundaki, u $s$ satrining barcha qism satrlari haqidagi ma’lumotni saqlaydi.
 Boshlang‘ich $t_0$ holatdan boshlanadigan istalgan yo‘ldagi o‘tishlar belgilarini yozsak, $s$ ning biror **qism satri** hosil bo‘ladi.
@@ -43,7 +43,7 @@ Aksincha, istalgan yo‘l uning o‘tishlari belgilari yozadigan satrga **mos ke
 Bir holatga bitta yoki bir nechta yo‘l olib kelishi mumkin.
 Shuning uchun holat shu yo‘llarga mos satrlar to‘plamiga **mos keladi** deymiz.
 
-### Qurilgan suffiks avtomatlariga misollar
+### Qurilgan suffiks avtomatlariga misollar {#examples-of-constructed-suffix-automata}
 
 Quyida bir nechta sodda satr uchun suffiks avtomatlariga misollar keltiriladi.
 
@@ -77,11 +77,11 @@ $s =~ \text{"abbb"}$ satri uchun:
 
 !["abbb" uchun suffiks avtomati](/algorithms-media/string/SAabbb.png)
 
-## Chiziqli vaqtda qurish
+## Chiziqli vaqtda qurish {#construction-in-linear-time}
 
 Suffiks avtomatini chiziqli vaqtda qurish algoritmini tasvirlashdan oldin bir nechta yangi tushuncha va sodda isbotlarni kiritishimiz kerak. Ular qurilish algoritmini tushunishda juda muhim bo‘ladi.
 
-### Tugash pozitsiyalari $endpos$
+### Tugash pozitsiyalari $endpos$ {#end-positions-endpos}
 
 $s$ satrining istalgan bo‘sh bo‘lmagan $t$ qism satrini ko‘rib chiqamiz.
 $t$ uchrashlari tugaydigan $s$ satridagi barcha pozitsiyalar to‘plamini $endpos(t)$ bilan belgilaymiz. Masalan, $\text{"abcbc"}$ satri uchun $endpos(\text{"bc"}) = \{2, 4\}$.
@@ -141,7 +141,7 @@ Bu suffiks ham ayni ekvivalentlik sinfiga kirishini ko‘rish oson.
 Chunki bu suffiks $s$ satrida faqat $w$ ning suffiksi ko‘rinishida uchrashi mumkin (sababi undan ham qisqa $u$ suffiksi $s$ da faqat $w$ ning suffiksi ko‘rinishida uchraydi).
 Demak, 1-lemmaga ko‘ra, bu suffiks $w$ bilan $endpos$ bo‘yicha ekvivalent.
 
-### Suffiks havolalari $link$
+### Suffiks havolalari $link$ {#suffix-links-link}
 
 Avtomatdagi biror $v \ne t_0$ holatni ko‘rib chiqamiz.
 Ma’lumki, $v$ holat $endpos$ qiymatlari teng bo‘lgan satrlar sinfiga mos keladi.
@@ -181,7 +181,7 @@ Tugunlar tegishli ekvivalentlik sinfidagi eng uzun qism satr bilan belgilangan.
 
 !["abcbc" uchun suffiks havolalari ko‘rsatilgan suffiks avtomati](/algorithms-media/string/SA_suffix_links.png)
 
-### Xulosa
+### Xulosa {#recap}
 
 Algoritmning o‘ziga o‘tishdan oldin to‘plangan bilimlarni jamlaymiz va bir nechta yordamchi belgilash kiritamiz.
 
@@ -202,7 +202,7 @@ $$minlen(v) = len(link(v)) + 1$$
 - Istalgan $v_0$ holatdan boshlab suffiks havolalari bo‘ylab yursak, ertami-kechmi boshlang‘ich $t_0$ holatga yetamiz.
   Bunda o‘zaro kesishmaydigan $[minlen(v_i); len(v_i)]$ oraliqlar ketma-ketligi hosil bo‘ladi va ularning birlashmasi uzluksiz $[0; len(v_0)]$ oraliqni beradi.
 
-### Algoritm
+### Algoritm {#algorithm}
 
 Endi algoritmning o‘ziga o‘tishimiz mumkin.
 Algoritm **onlayn** ishlaydi: satr belgilarini bittadan qo‘shamiz va har bir qadamda avtomatni mos ravishda o‘zgartiramiz.
@@ -253,7 +253,7 @@ Hozircha faqat shuni qayd etamizki, $s$ ning har bir belgisi uchun faqat bitta y
 
 O‘tishlar sonining chiziqliligi va umuman algoritm ishlash vaqtining chiziqliligi unchalik ravshan emas; ular to‘g‘rilik isbotidan keyin isbotlanadi.
 
-### To‘g‘rilik
+### To‘g‘rilik {#correctness}
 
   - Agar $len(p) + 1 = len(q)$ bo‘lsa, $(p, q)$ o‘tishni **uzluksiz** deb ataymiz.
     Aks holda, ya’ni $len(p) + 1 < len(q)$ bo‘lsa, o‘tish **uzluksiz bo‘lmagan** deb ataladi.
@@ -308,7 +308,7 @@ O‘tishlar sonining chiziqliligi va umuman algoritm ishlash vaqtining chiziqlil
     Qaysi o‘tishlarni o‘zgartirish kerak?
     Faqat $w + c$ satrining barcha suffikslariga mos o‘tishlarni ($w$ — $p$ ga mos eng uzun satr) qayta yo‘naltirish yetarli. Ya’ni $p$ tugunidan boshlab suffiks havolalari bo‘ylab soxta $-1$ holatga yoki $q$ dan boshqa holatga olib boruvchi o‘tishga yetguncha yurishda davom etamiz.
 
-### Amallar sonining chiziqliligi
+### Amallar sonining chiziqliligi {#linear-number-of-operations}
 
 Avvalo alifbo o‘lchami **o‘zgarmas** deb faraz qilamiz.
 Aks holda chiziqli vaqt murakkabligi haqida gapirib bo‘lmaydi.
@@ -338,7 +338,7 @@ Agar siklning birinchi iteratsiyasidan oldin tegishli $v$ satr $last$ dan $k$ ch
 Demak, ushbu siklning har bir iteratsiyasi joriy satrning suffiksi sifatida $longest(link(link(last)))$ satr pozitsiyasini monoton oshiradi.
 Shuning uchun bu sikl $n$ martadan ko‘p bajarilmaydi; isbotlash talab qilingan narsa ham shu edi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Avval muayyan holat haqidagi barcha ma’lumotlarni ($len$, $link$ va o‘tishlar ro‘yxatini) saqlaydigan ma’lumotlar tuzilmasini tasvirlaymiz.
 Zarur bo‘lsa, unga terminal bayroq va boshqa ma’lumotlarni ham qo‘shish mumkin.
@@ -407,9 +407,9 @@ void sa_extend(char c) {
 Yuqorida aytilganidek, xotirani qurbon qilsak ($O(n k)$, bu yerda $k$ — alifbo o‘lchami), istalgan $k$ uchun avtomatni $O(n)$ vaqtda qurish mumkin.
 Buning uchun har bir holatda uzunligi $k$ bo‘lgan massivni (belgi bo‘yicha o‘tishga tez sakrash uchun) va qo‘shimcha ravishda barcha o‘tishlar ro‘yxatini (ular bo‘ylab tez yurish uchun) saqlash kerak.
 
-## Qo‘shimcha xossalar
+## Qo‘shimcha xossalar {#additional-properties}
 
-### Holatlar soni
+### Holatlar soni {#number-of-states}
 
 Uzunligi $n$ bo‘lgan $s$ satrining suffiks avtomatidagi holatlar soni $2n - 1$ dan **oshmaydi** ($n \ge 2$ uchun).
 
@@ -430,7 +430,7 @@ $$\text{"abbb}\dots \text{bbb"}$$
 
 Uchinchi iteratsiyadan boshlab algoritm har safar bitta holatni bo‘ladi va natijada aynan $2n - 1$ ta holat hosil bo‘ladi.
 
-### O‘tishlar soni
+### O‘tishlar soni {#number-of-transitions}
 
 Uzunligi $n$ bo‘lgan $s$ satrining suffiks avtomatidagi o‘tishlar soni $3n - 4$ dan **oshmaydi** ($n \ge 3$ uchun).
 
@@ -454,12 +454,12 @@ Bu chegaraga quyidagi satrda ham erishish mumkin:
 
 $$\text{"abbb}\dots \text{bbbc"}$$
 
-## Qo‘llanishlar
+## Qo‘llanishlar {#applications}
 
 Quyida suffiks avtomati yordamida yechiladigan ayrim masalalarni ko‘rib chiqamiz.
 Soddalik uchun alifbo o‘lchami $k$ o‘zgarmas deb olamiz; bu belgi qo‘shish va o‘tish bo‘ylab yurish murakkabligini o‘zgarmas deb hisoblash imkonini beradi.
 
-### Uchrash mavjudligini tekshirish
+### Uchrash mavjudligini tekshirish {#check-for-occurrence}
 
 $T$ matn va bir nechta $P$ andoza berilgan.
 Har bir $P$ satr $T$ ning qism satri sifatida uchrash-uchramasligini tekshirish kerak.
@@ -472,7 +472,7 @@ Agar butun $P$ satrni shu tarzda qayta ishlay olsak, u $T$ da uchraydi.
 Bu har bir $P$ satr uchun $O(length(P))$ vaqt olishi ravshan.
 Bundan tashqari, algoritm amalda $P$ ning matnda uchraydigan eng uzun prefiksi uzunligini ham topadi.
 
-### Turli qism satrlar soni
+### Turli qism satrlar soni {#number-of-different-substrings}
 
 $S$ satri berilgan.
 Uning turli qism satrlari sonini hisoblash kerak.
@@ -513,7 +513,7 @@ long long get_diff_strings(){
 
 Bu usul ham $O(length(S))$ vaqtda ishlaydi, ammo qo‘shimcha xotira ham, rekursiv chaqiruvlar ham talab qilmaydi; shu sababli amalda tezroq ishlaydi.
 
-### Barcha turli qism satrlar uzunliklari yig‘indisi
+### Barcha turli qism satrlar uzunliklari yig‘indisi {#total-length-of-all-different-substrings}
 
 $S$ satri berilgan.
 Uning barcha turli qism satrlari uzunliklari yig‘indisini hisoblash kerak.
@@ -550,7 +550,7 @@ long long get_tot_len_diff_substings() {
 
 Bu yondashuv $O(length(S))$ vaqtda ishlaydi, ammo tajribalarda tasodifiy satrlarda memoizatsiyali dinamik dasturlash variantidan 20 baravar tezroq ishlagan. U qo‘shimcha xotira ham, rekursiya ham talab qilmaydi.
 
-### Leksikografik tartibdagi $k$-qism satr
+### Leksikografik tartibdagi $k$-qism satr {#lexicographically-k-th-substring}
 
 $S$ satri berilgan.
 Bir nechta so‘rovga javob berish kerak.
@@ -562,7 +562,7 @@ Shuning uchun har bir holatdan boshlanadigan yo‘llar sonini hisoblagach, avtom
 
 Oldindan hisoblash $O(length(S))$ vaqt oladi, har bir so‘rov esa $O(length(ans) \cdot k)$ vaqtda ishlaydi (bu yerda $ans$ — so‘rov javobi, $k$ — alifbo o‘lchami).
 
-### Eng kichik siklik siljitish
+### Eng kichik siklik siljitish {#smallest-cyclic-shift}
 
 $S$ satri berilgan.
 Uning leksikografik jihatdan eng kichik siklik siljitishini topish kerak.
@@ -574,7 +574,7 @@ Demak, masala uzunligi $length(S)$ bo‘lgan leksikografik jihatdan eng kichik y
 
 Umumiy vaqt murakkabligi $O(length(S))$.
 
-### Uchrashlar soni
+### Uchrashlar soni {#number-of-occurrences}
 
 $T$ matn berilgan.
 Bir nechta so‘rovga javob berish kerak.
@@ -613,7 +613,7 @@ Shundan keyin so‘rovga javob berish uchun, andozaga mos $t$ holat mavjud bo‘
 Aks holda javob $0$.
 Har bir so‘rovga javob berish $O(length(P))$ vaqt oladi.
 
-### Birinchi uchrash pozitsiyasi
+### Birinchi uchrash pozitsiyasi {#first-occurrence-position}
 
 $T$ matn va bir nechta so‘rov berilgan.
 Har bir $P$ so‘rov satri uchun uning $T$ dagi birinchi uchrashi boshlanish pozitsiyasini topish kerak.
@@ -636,7 +636,7 @@ deb olamiz (boshqa mumkin bo‘lgan qiymat $firstpos(cur)$ bo‘lardi, ammo u al
 Shu sababli so‘rov javobi shunchaki $firstpos(t) - length(P) + 1$ bo‘ladi; bu yerda $t$ — $P$ satriga mos holat.
 Har bir so‘rovga javob berish yana $O(length(P))$ vaqt oladi.
 
-### Barcha uchrash pozitsiyalari
+### Barcha uchrash pozitsiyalari {#all-occurrence-positions}
 
 Bu safar $T$ satridagi barcha uchrash pozitsiyalarini chiqarish kerak.
 
@@ -688,7 +688,7 @@ void output_all_occurrences(int v, int P_length) {
 }
 ```
 
-### Uchrashmaydigan eng qisqa satr
+### Uchrashmaydigan eng qisqa satr {#shortest-non-appearing-string}
 
 $S$ satri va ma’lum alifbo berilgan.
 $S$ da uchramaydigan eng qisqa satrni topish kerak.
@@ -704,7 +704,7 @@ $$d[v] = 1 + \min_{w:(v,w,c) \in SA} d[w].$$
 
 Masala javobi $d[t_0]$ bo‘ladi, haqiqiy satrni esa hisoblangan $d[]$ massivi yordamida tiklash mumkin.
 
-### Ikki satrning eng uzun umumiy qism satri
+### Ikki satrning eng uzun umumiy qism satri {#longest-common-substring-of-two-strings}
 
 $S$ va $T$ satrlari berilgan.
 Ikkalasida ham qism satr sifatida uchraydigan eng uzun $X$ satrni, ya’ni eng uzun umumiy qism satrni topish kerak.
@@ -758,7 +758,7 @@ string lcs (string S, string T) {
 } 
 ```
 
-### Bir nechta satrning eng uzun umumiy qism satri
+### Bir nechta satrning eng uzun umumiy qism satri {#largest-common-substring-of-multiple-strings}
 
 $k$ ta $S_i$ satr berilgan.
 Har bir $S_i$ satrda qism satr sifatida uchraydigan eng uzun $X$ satrni, ya’ni eng uzun umumiy qism satrni topish kerak.
@@ -776,7 +776,7 @@ Demak, yetib borish mumkinligini hisoblash kerak: avtomatning har bir holati va 
 Buni DFS yoki BFS va dinamik dasturlash yordamida oson hisoblash mumkin.
 Shundan keyin barcha maxsus belgilar uchun tegishli yo‘llar mavjud bo‘lgan $v$ holatlarning $longest(v)$ satrlari orasidagi eng uzuni masala javobi bo‘ladi.
 
-## Masalalar
+## Masalalar {#practice-problems}
 
   - [CSES - Finding Patterns](https://cses.fi/problemset/task/2102)
   - [CSES - Counting Patterns](https://cses.fi/problemset/task/2103)

@@ -1,4 +1,4 @@
-# Segment Tree
+# Segment Tree {#segment-tree}
 
 A Segment Tree is a data structure that stores information about array intervals as a tree. This allows answering range queries over an array efficiently, while still being flexible enough to allow quick modification of the array.
 This includes finding the sum of consecutive array elements $a[l \dots r]$, or finding the minimum element in a such a range in $O(\log n)$ time. 
@@ -12,7 +12,7 @@ For instance, with a two-dimensional Segment Tree you can answer sum or minimum 
 One important property of Segment Trees is that they require only a linear amount of memory.
 The standard Segment Tree requires $4n$ vertices for working on an array of size $n$. 
 
-## Simplest form of a Segment Tree
+## Simplest form of a Segment Tree {#simplest-form-of-a-segment-tree}
 
 To start easy, we consider the simplest form of a Segment Tree. 
 We want to answer sum queries efficiently. 
@@ -24,7 +24,7 @@ This is an improvement over the simpler approaches.
 A naive array implementation - just using a simple array - can update elements in $O(1)$, but requires $O(n)$ to compute each sum query.
 And precomputed prefix sums can compute sum queries in $O(1)$, but updating an array element requires $O(n)$ changes to the prefix sums.
 
-### Structure of the Segment Tree
+### Structure of the Segment Tree {#structure-of-the-segment-tree}
 
 We can take a divide-and-conquer approach when it comes to array segments. 
 We compute and store the sum of the elements of the whole array, i.e. the sum of the segment $a[0 \dots n-1]$. 
@@ -49,7 +49,7 @@ For now we can forget about this fact, but it will become important later during
 
 The height of the Segment Tree is $O(\log n)$, because when going down from the root to the leaves the size of the segments decreases approximately by half. 
 
-### Construction
+### Construction {#construction}
 
 Before constructing the segment tree, we need to decide:
 
@@ -72,7 +72,7 @@ We start the construction at the root vertex, and hence, we are able to compute 
 
 The time complexity of this construction is $O(n)$, assuming that the merge operation is constant time (the merge operation gets called $n$ times, which is equal to the number of internal nodes in the segment tree).
 
-### Sum queries
+### Sum queries {#sum-queries}
 
 For now we are going to answer sum queries. As an input we receive two integers $l$ and $r$, and we have to compute the sum of the segment $a[l \dots r]$ in $O(\log n)$ time. 
 
@@ -129,7 +129,7 @@ Therefore we visit at most $4 \log n$ vertices in total, and that is equal to a 
 In conclusion the query works by dividing the input segment into several sub-segments for which all the sums are already precomputed and stored in the tree. 
 And if we stop partitioning whenever the query segment coincides with the vertex segment, then we only need $O(\log n)$ such segments, which gives the effectiveness of the Segment Tree. 
 
-### Update queries
+### Update queries {#update-queries}
 
 Now we want to modify a specific element in the array, let's say we want to do the assignment $a[i] = x$. 
 And we have to rebuild the Segment Tree, such that it corresponds to the new, modified array. 
@@ -224,7 +224,7 @@ void update(int v, int tl, int tr, int pos, int new_val) {
 }
 ```
 
-### Memory efficient implementation
+### Memory efficient implementation {#memory-efficient-implementation}
 
 Most people use the implementation from the previous section. If you look at the array `t` you can see that it follows the numbering of the tree nodes in the order of a BFS traversal (level-order traversal). 
 Using this traversal the children of vertex $v$ are $2v$ and $2v + 1$ respectively.
@@ -240,16 +240,16 @@ The left child is responsible for the segment $[l, mid]$, i.e. in total there wi
 Thus we can compute the index of the right child of $v$. The index will be $v + 2 * (mid - l + 1)$.
 By this numbering we achieve a reduction of the necessary memory to $2n$.
 
-## Advanced versions of Segment Trees
+## Advanced versions of Segment Trees {#advanced-versions-of-segment-trees}
 
 A Segment Tree is a very flexible data structure, and allows variations and extensions in many different directions. 
 Let's try to categorize them below. 
 
-### More complex queries
+### More complex queries {#more-complex-queries}
 
 It can be quite easy to change the Segment Tree in a direction, such that it computes different queries (e.g. computing the minimum / maximum instead of the sum), but it also can be very nontrivial. 
 
-#### Finding the maximum
+#### Finding the maximum {#finding-the-maximum}
 
 Let us slightly change the condition of the problem described above: instead of querying the sum, we will now make maximum queries.
 
@@ -262,7 +262,7 @@ Of course this problem can be easily changed into computing the minimum instead 
 
 Instead of showing an implementation to this problem, the implementation will be given to a more complex version of this problem in the next section.
 
-#### Finding the maximum and the number of times it appears 
+#### Finding the maximum and the number of times it appears {#finding-the-maximum-and-the-number-of-times-it-appears}
 
 This task is very similar to the previous one.
 In addition of finding the maximum, we also have to find the number of occurrences of the maximum. 
@@ -317,7 +317,7 @@ void update(int v, int tl, int tr, int pos, int new_val) {
     }
 }
 ```
-#### Compute the greatest common divisor / least common multiple
+#### Compute the greatest common divisor / least common multiple {#compute-the-greatest-common-divisor-least-common-multiple}
 
 In this problem we want to compute the GCD / LCM of all numbers of given ranges of the array. 
 
@@ -356,7 +356,7 @@ int find_kth(int v, int tl, int tr, int k) {
 }
 ```
 
-#### Searching for an array prefix with a given amount
+#### Searching for an array prefix with a given amount {#searching-for-an-array-prefix-with-a-given-amount}
 
 The task is as follows: 
 for a given value $x$ we have to quickly find smallest index $i$ such that the sum of the first $i$ elements of the array $a[]$ is greater or equal to $x$ (assuming that the array $a[]$ only contains non-negative values).
@@ -368,7 +368,7 @@ Instead we can use the same idea as in the previous section, and find the positi
 by moving each time to the left or the right, depending on the sum of the left child.
 Thus finding the answer in $O(\log n)$ time.
 
-#### Searching for the first element greater than a given amount
+#### Searching for the first element greater than a given amount {#searching-for-the-first-element-greater-than-a-given-amount}
 
 The task is as follows: 
 for a given value $x$ and a range $a[l \dots r]$ find the smallest $i$  in the range $a[l \dots r]$, such that $a[i]$ is greater than $x$.
@@ -394,7 +394,7 @@ int get_first(int v, int tl, int tr, int l, int r, int x) {
 }
 ```
 
-#### Finding subsegments with the maximal sum
+#### Finding subsegments with the maximal sum {#finding-subsegments-with-the-maximal-sum}
 
 Here again we receive a range $a[l \dots r]$ for each query, this time we have to find a subsegment $a[l^\prime \dots r^\prime]$ such that $l \le l^\prime$ and $r^\prime \le r$ and the sum of the elements of this segment is maximal. 
 As before we also want to be able to modify individual elements of the array. 
@@ -486,7 +486,7 @@ data query(int v, int tl, int tr, int l, int r) {
 }
 ```
 
-### Saving the entire subarrays in each vertex
+### Saving the entire subarrays in each vertex {#saving-the-entire-subarrays-in-each-vertex}
 
 This is a separate subsection that stands apart from the others, because at each vertex of the Segment Tree we don't store information about the corresponding segment in compressed form (sum, minimum, maximum, ...), but store all elements of the segment.
 Thus the root of the Segment Tree will store all elements of the array, the left child vertex will store the first half of the array, the right vertex the second half, and so on.
@@ -505,7 +505,7 @@ So in spite of the apparent extravagance of such a Segment Tree, it consumes onl
 Several typical applications of this data structure are described below.
 It is worth noting the similarity of these Segment Trees with 2D data structures (in fact this is a 2D data structure, but with rather limited capabilities).
 
-#### Find the smallest number greater or equal to a specified number. No modification queries.
+#### Find the smallest number greater or equal to a specified number. No modification queries. {#find-the-smallest-number-greater-or-equal-to-a-specified-number-no-modification-queries}
 
 We want to answer queries of the following form: 
 for three given numbers $(l, r, x)$ we have to find the minimal number in the segment $a[l \dots r]$ which is greater than or equal to $x$.
@@ -569,7 +569,7 @@ The constant $\text{INF}$ is equal to some large number that is bigger than all 
 Its usage means, that there is no number greater than or equal to $x$ in the segment. 
 It has the meaning of "there is no answer in the given interval".
 
-#### Find the smallest number greater or equal to a specified number. With modification queries.
+#### Find the smallest number greater or equal to a specified number. With modification queries. {#find-the-smallest-number-greater-or-equal-to-a-specified-number-with-modification-queries}
 
 This task is similar to the previous.
 The last approach has a disadvantage, it was not possible to modify the array between answering queries.
@@ -605,7 +605,7 @@ void update(int v, int tl, int tr, int pos, int new_val) {
 
 Processing of this modification query also takes $O(\log^2 n)$ time.
 
-#### Find the smallest number greater or equal to a specified number. Acceleration with "fractional cascading".
+#### Find the smallest number greater or equal to a specified number. Acceleration with "fractional cascading". {#find-the-smallest-number-greater-or-equal-to-a-specified-number-acceleration-with-fractional-cascading}
 
 We have the same problem statement, we want to find the minimal number greater than or equal to $x$ in a segment, but this time in $O(\log n)$ time.
 We will improve the time complexity using the technique "fractional cascading".
@@ -656,18 +656,18 @@ It is still possible to also allow modification queries, but that complicates th
 Instead of integers, you need to store the sorted array as `multiset`, and instead of indices you need to store iterators.
 And you need to work very carefully, so that you increment or decrement the correct iterators during a modification query.
 
-#### Other possible variations
+#### Other possible variations {#other-possible-variations}
 
 This technique implies a whole new class of possible applications. 
 Instead of storing a $\text{vector}$ or a $\text{multiset}$ in each vertex, other data structures can be used:
 other Segment Trees (somewhat discussed in [Generalization to higher dimensions](/algorithms/data-structures/segment-tree#generalization-to-higher-dimensions)), Fenwick Trees, Cartesian trees, etc.
 
-### Range updates (Lazy Propagation)
+### Range updates (Lazy Propagation) {#range-updates-lazy-propagation}
 
 All problems in the above sections discussed modification queries that only affected a single element of the array each.
 However the Segment Tree allows applying modification queries to an entire segment of contiguous elements, and perform the query in the same time $O(\log n)$. 
 
-#### Addition on segments
+#### Addition on segments {#addition-on-segments}
 
 We begin by considering problems of the simplest form: the modification query should add a number $x$ to all numbers in the segment $a[l \dots r]$.
 The second query, that we are supposed to answer, asked simply for the value of $a[i]$.
@@ -714,7 +714,7 @@ int get(int v, int tl, int tr, int pos) {
 }
 ```
 
-#### Assignment on segments
+#### Assignment on segments {#assignment-on-segments}
 
 Suppose now that the modification query asks to assign each element of a certain segment $a[l \dots r]$ to some value $p$.
 As a second query we will again consider reading the value of the array $a[i]$.
@@ -785,7 +785,7 @@ int get(int v, int tl, int tr, int pos) {
 Notice: the function $\text{get}$ can also be implemented in a different way: 
 do not make delayed updates, but immediately return the value $t[v]$ if $marked[v]$ is true.
 
-#### Adding on segments, querying for maximum
+#### Adding on segments, querying for maximum {#adding-on-segments-querying-for-maximum}
 
 Now the modification query is to add a number to all elements in a range, and the reading query is to find the maximum in a range.
 
@@ -844,12 +844,12 @@ int query(int v, int tl, int tr, int l, int r) {
 }
 ```
 
-### Generalization to higher dimensions
+### Generalization to higher dimensions {#generalization-to-higher-dimensions}
 
 A Segment Tree can be generalized quite natural to higher dimensions.
 If in the one-dimensional case we split the indices of the array into segments, then in the two-dimensional we make an ordinary Segment Tree with respect to the first indices, and for each segment we build an ordinary Segment Tree with respect to the second indices.
 
-#### Simple 2D Segment Tree
+#### Simple 2D Segment Tree {#simple-2d-segment-tree}
 
 A matrix $a[0 \dots n-1, 0 \dots m-1]$ is given, and we have to find the sum (or minimum/maximum) on some submatrix $a[x_1 \dots x_2, y_1 \dots y_2]$, as well as perform modifications of individual matrix elements (i.e. queries of the form $a[x][y] = p$).
 
@@ -955,7 +955,7 @@ void update_x(int vx, int lx, int rx, int x, int y, int new_val) {
 }
 ```
 
-#### Compression of 2D Segment Tree
+#### Compression of 2D Segment Tree {#compression-of-2d-segment-tree}
 
 Let the problem be the following: there are $n$ points on the plane given by their coordinates $(x_i, y_i)$ and queries of the form "count the number of points lying in the rectangle $((x_1, y_1), (x_2, y_2))$".
 It is clear that in the case of such a problem it becomes unreasonably wasteful to construct a two-dimensional Segment Tree with $O(n^2)$ elements.
@@ -976,7 +976,7 @@ In conclusion we note that the two-dimensional Segment Tree contracted in the de
 In particular the two-dimensional Segment Tree is just a special case of storing a subarray in each vertex of the tree.
 It follows, that if you gave to abandon a two-dimensional Segment Tree due to the impossibility of executing a query, it makes sense to try to replace the nested Segment Tree with some more powerful data structure, for example a Cartesian tree.
 
-### Preserving the history of its values (Persistent Segment Tree)
+### Preserving the history of its values (Persistent Segment Tree) {#preserving-the-history-of-its-values-persistent-segment-tree}
 
 A persistent data structure is a data structure that remembers it previous state for each modification.
 This allows to access any version of this data structure that interest us and execute a query on it.
@@ -1037,7 +1037,7 @@ To use a specific version of the Segment Tree we simply call the query using the
 
 With the approach described above almost any Segment Tree can be turned into a persistent data structure.
 
-#### Finding the $k$-th smallest number in a range
+#### Finding the $k$-th smallest number in a range {#finding-the-k-th-smallest-number-in-a-range}
 
 This time we have to answer queries of the form "What is the $k$-th smallest element in the range $a[l \dots r]$. 
 This query can be answered using a binary search and a Merge Sort Tree, but the time complexity for a single query would be $O(\log^3 n)$.
@@ -1117,7 +1117,7 @@ We can actually transform any array to such an array by index compression.
 The smallest element in the array will gets assigned the value 0, the second smallest the value 1, and so forth.
 It is easy to generate lookup tables (e.g. using $\text{map}$), that convert a value to its index and vice versa in $O(\log n)$ time.
 
-### Dynamic segment tree
+### Dynamic segment tree {#dynamic-segment-tree}
 
 (Called so because its shape is dynamic and the nodes are usually dynamically allocated.
 Also known as _implicit segment tree_ or _sparse segment tree_.)
@@ -1174,7 +1174,7 @@ struct Vertex {
 
 Obviously this idea can be extended in lots of different ways. E.g. by adding support for range updates via lazy propagation.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ - KQUERY](http://www.spoj.com/problems/KQUERY/) [Persistent segment tree / Merge sort tree]
 * [Codeforces - Xenia and Bit Operations](https://codeforces.com/problemset/problem/339/D)

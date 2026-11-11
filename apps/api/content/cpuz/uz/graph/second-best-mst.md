@@ -1,10 +1,10 @@
-# Ikkinchi eng yaxshi minimal ostov daraxt
+# Ikkinchi eng yaxshi minimal ostov daraxt {#second-best-minimum-spanning-tree}
 
 Minimal ostov daraxt $T$ — berilgan $G$ grafning barcha tugunlarini qamrab oladigan va barcha mumkin bo‘lgan ostov daraxtlar orasida qirralari vaznlari yig‘indisi eng kichik bo‘lgan daraxtdir.
 
 Ikkinchi eng yaxshi minimal ostov daraxt $T'$ — $G$ grafning barcha mumkin bo‘lgan ostov daraxtlari orasida qirralar vaznlari yig‘indisi bo‘yicha ikkinchi eng kichik qiymatga ega ostov daraxtdir.
 
-## Kuzatuv
+## Kuzatuv {#observation}
 
 $T$ — $G$ grafning minimal ostov daraxti bo‘lsin.
 
@@ -12,7 +12,7 @@ Ikkinchi eng yaxshi minimal ostov daraxt $T$ dan faqat bitta qirrani almashtiris
 
 Demak, $T$ ga kirmaydigan biror $e_{new}$ qirrani topib, uni $T$ dagi biror $e_{old}$ qirra bilan shunday almashtirishimiz kerakki, yangi $T' = (T \cup \{e_{new}\}) \setminus \{e_{old}\}$ graf ostov daraxt bo‘lsin va vaznlar farqi ($e_{new} - e_{old}$) minimal bo‘lsin.
 
-## Kruskal algoritmidan foydalanish
+## Kruskal algoritmidan foydalanish {#using-kruskals-algorithm}
 
 Avval Kruskal algoritmi yordamida minimal ostov daraxtni topib, keyin undan bittadan qirrani olib tashlab, boshqa qirra bilan almashtirishga urinib ko‘rishimiz mumkin.
 
@@ -25,7 +25,7 @@ Eslatma: 3-qadam uchun qirralarni qayta saralash shart emas.
 
 Shunday qilib, umumiy vaqt murakkabligi $O(E \log V + E + V E)$ = $O(V E)$ bo‘ladi.
 
-## Eng yaqin umumiy ajdod (LCA) masalasiga modellashtirish
+## Eng yaqin umumiy ajdod (LCA) masalasiga modellashtirish {#modeling-into-a-lowest-common-ancestor-lca-problem}
 
 Avvalgi yondashuvda minimal ostov daraxtdan bitta qirrani olib tashlashning barcha imkoniyatlarini sinadik.
 
@@ -78,7 +78,7 @@ Boshlang‘ich minimal ostov daraxtga kirmaydigan qolgan barcha qirralar uchun h
 
 Og‘irligi 14 bo‘lgan qirrani tanlash daraxt vaznini 7 ga, vazni 27 bo‘lgan qirrani tanlash 14 ga, vazni 28 bo‘lgan qirrani tanlash 21 ga va vazni 39 bo‘lgan qirrani tanlash 5 ga oshiradi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 ```cpp
 struct edge {
@@ -195,11 +195,11 @@ int main(void) {
 }
 ```
 
-## Manbalar
+## Manbalar {#references}
 
 1. Steven Halim, *Competitive Programming-3*
 2. [web.mit.edu](http://web.mit.edu/6.263/www/quiz1-f05-sol.pdf)
 
-## Masalalar
+## Masalalar {#problems}
 
 * [Codeforces - Minimum spanning tree for each edge](https://codeforces.com/problemset/problem/609/E)

@@ -1,4 +1,4 @@
-# Discrete Logarithm
+# Discrete Logarithm {#discrete-logarithm}
 
 The discrete logarithm is an integer $x$ satisfying the equation
 
@@ -10,7 +10,7 @@ The discrete logarithm does not always exist, for instance there is no solution 
 
 In this article, we describe the **Baby-step giant-step** algorithm, an algorithm to compute the discrete logarithm proposed by Shanks in 1971, which has the time complexity $O(\sqrt{m})$. This is a **meet-in-the-middle** algorithm because it uses the technique of separating tasks in half.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Consider the equation:
 
@@ -39,7 +39,7 @@ This problem can be solved using the meet-in-the-middle method as follows:
 * Calculate $f_1$ for all possible arguments $p$. Sort the array of value-argument pairs.
 * For all possible arguments $q$, calculate $f_2$ and look for the corresponding $p$ in the sorted array using binary search.
 
-## Complexity
+## Complexity {#complexity}
 
 We can calculate $f_1(p)$ in $O(\log m)$ using the [binary exponentiation algorithm](/algorithms/algebra/binary-exp). Similarly for $f_2(q)$.
 
@@ -59,9 +59,9 @@ Then, the complexity of the algorithm becomes:
 
 $$O(\sqrt {m} \log m).$$
 
-## Implementation
+## Implementation {#implementation}
 
-### The simplest implementation
+### The simplest implementation {#the-simplest-implementation}
 
 In the following code, the function `powmod` calculates $a^b \pmod m$ and the function `solve` produces a proper solution to the problem.
 It returns $-1$ if there is no solution and returns one of the possible solutions otherwise.
@@ -115,7 +115,7 @@ This works in this case because we only want to return one possible solution.
 If we need to return all possible solutions, we need to change `map<int, int>` to, say, `map<int, vector<int>>`.
 We also need to change the second step accordingly.
 
-## Improved implementation
+## Improved implementation {#improved-implementation}
 
 A possible improvement is to get rid of binary exponentiation.
 This can be done by keeping a variable that is multiplied by $a$ each time we increase $q$ and a variable that is multiplied by $a^n$ each time we increase $p$.
@@ -154,7 +154,7 @@ int solve(int a, int b, int m) {
 
 The complexity is $O(\sqrt{m})$ using `unordered_map`.
 
-## When $a$ and $m$ are not coprime
+## When $a$ and $m$ are not coprime {#when-a-and-m-are-not-coprime}
 Let $g = \gcd(a, m)$, and $g > 1$. Clearly $a^x \bmod m$ for every $x \ge 1$ will be divisible by $g$.
 
 If $g \nmid b$, there is no solution for $x$.
@@ -209,13 +209,13 @@ int solve(int a, int b, int m) {
 
 The time complexity remains $O(\sqrt{m})$ as before since the initial reduction to coprime $a$ and $m$ is done in $O(\log^2 m)$.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 * [Spoj - Power Modulo Inverted](http://www.spoj.com/problems/MOD/)
 * [Topcoder - SplittingFoxes3](https://community.topcoder.com/stat?c=problem_statement&pm=14386&rd=16801)
 * [CodeChef - Inverse of a Function](https://www.codechef.com/problems/INVXOR/)
 * [Hard Equation](https://codeforces.com/gym/101853/problem/G) (assume that $0^0$ is undefined)
 * [CodeChef - Chef and Modular Sequence](https://www.codechef.com/problems/CHEFMOD)
 
-## References
+## References {#references}
 * [Wikipedia - Baby-step giant-step](https://en.wikipedia.org/wiki/Baby-step_giant-step)
 * [Answer by Zander on Mathematics StackExchange](https://math.stackexchange.com/a/133054)

@@ -1,6 +1,6 @@
-# Finding the nearest pair of points
+# Finding the nearest pair of points {#finding-the-nearest-pair-of-points}
 
-## Problem statement
+## Problem statement {#problem-statement}
 
 Given $n$ points on the plane. Each point $p_i$ is defined by its coordinates $(x_i,y_i)$. It is required to find among them two such points, such that the distance between them is minimal:
 
@@ -14,7 +14,7 @@ The trivial algorithm - iterating over all pairs and calculating the distance fo
 
 The algorithm running in time $O(n \log n)$ is described below. This algorithm was proposed by Shamos and Hoey in 1975. (Source: Ch. 5 Notes of _Algorithm Design_ by Kleinberg & Tardos, also see [here](https://ieeexplore.ieee.org/abstract/document/4567872)) Preparata and Shamos also showed that this algorithm is optimal in the decision tree model.
 
-## Algorithm
+## Algorithm {#algorithm}
 We construct an algorithm according to the general scheme of **divide-and-conquer** algorithms: the algorithm is designed as a recursive function, to which we pass a set of points; this recursive function splits this set in half, calls itself recursively on each half, and then performs some operations to combine the answers. The operation of combining consist of  detecting the cases when one point of the optimal solution fell into one half, and the other point into the other (in this case, recursive calls from each of the halves cannot detect this pair separately). The main difficulty, as always in case of divide and conquer algorithms, lies in the effective implementation of the merging stage. If a set of $n$ points is passed to the recursive function, then the merge stage should work no more than $O(n)$, then the asymptotics of the whole algorithm $T(n)$ will be found from the equation:
 
 $$T(n) = 2T(n/2) + O(n).$$ 
@@ -50,7 +50,7 @@ At first glance, this is still a non-optimal algorithm: it seems that the sizes 
 
 Finally, we pay attention to the sorting, which the above algorithm contains: first,sorting by pairs $(x, y)$, and then second, sorting the elements of the set $B$ by $y$. In fact, both of these sorts inside the recursive function can be eliminated (otherwise we would not reach the $O(n)$ estimate for the **merging stage**, and the general asymptotics of the algorithm would be $O(n \log^2 n)$). It is easy to get rid of the first sort — it is enough to perform this sort before starting the recursion: after all, the elements themselves do not change inside the recursion, so there is no need to sort again. With the second sorting a little more difficult to perform, performing it previously will not work. But, remembering the merge sort, which also works on the principle of divide-and-conquer, we can simply embed this sort in our recursion. Let recursion, taking some set of points (as we remember,ordered by pairs $(x, y)$), return the same set, but sorted by the $y$-coordinate. To do this, simply merge (in $O(n)$) the two results returned by recursive calls. This will result in a set sorted by $y$-coordinate.
 
-## Evaluation of the asymptotics
+## Evaluation of the asymptotics {#evaluation-of-the-asymptotics}
 
 To show that the above algorithm is actually executed in $O(n \log n)$, we need to prove the following fact: $|C(p_i)| = O(1)$.
 
@@ -66,7 +66,7 @@ We show that there are at most four points in each square. For example, this can
 
 So, we have proved that in a rectangle $2h \times h$ can not be more than $4 \cdot 2 = 8$ points, and, therefore, the size of the set $C(p_i)$ cannot exceed $7$, as required.
 
-## Implementation
+## Implementation {#implementation}
 
 We introduce a data structure to store a point (its coordinates and a number) and comparison operators required for two types of sorting:
 
@@ -156,9 +156,9 @@ mindist = 1E20;
 rec(0, n);
 ```
 
-## Linear time randomized algorithms
+## Linear time randomized algorithms {#linear-time-randomized-algorithms}
 
-### A randomized algorithm with linear expected time
+### A randomized algorithm with linear expected time {#a-randomized-algorithm-with-linear-expected-time}
 
 An alternative method, originally proposed by Rabin in 1976, arises from a very simple idea to heuristically improve the runtime: We can divide the plane into a grid of $d \times d$ squares, then it is only required to test distances between same-block or adjacent-block points (unless all squares are disconnected from each other, but we will avoid this by design), since any other pair has a larger distance than the two points in the same square.
 
@@ -172,7 +172,7 @@ We will consider only the squares containing at least one point. Denote by $n_1,
 
 Now we need to decide on how to set $d$ so that it minimizes $\Theta\!\left(\sum\limits_{i=1}^k n_i^2\right)$.
 
-####  Choosing d
+####  Choosing d {#choosing-d}
 
 We need $d$ to be an approximation of the minimum distance $d$. Richard Lipton proposed to sample $n$ distances randomly and choose $d$ to be the smallest of these distances as an approximation for $d$. We now prove that the expected running time of the algorithm is linear.
 
@@ -197,7 +197,7 @@ We need $d$ to be an approximation of the minimum distance $d$. Richard Lipton p
 >
 > Finally, $\mathbb{E}[C(d)] = \mathbb{E}[\lambda(d) \, n] \le 16n$, and the expected running time is $O(n)$, with a reasonable constant factor. $\quad \blacksquare$
 
-#### Implementation of the algorithm
+#### Implementation of the algorithm {#implementation-of-the-algorithm}
 
 The advantage of this algorithm is that it is straightforward to implement, but still has good performance in practise. We first sample $n$ distances and set $d$ as the minimum of the distances. Then we insert points into the "blocks" by using a hash table from 2D coordinates to a vector of points. Finally, just compute distances between same-block pairs and adjacent-block pairs. Hash table operations have $O(1)$ expected time cost, and therefore our algorithm retains the $O(n)$ expected time cost with an increased constant.
 
@@ -314,7 +314,7 @@ pair<int,int> closest_pair_of_points(vector<pt> P) {
 }
 ```
 
-### An alternative randomized linear expected time algorithm
+### An alternative randomized linear expected time algorithm {#an-alternative-randomized-linear-expected-time-algorithm}
 
 Now we introduce a different randomized algorithm which is less practical but very easy to show that it runs in expected linear time.
 
@@ -342,13 +342,13 @@ While this algorithm may look slow, because of recomputing everything multiple t
 >
 > $$O\!\left(n + \sum_{i=1}^{n} i \Pr(X_i = 1)\right) \le O\!\left(n + \sum_{i=1}^{n} i \frac{2}{i}\right) = O(3n) = O(n) \quad \quad \blacksquare$$ 
 
-## Generalization: finding a triangle with minimal perimeter
+## Generalization: finding a triangle with minimal perimeter {#generalization-finding-a-triangle-with-minimal-perimeter}
 
 The algorithm described above is interestingly generalized to this problem: among a given set of points, choose three different points so that the sum of pairwise distances between them is the smallest.
 
 In fact, to solve this problem, the algorithm remains the same: we divide the field into two halves of the vertical line, call the solution recursively on both halves, choose the minimum $minper$ from the found perimeters, build a strip with the thickness of $minper / 2$, and iterate through all triangles that can improve the answer. (Note that the triangle with perimeter $\le minper$ has the longest side $\le minper / 2$.)
 
-## Practice problems
+## Practice problems {#practice-problems}
 
 * [UVA 10245 "The Closest Pair Problem" [difficulty: low]](https://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1186)
 * [SPOJ #8725 CLOPPAIR "Closest Point Pair" [difficulty: low]](https://www.spoj.com/problems/CLOPPAIR/)

@@ -1,33 +1,33 @@
-# Simulyatsiyalangan toblash
+# Simulyatsiyalangan toblash {#simulated-annealing}
 
 **Simulyatsiyalangan toblash (Simulated Annealing, SA)** — funksiyaning global optimumini yaqinlashtiradigan tasodifiy algoritm. U tasodifiy algoritm deb ataladi, chunki qidiruvda ma’lum miqdorda tasodifiylikdan foydalanadi, shuning uchun bir xil kirish uchun ham uning chiqishi har xil bo‘lishi mumkin.
 
-## Masala
+## Masala {#the-problem}
 
 Bizga $s$ holatning energiyasini hisoblaydigan $E(s)$ funksiya berilgan. $E(s)$ minimal bo‘ladigan $s_{best}$ holatni topish talab qilinadi. **SA** holatlar diskret va $E(s)$ bir nechta lokal minimumga ega bo‘lgan masalalar uchun mos keladi. Misol sifatida [kommivoyajer masalasi (TSP)](https://en.wikipedia.org/wiki/Travelling_salesman_problem)ni olamiz.
 
-### Kommivoyajer masalasi (TSP)
+### Kommivoyajer masalasi (TSP) {#travelling-salesman-problem-tsp}
 
 Sizga 2 o‘lchamli fazodagi tugunlar to‘plami berilgan. Har bir tugun $x$ va $y$ koordinatalari bilan xarakterlanadi. Vazifangiz — tugunlarga shu tartibda tashrif buyurganda bosib o‘tiladigan masofani minimallashtiradigan tugunlar tartibini topish.
 
-## Motivatsiya
+## Motivatsiya {#motivation}
 Toblash — metallurgiya jarayoni bo‘lib, unda material qizdiriladi va sovishga qo‘yib yuboriladi, shunda ichidagi atomlar minimal ichki energiyali joylashuvga qayta joylashadi, bu esa o‘z navbatida materialning xossalari boshqacha bo‘lishiga olib keladi. Holat — atomlarning joylashuvi, ichki energiya esa minimallashtirilayotgan funksiyadir. Atomlarning dastlabki holatini ularning ichki energiyasi uchun lokal minimum deb tasavvur qilish mumkin. Materialni atomlarini qayta joylashtirishga undash uchun, global minimumga yetish maqsadida, uning ichki energiyasi minimal bo‘lmagan sohadan o‘tishga rag‘batlantirish kerak. Bu rag‘bat materialni yuqoriroq haroratgacha qizdirish orqali beriladi.
 
 Simulyatsiyalangan toblash aynan shu jarayonni simulyatsiya qiladi. Biz tasodifiy holat (material) bilan boshlaymiz va yuqori temperatura o‘rnatamiz (uni qizdiramiz). Endi algoritm joriy holatdan yuqoriroq energiyali holatlarni qabul qilishga tayyor, chunki uni yuqori temperatura rag‘batlantiradi. Bu algoritmning lokal minimumlarda tiqilib qolishiga to‘sqinlik qiladi va global minimum tomon harakatlanishiga yordam beradi. Vaqt o‘tishi bilan algoritm soviydi, yuqoriroq energiyali holatlarni rad eta boshlaydi va o‘zi topgan eng yaqin minimumga o‘tadi.
 
-### $E(s)$ energiya funksiyasi
+### $E(s)$ energiya funksiyasi {#the-energy-function-es}
 
 $E(s)$ — minimallashtirilishi (yoki maksimallashtirilishi) kerak bo‘lgan funksiya. U har bir holatni haqiqiy songa akslantiradi. TSP holida $E(s)$ holatdagi tugunlar tartibida bitta to‘liq aylanib chiqish masofasini qaytaradi.
 
-### Holat
+### Holat {#state}
 
 Holatlar fazosi — $E(s)$ energiya funksiyasining aniqlanish sohasi, holat esa holatlar fazosiga tegishli har qanday elementdir. TSP holida barcha tugunlarga tashrif buyurish uchun bosib o‘tish mumkin bo‘lgan barcha yo‘llar holatlar fazosini tashkil qiladi, bu yo‘llarning har bir alohida birini esa holat deb hisoblash mumkin.
 
-### Qo‘shni holat
+### Qo‘shni holat {#neighbouring-state}
 
 Bu holatlar fazosidagi oldingi holatga yaqin bo‘lgan holat. Odatda qo‘shni holatni dastlabki holatdan oddiy almashtirish yordamida olish mumkin. Kommivoyajer masalasida qo‘shni holat tasodifiy ravishda 2 ta tugun tanlab, ularning joriy holatdagi o‘rinlarini almashtirish orqali olinadi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Biz tasodifiy $s$ holatdan boshlaymiz. Har qadamda joriy $s$ holatning $s_{next}$ qo‘shni holatini tanlaymiz. Agar $E(s_{next}) < E(s)$ bo‘lsa, $s = s_{next}$ deb yangilaymiz. Aks holda $s_{next}$ ga o‘tish yoki $s$ da qolishni hal qiluvchi $P(E(s),E(s_{next}),T)$ qabul qilish ehtimoli funksiyasidan foydalanamiz. Bu yerda $T$ — temperatura; u boshida yuqori qiymatga o‘rnatiladi va har qadamda asta-sekin kamayadi. Temperatura qancha yuqori bo‘lsa, $s_{next}$ ga o‘tish ehtimoli shuncha katta.
 Shu bilan birga barcha iteratsiyalar bo‘yicha eng yaxshi $s_{best}$ holatni ham kuzatib boramiz. Jarayon yaqinlashguncha yoki vaqt tugaguncha davom etadi.
@@ -37,11 +37,11 @@ Shu bilan birga barcha iteratsiyalar bo‘yicha eng yaxshi $s_{best}$ holatni ha
 *Bir nechta lokal maksimumga ega funksiyaning maksimumini izlayotgan simulyatsiyalangan toblashning vizual ko‘rinishi.*
 
 
-### Temperatura ($T$) va sovish ($u$)
+### Temperatura ($T$) va sovish ($u$) {#temperaturet-and-decayu}
 
 Tizim temperaturasi algoritmning yuqoriroq energiyali holatni qabul qilishga tayyorligini miqdoriy ifodalaydi. Sovish (decay) — algoritmning «sovish tezligi»ni ifodalovchi o‘zgarmas. Sekin sovish (kattaroq $u$) yaxshiroq natija berishi ma’lum.
 
-## Qabul qilish ehtimoli funksiyasi (PAF)
+## Qabul qilish ehtimoli funksiyasi (PAF) {#probability-acceptance-functionpaf}
 
 $P(E,E_{next},T) =
     \begin{cases}
@@ -61,7 +61,7 @@ bool P(double E,double E_next,double T,mt19937 rng){
     }
 }
 ```
-## Kod shabloni
+## Kod shabloni {#code-template}
 
 ```cpp
 class state {
@@ -105,10 +105,10 @@ pair<double, state> simAnneal() {
 }
 
 ```
-## Qanday foydalanish:
+## Qanday foydalanish: {#how-to-use}
 State sinfining funksiyalarini kerakli tarzda to‘ldiring. Agar minimum emas, global maksimumni topmoqchi bo‘lsangiz, $E()$ funksiya maksimallashtirilayotgan funksiyaning manfiy qiymatini qaytarishiga ishonch hosil qiling va oxirida $-E_{best}$ ni chop eting. Quyidagi parametrlarni ehtiyojingizga qarab o‘rnating.
 
-### Parametrlar
+### Parametrlar {#parameters}
 - $T$ : Boshlang‘ich temperatura. Qidiruv uzoqroq ishlashini istasangiz, uni kattaroq qiymatga o‘rnating.
 - $u$ : Sovish. Sovish tezligini belgilaydi. Sekinroq sovish ($u$ ning kattaroq qiymati) odatda yaxshiroq natija beradi, lekin uzoqroq ishlash evaziga. $u < 1$ ekaniga ishonch hosil qiling.
 
@@ -120,7 +120,7 @@ $T$ va $u$ ni tanlash bo‘yicha maslahatlar: agar lokal minimumlar ko‘p va ho
 
 $T = u^{-N}$
 
-### TSP uchun namunaviy implementatsiya
+### TSP uchun namunaviy implementatsiya {#example-implementation-for-tsp}
 ```cpp
 
 class state {
@@ -168,7 +168,7 @@ int main() {
 }
 ```
 
-## Algoritmga qo‘shimcha o‘zgartirishlar:
+## Algoritmga qo‘shimcha o‘zgartirishlar: {#further-modifications-to-the-algorithm}
 
 - TLE bo‘lmasligi uchun while siklga vaqtga asoslangan chiqish shartini qo‘shing
 - Yuqorida amalga oshirilgan sovish eksponensial sovishdir. Uni ehtiyojingizga mos sovish funksiyasi bilan almashtirishingiz mumkin.
@@ -187,7 +187,7 @@ bool P(double E, double E_next, double T, mt19937 rng) {
 }
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
 - [USACO Jan 2017 - Subsequence Reversal](https://usaco.org/index.php?page=viewproblem2&cpid=698)
 - [Deltix Summer 2021 - DIY Tree](https://codeforces.com/contest/1556/problem/H)

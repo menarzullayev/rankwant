@@ -1,6 +1,6 @@
-# Eng yaqin nuqtalar juftini topish
+# Eng yaqin nuqtalar juftini topish {#finding-the-nearest-pair-of-points}
 
-## Masala sharti
+## Masala sharti {#problem-statement}
 
 Tekislikda $n$ ta nuqta berilgan. Har bir $p_i$ nuqta o‘zining $(x_i,y_i)$ koordinatalari bilan aniqlanadi. Ular orasidan shunday ikkita nuqtani topish talab etiladiki, ular orasidagi masofa minimal bo‘lsin:
 
@@ -14,7 +14,7 @@ Oddiy algoritm — barcha juftliklarni ko‘rib chiqib, har biri uchun masofani 
 
 $O(n \log n)$ vaqtda ishlaydigan algoritm quyida tasvirlangan. Bu algoritmni 1975-yilda Shamos va Hoey taklif qilgan. (Manba: Kleinberg va Tardosning _Algorithm Design_ kitobi 5-bobining izohlari, shuningdek [bu yerga](https://ieeexplore.ieee.org/abstract/document/4567872) qarang.) Preparata va Shamos, shuningdek, bu algoritm qaror daraxti modelida optimal ekanini ko‘rsatgan.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Algoritmni **bo‘lib yechish** algoritmlarining umumiy sxemasi bo‘yicha quramiz: algoritm rekursiv funksiya sifatida tuziladi, unga nuqtalar to‘plami uzatiladi; bu rekursiv funksiya to‘plamni teng ikkiga bo‘ladi, har bir yarmi uchun o‘zini rekursiv chaqiradi, so‘ng javoblarni birlashtirish uchun ba’zi amallarni bajaradi. Birlashtirish amali optimal yechimning bir nuqtasi bir yarmga, ikkinchi nuqtasi esa ikkinchi yarmga tushgan holatlarni aniqlashdan iborat (bu holda har bir yarmdan qilingan rekursiv chaqiruvlar bu juftni alohida aniqlay olmaydi). Bo‘lib yechish algoritmlarida doim bo‘lgani kabi, asosiy qiyinchilik birlashtirish bosqichini samarali implementatsiya qilishda yotadi. Agar rekursiv funksiyaga $n$ ta nuqtadan iborat to‘plam uzatilsa, birlashtirish bosqichi $O(n)$ dan ortiq ishlamasligi kerak; shunda butun algoritmning asimptotikasi $T(n)$ quyidagi tenglamadan topiladi:
 
@@ -51,7 +51,7 @@ Bir qarashda bu hamon optimal bo‘lmagan algoritm: $C(p_i)$ to‘plamlar o‘lc
 
 Nihoyat, yuqoridagi algoritm tarkibidagi saralashlarga e’tibor beramiz: birinchisi — $(x, y)$ juftliklar bo‘yicha saralash, ikkinchisi — $B$ to‘plam elementlarini $y$ bo‘yicha saralash. Aslida, rekursiv funksiya ichidagi bu ikkala saralashni ham yo‘qotish mumkin (aks holda **birlashtirish bosqichi** uchun $O(n)$ bahoga erisha olmas edik, algoritmning umumiy asimptotikasi esa $O(n \log^2 n)$ bo‘lar edi). Birinchi saralashdan qutulish oson — bu saralashni rekursiyani boshlashdan oldin bajarish yetarli: axir elementlarning o‘zi rekursiya ichida o‘zgarmaydi, shuning uchun qayta saralash shart emas. Ikkinchi saralash bilan biroz qiyinroq; uni oldindan bajarish ishlamaydi. Ammo bo‘lib yechish tamoyilida ishlaydigan birlashtirib saralashni eslab, bu saralashni shunchaki o‘z rekursiyamizga kiritishimiz mumkin. Rekursiya biror nuqtalar to‘plamini (eslaganimizdek, $(x, y)$ juftliklar bo‘yicha tartiblangan) olib, xuddi shu to‘plamni, lekin $y$-koordinata bo‘yicha saralangan holda qaytarsin. Buning uchun rekursiv chaqiruvlar qaytargan ikki natijani ($O(n)$ da) birlashtirish kifoya. Bu $y$-koordinata bo‘yicha saralangan to‘plamni beradi.
 
-## Asimptotikani baholash
+## Asimptotikani baholash {#evaluation-of-the-asymptotics}
 
 Yuqoridagi algoritm haqiqatan $O(n \log n)$ da bajarilishini ko‘rsatish uchun quyidagi faktni isbotlashimiz kerak: $|C(p_i)| = O(1)$.
 
@@ -67,7 +67,7 @@ Har bir kvadratda ko‘pi bilan to‘rtta nuqta borligini ko‘rsatamiz. Masalan
 
 Shunday qilib, $2h \times h$ to‘g‘ri to‘rtburchakda $4 \cdot 2 = 8$ tadan ortiq nuqta bo‘lishi mumkin emasligini, demak, $C(p_i)$ to‘plamning o‘lchami $7$ dan oshmasligini isbotladik, shuni talab qilgan edik.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Nuqtani (uning koordinatalari va raqamini) saqlash uchun ma’lumotlar tuzilmasini hamda ikki turdagi saralash uchun zarur taqqoslash operatorlarini kiritamiz:
 
@@ -157,9 +157,9 @@ mindist = 1E20;
 rec(0, n);
 ```
 
-## Chiziqli vaqtli tasodifiy algoritmlar
+## Chiziqli vaqtli tasodifiy algoritmlar {#linear-time-randomized-algorithms}
 
-### Kutilgan chiziqli vaqtli tasodifiy algoritm
+### Kutilgan chiziqli vaqtli tasodifiy algoritm {#a-randomized-algorithm-with-linear-expected-time}
 
 Dastlab 1976-yilda Rabin taklif qilgan muqobil usul ishlash vaqtini evristik yaxshilashning juda sodda g‘oyasidan kelib chiqadi: tekislikni $d \times d$ kvadratlardan iborat to‘rga bo‘lib, faqat bir xil blokdagi yoki qo‘shni bloklardagi nuqtalar orasidagi masofalarni tekshirish yetarli (agar barcha kvadratlar bir-biridan uzilgan bo‘lmasa; buni esa loyihalash orqali oldini olamiz), chunki har qanday boshqa juft orasidagi masofa bir kvadratdagi ikki nuqta orasidagi masofadan kattaroq.
 
@@ -173,7 +173,7 @@ Faqat kamida bitta nuqtasi bor kvadratlarni ko‘rib chiqamiz. Qolgan $k$ ta kva
 
 Endi $\Theta\!\left(\sum\limits_{i=1}^k n_i^2\right)$ ni minimallashtiradigan qilib $d$ ni qanday tanlashni hal qilishimiz kerak.
 
-#### $d$ ni tanlash
+#### $d$ ni tanlash {#choosing-d}
 
 Bizga $d$ minimal masofa $d$ ning yaqinlashuvi bo‘lishi kerak. Richard Lipton $n$ ta masofani tasodifiy tanlab olishni va $d$ ning yaqinlashuvi sifatida shu masofalarning eng kichigini tanlashni taklif qildi. Endi algoritmning kutilgan ishlash vaqti chiziqli ekanini isbotlaymiz.
 
@@ -198,7 +198,7 @@ Bizga $d$ minimal masofa $d$ ning yaqinlashuvi bo‘lishi kerak. Richard Lipton 
 >
 > Nihoyat, $\mathbb{E}[C(d)] = \mathbb{E}[\lambda(d) \, n] \le 16n$, va kutilgan ishlash vaqti $O(n)$, doimiy ko‘paytuvchisi esa maqbul. $\quad \blacksquare$
 
-#### Algoritmning implementatsiyasi
+#### Algoritmning implementatsiyasi {#implementation-of-the-algorithm}
 
 Bu algoritmning afzalligi — implementatsiya qilish oddiy, lekin amalda baribir yaxshi samaradorlikka ega. Avval $n$ ta masofani tasodifiy tanlab olamiz va $d$ ni shu masofalarning minimumi deb olamiz. So‘ng nuqtalarni 2 o‘lchamli koordinatalardan nuqtalar vektoriga o‘tkazuvchi xesh jadvali yordamida «bloklar»ga joylashtiramiz. Nihoyat, faqat bir xil blokdagi juftlar va qo‘shni blokdagi juftlar orasidagi masofalarni hisoblaymiz. Xesh jadvali amallarining kutilgan vaqt xarajati $O(1)$, shuning uchun algoritmimiz kutilgan $O(n)$ vaqt xarajatini, faqat kattaroq doimiy bilan, saqlab qoladi.
 
@@ -315,7 +315,7 @@ pair<int,int> closest_pair_of_points(vector<pt> P) {
 }
 ```
 
-### Kutilgan chiziqli vaqtli muqobil tasodifiy algoritm
+### Kutilgan chiziqli vaqtli muqobil tasodifiy algoritm {#an-alternative-randomized-linear-expected-time-algorithm}
 
 Endi boshqa, amaliyroq bo‘lmagan, lekin kutilgan chiziqli vaqtda ishlashini ko‘rsatish juda oson bo‘lgan tasodifiy algoritmni keltiramiz.
 
@@ -343,13 +343,13 @@ Bu algoritm hamma narsani bir necha marta qayta hisoblagani uchun sekin ko‘rin
 >
 > $$O\!\left(n + \sum_{i=1}^{n} i \Pr(X_i = 1)\right) \le O\!\left(n + \sum_{i=1}^{n} i \frac{2}{i}\right) = O(3n) = O(n) \quad \quad \blacksquare$$
 
-## Umumlashtirish: minimal perimetrli uchburchakni topish
+## Umumlashtirish: minimal perimetrli uchburchakni topish {#generalization-finding-a-triangle-with-minimal-perimeter}
 
 Yuqorida tasvirlangan algoritm bu masalaga qiziqarli tarzda umumlashtiriladi: berilgan nuqtalar to‘plamidan uchta turli nuqtani shunday tanlash kerakki, ular orasidagi juft masofalar yig‘indisi eng kichik bo‘lsin.
 
 Aslida, bu masalani yechish uchun algoritm o‘zgarishsiz qoladi: maydonni vertikal chiziq bilan ikki yarmga bo‘lamiz, har ikki yarm uchun yechimni rekursiv chaqiramiz, topilgan perimetrlardan minimal $minper$ ni tanlaymiz, qalinligi $minper / 2$ bo‘lgan polosa quramiz va javobni yaxshilashi mumkin bo‘lgan barcha uchburchaklarni ko‘rib chiqamiz. (E’tibor bering, perimetri $\le minper$ bo‘lgan uchburchakning eng uzun tomoni $\le minper / 2$ bo‘ladi.)
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [UVA 10245 "The Closest Pair Problem" [qiyinlik: oson]](https://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1186)
 * [SPOJ #8725 CLOPPAIR "Closest Point Pair" [qiyinlik: oson]](https://www.spoj.com/problems/CLOPPAIR/)

@@ -1,4 +1,4 @@
-# Ishlarni ikkita mashinada rejalashtirish
+# Ishlarni ikkita mashinada rejalashtirish {#scheduling-jobs-on-two-machines}
 
 Bu masalada $n$ ta ishni ikkita mashinada bajarish uchun optimal jadval topiladi. Har bir ish avval birinchi, keyin ikkinchi mashinada qayta ishlanishi kerak. $i$-ish birinchi mashinada $a_i$, ikkinchi mashinada $b_i$ vaqt oladi. Har bir mashina bir vaqtda faqat bitta ishni bajarishi mumkin.
 
@@ -8,7 +8,7 @@ Bu yerda ko‘riladigan yechim S. M. Johnson nomi bilan atalgan **Johnson qoidas
 
 Mashinalar soni ikkitadan ko‘p bo‘lsa, masala NP-to‘liq bo‘lib qolishini ta’kidlash kerak.
 
-## Algoritmni qurish
+## Algoritmni qurish {#construction-of-the-algorithm}
 
 Avvalo, birinchi va ikkinchi mashinadagi ishlar tartibi bir xil bo‘lishi kerak deb olish mumkin. Haqiqatan, ishlar ikkinchi mashina uchun birinchi mashinada bajarilgach tayyor bo‘ladi. Agar ikkinchi mashina uchun bir nechta ish tayyor bo‘lsa, ularning tartibidan qat’i nazar jami bajarilish vaqti $b_i$ lar yig‘indisiga teng. Shu sababli ishlarni ikkinchi mashinaga birinchi mashinadagi tartibda yuborish hech qachon yomon emas.
 
@@ -56,7 +56,7 @@ Taqqoslagichga boshqacha qarab, saralashni yanada **soddalashtirish** mumkin. To
 
 Johnson qoidasi masalani saralash orqali yechadi va $O(n \log n)$ vaqt murakkabligini beradi.
 
-## Amalga oshirish
+## Amalga oshirish {#implementation}
 
 Quyida algoritmning ikkinchi ko‘rinishi amalga oshirilgan.
 

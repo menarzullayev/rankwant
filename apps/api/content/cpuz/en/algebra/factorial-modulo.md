@@ -1,4 +1,4 @@
-# Factorial modulo $p$
+# Factorial modulo $p$ {#factorial-modulo-p}
 
 In some cases it is necessary to consider complex formulas modulo some prime $p$, containing factorials in both numerator and denominator, like such that you encounter in the formula for Binomial coefficients.
 We consider the case when $p$ is relatively small.
@@ -13,7 +13,7 @@ For instance $7!_{\%p} \equiv 1 \cdot 2 \cdot \underbrace{1}_{3} \cdot 4 \cdot 5
 
 Learning how to effectively calculate this modified factorial allows us to quickly calculate the value of the various combinatorial formulas (for example, [Binomial coefficients](/algorithms/combinatorics/binomial-coefficients)).
 
-## Algorithm
+## Algorithm {#algorithm}
 Let's write this modified factorial explicitly.
 
 $$\begin{eqnarray}
@@ -53,7 +53,7 @@ The recursion depth is $O(\log_p n)$, and therefore the complete asymptotic beha
 
 Notice, if you precompute the factorials $0!,~ 1!,~ 2!,~ \dots,~ (p-1)!$ modulo $p$, then the complexity will just be $O(\log_p n)$.
 
-## Implementation
+## Implementation {#implementation}
 
 We don't need recursion because this is a case of tail recursion and thus can be easily implemented using iteration.
 In the following implementation we precompute the factorials $0!,~ 1!,~ \dots,~ (p-1)!$, and thus have the runtime $O(p + \log_p n)$.
@@ -79,7 +79,7 @@ int factmod(int n, int p) {
 
 Alternative, if you only have limit memory and can't afford storing all factorials, you can also just remember the factorials that you need, sort them, and then compute them in one sweep by computing the factorials $0!,~ 1!,~ 2!,~ \dots,~ (p-1)!$ in a loop without storing them explicitly.
 
-## Multiplicity of $p$
+## Multiplicity of $p$ {#multiplicity-of-p}
 
 If we want to compute a Binomial coefficient modulo $p$, then we additionally need the multiplicity of the $p$ in $n$, i.e. the number of times $p$ occurs in the prime factorization of $n$, or number of times we erased $p$ during the computation of the *modified* factorial.
 

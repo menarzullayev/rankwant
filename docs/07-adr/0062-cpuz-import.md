@@ -94,6 +94,12 @@ half of ADR-0005 stands. The "own content only" half changes for these articles.
 - **Markup.** Our renderer draws no raw HTML on purpose, so the snapshot builder turns mkdocs
   admonitions, tabs, fence attributes and the `<img>`, `<figure>`, `<center>` and `<a>` tags
   into Markdown. Prose, code and formulas are left as they are.
+- **Section links.** The originals link to sections across articles by mkdocs' heading ids.
+  The builder gives every heading (Uzbek and English) the original's id, moves a
+  `<div id>` anchor onto the heading it marks, and points a link to a paragraph anchor at
+  its section. The Uzbek alphabet converter leaves `{#id}` as written.
+- **Practice section.** The text's own practice section is not drawn on the page: the same
+  links are listed under "on other sites", next to the problems on this site.
 - **Personal data stays out of the repository.** The repository is public and its history
   is permanent. The participant profiles and the KEP statements are imported into the
   database from a cp-uz clone on the host, so a removal request can still be honoured

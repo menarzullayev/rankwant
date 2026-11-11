@@ -1,8 +1,8 @@
-# Pick's Theorem
+# Pick's Theorem {#picks-theorem}
 
 A polygon without self-intersections is called lattice if all its vertices have integer coordinates in some 2D grid. Pick's theorem provides a way to compute the area of this polygon through the number of vertices that are lying on the boundary and the number of vertices that lie strictly inside the polygon.
 
-## Formula
+## Formula {#formula}
 
 Given a certain lattice polygon with non-zero area.
 
@@ -16,7 +16,7 @@ In particular, if the values of $I$ and $B$ for a polygon are given, the area ca
 
 This formula was discovered and proven by Austrian mathematician Georg Alexander Pick in 1899.
 
-## Proof
+## Proof {#proof}
 
 The proof is carried out in many stages: from simple polygons to arbitrary ones:
 
@@ -30,7 +30,7 @@ The proof is carried out in many stages: from simple polygons to arbitrary ones:
 
 - An arbitrary polygon: To prove this, triangulate it, ie, divide into triangles with integral coordinates. Further, it is possible to prove that Pick's theorem retains its validity when a polygon is added to a triangle. Thus, we have proven Pick's formula for arbitrary polygon.
 
-## Generalization to higher dimensions
+## Generalization to higher dimensions {#generalization-to-higher-dimensions}
 
 Unfortunately, this simple and beautiful formula cannot be generalized to higher dimensions.
 
@@ -45,5 +45,5 @@ where $k$ can be any natural number. Then for any $k$, the tetrahedron $ABCD$ do
 
 However, higher dimensions still has a generalization using **Ehrhart polynomials** but they are quite complex and depends not only on points inside but also on the boundary of polytype.
 
-## Extra Resources
+## Extra Resources {#extra-resources}
 A few simple examples and a simple proof of Pick's theorem can be found [here](http://www.geometer.org/mathcircles/pick.pdf).

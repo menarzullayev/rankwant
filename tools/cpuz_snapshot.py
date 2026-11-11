@@ -34,6 +34,7 @@ import re
 import shutil
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 from typing import Any
 
@@ -50,7 +51,8 @@ UPSTREAM_SITE = "https://cp-algorithms.com"
 FENCE = re.compile(r"^(\s*)(```+|~~~+)\s*(.*)$")
 ADMONITION = re.compile(r'^(\s*)(!!!|\?\?\?\+?)\s*([\w-]+)(?:\s+"([^"]*)")?\s*$')
 TAB = re.compile(r'^(\s*)===\s+"([^"]*)"\s*$')
-HEADING_ID = re.compile(r"^(#{1,6}\s.*?)\s*\{\s*#([\w-]+)(?:\s[^}]*)?\}\s*$")
+# `{#id}`, `{ #id data-toc-label=… }` and the attr_list form `{: #id }`.
+HEADING_ID = re.compile(r"^(#{1,6}\s.*?)\s*\{\s*:?\s*#([\w-]+)(?:\s[^}]*)?\}\s*$")
 LANGS = {
     "c++": "cpp",
     "cpp": "cpp",
@@ -334,12 +336,132 @@ def tidy(text: str) -> str:
     return "\n".join(out)
 
 
+HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*$")
+EXPLICIT_ID = re.compile(r"\s*\{#([\w-]+)\}\s*$")
+# A heading's own id in the raw original: `{#id}`, `{ #id … }` or `{: #id }`.
+OWN_ID = re.compile(r"\s*\{\s*:?\s*#([\w-]+)[^}]*\}\s*$")
+
+
+def slugify(text: str) -> str:
+    """The id mkdocs gave a heading (python-markdown's `toc` slugify).
+
+    The original's cross-article links point at these ids
+    (`segment_tree.md#implementation`), so the headings must carry them.
+    """
+    text = re.sub(r"\$[^$]*\$", lambda m: m.group(0).strip("$"), text)
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
+    text = re.sub(r"[^\w\s-]", "", text).strip().lower()
+    return re.sub(r"[-\s]+", "-", text)
+
+
+def heading_lines(text: str) -> list[int]:
+    """Indexes of the heading lines outside fenced code."""
+    found, line_no = [], 0
+    for is_code, chunk in split_fences(text):
+        lines = chunk.split("\n")
+        if not is_code:
+            found += [line_no + i for i, line in enumerate(lines) if HEADING.match(line)]
+        line_no += len(lines)
+    return found
+
+
+def with_heading_ids(text: str, original: str) -> str:
+    """Give each heading the id of the original's heading in the same place.
+
+    A translation keeps the original's headings in order, so the n-th heading
+    of one is the n-th of the other. When the outlines differ (a level or a
+    count), nothing is guessed and the text is returned unchanged.
+    """
+    lines, orig = text.split("\n"), original.split("\n")
+    mine, theirs = heading_lines(text), heading_lines(original)
+    levels = [HEADING.match(lines[i]).group(1) for i in mine]  # type: ignore[union-attr]
+    their_levels = [HEADING.match(orig[i]).group(1) for i in theirs]  # type: ignore[union-attr]
+    if levels != their_levels:
+        return text
+    for i, j in zip(mine, theirs, strict=True):
+        head = HEADING.match(orig[j])
+        assert head is not None
+        found = EXPLICIT_ID.search(head.group(2))
+        auto = slugify(EXPLICIT_ID.sub("", head.group(2)))
+        anchor = found.group(1) if found else auto
+        own = EXPLICIT_ID.search(lines[i])
+        if own and own.group(1) != auto:
+            continue  # an id the text chose itself stays
+        if anchor:
+            lines[i] = f"{EXPLICIT_ID.sub('', lines[i]).rstrip()} {{#{anchor}}}"
+    return "\n".join(lines)
+
+
+ANCHOR_BEFORE_HEADING = re.compile(
+    r"^[ \t]*<(?:div|a)\s+(?:id|name)=[\"']([\w-]+)[\"']\s*>\s*</(?:div|a)>[ \t]*\n+(#{1,6}\s[^\n]*?)[ \t]*$",
+    re.M,
+)
+
+
+PARAGRAPH_ANCHOR = re.compile(r"^[ \t]*<(?:div|a)\s+(?:id|name)=[\"']([\w-]+)[\"']\s*>\s*</(?:div|a)>[ \t]*$")
+ANCHOR_LINK = re.compile(r"\]\((/algorithms/[\w-]+/[\w-]+)?#([\w-]+)\)")
+
+
+def section_anchors(original: str) -> dict[str, str]:
+    """`<div id>` anchors in the middle of a section → that section's heading id.
+
+    A heading can carry one id; an anchor before a paragraph has no heading of
+    its own, so a link to it is sent to the section it sits in.
+    """
+    found: dict[str, str] = {}
+    current = ""
+    lines = original.split("\n")
+    for k, line in enumerate(lines):
+        head = HEADING.match(line)
+        if head:
+            own = OWN_ID.search(head.group(2))
+            current = own.group(1) if own else slugify(OWN_ID.sub("", head.group(2)))
+            continue
+        m = PARAGRAPH_ANCHOR.match(line)
+        if not m:
+            continue
+        nxt = next((x for x in lines[k + 1 :] if x.strip()), "")
+        nxt_head = HEADING.match(nxt)
+        if nxt_head:
+            own = OWN_ID.search(nxt_head.group(2))
+            if own and own.group(1) != m.group(1):
+                found[m.group(1)] = own.group(1)
+        elif current:
+            found[m.group(1)] = current
+    return found
+
+
+def retarget(text: str, here: str, sections: dict[str, dict[str, str]]) -> str:
+    def fix(m: re.Match[str]) -> str:
+        page = m.group(1) or here
+        anchor = sections.get(page, {}).get(m.group(2), m.group(2))
+        return f"]({m.group(1) or ''}#{anchor})"
+
+    return ANCHOR_LINK.sub(fix, text)
+
+
+def anchors_to_headings(text: str) -> str:
+    """`<div id="fermat-euler"></div>` right above a heading → the heading's id.
+
+    The original marks a few sections that way so other articles can link to
+    them; our renderer draws no raw HTML, so the id moves onto the heading.
+    """
+
+    def move(m: re.Match[str]) -> str:
+        if OWN_ID.search(m.group(2)):
+            return m.group(2)  # its own id wins; links to the div are retargeted
+        return f"{m.group(2).rstrip()} {{#{m.group(1)}}}"
+
+    return ANCHOR_BEFORE_HEADING.sub(move, text)
+
+
 def normalise(text: str, links: Links) -> str:
     text = text.replace("\r\n", "\n")
     if text.startswith("---\n"):
         end = text.find("\n---\n", 4)
         if end != -1:
             text = text[end + 5 :]
+    text = anchors_to_headings(text)
     text = "\n".join(normalise_blocks(text.split("\n")))
     out = []
     for is_code, chunk in split_fences(text):
@@ -442,6 +564,15 @@ def build(cpuz: Path, rev: str, upstream: Path) -> dict[str, Any]:
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(git_show(cpuz, cpuz_commit, f"content/articles/{p}"))
 
+    # Paragraph anchors of every original, by the article's address.
+    sections = {
+        routes[a['path']]: section_anchors(
+            anchors_to_headings(
+                (upstream / meta[a['id']]['source']['file']).read_text(encoding='utf-8')
+            )
+        )
+        for a in export['articles']
+    }
     articles = []
     for a in sorted(export["articles"], key=lambda x: int(x["index"])):
         m = meta[a["id"]]
@@ -474,6 +605,12 @@ def build(cpuz: Path, rev: str, upstream: Path) -> dict[str, Any]:
             else:
                 report["unresolved"].append(f"{a['id']} en {ref}")
         report["unresolved"] += [f"{a['id']} uz {u}" for u in uz_links.unresolved]
+        # The original's headings get mkdocs' ids, and the translation the same.
+        en = with_heading_ids(en, en)
+        uz = with_heading_ids(uz, en)
+        here = routes[a['path']]
+        en = retarget(en, here, sections)
+        uz = retarget(uz, here, sections)
 
         for lang, text in (("uz", uz), ("en", en)):
             left = remaining_html(text)

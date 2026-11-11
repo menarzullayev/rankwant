@@ -1,4 +1,4 @@
-# Ixtiyoriy graflardagi o‘yinlar
+# Ixtiyoriy graflardagi o‘yinlar {#games-on-arbitrary-graphs}
 
 Ikkita o‘yinchi ixtiyoriy $G$ grafida o‘yin o‘ynasin.
 Ya’ni o‘yinning joriy holati grafning ma’lum bir tuguni bilan ifodalanadi.
@@ -10,7 +10,7 @@ Boshlang‘ich holat berilganda, ikkala o‘yinchi ham optimal strategiya bilan 
 Bu masalani juda samarali yechamiz.
 Grafning barcha mumkin bo‘lgan boshlang‘ich tugunlari uchun javobni qirralar soniga nisbatan chiziqli, ya’ni $O(m)$ vaqtda topamiz.
 
-## Algoritm tavsifi
+## Algoritm tavsifi {#description-of-the-algorithm}
 
 Agar biror tugundan boshlagan o‘yinchi, raqibi qanday yurish qilishidan qat’i nazar, optimal o‘ynab yuta olsa, bu tugunni **yutuvchi tugun** deb ataymiz.
 Xuddi shunday, agar biror tugundan boshlagan o‘yinchi raqibi optimal o‘ynaganda yutqazsa, bu tugunni **yutqazuvchi tugun** deb ataymiz.
@@ -40,7 +40,7 @@ Aks holda tugunning yutuvchi yoki yutqazuvchi ekanini hali bilmaymiz, shuning uc
 Jami har bir yutuvchi va har bir yutqazuvchi tugunga aynan bir marta tashrif buyuramiz; aniqlanmagan tugunlarga tashrif buyurilmaydi. Har bir qirra ham ko‘pi bilan bir marta ko‘rib chiqiladi.
 Shunday qilib, murakkablik $O(m)$ ga teng.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida shu DFSning implementatsiyasi keltirilgan.
 `adj_rev` o‘zgaruvchisi grafning qo‘shnilik ro‘yxatini **teskari** ko‘rinishda saqlaydi, deb faraz qilamiz: grafning $(i, j)$ qirrasini saqlash o‘rniga $(j, i)$ qirrasini saqlaymiz.
@@ -69,7 +69,7 @@ void dfs(int v) {
 }
 ```
 
-## Misol: “Politsiyachi va o‘g‘ri”
+## Misol: “Politsiyachi va o‘g‘ri” {#example-policeman-and-thief}
 
 Quyida bunday o‘yinning aniq bir misoli keltirilgan.
 O‘lchami $m \times n$ bo‘lgan taxta mavjud.

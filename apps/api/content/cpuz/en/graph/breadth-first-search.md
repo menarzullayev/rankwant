@@ -1,4 +1,4 @@
-# Breadth-first search
+# Breadth-first search {#breadth-first-search}
 
 Breadth first search is one of the basic and essential searching algorithms on graphs.
 
@@ -6,7 +6,7 @@ As a result of how the algorithm works, the path found by breadth first search t
 
 The algorithm works in $O(n + m)$ time, where $n$ is number of vertices and $m$ is the number of edges.
 
-## Description of the algorithm
+## Description of the algorithm {#description-of-the-algorithm}
 
 The algorithm takes as input an unweighted graph and the id of the source vertex $s$. The input graph can be directed or undirected,
 it does not matter to the algorithm.
@@ -24,7 +24,7 @@ of this vertex and if some of these edges go to vertices that are not already li
 As a result, when the queue is empty, the "ring of fire" contains all vertices reachable from the source $s$, with each vertex reached in the shortest possible way.
 You can also calculate the lengths of the shortest paths (which just requires maintaining an array of path lengths $d[]$) as well as save information to restore all of these shortest paths (for this, it is necessary to maintain an array of "parents" $p[]$, which stores for each vertex the vertex from which we reached it).
 
-## Implementation
+## Implementation {#implementation}
 
 We write code for the described algorithm in C++ and Java.
 
@@ -118,7 +118,7 @@ if (!used[u]) {
 }
 ```
 
-## Applications of BFS
+## Applications of BFS {#applications-of-bfs}
 
 * Find the shortest path from a source to other vertices in an unweighted graph.
 
@@ -156,7 +156,7 @@ For this, we must construct an auxiliary graph, whose vertices are the state $(v
 Any edge $(u, v)$ of the original graph in this new column will turn into two edges $((u, 0), (v, 1))$ and $((u, 1), (v, 0))$.
 After that we run a BFS to find the shortest walk from the starting vertex $(s, 0)$ to the end vertex $(t, 0)$. **Note**: This item uses the term "_walk_" rather than a "_path_" for a reason, as the vertices may potentially repeat in the found walk in order to make its length even. The problem of finding the shortest _path_ of even length is NP-Complete in directed graphs, and [solvable in linear time](https://onlinelibrary.wiley.com/doi/abs/10.1002/net.3230140403) in undirected graphs, but with a much more involved approach.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ: AKBAR](http://spoj.com/problems/AKBAR)
 * [SPOJ: NAKANJ](http://www.spoj.com/problems/NAKANJ/)

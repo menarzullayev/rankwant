@@ -3274,6 +3274,39 @@ def karma_is_all_time_votes() -> str | None:
     return None
 
 
+def algorithm_pages_carry_the_attribution() -> str | None:
+    """2026-11-11 (HITL; `docs/decisions/2026-11-11-cpuz-import.md`, ADR-0062 § 2.2, § 5.3).
+
+    Kutubxona maqolasi sahifasi CC BY-SA talab qilgan manbani ko'rsatadi
+    (asl maqola, mualliflar, AI tarjima va ko'rik, o'zgartirishlar,
+    litsenziya havolasi); sarlavha langarlari alifbo o'giruvchisidan
+    himoyalangan (ikkala egizak); `/learn` import maqolani kanonik
+    `/algorithms/<kategoriya>/<slug>` ga yo'naltiradi; `check_cpuz`
+    kutubxona ichidagi `#langar` havolalarini tekshiradi.
+    """
+    page = read("apps/web/src/app/(site)/algorithms/[category]/[slug]/page.tsx")
+    if "<SourceNote" not in page or "<Markdown lang={article.locale} anchors>" not in page:
+        return "algorithms/[category]/[slug]/page.tsx: manba bloki yoki sarlavha langarlari yo'q"
+    note = read("apps/web/src/features/algorithms/components/SourceNote.tsx")
+    for needle in ("href={LICENCE_URL}", '"algorithms.source.authors"', '"algorithms.source.ai"'):
+        if needle not in note:
+            return f"SourceNote.tsx: `{needle}` yo'q — CC BY-SA manbasi to'liq ko'rsatilmaydi"
+    if "\"\\\\{#[\\\\w-]+\\\\}\"," not in read("packages/shared/src/alphabet.ts"):
+        return "packages/shared/src/alphabet.ts: sarlavha langari ({#id}) o'giruvchidan himoyalanmagan"
+    if "r\"\\{#[\\w-]+\\}\"," not in read("apps/api/core/alphabet.py"):
+        return "apps/api/core/alphabet.py: sarlavha langari ({#id}) o'giruvchidan himoyalanmagan"
+    if "permanentRedirect(algorithmPath(" not in read("apps/web/src/app/(site)/learn/[slug]/page.tsx"):
+        return "learn/[slug]/page.tsx: import maqola kanonik manzilga yo'naltirilmaydi"
+    if "failures += broken_anchors(" not in read("tools/check_cpuz.py"):
+        return "tools/check_cpuz.py: kutubxona ichidagi #langar havolalari tekshirilmaydi"
+    # Glossary (ADR-0062 § 3): a page, and the article links its terms to it.
+    if "const body = linkTerms(text, glossary" not in page:
+        return "algorithms/[category]/[slug]/page.tsx: atamalar lug'atga bog'lanmaydi"
+    if not (ROOT / "apps/web/src/app/(site)/algorithms/glossary/page.tsx").exists():
+        return "algorithms/glossary/page.tsx: atamalar lug'ati sahifasi yo'q"
+    return None
+
+
 def cpuz_library_is_pinned_and_checked() -> str | None:
     """2026-11-11 (HITL; `docs/decisions/2026-11-11-cpuz-import.md`, ADR-0062).
 
@@ -5750,6 +5783,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("seriya bosqichlari, hudud xaritasi, kontentim anonim", streak_page_and_region_map),
     ("masala sahifasi: haqiqiy taymer va fokus rejimi", problem_page_tools_are_real),
     ("cp.uz kutubxonasi qadalgan va tekshirilgan", cpuz_library_is_pinned_and_checked),
+    ("algoritm sahifasi manbani ko'rsatadi", algorithm_pages_carry_the_attribution),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

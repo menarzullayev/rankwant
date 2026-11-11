@@ -1,4 +1,4 @@
-# Delaunay triangulation and Voronoi diagram
+# Delaunay triangulation and Voronoi diagram {#delaunay-triangulation-and-voronoi-diagram}
 
 Consider a set $\{p_i\}$ of points on the plane.
 A **Voronoi diagram** $V(\{p_i\})$ of $\{p_i\}$ is a partition of the plane into $n$ regions $V_i$, where $V_i = \{p\in\mathbb{R}^2;\ \rho(p, p_i) = \min\ \rho(p, p_k)\}$.
@@ -7,21 +7,21 @@ A **Delaunay triangulation** $D(\{p_i\})$ of $\{p_i\}$ is a triangulation where 
 
 There is a nasty degenerated case when the Voronoi diagram isn't connected and Delaunay triangulation doesn't exist. This case is when all points are collinear.
 
-## Properties
+## Properties {#properties}
 
 The Delaunay triangulation maximizes the minimum angle among all possible triangulations.
 
 The Minimum Euclidean spanning tree of a point set is a subset of edges of its' Delaunay triangulation.
 
-## Duality
+## Duality {#duality}
 
 Suppose that $\{p_i\}$ is not collinear and among $\{p_i\}$ no four points lie on one circle. Then $V(\{p_i\})$ and $D(\{p_i\})$ are dual, so if we obtain one of them, we may obtain the other in $O(n)$. What to do if it's not the case? The collinear case may be processed easily. Otherwise, $V$ and $D'$ are dual, where $D'$ is obtained from $D$ by removing all the edges such that two triangles on this edge share the circumcircle.
 
-## Building Delaunay and Voronoi
+## Building Delaunay and Voronoi {#building-delaunay-and-voronoi}
 
 Because of the duality, we only need a fast algorithm to compute only one of $V$ and $D$. We will describe how to build $D(\{p_i\})$ in $O(n\log n)$. The triangulation will be built via divide-and-conquer algorithm due to Guibas and Stolfi.
 
-## Quad-edge data structure
+## Quad-edge data structure {#quad-edge-data-structure}
 
 During the algorithm $D$ will be stored inside the quad-edge data structure. This structure is described in the picture:
 
@@ -38,7 +38,7 @@ In the algorithm we will use the following functions on edges:
   4. `connect(a, b)` 
     This function creates a new edge `e` from `a->Dest` to `b->Org` in such a way that `a`, `b`, `e` all have the same left face. To do this, we call `e = make_edge(a->Dest, b->Org)`, `splice(e, a->Lnext)` and `splice(e->Rev, b)`.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 The algorithm will compute the triangulation and return two quad-edges: the counterclockwise convex hull edge out of the leftmost vertex and the clockwise convex hull edge out of the rightmost vertex.
 
@@ -53,7 +53,7 @@ The new L-R edge of this triangle is the next cross edge added.
 To do this efficiently, we compute two edges `lcand` and `rcand` so that `lcand` points to the first L point encountered in this process, and `rcand` points to the first R point.
 Then we choose the one that would be encountered first. Initially base points to the lower tangent of L and R.
 
-## Implementation
+## Implementation {#implementation}
 
 Note that the implementation of the in_circle function is GCC-specific.
 
@@ -299,7 +299,7 @@ vector<tuple<pt, pt, pt>> delaunay(vector<pt> p) {
 }
 ```
 
-## Problems
+## Problems {#problems}
  * [TIMUS 1504 Good Manners](http://acm.timus.ru/problem.aspx?space=1&num=1504)
  * [TIMUS 1520 Empire Strikes Back](http://acm.timus.ru/problem.aspx?space=1&num=1520)
  * [SGU 383 Caravans](https://codeforces.com/problemsets/acmsguru/problem/99999/383)

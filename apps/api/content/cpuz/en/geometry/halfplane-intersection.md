@@ -1,10 +1,10 @@
-# Half-plane intersection
+# Half-plane intersection {#half-plane-intersection}
 
 In this article we will discuss the problem of computing the intersection of a set of half-planes. Such an intersection can be conveniently represented as a convex region/polygon, where every point inside of it is also inside all of the half-planes, and it is this polygon that we're trying to find or construct. We give some initial intuition for the problem, describe a $O(N \log N)$ approach known as the Sort-and-Incremental algorithm and give some sample applications of this technique.
 
 It is strongly recommended for the reader to be familiar with basic geometrical primitives and operations (points, vectors, intersection of lines). Additionally, knowledge about [Convex Hulls](/algorithms/geometry/convex-hull) or the [Convex Hull Trick](/algorithms/geometry/convex-hull-trick) may help to better understand the concepts in this article, but they are not a prerequisite by any means.
 
-## Initial clarifications and definitions
+## Initial clarifications and definitions {#initial-clarifications-and-definitions}
 
 For the entire article, we will make some assumptions (unless specified otherwise):
 
@@ -17,19 +17,19 @@ For the entire article, we will make some assumptions (unless specified otherwis
 
 The half-plane $y \geq 2x - 2$ can be represented as the point $P = (1, 0)$ with direction vector $PQ = Q - P = (1, 2)$
 
-## Brute force approach - $O(N^3)$
+## Brute force approach - $O(N^3)$ {#brute-force-approach-on3}
 
 One of the most straightforward and obvious solutions would be to compute the intersection point of the lines of all pairs of half-planes and, for each point, check if it is inside all of the other half-planes. Since there are $O(N^2)$ intersection points, and for each of them we have to check $O(N)$ half-planes, the total time complexity is $O(N^3)$. The actual region of the intersection can then be reconstructed using, for example, a Convex Hull algorithm on the set of intersection points that were included in all the half-planes. 
 
 It is fairly easy to see why this works: the vertices of the resulting convex polygon are all intersection points of the half-plane lines, and each of those vertices is obviously part of all the half-planes. The main advantage of this method is that its easy to understand, remember and code on-the-fly if you just need to check if the intersection is empty or not. However, it is awfully slow and unfit for most problems, so we need something faster.
 
-## Incremental approach - $O(N^2)$
+## Incremental approach - $O(N^2)$ {#incremental-approach-on2}
 
 Another fairly straightforward approach is to incrementally construct the intersection of the half-planes, one at a time. This method is basically equivalent to cutting a convex polygon by a line $N$ times, and removing the redundant half-planes at every step. To do this, we can represent the convex polygon as a list of line segments, and to cut it with a half-plane we simply find the intersection points of the segments with the half-plane line (there will only be two intersection points if the line properly intersects the polygon), and replace all the line segments in-between with the new segment corresponding to the half-plane. Since such procedure can be implemented in linear time, we can simply start with a big bounding box and cut it down with each one of the half-planes, obtaining a total time complexity of $O(N^2)$.
 
 This method is a big step in the right direction, but it does feel wasteful to have to iterate over $O(N)$ half-planes at every step. We will see next that, by making some clever observations, the ideas behind this incremental approach can be recycled to create a $O(N \log N)$ algorithm.
 
-## Sort-and-Incremental algorithm - $O(N \log N)$
+## Sort-and-Incremental algorithm - $O(N \log N)$ {#sort-and-incremental-algorithm-on-log-n}
 
 The first properly-documented source of this algorithm we could find was Zeyuan Zhu's thesis for Chinese Team Selecting Contest titled [New Algorithm for Half-plane Intersection and its Practical Value](http://people.csail.mit.edu/zeyuan/publications.htm), from the year 2006. The approach we'll describe next is based on this same algorithm, but instead of computing two separate intersections for the lower and upper halves of the intersections, we'll construct it all at once in one pass with a deque (double-ended queue).
 
@@ -68,7 +68,7 @@ To sum up, the full algorithm will roughly look as follows:
 
 In total, we have achieved a time complexity of $O(N \log N)$. Since sorting is clearly the bottleneck, the algorithm can be made to run in linear time in the special case where we are given half-planes sorted in advance by their angles (an example of such a case would be obtaining the half-planes that define a convex polygon). 
 
-### Direct implementation
+### Direct implementation {#direct-implementation}
 
 Here is a sample, direct implementation of the algorithm, with comments explaining most parts: 
 
@@ -217,23 +217,23 @@ vector<Point> hp_intersect(vector<Halfplane>& H) {
 }
 ```
 
-### Implementation discussion
+### Implementation discussion {#implementation-discussion}
 
 A special thing to note is that, in case there multiple half-planes that intersect at the same point, then this algorithm could return repeated adjacent points in the final polygon. However, this should not have any impact on judging correctly whether the intersection is empty or not, and it does not affect the polygon area at all either. You may want to remove these duplicates depending on what tasks you need to do after. You can do this very easily with std::unique. We want to keep the repeat points during the execution of the algorithm so that the intersections with area equal to zero can be computed correctly (for example, intersections that consist of a single point, line or line-segment). I encourage the reader to test some small hand-made cases where the intersection results in a single point or line.
 
 One more thing that should be talked about is what to do if we are given half-planes in the form of a linear constraint (for example, $ax + by + c \leq 0$). In such case, there are two options. You can either implement the algorithm with the corresponding modifications to work with such representation (essentially create your own half-plane struct, should be fairly straightforward if you're familiar with the convex hull trick), or you can transform the lines into the representation we used in this article by taking any 2 points of each line. In general, it is recommended to work with the representation that you're given in the problem to avoid additional precision issues.
 
-## Problems, tasks and applications
+## Problems, tasks and applications {#problems-tasks-and-applications}
 
 Many problems that can be solved with half-plane intersection can also be solved without it, but with (usually) more complicated or uncommon approaches. Generally, half-plane intersection can appear when dealing with problems related to polygons (mostly convex), visibility in the plane and two-dimensional linear programming. Here are some sample tasks that can be solved with this technique: 
 
-### Convex polygon intersection 
+### Convex polygon intersection {#convex-polygon-intersection}
 
 One of the classical applications of half-plane intersection: Given $N$ polygons, compute the region that is included inside all of the polygons. 
 
 Since the intersection of a set of half-planes is a convex polygon, we can also represent a convex polygon as a set of half-planes (every edge of the polygon is a segment of a half-plane). Generate these half-planes for every polygon and compute the intersection of the whole set. The total time complexity is $O(S \log S)$, where S is the total number of sides of all the polygons. The problem can also theoretically be solved in $O(S \log N)$ by merging the $N$ sets of half-planes using a heap and then running the algorithm without the sorting step, but such solution has much worse constant factor than straightforward sorting and only provides minor speed gains for very small $N$.
 
-### Visibility in the plane
+### Visibility in the plane {#visibility-in-the-plane}
 
 Problems that require something among the lines of "determine if some line segments are visible from some point(s) in the plane" can usually be formulated as half-plane intersection problems. Take, for example, the following task: Given some simple polygon (not necessarily convex), determine if there's any point inside the polygon such that the whole boundary of the polygon can be observed from that point. This is also known as finding the [kernel of a polygon](https://en.wikipedia.org/wiki/Star-shaped_polygon) and can be solved by simple half-plane intersection, taking each edge of the polygon as a half-plane and then computing its intersection.
 
@@ -242,7 +242,7 @@ Given a set $p$ of points $p_1, p_2\ \dots \ p_n$ in the plane, determine if the
 
 Such problem can be solved by noticing that being able to see some point $p_i$ to the left of $p_j$ is the same as being able to see the right side of the line segment from $p_i$ to $p_j$ (or equivalently, being able to see the left side of the segment from $p_j$ to $p_i$). With that in mind, we can simply create a half-plane for every line segment $p_i p_{i+1}$ (or $p_{i+1} p_i$ depending on the orientation you choose) and check if the intersection of the whole set is empty or not.
 
-### Half-plane intersection with binary search
+### Half-plane intersection with binary search {#half-plane-intersection-with-binary-search}
 
 Another common application is utilizing half-plane intersection as a tool to validate the predicate of a binary search procedure. Here's an example of such a problem, also presented by Artem Vasilyev in the same lecture that was previously mentioned: Given a **convex** polygon $P$, find the biggest circumference that can be inscribed inside of it.
 
@@ -250,15 +250,15 @@ Instead of looking for some sort of closed-form solution, annoying formulas or o
 
 Clearly, if we can inscribe a circle of radius $r$, we can also inscribe any other circle of radius smaller than $r$. So we can perform a binary search on the radius $r$ and validate every step using half-plane intersection. Also, note that the half-planes of a convex polygon are already sorted by angle, so the sorting step can be skipped in the algorithm. Thus we obtain a total time complexity of $O(NK)$, where $N$ is the number of polygon vertices and $K$ is the number of iterations of the binary search (the actual value will depend on the range of possible answers and the desired precision).
 
-### Two-dimensional linear programming
+### Two-dimensional linear programming {#two-dimensional-linear-programming}
 
 One more application of half-plane intersection is linear programming in two variables. All linear constraints for two variables can be expressed in the form of $Ax + By + C \leq 0$ (inequality comparator may vary). Clearly, these are just half-planes, so checking if a feasible solution exists for a set of linear constraints can be done with half-plane intersection. Additionally, for a given set of linear constraints, it is possible to compute the region of feasible solutions (i.e. the intersection of the half-planes) and then answer multiple queries of maximizing/minimizing some linear function $f(x, y)$ subject to the constraints in $O(\log N)$ per query using binary search (very similar to the convex hull trick).
 
 It is worth mentioning that there also exists a fairly simple randomized algorithm that can check whether a set of linear constraints has a feasible solution or not, and maximize/minimize some linear function subject to the given constraints. This randomized algorithm was also explained nicely by Artem Vasilyev in the lecture mentioned earlier. Here are some additional resources on it, should the reader be interested: [CG - Lecture 4, parts 4 and 5](https://youtu.be/5dfc355t2y4) and [Petr Mitrichev's blog (which includes the solution to the hardest problem in the practice problems list below)](https://petr-mitrichev.blogspot.com/2016/07/a-half-plane-week.html).
 
-## Practice problems
+## Practice problems {#practice-problems}
 
-### Classic problems, direct application
+### Classic problems, direct application {#classic-problems-direct-application}
 
 * [Codechef - Animesh decides to settle down](https://www.codechef.com/problems/CHN02)
 * [POJ - How I mathematician Wonder What You Are!](http://poj.org/problem?id=3130)
@@ -267,7 +267,7 @@ It is worth mentioning that there also exists a fairly simple randomized algorit
 * [POJ - Art Gallery](http://poj.org/problem?id=1279)
 * [POJ - Uyuw's Concert](http://poj.org/problem?id=2451)
 
-### Harder problems
+### Harder problems {#harder-problems}
 
 * [POJ - Most Distant Point from the Sea - Medium](http://poj.org/problem?id=3525)
 * [Baekjoon - Jeju's Island - Same as above but seemingly stronger test cases](https://www.acmicpc.net/problem/3903)
@@ -278,25 +278,25 @@ It is worth mentioning that there also exists a fairly simple randomized algorit
 * [Codeforces - Jungle Outpost (alternative link, problem J) - Hard](https://codeforces.com/gym/101309/attachments?mobile=false) 
 * [Yandex - Asymmetry Value (need virtual contest to see, problem F) - Very Hard](https://contest.yandex.com/contest/2540/enter/)
 
-### Additional problems
+### Additional problems {#additional-problems}
 
 * 40th Petrozavodsk Programming Camp, Winter 2021 - Day 1: Jagiellonian U Contest, Grand Prix of Krakow - Problem B: (Almost) Fair Cake-Cutting. At the time of writing the article, this problem was private and only accessible by participants of the Programming Camp.
 
-## References, bibliography and other sources
+## References, bibliography and other sources {#references-bibliography-and-other-sources}
 
-### Main sources
+### Main sources {#main-sources}
 
 * [New Algorithm for Half-plane Intersection and its Practical Value.](http://people.csail.mit.edu/zeyuan/publications.htm) Original paper of the algorithm.
 * [Artem Vasilyev's Brazilian ICPC Summer School 2020 lecture.](https://youtu.be/WKyZSitpm6M?t=6463) Amazing lecture on half-plane intersection. Also covers other geometry topics.
 
-### Good blogs (Chinese)
+### Good blogs (Chinese) {#good-blogs-chinese}
 
 * [Fundamentals of Computational Geometry - Intersection of Half-planes.](https://zhuanlan.zhihu.com/p/83499723)
 * [Detailed introduction to the half-plane intersection algorithm.](https://blog.csdn.net/qq_40861916/article/details/83541403)
 * [Summary of Half-plane intersection problems.](https://blog.csdn.net/qq_40482358/article/details/87921815)
 * [Sorting incremental method of half-plane intersection.](https://blog.csdn.net/u012061345/article/details/23872929)
 
-### Randomized algorithm
+### Randomized algorithm {#randomized-algorithm}
 
 * [Linear Programming and Half-Plane intersection - Parts 4 and 5.](https://youtu.be/5dfc355t2y4)
 * [Petr Mitrichev's Blog: A half-plane week.](https://petr-mitrichev.blogspot.com/2016/07/a-half-plane-week.html)

@@ -1,4 +1,4 @@
-# Gray code
+# Gray code {#gray-code}
 
 Gray code is a binary numeral system where two successive values differ in only one bit. 
 
@@ -7,7 +7,7 @@ For example, $G(3) = (010)_2$ and $G(4) = (110)_2$ differ at exactly one bit, th
 
 This code was invented by Frank Gray in 1953.
 
-## Finding Gray code
+## Finding Gray code {#finding-gray-code}
 
 Let's look at the bits of number $n$ and the bits of number $G(n)$. Notice that $i$-th bit of $G(n)$ equals 1 only when $i$-th bit of $n$ equals 1 and $i + 1$-th bit equals 0 or the other way around ($i$-th bit equals 0 and $i + 1$-th bit equals 1). Thus, $G(n) = n \oplus (n >> 1)$:  
 
@@ -17,7 +17,7 @@ int g (int n) {
 }
 ```
 
-## Finding inverse Gray code
+## Finding inverse Gray code {#finding-inverse-gray-code}
 
 Given Gray code $g$, restore the original number $n$.
 
@@ -42,7 +42,7 @@ int rev_g (int g) {
 }
 ```
 
-## Practical applications
+## Practical applications {#practical-applications}
 Gray codes have some useful applications, sometimes quite unexpected:
 
 *   Gray code of $n$ bits forms a Hamiltonian cycle on a hypercube, where each bit corresponds to one dimension. 
@@ -63,6 +63,6 @@ Gray codes have some useful applications, sometimes quite unexpected:
 
 *   Gray codes are also used in genetic algorithms theory.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 *   [Gray Code &nbsp;&nbsp;&nbsp;&nbsp; [Difficulty: easy]](https://cses.fi/problemset/task/2205)
 *   [SGU #249 **"Matrix"** &nbsp;&nbsp;&nbsp;&nbsp; [Difficulty: medium]](http://codeforces.com/problemsets/acmsguru/problem/99999/249)

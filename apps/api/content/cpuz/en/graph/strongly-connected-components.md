@@ -1,6 +1,6 @@
-# Strongly connected components and the condensation graph
+# Strongly connected components and the condensation graph {#strongly-connected-components-and-the-condensation-graph}
 
-## Definitions
+## Definitions {#definitions}
 Let $G=(V,E)$ be a directed graph with vertices $V$ and edges $E \subseteq V \times V$. We denote with $n=|V|$ the number of vertices and with $m=|E|$ the number of edges in $G$. It is easy to extend all definitions in this article to multigraphs, but we will not focus on that.
 
 A subset of vertices $C \subseteq V$ is called a **strongly connected component** if the following conditions hold:
@@ -29,9 +29,9 @@ The most important property of the condensation graph is that it is **acyclic**.
 
 The algorithm described in the next section finds all strongly connected components in a given graph. After that, the condensation graph can be constructed.
 
-## Kosaraju's algorithm
+## Kosaraju's algorithm {#kosarajus-algorithm}
 
-### Description of the algorithm
+### Description of the algorithm {#description-of-the-algorithm}
 The described algorithm was independently suggested by Kosaraju and Sharir around 1980. It is based on two series of [depth first search](/algorithms/graph/depth-first-search), with a runtime of $O(n + m)$.
 
 In the first step of the algorithm, we perform a sequence of depth first searches (`dfs`), visiting the entire graph. That is, as long as there are still unvisited vertices, we take one of them, and initiate a depth first search from that vertex. For each vertex, we keep track of the *exit time* $t_\text{out}[v]$. This is the 'timestamp' at which the execution of `dfs` on vertex $v$ finishes, i.e., the moment at which all vertices reachable from $v$ have been visited and the algorithm is back at $v$. The timestamp counter should *not* be reset between consecutive calls to `dfs`. The exit times play a key role in the algorithm, which will become clear when we discuss the following theorem.
@@ -75,7 +75,7 @@ The runtime complexity of the algorithm is $O(n + m)$, because depth first searc
 
 Finally, it is appropriate to mention [topological sort](/algorithms/graph/topological-sort) here. In step 1, we find the vertices in the order of increasing exit time. If $G$ is acyclic, this corresponds to a (reversed) topological sort of $G$. In step 2, the algorithm finds strongly connected components in decreasing order of their exit times. Thus, it finds components - vertices of the condensation graph - in an order corresponding to a topological sort of the condensation graph.
 
-### Implementation
+### Implementation {#implementation}
 ```cpp
 vector<bool> visited; // keeps track of which vertices are already visited
 
@@ -142,9 +142,9 @@ The function `dfs` implements depth first search. It takes as input an adjacency
 
 Note that we use the function `dfs` both in the first and second step of the algorithm. In the first step, we pass in the adjacency list of $G$, and during consecutive calls to `dfs`, we keep passing in the same 'output vector' `order`, so that eventually we obtain a list of vertices in increasing order of exit times. In the second step, we pass in the adjacency list of $G^T$, and in each call, we pass in an empty 'output vector' `component`, which will give us one strongly connected component at a time.
 
-## Tarjan's strongly connected components algorithm
+## Tarjan's strongly connected components algorithm {#tarjans-strongly-connected-components-algorithm}
 
-### Description of the algorithm
+### Description of the algorithm {#description-of-the-algorithm}
 
 The described algorithm was first suggested by Tarjan in 1972.
 It is based on performing a sequence of DFS calls, using information inherent to its structure to determine the strongly connected components (SCC), with a runtime of $O(n+m)$.
@@ -289,7 +289,7 @@ As an additional remark, the roots are found in reversed topological order.
 In the algorithm, the vertex is a root if there are no edges to unclaimed vertices outside of its subtree, meaning all other reachable components are either in its subtree (and therefore their roots were already found) or they connect to already claimed vertices outside of the subtree (whose roots were also already found).
 So all reachable components were already found, meaning they are introduced in a valid reversed topological ordering of the condensation graph.
 
-### Implementation
+### Implementation {#implementation}
 
 ```cpp
 vector<int> st;    // - stack holding the unclaimed vertices
@@ -393,19 +393,19 @@ $t_{low}$ is used to propagate the information to the root, and when we perform 
 If $t_{low}[u]$ is propagated until the root of $u$, it can also be propagated through $v$ since the root is the same.
 Since $t_{low}[u] \leq t_{in}[u]$, this does not introduce any conflicts, instead only improving the bound on the root of $v$.
 
-## Building the Condensation Graph
+## Building the Condensation Graph {#building-the-condensation-graph}
 
 When building the adjacency list of the condensation graph, we select the *root* of each component as the first vertex in its list of vertices (this is an arbitrary choice). This root vertex represents its entire SCC. For each vertex `v`, the value `roots[v]` indicates the root vertex of the SCC which `v` belongs to.
 
 Our condensation graph is now given by the vertices `components` (one strongly connected component corresponds to one vertex in the condensation graph), and the adjacency list is given by `adj_cond`, using only the root vertices of the strongly connected components. Notice that we generate one edge from $C$ to $C'$ in $G^\text{SCC}$ for each edge from some $a\in C$ to some $b\in C'$ in $G$ (if $C\neq C'$). This implies that in our implementation, we can have multiple edges between two components in the condensation graph.
 
-## Literature
+## Literature {#literature}
 
 * Thomas Cormen, Charles Leiserson, Ronald Rivest, Clifford Stein. Introduction to Algorithms [2005].
 * M. Sharir. A strong-connectivity algorithm and its applications in data-flow analysis [1979].
 * Robert Tarjan. Depth-first search and linear graph algorithms [1972].
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ - Good Travels](http://www.spoj.com/problems/GOODA/)
 * [SPOJ - Lego](http://www.spoj.com/problems/LEGO/)

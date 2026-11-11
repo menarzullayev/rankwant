@@ -1,8 +1,8 @@
-# Maximum flow - Push-relabel method improved
+# Maximum flow - Push-relabel method improved {#maximum-flow-push-relabel-method-improved}
 
 We will modify the [push-relabel method](/algorithms/graph/push-relabel) to achieve a better runtime.
 
-## Description
+## Description {#description}
 
 The modification is extremely simple:
 In the previous article we chosen a vertex with excess without any particular rule.
@@ -14,7 +14,7 @@ To be precise, the complexity of the resulting algorithm is $O(V E + V^2 \sqrt{E
 
 This modification was proposed by Cheriyan and Maheshwari in 1989.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 const int inf = 1000000000;

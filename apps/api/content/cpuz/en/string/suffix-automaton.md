@@ -1,4 +1,4 @@
-# Suffix Automaton
+# Suffix Automaton {#suffix-automaton}
 
 A **suffix automaton** is a powerful data structure that allows solving many string-related problems. 
 
@@ -12,7 +12,7 @@ Moreover, it can also be built in $O(n)$ time (if we consider the size $k$ of th
 
 The linearity of the size of the suffix automaton was first discovered in 1983 by Blumer et al., and in 1985 the first linear algorithms for the construction was presented by Crochemore and Blumer.
 
-## Definition of a suffix automaton
+## Definition of a suffix automaton {#definition-of-a-suffix-automaton}
 
 A suffix automaton for a given string $s$ is a minimal **DFA** (deterministic finite automaton / deterministic finite state machine) that accepts all the suffixes of the string $s$.
 
@@ -28,7 +28,7 @@ In other words:
     Each of the suffixes of $s$ must be spellable using a path from $t_0$ to a terminal state.
  -  The suffix automaton contains the minimum number of vertices among all automata satisfying the conditions described above.
 
-### Substring property
+### Substring property {#substring-property}
 
 The simplest and most important property of a suffix automaton is, that it contains information about all substrings of the string $s$.
 Any path starting at the initial state $t_0$, if we write down the labels of the transitions, forms a **substring** of $s$.
@@ -40,7 +40,7 @@ And conversely we say that any path **corresponds** to the string spelled by its
 One or multiple paths can lead to a state.
 Thus, we will say that a state **corresponds** to the set of strings, which correspond to these paths.
 
-### Examples of constructed suffix automata
+### Examples of constructed suffix automata {#examples-of-constructed-suffix-automata}
 
 Here we will show some examples of suffix automata for several simple strings.
 
@@ -74,11 +74,11 @@ For the string $s =~ \text{"abbb"}$:
 
 ![Suffix automaton for "abbb"](/algorithms-media/string/SAabbb.png)
 
-## Construction in linear time
+## Construction in linear time {#construction-in-linear-time}
 
 Before we describe the algorithm to construct a suffix automaton in linear time, we need to introduce several new concepts and simple proofs, which will be very important in understanding the construction.
 
-### End positions $endpos$
+### End positions $endpos$ {#end-positions-endpos}
 
 Consider any non-empty substring $t$ of the string $s$.
 We will denote with $endpos(t)$ the set of all positions in the string $s$, in which the occurrences of $t$ end. For instance, we have $endpos(\text{"bc"}) = \{2, 4\}$ for the string $\text{"abcbc"}$.
@@ -138,7 +138,7 @@ It is easy to see, that this suffix is also contained in the same equivalence cl
 Because this suffix can only appear in the form of a suffix of $w$ in the string $s$ (since also the shorter suffix $u$ occurs in $s$ only in the form of a suffix of $w$).
 Consequently, according to Lemma 1, this suffix is $endpos$-equivalent to the string $w$.
 
-### Suffix links $link$
+### Suffix links $link$ {#suffix-links-link}
 
 Consider some state $v \ne t_0$ in the automaton.
 As we know, the state $v$ corresponds to the class of strings with the same $endpos$ values.
@@ -178,7 +178,7 @@ The nodes are labeled with the longest substring from the corresponding equivale
 
 ![Suffix automaton for "abcbc" with suffix links](/algorithms-media/string/SA_suffix_links.png)
 
-### Recap
+### Recap {#recap}
 
 Before proceeding to the algorithm itself, we recap the accumulated knowledge, and introduce a few auxiliary notations.
 
@@ -197,7 +197,7 @@ $$minlen(v) = len(link(v)) + 1$$
 - If we start from an arbitrary state $v_0$ and follow the suffix links, then sooner or later we will reach the initial state $t_0$.
   In this case we obtain a sequence of disjoint intervals $[minlen(v_i); len(v_i)]$, which in union forms the continuous interval $[0; len(v_0)]$.
 
-### Algorithm
+### Algorithm {#algorithm}
 
 Now we can proceed to the algorithm itself.
 The algorithm will be **online**, i.e. we will add the characters of the string one by one, and modify the automaton accordingly in each step.
@@ -246,7 +246,7 @@ Here we only note that, since we only create one or two new states for each char
 
 The linearity of the number of transitions, and in general the linearity of the runtime of the algorithm is less clear, and they will be proven after we proved the correctness.
 
-### Correctness
+### Correctness {#correctness}
 
   - We will call a transition $(p, q)$ **continuous** if $len(p) + 1 = len(q)$.
     Otherwise, i.e. when $len(p) + 1 < len(q)$, the transition will be called **non-continuous**.
@@ -301,7 +301,7 @@ The linearity of the number of transitions, and in general the linearity of the 
     Which transitions do we have to change?
     It is enough to redirect only the transitions corresponding to all the suffixes of the string $w + c$ (where $w$ is the longest string of $p$), i.e. we need to continue to move along the suffix links, starting from the vertex $p$ until we reach the fictitious state $-1$ or a transition that leads to a different state than $q$.
 
-### Linear number of operations
+### Linear number of operations {#linear-number-of-operations}
 
 First we immediately make the assumption that the size of the alphabet is **constant**.
 If this is not the case, then it will not be possible to talk about the linear time complexity.
@@ -331,7 +331,7 @@ In this case, if before the first iteration of the loop, the corresponding strin
 Thus, each iteration of this loop leads to the fact that the position of the string $longest(link(link(last))$ as a suffix of the current string will monotonically increase.
 Therefore this cycle cannot be executed more than $n$ iterations, which was required to prove.
 
-### Implementation
+### Implementation {#implementation}
 
 First we describe a data structure that will store all information about a specific transition ($len$, $link$ and the list of transitions).
 If necessary you can add a terminal flag here, as well as other information.
@@ -400,9 +400,9 @@ void sa_extend(char c) {
 As mentioned above, if you sacrifice memory ($O(n k)$, where $k$ is the size of the alphabet), then you can achieve the build time of the machine in $O(n)$, even for any alphabet size $k$.
 But for this you will have to store an array of size $k$ in each state (for quickly jumping to the transition of the letter), and additional a list of all transitions (to quickly iterate over the transitions them).
 
-## Additional properties
+## Additional properties {#additional-properties}
 
-### Number of states
+### Number of states {#number-of-states}
 
 The number of states in a suffix automaton of the string $s$ of length $n$ **doesn't exceed** $2n - 1$ (for $n \ge 2$).
 
@@ -423,7 +423,7 @@ $$\text{"abbb}\dots \text{bbb"}$$
 
 In each iteration, starting at the third one, the algorithm will split a state, resulting in exactly $2n - 1$ states.
 
-### Number of transitions
+### Number of transitions {#number-of-transitions}
 
 The number of transitions in a suffix automaton of a string $s$ of length $n$ **doesn't exceed** $3n - 4$ (for $n \ge 3$).
 
@@ -447,12 +447,12 @@ This bound can also be achieved with the string:
 
 $$\text{"abbb}\dots \text{bbbc"}$$
 
-## Applications
+## Applications {#applications}
 
 Here we look at some tasks that can be solved using the suffix automaton.
 For the simplicity we assume that the alphabet size $k$ is constant, which allows us to consider the complexity of appending a character and the traversal as constant.
 
-### Check for occurrence
+### Check for occurrence {#check-for-occurrence}
 
 Given a text $T$, and multiple patterns $P$.
 We have to check whether or not the strings $P$ appear as a substring of $T$.
@@ -465,7 +465,7 @@ If we can process the entire string $P$ this way, then the string appears in $T$
 It is clear that this will take $O(length(P))$ time for each string $P$.
 Moreover the algorithm actually finds the length of the longest prefix of $P$ that appears in the text.
 
-### Number of different substrings
+### Number of different substrings {#number-of-different-substrings}
 
 Given a string $S$.
 You want to compute the number of different substrings.
@@ -505,7 +505,7 @@ long long get_diff_strings(){
 
 While this is also $O(length(S))$, it requires no extra space and no recursive calls, consequently running faster in practice.
 
-### Total length of all different substrings
+### Total length of all different substrings {#total-length-of-all-different-substrings}
 
 Given a string $S$.
 We want to compute the total length of all its various substrings.
@@ -542,7 +542,7 @@ long long get_tot_len_diff_substings() {
 
 This approach runs in  $O(length(S))$ time, but experimentally runs 20x faster than the memoized dynamic programming version on randomized strings. It requires no extra space and no recursion.
 
-### Lexicographically $k$-th substring
+### Lexicographically $k$-th substring {#lexicographically-k-th-substring}
 
 Given a string $S$.
 We have to answer multiple queries.
@@ -554,7 +554,7 @@ Therefore after counting the number of paths from each state, we can easily sear
 
 This takes $O(length(S))$ time for preprocessing and then $O(length(ans) \cdot k)$ for each query (where $ans$ is the answer for the query and $k$ is the size of the alphabet).
 
-### Smallest cyclic shift
+### Smallest cyclic shift {#smallest-cyclic-shift}
 
 Given a string $S$.
 We want to find the lexicographically smallest cyclic shift.
@@ -566,7 +566,7 @@ Consequently the problem is reduced to finding the lexicographically smallest pa
 
 Total time complexity is $O(length(S))$.
 
-### Number of occurrences
+### Number of occurrences {#number-of-occurrences}
 
 For a given text $T$.
 We have to answer multiple queries.
@@ -605,7 +605,7 @@ After that answering a query by just looking up the value $cnt[t]$, where $t$ is
 Otherwise answer with $0$.
 Answering a query takes $O(length(P))$ time.
 
-### First occurrence position
+### First occurrence position {#first-occurrence-position}
 
 Given a text $T$ and multiple queries.
 For each query string $P$ we want to find the position of the first occurrence of $P$ in the string $T$ (the position of the beginning of $P$).
@@ -628,7 +628,7 @@ $$firstpos(clone) = firstpos(q)$$
 Thus the answer for a query is simply $firstpos(t) - length(P) + 1$, where $t$ is the state corresponding to the string $P$.
 Answering a query again takes only $O(length(P))$ time.
 
-### All occurrence positions
+### All occurrence positions {#all-occurrence-positions}
 
 This time we have to display all positions of the occurrences in the string $T$.
 
@@ -680,7 +680,7 @@ void output_all_occurrences(int v, int P_length) {
 }
 ```
 
-### Shortest non-appearing string
+### Shortest non-appearing string {#shortest-non-appearing-string}
 
 Given a string $S$ and a certain alphabet.
 We have to find a string of the smallest length, that doesn't appear in $S$.
@@ -696,7 +696,7 @@ $$d[v] = 1 + \min_{w:(v,w,c) \in SA} d[w].$$
 
 The answer to the problem will be $d[t_0]$, and the actual string can be restored using the computed array $d[]$.
 
-### Longest common substring of two strings
+### Longest common substring of two strings {#longest-common-substring-of-two-strings}
 
 Given two strings $S$ and $T$.
 We have to find the longest common substring, i.e. such a string $X$ that appears as a substring in $S$ and also in $T$.
@@ -750,7 +750,7 @@ string lcs (string S, string T) {
 } 
 ```
 
-### Largest common substring of multiple strings
+### Largest common substring of multiple strings {#largest-common-substring-of-multiple-strings}
 
 There are $k$ strings $S_i$ given.
 We have to find the longest common substring, i.e. such a string $X$ that appears as substring in each string $S_i$.
@@ -768,7 +768,7 @@ Thus we need to calculate the attainability, which tells us for each state of th
 This can easily be computed by DFS or BFS and dynamic programming.
 After that, the answer to the problem will be the string $longest(v)$ for the state $v$, from which the paths were exists for all special characters.
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
   - [CSES - Finding Patterns](https://cses.fi/problemset/task/2102)
   - [CSES - Counting Patterns](https://cses.fi/problemset/task/2103)

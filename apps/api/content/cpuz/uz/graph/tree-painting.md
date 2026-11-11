@@ -1,11 +1,11 @@
-# Daraxt qirralarini bo‘yash
+# Daraxt qirralarini bo‘yash {#paint-the-edges-of-the-tree}
 
 Bu juda ko‘p uchraydigan masala. $N$ ta tugundan iborat $G$ daraxti berilgan. So‘rovlarning ikki turi mavjud: birinchi turda qirra bo‘yaladi, ikkinchi turda esa ikki tugun orasidagi bo‘yalgan qirralar soni so‘raladi.
 
 Bu yerda har bir so‘rovga $O(\log N)$ vaqtda javob beradigan, [segment daraxti](/algorithms/data-structures/segment-tree)dan foydalanuvchi ancha sodda yechimni tasvirlaymiz.
 Dastlabki ishlov berish bosqichi $O(N)$ vaqt oladi.
 
-## Algoritm
+## Algoritm {#algorithm}
 
 Avval ikkinchi turdagi har bir $(i,j)$ so‘rovni $(l,i)$ va $(l,j)$ ko‘rinishidagi ikkita so‘rovga ajratish uchun [LCA](/algorithms/graph/lca)ni topishimiz kerak; bu yerda $l$ — $i$ va $j$ ning eng yaqin umumiy ajdodi.
 $(i,j)$ so‘rovining javobi ikkala qism-so‘rov javoblarining yig‘indisiga teng bo‘ladi.
@@ -36,7 +36,7 @@ Segment daraxtidagi yig‘indi so‘rovi $O(\log N)$ vaqtda bajariladi.
 **Birinchi turdagi so‘rov**ga (qirrani bo‘yashga) javob berish yanada oson: $T1$ va $T2$ ni yangilash, ya’ni qirramizga mos elementni bittadan o‘zgartirish kifoya (qirrani ro‘yxatda topish ham, agar bu qidiruv dastlabki ishlov berish paytida bajarilsa, $O(1)$ vaqtda mumkin).
 Segment daraxtidagi bitta o‘zgartirish $O(\log N)$ vaqtda bajariladi.
 
-## Implementatsiya
+## Implementatsiya {#implementation}
 
 Quyida LCA hisoblashni ham o‘z ichiga olgan yechimning to‘liq implementatsiyasi keltirilgan:
 

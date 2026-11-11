@@ -1,8 +1,8 @@
-# Optimal schedule of jobs given their deadlines and durations
+# Optimal schedule of jobs given their deadlines and durations {#optimal-schedule-of-jobs-given-their-deadlines-and-durations}
 
 Suppose, we have a set of jobs, and we are aware of every job’s deadline and its duration. The execution of a job cannot be interrupted prior to its ending. It is required to create such a schedule to accomplish the biggest number of jobs.
 
-## Solving
+## Solving {#solving}
 
 The algorithm of the solving is **greedy**. Let’s sort all the jobs by their deadlines and look at them in descending order. Also, let’s create a queue $q$, in which we’ll gradually put the jobs and extract one with the least run-time (for instance, we can use set or priority_queue). Initially, $q$ is empty.
 
@@ -10,7 +10,7 @@ Suppose, we’re looking at the $i$-th job. First of all, let’s put it into $q
 
 On the algorithm’s completion we’ll choose the optimal solution (or, at least, one of several solutions). The running time of algorithm is $O(n \log n)$.
 
-## Implementation
+## Implementation {#implementation}
 
 The following function takes a vector of jobs (consisting of a deadline, a duration, and the job's index) and computes a vector containing all indices of the used jobs in the optimal schedule.
 Notice that you still need to sort these jobs by their deadline, if you want to write down the plan explicitly.

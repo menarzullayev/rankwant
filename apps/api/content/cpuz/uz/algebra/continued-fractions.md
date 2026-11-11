@@ -1,9 +1,9 @@
-# Uzluksiz kasrlar
+# Uzluksiz kasrlar {#continued-fractions}
 
 **Uzluksiz kasr** — haqiqiy sonni ratsional sonlarning maxsus yaqinlashuvchi ketma-ketligi orqali ifodalash usuli. Ular musobaqaviy dasturlashda foydali, chunki ularni hisoblash oson va berilgan qiymatdan oshmaydigan maxrajlar orasida asosiy haqiqiy sonning eng yaxshi ratsional yaqinlashuvini samarali topish mumkin.
 Bundan tashqari, uzluksiz kasrlar Evklid algoritmi bilan chambarchas bog‘langan; shu sababli ular ko‘plab sonlar nazariyasiga oid masalalarda ishlatiladi.
 
-## Uzluksiz kasr ko‘rinishi
+## Uzluksiz kasr ko‘rinishi {#continued-fraction-representation}
 
 > **Ta’rif**
 >
@@ -88,7 +88,7 @@ $s_k=a_k$ bo‘lmasa, $a_0, a_1, \dots$ ketma-ketlik yaxshi aniqlangan; tenglik 
 
 Shunday qilib, har qanday irratsional $r$ soni uchun uzluksiz kasr ko‘rinishi yagona aniqlanadi.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Kod namunalarida asosan chekli uzluksiz kasrlarni qaraymiz.
 
@@ -140,7 +140,7 @@ def fraction(p, q):
     return a
 ```
 
-## Asosiy natijalar
+## Asosiy natijalar {#key-results}
 
 Uzluksiz kasrlarni keyinroq batafsil o‘rganishga turtki berish uchun hozir bir nechta asosiy faktlarni keltiramiz.
 
@@ -196,7 +196,7 @@ Oxirgi fakt $r$ ning eng yaxshi ratsional yaqinlashuvlarini uning yarim konverge
 
 Quyida bu faktlarning batafsil izohi hamda ularning bir oz sezgi va talqini keltiriladi.
 
-## Konvergentlar
+## Konvergentlar {#convergents}
 
 Oldin aniqlangan konvergentlarni yaqindan ko‘rib chiqamiz. $r=[a_0, a_1, a_2, \dots]$ uchun uning konvergentlari
 
@@ -277,7 +277,7 @@ Izchillik uchun yana ikkita konvergent: $r_{-1} = \frac{1}{0}$ va $r_{-2} = \fra
 >
 > $$P_k(a_0, \dots, a_k) = a_k P_{k-1}(a_0, \dots, a_{k-1}) + P_{k-2}(a_0, \dots, a_{k-2}).$$
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Konvergentlarni $p_{-2}, p_{-1}, p_0, p_1, \dots, p_k$ va $q_{-2}, q_{-1}, q_0, q_1, \dots, q_k$ ketma-ketliklari jufti sifatida hisoblaymiz:
 
@@ -307,11 +307,11 @@ def convergents(a):
     return p, q
 ```
 
-## Uzluksiz kasrlar daraxtlari
+## Uzluksiz kasrlar daraxtlari {#trees-of-continued-fractions}
 
 Barcha mumkin bo‘lgan uzluksiz kasrlarni foydali daraxt tuzilmalariga birlashtirishning ikkita asosiy usuli bor.
 
-### Stern–Brocot daraxti
+### Stern–Brocot daraxti {#stern-brocot-tree}
 
 [Stern–Brocot daraxti](/algorithms/others/stern-brocot-tree-farey-sequences) barcha turli musbat ratsional sonlarni o‘z ichiga oluvchi ikkilik qidiruv daraxtidir.
 
@@ -465,7 +465,7 @@ Stern–Brocot daraxti aslida [treap](/algorithms/data-structures/treap) ekanini
 > ```
 >
 
-### Calkin–Wilf daraxti
+### Calkin–Wilf daraxti {#calkin-wilf-tree}
 
 Uzluksiz kasrlarni ikkilik daraxtga joylashtirishning birmuncha sodda usuli — [Calkin–Wilf daraxti](https://en.wikipedia.org/wiki/Calkin–Wilf_tree).
 
@@ -495,7 +495,7 @@ Mos ravishda, $\frac{p}{q} = [a_0; a_1, \dots, a_k]$ ning bolalari:
 E’tiborlisi, Calkin–Wilf daraxtining tugunlarini kenglik bo‘yicha qidiruv tartibida raqamlab chiqsak — ildiz $1$, $v$ tugunning bolalari mos ravishda $2v$ va $2v+1$ — ratsional sonning Calkin–Wilf daraxtidagi indeksi Stern–Brocot daraxtidagi indeks bilan bir xil bo‘ladi.
 Demak, Stern–Brocot va Calkin–Wilf daraxtlarining bir xil darajalaridagi sonlar to‘plami bir xil, faqat ularning tartibi [bitlarni teskari joylashtirish permutatsiyasi](https://en.wikipedia.org/wiki/Bit-reversal_permutation) orqali farq qiladi.
 
-## Yaqinlashish
+## Yaqinlashish {#convergence}
 
 $r$ soni va uning $k$-konvergenti $r_k=\frac{p_k}{q_k}$ uchun quyidagi formula o‘rinli:
 
@@ -594,7 +594,7 @@ $$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
 > ```
 >
 
-## Chiziqli-kasrli almashtirishlar
+## Chiziqli-kasrli almashtirishlar {#linear-fractional-transformations}
 
 Uzluksiz kasrlar uchun yana bir muhim tushuncha — [chiziqli-kasrli almashtirishlar](https://en.wikipedia.org/wiki/Linear_fractional_transformation).
 
@@ -804,7 +804,7 @@ Bundan ham kuchliroq faktni isbotlash mumkin; uni birinchi bo‘lib Lagrange isb
 > ```
 >
 
-## Geometrik talqin
+## Geometrik talqin {#geometric-interpretation}
 
 $r_k = \frac{p_k}{q_k}$ konvergent uchun $\vec r_k = (q_k;p_k)$ deb olamiz. U holda quyidagi rekurrent formula o‘rinli:
 
@@ -884,7 +884,7 @@ Bu esa toq koeffitsiyentli $\vec r_k$ lar $y=rx$ chiziq ustida $x \geq 0$ bo‘l
 >
 > Bu ko‘pburchaklar uzluksiz kasrlarning bunday geometrik talqinini birinchi taklif qilgan Felix Klein sharafiga **Klein ko‘pburchaklari** deb ham ataladi.
 
-## Masala misollari
+## Masala misollari {#problem-examples}
 
 Endi eng muhim fakt va tushunchalar kiritildi; aniq masala misollarini ko‘rib chiqish vaqti keldi.
 
@@ -1198,7 +1198,7 @@ Endi eng muhim fakt va tushunchalar kiritildi; aniq masala misollarini ko‘rib 
 > ```
 >
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 - [UVa OJ - Continued Fractions](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=775)
 - [ProjectEuler+ #64: Odd period square roots](https://www.hackerrank.com/contests/projecteuler/challenges/euler064/problem)

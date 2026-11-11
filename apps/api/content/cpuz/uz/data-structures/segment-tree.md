@@ -1,4 +1,4 @@
-# Segment daraxti
+# Segment daraxti {#segment-tree}
 
 Segment daraxti — massiv oraliqlari haqidagi ma’lumotni daraxt ko‘rinishida saqlaydigan ma’lumotlar tuzilmasi. U massivdagi oraliq so‘rovlariga samarali javob berish bilan birga, massivni tez o‘zgartirish imkonini ham saqlab qoladi.
 Masalan, ketma-ket joylashgan $a[l \dots r]$ elementlar yig‘indisini yoki shunday oraliqdagi eng kichik elementni $O(\log n)$ vaqtda topish mumkin.
@@ -12,7 +12,7 @@ Masalan, ikki o‘lchamli segment daraxti yordamida berilgan matritsaning biror 
 Segment daraxtining muhim xususiyatlaridan biri — unga faqat chiziqli miqdorda xotira kerak bo‘lishidir.
 Standart segment daraxti o‘lchami $n$ bo‘lgan massiv uchun $4n$ ta tugun talab qiladi.
 
-## Segment daraxtining eng sodda ko‘rinishi
+## Segment daraxtining eng sodda ko‘rinishi {#simplest-form-of-a-segment-tree}
 
 Avval segment daraxtining eng sodda ko‘rinishini ko‘rib chiqamiz.
 Yig‘indi so‘rovlariga samarali javob bermoqchimiz.
@@ -24,7 +24,7 @@ Bu sodda yondashuvlarga nisbatan yaxshilanishdir.
 Oddiy massivdan foydalanadigan sodda implementatsiya elementni $O(1)$ vaqtda yangilaydi, ammo har bir yig‘indi so‘rovini hisoblash uchun $O(n)$ vaqt talab qiladi.
 Oldindan hisoblangan prefiks yig‘indilari esa yig‘indi so‘roviga $O(1)$ vaqtda javob beradi, lekin bitta massiv elementi yangilanganda prefiks yig‘indilarida $O(n)$ ta o‘zgarish qilish kerak bo‘ladi.
 
-### Segment daraxti tuzilishi
+### Segment daraxti tuzilishi {#structure-of-the-segment-tree}
 
 Massiv kesmalariga “bo‘lib tashla va hukmronlik qil” yondashuvini qo‘llash mumkin.
 Avval butun massiv elementlari yig‘indisini, ya’ni $a[0 \dots n-1]$ kesma yig‘indisini hisoblab saqlaymiz.
@@ -49,7 +49,7 @@ Hozircha bu faktni chetga surish mumkin, ammo implementatsiya vaqtida u muhim bo
 
 Segment daraxti balandligi $O(\log n)$ ga teng, chunki ildizdan barglarga tushishda kesmalar o‘lchami har safar taxminan ikki baravar kamayadi.
 
-### Qurish
+### Qurish {#construction}
 
 Segment daraxtini qurishdan oldin ikki narsani aniqlab olish kerak:
 
@@ -72,7 +72,7 @@ Qurishni ildiz tugundan boshlaganimiz uchun butun segment daraxtini hisoblay ola
 
 Birlashtirish amali o‘zgarmas vaqt olsa, qurishning vaqt murakkabligi $O(n)$ bo‘ladi. Birlashtirish amali segment daraxtidagi ichki tugunlar soniga teng bo‘lgan $n$ marta chaqiriladi.
 
-### Yig‘indi so‘rovlari
+### Yig‘indi so‘rovlari {#sum-queries}
 
 Hozircha yig‘indi so‘rovlariga javob beramiz. Kirishda $l$ va $r$ butun sonlari beriladi, $a[l \dots r]$ kesma yig‘indisini $O(\log n)$ vaqtda hisoblash kerak.
 
@@ -129,7 +129,7 @@ Demak, jami ko‘pi bilan $4 \log n$ ta tugunga tashrif buyuriladi va ishlash va
 Xulosa qilib aytganda, so‘rov kirish kesmasini yig‘indilari daraxtda oldindan hisoblangan va saqlangan bir nechta ostkesmaga ajratadi.
 So‘rov kesmasi tugun kesmasiga tenglashgan zahoti ajratishni to‘xtatsak, atigi $O(\log n)$ ta shunday kesma kerak bo‘ladi. Segment daraxti samaradorligi shundan kelib chiqadi.
 
-### Yangilash so‘rovlari
+### Yangilash so‘rovlari {#update-queries}
 
 Endi massivning muayyan elementini o‘zgartirmoqchimiz; masalan, $a[i] = x$ qiymat berish amalini bajaramiz.
 Segment daraxti yangi o‘zgartirilgan massivga mos kelishi uchun uni yangilashimiz kerak.
@@ -224,7 +224,7 @@ void update(int v, int tl, int tr, int pos, int new_val) {
 }
 ```
 
-### Xotiradan tejamkor implementatsiya
+### Xotiradan tejamkor implementatsiya {#memory-efficient-implementation}
 
 Ko‘pchilik avvalgi bo‘limdagi implementatsiyadan foydalanadi. `t` massiviga qaralsa, daraxt tugunlari BFS yurishi — darajalar bo‘yicha yurish — tartibida raqamlanganini ko‘rish mumkin.
 Bu tartibda $v$ tugunning farzandlari mos ravishda $2v$ va $2v + 1$ bo‘ladi.
@@ -240,16 +240,16 @@ Chap farzand $[l, mid]$ kesma uchun javob beradi, ya’ni uning ost-daraxtida ja
 Shundan $v$ tugunning o‘ng farzandi indeksini hisoblash mumkin: u $v + 2 * (mid - l + 1)$ ga teng.
 Bunday raqamlash zarur xotirani $2n$ gacha kamaytiradi.
 
-## Segment daraxtining ilg‘or ko‘rinishlari
+## Segment daraxtining ilg‘or ko‘rinishlari {#advanced-versions-of-segment-trees}
 
 Segment daraxti juda moslashuvchan ma’lumotlar tuzilmasi bo‘lib, uni turli yo‘nalishlarda o‘zgartirish va kengaytirish mumkin.
 Quyida bu variantlarni guruhlarga ajratishga harakat qilamiz.
 
-### Murakkabroq so‘rovlar
+### Murakkabroq so‘rovlar {#more-complex-queries}
 
 Segment daraxtini yig‘indi o‘rniga minimum yoki maksimum kabi boshqa so‘rovlarni hisoblaydigan qilib o‘zgartirish ba’zan juda oson, ba’zan esa ancha murakkab bo‘lishi mumkin.
 
-#### Maksimumni topish
+#### Maksimumni topish {#finding-the-maximum}
 
 Yuqoridagi masala shartini biroz o‘zgartiramiz: endi yig‘indi emas, maksimum so‘rovlariga javob beramiz.
 
@@ -262,7 +262,7 @@ Tabiiyki, bu masalani maksimum o‘rniga minimum hisoblaydigan ko‘rinishga ham
 
 Bu sodda variant implementatsiyasini alohida ko‘rsatmaymiz; keyingi bo‘limda uning murakkabroq ko‘rinishi implementatsiya qilinadi.
 
-#### Maksimum va uning uchrashishlar sonini topish
+#### Maksimum va uning uchrashishlar sonini topish {#finding-the-maximum-and-the-number-of-times-it-appears}
 
 Bu masala oldingisiga juda o‘xshaydi.
 Maksimumni topishdan tashqari, uning necha marta uchrashishini ham aniqlash kerak.
@@ -317,7 +317,7 @@ void update(int v, int tl, int tr, int pos, int new_val) {
     }
 }
 ```
-#### Eng katta umumiy bo‘luvchi yoki eng kichik umumiy karralini hisoblash
+#### Eng katta umumiy bo‘luvchi yoki eng kichik umumiy karralini hisoblash {#compute-the-greatest-common-divisor-least-common-multiple}
 
 Bu masalada massivning berilgan oraliqlaridagi barcha sonlarning EKUB yoki EKUKini hisoblamoqchimiz.
 
@@ -356,7 +356,7 @@ int find_kth(int v, int tl, int tr, int k) {
 }
 ```
 
-#### Berilgan yig‘indili massiv prefiksini qidirish
+#### Berilgan yig‘indili massiv prefiksini qidirish {#searching-for-an-array-prefix-with-a-given-amount}
 
 Masala quyidagicha:
 berilgan $x$ qiymat uchun $a[]$ massivining dastlabki $i$ elementi yig‘indisi $x$ dan katta yoki unga teng bo‘ladigan eng kichik $i$ indeksni tez topish kerak. Bunda $a[]$ faqat manfiy bo‘lmagan qiymatlardan iborat deb faraz qilinadi.
@@ -367,7 +367,7 @@ Biroq bunday yechim murakkabligi $O(\log^2 n)$ bo‘ladi.
 Buning o‘rniga avvalgi bo‘limdagi kabi daraxt bo‘ylab pastga tushib, chap farzand yig‘indisiga qarab har safar chap yoki o‘ng farzandga o‘tish orqali pozitsiyani topish mumkin.
 Shunda javob $O(\log n)$ vaqtda topiladi.
 
-#### Berilgan qiymatdan katta birinchi elementni qidirish
+#### Berilgan qiymatdan katta birinchi elementni qidirish {#searching-for-the-first-element-greater-than-a-given-amount}
 
 Masala quyidagicha:
 berilgan $x$ qiymat va $a[l \dots r]$ oraliq uchun $a[l \dots r]$ ichidagi $a[i]$ qiymati $x$ dan katta bo‘ladigan eng kichik $i$ indeksni topish kerak.
@@ -393,7 +393,7 @@ int get_first(int v, int tl, int tr, int l, int r, int x) {
 }
 ```
 
-#### Maksimal yig‘indili ostkesmalarni topish
+#### Maksimal yig‘indili ostkesmalarni topish {#finding-subsegments-with-the-maximal-sum}
 
 Har bir so‘rovda yana $a[l \dots r]$ oraliq beriladi. Bu safar $l \le l^\prime$ va $r^\prime \le r$ shartlarini qanoatlantiradigan, elementlari yig‘indisi maksimal bo‘lgan $a[l^\prime \dots r^\prime]$ ostkesmani topish kerak.
 Avvalgidek, massivning alohida elementlarini o‘zgartirish imkonini ham saqlab qolmoqchimiz.
@@ -485,7 +485,7 @@ data query(int v, int tl, int tr, int l, int r) {
 }
 ```
 
-### Har bir tugunda butun ostmassivni saqlash
+### Har bir tugunda butun ostmassivni saqlash {#saving-the-entire-subarrays-in-each-vertex}
 
 Bu kichik bo‘lim boshqalaridan ajralib turadi: Segment daraxtining har bir tugunida mos kesma haqidagi ma’lumotni siqilgan ko‘rinishda — yig‘indi, minimum, maksimum va hokazo — emas, kesmaning barcha elementlarini saqlaymiz.
 Shunday qilib, segment daraxti ildizi massivning barcha elementlarini, chap farzand massivning birinchi yarmini, o‘ng farzand ikkinchi yarmini va shu tarzda davom etib saqlaydi.
@@ -504,7 +504,7 @@ Demak, bunday segment daraxti tashqi ko‘rinishidan isrofgar tuyulsa ham, odati
 Quyida bu ma’lumotlar tuzilmasining bir nechta odatiy qo‘llanishi tasvirlangan.
 Bunday segment daraxtlarining ikki o‘lchamli ma’lumotlar tuzilmalariga o‘xshashligini ham qayd etish kerak. Aslida bu imkoniyatlari ancha cheklangan ikki o‘lchamli tuzilmadir.
 
-#### Berilgan sondan katta yoki unga teng eng kichik sonni topish: yangilash so‘rovlari yo‘q
+#### Berilgan sondan katta yoki unga teng eng kichik sonni topish: yangilash so‘rovlari yo‘q {#find-the-smallest-number-greater-or-equal-to-a-specified-number-no-modification-queries}
 
 Quyidagi ko‘rinishdagi so‘rovlarga javob bermoqchimiz:
 berilgan $(l, r, x)$ uchlik uchun $a[l \dots r]$ kesmada $x$ dan katta yoki unga teng bo‘lgan eng kichik sonni topish kerak.
@@ -568,7 +568,7 @@ $\text{INF}$ o‘zgarmasi massivdagi barcha sonlardan katta bo‘lgan biror katt
 Undan foydalanish kesmada $x$ dan katta yoki unga teng son yo‘qligini bildiradi.
 Ya’ni uning ma’nosi: “berilgan oraliqda javob yo‘q”.
 
-#### Berilgan sondan katta yoki unga teng eng kichik sonni topish: yangilash so‘rovlari bilan
+#### Berilgan sondan katta yoki unga teng eng kichik sonni topish: yangilash so‘rovlari bilan {#find-the-smallest-number-greater-or-equal-to-a-specified-number-with-modification-queries}
 
 Bu masala oldingisiga o‘xshaydi.
 Avvalgi yondashuvning kamchiligi shuki, so‘rovlarga javob berish orasida massivni o‘zgartirib bo‘lmas edi.
@@ -604,7 +604,7 @@ void update(int v, int tl, int tr, int pos, int new_val) {
 
 Bu yangilash so‘rovini qayta ishlash ham $O(\log^2 n)$ vaqt oladi.
 
-#### Berilgan sondan katta yoki unga teng eng kichik sonni topish: fractional cascading bilan tezlashtirish
+#### Berilgan sondan katta yoki unga teng eng kichik sonni topish: fractional cascading bilan tezlashtirish {#find-the-smallest-number-greater-or-equal-to-a-specified-number-acceleration-with-fractional-cascading}
 
 Masala sharti o‘sha-o‘sha: kesmada $x$ dan katta yoki unga teng eng kichik sonni topish kerak, lekin bu safar uni $O(\log n)$ vaqtda bajarishni istaymiz.
 Vaqt murakkabligini **fractional cascading** texnikasi yordamida yaxshilaymiz.
@@ -655,18 +655,18 @@ Yangilash so‘rovlarini ham qo‘llab-quvvatlash mumkin, lekin bu butun kodni m
 Butun sonlar o‘rniga saralangan massivni `multiset` sifatida, indekslar o‘rniga esa iteratorlarni saqlash kerak.
 Yangilash vaqtida aynan kerakli iteratorlarni oshirish yoki kamaytirish uchun juda ehtiyotkor ishlash lozim.
 
-#### Boshqa mumkin bo‘lgan variantlar
+#### Boshqa mumkin bo‘lgan variantlar {#other-possible-variations}
 
 Bu texnika mumkin bo‘lgan qo‘llanishlarning butunlay yangi sinfini beradi.
 Har bir tugunda $\text{vector}$ yoki $\text{multiset}$ saqlash o‘rniga boshqa ma’lumotlar tuzilmalaridan foydalanish mumkin:
 boshqa segment daraxtlari — bu haqda [Katta o‘lchamlarga umumlashtirish](/algorithms/data-structures/segment-tree#generalization-to-higher-dimensions) bo‘limida qisman so‘z yuritiladi — Fenwick daraxtlari, Dekart daraxtlari va hokazo.
 
-### Oraliq yangilashlari (kechiktirib tarqatish)
+### Oraliq yangilashlari (kechiktirib tarqatish) {#range-updates-lazy-propagation}
 
 Yuqoridagi barcha masalalarda yangilash so‘rovi massivning faqat bitta elementiga ta’sir qilardi.
 Biroq segment daraxti ketma-ket elementlarning butun kesmasiga yangilash qo‘llash va so‘rovni o‘sha $O(\log n)$ vaqtda bajarish imkonini beradi.
 
-#### Kesmaga qiymat qo‘shish
+#### Kesmaga qiymat qo‘shish {#addition-on-segments}
 
 Eng sodda ko‘rinishdagi masaladan boshlaymiz: yangilash so‘rovi $a[l \dots r]$ kesmadagi barcha sonlarga $x$ sonini qo‘shishi kerak.
 Javob beriladigan ikkinchi turdagi so‘rov esa shunchaki $a[i]$ qiymatini so‘raydi.
@@ -713,7 +713,7 @@ int get(int v, int tl, int tr, int pos) {
 }
 ```
 
-#### Kesmaga qiymat berish
+#### Kesmaga qiymat berish {#assignment-on-segments}
 
 Endi yangilash so‘rovi muayyan $a[l \dots r]$ kesmaning har bir elementiga biror $p$ qiymatni berishini faraz qilaylik.
 Ikkinchi turdagi so‘rov sifatida yana $a[i]$ massiv elementi qiymatini o‘qishni ko‘ramiz.
@@ -784,7 +784,7 @@ int get(int v, int tl, int tr, int pos) {
 Eslatma: $\text{get}$ funksiyasini boshqacha ham implementatsiya qilish mumkin:
 kechiktirilgan yangilashlarni pastga tushirmasdan, $marked[v]$ rost bo‘lsa, darhol $t[v]$ qiymatini qaytarish mumkin.
 
-#### Kesmalarga qo‘shish va maksimum so‘rovi
+#### Kesmalarga qo‘shish va maksimum so‘rovi {#adding-on-segments-querying-for-maximum}
 
 Endi yangilash so‘rovi oraliqdagi barcha elementlarga son qo‘shadi, o‘qish so‘rovi esa oraliq maksimumini topadi.
 
@@ -843,12 +843,12 @@ int query(int v, int tl, int tr, int l, int r) {
 }
 ```
 
-### Katta o‘lchamlarga umumlashtirish
+### Katta o‘lchamlarga umumlashtirish {#generalization-to-higher-dimensions}
 
 Segment daraxtini tabiiy tarzda kattaroq o‘lchamlarga umumlashtirish mumkin.
 Bir o‘lchamli holatda massiv indekslarini kesmalarga bo‘lsak, ikki o‘lchamli holatda avval birinchi indekslar bo‘yicha odatiy segment daraxti quramiz, so‘ng uning har bir kesmasi uchun ikkinchi indekslar bo‘yicha yana odatiy segment daraxti quramiz.
 
-#### Sodda ikki o‘lchamli segment daraxti
+#### Sodda ikki o‘lchamli segment daraxti {#simple-2d-segment-tree}
 
 $a[0 \dots n-1, 0 \dots m-1]$ matritsa berilgan. Biror $a[x_1 \dots x_2, y_1 \dots y_2]$ ostmatritsada yig‘indi — yoki minimum/maksimum — topish, shuningdek matritsaning alohida elementlarini o‘zgartirish, ya’ni $a[x][y] = p$ ko‘rinishidagi so‘rovlarni bajarish kerak.
 
@@ -954,7 +954,7 @@ void update_x(int vx, int lx, int rx, int x, int y, int new_val) {
 }
 ```
 
-#### Ikki o‘lchamli segment daraxtini siqish
+#### Ikki o‘lchamli segment daraxtini siqish {#compression-of-2d-segment-tree}
 
 Quyidagi masala berilgan bo‘lsin: tekislikda koordinatalari $(x_i, y_i)$ bo‘lgan $n$ ta nuqta bor va “$((x_1, y_1), (x_2, y_2))$ to‘g‘ri to‘rtburchak ichida yotgan nuqtalar sonini sanash” ko‘rinishidagi so‘rovlarga javob berish kerak.
 Bunday masalada $O(n^2)$ elementli ikki o‘lchamli segment daraxti qurish haddan tashqari isrofgar bo‘lishi ravshan.
@@ -975,7 +975,7 @@ Xulosa qilib, shu usulda siqilgan ikki o‘lchamli segment daraxti amalda bir o�
 Xususan, ikki o‘lchamli segment daraxti har bir daraxt tugunida ostmassiv saqlashning maxsus holatidir.
 Shundan kelib chiqadiki, biror so‘rovni bajarib bo‘lmagani sababli ikki o‘lchamli segment daraxtidan voz kechishga to‘g‘ri kelsa, ichki segment daraxtini kuchliroq ma’lumotlar tuzilmasi, masalan Dekart daraxti bilan almashtirishni sinab ko‘rish maqsadga muvofiq.
 
-### Qiymatlar tarixini saqlash: persistent segment daraxti
+### Qiymatlar tarixini saqlash: persistent segment daraxti {#preserving-the-history-of-its-values-persistent-segment-tree}
 
 **Persistent ma’lumotlar tuzilmasi** har bir yangilashdan oldingi holatini eslab qoladigan tuzilmadir.
 Bu bizni qiziqtirgan istalgan versiyaga murojaat qilish va unda so‘rov bajarish imkonini beradi.
@@ -1036,7 +1036,7 @@ Muayyan segment daraxti versiyasidan foydalanish uchun so‘rovni tegishli ildiz
 
 Yuqoridagi yondashuv yordamida deyarli istalgan segment daraxtini persistent ma’lumotlar tuzilmasiga aylantirish mumkin.
 
-#### Oraliqdagi $k$-kichik sonni topish
+#### Oraliqdagi $k$-kichik sonni topish {#finding-the-k-th-smallest-number-in-a-range}
 
 Bu safar “$a[l \dots r]$ oraliqdagi $k$-kichik element nima?” ko‘rinishidagi so‘rovlarga javob berish kerak.
 Bu so‘rovga Merge Sort Tree va ikkilik qidiruv yordamida javob berish mumkin, lekin bitta so‘rovning vaqt murakkabligi $O(\log^3 n)$ bo‘ladi.
@@ -1116,7 +1116,7 @@ indekslarni siqish yordamida istalgan massivni shu ko‘rinishdagi massivga ayla
 Massivdagi eng kichik elementga 0, ikkinchi eng kichik elementga 1 va shu tarzda davom etib qiymatlar beriladi.
 Qiymatni uning siqilgan indeksiga va aksincha o‘giradigan qidiruv jadvallarini, masalan $\text{map}$ yordamida, $O(\log n)$ vaqtda oson tuzish mumkin.
 
-### Dinamik segment daraxti
+### Dinamik segment daraxti {#dynamic-segment-tree}
 
 (Uning shakli dinamik va tugunlari odatda dinamik ajratilgani uchun shunday ataladi.
 U **implicit segment daraxti** yoki **sparse segment daraxti** nomlari bilan ham ma’lum.)
@@ -1173,7 +1173,7 @@ struct Vertex {
 
 Bu g‘oyani turli yo‘nalishlarda kengaytirish mumkin. Masalan, lazy propagation yordamida oraliq yangilashlarini ham qo‘llab-quvvatlash mumkin.
 
-## Mashq masalalari
+## Mashq masalalari {#practice-problems}
 
 * [SPOJ — KQUERY](http://www.spoj.com/problems/KQUERY/) [Persistent segment daraxti / Merge Sort Tree]
 * [Codeforces — Xenia and Bit Operations](https://codeforces.com/problemset/problem/339/D)

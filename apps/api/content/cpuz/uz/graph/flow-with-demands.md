@@ -1,4 +1,4 @@
-# Talabli oqimlar
+# Talabli oqimlar {#flows-with-demands}
 
 Oddiy oqim tarmog‘ida qirra oqimi yuqoridan faqat $c(e)$ sig‘im, pastdan esa $0$ bilan chegaralanadi.
 Bu maqolada har bir qirradagi oqimdan ma’lum miqdorda oqim o‘tishini qo‘shimcha ravishda talab qiladigan, ya’ni oqimni pastdan **talab** funksiyasi $d(e)$ bilan chegaralaydigan oqim tarmoqlarini ko‘rib chiqamiz:
@@ -15,7 +15,7 @@ Biz ikkita masalani ko‘rib chiqamiz:
 1. barcha cheklovlarni qanoatlantiradigan ixtiyoriy oqimni topish;
 2. barcha cheklovlarni qanoatlantiradigan minimal oqimni topish.
 
-## Ixtiyoriy oqimni topish
+## Ixtiyoriy oqimni topish {#finding-an-arbitrary-flow}
 
 Tarmoqqa quyidagi o‘zgartirishlarni kiritamiz.
 Yangi $s'$ manba va yangi $t'$ qabul qiluvchi, $s'$ manbadan boshqa har bir tugunga yangi qirra, har bir tugundan $t'$ qabul qiluvchiga yangi qirra va $t$ dan $s$ ga bitta qirra qo‘shamiz.
@@ -40,7 +40,7 @@ Bu amallar orqali qirra to‘yintirilganini simulyatsiya qilamiz: $v$ dan qo‘s
 Dastlab $s - \dots - u - v - \dots - t$ yo‘l bo‘ylab oqadigan $d(e)$ qiymatli oqim endi $s' - v - \dots - t - s - \dots - u - t'$ yangi yo‘ldan borishi mumkin.
 Yangi tarmoq ta’rifida faqat bitta soddalashtirish bor: agar jarayon bir xil tugunlar jufti orasida bir nechta qirra hosil qilsa, ular sig‘imlari yig‘indisiga ega bitta qirraga birlashtiriladi.
 
-## Minimal oqim
+## Minimal oqim {#minimal-flow}
 
 Sig‘imi $\infty$ bo‘lgan $(t, s)$ qirra (eski qabul qiluvchidan eski manbaga) bo‘ylab mos eski tarmoqning butun oqimi o‘tishini qayd eting.
 Ya’ni bu qirraning sig‘imi eski tarmoq oqimining qiymatiga ta’sir qiladi.

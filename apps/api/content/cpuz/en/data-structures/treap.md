@@ -1,4 +1,4 @@
-# Treap (Cartesian tree)
+# Treap (Cartesian tree) {#treap-cartesian-tree}
 
 A treap is a data structure which combines binary tree and binary heap (hence the name: tree + heap $\Rightarrow$ Treap).
 
@@ -11,13 +11,13 @@ A treap is also often referred to as a "cartesian tree", as it is easy to embed 
 
 Treaps have been proposed by Raimund Siedel and Cecilia Aragon in 1989.
 
-## Advantages of such data organisation
+## Advantages of such data organisation {#advantages-of-such-data-organisation}
 
 In such implementation, $X$ values are the keys (and at same time the values stored in the treap), and $Y$ values are called **priorities**. Without priorities, the treap would be a regular binary search tree by $X$, and one set of $X$ values could correspond to a lot of different trees, some of them degenerate (for example, in the form of a linked list), and therefore extremely slow (the main operations would have $O(N)$ complexity).
 
 At the same time, **priorities** (when they're unique) allow to **uniquely** specify the tree that will be constructed (of course, it does not depend on the order in which values are added), which can be proven using corresponding theorem. Obviously, if you **choose the priorities randomly**, you will get non-degenerate trees on average, which will ensure $O(\log N)$ complexity for the main operations. Hence another name of this data structure - **randomized binary search tree**.
 
-## Operations
+## Operations {#operations}
 
 A treap provides the following operations:
 
@@ -36,13 +36,13 @@ A treap provides the following operations:
 
 In addition, due to the fact that a treap is a binary search tree, it can implement other operations, such as finding the $K$-th largest element or finding the index of an element.
 
-## Implementation Description
+## Implementation Description {#implementation-description}
 
 In terms of implementation, each node contains $X$, $Y$ and pointers to the left ($L$) and right ($R$) children.
 
 We will implement all the required operations using just two auxiliary operations: Split and Merge.
 
-### Split
+### Split {#split}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/6/69/Treap_split.svg)
 
@@ -57,13 +57,13 @@ Thus, the split algorithm is:
 2. recursively call split on one of its children
 3. create the final result by reusing the recursive split call.
 
-### Merge
+### Merge {#merge}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/a/a8/Treap_merge.svg)
 
 **Merge ($T_1$, $T_2$)** combines two subtrees $T_1$ and $T_2$ and returns the new tree. This operation also has $O (\log N)$ complexity. It works under the assumption that $T_1$ and $T_2$ are ordered (all keys $X$ in $T_1$ are smaller than keys in $T_2$). Thus, we need to combine these trees without violating the order of priorities $Y$. To do this, we choose as the root the tree which has higher priority $Y$ in the root node, and recursively call Merge for the other tree and the corresponding subtree of the selected root node.
 
-### Insert
+### Insert {#insert}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/3/35/Treap_insert.svg)
 
@@ -71,7 +71,7 @@ Now implementation of **Insert ($X$, $Y$)** becomes obvious. First we descend in
 
 Alternatively, insert can be done by splitting the initial treap on $X$ and doing $2$ merges with the new node (see the picture).
 
-### Erase
+### Erase {#erase}
 
 ![](https://upload.wikimedia.org/wikipedia/commons/6/62/Treap_erase.svg)
 
@@ -79,15 +79,15 @@ Implementation of **Erase ($X$)** is also clear. First we descend in the tree (a
 
 Alternatively, we can factor out the subtree holding $X$ with $2$ split operations and merge the remaining treaps (see the picture).
 
-### Build
+### Build {#build}
 
 We implement **Build** operation with $O (N \log N)$ complexity using $N$ **Insert** calls.
 
-### Union
+### Union {#union}
 
 **Union ($T_1$, $T_2$)** has theoretical complexity $O (M \log (N / M))$, but in practice it works very well, probably with a very small hidden constant. Let's assume without loss of generality that $T_1 \rightarrow Y > T_2 \rightarrow Y$, i. e. root of $T_1$ will be the root of the result. To get the result, we need to merge trees $T_1 \rightarrow L$, $T_1 \rightarrow R$ and $T_2$ in two trees which could be children of $T_1$ root. To do this, we call Split ($T_2$, $T_1\rightarrow X$), thus splitting $T_2$ in two parts L and R, which we then recursively combine with children of $T_1$: Union ($T_1 \rightarrow L$, $L$) and Union ($T_1 \rightarrow R$, $R$), thus getting left and right subtrees of the result.
 
-## Implementation
+## Implementation {#implementation}
 
 ```cpp
 struct item {
@@ -169,7 +169,7 @@ pitem unite (pitem l, pitem r) {
 }
 ```
 
-## Maintaining the sizes of subtrees
+## Maintaining the sizes of subtrees {#maintaining-the-sizes-of-subtrees}
 
 To extend the functionality of the treap, it is often necessary to store the number of nodes in subtree of each node - field `int cnt` in the `item` structure. For example, it can be used to find K-th largest element of tree in $O (\log N)$, or to find the index of the element in the sorted list with the same complexity. The implementation of these operations will be the same as for the regular binary search tree.
 
@@ -186,7 +186,7 @@ void upd_cnt (pitem t) {
 }
 ```
 
-## Building a Treap in $O (N)$ in offline mode
+## Building a Treap in $O (N)$ in offline mode {#building-a-treap-in-o-n-in-offline-mode}
 
 Given a sorted list of keys, it is possible to construct a treap faster than by inserting the keys one at a time which takes $O(N \log N)$. Since the keys are sorted, a balanced binary search tree can be easily constructed in linear time. The heap values $Y$ are initialized randomly and then can be heapified independent of the keys $X$ to [build the heap](https://en.wikipedia.org/wiki/Binary_heap#Building_a_heap) in $O(N)$.
 
@@ -267,7 +267,7 @@ pitem build(int *x, int *y, int n) {
 }
 ```
 
-## Implicit Treaps
+## Implicit Treaps {#implicit-treaps}
 
 Implicit treap is a simple modification of the regular treap which is a very powerful data structure. In fact, implicit treap can be considered as an array with the following procedures implemented (all in $O (\log N)$ in the online mode):
 
@@ -396,11 +396,11 @@ void output (pitem t) {
 }
 ```
 
-## Literature
+## Literature {#literature}
 
 * [Blelloch, Reid-Miller "Fast Set Operations Using Treaps"](https://www.cs.cmu.edu/~scandal/papers/treaps-spaa98.pdf)
 
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [SPOJ - Ada and Aphids](http://www.spoj.com/problems/ADAAPHID/)
 * [SPOJ - Ada and Harvest](http://www.spoj.com/problems/ADACROP/)

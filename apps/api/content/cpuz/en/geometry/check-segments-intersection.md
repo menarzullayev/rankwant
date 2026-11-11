@@ -1,18 +1,18 @@
-# Check if two segments intersect
+# Check if two segments intersect {#check-if-two-segments-intersect}
 
 You are given two segments $(a, b)$ and $(c, d)$.
 You have to check if they intersect.
 Of course, you may find their intersection and check if it isn't empty, but this can't be done in integers for segments with integer coordinates.
 The approach described here can work in integers.
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Firstly, consider the case when the segments are part of the same line.
 In this case it is sufficient to check if their projections on $Ox$ and $Oy$ intersect.
 In the other case $a$ and $b$ must not lie on the same side of line $(c, d)$, and $c$ and $d$ must not lie on the same side of line $(a, b)$.
 It can be checked with a couple of cross products.
 
-## Implementation
+## Implementation {#implementation}
 
 The given algorithm is implemented for integer points. Of course, it can be easily modified to work with doubles.
 
@@ -43,6 +43,6 @@ bool check_inter(const pt& a, const pt& b, const pt& c, const pt& d) {
            sgn(c.cross(d, a)) != sgn(c.cross(d, b));
 }
 ```
-## Practice Problems
+## Practice Problems {#practice-problems}
 
 * [CSES - Line Segment Intersection](https://cses.fi/problemset/task/2190)

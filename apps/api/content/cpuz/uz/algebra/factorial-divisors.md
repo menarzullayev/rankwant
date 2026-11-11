@@ -1,8 +1,8 @@
-# Faktorial bo‘luvchisining darajasini topish
+# Faktorial bo‘luvchisining darajasini topish {#finding-power-of-factorial-divisor}
 
 Ikkita $n$ va $k$ sonlari berilgan. $k^x$ soni $n!$ ni bo‘ladigan eng katta butun $x$ ni topish talab etiladi.
 
-## $k$ tub son bo‘lganda
+## $k$ tub son bo‘lganda {#prime-k}
 
 Avval $k$ tub son bo‘lgan holatni ko‘rib chiqamiz. Faktorialning ochiq ko‘rinishi:
 
@@ -21,7 +21,7 @@ $$\Bigl\lfloor\dfrac{n}{k}\Bigr\rfloor + \Bigl\lfloor\dfrac{n}{k^2}\Bigr\rfloor 
 Bu natija [Legendre formulasi](https://en.wikipedia.org/wiki/Legendre%27s_formula) nomi bilan ham ma’lum.
 Yig‘indi, albatta, chekli: taxminan faqat dastlabki $\log_k n$ ta hadi noldan farqli bo‘ladi. Shuning uchun algoritmning vaqt murakkabligi $O(\log_k n)$.
 
-### Dastur kodi
+### Dastur kodi {#implementation}
 
 ```cpp
 
@@ -36,7 +36,7 @@ int fact_pow (int n, int k) {
 
 ```
 
-## $k$ murakkab son bo‘lganda
+## $k$ murakkab son bo‘lganda {#composite-k}
 
 Yuqoridagi g‘oyani bevosita qo‘llab bo‘lmaydi. Buning o‘rniga $k$ ni tub ko‘paytuvchilarga ajratib, $k = k_1^{p_1} \cdot \ldots \cdot k_m^{p_m}$ ko‘rinishda ifodalaymiz. Har bir $k_i$ uchun yuqoridagi algoritm yordamida uning $n!$ tarkibida necha marta qatnashishini topamiz va bu qiymatni $a_i$ deb belgilaymiz. Murakkab $k$ uchun javob:
 

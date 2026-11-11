@@ -1,6 +1,6 @@
-# Lyndon faktorizatsiyasi
+# Lyndon faktorizatsiyasi {#lyndon-factorization}
 
-## Lyndon faktorizatsiyasi
+## Lyndon faktorizatsiyasi {#lyndon-factorization}
 
 Avval Lyndon faktorizatsiyasi tushunchasini ta’riflaymiz.
 
@@ -13,7 +13,7 @@ $s$ satrining **Lyndon faktorizatsiyasi** — bu $s = w_1 w_2 \dots w_k$ ko‘ri
 
 Har qanday satr uchun bunday faktorizatsiya mavjud va yagona ekanini ko‘rsatish mumkin.
 
-## Duval algoritmi
+## Duval algoritmi {#duval-algorithm}
 
 Duval algoritmi Lyndon faktorizatsiyasini $O(n)$ vaqtda, $O(1)$ qo‘shimcha xotira bilan quradi.
 
@@ -44,7 +44,7 @@ Uch xil holat yuz berishi mumkin:
   Sodda satrning uzunligi $j - k$ bo‘ladi.
   Keyingi iteratsiyada qolgan $s_2$ bilan boshidan davom etamiz.
 
-### Implementatsiya
+### Implementatsiya {#implementation}
 
 Quyida berilgan $s$ satrining kerakli Lyndon faktorizatsiyasini qaytaruvchi Duval algoritmi implementatsiyasi keltirilgan.
 
@@ -71,7 +71,7 @@ vector<string> duval(string const& s) {
 }
 ```
 
-### Murakkablik
+### Murakkablik {#complexity}
 
 Ushbu algoritmning ishlash vaqtini baholaymiz.
 
@@ -84,7 +84,7 @@ Tashqi siklning har bir iteratsiyasida aniqlanadigan sodda so‘zlar qo‘shimch
 Shuning uchun qoldiqlar uzunliklarining yig‘indisi ham $n$ dan kichik bo‘ladi; demak, birinchi ichki `while` sikli jami ko‘pi bilan $O(n)$ ta iteratsiya bajaradi.
 Aslida belgilarni taqqoslashlarning umumiy soni $4n - 3$ dan oshmaydi.
 
-## Eng kichik siklik siljitishni topish
+## Eng kichik siklik siljitishni topish {#finding-the-smallest-cyclic-shift}
 
 $s$ satri berilgan bo‘lsin.
 $s + s$ satri uchun Lyndon faktorizatsiyasini quramiz (bu $O(n)$ vaqt oladi).
@@ -118,6 +118,6 @@ string min_cyclic_string(string s) {
 }
 ```
 
-## Masalalar
+## Masalalar {#problems}
 
 - [UVA #719 - Glass Beads](https://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=660)

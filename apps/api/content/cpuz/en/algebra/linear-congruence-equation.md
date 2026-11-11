@@ -1,4 +1,4 @@
-# Linear Congruence Equation
+# Linear Congruence Equation {#linear-congruence-equation}
 
 This equation is of the form:
 
@@ -8,7 +8,7 @@ where $a$, $b$ and $n$ are given integers and $x$ is an unknown integer.
 
 It is required to find the value $x$ from the interval $[0, n-1]$ (clearly, on the entire number line there can be infinitely many solutions that will differ from each other in $n \cdot k$ , where $k$ is any integer). If the solution is not unique, then we will consider how to get all the solutions.
 
-## Solution by finding the inverse element
+## Solution by finding the inverse element {#solution-by-finding-the-inverse-element}
 
 Let us first consider a simpler case where $a$ and $n$ are **coprime** ($\gcd(a, n) = 1$).
 Then one can find the [inverse](/algorithms/algebra/module-inverse) of $a$, and multiplying both sides of the equation with the inverse, and we can get a **unique** solution.
@@ -37,7 +37,7 @@ $$x_i \equiv (x^\prime + i\cdot n^\prime) \pmod n \quad \text{for } i = 0 \ldots
 
 Summarizing, we can say that the **number of solutions** of the linear congruence equation is equal to either $g = \gcd(a, n)$ or to zero.
 
-## Solution with the Extended Euclidean Algorithm
+## Solution with the Extended Euclidean Algorithm {#solution-with-the-extended-euclidean-algorithm}
 
 We can rewrite the linear congruence to the following Diophantine equation:
 
