@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "classroom",
     "coaching",
     "community",
+    "olympiads",
     "quizzes",
     "arena",
     "duels",

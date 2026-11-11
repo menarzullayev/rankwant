@@ -3221,6 +3221,71 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/olympiads/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Every season with its routes and events, newest first. */
+        get: operations["olympiads_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/olympiads/events/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["olympiads_events_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/olympiads/events/{slug}/tasks/{task}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["olympiads_events_tasks_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/olympiads/participants/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["olympiads_participants_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/platform-roadmap/": {
         parameters: {
             query?: never;
@@ -8888,6 +8953,59 @@ export interface components {
             body: string;
             tags?: string[];
         };
+        EventCard: {
+            slug: string;
+            code?: string;
+            title: string;
+            short_title?: string;
+            summary?: string;
+            kind?: string;
+            status?: string;
+            /** Format: date */
+            start_date?: string | null;
+            /** Format: date */
+            end_date?: string | null;
+            date_label?: string;
+            location?: string;
+            is_featured?: boolean;
+            routes?: unknown;
+            /** @default 0 */
+            readonly task_count: number;
+            /** @default 0 */
+            readonly result_count: number;
+        };
+        EventDetail: {
+            slug: string;
+            code?: string;
+            title: string;
+            short_title?: string;
+            summary?: string;
+            kind?: string;
+            status?: string;
+            /** Format: date */
+            start_date?: string | null;
+            /** Format: date */
+            end_date?: string | null;
+            date_label?: string;
+            location?: string;
+            is_featured?: boolean;
+            routes?: unknown;
+            /** @default 0 */
+            readonly task_count: number;
+            /** @default 0 */
+            readonly result_count: number;
+            season: string;
+            description?: string;
+            mode?: string;
+            platform?: string;
+            organizer?: string;
+            eligibility?: string;
+            resources?: unknown;
+            readonly sets: components["schemas"]["ProblemSet"][];
+            readonly results: {
+                [key: string]: unknown;
+            }[];
+        };
         ExternalIn: {
             kind: components["schemas"]["ExternalProfileKindEnum"];
             handle: string;
@@ -10763,6 +10881,14 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["UserPublic"][];
         };
+        Participant: {
+            slug: string;
+            full_name: string;
+            country_code?: string;
+            readonly results: {
+                [key: string]: unknown;
+            }[];
+        };
         PasswordChange: {
             old_password?: string;
             new_password: string;
@@ -11894,6 +12020,12 @@ export interface components {
          * @enum {string}
          */
         ProblemReportReasonEnum: "statement" | "tests" | "translation" | "duplicate" | "other";
+        ProblemSet: {
+            slug: string;
+            title: string;
+            description?: string;
+            readonly tasks: components["schemas"]["TaskRow"][];
+        };
         /** @description One other language of a problem's text (ADR-0058); the locale is in the URL. */
         ProblemTranslation: {
             readonly locale: components["schemas"]["LocaleEnum"];
@@ -12399,6 +12531,17 @@ export interface components {
                 [key: string]: number;
             };
             total: number;
+        };
+        Season: {
+            slug: string;
+            title: string;
+            summary?: string;
+            /** Format: date */
+            start_date?: string | null;
+            /** Format: date */
+            end_date?: string | null;
+            routes?: unknown;
+            readonly events: components["schemas"]["EventCard"][];
         };
         /**
          * @description * `core` - Asosiy jamoa
@@ -13499,6 +13642,33 @@ export interface components {
          * @enum {string}
          */
         TargetTypeEnum: "problem" | "entry";
+        TaskDetail: {
+            slug: string;
+            code?: string;
+            title: string;
+            original_title?: string;
+            /** @description Markdown + LaTeX */
+            statement?: string;
+            translation_status?: string;
+            problem_type?: string;
+            /** Format: int64 */
+            time_limit_ms?: number | null;
+            /** Format: int64 */
+            memory_limit_mb?: number | null;
+            /** Format: int64 */
+            max_score?: number | null;
+            tags?: unknown;
+            links?: unknown;
+            statement_pdf?: string;
+            from_kep?: boolean;
+            event: string;
+            event_title: string;
+            set_title: string;
+            /** @description Our own copy of the problem, matched by its source (KEP, Codeforces, …). */
+            readonly practice_here: {
+                [key: string]: unknown;
+            }[];
+        };
         /**
          * @description * `program` - Whole program
          *     * `function` - Function
@@ -13508,6 +13678,14 @@ export interface components {
          * @enum {string}
          */
         TaskKindEnum: "program" | "function" | "answer" | "two_pass" | "sql";
+        TaskRow: {
+            slug: string;
+            code?: string;
+            title: string;
+            original_title?: string;
+            problem_type?: string;
+            from_kep?: boolean;
+        };
         Team: {
             readonly id: number;
             name: string;
@@ -18470,6 +18648,89 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EmailUnsubscribeResult"];
+                };
+            };
+        };
+    };
+    olympiads_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Season"][];
+                };
+            };
+        };
+    };
+    olympiads_events_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventDetail"];
+                };
+            };
+        };
+    };
+    olympiads_events_tasks_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                task: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDetail"];
+                };
+            };
+        };
+    };
+    olympiads_participants_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Participant"];
                 };
             };
         };

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3403 strings.**
+**3442 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2448,6 +2448,45 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `algorithms.source.changedMarkup` | RankWant faqat belgilashni o'zgartirgan: havolalar, sarlavha belgilari va formula chegaralari shu sayt uchun moslangan. | RankWant танҳо нишонагузориро тағйир дод: истинодҳо, нишонаҳои сарлавҳа ва маҳдудкунандаҳои формула ба ин сайт мутобиқ карда шуданд. |  |
 | `algorithms.source.license` | Litsenziya: | Иҷозатнома: |  |
 | `algorithms.notFound` | Algoritm topilmadi | Алгоритм ёфт нашуд |  |
+| `olympiads.title` | Olimpiada arxivi | Бойгонии олимпиадаҳо |  |
+| `olympiads.intro` | Mavsumlar bo'yicha olimpiadalar: maktab bosqichidan IOI, EGOI, APIO va boshqalargacha — masala shartlari va natijalar. | Олимпиадаҳо аз рӯи мавсим: аз марҳилаи мактабӣ то IOI, EGOI, APIO ва дигарон — шартҳои масъалаҳо ва натиҷаҳо. |  |
+| `olympiads.seasons` | Mavsumlar | Мавсимҳо |  |
+| `olympiads.otherEvents` | Boshqa tadbirlar | Чорабиниҳои дигар |  |
+| `olympiads.source` | Manba: cp.uz olimpiada arxivi. | Манбаъ: бойгонии олимпиадаҳои cp.uz. |  |
+| `olympiads.kind.international` | Xalqaro | Байналмилалӣ |  |
+| `olympiads.kind.selection` | Saralash | Интихоб |  |
+| `olympiads.kind.stage` | Bosqich | Марҳила |  |
+| `olympiads.kind.training` | Tayyorgarlik | Омодагӣ |  |
+| `olympiads.kind.unofficial` | Norasmiy | Ғайрирасмӣ |  |
+| `olympiads.status.completed` | Yakunlangan | Анҷомёфта |  |
+| `olympiads.status.scheduled` | Rejalashtirilgan | Банақшагирифта |  |
+| `olympiads.status.tba` | Sana aniqlanmagan | Сана муайян нашудааст |  |
+| `olympiads.medal.gold` | Oltin | Тилло |  |
+| `olympiads.medal.silver` | Kumush | Нуқра |  |
+| `olympiads.medal.bronze` | Bronza | Биринҷӣ |  |
+| `olympiads.medal.honourable` | Faxriy yorliq | Ифтихорнома |  |
+| `olympiads.taskCount` | {count} ta masala | Масъалаҳо: {count} |  |
+| `olympiads.resultCount` | {count} ta natija | Натиҷаҳо: {count} |  |
+| `olympiads.col.rank` | O'rin | Ҷой |  |
+| `olympiads.col.name` | Ishtirokchi | Иштирокчӣ |  |
+| `olympiads.col.score` | Ball | Хол |  |
+| `olympiads.col.medal` | Mukofot | Медал |  |
+| `olympiads.when` | Qachon | Кай |  |
+| `olympiads.where` | Qayerda | Дар куҷо |  |
+| `olympiads.organizer` | Tashkilotchi | Ташкилкунанда |  |
+| `olympiads.platform` | Platforma | Платформа |  |
+| `olympiads.eligibility` | Kim qatnashadi | Кӣ иштирок мекунад |  |
+| `olympiads.results` | Natijalar | Натиҷаҳо |  |
+| `olympiads.resources` | Rasmiy manbalar | Манбаъҳои расмӣ |  |
+| `olympiads.breadcrumbs` | Navigatsiya yo'li | Роҳи навигатсия |  |
+| `olympiads.notFound` | Tadbir topilmadi | Чорабинӣ ёфт нашуд |  |
+| `olympiads.kepNote` | Bu shart KEP.uz saytidan olingan; KEP bilan hamkorlik yoki litsenziya yo'q, so'rov bo'lsa olib tashlanadi. Manba: | Ин шарт аз сайти KEP.uz гирифта шудааст; бо KEP шарикӣ ё иҷозатнома нест, бо дархост хориҷ карда мешавад. Манбаъ: |  |
+| `olympiads.limits` | Vaqt: {ms} ms · Xotira: {mb} MB | Вақт: {ms} мс · Хотира: {mb} МБ |  |
+| `olympiads.maxScore` | {score} ball | {score} хол |  |
+| `olympiads.solve` | Yechish | Ҳал кардан |  |
+| `olympiads.solveHere` | Shu saytda yechish: {title} | Дар ҳамин сайт ҳал кунед: {title} |  |
+| `olympiads.pdf` | Asl shart (PDF) | Шарти аслӣ (PDF) |  |
+| `olympiads.personNote` | Ism va mamlakat rasmiy natijalardan olingan. O'chirishni so'rash uchun biz bilan bog'laning. | Ном ва кишвар аз натиҷаҳои расмӣ гирифта шудаанд. Барои дархости хориҷкунӣ бо мо тамос гиред. |  |
 | `algorithms.glossary.title` | Atamalar lug'ati | Луғати истилоҳот |  |
 | `algorithms.glossary.intro` | Algoritmlar kutubxonasidagi atamalar: o'zbekcha nomi, inglizchasi va qisqa izohi. | Истилоҳоти китобхонаи алгоритмҳо: номи ӯзбекӣ, англисӣ ва шарҳи кӯтоҳ. |  |
 | `algorithms.glossary.letters` | Harflar | Ҳарфҳо |  |

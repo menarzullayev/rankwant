@@ -55,6 +55,9 @@ export default async function AlgorithmsPage({ searchParams }: Props) {
             <Link href={GLOSSARY_PATH as Route} className="font-medium rw-accent-ink rw-focus-ring hover:underline">
               {t(locale, "algorithms.glossary.title")}
             </Link>
+            <Link href={"/olympiads" as Route} className="font-medium rw-accent-ink rw-focus-ring hover:underline">
+              {t(locale, "olympiads.title")}
+            </Link>
           </p>
         )}
       </header>

@@ -44,5 +44,6 @@ export * from "@/features/hackathons/api/hacks";
 
 // Domenlararo — shu qatlamda qoladi.
 export * from "./content";
+export * from "./olympiads";
 export * from "./platform";
 export { api } from "./endpoints";

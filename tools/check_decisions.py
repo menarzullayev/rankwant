@@ -3307,6 +3307,40 @@ def algorithm_pages_carry_the_attribution() -> str | None:
     return None
 
 
+def olympiad_archive_keeps_personal_data_out() -> str | None:
+    """2026-11-11 (HITL; `docs/decisions/2026-11-11-cpuz-import.md` ⑪, ADR-0062 § 2.6).
+
+    Olimpiada arxivi: ishtirokchi profillari (ism + mamlakat, ko'pchiligi
+    o'quvchi) va litsenziyasiz KEP shartlari **repoga kirmaydi** — host'dagi
+    cp.uz klonidan import qilinadi; o'chirish so'rovi (`removed_at`) qayta
+    importda ham kuchda qoladi va API uni ko'rsatmaydi; ishtirokchi sahifasi
+    qidiruv tizimiga berilmaydi; KEP shartida «hamkorlik yo'q» izohi turadi.
+    """
+    importer = read("apps/api/olympiads/importer.py")
+    for needle in (
+        "report.kept_removed.append(f\"participant:{doc['slug']}\")",
+        "report.kept_removed.append(f\"task:{problem_set.event_id}/{doc['slug']}\")",
+    ):
+        if needle not in importer:
+            return "olympiads/importer.py: o'chirilgan yozuv qayta importda qaytib keladi"
+    views = read("apps/api/olympiads/views.py")
+    if "Participant.objects.filter(slug=slug, removed_at__isnull=True)" not in views:
+        return "olympiads/views.py: o'chirilgan ishtirokchi API'da ko'rinadi"
+    person = read("apps/web/src/app/(site)/olympiads/participants/[slug]/page.tsx")
+    if "robots: { index: false, follow: false }" not in person:
+        return "olympiads/participants/[slug]/page.tsx: ishtirokchi sahifasi qidiruvga berilgan"
+    if 'data-kep-note=""' not in read("apps/web/src/app/(site)/olympiads/[event]/[task]/page.tsx"):
+        return "olympiads/[event]/[task]/page.tsx: KEP shartida manba va «hamkorlik yo'q» izohi yo'q"
+    vendored = [
+        p.relative_to(ROOT).as_posix()
+        for p in (ROOT / "apps").rglob("*.json")
+        if p.parent.name == "participants" and "node_modules" not in p.parts
+    ]
+    if vendored:
+        return f"repoda ishtirokchi ma'lumoti bor: {vendored[:2]}"
+    return None
+
+
 def cpuz_library_is_pinned_and_checked() -> str | None:
     """2026-11-11 (HITL; `docs/decisions/2026-11-11-cpuz-import.md`, ADR-0062).
 
@@ -5784,6 +5818,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("masala sahifasi: haqiqiy taymer va fokus rejimi", problem_page_tools_are_real),
     ("cp.uz kutubxonasi qadalgan va tekshirilgan", cpuz_library_is_pinned_and_checked),
     ("algoritm sahifasi manbani ko'rsatadi", algorithm_pages_carry_the_attribution),
+    ("olimpiada arxivi shaxsiy ma'lumotni repoga olmaydi", olympiad_archive_keeps_personal_data_out),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

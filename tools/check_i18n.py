@@ -145,6 +145,9 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # three mathematical terms exactly as Uzbek does.
         "algorithms.category.combinatorics", "algorithms.category.geometry",
         "algorithms.category.graph",
+        # Olympiad archive (ADR-0062): Karakalpak writes these words as Uzbek does.
+        "olympiads.medal.bronze", "olympiads.col.score", "olympiads.platform",
+        "olympiads.maxScore",
         # Courses (ADR-0056): «Kurslar» and «Test» are written the same in kaa.
         "nav.courses", "course.lesson.kind.quiz", "studio.courses.col.course",
         # Education levels: loanwords written the same in uz and kaa.
