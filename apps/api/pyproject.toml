@@ -1,7 +1,9 @@
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-exclude = ["*/migrations/*"]
+# `content/cpuz/` is the vendored cp.uz text (ADR-0062): its code blocks are
+# the original's and must not be reformatted.
+exclude = ["*/migrations/*", "content/cpuz/*"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "DJ", "RUF"]

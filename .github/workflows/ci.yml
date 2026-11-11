@@ -616,6 +616,9 @@ jobs:
       # (honest judge, false TLE, refused submissions) — see its docstring.
       - name: Judge burst harness (stub)
         run: python3 tests/burst/selftest_burst.py
+      # cp.uz articles keep the original's code and formulas (ADR-0062).
+      - name: cp.uz library (code and formulas against cp-algorithms)
+        run: python3 tools/check_cpuz.py
       - name: DRF `ordering` tiebreaker (unstable pagination)
         run: python3 tools/check_ordering.py
       - name: Owner decisions in code (CLAUDE.md § Saidakbar aka qarorlari)

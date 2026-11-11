@@ -5201,6 +5201,128 @@ def neg_decisions_my_content_names_reporter() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_cpuz_unchecked_in_ci() -> tuple[bool, str]:
+    """The code and formula check would leave CI."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "run: python3 tools/check_cpuz.py",
+        "run: python3 tools/check_ordering.py",
+        "kod va formula tekshiruvi CI'da yo'q",
+    )
+
+
+def neg_decisions_cpuz_overwrites_edits() -> tuple[bool, str]:
+    """The import would write over an article we edited."""
+    return _decision_broken(
+        "apps/api/content/cpuz.py",
+        "elif article.import_sha256 and sha256(article.body) != article.import_sha256:",
+        "elif False:",
+        "biz tahrirlagan maqola ustidan yozadi",
+    )
+
+
+def neg_decisions_cpuz_publishes_unreviewed() -> tuple[bool, str]:
+    """The import would publish an article the review has not passed."""
+    return _decision_broken(
+        "apps/api/content/cpuz.py",
+        "if article.review_state == Article.Review.REVIEWED:",
+        "if True:",
+        "ko'rikdan o'tmagan maqola ham nashr qilinadi",
+    )
+
+
+def neg_decisions_cpuz_seed_brings_back_binary_search() -> tuple[bool, str]:
+    """The demo seed would create the deleted article again."""
+    return _decision_broken(
+        "apps/api/core/management/commands/seed_demo.py",
+        "        # No demo algorithm article:",
+        "        # slug=\"ikkilik-qidiruv\"\n        # No demo algorithm article:",
+        "`ikkilik-qidiruv` maqolasini qaytaradi",
+    )
+
+
+def _cpuz_broken(rel: str, old: str, new: str, expect: str, code_wanted: int = 1) -> tuple[bool, str]:
+    """Break the vendored cp.uz snapshot; check_cpuz must catch it."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"cpuz/{expect}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("cpuz")
+    if code != code_wanted:
+        return False, f"cpuz/{expect}: buzilgan holat exit {code} berdi ({code_wanted} kerak)"
+    if expect not in out:
+        return False, f"cpuz/{expect}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"cpuz/{expect}: tutildi (exit {code})"
+
+
+_CPUZ_CLEAN = "apps/api/content/cpuz/uz/algebra/binary-exp.md"
+_CPUZ_ALLOW = "apps/api/content/cpuz/mechanical-allow.json"
+
+
+def neg_cpuz_code_changed() -> tuple[bool, str]:
+    """A statement inside a translated code block no longer matches the original."""
+    return _cpuz_broken(
+        _CPUZ_CLEAN,
+        "    long long res = binpow(a, b / 2);",
+        "    long long res = binpow(a, b / 3);",
+        "code blocks differ",
+    )
+
+
+def neg_cpuz_comment_is_free() -> tuple[bool, str]:
+    """A translated comment is not a difference (positive control)."""
+    path = ROOT / _CPUZ_CLEAN
+    old = "    long long res = binpow(a, b / 2);"
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "cpuz/izoh: langar topilmadi"
+    with Mutation(path, old, old + "  // yarmi"):
+        code, out = run_check("cpuz")
+    if code != 0:
+        return False, f"cpuz/izoh: tarjima qilingan izoh farq deb sanaldi (exit {code}): {out.strip()[-160:]}"
+    return True, "cpuz/izoh: izoh farq emas (exit 0)"
+
+
+def neg_cpuz_formula_invented() -> tuple[bool, str]:
+    """The translation adds a formula the original does not have."""
+    return _cpuz_broken(
+        _CPUZ_CLEAN,
+        "    long long res = binpow(a, b / 2);",
+        "    long long res = binpow(a, b / 2);\n```\n\nShunda $a^{n+1} = 42$ bo'ladi.\n\n```cpp",
+        "not in the original",
+    )
+
+
+def neg_cpuz_raw_html() -> tuple[bool, str]:
+    """A tag left in prose would be printed as text by the renderer."""
+    return _cpuz_broken(_CPUZ_CLEAN, "# Ikkilik darajaga oshirish", "# Ikkilik darajaga oshirish\n\n<center>x</center>", "raw HTML in prose")
+
+
+def neg_cpuz_accepted_without_reason() -> tuple[bool, str]:
+    """A difference marked accepted must say why."""
+    return _cpuz_broken(
+        _CPUZ_ALLOW,
+        '"articles": [\n',
+        '"articles": [\n  {"id": "algebra--binary-exp", "status": "accepted", "reason": ""},\n',
+        "sababi yozilmagan",
+    )
+
+
+def neg_cpuz_stale_row() -> tuple[bool, str]:
+    """A listed article that no longer differs keeps no row."""
+    return _cpuz_broken(
+        _CPUZ_ALLOW,
+        '"articles": [\n',
+        '"articles": [\n  {"id": "algebra--binary-exp", "status": "pending", "reason": ""},\n',
+        "farq yo'q",
+    )
+
+
+def neg_cpuz_unreadable_is_not_green() -> tuple[bool, str]:
+    """A broken snapshot file is exit 2, never a pass."""
+    return _cpuz_broken(_CPUZ_ALLOW, '"articles": [', '"articles": [[', "o'qilmadi", code_wanted=2)
+
+
 def neg_decisions_home_without_map() -> tuple[bool, str]:
     """The home page would lose the region map."""
     return _decision_broken(
@@ -9149,6 +9271,9 @@ _TRIAL_WORKFLOW = (
 _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/ProblemSolveTimer.tsx",
     "apps/web/src/features/problems/components/ProblemTabs.tsx",
+    "apps/api/content/cpuz.py",
+    "apps/api/content/cpuz/articles.json",
+    "apps/api/content/migrations/0005_drop_ikkilik_qidiruv.py",
     "apps/api/qvant/views.py",
     "apps/api/profiles/regions.py",
     "apps/api/community/mine.py",
@@ -13118,6 +13243,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ],
     ),
     (
+        "cpuz",
+        [
+            ("o'zgargan kod tutilsin", neg_cpuz_code_changed),
+            ("tarjima qilingan izoh farq emas", neg_cpuz_comment_is_free),
+            ("o'ylab topilgan formula tutilsin", neg_cpuz_formula_invented),
+            ("matnda qolgan HTML tutilsin", neg_cpuz_raw_html),
+            ("sababsiz qabul tutilsin", neg_cpuz_accepted_without_reason),
+            ("eskirgan ruxsat yozuvi tutilsin", neg_cpuz_stale_row),
+            ("buzuq snapshot yashil bo'lmasin", neg_cpuz_unreadable_is_not_green),
+        ],
+    ),
+    (
         "scroll",
         [
             ("xom scroll klassi tutilsin", neg_scroll_raw_class),
@@ -13570,6 +13707,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("musobaqa sanog'i soxta bo'lsa tutilsin", neg_decisions_timer_fake_contest),
             ("fokusda footer qolsa tutilsin", neg_decisions_focus_keeps_chrome),
             ("fokus tugmasi yo'qolsa tutilsin", neg_decisions_focus_without_button),
+            ("cp.uz tekshiruvi CI'dan tushsa tutilsin", neg_decisions_cpuz_unchecked_in_ci),
+            ("import tahrirni bossa tutilsin", neg_decisions_cpuz_overwrites_edits),
+            ("ko'riksiz nashr tutilsin", neg_decisions_cpuz_publishes_unreviewed),
+            ("seed eski maqolani qaytarsa tutilsin", neg_decisions_cpuz_seed_brings_back_binary_search),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

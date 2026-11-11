@@ -1,0 +1,939 @@
+{
+ "about": "Articles whose code or formulas differ from the cp-algorithms original (tools/check_cpuz.py). pending: the agent review has not looked yet; accepted: reviewed, the reason says why the difference stays.",
+ "articles": [
+  {
+   "id": "algebra--fibonacci-numbers",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 17 vs original 17; missing ['\\\\begineqnarray1&=&1&=&F_2&=&(11)_F\\\\\\\\2&=&2&=&F_3&=&(011)_F\\\\\\\\6']; extra ['\\\\beginaligned1&=&1&=&F_2&=&(11)_F\\\\\\\\2&=&2&=&F_3&=&(011)_F\\\\\\\\6&']",
+    "inline formulas not in the original: ['2\\\\times2']"
+   ]
+  },
+  {
+   "id": "algebra--primality_tests",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 5 vs original 5; missing ['\\\\beginarrayrla^n-1\\\\equiv1\\\\bmodn&\\\\Longleftrightarrowa^2^sd-1\\\\']; extra ['\\\\beginarrayrla^n-1\\\\equiv1\\\\bmodn&\\\\Longleftrightarrowa^2^sd-1\\\\']"
+   ]
+  },
+  {
+   "id": "algebra--phi-function",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 12 vs original 12; missing ['\\\\beginalign\\\\phi(n)&=\\\\phi(p_1^a_1)\\\\cdot\\\\phi(p_2^a_2)\\\\cdots\\\\ph', '\\\\beginarray|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|\\\\hli']; extra ['\\\\beginalign\\\\phi(n)&=\\\\phi(p_1^a_1)\\\\cdot\\\\phi(p_2^a_2)\\\\cdots\\\\ph', '\\\\beginarray|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|\\\\hli']"
+   ]
+  },
+  {
+   "id": "algebra--divisors",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 7 vs original 7; missing ['\\\\beginarrayc|ccccc&1&p_2&p_2^2&\\\\dots&p_2^e_2\\\\\\\\\\\\\\\\\\\\hline1&1&p_']; extra ['\\\\beginarrayc|ccccc&1&p_2&p_2^2&\\\\dots&p_2^e_2\\\\\\\\\\\\hline1&1&p_2&']"
+   ]
+  },
+  {
+   "id": "algebra--chinese-remainder-theorem",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['\\\\operatornamelcm(10,12)=60', '\\\\operatornamelcm(m_1,m_2,\\\\dots,m_k)', 'm_1,m_2,\\\\dots,m_k']"
+   ]
+  },
+  {
+   "id": "algebra--factorial-modulo",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 4 vs original 4; missing ['\\\\begineqnarrayn!_\\\\%p&=&1\\\\cdot2\\\\cdot3\\\\cdot\\\\ldots\\\\cdot(p-2)\\\\cd', '\\\\begineqnarrayn!_\\\\%p&=&\\\\underbrace1\\\\cdot2\\\\cdot3\\\\cdot\\\\ldots\\\\c']; extra ['\\\\beginalignedn!_\\\\%p&=&1\\\\cdot2\\\\cdot3\\\\cdot\\\\ldots\\\\cdot(p-2)\\\\cdo', '\\\\beginalignedn!_\\\\%p&=&\\\\underbrace1\\\\cdot2\\\\cdot3\\\\cdot\\\\ldots\\\\cd']"
+   ]
+  },
+  {
+   "id": "algebra--discrete-log",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 10 vs original 10; missing ['\\\\beginaligneda^x&\\\\equivb\\\\modm\\\\\\\\\\\\(g\\\\alpha)a^x-1&\\\\equivg\\\\beta\\\\']; extra ['\\\\beginaligneda^x&\\\\equivb\\\\modm\\\\\\\\(g\\\\alpha)a^x-1&\\\\equivg\\\\beta\\\\m']",
+    "inline formulas not in the original: ['a=g\\\\alpha', 'b=g\\\\beta', 'm=g\\\\nu']"
+   ]
+  },
+  {
+   "id": "algebra--primitive-root",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['d=\\\\frac\\\\phi(n)p_j']"
+   ]
+  },
+  {
+   "id": "algebra--discrete-root",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['1']"
+   ]
+  },
+  {
+   "id": "algebra--montgomery_multiplication",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['r=2^m', 'y']"
+   ]
+  },
+  {
+   "id": "algebra--gray-code",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['(i+1)']"
+   ]
+  },
+  {
+   "id": "algebra--big-integer",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['M']"
+   ]
+  },
+  {
+   "id": "algebra--fft",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 34 vs original 34; missing ['\\\\beginalignc_m-1+i&=\\\\sum_j=0^m-1\\\\left(\\\\cos(\\\\alpha_i+j)+i\\\\sin']; extra ['\\\\beginalignc_m-1+i&=\\\\sum_j=0^m-1\\\\left(\\\\cos(\\\\alpha_i+j)+i\\\\sin']",
+    "inline formulas not in the original: ['A\\\\cdotB', 'P[i]', 'a_i+j\\\\cdotb_m-1-j']"
+   ]
+  },
+  {
+   "id": "algebra--polynomial",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 43 vs original 43; missing ['>A\\\\equivB\\\\pmodC.>']; extra ['>A\\\\equivB\\\\pmodC>']"
+   ]
+  },
+  {
+   "id": "algebra--continued-fractions",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['(q,k)', '(t+1)q_k>N', '\\\\alpha']"
+   ]
+  },
+  {
+   "id": "data_structures--sparse-table",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['K', 'R-L+1']"
+   ]
+  },
+  {
+   "id": "data_structures--disjoint_set_union",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 2 vs original 1; missing []; extra ['\\\\Omega\\\\left(n\\\\frac\\\\logn\\\\log\\\\logn\\\\right)']"
+   ]
+  },
+  {
+   "id": "data_structures--fenwick",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 10 vs original 10; missing ['\\\\beginalign10&=0001010_2\\\\\\\\\\\\\\\\h(10)=11&=0001011_2\\\\\\\\\\\\\\\\h(11)=15&', '\\\\beginaligng(11)=g(1011_2)=1000_2&=8\\\\\\\\\\\\\\\\g(12)=g(1100_2)=1100']; extra ['\\\\beginalign10&=0001010_2\\\\\\\\h(10)=11&=0001011_2\\\\\\\\h(11)=15&=000', '\\\\beginaligng(11)=g(1011_2)=1000_2&=8\\\\\\\\g(12)=g(1100_2)=1100_2']",
+    "inline formulas not in the original: ['O(1)', '[0,g(g(\\\\dotsg(r)-1\\\\dots)-1)]', '[g(i)+1,i]']"
+   ]
+  },
+  {
+   "id": "data_structures--sqrt_decomposition",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['N/S']"
+   ]
+  },
+  {
+   "id": "data_structures--segment_tree",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['\\\\textttcount\\\\_zero', '\\\\textttfind\\\\_kth', '\\\\textttlower\\\\_bound']"
+   ]
+  },
+  {
+   "id": "data_structures--treap",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['(T,X)', '(T_1,T_2)', '(T_1\\\\toL,L)']"
+   ]
+  },
+  {
+   "id": "data_structures--sqrt-tree",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 6 vs original 0; missing []; extra ['(x\\\\circy)\\\\circz=x\\\\circ(y\\\\circz)', 'O(\\\\sqrtn+\\\\sqrt\\\\sqrtn+\\\\dots)=O(\\\\sqrtn)']",
+    "inline formulas not in the original: ['000000_2', '001111_2', '010000_2']"
+   ]
+  },
+  {
+   "id": "data_structures--randomized_heap",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 4 vs original 4; missing ['\\\\beginalign\\\\mathbfEh(T)&=1+\\\\frac\\\\mathbfEh(L)+\\\\mathbfEh(R)2\\\\l']; extra ['\\\\beginalign\\\\mathbfEh(T)&=1+\\\\frac\\\\mathbfEh(L)+\\\\mathbfEh(R)2\\\\l']"
+   ]
+  },
+  {
+   "id": "data_structures--deleting_in_log_n",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['O(\\\\logT)']"
+   ]
+  },
+  {
+   "id": "dynamic_programming--longest_increasing_subsequence",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 7 vs original 7; missing ['d[i]=\\\\max\\\\left(1,\\\\max_\\\\substackj<i\\\\\\\\\\\\a[j]<a[i]\\\\left(d[j]+1\\\\r', 'd[i]=\\\\max_\\\\substackj<i\\\\\\\\\\\\a[j]<a[i]\\\\left(d[j]+1\\\\right)']; extra ['d[i]=\\\\max\\\\left(1,\\\\max_\\\\substackj<i\\\\a[j]<a[i]\\\\left(d[j]+1\\\\rig', 'd[i]=\\\\max_\\\\substackj<i\\\\a[j]<a[i]\\\\left(d[j]+1\\\\right)']",
+    "inline formulas not in the original: ['i_1,\\\\dots,i_k', 'l=1\\\\dotsn']"
+   ]
+  },
+  {
+   "id": "dynamic_programming--knuth-optimization",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['S', 'S[i],S[i+1],\\\\ldots,S[j]']"
+   ]
+  },
+  {
+   "id": "string--z-function",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['[0,0)', 'k=\\\\operatornamelength(p)']"
+   ]
+  },
+  {
+   "id": "string--suffix-array",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 7 vs original 7; missing ['.Thiswillobviouslygivethesuffixarrayof$s$,howeverprependedwi', 'Hereistheimplementationofthecomparison.Notethatitisassumedth']; extra ['\\\\beginarraycccc0:&(a,a,b,a)&p=(0,1,3,2)&c=(0,0,1,0)\\\\\\\\1:&(aa,', '\\\\dots\\\\overbrace\\\\underbraces_i\\\\dotss_i+2^k-1-1_=2^k-1,=c[i]\\\\u']",
+    "inline formulas not in the original: ['2^k\\\\lel', 'O(|s|)', 'O(|s|\\\\log|s|)']"
+   ]
+  },
+  {
+   "id": "string--aho_corasick",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['go[v][c]=w\\\\ne-1']"
+   ]
+  },
+  {
+   "id": "string--suffix-automaton",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['longest(link(link(last)))']"
+   ]
+  },
+  {
+   "id": "string--manacher",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['0']"
+   ]
+  },
+  {
+   "id": "string--main_lorentz",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 14 vs original 9; missing ['\\\\beginalignl_1&\\\\lek_1,\\\\\\\\\\\\\\\\l_2&\\\\lek_2.\\\\\\\\\\\\\\\\\\\\endalign', '\\\\beginalignl_1+l_2&=l=|u|-cntr\\\\\\\\\\\\\\\\l_1&\\\\lek_1,\\\\\\\\\\\\\\\\l_2&\\\\lek_2.']; extra ['2l=2(l_1+l_2)=2(|u|-cntr)', '2l=l_1+l_2+l_1+l_2']",
+    "inline formulas not in the original: ['|s|/2']"
+   ]
+  },
+  {
+   "id": "linear_algebra--linear-system-gauss",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 4 vs original 3; missing ['\\\\beginaligna_11x_1+a_12x_2+&\\\\dots+a_1mx_m=b_1\\\\\\\\a_21x_1+a_22x', '\\\\beginaligna_11x_1+a_12x_2+&\\\\dots+a_1mx_m\\\\equivb_1\\\\pmodp\\\\\\\\a_']; extra ['O(\\\\min(n,m)\\\\cdotn\\\\cdotm)', '\\\\beginaligna_11x_1+a_12x_2+&\\\\dots+a_1mx_m=b_1\\\\\\\\a_21x_1+a_22x']",
+    "inline formulas not in the original: ['(m+1)', '100', '1\\\\lei\\\\len']"
+   ]
+  },
+  {
+   "id": "linear_algebra--determinant-gauss",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['-1', '0', 'N']"
+   ]
+  },
+  {
+   "id": "linear_algebra--determinant-kraut",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "display formulas: 6 vs original 0; missing []; extra ['A=LU', 'L_ii=1,i=1,2,\\\\ldots,N']",
+    "inline formulas not in the original: ['1', 'A_ij=\\\\sum_kL_ikU_kj', 'N\\\\timesN']"
+   ]
+  },
+  {
+   "id": "linear_algebra--rank-matrix",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "display formulas: 1 vs original 0; missing []; extra ['O(\\\\min(N,M)\\\\cdotN\\\\cdotM)']",
+    "inline formulas not in the original: ['A', 'M', 'O(N)']"
+   ]
+  },
+  {
+   "id": "algebra--factorial-divisors",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 4 vs original 3; missing []; extra ['k=k_1^p_1\\\\cdot\\\\ldots\\\\cdotk_m^p_m']"
+   ]
+  },
+  {
+   "id": "combinatorics--binomial-coefficients",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 8 vs original 6; missing []; extra ['g(x):=\\\\fracx!p^c(x)', 'm=p_1^e_1p_2^e_2\\\\cdotsp_h^e_h']",
+    "inline formulas not in the original: ['(n-1)', '1\\\\lei\\\\len', '1\\\\lej\\\\len']"
+   ]
+  },
+  {
+   "id": "combinatorics--catalan-numbers",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 5 vs original 4; missing []; extra ['1,1,2,5,14,42,132,429,1430,\\\\ldots']",
+    "inline formulas not in the original: ['(n+2)']"
+   ]
+  },
+  {
+   "id": "combinatorics--inclusion-exclusion",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 44 vs original 37; missing ['(-1)^|Y|-k\\\\cdot\\\\binom|Y|-1|Y|-k', '(-1)^|Y|-k\\\\cdot\\\\binom|Y|k+(-1)^|Y|-k-1\\\\cdot\\\\binom|Y|k+1+(-1)']; extra ['(-1)^|Y|-k\\\\binom|Y|-1|Y|-k', '(-1)^|Y|-k\\\\binom|Y|k+(-1)^|Y|-k-1\\\\binom|Y|k+1+(-1)^|Y|-k-2\\\\b']",
+    "inline formulas not in the original: ['(-1)^k-1\\\\binomkk', '(0,1,2)', 'O(1)']"
+   ]
+  },
+  {
+   "id": "combinatorics--burnside",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 17 vs original 12; missing ['\\\\frac1n\\\\sum_d|nC_dk^d', '\\\\frac1n\\\\sum_d|n\\\\phi\\\\left(\\\\fracnd\\\\right)k^d']; extra ['\\\\frac1n\\\\sum_d\\\\midnC_dk^d', '\\\\frac1n\\\\sum_d\\\\midn\\\\phi\\\\left(\\\\fracnd\\\\right)k^d']",
+    "inline formulas not in the original: ['180^\\\\circ', 'd\\\\midn', 'i_1=0\\\\ldotsm-1']"
+   ]
+  },
+  {
+   "id": "combinatorics--bishops-on-chessboard",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 3 vs original 2",
+    "display formulas: 1 vs original 1; missing ['\\\\beginmatrix\\\\bf1&2&\\\\bf5&6&\\\\bf9\\\\\\\\\\\\2&\\\\bf5&6&\\\\bf9&8\\\\\\\\\\\\\\\\bf5&6&\\\\b']; extra ['\\\\beginmatrix\\\\bf1&2&\\\\bf5&6&\\\\bf9\\\\\\\\2&\\\\bf5&6&\\\\bf9&8\\\\\\\\\\\\bf5&6&\\\\bf9']"
+   ]
+  },
+  {
+   "id": "combinatorics--bracket_sequences",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 9 vs original 5; missing []; extra ['\\\\frac2n-i-1-2', 'd[2n-i-1][+1]']",
+    "inline formulas not in the original: ['n<12']"
+   ]
+  },
+  {
+   "id": "combinatorics--counting_labeled_graphs",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 7 vs original 4; missing []; extra ['D[i][j]', '\\\\binomn2=\\\\fracn(n-1)2']",
+    "inline formulas not in the original: ['1,\\\\ldots,n-1', 's-1']"
+   ]
+  },
+  {
+   "id": "num_methods--binary_search",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1, 2]",
+    "display formulas: 9 vs original 5; missing ['M-L\\\\approx\\\\fracR-L2\\\\approxR-M', '\\\\left\\\\lfloor\\\\fraca_l+a_l+1+\\\\dots+a_rr-l+1\\\\right\\\\rfloor']; extra ['A_0\\\\leA_1\\\\le\\\\dots\\\\leA_n-1', 'M\\\\approx\\\\fracL+R2']",
+    "inline formulas not in the original: ['(R-L)/2', '(R-L)/2^h\\\\approx1', '+\\\\infty']"
+   ]
+  },
+  {
+   "id": "num_methods--ternary_search",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 2 vs original 1",
+    "display formulas: 10 vs original 3; missing ['m_1=l+\\\\frac(r-l)3', 'm_2=r-\\\\frac(r-l)3']; extra ['O\\\\left(\\\\log\\\\fracr-l\\\\varepsilon\\\\right)', '\\\\fracr-lr-m_1=\\\\fracr-lm_2-l=\\\\varphi']",
+    "inline formulas not in the original: ['C', 'O(C\\\\log((r-l)/\\\\varepsilon))', \"[l',r']\"]"
+   ]
+  },
+  {
+   "id": "num_methods--roots_newton",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1, 2, 3]",
+    "display formulas: 5 vs original 5; missing ['f(x)=0', 'x_i+1=\\\\fracx_i+\\\\fracnx_i2']; extra ['f(x)=x^2-n', 'x_i+1=\\\\fracx_i+n/x_i2']",
+    "inline formulas not in the original: ['(x_i,f(x_i))', '2^\\\\lfloorbits/2\\\\rfloor', 'O(\\\\logp)']"
+   ]
+  },
+  {
+   "id": "num_methods--simulated_annealing",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1, 2, 3, 4]",
+    "display formulas: 5 vs original 0; missing []; extra ['N=\\\\left\\\\lceil-\\\\log_uT_0\\\\right\\\\rceil', 'T\\\\leftarrowT\\\\cdotu,0<u<1']",
+    "inline formulas not in the original: ['1', 'C', 'E']"
+   ]
+  },
+  {
+   "id": "num_methods--simpson-integration",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 2 vs original 1",
+    "display formulas: 8 vs original 6; missing ['-\\\\tfrac190\\\\left(\\\\tfracb-a2\\\\right)^5f^(4)(\\\\xi)', '\\\\int_a^bf(x)dx\\\\approx\\\\left(f(x_0)+4f(x_1)+2f(x_2)+4f(x_3)+2f']; extra ['-\\\\frac190\\\\left(\\\\fracb-a2\\\\right)^5f^(4)(\\\\xi)', 'E=-\\\\fracb-a180h^4f^(4)(\\\\xi)']",
+    "inline formulas not in the original: ['16', '2', '2N']"
+   ]
+  },
+  {
+   "id": "geometry--basic-geometry",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [5, 6, 7]",
+    "display formulas: 15 vs original 9; missing ['(\\\\mathbfa_1+t\\\\cdot\\\\mathbfd_1-\\\\mathbfa_2)\\\\times\\\\mathbfd_2=0\\\\R', '(y_1z_2-z_1y_2)\\\\mathbfe_x+(z_1x_2-x_1z_2)\\\\mathbfe_y+(x_1y_2-']; extra ['(\\\\mathbfa_2-\\\\mathbfa_1)\\\\cdot(\\\\mathbfd_1\\\\times\\\\mathbfd_2)=0', '(\\\\mathbfr-\\\\mathbfr_0)\\\\cdot\\\\mathbfn=0']",
+    "inline formulas not in the original: ['(\\\\alpha\\\\mathbfa)\\\\cdot\\\\mathbfb=\\\\alpha(\\\\mathbfa\\\\cdot\\\\mathbfb)', '(\\\\alpha\\\\mathbfa)\\\\times\\\\mathbfb=\\\\alpha(\\\\mathbfa\\\\times\\\\mathbfb', '\\\\arccos\\\\dfrac\\\\mathbfa\\\\cdot\\\\mathbfb|\\\\mathbfa||\\\\mathbfb|']"
+   ]
+  },
+  {
+   "id": "geometry--segment-to-line",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 2 vs original 0",
+    "display formulas: 8 vs original 4; missing ['Ax+By+C=0', 'Z=\\\\sqrtA^2+B^2']; extra ['(x_2-x_1)(y_1-y_2)+(y_2-y_1)(x_2-x_1)=0', '\\\\boxeda=y_1-y_2,b=x_2-x_1,c=x_1y_2-x_2y_1']",
+    "inline formulas not in the original: ['(a,b,c)', '(ka,kb,kc)', '(x_1,y_1)']"
+   ]
+  },
+  {
+   "id": "geometry--lines-intersection",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 4 vs original 1",
+    "display formulas: 7 vs original 5; missing ['\\\\begincasesa_1x+b_1y+c_1=0\\\\\\\\a_2x+b_2y+c_2=0\\\\endcases', '\\\\beginvmatrixa_1&b_1\\\\cra_2&b_2\\\\endvmatrix=a_1b_2-a_2b_1=0']; extra ['D=a_1b_2-a_2b_1', 'a_1c_2-a_2c_1=0,b_1c_2-b_2c_1=0']",
+    "inline formulas not in the original: ['D=0', 'D\\\\ne0', '\\\\sqrta^2+b^2=1']"
+   ]
+  },
+  {
+   "id": "geometry--check-segments-intersection",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "display formulas: 3 vs original 0; missing []; extra ['\\\\operatornameorient(a,b,p)=(b-a)\\\\times(p-a)', '\\\\operatornamesgn(\\\\operatornameorient(a,b,c))\\\\ne\\\\operatorname']",
+    "inline formulas not in the original: ['O(1)', 'a,b,c,d']"
+   ]
+  },
+  {
+   "id": "geometry--segments-intersection",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 4 vs original 1",
+    "inline formulas not in the original: ['O(1)', '[\\\\max(a,c),\\\\min(b,d)]', '[a,b]']"
+   ]
+  },
+  {
+   "id": "geometry--circle-line-intersection",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 2 vs original 1",
+    "display formulas: 8 vs original 4; missing ['\\\\beginalignm&=\\\\sqrt\\\\fracd^2A^2+B^2\\\\\\\\a_x&=x_0+B\\\\cdotm,a_y=y_0', '\\\\beginalignx_0&=-\\\\fracACA^2+B^2\\\\\\\\y_0&=-\\\\fracBCA^2+B^2\\\\endali']; extra ['(x_0+\\\\Deltax,y_0+\\\\Deltay),(x_0-\\\\Deltax,y_0-\\\\Deltay)', '\\\\Deltax=-b\\\\sqrt\\\\fracr^2-d_0^2a^2+b^2,\\\\Deltay=a\\\\sqrt\\\\fracr^2-']",
+    "inline formulas not in the original: ['(X,Y)', '(a,b)', '(x_c,y_c)']"
+   ]
+  },
+  {
+   "id": "geometry--circle-circle-intersection",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 1 vs original 0",
+    "display formulas: 9 vs original 6; missing ['(x-x_2)^2+(y-y_2)^2=r_2^2', '\\\\beginalignA&=-2x_2\\\\\\\\B&=-2y_2\\\\\\\\C&=x_2^2+y_2^2+r_1^2-r_2^2\\\\en']; extra [\"(x-x_2')^2+(y-y_2')^2=r_2^2\", \"(x_2',y_2')=(x_2-x_1,y_2-y_1)\"]",
+    "inline formulas not in the original: ['(x_1,y_1)', '(x_2,y_2)', 'O(1)']"
+   ]
+  },
+  {
+   "id": "geometry--tangents-to-two-circles",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 3 vs original 2",
+    "display formulas: 6 vs original 4; missing ['\\\\beginaligna&=(d_2-d_1)v_x\\\\pmv_y\\\\sqrtv_x^2+v_y^2-(d_2-d_1)^2', '\\\\beginaligna^2+b^2&=1\\\\\\\\\\\\mida\\\\cdot0+b\\\\cdot0+c\\\\mid&=r_1\\\\\\\\\\\\mida']; extra ['a=\\\\fracrv_x+v_y\\\\sqrtz-r^2z,b=\\\\fracrv_y-v_x\\\\sqrtz-r^2z,c=d_1', 'a^2+b^2=1']",
+    "inline formulas not in the original: ['(d_1,d_2)', '(x_0,y_0)', '0,1,2,3,4']"
+   ]
+  },
+  {
+   "id": "geometry--length-of-segments-union",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 2 vs original 1",
+    "inline formulas not in the original: ['2n', 'O(n)', 'R=\\\\max(R,r)']"
+   ]
+  },
+  {
+   "id": "geometry--oriented-triangle-area",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 2 vs original 1",
+    "display formulas: 2 vs original 1; missing ['2S=\\\\left|\\\\beginmatrixx_2-x_1&x_3-x_2\\\\\\\\y_2-y_1&y_3-y_2\\\\endmat']; extra ['2S=\\\\beginvmatrixx_2-x_1&x_3-x_1\\\\\\\\y_2-y_1&y_3-y_1\\\\endvmatrix=', '2S=\\\\beginvmatrixx_2-x_1&x_3-x_2\\\\\\\\y_2-y_1&y_3-y_2\\\\endvmatrix']",
+    "inline formulas not in the original: ['10^18', '10^9', '2S']"
+   ]
+  },
+  {
+   "id": "geometry--area-of-simple-polygon",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 2 vs original 1",
+    "display formulas: 5 vs original 1; missing ['A=\\\\sum_(p,q)\\\\in\\\\frac(p_x-q_x)\\\\cdot(p_y+q_y)2']; extra ['2S=\\\\left|\\\\sum_i=0^n-1(x_iy_i+1-y_ix_i+1)\\\\right|', '2S=\\\\left|\\\\sum_i=0^n-1p_i\\\\timesp_i+1\\\\right|']",
+    "inline formulas not in the original: ['(p_i,p_i+1)', 'O(1)', 'O(n)']"
+   ]
+  },
+  {
+   "id": "geometry--point-in-convex-polygon",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 3 vs original 1",
+    "display formulas: 4 vs original 0; missing []; extra ['(p_0,p_1,p_2),(p_0,p_2,p_3),\\\\dots,(p_0,p_n-2,p_n-1)', '(p_1-p_0)\\\\times(q-p_0)\\\\ge0']",
+    "inline formulas not in the original: ['(p_0,p_i,p_i+1)', 'O(1)', 'O(n)']"
+   ]
+  },
+  {
+   "id": "geometry--minkowski",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "display formulas: 5 vs original 0; missing []; extra ['-Q=\\\\-q\\\\midq\\\\inQ\\\\', 'P+Q=Q+P,(P+Q)+R=P+(Q+R)']",
+    "inline formulas not in the original: ['p-q', 'x', 'y']"
+   ]
+  },
+  {
+   "id": "geometry--picks-theorem",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 1 vs original 0",
+    "display formulas: 10 vs original 2; missing ['A=(0,0,0),B=(1,0,0),C=(0,1,0),D=(1,1,k)', 'S=I+\\\\fracB2-1']; extra ['(a-1)(b-1)+a+b-1=ab', '2S=2I+B-2']",
+    "inline formulas not in the original: ['1/2', 'A=(x_1,y_1)', 'B=(x_2,y_2)']"
+   ]
+  },
+  {
+   "id": "geometry--lattice-points",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "display formulas: 8 vs original 2; missing ['y=k\\\\cdotx+b,k=\\\\dfracy_2-y_1x_2-x_1,b=\\\\dfracy_1x_2-x_1y_2x_2-', 'y=y_1+(y_2-y_1)\\\\cdot\\\\dfracx-x_1x_2-x_1=\\\\left(\\\\dfracy_2-y_1x_']; extra ['F(k,b,n)=F\\\\left(\\\\frac1k,\\\\frackn+b-\\\\lfloorkn+b\\\\rfloork,\\\\lfloo', 'F(k,b,n)=\\\\lfloork\\\\rfloor\\\\fracn(n-1)2+\\\\lfloorb\\\\rfloorn+F(\\\\k\\\\,']",
+    "inline formulas not in the original: ['(n,m)', '(x,y)', '0\\\\leb<1']"
+   ]
+  },
+  {
+   "id": "geometry--convex-hull",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1, 2]",
+    "inline formulas not in the original: ['A', 'AB', 'B']"
+   ]
+  },
+  {
+   "id": "geometry--convex_hull_trick",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 4 vs original 6",
+    "display formulas: 3 vs original 1; missing ['dp_i=toll_i+\\\\min\\\\limits_j<i(cost_j\\\\cdot(x_i-x_j)+dp_j)']; extra ['(k,b)\\\\cdot(x,1)=kx+b', 'dp_i=toll_i+\\\\min_j<i\\\\bigl(cost_j(x_i-x_j)+dp_j\\\\bigr)']",
+    "inline formulas not in the original: ['(k,b)', '(x,1)', '0x+']"
+   ]
+  },
+  {
+   "id": "geometry--intersecting_segments",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 2 vs original 1",
+    "inline formulas not in the original: ['\\\\mathcalO(\\\\logn)', '\\\\mathcalO(n)', '\\\\mathcalO(n\\\\logn)']"
+   ]
+  },
+  {
+   "id": "geometry--planar",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1, 2]",
+    "display formulas: 3 vs original 2; missing ['n-m+f=1+k']; extra ['2S=\\\\sum_i(x_iy_i+1-y_ix_i+1)', 'n-m+f=1+c']",
+    "inline formulas not in the original: ['\\\\mathcalO(1)', '\\\\mathcalO(m)', '\\\\mathcalO(m\\\\logm)']"
+   ]
+  },
+  {
+   "id": "geometry--point-location",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 4 vs original 1",
+    "inline formulas not in the original: ['O(\\\\logN)', '\\\\mathcalO((n+q)\\\\log(n+q))', '\\\\mathcalO(\\\\logn)']"
+   ]
+  },
+  {
+   "id": "geometry--nearest_points",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 1 vs original 5",
+    "display formulas: 6 vs original 12; missing ['1-\\\\left(1-\\\\frac\\\\lambda(x)/16n\\\\right)^n\\\\ge1-e^-\\\\lambda(x)/16', 'A_1=\\\\p_i|i=0\\\\ldotsm\\\\']; extra ['B=\\\\p_i\\\\mid|x_i-x_m|<h\\\\', 'C(p_i)=\\\\p_j\\\\inB\\\\midy_i-h<y_j\\\\ley_i\\\\']",
+    "inline formulas not in the original: ['\\\\mathcalO(n)', '\\\\mathcalO(n\\\\log^2n)', '\\\\mathcalO(n\\\\logn)']"
+   ]
+  },
+  {
+   "id": "geometry--delaunay",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "display formulas: 1 vs original 0; missing []; extra ['V_i=\\\\p\\\\in\\\\mathbbR^2\\\\mid\\\\rho(p,p_i)=\\\\min_k\\\\rho(p,p_k)\\\\']",
+    "inline formulas not in the original: ['L', 'R', '\\\\mathcalO(\\\\logn)']"
+   ]
+  },
+  {
+   "id": "geometry--vertical_decomposition",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "inline formulas not in the original: ['(x_1,w)', '(x_2,-w)', '+1']"
+   ]
+  },
+  {
+   "id": "geometry--halfplane-intersection",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks: 1 vs original 2",
+    "inline formulas not in the original: ['H_k', 'PQ=(1,2)', 'S']"
+   ]
+  },
+  {
+   "id": "geometry--manhattan-distance",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [2]",
+    "display formulas: 10 vs original 7; missing ['\\\\alpha:(x,y)\\\\to(x+y,y-x)', '\\\\max\\\\limits_p,q\\\\inP(x_p+(-x_q))=\\\\max\\\\limits_p\\\\inP(x_p)+\\\\max\\\\']; extra ['\\\\alpha:(x,y)\\\\longmapsto(x+y,y-x)', '\\\\beginalignedd((x_1,y_1),(x_2,y_2))&=|x_1-x_2|+|y_1-y_2|\\\\\\\\&=']",
+    "inline formulas not in the original: ['(s,p)', '(s,q)', 'm,n']"
+   ]
+  },
+  {
+   "id": "geometry--enclosing-circle",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "display formulas: 6 vs original 4; missing ['\\\\sum\\\\limits_j=1^i\\\\frac2j\\\\cdotO(j)=O(i)']; extra ['I_2=(a-c)\\\\overline(b-c)', '\\\\operatornameRe(I_0)\\\\le0']",
+    "inline formulas not in the original: ['(a+b)/2', '-\\\\operatornameIm(I_1)', '2/j']"
+   ]
+  },
+  {
+   "id": "graph--breadth-first-search",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['0', '1']"
+   ]
+  },
+  {
+   "id": "graph--depth-first-search",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['0', '1', '2']"
+   ]
+  },
+  {
+   "id": "graph--bridge-searching",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 2 vs original 1; missing ['\\\\mathttlow[v]=\\\\min\\\\left\\\\\\\\beginarrayl\\\\mathtttin[v]\\\\\\\\mathtttin']; extra ['\\\\textttlow[to]>\\\\texttttin[v]', '\\\\textttlow[v]=\\\\min\\\\left\\\\\\\\beginarrayll\\\\texttttin[v]\\\\\\\\\\\\textttt']",
+    "inline formulas not in the original: ['\\\\textttlow', '\\\\textttlow[to]', '\\\\textttlow[to]=\\\\texttttin[v]']"
+   ]
+  },
+  {
+   "id": "graph--cutpoints",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['to\\\\neparent']"
+   ]
+  },
+  {
+   "id": "graph--strongly-connected-components",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 1 vs original 0; missing []; extra ['(G_)=\\\\\\\\0,7\\\\,\\\\1,2,3,5,6\\\\,\\\\4,9\\\\,\\\\8\\\\\\\\']",
+    "inline formulas not in the original: ['1\\\\implies2', \"C\\\\neC'\", 'C_i\\\\neC_j']"
+   ]
+  },
+  {
+   "id": "graph--strong-orientation",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['m', 'n']"
+   ]
+  },
+  {
+   "id": "graph--dijkstra",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['(q,p)', 'l[p]=d[p]']"
+   ]
+  },
+  {
+   "id": "graph--dijkstra_sparse",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 1 vs original 0; missing []; extra ['O(n\\\\logn+m\\\\logn)=O(m\\\\logn)']"
+   ]
+  },
+  {
+   "id": "graph--bellman_ford",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['(n-1)', 'b']"
+   ]
+  },
+  {
+   "id": "graph--all-pair-shortest-path-floyd-warshall",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['1']"
+   ]
+  },
+  {
+   "id": "graph--fixed_length_paths",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['G[i][j]=0', 'G[i][j]=1']"
+   ]
+  },
+  {
+   "id": "graph--mst_prim",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['v']"
+   ]
+  },
+  {
+   "id": "graph--pruefer_code",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 8 vs original 8; missing ['(x_1+\\\\dots+x_m)^p=\\\\sum_\\\\substackc_i\\\\ge0\\\\\\\\\\\\\\\\sum_i=1^mc_i=px_1', '\\\\sum_\\\\substackd_i\\\\ge1\\\\\\\\\\\\\\\\sum_i=1^kd_i=2k-2s_1^d_1\\\\cdots_2^d_']; extra ['(x_1+\\\\dots+x_m)^p=\\\\sum_\\\\substackc_i\\\\ge0\\\\\\\\sum_i=1^mc_i=px_1^c', '\\\\sum_\\\\substackd_i\\\\ge1\\\\\\\\sum_i=1^kd_i=2k-2s_1^d_1\\\\cdots_2^d_2\\\\']"
+   ]
+  },
+  {
+   "id": "graph--edmonds_karp",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['0', '1', '2']"
+   ]
+  },
+  {
+   "id": "graph--mpm",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 1 vs original 1; missing ['\\\\beginalignp_in(v)&=\\\\sum\\\\limits_(u,v)\\\\inL(c(u,v)-f(u,v))\\\\\\\\\\\\\\\\']; extra ['\\\\beginalignp_in(v)&=\\\\sum\\\\limits_(u,v)\\\\inL(c(u,v)-f(u,v))\\\\\\\\p_']",
+    "inline formulas not in the original: ['p(r)=\\\\min\\\\p(v)\\\\', 'p(v)=\\\\min(p_in(v),p_out(v))']"
+   ]
+  },
+  {
+   "id": "graph--flow_with_demands",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['0', 'c(e)-d(e)', 's-\\\\dots-u-v-\\\\dots-t']"
+   ]
+  },
+  {
+   "id": "graph--Assignment-problem-min-flow",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['0', '1', 'F_ij=1']"
+   ]
+  },
+  {
+   "id": "graph--kuhn_maximum_bipartite_matching",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['\\\\texttttry\\\\_kuhn', '\\\\texttttry\\\\_kuhn()']"
+   ]
+  },
+  {
+   "id": "graph--edge_vertex_connectivity",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['x\\\\nes', 'x\\\\net']"
+   ]
+  },
+  {
+   "id": "graph--tree_painting",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['-1']"
+   ]
+  },
+  {
+   "id": "graph--hld",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 2 vs original 2; missing ['s(c)<\\\\fracs(v)2\\\\iff(v,c)', 's(c)\\\\ge\\\\fracs(v)2\\\\iff(v,c)']; extra ['s(c)<\\\\fracs(v)2\\\\iff', 's(c)\\\\ge\\\\fracs(v)2\\\\iff']",
+    "inline formulas not in the original: ['k']"
+   ]
+  },
+  {
+   "id": "graph--centroid_decomposition",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['1']"
+   ]
+  },
+  {
+   "id": "sequences--rmq",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 3 vs original 0; missing []; extra ['\\\\operatornameRMQ(L,R)=\\\\min(st[k][L],st[k][R-2^k+1])', '\\\\operatornameRMQ(L,R)=\\\\min_L\\\\lei\\\\leRA_i']",
+    "inline formulas not in the original: ['+\\\\infty', '2^k', 'A[1\\\\ldotsN]']"
+   ]
+  },
+  {
+   "id": "game_theory--sprague-grundy-nim",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['i\\\\in\\\\1,2,\\\\dots,k\\\\', 'k\\\\geq0']"
+   ]
+  },
+  {
+   "id": "schedules--schedule_one_machine",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['f_i(t)=c_i\\\\cdote^\\\\alpha\\\\cdott+d_i']"
+   ]
+  },
+  {
+   "id": "schedules--schedule_two_machines",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 7 vs original 7; missing ['F(x)=\\\\max_k=1\\\\dotsnK_i', 'K_i=\\\\sum_i=1^ka_i-\\\\sum_i=1^k-1b_i']; extra ['F(x)=\\\\max_k=1\\\\dotsnK_k', 'K_k=\\\\sum_i=1^ka_i-\\\\sum_i=1^k-1b_i']",
+    "inline formulas not in the original: ['x_2=\\\\max((a_1+a_2)-(x_1+b_1),0)']"
+   ]
+  },
+  {
+   "id": "schedules--schedule-with-completion-duration",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['(i-1)']"
+   ]
+  },
+  {
+   "id": "others--tortoise_and_hare",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [3]",
+    "display formulas: 2 vs original 0; missing []; extra ['a+yL+b=2(a+xL+b)', 'a=(y-2x)L-b']",
+    "inline formulas not in the original: ['fastDist=2\\\\cdotslowDist']"
+   ]
+  },
+  {
+   "id": "others--josephus_problem",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "inline formulas not in the original: ['\\\\left\\\\lfloor\\\\fracnk\\\\right\\\\rfloor', '\\\\left\\\\lfloor\\\\fracnk\\\\right\\\\rfloor\\\\cdotk', 'n-\\\\left\\\\lfloor\\\\fracnk\\\\right\\\\rfloor']"
+   ]
+  },
+  {
+   "id": "others--15-puzzle",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "display formulas: 3 vs original 3; missing ['a_1a_2...a_z-1a_z+1...a_15a_16']; extra ['a_1a_2\\\\ldotsa_z-1a_z+1\\\\ldotsa_15a_16']",
+    "inline formulas not in the original: ['K=(z-1)\\\\mathbin4+1']"
+   ]
+  },
+  {
+   "id": "others--stern_brocot_tree_farey_sequences",
+   "status": "pending",
+   "reason": "",
+   "found": [
+    "code blocks differ: [1]",
+    "display formulas: 15 vs original 15; missing ['\\\\beginalignb(a+c)-a(b+d)&=1\\\\\\\\c(b+d)-d(a+c)&=1\\\\endalign', '\\\\fracab\\\\lt\\\\fracxy\\\\lt\\\\fraccd']; extra ['\\\\beginalignb(a+c)-a(b+d)&=1\\\\\\\\c(b+d)-d(a+c)&=1.\\\\endalign', '\\\\fracab<\\\\fracxy<\\\\fraccd']",
+    "inline formulas not in the original: ['(n-1)', 'z', 'z>0']"
+   ]
+  }
+ ]
+}
