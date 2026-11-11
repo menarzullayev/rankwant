@@ -126,6 +126,19 @@ export type Standing = {
   insider_role: InsiderRole | "";
   /** Disqualified by the jury: «DQ», no place (part 4). */
   is_disqualified: boolean;
+  /** The place among the region's official rows — only in a regional
+   *  table (`?region=`); `null` in the full one. */
+  region_rank: number | null;
+};
+
+/** One answer for everybody, so the edge caches it (one entry per region). */
+export type StandingsPayload = {
+  frozen: boolean;
+  /** The region this table is cut to; "" for the full table. */
+  region: string;
+  /** Regions with participants whose location is public. */
+  regions: { code: string; count: number }[];
+  results: Standing[];
 };
 
 export type Arena = {

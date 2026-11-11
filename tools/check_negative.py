@@ -5433,6 +5433,56 @@ def neg_decisions_olympiad_kep_note_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_region_shows_hidden_location() -> tuple[bool, str]:
+    """A regional table would list someone who hid their location."""
+    return _decision_broken(
+        "apps/api/contests/regional.py",
+        "if not _location_public(row):",
+        "if False:",
+        "hududiy jadvalda ko'rinadi",
+    )
+
+
+def neg_decisions_region_counts_hidden_location() -> tuple[bool, str]:
+    """The region counts would include someone who hid their location."""
+    return _decision_broken(
+        "apps/api/contests/regional.py",
+        'if "country" not in (hidden or []):',
+        "if True:",
+        "yashirin joylashuvni ham sanaydi",
+    )
+
+
+def neg_decisions_region_unknown_accepted() -> tuple[bool, str]:
+    """An unknown region code would be served instead of refused."""
+    return _decision_broken(
+        "apps/api/contests/views.py",
+        "if region and region not in UZ_REGIONS:",
+        "if False:",
+        "rad etilmaydi",
+    )
+
+
+def neg_decisions_region_cache_survives_rebuild() -> tuple[bool, str]:
+    """A rebuild would leave the regional tables stale."""
+    return _decision_broken(
+        "apps/api/contests/services.py",
+        "for key in cache_keys(contest.pk):",
+        "for key in cache_keys(contest.pk)[:1]:",
+        "hududiy kesh tozalanmaydi",
+    )
+
+
+def neg_decisions_contest_print_indexed() -> tuple[bool, str]:
+    """The printable statements would be offered to search engines."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/contests/[slug]/print/page.tsx",
+        "robots: { index: false, follow: false }",
+        "robots: { index: true, follow: true }",
+        "chop etish sahifasi qidiruvga berilgan",
+    )
+
+
 def neg_cpuz_broken_anchor() -> tuple[bool, str]:
     """A link to a section that no heading carries."""
     return _cpuz_broken(
@@ -9389,6 +9439,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/contests/regional.py",
+    "apps/web/src/app/(site)/contests/[slug]/print/page.tsx",
     "apps/api/olympiads/importer.py",
     "apps/api/olympiads/views.py",
     "apps/web/src/app/(site)/olympiads/participants/[slug]/page.tsx",
@@ -13854,6 +13906,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("olib tashlangan ishtirokchi ko'rinsa tutilsin", neg_decisions_olympiad_shows_removed_person),
             ("o'quvchi sahifasi indekslansa tutilsin", neg_decisions_olympiad_person_indexed),
             ("KEP izohi tushsa tutilsin", neg_decisions_olympiad_kep_note_dropped),
+            ("yashirin joylashuv hududda ko'rinsa tutilsin", neg_decisions_region_shows_hidden_location),
+            ("yashirin joylashuv sanalsa tutilsin", neg_decisions_region_counts_hidden_location),
+            ("noma'lum hudud qabul qilinsa tutilsin", neg_decisions_region_unknown_accepted),
+            ("hududiy kesh qolsa tutilsin", neg_decisions_region_cache_survives_rebuild),
+            ("shartlar sahifasi indekslansa tutilsin", neg_decisions_contest_print_indexed),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

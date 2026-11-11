@@ -40,7 +40,7 @@ import type {
   Duel,
   Hackathon,
   HackathonSubmission,
-  Standing,
+  StandingsPayload,
   Tournament,
   TournamentDetail,
   TournamentStanding,
@@ -95,9 +95,9 @@ export const api = {
   contests: () => get<Paginated<Contest>>("/contests/"),
   contest: (slug: string) => get<ContestDetail>(`/contests/${slug}/`),
   // Standings tez o'zgaradi — kesh qisqa
-  standings: (slug: string) =>
-    get<{ frozen: boolean; results: Standing[] }>(
-      `/contests/${slug}/standings/`,
+  standings: (slug: string, region = "") =>
+    get<StandingsPayload>(
+      `/contests/${slug}/standings/${region ? `?region=${encodeURIComponent(region)}` : ""}`,
       5,
     ),
   leaderboard: (school?: string) =>

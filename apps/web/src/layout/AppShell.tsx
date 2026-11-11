@@ -70,6 +70,10 @@ const BARE = [
  *  redirect is in flight. */
 const FULL = ["/login", "/register", "/reset-password", "/unsubscribe", "/verify-email", "/onboarding"];
 
+/** A contest's statements as one printable document (decision 2026-11-10 ②):
+ *  the page is the paper, so no site header, menu, banners or footer. */
+const PRINT = /^\/contests\/[^/]+\/print$/;
+
 const SHELL_INSET = "--rw-shell-inset" as string;
 
 /** `newNav` (2026-11-10): the rail + group panel shell from `lg` up. A
@@ -91,8 +95,9 @@ function Shell({ children }: { children: React.ReactNode }) {
   const navMode = clampNavMode(appearance.navMode);
   const navShape = clampNavShape(appearance.navShape);
   const pathname = usePathname();
-  const bare = BARE.includes(pathname);
-  const full = FULL.includes(pathname);
+  const printing = PRINT.test(pathname);
+  const bare = BARE.includes(pathname) || printing;
+  const full = FULL.includes(pathname) || printing;
   const wide = isExpanded || isHovered;
   // Focus mode (decision 2026-11-11 ①): the problem page alone, no chrome.
   const focused = useFocusMode();

@@ -33,7 +33,8 @@ def test_standings_keshdan_qaytadi(contest, monkeypatch) -> None:
 
 
 def test_standings_yozuv_keshni_ochadi(contest) -> None:
-    from contests.services import STANDINGS_CACHE_KEY, _write
+    from contests.regional import STANDINGS_CACHE_KEY
+    from contests.services import _write
 
     key = STANDINGS_CACHE_KEY.format(contest_id=contest.pk)
     cache.set(key, {"stale": True}, 60)
