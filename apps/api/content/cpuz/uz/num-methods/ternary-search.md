@@ -31,15 +31,21 @@ Shunday qilib, ikkita ichki nuqtadagi qiymatlarni taqqoslash asosida joriy $[l, 
 
 Biz $m_1$ va $m_2$ nuqtalarni tanlashga hech qanday cheklov qo‘ymadik. Bu tanlov implementatsiyaning yaqinlashish tezligi va aniqligini belgilaydi. Eng keng tarqalgan usul — nuqtalarni $[l, r]$ oraliqni uchta teng qismga bo‘ladigan qilib tanlash. Shunda
 
-$$m_1 = l + \frac{(r - l)}{3}$$
+$$
+m_1 = l + \frac{(r - l)}{3}
+$$
 
-$$m_2 = r - \frac{(r - l)}{3}$$
+$$
+m_2 = r - \frac{(r - l)}{3}
+$$
 
 Agar $m_1$ va $m_2$ bir-biriga yaqinroq tanlansa, yaqinlashish tezligi biroz oshadi.
 
 ### Ishlash vaqtini tahlil qilish {#run-time-analysis}
 
-$$T(n) = T({2n}/{3}) + O(1) = \Theta(\log n)$$
+$$
+T(n) = T({2n}/{3}) + O(1) = \Theta(\log n)
+$$
 
 Buni quyidagicha tasavvur qilish mumkin: funksiyani $m_1$ va $m_2$ nuqtalarda hisoblagandan so‘ng har safar oraliqning taxminan uchdan birini, chap yoki o‘ng qismini, e’tiborga olmaymiz. Shunday qilib, qidiruv sohasi o‘lchami asl o‘lchamning ${2n}/{3}$ qismiga teng bo‘ladi.
 

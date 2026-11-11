@@ -35,13 +35,17 @@ We will also assume that all numbers in matrix A are **non-negative** (if this i
 
 Let's call a **potential** two arbitrary arrays of numbers $u[1 \ldots n]$ and $v[1 \ldots n]$, such that the following condition is satisfied:
 
-$$u[i]+v[j]\leq A[i][j],\quad i=1\dots n,\ j=1\dots n$$
+$$
+u[i]+v[j]\leq A[i][j],\quad i=1\dots n,\ j=1\dots n
+$$
 
 (As you can see, $u[i]$ corresponds to the $i$-th row, and $v[j]$ corresponds to the $j$-th column of the matrix).
 
 Let's call **the value $f$ of the potential** the sum of its elements:
 
-$$f=\sum_{i=1}^{n} u[i] + \sum_{j=1}^{n} v[j].$$
+$$
+f=\sum_{i=1}^{n} u[i] + \sum_{j=1}^{n} v[j].
+$$
 
 On one hand, it is easy to see that the cost of the desired solution $sol$ **is not less than** the value of any potential.
 
@@ -77,7 +81,9 @@ Denote by $Z_1$ the set of vertices of the left part that were visited during th
 
 Let's calculate the value $\Delta$:
 
-$$\Delta = \min_{i\in Z_1,\ j\notin Z_2} A[i][j]-u[i]-v[j].$$
+$$
+\Delta = \min_{i\in Z_1,\ j\notin Z_2} A[i][j]-u[i]-v[j].
+$$
 
 >
 >  **Lemma.** $\Delta > 0.$

@@ -9,10 +9,12 @@ The main difference from Dinic's is how we find the blocking flow.
 Consider the layered network $L$.
 For each node we define its' _inner potential_ and _outer potential_ as:
 
-$$\begin{align}
+$$
+\begin{align}
 p_{in}(v) &= \sum\limits_{(u, v)\in L}(c(u, v) - f(u, v)) \\
 p_{out}(v) &= \sum\limits_{(v, u)\in L}(c(v, u) - f(v, u))
-\end{align}$$
+\end{align}
+$$
 
 Also we set $p_{in}(s) = p_{out}(t) = \infty$.
 Given $p_{in}$ and $p_{out}$ we define the _potential_ as $p(v) = min(p_{in}(v), p_{out}(v))$.

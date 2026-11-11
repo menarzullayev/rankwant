@@ -10,7 +10,9 @@ Bu ikki o‘lchamli vektor ko‘paytma ta’rifining o‘xshashidir ([Asosiy geo
 Bu yuzni ikkiga bo‘lib, bizni qiziqtirgan uchburchak yuzini olamiz.
 Ustun vektorlari sifatida $\vec{p_1p_2}$ va $\vec{p_2p_3}$ ni olamiz va $2\times 2$ determinantni hisoblaymiz:
 
-$$2S=\left|\begin{matrix}x_2-x_1 & x_3-x_2\\y_2-y_1 & y_3-y_2\end{matrix}\right|=(x_2-x_1)(y_3-y_2)-(x_3-x_2)(y_2-y_1)$$
+$$
+2S=\left|\begin{matrix}x_2-x_1 & x_3-x_2\\y_2-y_1 & y_3-y_2\end{matrix}\right|=(x_2-x_1)(y_3-y_2)-(x_3-x_2)(y_2-y_1)
+$$
 
 ## Implementatsiya {#implementation}
 

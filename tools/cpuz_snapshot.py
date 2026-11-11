@@ -306,7 +306,90 @@ def split_fences(text: str) -> list[tuple[bool, str]]:
 
 HEADING_ATTRS = re.compile(r"^(#{1,6}\s.*?)\s*\{\s*[^}#]*\}\s*$")
 JINJA = re.compile(r"\{%-?\s*(?:raw|endraw)\s*-?%\}")
-DISPLAY_BRACKETS = re.compile(r"(?<!\\)\\\[(.+?)(?<!\\)\\\]", re.S)
+DISPLAY_BRACKETS = re.compile(r"(?<!\\)\\\[(.+?)(?<!\\)\\\]", re.DOTALL)
+
+
+TEXT_MODE = re.compile(r"(\\(?:text|textrm|texttt|textit|textbf|mbox)\{)([^{}]*)\}")
+
+
+def _eqnarray(edge: str) -> str:
+    return "\\begin{array}{rcl}" if edge == "begin" else "\\end{array}"
+
+
+DISPLAY_OPEN = re.compile(r"^([ \t>]*)\$\$(.*)$")
+DISPLAY_LINE = re.compile(r"^([ \t>]*)\$\$((?:(?!\$\$).)+)\$\$[ \t]*$")
+BARE_ENV = re.compile(r"^([ \t>]*)(\\begin\{([a-z]+\*?)\}.*)$")
+
+
+def _fenced(prefix: str, body: list[str]) -> list[str]:
+    rows = [f"{prefix}{row}" if row else prefix.rstrip() for row in body]
+    return [f"{prefix}$$", *rows, f"{prefix}$$"]
+
+
+def fence_display_math(chunk: str) -> str:
+    """Every display formula gets its `$$` on lines of their own.
+
+    remark-math reads a display formula like a code fence: what follows the
+    opening `$$` on its line is metadata and is dropped (`$$\\begin{align}`
+    lost its `\\begin`), and a closing `$$` must stand alone. A whole line of
+    `$$x$$` is not a fence at all: it renders as inline math, where `align`
+    is refused. MathJax also draws a bare `\\begin{align}` that no `$$`
+    surrounds; our renderer prints it as text. mkdocs accepted all three
+    (measured 2026-11-12). A blockquote's `>` prefix is kept on every line.
+    """
+    lines = chunk.split("\n")
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        one = DISPLAY_LINE.match(lines[i])
+        if one:
+            out += _fenced(one.group(1), [one.group(2).strip()])
+            i += 1
+            continue
+        env = BARE_ENV.match(lines[i])
+        # Only an environment that opens its own paragraph: one that follows
+        # text is the tail of an inline `$…$` (simulated-annealing's cases).
+        if env and (not out or not out[-1].strip(" \t>")):
+            prefix, end = env.group(1), f"\\end{{{env.group(3)}}}"
+            j = i
+            while j < len(lines) and end not in lines[j]:
+                j += 1
+            if j < len(lines):
+                body = [
+                    line[len(prefix) :] if line.startswith(prefix) else line.lstrip(" \t>")
+                    for line in lines[i : j + 1]
+                ]
+                out += _fenced(prefix, body)
+                i = j + 1
+                continue
+        m = DISPLAY_OPEN.match(lines[i])
+        rest = m.group(2) if m else ""
+        if m is None or (rest.strip() and rest.rstrip().endswith("$$")):
+            out.append(lines[i])
+            i += 1
+            continue
+        prefix = m.group(1)
+        body = [rest.rstrip()] if rest.strip() else []
+        j, after = i + 1, None
+        while j < len(lines):
+            line = lines[j]
+            content = line[len(prefix) :] if line.startswith(prefix) else line.lstrip(" \t>")
+            if "$$" in content:
+                before, _, after = content.partition("$$")
+                if before.strip():
+                    body.append(before.rstrip())
+                break
+            body.append(content)
+            j += 1
+        if after is None:  # never closed: leave it as written
+            out.append(lines[i])
+            i += 1
+            continue
+        out += _fenced(prefix, body)
+        if after.strip():
+            out.append(f"{prefix}{after.strip()}")
+        i = j + 1
+    return "\n".join(out)
 
 
 def tidy(text: str) -> str:
@@ -319,17 +402,33 @@ def tidy(text: str) -> str:
     - a heading's mkdocs attribute list without an id (`{ data-toc-label=… }`)
       goes; an `{#id}` stays (links point at it);
     - Jinja `{% raw %}` markers go.
+
+    And what KaTeX refuses where MathJax was lenient (measured 2026-11-12:
+    21 of 23 977 formulas failed to render on the site):
+
+    - `\\$` (a dollar sign inside a formula) → `\\text{\\textdollar}`: remark-math
+      reads `\\$$` as an escape and loses the formula's end (the library writes
+      `\\$` only inside formulas);
+    - `eqnarray` → `array{rcl}` (KaTeX has no `eqnarray`; same three columns);
+    - `_` inside `\\text{…}` → `\\_`;
+    - `\\*` inside a formula → `*` (a Markdown escape mkdocs removed).
     """
     text = JINJA.sub("", text)
     out = []
     for is_code, chunk in split_fences(text):
         if not is_code:
             chunk = DISPLAY_BRACKETS.sub(lambda m: f"$${m.group(1)}$$", chunk)
+            chunk = chunk.replace("\\$", "\\text{\\textdollar}")
+            chunk = fence_display_math(chunk)
+            chunk = re.sub(r"\\(begin|end)\{eqnarray\*?\}", lambda m: _eqnarray(m.group(1)), chunk)
+            chunk = TEXT_MODE.sub(
+                lambda m: m.group(1) + re.sub(r"(?<!\\)_", r"\\_", m.group(2)) + "}", chunk
+            )
             chunk = re.sub(
                 r"\$\$.+?\$\$|(?<![\\$])\$[^$\n]+\$",
-                lambda m: m.group(0).replace("\\\\\\\\", "\\\\"),
+                lambda m: m.group(0).replace("\\\\\\\\", "\\\\").replace("\\*", "*"),
                 chunk,
-                flags=re.S,
+                flags=re.DOTALL,
             )
             chunk = "\n".join(HEADING_ATTRS.sub(r"\1", line) for line in chunk.split("\n"))
         out.append(chunk)
@@ -394,7 +493,7 @@ def with_heading_ids(text: str, original: str) -> str:
 
 ANCHOR_BEFORE_HEADING = re.compile(
     r"^[ \t]*<(?:div|a)\s+(?:id|name)=[\"']([\w-]+)[\"']\s*>\s*</(?:div|a)>[ \t]*\n+(#{1,6}\s[^\n]*?)[ \t]*$",
-    re.M,
+    re.MULTILINE,
 )
 
 

@@ -3,7 +3,9 @@
 ## Definition {#definition}
 For points $p$ and $q$ on a plane, we can define the distance between them as the sum of the differences between their $x$ and $y$ coordinates: 
 
-$$d(p,q) = |x_p - x_q| + |y_p - y_q|$$
+$$
+d(p,q) = |x_p - x_q| + |y_p - y_q|
+$$
 
 Defined this way, the distance corresponds to the so-called [Manhattan (taxicab) geometry](https://en.wikipedia.org/wiki/Taxicab_geometry), in which the points are considered intersections in a well designed city, like Manhattan, where you can only move on the streets horizontally or vertically, as shown in the image below:
 
@@ -19,15 +21,21 @@ Given $n$ points $P$, we want to find the pair of points $p,q$ that are farther 
 
 Let's think first in one dimension, so $y=0$. The main observation is that we can bruteforce if $|x_p - x_q|$ is equal to $x_p - x_q$ or $-x_p + x_q$, because if we "miss the sign" of the absolute value, we will get only a smaller value, so it can't affect the answer. More formally, it holds that:
 
-$$|x_p - x_q| = \max(x_p - x_q, -x_p + x_q)$$
+$$
+|x_p - x_q| = \max(x_p - x_q, -x_p + x_q)
+$$
 
 So, for example, we can try to have $p$ such that $x_p$ has the plus sign, and then $q$ must have the negative sign. This way we want to find:
 
-$$\max\limits_{p, q \in P}(x_p + (-x_q)) = \max\limits_{p \in P}(x_p) + \max\limits_{q \in P}( - x_q ).$$
+$$
+\max\limits_{p, q \in P}(x_p + (-x_q)) = \max\limits_{p \in P}(x_p) + \max\limits_{q \in P}( - x_q ).
+$$
 
 Notice that we can extend this idea further for 2 (or more!) dimensions. For $d$ dimensions, we must bruteforce $2^d$ possible values of the signs. For example, if we are in $2$ dimensions and bruteforce that $p$ has both the plus signs we want to find: 
 
-$$\max\limits_{p, q \in P} [(x_p + (-x_q)) + (y_p + (-y_q))] = \max\limits_{p \in P}(x_p + y_p) + \max\limits_{q \in P}(-x_q - y_q).$$
+$$
+\max\limits_{p, q \in P} [(x_p + (-x_q)) + (y_p + (-y_q))] = \max\limits_{p \in P}(x_p + y_p) + \max\limits_{q \in P}(-x_q - y_q).
+$$
 
 As we made $p$ and $q$ independent, it is now easy to find the $p$ and $q$ that maximize the expression.
 
@@ -54,17 +62,23 @@ for (int msk = 0; msk < (1 << d); msk++) {
 
 It's well known that, for all $m, n \in \mathbb{R}$,
 
-$$|m| + |n| = \text{max}(|m + n|, |m - n|).$$
+$$
+|m| + |n| = \text{max}(|m + n|, |m - n|).
+$$
 
 To prove this, we just need to analyze the signs of $m$ and $n$. And it's left as an exercise.
 
 We may apply this equation to the Manhattan distance formula to find out that
 
-$$d((x_1, y_1), (x_2, y_2)) = |x_1 - x_2| + |y_1 - y_2| = \text{max}(|(x_1 + y_1) - (x_2 + y_2)|, |(y_1 - x_1) - (y_2 - x_2)|).$$
+$$
+d((x_1, y_1), (x_2, y_2)) = |x_1 - x_2| + |y_1 - y_2| = \text{max}(|(x_1 + y_1) - (x_2 + y_2)|, |(y_1 - x_1) - (y_2 - x_2)|).
+$$
 
 The last expression in the previous equation is the [Chebyshev distance](https://en.wikipedia.org/wiki/Chebyshev_distance) of the points $(x_1 + y_1, y_1 - x_1)$ and $(x_2 + y_2, y_2 - x_2)$. This means that, after applying the transformation
 
-$$\alpha : (x, y) \to (x + y, y - x),$$
+$$
+\alpha : (x, y) \to (x + y, y - x),
+$$
 
 the Manhattan distance between the points $p$ and $q$ turns into the Chebyshev distance between $\alpha(p)$ and $\alpha(q)$.
 

@@ -4,7 +4,9 @@
 
 $n$ ta tugun va $m$ ta qirrali yo‘naltirilmagan vaznli $G$ graf berilgan. $C$ kesim — tugunlarning bo‘sh bo‘lmagan va barcha tugunlarni ham o‘z ichiga olmaydigan xos qism to‘plami (amalda kesim tugunlarni ikkita bo‘sh bo‘lmagan to‘plamga ajratadi: $C$ ga tegishli tugunlar va qolgan barcha tugunlar). Kesim vazni kesimdan o‘tuvchi, ya’ni aynan bitta uchi $C$ da bo‘lgan qirralar vaznlari yig‘indisidir:
 
-$$ w(C) = \sum_{\substack{(v,u) \in E \\ u \in C,\ v \not\in C}} c(v,u), $$
+$$
+w(C) = \sum_{\substack{(v,u) \in E \\ u \in C,\ v \not\in C}} c(v,u),
+$$
 
 bu yerda $E$ $G$ grafdagi barcha qirralar to‘plamini, $c(v,u)$ esa $(v,u)$ qirraning vaznini bildiradi.
 
@@ -20,7 +22,9 @@ Algoritmning **asosiy g‘oyasi** juda sodda. Quyidagi jarayonni iterativ takror
 Haqiqatan, har bir $i$-bosqichda $s_i$ va $t_i$ tugunlar orasida topilgan minimal $C_i$ kesim yo izlanayotgan global minimal kesim bo‘lib chiqadi, yo aksincha $s_i$ va $t_i$ ni turli to‘plamlarga joylashtirish foydasiz bo‘ladi; demak, bu ikki tugunni bittaga birlashtirish bilan hech narsani yomonlashtirmaymiz.
 Shunday qilib, masalani quyidagiga keltirdik: berilgan grafda biror ixtiyoriy $s$ va $t$ tugunlar jufti orasidagi **minimal kesim**ni topish. Bu masalani yechish uchun yana iterativ jarayon taklif qilinadi. Dastlab ixtiyoriy bitta tugunni o‘z ichiga oladigan $A$ tugunlar to‘plamini kiritamiz. Har bir qadamda $A$ to‘plamiga **eng kuchli bog‘langan** tugunni, ya’ni quyidagi qiymati maksimal bo‘lgan $v \not\in A$ tugunni topamiz:
 
-$$ w(v,A) = \sum_{\substack{(v,u) \in E \\ u \in A}} c(v,u) $$
+$$
+w(v,A) = \sum_{\substack{(v,u) \in E \\ u \in A}} c(v,u)
+$$
 
 (ya’ni bir uchi $v$ da, ikkinchi uchi $A$ da bo‘lgan qirralar vaznlari yig‘indisi maksimal).
 Bu jarayon ham barcha tugunlar $A$ to‘plamiga o‘tganda $n-1$ ta iteratsiyadan so‘ng tugaydi (aytgancha, bu jarayon [Prim algoritmi](/algorithms/graph/mst-prim)ga juda o‘xshaydi). **Stoer–Wagner teoremasi**ga ko‘ra, $A$ ga oxirgi qo‘shilgan ikki tugunni $s$ va $t$ deb belgilasak, $s$ va $t$ orasidagi minimal kesim faqat bitta — $t$ tugundan iborat bo‘ladi.
@@ -37,39 +41,55 @@ Teorema bayonini eslaymiz. Har safar $A$ to‘plamiga unga eng kuchli bog‘lang
 
 Buni isbotlash uchun ixtiyoriy $s$-$t$ kesim $C$ ni ko‘rib, uning vazni faqat $t$ tugundan iborat kesim vaznidan kichik bo‘la olmasligini ko‘rsatamiz:
 
-$$ w(\{t\}) \le w(C). $$
+$$
+w(\{t\}) \le w(C).
+$$
 
 Buning uchun quyidagi faktni isbotlaymiz. $A_v$ — $v$ tugun qo‘shilishidan bevosita oldingi $A$ to‘plam holati bo‘lsin. $C_v$ — $C$ kesim tomonidan $A_v \cup \{v\}$ to‘plamida hosil qilingan kesim bo‘lsin (sodda qilib aytganda, $C_v$ shu ikki tugunlar to‘plamining kesishmasiga teng). Bundan tashqari, agar $v$ tugun va undan oldin qo‘shilgan tugun $C$ kesimning turli qismlariga tegishli bo‘lsa, $v$ tugunni $C$ kesimga nisbatan faol deb ataymiz. Shunda har bir faol $v$ tugun uchun quyidagi tengsizlik bajariladi, deb da’vo qilamiz:
 
-$$ w(v,A_v) \le w(C_v). $$
+$$
+w(v,A_v) \le w(C_v).
+$$
 
 Xususan, $t$ faol tugun (chunki undan oldin qo‘shilgan tugun $s$ edi) va $v=t$ uchun bu tengsizlik teorema bayoniga aylanadi:
 
-$$ w(t,A_t) = w(\{t\}) \le w(C_t) = w(C). $$
+$$
+w(t,A_t) = w(\{t\}) \le w(C_t) = w(C).
+$$
 
 Demak, bu tengsizlikni matematik induksiya yordamida isbotlaymiz.
 
 Birinchi faol $v$ tugun uchun tengsizlik bajariladi (hatto tenglikka aylanadi), chunki $A_v$ ning barcha tugunlari kesimning bir qismiga, $v$ esa ikkinchi qismiga tegishli.
 Endi bu tengsizlik biror $v$ tugungacha bo‘lgan barcha faol tugunlar uchun bajariladi deb faraz qilamiz; undan keyingi faol $u$ tugun uchun isbotlaymiz. Buning uchun chap tomonni o‘zgartiramiz:
 
-$$ w(u,A_u) \equiv w(u,A_v) + w(u,A_u \setminus A_v). $$
+$$
+w(u,A_u) \equiv w(u,A_v) + w(u,A_u \setminus A_v).
+$$
 
 Avval quyidagini qayd etamiz:
 
-$$ w(u,A_v) \le w(v,A_v), $$
+$$
+w(u,A_v) \le w(v,A_v),
+$$
 
 bu $A$ to‘plami $A_v$ ga teng bo‘lgan paytda unga $u$ emas, aynan $v$ tugun qo‘shilganidan kelib chiqadi; demak, $v$ ning $w$ qiymati eng katta edi.
 Bundan tashqari, induksiya faraziga ko‘ra $w(v,A_v) \le w(C_v)$, shuning uchun:
 
-$$ w(u,A_v) \le w(C_v), $$
+$$
+w(u,A_v) \le w(C_v),
+$$
 
 bundan esa:
 
-$$ w(u,A_u) \le w(C_v) + w(u,A_u \setminus A_v). $$
+$$
+w(u,A_u) \le w(C_v) + w(u,A_u \setminus A_v).
+$$
 
 Endi $u$ tugun va $A_u \setminus A_v$ dagi barcha tugunlar $C$ kesimning turli qismlarida ekanini qayd etamiz. Shu sabab $w(u,A_u \setminus A_v)$ qiymati $w(C_u)$ da hisobga olinadigan, ammo $w(C_v)$ da hali hisobga olinmagan qirralar vaznlari yig‘indisini bildiradi. Bundan:
 
-$$ w(u,A_u) \le w(C_v) + w(u,A_u \setminus A_v) \le w(C_u), $$
+$$
+w(u,A_u) \le w(C_v) + w(u,A_u \setminus A_v) \le w(C_u),
+$$
 
 ya’ni kerakli natijani olamiz.
 

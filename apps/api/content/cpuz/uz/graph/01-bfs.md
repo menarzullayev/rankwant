@@ -49,7 +49,9 @@ Ammo buning imkoni yo‘q, chunki Dijkstra algoritmi tugunlarni masofa o‘sish 
 
 Demak, navbat tartibi quyidagicha ko‘rinadi:
 
-$$Q = \underbrace{v}_{d[v]}, \dots, \underbrace{u}_{d[v]}, \underbrace{m}_{d[v]+1} \dots \underbrace{n}_{d[v]+1}$$
+$$
+Q = \underbrace{v}_{d[v]}, \dots, \underbrace{u}_{d[v]}, \underbrace{m}_{d[v]+1} \dots \underbrace{n}_{d[v]+1}
+$$
 
 Bu tuzilma shu qadar soddaki, haqiqiy ustuvor navbat kerak emas, ya’ni muvozanatlangan ikkilik daraxtdan foydalanish ortiqcha bo‘ladi.
 

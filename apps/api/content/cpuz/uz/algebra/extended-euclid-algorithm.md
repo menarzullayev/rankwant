@@ -2,7 +2,9 @@
 
 [Evklid algoritmi](/algorithms/algebra/euclid-algorithm) ikkita manfiy bo‘lmagan $a$ va $b$ butun sonning faqat eng katta umumiy bo‘luvchisini (EKUB) hisoblasa, uning kengaytirilgan varianti EKUBni $a$ va $b$ orqali ifodalash usulini, ya’ni quyidagi tenglikni qanoatlantiradigan $x$ va $y$ koeffitsiyentlarni ham topadi:
 
-$$a \cdot x + b \cdot y = \gcd(a, b)$$
+$$
+a \cdot x + b \cdot y = \gcd(a, b)
+$$
 
 [Bézout ayniyati](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity) tufayli bunday ifodani har doim topish mumkinligini ta’kidlash muhim. Masalan, $\gcd(55, 80) = 5$, shuning uchun $5$ ni $55$ va $80$ sonlarining chiziqli kombinatsiyasi sifatida ifodalash mumkin: $55 \cdot 3 + 80 \cdot (-2) = 5$.
 
@@ -22,30 +24,42 @@ Faqat $(a, b)$ dan $(b, a \bmod b)$ ga o‘tishda $x$ va $y$ koeffitsiyentlar qa
 
 Faraz qilaylik, $(b, a \bmod b)$ uchun $(x_1, y_1)$ koeffitsiyentlarni topdik:
 
-$$b \cdot x_1 + (a \bmod b) \cdot y_1 = g$$
+$$
+b \cdot x_1 + (a \bmod b) \cdot y_1 = g
+$$
 
 va $(a, b)$ uchun $(x, y)$ juftligini topmoqchimiz:
 
-$$ a \cdot x + b \cdot y = g$$
+$$
+a \cdot x + b \cdot y = g
+$$
 
 $a \bmod b$ ni quyidagicha ifodalash mumkin:
 
-$$ a \bmod b = a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b$$
+$$
+a \bmod b = a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b
+$$
 
 Bu ifodani $(x_1, y_1)$ koeffitsiyentlar tenglamasiga qo‘ysak:
 
-$$ g = b \cdot x_1 + (a \bmod b) \cdot y_1 = b \cdot x_1 + \left(a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b \right) \cdot y_1$$
+$$
+g = b \cdot x_1 + (a \bmod b) \cdot y_1 = b \cdot x_1 + \left(a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b \right) \cdot y_1
+$$
 
 hadlarni qayta tartiblagandan so‘ng:
 
-$$g = a \cdot y_1 + b \cdot \left( x_1 - y_1 \cdot \left\lfloor \frac{a}{b} \right\rfloor \right)$$
+$$
+g = a \cdot y_1 + b \cdot \left( x_1 - y_1 \cdot \left\lfloor \frac{a}{b} \right\rfloor \right)
+$$
 
 $x$ va $y$ qiymatlarini topdik:
 
-$$\begin{cases}
+$$
+\begin{cases}
 x = y_1 \\
 y = x_1 - y_1 \cdot \left\lfloor \frac{a}{b} \right\rfloor
-\end{cases} $$
+\end{cases}
+$$
 
 ## Implementatsiya {#implementation}
 
@@ -90,27 +104,43 @@ int gcd(int a, int b, int& x, int& y) {
 
 Algoritm koeffitsiyentlarni ham nega to‘g‘ri hisoblashini ko‘rish uchun istalgan paytda (while sikli boshlanishidan oldin va har bir iteratsiya oxirida) quyidagi invariantlar bajarilishini ko‘rib chiqing:
 
-$$x \cdot a + y \cdot b = a_1$$
+$$
+x \cdot a + y \cdot b = a_1
+$$
 
-$$x_1 \cdot a + y_1 \cdot b = b_1$$
+$$
+x_1 \cdot a + y_1 \cdot b = b_1
+$$
 
 Iteratsiya oxiridagi qiymatlarni shtrix ($'$) bilan belgilaylik va $q = \frac{a_1}{b_1}$ deb faraz qilaylik. [Evklid algoritmidan](/algorithms/algebra/euclid-algorithm) quyidagiga egamiz:
 
-$$a_1' = b_1$$
+$$
+a_1' = b_1
+$$
 
-$$b_1' = a_1 - q \cdot b_1$$
+$$
+b_1' = a_1 - q \cdot b_1
+$$
 
 Birinchi invariant saqlanishi uchun quyidagi tenglik bajarilishi kerak:
 
-$$x' \cdot a + y' \cdot b = a_1' = b_1$$
+$$
+x' \cdot a + y' \cdot b = a_1' = b_1
+$$
 
-$$x' \cdot a + y' \cdot b = x_1 \cdot a + y_1 \cdot b$$
+$$
+x' \cdot a + y' \cdot b = x_1 \cdot a + y_1 \cdot b
+$$
 
 Ikkinchi invariant uchun ham xuddi shunday quyidagi tenglik bajarilishi kerak:
 
-$$x_1' \cdot a + y_1' \cdot b = a_1 - q \cdot b_1$$
+$$
+x_1' \cdot a + y_1' \cdot b = a_1 - q \cdot b_1
+$$
 
-$$x_1' \cdot a + y_1' \cdot b = (x - q \cdot x_1) \cdot a + (y - q \cdot y_1) \cdot b$$
+$$
+x_1' \cdot a + y_1' \cdot b = (x - q \cdot x_1) \cdot a + (y - q \cdot y_1) \cdot b
+$$
 
 $a$ va $b$ ning koeffitsiyentlarini taqqoslash orqali har bir o‘zgaruvchi uchun yangilash formulalarini keltirib chiqarish mumkin; ular invariantlarning algoritm davomida saqlanishini ta’minlaydi.
 

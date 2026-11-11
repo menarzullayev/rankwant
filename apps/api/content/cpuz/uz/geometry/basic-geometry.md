@@ -118,17 +118,23 @@ Skalyar ko‘paytma bir nechta diqqatga sazovor xossalarga ega:
 Ya’ni u kommutativ funksiya bo‘lib, ikkala argumenti bo‘yicha chiziqlidir.
 Birlik vektorlarni quyidagicha belgilaymiz:
 
-$$\mathbf e_x = \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix}, \mathbf e_y = \begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix}, \mathbf e_z = \begin{pmatrix} 0 \\ 0 \\ 1 \end{pmatrix}.$$
+$$
+\mathbf e_x = \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix}, \mathbf e_y = \begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix}, \mathbf e_z = \begin{pmatrix} 0 \\ 0 \\ 1 \end{pmatrix}.
+$$
 
 Bu belgilash bilan $\mathbf r = (x;y;z)$ vektorni $r = x \cdot \mathbf e_x + y \cdot \mathbf e_y + z \cdot \mathbf e_z$ ko‘rinishida yozish mumkin.
 Birlik vektorlar uchun
 
-$$\mathbf e_x\cdot \mathbf e_x = \mathbf e_y\cdot \mathbf e_y = \mathbf e_z\cdot \mathbf e_z = 1,\\
-\mathbf e_x\cdot \mathbf e_y = \mathbf e_y\cdot \mathbf e_z = \mathbf e_z\cdot \mathbf e_x = 0$$
+$$
+\mathbf e_x\cdot \mathbf e_x = \mathbf e_y\cdot \mathbf e_y = \mathbf e_z\cdot \mathbf e_z = 1,\\
+\mathbf e_x\cdot \mathbf e_y = \mathbf e_y\cdot \mathbf e_z = \mathbf e_z\cdot \mathbf e_x = 0
+$$
 
 bo‘lgani uchun, $\mathbf a = (x_1;y_1;z_1)$ va $\mathbf b = (x_2;y_2;z_2)$ vektorlar uchun koordinatalarda quyidagi tenglik o‘rinli ekanini ko‘ramiz:
 
-$$\mathbf a\cdot \mathbf b = (x_1 \cdot \mathbf e_x + y_1 \cdot\mathbf e_y + z_1 \cdot\mathbf e_z)\cdot( x_2 \cdot\mathbf e_x + y_2 \cdot\mathbf e_y + z_2 \cdot\mathbf e_z) = x_1 x_2 + y_1 y_2 + z_1 z_2$$
+$$
+\mathbf a\cdot \mathbf b = (x_1 \cdot \mathbf e_x + y_1 \cdot\mathbf e_y + z_1 \cdot\mathbf e_z)\cdot( x_2 \cdot\mathbf e_x + y_2 \cdot\mathbf e_y + z_2 \cdot\mathbf e_z) = x_1 x_2 + y_1 y_2 + z_1 z_2
+$$
 
 Bu skalyar ko‘paytmaning algebraik ta’rifidir.
 Bundan uni hisoblaydigan funksiyalarni yozish mumkin.
@@ -208,7 +214,9 @@ Vektor va aralash ko‘paytmalarning diqqatga sazovor xossalari:
 5.  $(\mathbf a + \mathbf b)\times \mathbf c = \mathbf a\times \mathbf c + \mathbf b\times \mathbf c$.
     Haqiqatan, barcha $\mathbf r$ vektorlar uchun quyidagi tengliklar zanjiri o‘rinli:
 
-    $$\mathbf r\cdot( (\mathbf a + \mathbf b)\times \mathbf c) = (\mathbf a + \mathbf b) \cdot (\mathbf c\times \mathbf r) =  \mathbf a \cdot(\mathbf c\times \mathbf r) + \mathbf b\cdot(\mathbf c\times \mathbf r) = \mathbf r\cdot (\mathbf a\times \mathbf c) + \mathbf r\cdot(\mathbf b\times \mathbf c) = \mathbf r\cdot(\mathbf a\times \mathbf c + \mathbf b\times \mathbf c)$$
+    $$
+    \mathbf r\cdot( (\mathbf a + \mathbf b)\times \mathbf c) = (\mathbf a + \mathbf b) \cdot (\mathbf c\times \mathbf r) =  \mathbf a \cdot(\mathbf c\times \mathbf r) + \mathbf b\cdot(\mathbf c\times \mathbf r) = \mathbf r\cdot (\mathbf a\times \mathbf c) + \mathbf r\cdot(\mathbf b\times \mathbf c) = \mathbf r\cdot(\mathbf a\times \mathbf c + \mathbf b\times \mathbf c)
+    $$
 
     Bu 3-bandga ko‘ra $(\mathbf a + \mathbf b)\times \mathbf c = \mathbf a\times \mathbf c + \mathbf b\times \mathbf c$ ekanini isbotlaydi.
 
@@ -216,18 +224,26 @@ Vektor va aralash ko‘paytmalarning diqqatga sazovor xossalari:
 
 Bularni va birlik vektorlar uchun quyidagi tenglik o‘rinli ekanini hisobga olsak
 
-$$\mathbf e_x\times \mathbf e_x = \mathbf e_y\times \mathbf e_y = \mathbf e_z\times \mathbf e_z = \mathbf 0,\\
-\mathbf e_x\times \mathbf e_y = \mathbf e_z,~\mathbf e_y\times \mathbf e_z = \mathbf e_x,~\mathbf e_z\times \mathbf e_x = \mathbf e_y$$
+$$
+\mathbf e_x\times \mathbf e_x = \mathbf e_y\times \mathbf e_y = \mathbf e_z\times \mathbf e_z = \mathbf 0,\\
+\mathbf e_x\times \mathbf e_y = \mathbf e_z,~\mathbf e_y\times \mathbf e_z = \mathbf e_x,~\mathbf e_z\times \mathbf e_x = \mathbf e_y
+$$
 
 $\mathbf a = (x_1;y_1;z_1)$ va $\mathbf b = (x_2;y_2;z_2)$ ning vektor ko‘paytmasini koordinata shaklida hisoblashimiz mumkin:
 
-$$\mathbf a\times \mathbf b = (x_1 \cdot \mathbf e_x + y_1 \cdot \mathbf e_y + z_1 \cdot \mathbf e_z)\times (x_2 \cdot \mathbf e_x + y_2 \cdot \mathbf e_y + z_2 \cdot \mathbf e_z) =$$
+$$
+\mathbf a\times \mathbf b = (x_1 \cdot \mathbf e_x + y_1 \cdot \mathbf e_y + z_1 \cdot \mathbf e_z)\times (x_2 \cdot \mathbf e_x + y_2 \cdot \mathbf e_y + z_2 \cdot \mathbf e_z) =
+$$
 
-$$(y_1 z_2 - z_1 y_2)\mathbf e_x  + (z_1 x_2 - x_1 z_2)\mathbf e_y + (x_1 y_2 - y_1 x_2)\mathbf e_z$$
+$$
+(y_1 z_2 - z_1 y_2)\mathbf e_x  + (z_1 x_2 - x_1 z_2)\mathbf e_y + (x_1 y_2 - y_1 x_2)\mathbf e_z
+$$
 
 Buni yanada ixcham shaklda ham yozish mumkin:
 
-$$\mathbf a\times \mathbf b = \begin{vmatrix}\mathbf e_x & \mathbf e_y & \mathbf e_z \\ x_1 & y_1 & z_1 \\ x_2 & y_2 & z_2 \end{vmatrix},~a\cdot(b\times c) = \begin{vmatrix} x_1 & y_1 & z_1 \\ x_2 & y_2 & z_2 \\ x_3 & y_3 & z_3 \end{vmatrix}$$
+$$
+\mathbf a\times \mathbf b = \begin{vmatrix}\mathbf e_x & \mathbf e_y & \mathbf e_z \\ x_1 & y_1 & z_1 \\ x_2 & y_2 & z_2 \end{vmatrix},~a\cdot(b\times c) = \begin{vmatrix} x_1 & y_1 & z_1 \\ x_2 & y_2 & z_2 \\ x_3 & y_3 & z_3 \end{vmatrix}
+$$
 
 Bu yerda $| \cdot |$ matritsaning determinantini bildiradi.
 
@@ -279,7 +295,9 @@ Masalan, ikkita to‘g‘ri chiziq berilgan va ularning kesishish nuqtalarini to
 Birinchi chiziqning barcha nuqtalarini $\mathbf r = \mathbf a_1 + t \cdot \mathbf d_1$ ko‘rinishda parametrlash mumkin, bunda $\mathbf a_1$ — boshlang‘ich nuqta, $\mathbf d_1$ — yo‘nalish va $t$ — biror haqiqiy parametr.
 Ikkinchi chiziqning barcha nuqtalari esa $(\mathbf r - \mathbf a_2)\times \mathbf d_2=0$ ni qanoatlantirishi kerak. Bundan $t$ parametrni osongina topamiz:
 
-$$(\mathbf a_1 + t \cdot \mathbf d_1 - \mathbf a_2)\times \mathbf d_2=0 \quad\Rightarrow\quad t = \dfrac{(\mathbf a_2 - \mathbf a_1)\times\mathbf d_2}{\mathbf d_1\times \mathbf d_2}$$
+$$
+(\mathbf a_1 + t \cdot \mathbf d_1 - \mathbf a_2)\times \mathbf d_2=0 \quad\Rightarrow\quad t = \dfrac{(\mathbf a_2 - \mathbf a_1)\times\mathbf d_2}{\mathbf d_1\times \mathbf d_2}
+$$
 
 Ikki to‘g‘ri chiziqni kesishtiradigan funksiyani amalga oshiramiz.
 
@@ -295,7 +313,9 @@ Biroq ba’zan geometrik mulohazalardan foydalanish qiyin bo‘lishi mumkin.
 Masalan, boshlang‘ich nuqtalari $\mathbf a_i$ va yo‘nalishlari $\mathbf d_i$ bilan aniqlangan uchta tekislik berilgan va ularning kesishish nuqtasini topmoqchisiz.
 Siz shunchaki quyidagi tenglamalar sistemasini yechish kerakligini payqashingiz mumkin:
 
-$$\begin{cases}\mathbf r\cdot \mathbf n_1 = \mathbf a_1\cdot \mathbf n_1, \\ \mathbf r\cdot \mathbf n_2 = \mathbf a_2\cdot \mathbf n_2, \\ \mathbf r\cdot \mathbf n_3 = \mathbf a_3\cdot \mathbf n_3\end{cases}$$
+$$
+\begin{cases}\mathbf r\cdot \mathbf n_1 = \mathbf a_1\cdot \mathbf n_1, \\ \mathbf r\cdot \mathbf n_2 = \mathbf a_2\cdot \mathbf n_2, \\ \mathbf r\cdot \mathbf n_3 = \mathbf a_3\cdot \mathbf n_3\end{cases}
+$$
 
 Geometrik yondashuv haqida o‘ylash o‘rniga, bevosita olinadigan algebraik yondashuvni ishlab chiqish mumkin.
 Masalan, nuqta sinfini allaqachon amalga oshirgan bo‘lsangiz, bu sistemani Kramer qoidasi bilan yechish oson bo‘ladi, chunki aralash ko‘paytma ustunlari shu vektorlardan iborat matritsaning determinantiga teng:

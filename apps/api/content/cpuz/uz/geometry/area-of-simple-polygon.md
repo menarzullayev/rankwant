@@ -6,7 +6,9 @@ Sodda ko‘pburchak (ya’ni o‘zini kesmaydigan, qavariq bo‘lishi shart bo�
 
 Buni barcha qirralar bo‘ylab yurib, har bir qirra va x o‘qi bilan chegaralangan trapesiya yuzlarini qo‘shish orqali oson bajarish mumkin. Ortiqcha yuz kamayishi uchun yuz ishora bilan olinishi kerak. Demak, formula quyidagicha:
 
-$$A = \sum_{(p,q)\in \text{edges}} \frac{(p_x - q_x) \cdot (p_y + q_y)}{2}$$
+$$
+A = \sum_{(p,q)\in \text{edges}} \frac{(p_x - q_x) \cdot (p_y + q_y)}{2}
+$$
 
 Kod:
 

@@ -4,7 +4,9 @@ Bu iteratsion usulni Isaac Newton taxminan 1664-yilda ixtiro qilgan. Biroq usul 
 
 Masala quyidagicha. Quyidagi tenglama berilgan:
 
-$$f(x) = 0$$
+$$
+f(x) = 0
+$$
 
 Tenglamani yechish kerak. Aniqrog‘i, uning ildizlaridan birini topish kerak (ildiz mavjud deb faraz qilinadi). $f(x)$ funksiya $[a, b]$ oraliqda uzluksiz va differensiallanuvchi deb faraz qilinadi.
 
@@ -18,15 +20,21 @@ Faraz qilaylik, $x_i$ ni allaqachon hisoblab bo‘ldik; $x_{i+1}$ ni quyidagicha
 
 Quyidagi formulani hosil qilish qiyin emas:
 
-$$ x_{i+1} = x_i - \frac{f(x_i)}{f^\prime(x_i)} $$
+$$
+x_{i+1} = x_i - \frac{f(x_i)}{f^\prime(x_i)}
+$$
 
 Avval $f(x)$ ning hosilasi — $f'(x)$ qiyalikni hisoblaymiz, so‘ng urinma tenglamasini aniqlaymiz:
 
-$$ y - f(x_i) = f'(x_i)(x - x_i) $$
+$$
+y - f(x_i) = f'(x_i)(x - x_i)
+$$
 
 Urinma $x$ o‘qi bilan $y = 0$ va $x = x_{i+1}$ koordinatada kesishadi:
 
-$$ - f(x_i) = f'(x_i)(x_{i+1} - x_i) $$
+$$
+- f(x_i) = f'(x_i)(x_{i+1} - x_i)
+$$
 
 Endi tenglamani yechib, $x_{i+1}$ qiymatini olamiz.
 
@@ -40,7 +48,9 @@ Newton usulini kvadrat ildizni hisoblash misolida ko‘ramiz.
 
 $f(x) = x^2 - n$ deb olib, ifodani soddalashtirsak, quyidagini hosil qilamiz:
 
-$$ x_{i+1} = \frac{x_i + \frac{n}{x_i}}{2} $$
+$$
+x_{i+1} = \frac{x_i + \frac{n}{x_i}}{2}
+$$
 
 Masalaning birinchi odatiy varianti: ratsional $n$ soni berilgan va uning ildizini biror `eps` aniqlikda hisoblash kerak:
 

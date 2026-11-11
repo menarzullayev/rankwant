@@ -13,17 +13,23 @@ Bu funksiya quyidagi ikki shartni bajarishi kerak:
 
 Qirradagi oqim uning sig‘imidan oshmasligi kerak.
 
-$$f(e) \le c(e)$$
+$$
+f(e) \le c(e)
+$$
 
 Manba va qabul qiluvchi tugunlardan tashqari, har bir $u$ tugunga kiruvchi oqimlar yig‘indisi undan chiquvchi oqimlar yig‘indisiga teng bo‘lishi kerak.
 
-$$\sum_{(v, u) \in E} f((v, u)) = \sum_{(u, v) \in E} f((u, v))$$
+$$
+\sum_{(v, u) \in E} f((v, u)) = \sum_{(u, v) \in E} f((u, v))
+$$
 
 Manba $s$ tugundan faqat oqim chiqadi, qabul qiluvchi $t$ tugunga esa faqat oqim kiradi.
 
 Quyidagi tenglik bajarilishini ko‘rish oson:
 
-$$\sum_{(s, u) \in E} f((s, u)) = \sum_{(u, t) \in E} f((u, t))$$
+$$
+\sum_{(s, u) \in E} f((s, u)) = \sum_{(u, t) \in E} f((u, t))
+$$
 
 Oqim tarmog‘i uchun quyidagi tasavvur yaxshi o‘xshatish bo‘ladi:
 qirralarni suv quvurlari deb tasavvur qilamiz; qirra sig‘imi — bir soniyada quvurdan o‘ta oladigan eng katta suv miqdori, qirradagi oqim esa hozir bir soniyada shu quvurdan oqayotgan suv miqdoridir.

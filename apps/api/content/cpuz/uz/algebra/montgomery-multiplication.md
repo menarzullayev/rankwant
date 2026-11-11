@@ -17,7 +17,9 @@ Deyarli barcha qo‘llanishlarda $n$ toq bo‘ladi, chunki juft sonni faktorizat
 Shu sababli $2$ ning istalgan darajasi $n$ bilan o‘zaro tub bo‘ladi.
 $x$ sonining Montgomery fazosidagi vakili $\bar{x}$ quyidagicha aniqlanadi:
 
-$$\bar{x} := x \cdot r \bmod n$$
+$$
+\bar{x} := x \cdot r \bmod n
+$$
 
 E’tibor bering, bu o‘tkazishning o‘zi aynan optimallashtirmoqchi bo‘lgan ko‘paytirishimizdir.
 Demak, u hamon qimmat amal.
@@ -33,15 +35,21 @@ Ammo ko‘paytirish uchun bunday emas.
 
 Natija quyidagicha bo‘lishini kutamiz:
 
-$$\bar{x} * \bar{y} = \overline{x \cdot y} = (x \cdot y) \cdot r \bmod n.$$
+$$
+\bar{x} * \bar{y} = \overline{x \cdot y} = (x \cdot y) \cdot r \bmod n.
+$$
 
 Oddiy ko‘paytirish esa:
 
-$$\bar{x} \cdot \bar{y} = (x \cdot y) \cdot r \cdot r \bmod n.$$
+$$
+\bar{x} \cdot \bar{y} = (x \cdot y) \cdot r \cdot r \bmod n.
+$$
 
 ni beradi. Shuning uchun Montgomery fazosidagi ko‘paytirish quyidagicha aniqlanadi:
 
-$$\bar{x} * \bar{y} := \bar{x} \cdot \bar{y} \cdot r^{-1} \bmod n.$$
+$$
+\bar{x} * \bar{y} := \bar{x} \cdot \bar{y} \cdot r^{-1} \bmod n.
+$$
 
 ## Montgomery reduksiyasi {#montgomery-reduction}
 
@@ -50,17 +58,21 @@ Bu amal **Montgomery reduksiyasi** deb ataladi va **REDC** algoritmi nomi bilan 
 
 $\gcd(n,r)=1$ bo‘lgani uchun $0<r^{-1},n^{\prime}<n$ shartlarini qanoatlantiradigan ikkita $r^{-1}$ va $n^{\prime}$ soni mavjudligini bilamiz:
 
-$$r \cdot r^{-1} + n \cdot n^{\prime} = 1.$$
+$$
+r \cdot r^{-1} + n \cdot n^{\prime} = 1.
+$$
 
 $r^{-1}$ va $n^{\prime}$ ning ikkalasini ham [kengaytirilgan Evklid algoritmi](/algorithms/algebra/extended-euclid-algorithm) bilan hisoblash mumkin.
 
 Ushbu ayniyatdan foydalanib $x\cdot r^{-1}$ ni quyidagicha yozamiz:
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 x \cdot r^{-1} &= x \cdot r \cdot r^{-1} / r = x \cdot (-n \cdot n^{\prime} + 1) / r \\
 &= (-x \cdot n \cdot n^{\prime} + x) / r \equiv (-x \cdot n \cdot n^{\prime} + l \cdot r \cdot n + x) / r \bmod n\\
 &\equiv ((-x \cdot n^{\prime} + l \cdot r) \cdot n + x) / r \bmod n
-\end{aligned}$$
+\end{aligned}
+$$
 
 Bu kongruensiyalar istalgan $l$ butun son uchun bajariladi.
 Demak, $x\cdot n^{\prime}$ ga $r$ ning istalgan karralisini qo‘shish yoki ayirishimiz mumkin; boshqacha aytganda, $q:=x\cdot n^{\prime}$ ni $r$ modul bo‘yicha hisoblaymiz.
@@ -87,17 +99,21 @@ Montgomery reduksiyasining ikkinchi qo‘llanishi sonni Montgomery fazosidan odd
 
 $n^{\prime}:=n^{-1}\bmod r$ teskari elementni samarali hisoblash uchun Newton usulidan ilhomlangan quyidagi hiyladan foydalanish mumkin:
 
-$$a \cdot x \equiv 1 \bmod 2^k \Longrightarrow a \cdot x \cdot (2 - a \cdot x) \equiv 1 \bmod 2^{2k}$$
+$$
+a \cdot x \equiv 1 \bmod 2^k \Longrightarrow a \cdot x \cdot (2 - a \cdot x) \equiv 1 \bmod 2^{2k}
+$$
 
 Buni oson isbotlash mumkin.
 Agar $a\cdot x=1+m\cdot2^k$ bo‘lsa:
-$$\begin{aligned}
+$$
+\begin{aligned}
 a \cdot x \cdot (2 - a \cdot x) &= 2 \cdot a \cdot x - (a \cdot x)^2 \\
 &= 2 \cdot (1 + m \cdot 2^k) - (1 + m \cdot 2^k)^2 \\
 &= 2 + 2 \cdot m \cdot 2^k - 1 - 2 \cdot m \cdot 2^k - m^2 \cdot 2^{2k} \\
 &= 1 - m^2 \cdot 2^{2k} \\
 &\equiv 1 \bmod 2^{2k}.
-\end{aligned}$$
+\end{aligned}
+$$
 
 Demak, $a$ ning $2^1$ modul bo‘yicha teskari elementi sifatida $x=1$ dan boshlashimiz, hiylani bir necha marta qo‘llashimiz va har iteratsiyada $x$ ning to‘g‘ri bitlari sonini ikki baravar oshirishimiz mumkin.
 
@@ -171,7 +187,9 @@ Tezroq usullar mavjud.
 
 Quyidagi munosabatga e’tibor bering:
 
-$$\bar{x} := x \cdot r \bmod n = x \cdot r^2 / r = x * r^2$$
+$$
+\bar{x} := x \cdot r \bmod n = x \cdot r^2 / r = x * r^2
+$$
 
 Sonni fazoga o‘tkazish — oddiy sonni $r^2$ ga Montgomery fazosining o‘zida ko‘paytirishdan iborat.
 Shuning uchun $r^2\bmod n$ ni oldindan hisoblab, sonni 128 marta siljitish o‘rniga bitta ko‘paytirish bajarishimiz mumkin.

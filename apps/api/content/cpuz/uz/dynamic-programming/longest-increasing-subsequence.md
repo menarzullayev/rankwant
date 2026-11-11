@@ -5,8 +5,10 @@ Vazifa — $a$ massivining eng uzun qat’iy o‘suvchi qism ketma-ketligini top
 
 Formal ravishda, quyidagi shartlarni qanoatlantiruvchi indekslarning eng uzun $i_1,\dots,i_k$ ketma-ketligini qidiramiz:
 
-$$i_1 < i_2 < \dots < i_k,\quad
-a[i_1] < a[i_2] < \dots < a[i_k]$$
+$$
+i_1 < i_2 < \dots < i_k,\quad
+a[i_1] < a[i_2] < \dots < a[i_k]
+$$
 
 Ushbu maqolada masalani yechadigan bir nechta algoritmni ko‘rib chiqamiz.
 Shuningdek, shu masalaga keltirish mumkin bo‘lgan ayrim boshqa masalalarni ham muhokama qilamiz.
@@ -23,10 +25,12 @@ Avval faqat eng uzun o‘suvchi qism ketma-ketlikning **uzunligini** topamiz, ke
 $d[0\dots n-1]$ massivini ta’riflaymiz; $d[i]$ — $i$ indeksdagi element bilan tugaydigan eng uzun o‘suvchi qism ketma-ketlik uzunligi.
 
 >
-> $$\begin{array}{ll}
+> $$
+> \begin{array}{ll}
 > a &= \{8, 3, 4, 6, 5, 2, 0, 7, 9, 1\} \\
 > d &= \{1, 1, 2, 3, 3, 1, 1, 4, 5, 2\}
-> \end{array}$$
+> \end{array}
+> $$
 >
 > 4-indeksda tugaydigan eng uzun o‘suvchi qism ketma-ketlik $\{3,4,5\}$ bo‘lib, uning uzunligi 3. 8-indeksda tugaydigan eng uzun qism ketma-ketlik $\{3,4,5,7,9\}$ yoki $\{3,4,6,7,9\}$ bo‘lishi mumkin; ikkalasining ham uzunligi 5. 9-indeksda tugaydigan eng uzun qism ketma-ketlik esa uzunligi 2 bo‘lgan $\{0,1\}$ dir.
 
@@ -45,11 +49,15 @@ Ikki holat mavjud:
   Demak, $j<i$ va $a[j]<a[i]$ shartlarini qanoatlantiruvchi barcha $j$ larni ko‘rib chiqib, $a[j]$ da tugaydigan eng uzun o‘suvchi qism ketma-ketlikka $a[i]$ ni qo‘shish orqali olinadigan eng uzun variantni tanlaymiz.
   $a[j]$ da tugaydigan eng uzun o‘suvchi qism ketma-ketlik uzunligi $d[j]$ bo‘lgani uchun, uni bir elementga uzaytirish $d[j]+1$ uzunlikni beradi.
 
-  $$d[i] = \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)$$
+  $$
+  d[i] = \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)
+  $$
 
 Bu ikki holatni birlashtirsak, $d[i]$ uchun yakuniy formulani olamiz:
 
-$$d[i] = \max\left(1, \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)\right)$$
+$$
+d[i] = \max\left(1, \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)\right)
+$$
 
 ### Implementatsiya {#implementation}
 
@@ -255,11 +263,15 @@ $d[i]$ qiymati $j<i$ va $a[j]<a[i]$ bo‘lgan indekslar orasidagi $d[j]+1$ ning 
 
 Quyidagicha qo‘shimcha $t[]$ massivini ta’riflasak,
 
-$$t[a[i]] = d[i],$$
+$$
+t[a[i]] = d[i],
+$$
 
 $d[i]$ qiymatini hisoblash masalasi $t[]$ massivining bir prefiksidagi **eng katta qiymatni** topish masalasiga teng bo‘ladi:
 
-$$d[i] = \max\left(t[0 \dots a[i] - 1] + 1\right)$$
+$$
+d[i] = \max\left(t[0 \dots a[i] - 1] + 1\right)
+$$
 
 O‘zgarib turadigan massiv prefiksining maksimumini topish — ko‘plab ma’lumotlar tuzilmalari bilan yechiladigan standart masala.
 Masalan, [segment daraxti](/algorithms/data-structures/segment-tree) yoki [Fenwick daraxti](/algorithms/data-structures/fenwick) dan foydalanish mumkin.

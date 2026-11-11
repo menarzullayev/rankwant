@@ -276,7 +276,9 @@ Shuning uchun barcha daraxtlar va barcha Prüfer kodlari orasida biyeksiya (**bi
 
 Cayley formulasiga ko‘ra, $n$ ta tugunli **to‘liq belgilangan grafdagi ostov daraxtlar soni** quyidagiga teng:
 
-$$n^{n-2}$$
+$$
+n^{n-2}
+$$
 
 Bu formula uchun bir nechta isbot mavjud.
 
@@ -318,7 +320,9 @@ Tugunlarni bog‘lagandan keyingi daraxtdagi tugun darajalari $d_1, \dots, d_k$ 
 
 Darajalar yig‘indisi qirralar sonining ikki baravariga teng:
 
-$$\sum_{i=1}^k d_i = 2k - 2$$
+$$
+\sum_{i=1}^k d_i = 2k - 2
+$$
 
 Agar $i$ tugunning darajasi $d_i$ bo‘lsa, u Prüfer kodida $d_i - 1$ marta uchraydi.
 
@@ -326,29 +330,41 @@ $k$ ta tugunli daraxtning Prüfer kodi uzunligi $k-2$.
 
 Demak, $i$ soni aynan $d_i - 1$ marta uchraydigan $k-2$ ta sonli kodni tanlash usullari soni **multinomial koeffitsiyent**ga teng:
 
-$$\binom{k-2}{d_1-1, d_2-1, \dots, d_k-1} = \frac{(k-2)!}{(d_1-1)! (d_2-1)! \cdots (d_k-1)!}.$$
+$$
+\binom{k-2}{d_1-1, d_2-1, \dots, d_k-1} = \frac{(k-2)!}{(d_1-1)! (d_2-1)! \cdots (d_k-1)!}.
+$$
 
 $i$ tugunga tutash har bir qirra javobni $s_i$ ga ko‘paytirishini hisobga olib, tugun darajalari $d_1, \dots, d_k$ deb faraz qilgandagi javobni olamiz:
 
-$$s_1^{d_1} \cdot s_2^{d_2} \cdots s_k^{d_k} \cdot \binom{k-2}{d_1-1, d_2-1, \dots, d_k-1}$$
+$$
+s_1^{d_1} \cdot s_2^{d_2} \cdots s_k^{d_k} \cdot \binom{k-2}{d_1-1, d_2-1, \dots, d_k-1}
+$$
 
 Yakuniy javobni olish uchun darajalarni tanlashning barcha mumkin bo‘lgan usullari bo‘yicha buni yig‘ishimiz kerak:
 
-$$\sum_{\substack{d_i \ge 1 \\ \sum_{i=1}^k d_i = 2k -2}} s_1^{d_1} \cdot s_2^{d_2} \cdots s_k^{d_k} \cdot \binom{k-2}{d_1-1, d_2-1, \dots, d_k-1}$$
+$$
+\sum_{\substack{d_i \ge 1 \\ \sum_{i=1}^k d_i = 2k -2}} s_1^{d_1} \cdot s_2^{d_2} \cdots s_k^{d_k} \cdot \binom{k-2}{d_1-1, d_2-1, \dots, d_k-1}
+$$
 
 Hozircha bu juda noqulay javobdek ko‘rinadi, ammo quyidagini aytadigan **multinomial teorema**dan foydalanishimiz mumkin:
 
-$$(x_1 + \dots + x_m)^p = \sum_{\substack{c_i \ge 0 \\ \sum_{i=1}^m c_i = p}} x_1^{c_1} \cdot x_2^{c_2} \cdots x_m^{c_m} \cdot \binom{p}{c_1, c_2, \dots c_m}$$
+$$
+(x_1 + \dots + x_m)^p = \sum_{\substack{c_i \ge 0 \\ \sum_{i=1}^m c_i = p}} x_1^{c_1} \cdot x_2^{c_2} \cdots x_m^{c_m} \cdot \binom{p}{c_1, c_2, \dots c_m}
+$$
 
 Bu allaqachon formulamizga juda o‘xshaydi.
 
 Undan foydalanish uchun faqat $e_i = d_i - 1$ almashtirishni bajarish kerak:
 
-$$\sum_{\substack{e_i \ge 0 \\ \sum_{i=1}^k e_i = k - 2}} s_1^{e_1+1} \cdot s_2^{e_2+1} \cdots s_k^{e_k+1} \cdot \binom{k-2}{e_1, e_2, \dots, e_k}$$
+$$
+\sum_{\substack{e_i \ge 0 \\ \sum_{i=1}^k e_i = k - 2}} s_1^{e_1+1} \cdot s_2^{e_2+1} \cdots s_k^{e_k+1} \cdot \binom{k-2}{e_1, e_2, \dots, e_k}
+$$
 
 Multinomial teoremani qo‘llagach, **masalaning javobi**ni olamiz:
 
-$$s_1 \cdot s_2 \cdots s_k \cdot (s_1 + s_2 + \dots + s_k)^{k-2} = s_1 \cdot s_2 \cdots s_k \cdot n^{k-2}$$
+$$
+s_1 \cdot s_2 \cdots s_k \cdot (s_1 + s_2 + \dots + s_k)^{k-2} = s_1 \cdot s_2 \cdots s_k \cdot n^{k-2}
+$$
 
 Tasodifan, bu formula $k = 1$ uchun ham to‘g‘ri.
 

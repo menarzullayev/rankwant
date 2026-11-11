@@ -125,7 +125,9 @@ vector<long long> trial_division4(long long n) {
 
 We can write an odd composite number $n = p \cdot q$ as the difference of two squares $n = a^2 - b^2$:
 
-$$n = \left(\frac{p + q}{2}\right)^2 - \left(\frac{p - q}{2}\right)^2$$
+$$
+n = \left(\frac{p + q}{2}\right)^2 - \left(\frac{p - q}{2}\right)^2
+$$
 
 Fermat's factorization method tries to exploit this fact by guessing the first square $a^2$, and checking if the remaining part, $b^2 = a^2 - n$, is also a square number.
 If it is, then we have found the factors $a - b$ and $a + b$ of $n$.
@@ -162,11 +164,15 @@ The idea comes from [Fermat's little theorem](/algorithms/algebra/phi-function#a
 Let a factorization of $n$ be $n = p \cdot q$.
 It says that if $a$ is coprime to $p$, the following statement holds:
 
-$$a^{p - 1} \equiv 1 \pmod{p}$$
+$$
+a^{p - 1} \equiv 1 \pmod{p}
+$$
 
 This also means that
 
-$${\left(a^{(p - 1)}\right)}^k \equiv a^{k \cdot (p - 1)} \equiv 1 \pmod{p}.$$
+$$
+{\left(a^{(p - 1)}\right)}^k \equiv a^{k \cdot (p - 1)} \equiv 1 \pmod{p}.
+$$
 
 So for any $M$ with $p - 1 ~|~ M$ we know that $a^M \equiv 1$.
 This means that $a^M - 1 = p \cdot r$, and because of that also $p ~|~ \gcd(a^M - 1, n)$.
@@ -176,7 +182,9 @@ Therefore, if $p - 1$ for a factor $p$ of $n$ divides $M$, we can extract a fact
 It is clear, that the smallest $M$ that is a multiple of every $\mathrm{B}$-powersmooth number is $\text{lcm}(1,~2~,3~,4~,~\dots,~B)$.
 Or alternatively:
 
-$$M = \prod_{\text{prime } q \le B} q^{\lfloor \log_q B \rfloor}$$
+$$
+M = \prod_{\text{prime } q \le B} q^{\lfloor \log_q B \rfloor}
+$$
 
 Notice, if $p-1$ divides $M$ for all prime factors $p$ of $n$, then $\gcd(a^M - 1, n)$ will just be $n$.
 In this case we don't receive a factor.
@@ -323,7 +331,8 @@ i & x_i \bmod n & x_{2i} \bmod n & x_i \bmod 317 & x_{2i} \bmod 317 & \gcd(x_i -
 6   & 1671573 & 1264682 & 32      & 169     & 1   \\
 7   & 2193080 & 2088470 & 74      & 74      & 317 \\
 \hline
-\end{array}$$
+\end{array}
+$$
 
 The implementation uses a function `mult`, that multiplies two integers $\le 10^{18}$ without overflow by using a GCC's type `__int128` for 128-bit integer.
 If GCC is not available, you can using a similar idea as [binary exponentiation](/algorithms/algebra/binary-exp).

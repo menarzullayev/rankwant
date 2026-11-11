@@ -4,7 +4,9 @@ Ikkilik darajaga oshirish (kvadratlash orqali darajaga oshirish deb ham ataladi)
 
 U arifmetikaga aloqador bo‘lmagan ko‘plab masalalarda ham muhim qo‘llanishlarga ega, chunki undan **assotsiativlik** xossasiga ega bo‘lgan istalgan amal bilan foydalanish mumkin:
 
-$$(X \cdot Y) \cdot Z = X \cdot (Y \cdot Z)$$
+$$
+(X \cdot Y) \cdot Z = X \cdot (Y \cdot Z)
+$$
 
 Buning eng yaqqol misollari modul bo‘yicha ko‘paytirish, matritsalarni ko‘paytirish va quyida ko‘rib chiqiladigan boshqa masalalardir.
 
@@ -19,19 +21,23 @@ Ikkilik darajaga oshirish g‘oyasi ishni daraja ko‘rsatkichining ikkilik yozu
 
 Masalan, $n$ ni ikkilik sanoq tizimida yozamiz:
 
-$$3^{13} = 3^{1101_2} = 3^8 \cdot 3^4 \cdot 3^1$$
+$$
+3^{13} = 3^{1101_2} = 3^8 \cdot 3^4 \cdot 3^1
+$$
 
 $n$ sonining ikkilik yozuvida aynan $\lfloor \log_2 n \rfloor + 1$ ta raqam bo‘lgani sababli, agar $a^1, a^2, a^4, a^8, \dots, a^{2^{\lfloor \log_2 n \rfloor}}$ darajalarini bilsak, bizga atigi $O(\log n)$ ta ko‘paytirish kerak bo‘ladi.
 
 Demak, faqat shu darajalarni tez hisoblash usulini bilishimiz kerak.
 Yaxshiyamki, bu juda oson, chunki ketma-ketlikdagi har bir element avvalgi elementning kvadratidir.
 
-$$\begin{align}
+$$
+\begin{align}
 3^1 &= 3 \\
 3^2 &= \left(3^1\right)^2 = 3^2 = 9 \\
 3^4 &= \left(3^2\right)^2 = 9^2 = 81 \\
 3^8 &= \left(3^4\right)^2 = 81^2 = 6561
-\end{align}$$
+\end{align}
+$$
 
 Shunday qilib, $3^{13}$ ning yakuniy qiymatini olish uchun ulardan faqat uchtasini ko‘paytirish kifoya ($n$ dagi mos bit o‘rnatilmagani uchun $3^2$ tashlab ketiladi):
 $3^{13} = 6561 \cdot 81 \cdot 3 = 1594323$
@@ -39,11 +45,13 @@ Bu algoritmning yakuniy murakkabligi $O(\log n)$: $a$ ning $\log n$ ta darajasin
 
 Quyidagi rekursiv yondashuv ham ayni g‘oyani ifodalaydi:
 
-$$a^n = \begin{cases}
+$$
+a^n = \begin{cases}
 1 &\text{agar } n == 0 \\
 \left(a^{\frac{n}{2}}\right)^2 &\text{agar } n > 0 \text{ va } n \text{ juft bo‘lsa}\\
 \left(a^{\frac{n - 1}{2}}\right)^2 \cdot a &\text{agar } n > 0 \text{ va } n \text{ toq bo‘lsa}\\
-\end{cases}$$
+\end{cases}
+$$
 
 ## Implementatsiya {#implementation}
 
@@ -160,53 +168,63 @@ vector<int> permute(vector<int> sequence, vector<int> permutation, long long k) 
 
 Ko‘rib turganingizdek, har bir almashtirish koordinatalar ustidagi chiziqli amal sifatida ifodalanadi. Demak, almashtirish quyidagi ko‘rinishdagi $4 \times 4$ matritsa bilan yozilishi mumkin:
 
-$$\begin{pmatrix}
-a_{11} & a_ {12} & a_ {13} & a_ {14} \\
-a_{21} & a_ {22} & a_ {23} & a_ {24} \\
-a_{31} & a_ {32} & a_ {33} & a_ {34} \\
-a_{41} & a_ {42} & a_ {43} & a_ {44}
-\end{pmatrix}$$
-
-Bu matritsa eski koordinatalar va birlikdan iborat vektorga ko‘paytirilganda, yangi koordinatalar va birlikdan iborat yangi vektorni beradi:
-
-$$\begin{pmatrix} x & y & z & 1 \end{pmatrix} \cdot
+$$
 \begin{pmatrix}
 a_{11} & a_ {12} & a_ {13} & a_ {14} \\
 a_{21} & a_ {22} & a_ {23} & a_ {24} \\
 a_{31} & a_ {32} & a_ {33} & a_ {34} \\
 a_{41} & a_ {42} & a_ {43} & a_ {44}
 \end{pmatrix}
- = \begin{pmatrix} x' & y' & z' & 1 \end{pmatrix}$$
+$$
+
+Bu matritsa eski koordinatalar va birlikdan iborat vektorga ko‘paytirilganda, yangi koordinatalar va birlikdan iborat yangi vektorni beradi:
+
+$$
+\begin{pmatrix} x & y & z & 1 \end{pmatrix} \cdot
+\begin{pmatrix}
+a_{11} & a_ {12} & a_ {13} & a_ {14} \\
+a_{21} & a_ {22} & a_ {23} & a_ {24} \\
+a_{31} & a_ {32} & a_ {33} & a_ {34} \\
+a_{41} & a_ {42} & a_ {43} & a_ {44}
+\end{pmatrix}
+ = \begin{pmatrix} x' & y' & z' & 1 \end{pmatrix}
+$$
 
 (Nega soxta to‘rtinchi koordinatani kiritdik, deb so‘rashingiz mumkin. Bu kompyuter grafikasida keng qo‘llanadigan [bir jinsli koordinatalarning](https://en.wikipedia.org/wiki/Homogeneous_coordinates) go‘zalligidir. Ularsiz siljitish kabi affin amallarni bitta matritsa ko‘paytmasi bilan ifodalab bo‘lmaydi, chunki buning uchun koordinatalarga konstanta _qo‘shish_ kerak. Yuqoriroq o‘lchamda esa affin almashtirish chiziqli almashtirishga aylanadi!)
 Almashtirishlarning matritsa ko‘rinishida ifodalanishiga bir nechta misol:
 
 * Siljitish amali: $x$ koordinatani $5$ ga, $y$ koordinatani $7$ ga va $z$ koordinatani $9$ ga siljitish.
 
-$$\begin{pmatrix}
+$$
+\begin{pmatrix}
 1 & 0 & 0 & 0 \\
 0 & 1 & 0 & 0 \\
 0 & 0 & 1 & 0 \\
 5 & 7 & 9 & 1
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
 * Masshtablash amali: $x$ koordinatani $10$ marta, qolgan ikkitasini esa $5$ marta masshtablash.
 
-$$\begin{pmatrix}
+$$
+\begin{pmatrix}
 10 & 0 & 0 & 0 \\
 0 & 5 & 0 & 0 \\
 0 & 0 & 5 & 0 \\
 0 & 0 & 0 & 1
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
 * Aylantirish amali: o‘ng qo‘l qoidasiga muvofiq $x$ o‘qi atrofida $\theta$ gradusga aylantirish (soat mili yo‘nalishiga teskari).
 
-$$\begin{pmatrix}
+$$
+\begin{pmatrix}
 1 & 0 & 0 & 0 \\
 0 & \cos \theta & -\sin \theta & 0 \\
 0 & \sin \theta & \cos \theta & 0 \\
 0 & 0 & 0 & 1
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
 Endi har bir almashtirish matritsa sifatida ifodalangach, almashtirishlar ketma-ketligi ushbu matritsalar ko‘paytmasi bilan, $k$ marta takrorlanadigan `loop` esa matritsaning $k$-darajasi bilan ifodalanadi (uni ikkilik darajaga oshirish orqali $O(\log{k})$ vaqtda hisoblash mumkin). Shu yo‘l bilan barcha almashtirishlarni ifodalovchi matritsa avval $O(m \log{k})$ vaqtda hisoblanadi, keyin u $n$ ta nuqtaning har biriga jami $O(n)$ vaqtda qo‘llanadi; umumiy murakkablik $O(n + m \log{k})$ bo‘ladi.
 
@@ -227,11 +245,13 @@ Ya’ni: $result_{ij} = \min\limits_{1\ \leq\ k\ \leq\ n}(a_{ik} + b_{kj})$.
 
 **Yechim:** Yuqorida tasvirlangan ikkilik qurish algoritmini qo‘llaymiz, faqat ko‘paytirishlar o‘rniga qo‘shishlarni bajaramiz. Boshqacha aytganda, ikki sonni ko‘paytirishni $O(\log m)$ ta qo‘shish va ikkiga ko‘paytirish amaliga “yoydik” (ikkiga ko‘paytirishning o‘zi ham aslida qo‘shishdir).
 
-$$a \cdot b = \begin{cases}
+$$
+a \cdot b = \begin{cases}
 0 &\text{agar }a = 0 \\
 2 \cdot \frac{a}{2} \cdot b &\text{agar }a > 0 \text{ va }a \text{ juft bo‘lsa} \\
 2 \cdot \frac{a-1}{2} \cdot b + b &\text{agar }a > 0 \text{ va }a \text{ toq bo‘lsa}
-\end{cases}$$
+\end{cases}
+$$
 
 **Eslatma:** Bu masalani suzuvchi nuqtali amallar yordamida boshqacha usulda ham yechish mumkin. Avval suzuvchi nuqtali sonlar yordamida $\frac{a \cdot b}{m}$ ifodani hisoblab, uni ishorasiz butun $q$ ga o‘tkazing. So‘ng ishorasiz butun sonlar arifmetikasi yordamida $a \cdot b$ dan $q \cdot m$ ni ayirib, javobni topish uchun uni $m$ modul bo‘yicha oling. Bu yechim unchalik ishonchli ko‘rinmaydi, ammo juda tez va implementatsiyasi juda oson.
 Qo‘shimcha ma’lumot uchun [bu yerga](https://cs.stackexchange.com/questions/77016/modular-multiplication) qarang.

@@ -30,7 +30,9 @@ Grafning tugun bog‘liqligi barcha mumkin bo‘lgan $(s,t)$ juftlari orasida ik
 
 **Whitney tengsizliklari** (1932) qirra bog‘liqligi $\lambda$, tugun bog‘liqligi $\kappa$ va grafdagi istalgan tugunning minimal darajasi $\delta$ orasidagi bog‘lanishni beradi:
 
-$$\kappa \le \lambda \le \delta$$
+$$
+\kappa \le \lambda \le \delta
+$$
 
 Intuitiv ravishda, grafni uzadigan $\lambda$ o‘lchamli qirralar to‘plamimiz bo‘lsa, har bir qirraning uchlaridan birini tanlab, grafni ham uzadigan tugunlar to‘plamini yaratishimiz mumkin.
 Bu to‘plamning hajmi $\le \lambda$.

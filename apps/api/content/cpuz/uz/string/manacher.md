@@ -16,11 +16,15 @@ Toq va juft uzunlikdagi palindromlar mos ravishda $d_{odd}[i]$ va $d_{even}[i]$ 
 
 Masalan, $s = abababc$ satrida markazi $s[3] = b$ pozitsiyada bo‘lgan uchta toq uzunlikdagi palindrom bor, ya’ni $d_{odd}[3] = 3$:
 
-$$a\ \overbrace{b\ a\ \underbrace{b}_{s_3}\ a\ b}^{d_{odd}[3]=3} c$$
+$$
+a\ \overbrace{b\ a\ \underbrace{b}_{s_3}\ a\ b}^{d_{odd}[3]=3} c
+$$
 
 $s = cbaabd$ satrida esa markazi $s[3] = a$ pozitsiyada bo‘lgan ikkita juft uzunlikdagi palindrom bor, ya’ni $d_{even}[3] = 2$:
 
-$$c\ \overbrace{b\ a\ \underbrace{a}_{s_3}\ b}^{d_{even}[3]=2} d$$
+$$
+c\ \overbrace{b\ a\ \underbrace{a}_{s_3}\ b}^{d_{even}[3]=2} d
+$$
 
 Ajablanarlisi shundaki, ushbu “palindromlik massivlari” — $d_{odd}[]$ va $d_{even}[]$ ni chiziqli vaqtda hisoblaydigan yetarlicha sodda algoritm mavjud. Ushbu maqolada shu algoritm tasvirlanadi.
 
@@ -161,9 +165,13 @@ Manacher algoritmini toq va juft uzunliklar uchun alohida implementatsiya qilish
 
 Buni yengillashtirish uchun butun masalani faqat toq uzunlikdagi palindromlar bilan ishlaydigan holatga keltirish mumkin. Buning uchun satrdagi har bir belgi orasiga, shuningdek satr boshi va oxiriga qo‘shimcha `#` belgisini qo‘yamiz:
 
-$$abcbcba \to \#a\#b\#c\#b\#c\#b\#a\#,$$
+$$
+abcbcba \to \#a\#b\#c\#b\#c\#b\#a\#,
+$$
 
-$$d = [1,2,1,2,1,4,1,8,1,4,1,2,1,2,1].$$
+$$
+d = [1,2,1,2,1,4,1,8,1,4,1,2,1,2,1].
+$$
 
 Ko‘rinib turibdiki, $d[2i]=2 d_{even}[i]+1$ va $d[2i+1]=2 d_{odd}[i]$; bu yerda $d$ — `#` bilan birlashtirilgan satrdagi toq uzunlikdagi palindromlar uchun Manacher massivi, $d_{odd}$ va $d_{even}$ esa boshlang‘ich satr uchun yuqorida ta’riflangan massivlardir.
 

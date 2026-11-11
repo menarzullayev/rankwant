@@ -2,7 +2,9 @@
 
 Quyidagi masalani ko‘rib chiqamiz. $n$ ta shahar bor va siz avtomobilda $1$-shahardan $n$-shaharga borishingiz kerak. Buning uchun benzin sotib olishingiz lozim. $k$-shaharda bir litr benzin $cost_k$ turishi ma’lum. Dastlab yonilg‘i baki bo‘sh, avtomobil esa har kilometrga bir litr benzin sarflaydi. Shaharlar bitta to‘g‘ri chiziqda, o‘sish tartibida joylashgan; $k$-shaharning koordinatasi $x_k$. Bundan tashqari, $k$-shaharga kirish uchun $toll_k$ to‘lashingiz kerak. Vazifangiz — safarni eng kam mumkin bo‘lgan xarajat bilan amalga oshirish. Yechimni dinamik dasturlash orqali hisoblash mumkinligi ravshan:
 
-$$dp_i = toll_i+\min\limits_{j<i}(cost_j \cdot (x_i - x_j)+dp_j)$$
+$$
+dp_i = toll_i+\min\limits_{j<i}(cost_j \cdot (x_i - x_j)+dp_j)
+$$
 
 Sodda yondashuv $O(n^2)$ murakkablik beradi; uni $O(n \log n)$ yoki $O(n \log [C \varepsilon^{-1}])$ gacha yaxshilash mumkin, bunda $C$ — mumkin bo‘lgan eng katta $|x_i|$, $\varepsilon$ esa $x_i$ qanday aniqlikda qaralishini bildiradi (butun sonlar uchun, odatda shunday bo‘ladi, $\varepsilon = 1$). Buning uchun masalani to‘plamga $k \cdot x + b$ ko‘rinishidagi chiziqli funksiyalarni qo‘shish va funksiyalarning biror $x$ nuqtadagi eng kichik qiymatini topishga keltirish mumkinligini payqash kerak. Bu yerda ikkita asosiy yondashuvdan foydalanish mumkin.
 

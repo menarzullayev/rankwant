@@ -12,7 +12,9 @@ Bu yerda tasvirlanadigan algoritm Main va Lorentz tomonidan 1982-yilda e’lon q
 
 Quyidagi satrdagi takrorlanishlarni ko‘rib chiqamiz:
 
-$$acababaee$$
+$$
+acababaee
+$$
 
 Bu satrda quyidagi uchta takrorlanish mavjud:
 
@@ -22,7 +24,9 @@ Bu satrda quyidagi uchta takrorlanish mavjud:
 
 Yana bir misol:
 
-$$abaaba$$
+$$
+abaaba
+$$
 
 Bu yerda faqat ikkita takrorlanish bor:
 
@@ -65,7 +69,9 @@ Bo‘lib yechish algoritmlarining murakkabligi yaxshi o‘rganilgan. [Master teo
 
 Demak, satrning $u$ deb ataladigan birinchi yarmida boshlanib, $v$ deb ataladigan ikkinchi yarmida tugaydigan barcha takrorlanishlarni topmoqchimiz:
 
-$$s=u+v$$
+$$
+s=u+v
+$$
 
 Ularning uzunliklari taxminan $s$ uzunligining yarmiga teng.
 
@@ -81,7 +87,9 @@ $cntr$ pozitsiyani qayd etib, unga mos barcha takrorlanishlarni qidiramiz.
 
 Masalan:
 
-$$c~\underset{cntr}{a}~c~|~a~d~a$$
+$$
+c~\underset{cntr}{a}~c~|~a~d~a
+$$
 
 Vertikal chiziq satrning ikki yarmini ajratadi. Bu yerda $cntr=1$ pozitsiya qayd etilgan va shu pozitsiyada $caca$ takrorlanishi topiladi.
 
@@ -93,7 +101,9 @@ Qayd etilgan $cntr$ uchun barcha shunday takrorlanishlarni qanday topamiz? Bu po
 
 Yana bir tasviriy misolga, bu safar $abcabc$ takrorlanishiga qaraylik:
 
-$$\overbrace{a}^{l_1}~\overbrace{\underset{cntr}{b}~c}^{l_2}~\overbrace{a}^{l_1}~|~\overbrace{b~c}^{l_2}$$
+$$
+\overbrace{a}^{l_1}~\overbrace{\underset{cntr}{b}~c}^{l_2}~\overbrace{a}^{l_1}~|~\overbrace{b~c}^{l_2}
+$$
 
 Bu yerda takrorlanish qismlarining uzunliklarini $l_1$ va $l_2$ bilan belgiladik: $l_1$ — takrorlanishning $cntr-1$ pozitsiyagacha bo‘lgan qismi uzunligi, $l_2$ esa $cntr$ dan takrorlanish yarmining oxirigacha bo‘lgan qism uzunligi. Takrorlanishning jami uzunligi $2l=l_1+l_2+l_1+l_2$ bo‘ladi.
 
@@ -101,11 +111,15 @@ $cntr$ pozitsiyadagi uzunligi $2l=2(l_1+l_2)=2(|u|-cntr)$ bo‘lgan takrorlanish
 
 * $k_1$ — $cntr$ pozitsiyasidan oldingi dastlabki $k_1$ ta belgi $u$ satrining oxirgi $k_1$ ta belgisi bilan mos tushadigan eng katta son bo‘lsin:
 
-$$u[cntr-k_1\dots cntr-1]=u[|u|-k_1\dots |u|-1].$$
+$$
+u[cntr-k_1\dots cntr-1]=u[|u|-k_1\dots |u|-1].
+$$
 
 * $k_2$ — $cntr$ pozitsiyasidan boshlanadigan $k_2$ ta belgi $v$ satrining dastlabki $k_2$ ta belgisi bilan mos tushadigan eng katta son bo‘lsin:
 
-$$u[cntr\dots cntr+k_2-1]=v[0\dots k_2-1].$$
+$$
+u[cntr\dots cntr+k_2-1]=v[0\dots k_2-1].
+$$
 
 * U holda quyidagi shartlarni qanoatlantiradigan har bir $(l_1,l_2)$ juftlik uchun takrorlanish mavjud:
 

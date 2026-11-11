@@ -13,7 +13,9 @@ In this article we discuss an alternative, Garner's Algorithm, which can also be
 
 We can represent the number $a$ in the **mixed radix** representation:
 
-$$a = x_1 + x_2 p_1 + x_3 p_1 p_2 + \ldots + x_k p_1 \cdots p_{k-1} \text{ with }x_i \in [0, p_i)$$
+$$
+a = x_1 + x_2 p_1 + x_3 p_1 p_2 + \ldots + x_k p_1 \cdots p_{k-1} \text{ with }x_i \in [0, p_i)
+$$
 
 A mixed radix representation is a positional numeral system, that's a generalization of the typical number systems, like the binary numeral system or the decimal numeral system.
 For instance, the decimal numeral system is a positional numeral system with the radix (or base) 10.
@@ -30,29 +32,39 @@ The digit $x_i$ is an integer between $0$ and $p_i - 1$.
 
 Let $r_{ij}$ denote the inverse of $p_i$ modulo $p_j$
 
-$$r_{ij} = (p_i)^{-1} \pmod{p_j}$$
+$$
+r_{ij} = (p_i)^{-1} \pmod{p_j}
+$$
 
 which can be found using the algorithm described in [Modular Inverse](/algorithms/algebra/module-inverse).
 
 Substituting $a$ from the mixed radix representation into the first congruence equation we obtain
 
-$$a_1 \equiv x_1 \pmod{p_1}.$$
+$$
+a_1 \equiv x_1 \pmod{p_1}.
+$$
 
 Substituting into the second equation yields
 
-$$a_2 \equiv x_1 + x_2 p_1 \pmod{p_2},$$
+$$
+a_2 \equiv x_1 + x_2 p_1 \pmod{p_2},
+$$
 
 which can be rewritten by subtracting $x_1$ and dividing by $p_1$ to get
 
-$$\begin{array}{rclr}
+$$
+\begin{array}{rclr}
     a_2 - x_1 &\equiv& x_2 p_1 &\pmod{p_2} \\
     (a_2 - x_1) r_{12} &\equiv& x_2 &\pmod{p_2} \\
     x_2 &\equiv& (a_2 - x_1) r_{12} &\pmod{p_2}
-\end{array}$$
+\end{array}
+$$
 
 Similarly we get that
 
-$$x_3 \equiv ((a_3 - x_1) r_{13} - x_2) r_{23} \pmod{p_3}.$$
+$$
+x_3 \equiv ((a_3 - x_1) r_{13} - x_2) r_{23} \pmod{p_3}.
+$$
 
 Now, we can clearly see an emerging pattern, which can be expressed by the following code:
 
@@ -71,7 +83,9 @@ for (int i = 0; i < k; ++i) {
 
 So we learned how to calculate digits $x_i$ in $O(k^2)$ time. The number $a$ can now be calculated using the previously mentioned formula
 
-$$a = x_1 + x_2 \cdot p_1 + x_3 \cdot p_1 \cdot p_2 + \ldots + x_k \cdot p_1 \cdots p_{k-1}$$
+$$
+a = x_1 + x_2 \cdot p_1 + x_3 \cdot p_1 \cdot p_2 + \ldots + x_k \cdot p_1 \cdots p_{k-1}
+$$
 
 It is worth noting that in practice, we almost probably need to compute the answer $a$ using [Arbitrary-Precision Arithmetic](/algorithms/algebra/big-integer), but the digits $x_i$ (because they are small) can usually be calculated using built-in types, and therefore Garner's algorithm is very efficient.
 

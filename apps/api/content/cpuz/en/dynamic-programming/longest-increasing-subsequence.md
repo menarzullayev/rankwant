@@ -5,8 +5,10 @@ The task is to find the longest, strictly increasing, subsequence in $a$.
 
 Formally we look for the longest sequence of indices $i_1, \dots i_k$ such that
 
-$$i_1 < i_2 < \dots < i_k,\quad
-a[i_1] < a[i_2] < \dots < a[i_k]$$
+$$
+i_1 < i_2 < \dots < i_k,\quad
+a[i_1] < a[i_2] < \dots < a[i_k]
+$$
 
 In this article we discuss multiple algorithms for solving this task.
 Also we will discuss some other problems, that can be reduced to this problem.
@@ -23,10 +25,12 @@ First we will search only for the **length** of the longest increasing subsequen
 To accomplish this task, we define an array $d[0 \dots n-1]$, where $d[i]$ is the length of the longest increasing subsequence that ends in the element at index $i$.
 
 >
-> $$\begin{array}{ll}
+> $$
+> \begin{array}{ll}
 > a &= \{8, 3, 4, 6, 5, 2, 0, 7, 9, 1\} \\
 > d &= \{1, 1, 2, 3, 3, 1, 1, 4, 5, 2\}
-> \end{array}$$
+> \end{array}
+> $$
 >
 > The longest increasing subsequence that ends at index 4 is $\{3, 4, 5\}$ with a length of 3, the longest ending at index 8 is either $\{3, 4, 5, 7, 9\}$ or $\{3, 4, 6, 7, 9\}$, both having length 5, and the longest ending at index 9 is $\{0, 1\}$ having length 2.
 
@@ -47,11 +51,15 @@ Then there are two options:
     Therefore, we can just iterate over all $j < i$ with $a[j] < a[i]$, and take the longest sequence that we get by appending $a[i]$ to the longest increasing subsequence ending in $a[j]$.
     The longest increasing subsequence ending in $a[j]$ has length $d[j]$, extending it by one gives the length $d[j] + 1$.
   
-    $$d[i] = \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)$$
+    $$
+    d[i] = \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)
+    $$
 
 If we combine these two cases we get the final answer for $d[i]$:
 
-$$d[i] = \max\left(1, \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)\right)$$
+$$
+d[i] = \max\left(1, \max_{\substack{j < i \\ a[j] < a[i]}} \left(d[j] + 1\right)\right)
+$$
 
 ### Implementation {#implementation}
 
@@ -264,11 +272,15 @@ Remember that $d[i]$ is the value $d[j] + 1$ with $j < i$ and $a[j] < a[i]$.
 
 Thus if we define an additional array $t[]$ such that
 
-$$t[a[i]] = d[i],$$
+$$
+t[a[i]] = d[i],
+$$
 
 then the problem of computing the value $d[i]$ is equivalent to finding the **maximum value in a prefix** of the array $t[]$:
 
-$$d[i] = \max\left(t[0 \dots a[i] - 1] + 1\right)$$
+$$
+d[i] = \max\left(t[0 \dots a[i] - 1] + 1\right)
+$$
 
 The problem of finding the maximum of a prefix of an array (which changes) is a standard problem that can be solved by many different data structures. 
 For instance we can use a [Segment tree](/algorithms/data-structures/segment-tree) or a [Fenwick tree](/algorithms/data-structures/fenwick).

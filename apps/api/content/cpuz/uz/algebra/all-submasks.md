@@ -61,7 +61,9 @@ Jami $n$ ta bit bo‘lgani uchun, $3^n$ ta turli kombinatsiya mavjud bo‘ladi.
 
 **Ikkinchi isbot**: $m$ niqobida $k$ ta yoqilgan bit bo‘lsa, uning $2^k$ ta qism niqobi bo‘lishiga e’tibor bering. $k$ ta yoqilgan bitli niqoblar soni jami $\binom{n}{k}$ ta bo‘lgani uchun ([binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients)ga qarang), barcha niqoblar bo‘yicha kombinatsiyalarning umumiy soni:
 
-$$\sum_{k=0}^n \binom{n}{k} \cdot 2^k$$
+$$
+\sum_{k=0}^n \binom{n}{k} \cdot 2^k
+$$
 
 Bu sonni hisoblash uchun yuqoridagi yig‘indi binom teoremasi bo‘yicha $(1+2)^n$ yoyilmasiga teng ekaniga e’tibor bering. Demak, isbotlash talab qilinganidek, $3^n$ ta kombinatsiya bor.
 
