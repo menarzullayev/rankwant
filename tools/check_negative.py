@@ -6347,6 +6347,24 @@ def neg_decisions_rejected_solution_left_running() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_abramyan_publishes_unverified() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/problems/management/commands/publish_abramyan.py",
+        "        bad = unverified(problems)\n",
+        "        bad: list[str] = []\n",
+        "Abramyan faqat tekshiruvdan keyin nashr",
+    )
+
+
+def neg_decisions_abramyan_imported_official() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/problems/management/commands/import_abramyan.py",
+        '                "is_official": False,',
+        '                "is_official": True,',
+        "Abramyan faqat tekshiruvdan keyin nashr",
+    )
+
+
 def neg_decisions_plan_steps_replaced_with_sections() -> tuple[bool, str]:
     return _decision_broken(
         "apps/api/content/staff_serializers.py",
@@ -9033,6 +9051,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/content/models.py",
     "apps/api/content/views.py",
     "apps/api/content/staff_serializers.py",
+    "apps/api/problems/management/commands/publish_abramyan.py",
+    "apps/api/problems/management/commands/import_abramyan.py",
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
     "apps/api/contests/certificates.py",
@@ -12769,6 +12789,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("checker format farqini ko'rmasa tutilsin", neg_decisions_checker_never_sees_a_format_difference),
             ("scorer balli verdikt bo'lmasa tutilsin", neg_decisions_scorer_score_is_not_a_verdict),
             ("rad etilgan yechim to'xtatilmasa tutilsin", neg_decisions_rejected_solution_left_running),
+            ("tekshirilmagan Abramyan nashr qilinsa tutilsin", neg_decisions_abramyan_publishes_unverified),
+            ("Abramyan rasmiy bo'lib import qilinsa tutilsin", neg_decisions_abramyan_imported_official),
             ("bo'limli reja qadamlari almashsa tutilsin", neg_decisions_plan_steps_replaced_with_sections),
             ("reja tili 2 belgi bo'lsa tutilsin", neg_decisions_plan_locale_two_letters),
             ("norasmiy masala raqam olsa tutilsin", neg_decisions_unofficial_gets_a_number),
