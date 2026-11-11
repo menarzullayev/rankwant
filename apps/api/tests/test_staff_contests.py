@@ -96,8 +96,11 @@ class TestStaffContestCrud:
         assert staff.get(reverse("staff-contest-list"), {"search": "yoq"}).json()["count"] == 0
 
     def test_yaratish(self, staff, contest) -> None:
+        # A mirror is never rated (ADR-0063 § 2.6): the payload says so.
         r = staff.post(
-            reverse("staff-contest-list"), _payload(mirror_of=contest.slug), format="json"
+            reverse("staff-contest-list"),
+            _payload(mirror_of=contest.slug, is_rated=False),
+            format="json",
         )
         assert r.status_code == 201, r.json()
         body = r.json()
@@ -106,7 +109,12 @@ class TestStaffContestCrud:
         assert body["is_public"] is False
         created = Contest.objects.get(slug="round-2")
         assert created.mirror_of == contest
-        assert created.is_rated is True
+        assert created.is_rated is False
+
+    def test_yaratish_reytingli(self, staff) -> None:
+        r = staff.post(reverse("staff-contest-list"), _payload(), format="json")
+        assert r.status_code == 201, r.json()
+        assert Contest.objects.get(slug="round-2").is_rated is True
 
     def test_tugash_boshlanishdan_oldin_rad(self, staff) -> None:
         now = timezone.now()

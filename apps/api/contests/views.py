@@ -89,6 +89,7 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
     lookup_field = "slug"
     queryset = (
         Contest.objects.filter(is_public=True)
+        .select_related("partner", "mirror_of", "mirror_of_event")
         .prefetch_related("problems__problem")
         .annotate(participant_count=Count("registrations", distinct=True))
         # An aggregate drops `Meta.ordering`; without this the pages would shuffle.

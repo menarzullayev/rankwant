@@ -3,6 +3,25 @@
 import type { UserTitle } from "@/lib/identity";
 import type { Question } from "@/lib/api/content";
 
+/** A partner organization (ADR-0063). */
+export type OrganizationKind =
+  | "school"
+  | "university"
+  | "center"
+  | "company"
+  | "community"
+  | "government";
+
+export type OrganizationBrief = {
+  slug: string;
+  name: string;
+  kind: OrganizationKind;
+  /** A site path or an https URL; "" when there is none. */
+  logo_url: string;
+};
+
+export type Organization = OrganizationBrief & { website: string; about: string };
+
 export type Contest = {
   slug: string;
   title: string;
@@ -22,6 +41,12 @@ export type Contest = {
   hack_open_until: string | null;
   /** Registrations. Counted once for the whole list, not per row. */
   participant_count: number;
+  /** Partner, official and mirror marks (ADR-0063). */
+  partner: OrganizationBrief | null;
+  /** What the contest officially is; "" for an ordinary contest. */
+  official_title: string;
+  /** It mirrors another contest or an olympiad event: never rated. */
+  is_mirror: boolean;
 };
 
 export type ContestProblem = {
@@ -43,6 +68,15 @@ export type ContestDetail = Contest & {
   problem_count: number;
   /** Who prepared the contest — told always. */
   crew: { authors: CrewPerson[]; testers: CrewPerson[]; jury: CrewPerson[] };
+  partner: Organization | null;
+  /** Markdown; "" when the contest promises none. */
+  prizes: string;
+  /** The document behind `official_title`. */
+  official_url: string;
+  /** The original, when it can be named. */
+  mirror_source: { kind: "contest" | "olympiad"; slug: string; title: string } | null;
+  /** Public contests that mirror this one. */
+  mirrors: { slug: string; title: string; start_at: string }[];
 };
 
 /** A question, the jury's answer, or an announcement (ADR-0055, part 3). */

@@ -109,6 +109,23 @@ export default async function OlympiadEventPage({ params }: Props) {
         </Card>
       )}
 
+      {(event.mirror_contests ?? []).length > 0 && (
+        <section aria-labelledby="olympiad-mirrors" className="space-y-2" data-mirror-contests="">
+          <h2 id="olympiad-mirrors" className="text-theme-base font-semibold rw-strong">
+            {t(locale, "olympiads.mirrors")}
+          </h2>
+          <ul className="space-y-1 text-theme-sm">
+            {(event.mirror_contests ?? []).map((contest) => (
+              <li key={contest.slug}>
+                <Link href={`/contests/${contest.slug}`} className={LINK}>
+                  {contest.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {event.resources.length > 0 && (
         <section aria-labelledby="olympiad-resources" className="space-y-2">
           <h2 id="olympiad-resources" className="text-theme-base font-semibold rw-strong">

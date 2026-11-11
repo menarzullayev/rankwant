@@ -6,7 +6,7 @@ from typing import Any
 
 from django.db.models import Count, Prefetch, Q
 from django.http import Http404
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, extend_schema_field
 from rest_framework import serializers
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
@@ -77,10 +77,19 @@ class ResultRowSerializer(serializers.ModelSerializer[Result]):
         fields = ["participant", "full_name", "country_code", "rank", "score", "medal", "is_local"]
 
 
+class MirrorContestSerializer(serializers.Serializer[Any]):
+    slug = serializers.CharField()
+    title = serializers.CharField()
+    start_at = serializers.DateTimeField()
+
+
 class EventDetailSerializer(EventCardSerializer):
     season = serializers.CharField(source="season.slug")
     sets = ProblemSetSerializer(many=True, read_only=True)
     results = serializers.SerializerMethodField()
+    #: RankWant contests that mirror this event (ADR-0063 § 2.4). Read
+    #: through the reverse relation, so `olympiads` imports no `contests` model.
+    mirror_contests = serializers.SerializerMethodField()
 
     class Meta(EventCardSerializer.Meta):
         fields = [
@@ -94,7 +103,13 @@ class EventDetailSerializer(EventCardSerializer):
             "resources",
             "sets",
             "results",
+            "mirror_contests",
         ]
+
+    @extend_schema_field(MirrorContestSerializer(many=True))
+    def get_mirror_contests(self, event: Event) -> list[dict[str, Any]]:
+        rows = event.mirror_contests.filter(is_public=True).order_by("start_at")  # type: ignore[attr-defined]
+        return [{"slug": c.slug, "title": c.title, "start_at": c.start_at} for c in rows]
 
     def get_results(self, event: Event) -> list[dict[str, Any]]:
         rows = [row for row in event.results.all() if row.participant.removed_at is None]

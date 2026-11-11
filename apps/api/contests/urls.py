@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from contests import views
 from contests.organizer_views import OrganizerContestViewSet
-from contests.staff_views import StaffContestViewSet
+from contests.staff_views import StaffContestViewSet, StaffOrganizationViewSet
 
 router = DefaultRouter()
 # `mine` OLDIN ro'yxatga olinadi: aks holda `contests/<slug>/` detali
@@ -11,6 +11,7 @@ router = DefaultRouter()
 router.register("contests/mine", OrganizerContestViewSet, basename="mine-contest")
 router.register("contests", views.ContestViewSet, basename="contest")
 router.register("staff/contests", StaffContestViewSet, basename="staff-contest")
+router.register("staff/organizations", StaffOrganizationViewSet, basename="staff-organization")
 
 urlpatterns = [
     path("", include(router.urls)),

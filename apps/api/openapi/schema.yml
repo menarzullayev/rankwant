@@ -9801,6 +9801,196 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffSubmission'
           description: ''
+  /api/v1/staff/organizations/:
+    get:
+      operationId: staff_organizations_list
+      description: |-
+        Partner organizations (ADR-0063). Deleting one leaves its contests
+        without a partner; the contests stay.
+      summary: tashkilotlar ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffOrganizationList'
+          description: ''
+    post:
+      operationId: staff_organizations_create
+      description: |-
+        Partner organizations (ADR-0063). Deleting one leaves its contests
+        without a partner; the contests stay.
+      summary: Yangi tashkilot yaratish
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffOrganization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffOrganization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffOrganization'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffOrganization'
+          description: ''
+  /api/v1/staff/organizations/{slug}/:
+    get:
+      operationId: staff_organizations_retrieve
+      description: |-
+        Partner organizations (ADR-0063). Deleting one leaves its contests
+        without a partner; the contests stay.
+      summary: Bitta tashkilot
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffOrganization'
+          description: ''
+    put:
+      operationId: staff_organizations_update
+      description: |-
+        Partner organizations (ADR-0063). Deleting one leaves its contests
+        without a partner; the contests stay.
+      summary: tashkilotni yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffOrganization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffOrganization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffOrganization'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffOrganization'
+          description: ''
+    patch:
+      operationId: staff_organizations_partial_update
+      description: |-
+        Partner organizations (ADR-0063). Deleting one leaves its contests
+        without a partner; the contests stay.
+      summary: tashkilotni qisman yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffOrganization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffOrganization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffOrganization'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffOrganization'
+          description: ''
+    delete:
+      operationId: staff_organizations_destroy
+      description: |-
+        Partner organizations (ADR-0063). Deleting one leaves its contests
+        without a partner; the contests stay.
+      summary: tashkilotni o'chirish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/staff/platform-roadmap/:
     get:
       operationId: staff_platform_roadmap_list
@@ -18462,14 +18652,27 @@ components:
           type: integer
           readOnly: true
           default: 0
+        partner:
+          allOf:
+          - $ref: '#/components/schemas/OrganizationBrief'
+          readOnly: true
+          nullable: true
+        official_title:
+          type: string
+          maxLength: 200
+        is_mirror:
+          type: boolean
+          readOnly: true
       required:
       - end_at
       - hack_open_until
       - is_finished
       - is_frozen
       - is_hack_open
+      - is_mirror
       - is_running
       - participant_count
+      - partner
       - slug
       - start_at
       - title
@@ -18535,6 +18738,17 @@ components:
           type: integer
           readOnly: true
           default: 0
+        partner:
+          allOf:
+          - $ref: '#/components/schemas/Organization'
+          readOnly: true
+          nullable: true
+        official_title:
+          type: string
+          maxLength: 200
+        is_mirror:
+          type: boolean
+          readOnly: true
         description:
           type: string
         problems:
@@ -18549,6 +18763,25 @@ components:
           allOf:
           - $ref: '#/components/schemas/Crew'
           readOnly: true
+        prizes:
+          type: string
+        official_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        mirror_source:
+          allOf:
+          - $ref: '#/components/schemas/MirrorSource'
+          nullable: true
+          readOnly: true
+        mirrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mirror'
+          readOnly: true
       required:
       - crew
       - end_at
@@ -18556,8 +18789,12 @@ components:
       - is_finished
       - is_frozen
       - is_hack_open
+      - is_mirror
       - is_running
+      - mirror_source
+      - mirrors
       - participant_count
+      - partner
       - problem_count
       - problems
       - slug
@@ -19631,7 +19868,13 @@ components:
             type: object
             additionalProperties: {}
           readOnly: true
+        mirror_contests:
+          type: array
+          items:
+            $ref: '#/components/schemas/MirrorContest'
+          readOnly: true
       required:
+      - mirror_contests
       - result_count
       - results
       - season
@@ -21104,6 +21347,58 @@ components:
       - time_limit_ms
       - title
       - updated_at
+    Mirror:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+      required:
+      - slug
+      - start_at
+      - title
+    MirrorContest:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+      required:
+      - slug
+      - start_at
+      - title
+    MirrorSource:
+      type: object
+      description: |-
+        What a mirror contest mirrors: a RankWant contest or an olympiad
+        archive event (ADR-0063 § 2.4).
+      properties:
+        kind:
+          $ref: '#/components/schemas/MirrorSourceKindEnum'
+        slug:
+          type: string
+        title:
+          type: string
+      required:
+      - kind
+      - slug
+      - title
+    MirrorSourceKindEnum:
+      enum:
+      - contest
+      - olympiad
+      type: string
+      description: |-
+        * `contest` - contest
+        * `olympiad` - olympiad
     ModuleEnum:
       enum:
       - problems
@@ -21442,6 +21737,69 @@ components:
         * `paid` - Paid
         * `cancelled` - Cancelled
         * `refunded` - Refunded
+    Organization:
+      type: object
+      description: A partner on its contest's page.
+      properties:
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/OrganizationKindEnum'
+        logo_url:
+          type: string
+          maxLength: 500
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        about:
+          type: string
+      required:
+      - name
+      - slug
+    OrganizationBrief:
+      type: object
+      description: A partner as the contest list names it (ADR-0063).
+      properties:
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/OrganizationKindEnum'
+        logo_url:
+          type: string
+          maxLength: 500
+      required:
+      - name
+      - slug
+    OrganizationKindEnum:
+      enum:
+      - school
+      - university
+      - center
+      - company
+      - community
+      - government
+      type: string
+      description: |-
+        * `school` - Maktab
+        * `university` - Universitet
+        * `center` - O'quv markazi
+        * `company` - Kompaniya
+        * `community` - Hamjamiyat
+        * `government` - Davlat tashkiloti
     OrganizerContest:
       type: object
       description: |-
@@ -21495,6 +21853,8 @@ components:
         participant_count:
           type: integer
           readOnly: true
+        prizes:
+          type: string
       required:
       - end_at
       - is_public
@@ -22476,6 +22836,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffHackathon'
+    PaginatedStaffOrganizationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffOrganization'
     PaginatedStaffPostList:
       type: object
       required:
@@ -23757,6 +24140,8 @@ components:
         participant_count:
           type: integer
           readOnly: true
+        prizes:
+          type: string
     PatchedStaffArena:
       type: object
       properties:
@@ -23911,6 +24296,24 @@ components:
         mirror_of:
           type: string
           nullable: true
+        mirror_of_event:
+          type: string
+          nullable: true
+        partner:
+          type: string
+          nullable: true
+        prizes:
+          type: string
+        official_title:
+          type: string
+          maxLength: 200
+        official_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
         ratings_applied_at:
           type: string
           format: date-time
@@ -24079,6 +24482,36 @@ components:
           readOnly: true
         is_finished:
           type: boolean
+          readOnly: true
+    PatchedStaffOrganization:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/OrganizationKindEnum'
+        logo_url:
+          type: string
+          maxLength: 500
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        about:
+          type: string
+        contest_count:
+          type: integer
           readOnly: true
     PatchedStaffPost:
       type: object
@@ -27625,6 +28058,24 @@ components:
         mirror_of:
           type: string
           nullable: true
+        mirror_of_event:
+          type: string
+          nullable: true
+        partner:
+          type: string
+          nullable: true
+        prizes:
+          type: string
+        official_title:
+          type: string
+          maxLength: 200
+        official_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
         ratings_applied_at:
           type: string
           format: date-time
@@ -28028,6 +28479,41 @@ components:
       - submission_count
       - submission_deadline
       - title
+    StaffOrganization:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/OrganizationKindEnum'
+        logo_url:
+          type: string
+          maxLength: 500
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        about:
+          type: string
+        contest_count:
+          type: integer
+          readOnly: true
+      required:
+      - contest_count
+      - id
+      - name
+      - slug
     StaffPost:
       type: object
       properties:

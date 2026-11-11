@@ -371,6 +371,9 @@ SPECTACULAR_SETTINGS = {
         "SchoolKindEnum": "core.models.School.Kind",
         # The algorithms library (ADR-0062): `level` collides with other choice sets.
         "ArticleLevelEnum": "content.models.Article.Level",
+        # Partner organizations and mirror sources (ADR-0063): both `kind`.
+        "OrganizationKindEnum": "contests.models.Organization.Kind",
+        "MirrorSourceKindEnum": [("contest", "contest"), ("olympiad", "olympiad")],
         # Billing (ADR-0057): `kind`, `provider` and the plan code collide
         # with other models' choice sets.
         "OrderKindEnum": "billing.models.Order.Kind",

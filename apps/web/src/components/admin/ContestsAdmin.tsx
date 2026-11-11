@@ -36,6 +36,11 @@ type ContestRow = {
   is_virtual: boolean;
   is_public: boolean;
   mirror_of: string | null;
+  mirror_of_event: string | null;
+  partner: string | null;
+  prizes: string;
+  official_title: string;
+  official_url: string;
   ratings_applied_at: string | null;
   problems: ContestProblemRow[];
   is_running: boolean;
@@ -78,6 +83,18 @@ const FIELDS: FieldDef[] = [
     ],
   },
   { name: "mirror_of", labelKey: "admin.label.flag.mirror", type: "slug" },
+  // ADR-0063: an olympiad archive event this contest mirrors. A mirror is
+  // never rated; the API and the database refuse it.
+  {
+    name: "mirror_of_event",
+    labelKey: "admin.label.flag.mirrorEvent",
+    type: "slug",
+    helpKey: "admin.help.mirrorUnrated",
+  },
+  { name: "partner", labelKey: "admin.label.text.partner", type: "slug" },
+  { name: "official_title", labelKey: "admin.label.text.officialTitle" },
+  { name: "official_url", labelKey: "admin.label.tech.officialUrl" },
+  { name: "prizes", labelKey: "admin.label.text.prizes", type: "textarea", rows: 4 },
   { name: "is_rated", labelKey: "admin.label.flag.rated", type: "checkbox" },
   { name: "is_virtual", labelKey: "admin.label.flag.virtual", type: "checkbox" },
   { name: "is_public", labelKey: "admin.label.flag.public", type: "checkbox" },
@@ -365,6 +382,8 @@ export function ContestsAdmin() {
       toPayload={(values) => ({
         ...values,
         mirror_of: values.mirror_of ? String(values.mirror_of).trim() : null,
+        mirror_of_event: values.mirror_of_event ? String(values.mirror_of_event).trim() : null,
+        partner: values.partner ? String(values.partner).trim() : null,
         freeze_minutes: values.freeze_minutes ?? 0,
       })}
       rowExtra={(item, reload) => (

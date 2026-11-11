@@ -5309,6 +5309,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/staff/organizations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * tashkilotlar ro'yxati
+         * @description Partner organizations (ADR-0063). Deleting one leaves its contests
+         *     without a partner; the contests stay.
+         */
+        get: operations["staff_organizations_list"];
+        put?: never;
+        /**
+         * Yangi tashkilot yaratish
+         * @description Partner organizations (ADR-0063). Deleting one leaves its contests
+         *     without a partner; the contests stay.
+         */
+        post: operations["staff_organizations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/organizations/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Bitta tashkilot
+         * @description Partner organizations (ADR-0063). Deleting one leaves its contests
+         *     without a partner; the contests stay.
+         */
+        get: operations["staff_organizations_retrieve"];
+        /**
+         * tashkilotni yangilash
+         * @description Partner organizations (ADR-0063). Deleting one leaves its contests
+         *     without a partner; the contests stay.
+         */
+        put: operations["staff_organizations_update"];
+        post?: never;
+        /**
+         * tashkilotni o'chirish
+         * @description Partner organizations (ADR-0063). Deleting one leaves its contests
+         *     without a partner; the contests stay.
+         */
+        delete: operations["staff_organizations_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * tashkilotni qisman yangilash
+         * @description Partner organizations (ADR-0063). Deleting one leaves its contests
+         *     without a partner; the contests stay.
+         */
+        patch: operations["staff_organizations_partial_update"];
+        trace?: never;
+    };
     "/api/v1/staff/platform-roadmap/": {
         parameters: {
             query?: never;
@@ -8577,6 +8639,9 @@ export interface components {
             readonly hack_open_until: string;
             /** @default 0 */
             readonly participant_count: number;
+            readonly partner: components["schemas"]["OrganizationBrief"] | null;
+            official_title?: string;
+            readonly is_mirror: boolean;
         };
         ContestAnnouncement: {
             problem?: string | null;
@@ -8606,10 +8671,17 @@ export interface components {
             readonly hack_open_until: string;
             /** @default 0 */
             readonly participant_count: number;
+            readonly partner: components["schemas"]["Organization"] | null;
+            official_title?: string;
+            readonly is_mirror: boolean;
             description?: string;
             readonly problems: components["schemas"]["ContestProblem"][];
             readonly problem_count: number;
             readonly crew: components["schemas"]["Crew"];
+            prizes?: string;
+            official_url?: string;
+            readonly mirror_source: components["schemas"]["MirrorSource"] | null;
+            readonly mirrors: components["schemas"]["Mirror"][];
         };
         ContestProblem: {
             index_letter: string;
@@ -9005,6 +9077,7 @@ export interface components {
             readonly results: {
                 [key: string]: unknown;
             }[];
+            readonly mirror_contests: components["schemas"]["MirrorContest"][];
         };
         ExternalIn: {
             kind: components["schemas"]["ExternalProfileKindEnum"];
@@ -9610,6 +9683,33 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        Mirror: {
+            slug: string;
+            title: string;
+            /** Format: date-time */
+            start_at: string;
+        };
+        MirrorContest: {
+            slug: string;
+            title: string;
+            /** Format: date-time */
+            start_at: string;
+        };
+        /**
+         * @description What a mirror contest mirrors: a RankWant contest or an olympiad
+         *     archive event (ADR-0063 § 2.4).
+         */
+        MirrorSource: {
+            kind: components["schemas"]["MirrorSourceKindEnum"];
+            slug: string;
+            title: string;
+        };
+        /**
+         * @description * `contest` - contest
+         *     * `olympiad` - olympiad
+         * @enum {string}
+         */
+        MirrorSourceKindEnum: "contest" | "olympiad";
         /**
          * @description * `problems` - Masalalar
          *     * `contests` - Musobaqalar
@@ -9750,6 +9850,32 @@ export interface components {
          * @enum {string}
          */
         OrderStatusEnum: "pending" | "paid" | "cancelled" | "refunded";
+        /** @description A partner on its contest's page. */
+        Organization: {
+            slug: string;
+            name: string;
+            kind?: components["schemas"]["OrganizationKindEnum"];
+            logo_url?: string;
+            website?: string;
+            about?: string;
+        };
+        /** @description A partner as the contest list names it (ADR-0063). */
+        OrganizationBrief: {
+            slug: string;
+            name: string;
+            kind?: components["schemas"]["OrganizationKindEnum"];
+            logo_url?: string;
+        };
+        /**
+         * @description * `school` - Maktab
+         *     * `university` - Universitet
+         *     * `center` - O'quv markazi
+         *     * `company` - Kompaniya
+         *     * `community` - Hamjamiyat
+         *     * `government` - Davlat tashkiloti
+         * @enum {string}
+         */
+        OrganizationKindEnum: "school" | "university" | "center" | "company" | "community" | "government";
         /**
          * @description Organizator ko'radigan maydonlar.
          *
@@ -9777,6 +9903,7 @@ export interface components {
             testers?: string[];
             readonly problems: components["schemas"]["OrganizerContestProblem"][];
             readonly participant_count: number;
+            prizes?: string;
         };
         /** @description One problem of the organizer's contest. */
         OrganizerContestProblem: {
@@ -10402,6 +10529,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["StaffHackathon"][];
+        };
+        PaginatedStaffOrganizationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffOrganization"][];
         };
         PaginatedStaffPostList: {
             /** @example 123 */
@@ -11127,6 +11269,7 @@ export interface components {
             testers?: string[];
             readonly problems?: components["schemas"]["OrganizerContestProblem"][];
             readonly participant_count?: number;
+            prizes?: string;
         };
         PatchedStaffArena: {
             slug?: string;
@@ -11194,6 +11337,11 @@ export interface components {
             is_virtual?: boolean;
             is_public?: boolean;
             mirror_of?: string | null;
+            mirror_of_event?: string | null;
+            partner?: string | null;
+            prizes?: string;
+            official_title?: string;
+            official_url?: string;
             /** Format: date-time */
             readonly ratings_applied_at?: string | null;
             /** Format: date-time */
@@ -11264,6 +11412,16 @@ export interface components {
             readonly submission_count?: number;
             readonly accepts_submissions?: boolean;
             readonly is_finished?: boolean;
+        };
+        PatchedStaffOrganization: {
+            readonly id?: number;
+            slug?: string;
+            name?: string;
+            kind?: components["schemas"]["OrganizationKindEnum"];
+            logo_url?: string;
+            website?: string;
+            about?: string;
+            readonly contest_count?: number;
         };
         PatchedStaffPost: {
             slug?: string;
@@ -12740,6 +12898,11 @@ export interface components {
             is_virtual?: boolean;
             is_public?: boolean;
             mirror_of?: string | null;
+            mirror_of_event?: string | null;
+            partner?: string | null;
+            prizes?: string;
+            official_title?: string;
+            official_url?: string;
             /** Format: date-time */
             readonly ratings_applied_at: string | null;
             /** Format: date-time */
@@ -12883,6 +13046,16 @@ export interface components {
             readonly submission_count: number;
             readonly accepts_submissions: boolean;
             readonly is_finished: boolean;
+        };
+        StaffOrganization: {
+            readonly id: number;
+            slug: string;
+            name: string;
+            kind?: components["schemas"]["OrganizationKindEnum"];
+            logo_url?: string;
+            website?: string;
+            about?: string;
+            readonly contest_count: number;
         };
         StaffPost: {
             slug: string;
@@ -22017,6 +22190,154 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffSubmission"];
+                };
+            };
+        };
+    };
+    staff_organizations_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffOrganizationList"];
+                };
+            };
+        };
+    };
+    staff_organizations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffOrganization"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffOrganization"];
+                "multipart/form-data": components["schemas"]["StaffOrganization"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffOrganization"];
+                };
+            };
+        };
+    };
+    staff_organizations_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffOrganization"];
+                };
+            };
+        };
+    };
+    staff_organizations_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffOrganization"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffOrganization"];
+                "multipart/form-data": components["schemas"]["StaffOrganization"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffOrganization"];
+                };
+            };
+        };
+    };
+    staff_organizations_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    staff_organizations_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStaffOrganization"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStaffOrganization"];
+                "multipart/form-data": components["schemas"]["PatchedStaffOrganization"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffOrganization"];
                 };
             };
         };

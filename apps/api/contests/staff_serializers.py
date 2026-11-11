@@ -5,10 +5,11 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from django.apps import apps
 from rest_framework import serializers
 
 from contests.insiders import notify_new_testers
-from contests.models import Contest, ContestProblem
+from contests.models import Contest, ContestProblem, Organization
 from core.models import User
 from problems.models import Problem
 from problems.readiness import GRADED_READY, enforcing, graded_gate_error
@@ -38,9 +39,53 @@ def crew_field() -> serializers.SlugRelatedField[User]:
     )
 
 
+def clean_logo(value: str) -> str:
+    """A logo is a site path or an https URL — nothing a browser would run
+    (ADR-0063 § 2.7; the same rule as team photos)."""
+    value = value.strip()
+    if not value:
+        return value
+    site_path = value.startswith("/") and not value.startswith("//")
+    if not (site_path or value.startswith("https://")):
+        raise serializers.ValidationError("Use a site path (/partners/logo.png) or an https:// URL")
+    return value
+
+
+def clean_https(value: str) -> str:
+    value = value.strip()
+    if value and not value.startswith("https://"):
+        raise serializers.ValidationError("Use an https:// URL")
+    return value
+
+
+class StaffOrganizationSerializer(serializers.ModelSerializer[Organization]):
+    contest_count = serializers.IntegerField(source="contests.count", read_only=True)
+
+    class Meta:
+        model = Organization
+        fields = ["id", "slug", "name", "kind", "logo_url", "website", "about", "contest_count"]
+
+    def validate_logo_url(self, value: str) -> str:
+        return clean_logo(value)
+
+    def validate_website(self, value: str) -> str:
+        return clean_https(value)
+
+
 class StaffContestSerializer(serializers.ModelSerializer[Contest]):
     mirror_of = serializers.SlugRelatedField(
         slug_field="slug", queryset=Contest.objects.all(), allow_null=True, required=False
+    )
+    #: An olympiad archive event (ADR-0063 § 2.4). Looked up through the app
+    #: registry, so `contests` does not import `olympiads.models`.
+    mirror_of_event = serializers.SlugRelatedField(
+        slug_field="slug",
+        queryset=apps.get_model("olympiads", "Event")._default_manager.all(),
+        allow_null=True,
+        required=False,
+    )
+    partner = serializers.SlugRelatedField(
+        slug_field="slug", queryset=Organization.objects.all(), allow_null=True, required=False
     )
     #: Insiders the staff appoint (ADR-0055, part 2). They see the problems
     #: early and take part unrated.
@@ -69,6 +114,11 @@ class StaffContestSerializer(serializers.ModelSerializer[Contest]):
             "is_virtual",
             "is_public",
             "mirror_of",
+            "mirror_of_event",
+            "partner",
+            "prizes",
+            "official_title",
+            "official_url",
             "ratings_applied_at",
             "created_at",
             "problems",
@@ -99,7 +149,19 @@ class StaffContestSerializer(serializers.ModelSerializer[Contest]):
         mirror = attrs.get("mirror_of")
         if mirror is not None and self.instance is not None and mirror.pk == self.instance.pk:
             raise serializers.ValidationError({"mirror_of": "A contest cannot be its own mirror"})
+
+        # A mirror's problems were set elsewhere first: never rated
+        # (ADR-0063 § 2.6; the database refuses it too).
+        def current(name: str) -> Any:
+            return attrs[name] if name in attrs else getattr(self.instance, name, None)
+
+        mirrors = current("mirror_of") is not None or current("mirror_of_event") is not None
+        if mirrors and current("is_rated"):
+            raise serializers.ValidationError({"is_rated": "A mirror contest is never rated"})
         return attrs
+
+    def validate_official_url(self, value: str) -> str:
+        return clean_https(value)
 
 
 class StaffContestProblemListSerializer(serializers.Serializer[Any]):

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3454 strings.**
+**3481 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2926,6 +2926,33 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `contest.print.hint` | PDF fayl olish uchun chop etish oynasida «PDF sifatida saqlash» ni tanlang. | Барои гирифтани файли PDF дар равзанаи чоп «Ҳамчун PDF нигоҳ доштан»-ро интихоб кунед. |  |
 | `contest.print.count` | {count} ta masala | {count} масъала |  |
 | `contest.print.limits` | Vaqt: {time} ms · Xotira: {memory} MB | Вақт: {time} мс · Хотира: {memory} МБ |  |
+| `contests.official` | Rasmiy | Расмӣ |  |
+| `contests.mirror` | Ko'zgu | Оина |  |
+| `contests.partnerOf` | Hamkor: {name} | Шарик: {name} |  |
+| `contest.official.document` | Rasmiy hujjat | Ҳуҷҷати расмӣ |  |
+| `contest.mirror.of` | Bu musobaqa quyidagining ko'zgusi: | Ин мусобиқа оинаи |  |
+| `contest.mirror.unrated` | Masalalar avval o'sha yerda berilgan, shuning uchun reyting hisoblanmaydi. | Масъалаҳо аввал дар он ҷо дода шудаанд, аз ин рӯ рейтинг ҳисоб намешавад. |  |
+| `contest.mirrors` | Ko'zgu musobaqalar | Мусобиқаҳои оина |  |
+| `contest.partner` | Hamkor | Шарик |  |
+| `contest.partner.website` | Sayti | Сомона |  |
+| `contest.prizes` | Sovrinlar | Ҷоизаҳо |  |
+| `olympiads.mirrors` | RankWant'dagi ko'zgu musobaqalar | Мусобиқаҳои оина дар RankWant |  |
+| `org.kind.school` | Maktab | Мактаб |  |
+| `org.kind.university` | Universitet | Донишгоҳ |  |
+| `org.kind.center` | O'quv markazi | Маркази таълимӣ |  |
+| `org.kind.company` | Kompaniya | Ширкат |  |
+| `org.kind.community` | Hamjamiyat | Ҷомеа |  |
+| `org.kind.government` | Davlat tashkiloti | Ташкилоти давлатӣ |  |
+| `admin.section.organizations` | Tashkilotlar | Ташкилотҳо |  |
+| `admin.label.tech.website` | Sayt (https://) | Сомона (https://) |  |
+| `admin.label.text.about` | Tavsif | Тавсиф |  |
+| `admin.label.text.partner` | Hamkor (tashkilot slug'i) | Шарик (slug-и ташкилот) |  |
+| `admin.label.text.officialTitle` | Rasmiy maqomi | Мақоми расмӣ |  |
+| `admin.label.tech.officialUrl` | Rasmiy hujjat havolasi (https://) | Пайванди ҳуҷҷати расмӣ (https://) |  |
+| `admin.label.text.prizes` | Sovrinlar (Markdown) | Ҷоизаҳо (Markdown) |  |
+| `admin.label.flag.mirrorEvent` | Olimpiada ko'zgusi (tadbir slug'i) | Оинаи олимпиада (slug-и чорабинӣ) |  |
+| `admin.help.mirrorUnrated` | Ko'zgu musobaqa reytingli bo'lmaydi. | Мусобиқаи оина рейтингӣ намешавад. |  |
+| `admin.help.organizationLogo` | Sayt yo'li (/partners/logo.png) yoki https:// manzil. | Роҳ дар сайт (/partners/logo.png) ё нишонии https://. |  |
 | `contest.fair.rule` | Musobaqada sun'iy intellekt yordamchilaridan (ChatGPT, Copilot va boshqalar) foydalanish taqiqlanadi. Muharrirda kod joylash va sahifadan chiqish qayd etiladi — hakam ko'radi. | Дар мусобиқа истифодаи ёрдамчиёни зеҳни сунъӣ (ChatGPT, Copilot ва ғ.) манъ аст. Гузоштани код дар муҳаррир ва баромадан аз саҳифа сабт мешавад — ҳакам мебинад. |  |
 | `contest.fair.editorNote` | Musobaqa: AI yordamchilar taqiqlanadi. Kod joylash va sahifadan chiqish qayd etiladi. | Мусобиқа: ёрдамчиёни ЗС манъ аст. Гузоштани код ва баромадан аз саҳифа сабт мешавад. |  |
 | `contest.fair.youAreOut` | Siz bu musobaqadan chetlatildingiz | Шумо аз ин мусобиқа хориҷ карда шудед |  |

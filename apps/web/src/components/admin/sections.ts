@@ -9,6 +9,8 @@ export const ADMIN_SECTIONS = [
   { href: "/admin/problems", labelKey: "admin.section.problems" },
   { href: "/admin/reports", labelKey: "admin.section.reports" },
   { href: "/admin/contests", labelKey: "admin.section.contests" },
+  // Partner organizations (ADR-0063) — beside the contests they partner.
+  { href: "/admin/organizations", labelKey: "admin.section.organizations" },
   { href: "/admin/questions", labelKey: "admin.section.questions" },
   { href: "/admin/quizzes", labelKey: "admin.section.quizzes" },
   { href: "/admin/courses", labelKey: "admin.section.courses" },

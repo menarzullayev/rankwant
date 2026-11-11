@@ -12,6 +12,7 @@ from contests.models import (
     Contest,
     ContestProblem,
     ContestRegistration,
+    Organization,
     Standing,
 )
 from profiles.titles import TitleField, UserTitleSerializer
@@ -26,6 +27,36 @@ class ContestProblemSerializer(serializers.ModelSerializer[ContestProblem]):
         fields = ["index_letter", "slug", "title", "points"]
 
 
+class OrganizationBriefSerializer(serializers.ModelSerializer[Organization]):
+    """A partner as the contest list names it (ADR-0063)."""
+
+    class Meta:
+        model = Organization
+        fields = ["slug", "name", "kind", "logo_url"]
+
+
+class OrganizationSerializer(OrganizationBriefSerializer):
+    """A partner on its contest's page."""
+
+    class Meta(OrganizationBriefSerializer.Meta):
+        fields = [*OrganizationBriefSerializer.Meta.fields, "website", "about"]
+
+
+class MirrorSourceSerializer(serializers.Serializer[Any]):
+    """What a mirror contest mirrors: a RankWant contest or an olympiad
+    archive event (ADR-0063 § 2.4)."""
+
+    kind = serializers.ChoiceField(choices=["contest", "olympiad"])
+    slug = serializers.CharField()
+    title = serializers.CharField()
+
+
+class MirrorSerializer(serializers.Serializer[Any]):
+    slug = serializers.CharField()
+    title = serializers.CharField()
+    start_at = serializers.DateTimeField()
+
+
 class ContestSerializer(serializers.ModelSerializer[Contest]):
     is_running = serializers.BooleanField(read_only=True)
     is_finished = serializers.BooleanField(read_only=True)
@@ -37,6 +68,9 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
     hack_open_until = serializers.DateTimeField(read_only=True)
     #: Registrations, annotated by the viewset — one COUNT for the whole list.
     participant_count = serializers.IntegerField(read_only=True, default=0)
+    #: Partner, official and mirror marks (ADR-0063).
+    partner = OrganizationBriefSerializer(read_only=True, allow_null=True)
+    is_mirror = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Contest
@@ -56,6 +90,9 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
             "is_hack_open",
             "hack_open_until",
             "participant_count",
+            "partner",
+            "official_title",
+            "is_mirror",
         ]
 
 
@@ -76,6 +113,9 @@ class ContestDetailSerializer(ContestSerializer):
     problems = ContestProblemSerializer(many=True, read_only=True)
     problem_count = serializers.SerializerMethodField()
     crew = serializers.SerializerMethodField()
+    partner = OrganizationSerializer(read_only=True, allow_null=True)
+    mirror_source = serializers.SerializerMethodField()
+    mirrors = serializers.SerializerMethodField()
 
     class Meta(ContestSerializer.Meta):
         fields = [
@@ -84,7 +124,27 @@ class ContestDetailSerializer(ContestSerializer):
             "problems",
             "problem_count",
             "crew",
+            "prizes",
+            "official_url",
+            "mirror_source",
+            "mirrors",
         ]
+
+    @extend_schema_field(MirrorSourceSerializer(allow_null=True))
+    def get_mirror_source(self, contest: Contest) -> dict[str, Any] | None:
+        """The original, when it can be shown: a hidden contest is not named."""
+        original = contest.mirror_of
+        if original is not None and original.is_public:
+            return {"kind": "contest", "slug": original.slug, "title": original.title}
+        event = contest.mirror_of_event
+        if event is not None:
+            return {"kind": "olympiad", "slug": event.slug, "title": event.title}
+        return None
+
+    @extend_schema_field(MirrorSerializer(many=True))
+    def get_mirrors(self, contest: Contest) -> list[dict[str, Any]]:
+        rows = contest.mirrors.filter(is_public=True).order_by("start_at")
+        return [{"slug": c.slug, "title": c.title, "start_at": c.start_at} for c in rows]
 
     def get_problem_count(self, contest: Contest) -> int:
         return len(contest.problems.all())
