@@ -8,6 +8,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from problems import storage, testsets, translations
+from problems.limits import memory_limit_kb
 from problems.models import (
     Language,
     Problem,
@@ -303,7 +304,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
                     "name": language.name,
                     "version": language.version,
                     "time_limit_ms": problem.time_limit_ms,
-                    "memory_limit_kb": problem.memory_limit_kb,
+                    "memory_limit_kb": memory_limit_kb(problem, language),
                     "code_template": "SELECT\n",
                     "harness": "",
                 }
@@ -317,7 +318,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
                     "name": language.name,
                     "version": language.version,
                     "time_limit_ms": problem.time_limit_ms,
-                    "memory_limit_kb": problem.memory_limit_kb,
+                    "memory_limit_kb": memory_limit_kb(problem, language),
                     "code_template": "",
                     "harness": "",
                 }
@@ -329,7 +330,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
                 "name": row.language.name,
                 "version": row.language.version,
                 "time_limit_ms": row.time_limit_ms or problem.time_limit_ms,
-                "memory_limit_kb": row.memory_limit_kb or problem.memory_limit_kb,
+                "memory_limit_kb": memory_limit_kb(problem, row.language, row),
                 "code_template": row.code_template,
                 "harness": row.harness,
             }

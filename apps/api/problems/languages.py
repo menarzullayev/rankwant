@@ -13,6 +13,9 @@ Optional keys, with the defaults `row_values` fills in:
   compile_time_ms  CPU budget for one compile (10_000)
   proc_self        mount a procfs of the sandbox's own processes (False)
   open_files       RLIMIT_NOFILE for programs, 0 = the judge's 64 (0)
+  memory_overhead_kb  the runtime's own memory, added to every problem's
+                   limit (ADR-0060 § 2.2): the 95th percentile of the A+B
+                   peak in the judge image, warm, rounded up to a whole MB (0)
 """
 
 from __future__ import annotations
@@ -28,6 +31,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": ["g++", "-std=c++23", "-O2", "-o", "{bin}", "{src}"],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 2048,
     },
     {
         "code": "py313",
@@ -37,6 +41,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["python3", "{src}"],
         "processes": 1,
+        "memory_overhead_kb": 5120,
     },
     {
         "code": "java21",
@@ -47,6 +52,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "run": ["java", "-cp", "/box", "Main"],
         # The JVM opens 18 threads even for an empty program (measured).
         "processes": 32,
+        "memory_overhead_kb": 21504,
     },
     # ── Group 1: on KEP.uz, Robocontest and Codeforces (ADR-0022) ──
     {
@@ -59,6 +65,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": ["gcc", "-std=gnu17", "-O2", "-o", "{bin}", "{src}", "-lm"],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 2048,
     },
     {
         "code": "csharp14",
@@ -86,6 +93,7 @@ LANGUAGES: list[dict[str, Any]] = [
             "{bin}.dll",
         ],
         "processes": 32,
+        "memory_overhead_kb": 7168,
         # CoreCLR reads /proc/self; under the mask it fails with 0x8007000E.
         "proc_self": True,
     },
@@ -97,6 +105,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["/opt/node/bin/node", "{src}"],
         "processes": 16,
+        "memory_overhead_kb": 14336,
     },
     {
         "code": "rust185",
@@ -116,6 +125,7 @@ LANGUAGES: list[dict[str, Any]] = [
         ],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 2048,
     },
     {
         "code": "go124",
@@ -136,6 +146,7 @@ LANGUAGES: list[dict[str, Any]] = [
         ],
         "run": ["{bin}"],
         "processes": 16,
+        "memory_overhead_kb": 3072,
     },
     {
         "code": "php84",
@@ -145,6 +156,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["php", "{src}"],
         "processes": 1,
+        "memory_overhead_kb": 7168,
     },
     {
         "code": "kotlin24",
@@ -163,6 +175,7 @@ LANGUAGES: list[dict[str, Any]] = [
         ],
         "run": ["java", "-jar", "{bin}.jar"],
         "processes": 32,
+        "memory_overhead_kb": 33792,
         # kotlinc spends ~5 s of CPU on A+B alone.
         "compile_time_ms": 20_000,
     },
@@ -175,6 +188,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": ["fpc", "-O2", "-XS", "-o{bin}", "{src}"],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 2048,
     },
     {
         "code": "ruby33",
@@ -184,6 +198,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["ruby", "{src}"],
         "processes": 8,
+        "memory_overhead_kb": 8192,
     },
     {
         "code": "haskell96",
@@ -194,6 +209,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": ["/usr/bin/env", "TMPDIR=/box", "ghc", "-O2", "-o", "{bin}", "{src}"],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 3072,
     },
     {
         "code": "r45",
@@ -203,6 +219,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["/usr/bin/env", "TMPDIR=/box", "Rscript", "{src}"],
         "processes": 8,
+        "memory_overhead_kb": 45056,
         # R refuses to start with fewer open files ("limit on the number of open
         # files is too low"): it failed at 128 and started at 192.
         "open_files": 256,
@@ -226,6 +243,7 @@ LANGUAGES: list[dict[str, Any]] = [
         ],
         "run": ["{bin}"],
         "processes": 8,
+        "memory_overhead_kb": 3072,
         # swiftc dies with signal 4 under the /proc mask.
         "proc_self": True,
     },
@@ -237,6 +255,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["perl", "{src}"],
         "processes": 1,
+        "memory_overhead_kb": 3072,
     },
     {
         "code": "d140",
@@ -247,6 +266,7 @@ LANGUAGES: list[dict[str, Any]] = [
         # Without this the GC starts a marking thread for every core but one.
         "run": ["{bin}", "--DRT-gcopt=parallel:0"],
         "processes": 4,
+        "memory_overhead_kb": 3072,
     },
     {
         "code": "ocaml53",
@@ -267,6 +287,7 @@ LANGUAGES: list[dict[str, Any]] = [
         ],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 3072,
     },
     {
         "code": "ts24",
@@ -278,6 +299,7 @@ LANGUAGES: list[dict[str, Any]] = [
         # flag it rejects enums and constructor parameter properties.
         "run": ["/opt/node/bin/node", "--experimental-transform-types", "{src}"],
         "processes": 16,
+        "memory_overhead_kb": 26624,
     },
     {
         "code": "dart313",
@@ -296,6 +318,7 @@ LANGUAGES: list[dict[str, Any]] = [
         ],
         "run": ["{bin}"],
         "processes": 16,
+        "memory_overhead_kb": 4096,
         # The Dart VM reads its stack bounds from /proc/self, in the compiler and in
         # the compiled program alike.
         "proc_self": True,
@@ -310,6 +333,7 @@ LANGUAGES: list[dict[str, Any]] = [
         # scala.jar lists only the runtime libraries: the compiler stays off the classpath.
         "run": ["java", "-cp", "/opt/scala/lib/scala.jar:/box", "Main"],
         "processes": 32,
+        "memory_overhead_kb": 35840,
         "compile_time_ms": 20_000,
     },
     # ── Group 3: the rest of the TIOBE top 50, plus PyPy and F# (ADR-0022) ──
@@ -337,6 +361,7 @@ LANGUAGES: list[dict[str, Any]] = [
             "{bin}.dll",
         ],
         "processes": 32,
+        "memory_overhead_kb": 8192,
         "proc_self": True,
     },
     {
@@ -347,6 +372,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": ["gfortran", "-O2", "-o", "{bin}", "{src}"],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 2048,
     },
     {
         "code": "nasm216",
@@ -360,6 +386,7 @@ LANGUAGES: list[dict[str, Any]] = [
         ],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 2048,
     },
     {
         "code": "ada14",
@@ -369,6 +396,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": ["gnatmake", "-O2", "-o", "{bin}", "{src}"],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 3072,
     },
     {
         "code": "objc14",
@@ -390,6 +418,7 @@ LANGUAGES: list[dict[str, Any]] = [
         ],
         "run": ["{bin}"],
         "processes": 8,
+        "memory_overhead_kb": 2048,
     },
     {
         "code": "cobol32",
@@ -399,6 +428,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": ["/usr/bin/env", "TMPDIR=/box", "cobc", "-x", "-O2", "-o", "{bin}", "{src}"],
         "run": ["{bin}"],
         "processes": 1,
+        "memory_overhead_kb": 3072,
     },
     {
         "code": "julia113",
@@ -416,6 +446,7 @@ LANGUAGES: list[dict[str, Any]] = [
             "{src}",
         ],
         "processes": 32,
+        "memory_overhead_kb": 119808,
         "proc_self": True,
     },
     {
@@ -426,6 +457,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["ocaml", "{src}"],
         "processes": 1,
+        "memory_overhead_kb": 12288,
     },
     {
         "code": "prolog92",
@@ -435,6 +467,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["swipl", "{src}"],
         "processes": 8,
+        "memory_overhead_kb": 10240,
     },
     {
         "code": "lua54",
@@ -444,6 +477,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["lua5.4", "{src}"],
         "processes": 1,
+        "memory_overhead_kb": 2048,
     },
     {
         "code": "powershell76",
@@ -463,6 +497,7 @@ LANGUAGES: list[dict[str, Any]] = [
             "{src}",
         ],
         "processes": 64,
+        "memory_overhead_kb": 28672,
         "proc_self": True,
         # PowerShell fails with FileNotFound below ~192 open files.
         "open_files": 256,
@@ -475,6 +510,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["sbcl", "--script", "{src}"],
         "processes": 8,
+        "memory_overhead_kb": 4096,
     },
     {
         "code": "pypy73",
@@ -484,6 +520,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [],
         "run": ["pypy3", "{src}"],
         "processes": 4,
+        "memory_overhead_kb": 26624,
     },
     {
         "code": "fsharp10",
@@ -510,6 +547,7 @@ LANGUAGES: list[dict[str, Any]] = [
             "{bin}.dll",
         ],
         "processes": 32,
+        "memory_overhead_kb": 7168,
         "proc_self": True,
     },
 ]
@@ -527,4 +565,5 @@ def row_values(spec: dict[str, Any]) -> dict[str, Any]:
         "compile_time_ms": spec.get("compile_time_ms", 10_000),
         "proc_self": spec.get("proc_self", False),
         "open_files": spec.get("open_files", 0),
+        "memory_overhead_kb": spec.get("memory_overhead_kb", 0),
     }

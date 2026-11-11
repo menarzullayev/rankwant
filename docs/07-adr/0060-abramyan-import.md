@@ -60,6 +60,11 @@ Platforma bu paketni bugun to'g'ri qabul qila olmaydi (kod va jonli baza o'lchan
   chegarasini o'zi aytgan.
 - Masala sahifasida masala chegarasi ko'rsatiladi. Til ustamasi yuborish panelida tanlangan til
   bilan birga ko'rsatiladi.
+- **O'lchandi (2026-11-11)** — [yozuv](../research/2026-11-11-language-memory-overhead/README.md):
+  35 til, 35 tadan yurish, p95 butun MB'ga yaxlitlangan (Julia 117, R 44, Scala 35, Java 21,
+  Python 5, C++ 2). O'lchov judge'ning nuqsonini ochdi: MLE `memory.peak >= chegara` bilan
+  berilardi, `memory.peak` esa sahifa keshini ham sanaydi. Endi MLE faqat kernel dasturni
+  xotira uchun o'ldirganda (`oom_kill`) beriladi.
 
 ### 2.3 Norasmiy masalalar
 

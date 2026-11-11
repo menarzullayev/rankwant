@@ -30,7 +30,7 @@ from hacks.policies import AddsTest, Policy
 from judging.models import Attempt
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import Verdict
-from problems import evaluation, storage
+from problems import evaluation, limits, storage
 from problems.models import (
     Language,
     Problem,
@@ -231,7 +231,7 @@ def _problem_limits(problem: Problem, language: Language) -> dict[str, int]:
     return {
         "compile_time_ms": language.compile_time_ms,
         "time_ms": (override.time_limit_ms if override else None) or problem.time_limit_ms,
-        "memory_kb": (override.memory_limit_kb if override else None) or problem.memory_limit_kb,
+        "memory_kb": limits.memory_limit_kb(problem, language, override),
         "output_kb": settings.HACK_GENERATOR_OUTPUT_KB,
         "processes": language.process_limit,
     }

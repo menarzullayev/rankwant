@@ -491,7 +491,15 @@ func classify(out *runOutcome, test Test, lim Limits, cmp Compare) string {
 	switch {
 	case out.OutputEx:
 		return VOLE
-	case out.OOMKill || (lim.MemoryKB > 0 && out.PeakKB >= int64(lim.MemoryKB)):
+	case out.OOMKill:
+		// MLE is the kernel killing the program for memory, nothing else.
+		// `memory.peak` also counts page cache — a runtime's files read
+		// cold, a file the program wrote — which the kernel reclaims at the
+		// limit instead of killing. Measured 2026-11-11: a C++ program that
+		// held 1 MB and wrote 150 MB of files under a 64 MB limit printed its
+		// answer and still came back MLE at a peak of exactly 65 536 kB; a
+		// Julia A+B in production did the same at 262 144 kB (2026-09-29).
+		// The peak stays the reported memory; it no longer decides.
 		return VMLE
 	case out.CPUMs > int64(lim.TimeMS):
 		return VTLE

@@ -6347,6 +6347,33 @@ def neg_decisions_rejected_solution_left_running() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_mle_counts_page_cache() -> tuple[bool, str]:
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "\tcase out.OOMKill:\n",
+        "\tcase out.OOMKill || (lim.MemoryKB > 0 && out.PeakKB >= int64(lim.MemoryKB)):\n",
+        "xotira chegarasi dastur ushlagan xotira",
+    )
+
+
+def neg_decisions_job_drops_language_overhead() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/judging/services.py",
+        "limits.memory_limit_kb(problem, language, override)",
+        "(override.memory_limit_kb if override else None) or problem.memory_limit_kb",
+        "xotira chegarasi dastur ushlagan xotira",
+    )
+
+
+def neg_decisions_panel_drops_language_overhead() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/api/problems/serializers.py",
+        "memory_limit_kb(problem, row.language, row)",
+        "row.memory_limit_kb or problem.memory_limit_kb",
+        "xotira chegarasi dastur ushlagan xotira",
+    )
+
+
 def neg_decisions_real_tolerance_absolute() -> tuple[bool, str]:
     return _decision_broken(
         "services/judge-go/compare.go",
@@ -8948,6 +8975,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/problems/visibility.py",
     "apps/api/problems/views.py",
     "apps/api/problems/serializers.py",
+    "apps/api/problems/languages.py",
     "apps/api/contests/serializers.py",
     "apps/api/contests/services.py",
     "apps/api/contests/certificates.py",
@@ -12684,6 +12712,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("checker format farqini ko'rmasa tutilsin", neg_decisions_checker_never_sees_a_format_difference),
             ("scorer balli verdikt bo'lmasa tutilsin", neg_decisions_scorer_score_is_not_a_verdict),
             ("rad etilgan yechim to'xtatilmasa tutilsin", neg_decisions_rejected_solution_left_running),
+            ("MLE sahifa keshini sanasa tutilsin", neg_decisions_mle_counts_page_cache),
+            ("ishda til ustamasi tushsa tutilsin", neg_decisions_job_drops_language_overhead),
+            ("panelda til ustamasi tushsa tutilsin", neg_decisions_panel_drops_language_overhead),
             ("haqiqiy son chegarasi mutlaq bo'lsa tutilsin", neg_decisions_real_tolerance_absolute),
             (
                 "noma'lum checker aniq solishtiruvga tushsa tutilsin",

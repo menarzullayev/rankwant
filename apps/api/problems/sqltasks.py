@@ -101,6 +101,9 @@ def sql_language() -> Language:
             "source_file": "main.py",
             "compile_cmd": [],
             "run_cmd": ["python3", "{src}"],
+            # The runner's own memory (Python + sqlite3), measured like the
+            # catalog's languages (ADR-0060 § 2.2).
+            "memory_overhead_kb": 9216,
             "is_active": False,
         },
     )

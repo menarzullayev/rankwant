@@ -104,3 +104,17 @@ func TestUnknownCheckerIsRefused(t *testing.T) {
 		}
 	}
 }
+
+// Page cache reclaimed at the limit is not MLE; a kill for memory is.
+func TestMLEIsTheKernelKilling(t *testing.T) {
+	lim := Limits{TimeMS: 1000, MemoryKB: 65536}
+	test := Test{Index: 1, Expected: "7\n"}
+	atLimit := &runOutcome{ExitCode: 0, Stdout: "7\n", PeakKB: 65536}
+	if v := classify(atLimit, test, lim, Compare{}); v != VAC {
+		t.Fatalf("a run that reached the limit through page cache and finished = %s, want AC", v)
+	}
+	killed := &runOutcome{ExitCode: 137, PeakKB: 65536, OOMKill: true}
+	if v := classify(killed, test, lim, Compare{}); v != VMLE {
+		t.Fatalf("a run the kernel killed for memory = %s, want MLE", v)
+	}
+}
