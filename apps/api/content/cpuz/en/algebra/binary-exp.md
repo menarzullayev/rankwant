@@ -5,7 +5,9 @@ Binary exponentiation (also known as exponentiation by squaring) is a trick whic
 It also has important applications in many tasks unrelated to arithmetic, since it
 can be used with any operations that have the property of **associativity**:
 
-$$(X \cdot Y) \cdot Z = X \cdot (Y \cdot Z)$$
+$$
+(X \cdot Y) \cdot Z = X \cdot (Y \cdot Z)
+$$
 
 Most obviously this applies to modular multiplication, to multiplication of matrices and
 to other problems which we will discuss below.
@@ -21,19 +23,23 @@ The idea of binary exponentiation is, that we split the work using the binary re
 
 Let's write $n$ in base 2, for example:
 
-$$3^{13} = 3^{1101_2} = 3^8 \cdot 3^4 \cdot 3^1$$
+$$
+3^{13} = 3^{1101_2} = 3^8 \cdot 3^4 \cdot 3^1
+$$
 
 Since the number $n$ has exactly $\lfloor \log_2 n \rfloor + 1$ digits in base 2, we only need to perform $O(\log n)$ multiplications, if we know the powers $a^1, a^2, a^4, a^8, \dots, a^{2^{\lfloor \log_2 n \rfloor}}$.
 
 So we only need to know a fast way to compute those.
 Luckily this is very easy, since an element in the sequence is just the square of the previous element.
 
-$$\begin{align}
+$$
+\begin{align}
 3^1 &= 3 \\
 3^2 &= \left(3^1\right)^2 = 3^2 = 9 \\
 3^4 &= \left(3^2\right)^2 = 9^2 = 81 \\
 3^8 &= \left(3^4\right)^2 = 81^2 = 6561
-\end{align}$$
+\end{align}
+$$
 
 So to get the final answer for $3^{13}$, we only need to multiply three of them (skipping $3^2$ because the corresponding bit in $n$ is not set):
 $3^{13} = 6561 \cdot 81 \cdot 3 = 1594323$
@@ -42,11 +48,13 @@ The final complexity of this algorithm is $O(\log n)$: we have to compute $\log 
 
 The following recursive approach expresses the same idea:
 
-$$a^n = \begin{cases}
+$$
+a^n = \begin{cases}
 1 &\text{if } n == 0 \\
 \left(a^{\frac{n}{2}}\right)^2 &\text{if } n > 0 \text{ and } n \text{ even}\\
 \left(a^{\frac{n - 1}{2}}\right)^2 \cdot a &\text{if } n > 0 \text{ and } n \text{ odd}\\
-\end{cases}$$
+\end{cases}
+$$
 
 ## Implementation {#implementation}
 
@@ -164,23 +172,27 @@ vector<int> permute(vector<int> sequence, vector<int> permutation, long long k) 
 
 As you can see, each of the transformations can be represented as a linear operation on the coordinates. Thus, a transformation can be written as a $4 \times 4$ matrix of the form:
 
-$$\begin{pmatrix}
-a_{11} & a_ {12} & a_ {13} & a_ {14} \\
-a_{21} & a_ {22} & a_ {23} & a_ {24} \\
-a_{31} & a_ {32} & a_ {33} & a_ {34} \\
-a_{41} & a_ {42} & a_ {43} & a_ {44}
-\end{pmatrix}$$
-
-that, when multiplied by a vector with the old coordinates and a unit gives a new vector with the new coordinates and a unit:
-
-$$\begin{pmatrix} x & y & z & 1 \end{pmatrix} \cdot
+$$
 \begin{pmatrix}
 a_{11} & a_ {12} & a_ {13} & a_ {14} \\
 a_{21} & a_ {22} & a_ {23} & a_ {24} \\
 a_{31} & a_ {32} & a_ {33} & a_ {34} \\
 a_{41} & a_ {42} & a_ {43} & a_ {44}
 \end{pmatrix}
- = \begin{pmatrix} x' & y' & z' & 1 \end{pmatrix}$$
+$$
+
+that, when multiplied by a vector with the old coordinates and a unit gives a new vector with the new coordinates and a unit:
+
+$$
+\begin{pmatrix} x & y & z & 1 \end{pmatrix} \cdot
+\begin{pmatrix}
+a_{11} & a_ {12} & a_ {13} & a_ {14} \\
+a_{21} & a_ {22} & a_ {23} & a_ {24} \\
+a_{31} & a_ {32} & a_ {33} & a_ {34} \\
+a_{41} & a_ {42} & a_ {43} & a_ {44}
+\end{pmatrix}
+ = \begin{pmatrix} x' & y' & z' & 1 \end{pmatrix}
+$$
 
 (Why introduce a fictitious fourth coordinate, you ask? That is the beauty of [homogeneous coordinates](https://en.wikipedia.org/wiki/Homogeneous_coordinates), which find great application in computer graphics. Without this, it would not be possible to implement affine operations like the shift operation as a single matrix multiplication, as it requires us to _add_ a constant to the coordinates. The affine transformation becomes a linear transformation in the higher dimension!)
 
@@ -188,30 +200,36 @@ Here are some examples of how transformations are represented in matrix form:
 
 * Shift operation: shift $x$ coordinate by $5$, $y$ coordinate by $7$ and $z$ coordinate by $9$.
 
-$$\begin{pmatrix}
+$$
+\begin{pmatrix}
 1 & 0 & 0 & 0 \\
 0 & 1 & 0 & 0 \\
 0 & 0 & 1 & 0 \\
 5 & 7 & 9 & 1
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
 * Scaling operation: scale the $x$ coordinate by $10$ and the other two by $5$.
 
-$$\begin{pmatrix}
+$$
+\begin{pmatrix}
 10 & 0 & 0 & 0 \\
 0 & 5 & 0 & 0 \\
 0 & 0 & 5 & 0 \\
 0 & 0 & 0 & 1
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
 * Rotation operation: rotate $\theta$ degrees around the $x$ axis following the right-hand rule (counter-clockwise direction).
 
-$$\begin{pmatrix}
+$$
+\begin{pmatrix}
 1 & 0 & 0 & 0 \\
 0 & \cos \theta & -\sin \theta & 0 \\
 0 & \sin \theta & \cos \theta & 0 \\
 0 & 0 & 0 & 1
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
 Now, once every transformation is described as a matrix, the sequence of transformations can be described as a product of these matrices, and a "loop" of $k$ repetitions can be described as the matrix raised to the power of $k$ (which can be calculated using binary exponentiation in $O(\log{k})$). This way, the matrix which represents all transformations can be calculated first in $O(m \log{k})$, and then it can be applied to each of the $n$ points in $O(n)$ for a total complexity of $O(n + m \log{k})$.
 
@@ -232,11 +250,13 @@ That is: $result_{ij} = \min\limits_{1\ \leq\ k\ \leq\ n}(a_{ik} + b_{kj})$.
 
 **Solution:** We simply apply the binary construction algorithm described above, only performing additions instead of multiplications. In other words, we have "expanded" the multiplication of two numbers to $O (\log m)$ operations of addition and multiplication by two (which, in essence, is an addition).
 
-$$a \cdot b = \begin{cases}
+$$
+a \cdot b = \begin{cases}
 0 &\text{if }a = 0 \\
 2 \cdot \frac{a}{2} \cdot b &\text{if }a > 0 \text{ and }a \text{ even} \\
 2 \cdot \frac{a-1}{2} \cdot b + b &\text{if }a > 0 \text{ and }a \text{ odd}
-\end{cases}$$
+\end{cases}
+$$
 
 **Note:** You can solve this task in a different way by using floating-point operations. First compute the expression $\frac{a \cdot b}{m}$ using floating-point numbers and cast it to an unsigned integer $q$. Subtract $q \cdot m$ from $a \cdot b$ using unsigned integer arithmetics and take it modulo $m$ to find the answer. This solution looks rather unreliable, but it is very fast, and very easy to implement. See [here](https://cs.stackexchange.com/questions/77016/modular-multiplication) for more information.
 

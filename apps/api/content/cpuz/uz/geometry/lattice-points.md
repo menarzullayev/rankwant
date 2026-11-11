@@ -7,9 +7,13 @@ Ko‘pburchakning har bir qirrasini alohida ko‘rib chiqamiz, so‘ng har bir q
 
 Avvalo shuni ta’kidlaymizki, agar joriy qirraning uchlari $A=(x_1;y_1)$ va $B=(x_2;y_2)$ nuqtalarda bo‘lsa, uni chiziqli funksiya ko‘rinishida yozish mumkin:
 
-$$y=y_1+(y_2-y_1) \cdot \dfrac{x-x_1}{x_2-x_1}=\left(\dfrac{y_2-y_1}{x_2-x_1}\right)\cdot x + \left(\dfrac{y_1x_2-x_1y_2}{x_2-x_1}\right)$$
+$$
+y=y_1+(y_2-y_1) \cdot \dfrac{x-x_1}{x_2-x_1}=\left(\dfrac{y_2-y_1}{x_2-x_1}\right)\cdot x + \left(\dfrac{y_1x_2-x_1y_2}{x_2-x_1}\right)
+$$
 
-$$y = k \cdot x + b,~k = \dfrac{y_2-y_1}{x_2-x_1},~b = \dfrac{y_1x_2-x_1y_2}{x_2-x_1}$$
+$$
+y = k \cdot x + b,~k = \dfrac{y_2-y_1}{x_2-x_1},~b = \dfrac{y_1x_2-x_1y_2}{x_2-x_1}
+$$
 
 Endi $x=x'+\lceil x_1 \rceil$ almashtirishni bajaramiz, shunda $b' = b + k \cdot \lceil x_1 \rceil$ bo‘ladi.
 Bu bizga $x_1'=0$ va $x_2'=x_2 - \lceil x_1 \rceil$ bilan ishlash imkonini beradi.

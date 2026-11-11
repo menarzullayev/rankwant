@@ -2,7 +2,9 @@
 
 Quyidagi aniq integralning qiymatini hisoblashimiz kerak:
 
-$$\int_a ^ b f (x) dx$$
+$$
+\int_a ^ b f (x) dx
+$$
 
 Bu yerda tavsiflangan yechim **Thomas Simpson**ning dissertatsiyalaridan birida 1743-yilda e’lon qilingan.
 
@@ -10,9 +12,13 @@ Bu yerda tavsiflangan yechim **Thomas Simpson**ning dissertatsiyalaridan birida 
 
 $n$ biror natural son bo‘lsin. Integrallash kesmasi $[a, b]$ ni $2n$ ta teng qismga bo‘lamiz:
 
-$$x_i = a + i h, ~~ i = 0 \ldots 2n,$$
+$$
+x_i = a + i h, ~~ i = 0 \ldots 2n,
+$$
 
-$$h = \frac {b-a} {2n}.$$
+$$
+h = \frac {b-a} {2n}.
+$$
 
 Endi integralni $[x_ {2i-2}, x_ {2i}]$, $i = 1 \ldots n$ kesmalarning har birida alohida hisoblaymiz, so‘ng barcha qiymatlarni qo‘shamiz.
 
@@ -21,17 +27,23 @@ Masalan, uni Lagrange ko‘phad interpolyatsiyasi yordamida qurish mumkin.
 Endi faqat shu ko‘phadni integrallash qoladi.
 Buni umumiy $f$ funksiya uchun bajarsangiz, juda sodda ifodaga ega bo‘lasiz:
 
-$$\int_{x_ {2i-2}} ^ {x_ {2i}} f (x) ~dx \approx \int_{x_ {2i-2}} ^ {x_ {2i}} P (x) ~dx = \left(f(x_{2i-2}) + 4f(x_{2i-1})+(f(x_{2i})\right)\frac {h} {3} $$
+$$
+\int_{x_ {2i-2}} ^ {x_ {2i}} f (x) ~dx \approx \int_{x_ {2i-2}} ^ {x_ {2i}} P (x) ~dx = \left(f(x_{2i-2}) + 4f(x_{2i-1})+(f(x_{2i})\right)\frac {h} {3}
+$$
 
 Bu qiymatlarni barcha kesmalar bo‘yicha qo‘shib, yakuniy **Simpson formulasi**ni olamiz:
 
-$$\int_a ^ b f (x) dx \approx \left(f (x_0) + 4 f (x_1) + 2 f (x_2) + 4f(x_3) + 2 f(x_4) + \ldots + 4 f(x_{2N-1}) + f(x_{2N}) \right)\frac {h} {3} $$
+$$
+\int_a ^ b f (x) dx \approx \left(f (x_0) + 4 f (x_1) + 2 f (x_2) + 4f(x_3) + 2 f(x_4) + \ldots + 4 f(x_{2N-1}) + f(x_{2N}) \right)\frac {h} {3}
+$$
 
 ## Xatolik {#error}
 
 Integralni Simpson formulasi bilan yaqinlashtirishdagi xatolik quyidagiga teng:
 
-$$ -\tfrac{1}{90} \left(\tfrac{b-a}{2}\right)^5 f^{(4)}(\xi)$$
+$$
+-\tfrac{1}{90} \left(\tfrac{b-a}{2}\right)^5 f^{(4)}(\xi)
+$$
 
 bu yerda $\xi$ — $a$ va $b$ orasidagi biror son.
 

@@ -169,7 +169,9 @@ s2.pop();
 
 Uzunligi $N$ bo‘lgan $A$ massiv va $M \le N$ soni berilgan bo‘lsin. Massivdagi uzunligi $M$ bo‘lgan har bir ostmassivning minimumini, ya’ni quyidagi qiymatlarni topishimiz kerak:
 
-$$\min_{0 \le i \le M-1} A[i], \min_{1 \le i \le M} A[i], \min_{2 \le i \le M+1} A[i],~\dots~, \min_{N-M \le i \le N-1} A[i]$$
+$$
+\min_{0 \le i \le M-1} A[i], \min_{1 \le i \le M} A[i], \min_{2 \le i \le M+1} A[i],~\dots~, \min_{N-M \le i \le N-1} A[i]
+$$
 
 Masalani chiziqli, ya’ni $O(n)$ vaqtda yechish talab qilinadi.
 

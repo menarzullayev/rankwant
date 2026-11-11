@@ -16,19 +16,27 @@ Ishlar tartibi ularning kirishdagi $1, 2, \dots, n$ tartibiga teng bo‘lsin.
 
 $x_i$ bilan ikkinchi mashinaning $i$-ishni boshlashidan oldingi **bekor turish vaqti**ni belgilaymiz. Maqsad — jami bekor turish vaqtini **minimallashtirish**:
 
-$$F(x) = \sum x_i \rightarrow \min$$
+$$
+F(x) = \sum x_i \rightarrow \min
+$$
 
 Birinchi ish uchun $x_1 = a_1$. Ikkinchi ish birinchi mashinadan $a_1 + a_2$ vaqtda chiqadi, ikkinchi mashina esa $x_1 + b_1$ vaqtda bo‘shaydi. Shuning uchun $x_2 = \max\left((a_1 + a_2) - (x_1 + b_1), 0\right)$. Umumiy holda:
 
-$$x_k = \max\left(\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i - \sum_{i=1}^{k-1} x_i, 0 \right)$$
+$$
+x_k = \max\left(\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i - \sum_{i=1}^{k-1} x_i, 0 \right)
+$$
 
 Endi jami bekor turish vaqti $F(x)$ ni hisoblash mumkin. U quyidagi ko‘rinishga ega:
 
-$$F(x) = \max_{k=1 \dots n} K_k,$$
+$$
+F(x) = \max_{k=1 \dots n} K_k,
+$$
 
 bu yerda
 
-$$K_k = \sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i.$$
+$$
+K_k = \sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i.
+$$
 
 Buni induksiya yordamida oson tekshirish mumkin.
 
@@ -38,17 +46,23 @@ $K_i$ ifodasidan faqat $K_j$ va $K_{j+1}$ o‘zgarishi ko‘rinadi; ularning yan
 
 Agar $j$ va $j+1$ ishlarni almashtirish jami bekor turish vaqtini oshirgan bo‘lsa, quyidagi shart bajarilishi kerak:
 
-$$\max(K_j, K_{j+1}) \le \max(K_j', K_{j+1}')$$
+$$
+\max(K_j, K_{j+1}) \le \max(K_j', K_{j+1}')
+$$
 
 Ikki ishning o‘rnini almashtirish umuman ta’sir qilmasligi ham mumkin. Yuqoridagi shart yetarli, lekin zarur shart emas.
 
 Tengsizlikning ikki tomonidan $\sum_{i=1}^{j+1} a_i - \sum_{i=1}^{j-1} b_i$ ni olib tashlasak:
 
-$$\max(-a_{j+1}, -b_j) \le \max(-b_{j+1}, -a_j)$$
+$$
+\max(-a_{j+1}, -b_j) \le \max(-b_{j+1}, -a_j)
+$$
 
 Manfiy ishoralarni yo‘qotsak:
 
-$$\min(a_j, b_{j+1}) \le \min(b_j, a_{j+1})$$
+$$
+\min(a_j, b_{j+1}) \le \min(b_j, a_{j+1})
+$$
 
 Shunday qilib, **taqqoslagich** hosil bo‘ldi. Ishlarni shu qoida bo‘yicha saralash orqali hech bir qo‘shni juftligini almashtirish yakuniy vaqtni yaxshilamaydigan optimal tartib olinadi.
 

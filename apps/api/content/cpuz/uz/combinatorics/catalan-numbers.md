@@ -29,9 +29,13 @@ Catalan sonlari uchun ikkita formula mavjud: **rekurrent** va **analitik**. Yuqo
 
 ### Rekurrent formula {#recursive-formula}
 
-$$C_0 = C_1 = 1$$
+$$
+C_0 = C_1 = 1
+$$
 
-$$C_n = \sum_{k = 0}^{n-1} C_k C_{n-1-k} , {n} \geq 2$$
+$$
+C_n = \sum_{k = 0}^{n-1} C_k C_{n-1-k} , {n} \geq 2
+$$
 
 Rekurrent formulani to‘g‘ri qavslar ketma-ketligi masalasidan osongina keltirib chiqarish mumkin.
 
@@ -63,7 +67,9 @@ void init() {
 
 ### Analitik formula {#analytical-formula}
 
-$$C_n = \frac{1}{n + 1} {\binom{2n}{n}}$$
+$$
+C_n = \frac{1}{n + 1} {\binom{2n}{n}}
+$$
 
 Bu yerda $\binom{n}{k}$ odatiy binomial koeffitsiyent, ya’ni $n$ elementli to‘plamdan $k$ ta obyekt tanlash usullari sonini bildiradi.
 
@@ -75,7 +81,9 @@ Shu tariqa $n\times n$ panjarada bosh diagonalni kesib o‘tadigan barcha monoto
 
 $(n-1)\times(n+1)$ panjaradagi monoton yo‘llar soni $\binom{2n}{n-1}$ ga teng. Bunday yo‘llarni “yomon” yo‘llar deb ataylik. Bosh diagonalni kesib o‘tmaydigan monoton yo‘llar sonini olish uchun barcha yo‘llardan “yomon” yo‘llarni ayiramiz va quyidagi formulaga ega bo‘lamiz:
 
-$$C_n = \binom{2n}{n} - \binom{2n}{n-1} = \frac{1}{n + 1} \binom{2n}{n} , {n} \geq 0$$
+$$
+C_n = \binom{2n}{n} - \binom{2n}{n-1} = \frac{1}{n + 1} \binom{2n}{n} , {n} \geq 0
+$$
 
 ## Manbalar {#reference}
 

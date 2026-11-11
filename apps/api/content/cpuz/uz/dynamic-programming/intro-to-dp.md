@@ -71,7 +71,9 @@ Umumiy memoizatsiyali rekursiv funksiya uchun bu ikki variant deyarli har doim m
 
 Memoizatsiyali rekursiv funksiyaning ishlash vaqtini sodda usulda quyidagicha tahlil qilish mumkin:
 
-$$\text{work per subproblem} * \text{number of subproblems}$$
+$$
+\text{work per subproblem} * \text{number of subproblems}
+$$
 
 Holatlarni ikkilik qidiruv daraxtida, ya’ni C++ dagi `map` da saqlash texnik jihatdan $O(n \log n)$ vaqt beradi: har bir qidiruv va qo‘shish $O(\log n)$ ish talab qiladi, noyob kichik masalalar soni esa $O(n)$ ta.
 

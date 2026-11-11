@@ -10,7 +10,9 @@ Berilgan kesma $PQ$ bo‘lsin, ya’ni uning uchlarining $P_x , P_y , Q_x , Q_y$
 
 Shu kesma orqali o‘tuvchi **tekislikdagi to‘g‘ri chiziq tenglamasini** qurish kerak, ya’ni to‘g‘ri chiziq tenglamasidagi $A , B , C$ koeffitsiyentlarni topish lozim:
 
-$$A x + B y + C = 0.$$
+$$
+A x + B y + C = 0.
+$$
 
 E’tibor bering: izlanayotgan $(A, B, C)$ uchliklar uchun berilgan kesmani tasvirlaydigan **cheksiz ko‘p** yechim mavjud:
 uchala koeffitsiyentni ixtiyoriy nolga teng bo‘lmagan songa ko‘paytirib, xuddi shu to‘g‘ri chiziqni olish mumkin.
@@ -18,11 +20,13 @@ Shuning uchun vazifamiz shu uchliklardan birini topishdir.
 
 Quyidagi koeffitsiyentlar to‘plami mos kelishini tekshirish oson (bu ifodalarni va $P$ hamda $Q$ nuqtalarning koordinatalarini to‘g‘ri chiziq tenglamasiga qo‘yib ko‘rish kifoya):
 
-$$\begin{align}
+$$
+\begin{align}
 A &= P_y - Q_y, \\
 B &= Q_x - P_x, \\
 C &= - A P_x - B P_y.
-\end{align}$$
+\end{align}
+$$
 
 ### Butun sonli holat {#integer-case}
 
@@ -40,7 +44,9 @@ $A$ va $B$ koeffitsiyentlar boshlang‘ich koordinatalar tartibida, $C$ koeffits
 
 Shu sababli haqiqiy sonlar bilan ishlaganda **normallashtirish** deb ataladigan amalni bajarish tavsiya etiladi; u sodda: koeffitsiyentlarni $A ^ 2 + B ^ 2 = 1$ bo‘ladigan qilib tanlash kerak. Buning uchun $Z$ sonini hisoblaymiz:
 
-$$Z = \sqrt{A ^ 2 + B ^ 2},$$
+$$
+Z = \sqrt{A ^ 2 + B ^ 2},
+$$
 
 va uchala $A , B , C$ koeffitsiyentni unga bo‘lamiz.
 
@@ -55,7 +61,9 @@ Uch o‘lchamli holatdayoq to‘g‘ri chiziqni tasvirlaydigan **oddiy tenglama 
 
 Shuning uchun uch o‘lchamli va ko‘p o‘lchamli holatlarda to‘g‘ri chiziqni berishning **parametrik usulidan** foydalanish kerak, ya’ni uni $p$ nuqta va $v$ vektor orqali ifodalash:
 
-$$p + v t, ~~~ t \in \mathbb{R}.$$
+$$
+p + v t, ~~~ t \in \mathbb{R}.
+$$
 
 Ya’ni to‘g‘ri chiziq — $p$ nuqtaga $v$ vektorni ixtiyoriy koeffitsiyent bilan qo‘shib hosil qilish mumkin bo‘lgan barcha nuqtalardir.
 

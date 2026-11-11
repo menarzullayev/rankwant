@@ -16,11 +16,15 @@ Palindromes of odd and even lengths are accounted for separately as $d_{odd}[i]$
 
 For instance, string $s = abababc$ has three palindromes with odd length with centers in the position $s[3] = b$, i. e. $d_{odd}[3] = 3$:
 
-$$a\ \overbrace{b\ a\ \underbrace{b}_{s_3}\ a\ b}^{d_{odd}[3]=3} c$$
+$$
+a\ \overbrace{b\ a\ \underbrace{b}_{s_3}\ a\ b}^{d_{odd}[3]=3} c
+$$
 
 And string $s = cbaabd$ has two palindromes with even length with centers in the position $s[3] = a$, i. e. $d_{even}[3] = 2$:
 
-$$c\ \overbrace{b\ a\ \underbrace{a}_{s_3}\ b}^{d_{even}[3]=2} d$$
+$$
+c\ \overbrace{b\ a\ \underbrace{a}_{s_3}\ b}^{d_{even}[3]=2} d
+$$
 
 It's a surprising fact that there is an algorithm, which is simple enough, that calculates these "palindromity arrays" $d_{odd}[]$ and $d_{even}[]$ in linear time. The algorithm is described in this article.
 
@@ -161,9 +165,13 @@ Although it is possible to implement Manacher's algorithm for odd and even lengt
 
 To mitigate this, it is possible to reduce the whole problem to the case when we only deal with the palindromes of odd length. To do this, we can put an additional `#` character between each letter in the string and also in the beginning and the end of the string:
 
-$$abcbcba \to \#a\#b\#c\#b\#c\#b\#a\#,$$
+$$
+abcbcba \to \#a\#b\#c\#b\#c\#b\#a\#,
+$$
 
-$$d = [1,2,1,2,1,4,1,8,1,4,1,2,1,2,1].$$
+$$
+d = [1,2,1,2,1,4,1,8,1,4,1,2,1,2,1].
+$$
 
 As you can see, $d[2i]=2 d_{even}[i]+1$ and $d[2i+1]=2 d_{odd}[i]$ where $d$ denotes the Manacher array for odd-length palindromes in `#`-joined string, while $d_{odd}$ and $d_{even}$ correspond to the arrays defined above in the initial string.
 

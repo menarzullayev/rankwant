@@ -10,7 +10,9 @@ Grafning barcha mumkin bo‘lgan qirralari to‘plamini ko‘rib chiqamiz. Har b
 
 Har bir belgilangan graf o‘z qirralari bilan yagona aniqlanadi, shuning uchun $n$ ta tugunga ega belgilangan graflar soni:
 
-$$G_n = 2^{\frac{n(n-1)}{2}}$$
+$$
+G_n = 2^{\frac{n(n-1)}{2}}
+$$
 
 ## Bog‘langan belgilangan graflar {#connected-labeled-graphs}
 
@@ -28,11 +30,15 @@ Ildiz tugun $k$ ta tugunli bog‘langan komponentga tegishli bo‘lgan $k\binom{
 
 Shunday qilib, $n$ ta tugunga ega bog‘lanmagan graflar soni:
 
-$$\frac{1}{n} \sum_{k=1}^{n-1} k \binom{n}{k} C_k G_{n-k}$$
+$$
+\frac{1}{n} \sum_{k=1}^{n-1} k \binom{n}{k} C_k G_{n-k}
+$$
 
 Nihoyat, bog‘langan graflar soni:
 
-$$C_n = G_n - \frac{1}{n} \sum_{k=1}^{n-1} k \binom{n}{k} C_k G_{n-k}$$
+$$
+C_n = G_n - \frac{1}{n} \sum_{k=1}^{n-1} k \binom{n}{k} C_k G_{n-k}
+$$
 
 ## $k$ ta bog‘langan komponentli belgilangan graflar {#labeled-graphs-with-k-connected-components}
 
@@ -46,4 +52,6 @@ Ushbu komponentning o‘lchami $s$ bo‘lsin. Komponentdagi qolgan $s-1$ ta tugu
 
 Shuning uchun quyidagi rekurrent munosabatni olamiz:
 
-$$D[n][k] = \sum_{s=1}^{n} \binom{n-1}{s-1} C_s D[n-s][k-1]$$
+$$
+D[n][k] = \sum_{s=1}^{n} \binom{n-1}{s-1} C_s D[n-s][k-1]
+$$

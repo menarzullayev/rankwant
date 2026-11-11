@@ -111,10 +111,12 @@ Bo‘sh bo‘lmagan $u$ va $w$ qism satrlarni ($length(u) \le length(w)$) ko‘r
 Ularning $endpos$ to‘plamlari yo umuman kesishmaydi, yoki $endpos(w)$ to‘plami $endpos(u)$ ning qism to‘plami bo‘ladi.
 Qaysi holat yuz berishi $u$ satri $w$ ning suffiksi ekaniga bog‘liq:
 
-$$\begin{cases}
+$$
+\begin{cases}
 endpos(w) \subseteq endpos(u) & \text{if } u \text{ is a suffix of } w \\
 endpos(w) \cap endpos(u) = \emptyset & \text{otherwise}
-\end{cases}$$
+\end{cases}
+$$
 
 Isbot:
 Agar $endpos(u)$ va $endpos(w)$ to‘plamlari kamida bitta umumiy elementga ega bo‘lsa, $u$ va $w$ satrlarining ikkalasi ham shu pozitsiyada tugaydi, ya’ni $u$ — $w$ ning suffiksi.
@@ -171,7 +173,9 @@ $endpos$ to‘plamlari yordamida daraxt qurish mumkinligi 2-lemmadan bevosita ke
 Endi istalgan $v \ne t_0$ holat va uning $link(v)$ suffiks havolasini ko‘rib chiqamiz.
 Suffiks havolasi ta’rifi va 2-lemmadan
 
-$$endpos(v) \subseteq endpos(link(v)),$$
+$$
+endpos(v) \subseteq endpos(link(v)),
+$$
 
 kelib chiqadi; bu esa oldingi lemma bilan birga tasdiqni isbotlaydi:
 suffiks havolalari daraxti mohiyatan $endpos$ to‘plamlar daraxtidir.
@@ -197,7 +201,9 @@ Algoritmning o‘ziga o‘tishdan oldin to‘plangan bilimlarni jamlaymiz va bir
 
 - $v \ne t_0$ uchun $minlen(v)$ ni $link(v)$ suffiks havolasi orqali quyidagicha ifodalash mumkin:
 
-$$minlen(v) = len(link(v)) + 1$$
+$$
+minlen(v) = len(link(v)) + 1
+$$
 
 - Istalgan $v_0$ holatdan boshlab suffiks havolalari bo‘ylab yursak, ertami-kechmi boshlang‘ich $t_0$ holatga yetamiz.
   Bunda o‘zaro kesishmaydigan $[minlen(v_i); len(v_i)]$ oraliqlar ketma-ketligi hosil bo‘ladi va ularning birlashmasi uzluksiz $[0; len(v_0)]$ oraliqni beradi.
@@ -426,7 +432,9 @@ Demak, bunday daraxtda $2n - 1$ tadan ko‘p tugun bo‘la olmaydi.
 Holatlar soni uchun bu chegara har bir $n$ da haqiqatan ham erishilishi mumkin.
 Masalan, quyidagi satr mos keladi:
 
-$$\text{"abbb}\dots \text{bbb"}$$
+$$
+\text{"abbb}\dots \text{bbb"}
+$$
 
 Uchinchi iteratsiyadan boshlab algoritm har safar bitta holatni bo‘ladi va natijada aynan $2n - 1$ ta holat hosil bo‘ladi.
 
@@ -452,7 +460,9 @@ Ammo holatlarning maksimal soniga faqat $\text{"abbb\dots bbb"}$ sinov satrida e
 
 Bu chegaraga quyidagi satrda ham erishish mumkin:
 
-$$\text{"abbb}\dots \text{bbbc"}$$
+$$
+\text{"abbb}\dots \text{bbbc"}
+$$
 
 ## Qo‘llanishlar {#applications}
 
@@ -487,7 +497,9 @@ Suffiks avtomati yo‘naltirilgan siklsiz graf bo‘lgani sababli turli yo‘lla
 $v$ holatdan boshlanadigan yo‘llar sonini (uzunligi nol bo‘lgan yo‘lni ham qo‘shib) $d[v]$ bilan belgilaymiz.
 U holda quyidagi rekurrent formula o‘rinli:
 
-$$d[v] = 1 + \sum_{w : (v, w, c) \in DAWG} d[w]$$
+$$
+d[v] = 1 + \sum_{w : (v, w, c) \in DAWG} d[w]
+$$
 
 Ya’ni $d[v]$ ni $v$ dan chiquvchi barcha o‘tishlar oxiridagi holatlar javoblari yig‘indisi orqali ifodalash mumkin.
 
@@ -524,7 +536,9 @@ turli qism satrlar soni $d[v]$ va ularning umumiy uzunligi $ans[v]$.
 $d[v]$ ni qanday hisoblashni oldingi masalada tasvirladik.
 $ans[v]$ qiymatini quyidagi rekurrent formula bilan hisoblash mumkin:
 
-$$ans[v] = \sum_{w : (v, w, c) \in DAWG} d[w] + ans[w]$$
+$$
+ans[v] = \sum_{w : (v, w, c) \in DAWG} d[w] + ans[w]
+$$
 
 Har bir qo‘shni $w$ tugunning javobini olamiz va unga $d[w]$ ni qo‘shamiz (chunki $v$ holatdan boshlangan har bir qism satr bitta belgiga uzunroq bo‘ladi).
 
@@ -592,7 +606,9 @@ Buni quyidagicha qilamiz.
 Klonlash orqali yaratilmagan (va boshlang‘ich $t_0$ holat bo‘lmagan) har bir holat uchun dastlab $cnt = 1$ deb olamiz.
 So‘ng barcha holatlarni $len$ uzunligi kamayish tartibida ko‘rib chiqib, joriy $cnt[v]$ qiymatini suffiks havolasi bo‘yicha qo‘shamiz:
 
-$$cnt[link(v)] \text{ += } cnt[v]$$
+$$
+cnt[link(v)] \text{ += } cnt[v]
+$$
 
 Bu har bir holat uchun to‘g‘ri qiymat beradi.
 
@@ -625,11 +641,15 @@ Boshqacha aytganda, har bir $endpos$ to‘plamining minimal elementini oldindan 
 $firstpos$ qiymatlarini saqlash uchun `sa_extend()` funksiyasini kengaytiramiz.
 Yangi $cur$ holat yaratganda quyidagicha belgilaymiz:
 
-$$firstpos(cur) = len(cur) - 1$$
+$$
+firstpos(cur) = len(cur) - 1
+$$
 
 $q$ tugunni $clone$ sifatida klonlaganda esa:
 
-$$firstpos(clone) = firstpos(q)$$
+$$
+firstpos(clone) = firstpos(q)
+$$
 
 deb olamiz (boshqa mumkin bo‘lgan qiymat $firstpos(cur)$ bo‘lardi, ammo u albatta juda katta).
 
@@ -700,7 +720,9 @@ $d[v]$ ni hisoblash juda sodda.
 Alifboning kamida bitta belgisi bo‘yicha o‘tish mavjud bo‘lmasa, $d[v] = 1$.
 Aks holda bitta belgi yetarli emas, shuning uchun barcha o‘tishlarning javoblari orasidan minimumni olish kerak:
 
-$$d[v] = 1 + \min_{w:(v,w,c) \in SA} d[w].$$
+$$
+d[v] = 1 + \min_{w:(v,w,c) \in SA} d[w].
+$$
 
 Masala javobi $d[t_0]$ bo‘ladi, haqiqiy satrni esa hisoblangan $d[]$ massivi yordamida tiklash mumkin.
 
@@ -765,7 +787,9 @@ Har bir $S_i$ satrda qism satr sifatida uchraydigan eng uzun $X$ satrni, ya’ni
 
 Barcha satrlarni bitta katta $T$ satrga birlashtiramiz va ularni maxsus $D_i$ belgilar (har bir satr uchun bittadan) bilan ajratamiz:
 
-$$T = S_1 + D_1 + S_2 + D_2 + \dots + S_k + D_k.$$
+$$
+T = S_1 + D_1 + S_2 + D_2 + \dots + S_k + D_k.
+$$
 
 Keyin $T$ satri uchun suffiks avtomatini quramiz.
 

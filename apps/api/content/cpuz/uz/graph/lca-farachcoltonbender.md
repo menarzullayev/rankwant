@@ -24,11 +24,13 @@ Quyidagi rasmda graf uchun mumkin bo‘lgan Euler turini, uning ostidagi ro‘yx
 
   ![LCA uchun Euler turi](/algorithms-media/graph/LCA_Euler.png)
 
-$$\begin{array}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+$$
+\begin{array}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
 \text{Tugunlar:}   & 1 & 2 & 5 & 2 & 6 & 2 & 1 & 3 & 1 & 4 & 7 & 4 & 1 \\ \hline
 \text{Balandliklar:} & 1 & 2 & 3 & 2 & 3 & 2 & 1 & 2 & 1 & 2 & 3 & 2 & 1 \\ \hline
-\end{array}$$
+\end{array}
+$$
 
 Bu keltirish haqida [Eng yaqin umumiy ajdod](/algorithms/graph/lca) maqolasida batafsil o‘qishingiz mumkin.
 
@@ -78,9 +80,13 @@ $B$ massivdan siyrak jadval quramiz.
 
 Uning o‘lchami va vaqt murakkabligi quyidagicha bo‘ladi:
 
-$$\frac{N}{K}\log\left(\frac{N}{K}\right) = \frac{2N}{\log(N)} \log\left(\frac{2N}{\log(N)}\right) =$$
+$$
+\frac{N}{K}\log\left(\frac{N}{K}\right) = \frac{2N}{\log(N)} \log\left(\frac{2N}{\log(N)}\right) =
+$$
 
-$$= \frac{2N}{\log(N)} \left(1 + \log\left(\frac{N}{\log(N)}\right)\right) \leq \frac{2N}{\log(N)} + 2N = O(N)$$
+$$
+= \frac{2N}{\log(N)} \left(1 + \log\left(\frac{N}{\log(N)}\right)\right) \leq \frac{2N}{\log(N)} + 2N = O(N)
+$$
 
 Endi faqat har bir blok ichidagi oraliq minimum so‘rovlariga tez javob berishni o‘rganish qoladi.
 
@@ -102,7 +108,9 @@ Bloklar juda kichik bo‘lgani sababli, uchrashi mumkin bo‘lgan turli ketma-ke
 
 Mumkin bo‘lgan ketma-ketliklar soni:
 
-$$2^{K-1} = 2^{0.5 \log(N) - 1} = 0.5 \left(2^{\log(N)}\right)^{0.5} = 0.5 \sqrt{N}$$
+$$
+2^{K-1} = 2^{0.5 \log(N) - 1} = 0.5 \left(2^{\log(N)}\right)^{0.5} = 0.5 \sqrt{N}
+$$
 
 Shunday qilib, turli bloklar soni $O(\sqrt{N})$; demak, barcha turli bloklar ichidagi oraliq minimum so‘rovlari natijalarini $O(\sqrt{N} K^2) = O(\sqrt{N} \log^2(N)) = O(N)$ vaqtda oldindan hisoblash mumkin.
 

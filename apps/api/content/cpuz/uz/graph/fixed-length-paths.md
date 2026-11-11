@@ -24,15 +24,21 @@ Endi $k + 1$ uchun javobni qanday qurish mumkinligini tavsiflaymiz.
 $k$ holat uchun matritsani $C_k$, qurmoqchi bo‘lgan matritsani esa $C_{k+1}$ deb belgilaymiz.
 Quyidagi formula yordamida $C_{k+1}$ ning har bir elementini hisoblash mumkin:
 
-$$C_{k+1}[i][j] = \sum_{p = 1}^{n} C_k[i][p] \cdot G[p][j]$$
+$$
+C_{k+1}[i][j] = \sum_{p = 1}^{n} C_k[i][p] \cdot G[p][j]
+$$
 
 Formula $C_k$ va $G$ matritsalarning ko‘paytmasidan boshqa narsani hisoblamayotganini ko‘rish oson:
 
-$$C_{k+1} = C_k \cdot G$$
+$$
+C_{k+1} = C_k \cdot G
+$$
 
 Demak, masala yechimini quyidagicha ifodalash mumkin:
 
-$$C_k = \underbrace{G \cdot G \cdots G}_{k \text{ marta}} = G^k$$
+$$
+C_k = \underbrace{G \cdot G \cdots G}_{k \text{ marta}} = G^k
+$$
 
 Matritsa ko‘paytmasidan hosil bo‘lgan darajani [ikkilik darajaga oshirish](/algorithms/algebra/binary-exp) yordamida katta daraja uchun ham samarali hisoblash mumkinligini qayd etish qoladi.
 Bu $O(n^3 \log k)$ murakkablikdagi yechimni beradi.
@@ -54,20 +60,28 @@ $k+1$ uchun javobni qanday hisoblashni ko‘rsatamiz.
 $k$ uchun matritsani $L_k$, qurmoqchi bo‘lgan matritsani esa $L_{k+1}$ deb belgilaylik.
 U holda quyidagi formula $L_{k+1}$ ning har bir elementini hisoblaydi:
 
-$$L_{k+1}[i][j] = \min_{p = 1 \ldots n} \left(L_k[i][p] + G[p][j]\right)$$
+$$
+L_{k+1}[i][j] = \min_{p = 1 \ldots n} \left(L_k[i][p] + G[p][j]\right)
+$$
 
 Bu formulaga diqqat bilan qarasak, matritsa ko‘paytmasi bilan o‘xshashlikni ko‘ramiz:
 aslida $L_k$ matritsa $G$ matritsaga ko‘paytirilmoqda; farqi shundaki, ko‘paytirish amalida yig‘indi o‘rniga minimum, ichki amal sifatida esa ko‘paytirish o‘rniga qo‘shish olinadi.
 
-$$L_{k+1} = L_k \odot G,$$
+$$
+L_{k+1} = L_k \odot G,
+$$
 
 bu yerda $\odot$ amali quyidagicha aniqlangan:
 
-$$A \odot B = C~~\Longleftrightarrow~~C_{i j} = \min_{p = 1 \ldots n}\left(A_{i p} + B_{p j}\right)$$
+$$
+A \odot B = C~~\Longleftrightarrow~~C_{i j} = \min_{p = 1 \ldots n}\left(A_{i p} + B_{p j}\right)
+$$
 
 Demak, masala yechimini o‘zgartirilgan ko‘paytma yordamida quyidagicha ifodalash mumkin:
 
-$$L_k = \underbrace{G \odot \ldots \odot G}_{k~\text{marta}} = G^{\odot k}$$
+$$
+L_k = \underbrace{G \odot \ldots \odot G}_{k~\text{marta}} = G^{\odot k}
+$$
 
 O‘zgartirilgan ko‘paytma, ravshanki, assotsiativ bo‘lgani uchun, bu darajaga oshirishni ham [ikkilik darajaga oshirish](/algorithms/algebra/binary-exp) yordamida samarali hisoblash mumkin.
 Shunday qilib, bu yechim ham $O(n^3 \log k)$ murakkablikka ega.

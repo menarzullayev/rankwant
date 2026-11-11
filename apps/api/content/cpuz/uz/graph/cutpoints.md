@@ -15,7 +15,9 @@ Endi bu faktni har bir tugun uchun samarali tekshirishni o‘rganamiz. Chuqurlik
 
 $tin[v]$ qiymat $v$ tugunga kirish vaqtini bildirsin. Har bir $v$ uchun yuqoridagi faktni tekshirishga imkon beruvchi $low[v]$ massivini kiritamiz. $low[v]$ — $tin[v]$, $(v,p)$ orqa qirra orqali $v$ ga ulangan har bir $p$ tugunning $tin[p]$ kirish vaqti va DFS daraxtida $v$ ning bevosita avlodi bo‘lgan har bir $to$ uchun $low[to]$ qiymatlari minimumidir:
 
-$$low[v] = \min \begin{cases} tin[v] \\ tin[p] &\text{ barcha }p\text{ uchun, agar }(v,p)\text{ orqa qirra bo‘lsa} \\ low[to] &\text{ barcha }to\text{ uchun, agar }(v,to)\text{ daraxt qirrasi bo‘lsa} \end{cases}$$
+$$
+low[v] = \min \begin{cases} tin[v] \\ tin[p] &\text{ barcha }p\text{ uchun, agar }(v,p)\text{ orqa qirra bo‘lsa} \\ low[to] &\text{ barcha }to\text{ uchun, agar }(v,to)\text{ daraxt qirrasi bo‘lsa} \end{cases}
+$$
 
 $v$ tugundan yoki uning avlodlaridan $v$ ning biror ajdodiga orqa qirra mavjud bo‘lishi uchun $v$ ning $low[to] < tin[v]$ bo‘ladigan $to$ farzandi bo‘lishi zarur va yetarli. Agar $low[to] = tin[v]$ bo‘lsa, orqa qirra bevosita $v$ ga keladi; aks holda u $v$ ning ajdodlaridan biriga keladi.
 

@@ -44,11 +44,13 @@ Quyidagi graf va mos balandliklari bilan Euler turini ko‘rib chiqamiz:
 
   ![LCA uchun Euler turi](/algorithms-media/graph/LCA_Euler.png)
 
-$$\begin{array}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+$$
+\begin{array}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
 \text{Tugunlar:}   & 1 & 2 & 5 & 2 & 6 & 2 & 1 & 3 & 1 & 4 & 7 & 4 & 1 \\ \hline
 \text{Balandliklar:} & 1 & 2 & 3 & 2 & 3 & 2 & 1 & 2 & 1 & 2 & 3 & 2 & 1 \\ \hline
-\end{array}$$
+\end{array}
+$$
 
 $6$ tugundan boshlanib $4$ tugunda tugaydigan turda $[6, 2, 1, 3, 1, 4]$ tugunlarga tashrif buyuramiz.
 

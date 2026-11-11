@@ -15,7 +15,9 @@ Which means we have $e+1$ choices.
 
 Therefore if the prime factorization of $n$ is $p_1^{e_1} \cdot p_2^{e_2} \cdots p_k^{e_k}$, where $p_i$ are distinct prime numbers, then the number of divisors is:
 
-$$d(n) = (e_1 + 1) \cdot (e_2 + 1) \cdots (e_k + 1)$$
+$$
+d(n) = (e_1 + 1) \cdot (e_2 + 1) \cdots (e_k + 1)
+$$
 
 A way of thinking about it is the following:
 
@@ -23,14 +25,16 @@ A way of thinking about it is the following:
 
 * If there are two distinct prime divisors $n = p_1^{e_1} \cdot p_2^{e_2}$, then you can arrange all divisors in form of a tabular.
 
-$$\begin{array}{c|ccccc}
+$$
+\begin{array}{c|ccccc}
 & 1 & p_2 & p_2^2 & \dots & p_2^{e_2} \\\hline
 1 & 1 & p_2 & p_2^2 & \dots & p_2^{e_2} \\
 p_1 & p_1 & p_1 \cdot p_2 & p_1 \cdot p_2^2 & \dots & p_1 \cdot p_2^{e_2} \\
 p_1^2 & p_1^2 & p_1^2 \cdot p_2 & p_1^2 \cdot p_2^2 & \dots & p_1^2 \cdot p_2^{e_2} \\
 \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
 p_1^{e_1} & p_1^{e_1} & p_1^{e_1} \cdot p_2 & p_1^{e_1} \cdot p_2^2 & \dots & p_1^{e_1} \cdot p_2^{e_2} \\
-\end{array}$$
+\end{array}
+$$
 
 So the number of divisors is trivially $(e_1 + 1) \cdot (e_2 + 1)$.
 
@@ -62,19 +66,27 @@ We can use the same argument of the previous section.
 
 * If there is only one distinct prime divisor $n = p_1^{e_1}$, then the sum is:
 
-$$1 + p_1 + p_1^2 + \dots + p_1^{e_1} = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1}$$
+$$
+1 + p_1 + p_1^2 + \dots + p_1^{e_1} = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1}
+$$
 
 * If there are two distinct prime divisors $n = p_1^{e_1} \cdot p_2^{e_2}$, then we can make the same table as before.
   The only difference is that now we now want to compute the sum instead of counting the elements.
   It is easy to see, that the sum of each combination can be expressed as:
 
-$$\left(1 + p_1 + p_1^2 + \dots + p_1^{e_1}\right) \cdot \left(1 + p_2 + p_2^2 + \dots + p_2^{e_2}\right)$$
+$$
+\left(1 + p_1 + p_1^2 + \dots + p_1^{e_1}\right) \cdot \left(1 + p_2 + p_2^2 + \dots + p_2^{e_2}\right)
+$$
 
-$$ = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1} \cdot \frac{p_2^{e_2 + 1} - 1}{p_2 - 1}$$
+$$
+= \frac{p_1^{e_1 + 1} - 1}{p_1 - 1} \cdot \frac{p_2^{e_2 + 1} - 1}{p_2 - 1}
+$$
 
 * In general, for $n = p_1^{e_1} \cdot p_2^{e_2} \cdots p_k^{e_k}$ we receive the formula:
 
-$$\sigma(n) = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1} \cdot \frac{p_2^{e_2 + 1} - 1}{p_2 - 1} \cdots \frac{p_k^{e_k + 1} - 1}{p_k - 1}$$
+$$
+\sigma(n) = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1} \cdot \frac{p_2^{e_2 + 1} - 1}{p_2 - 1} \cdots \frac{p_k^{e_k + 1} - 1}{p_k - 1}
+$$
 
 ```cpp
 long long SumOfDivisors(long long num) {
@@ -107,7 +119,9 @@ long long SumOfDivisors(long long num) {
 
 A multiplicative function is a function $f(x)$ which satisfies
 
-$$f(a \cdot b) = f(a) \cdot f(b)$$
+$$
+f(a \cdot b) = f(a) \cdot f(b)
+$$
 
 if $a$ and $b$ are coprime.
 

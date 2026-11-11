@@ -15,7 +15,9 @@ Yaqinda esa (2019-yilda) Harvey va van der Hoeven haqiqiy $O(n \log n)$ vaqtda i
 
 Darajasi $n - 1$ bo‘lgan ko‘phad berilgan bo‘lsin:
 
-$$A(x) = a_0 x^0 + a_1 x^1 + \dots + a_{n-1} x^{n-1}$$
+$$
+A(x) = a_0 x^0 + a_1 x^1 + \dots + a_{n-1} x^{n-1}
+$$
 
 Umumiylikni yo‘qotmagan holda $n$ — koeffitsiyentlar soni — 2 ning darajasi deb faraz qilamiz.
 Agar $n$ 2 ning darajasi bo‘lmasa, yetishmayotgan $a_i x^i$ hadlarni qo‘shib, ularning $a_i$ koeffitsiyentlarini $0$ ga tenglaymiz.
@@ -24,16 +26,20 @@ Bundan tashqari, bu kompleks sonlarning juda qiziqarli xossalari bor.
 Masalan, asosiy $n$-darajali ildiz $w_n = w_{n, 1} = e^{\frac{2 \pi i}{n}}$ yordamida qolgan barcha $n$-darajali ildizlarni $w_{n, k} = (w_n)^k$ ko‘rinishida ifodalash mumkin.
 $A(x)$ ko‘phadning (yoki unga ekvivalent ravishda $(a_0, a_1, \dots, a_{n-1})$ koeffitsiyentlar vektorining) **diskret Fourier almashtirishi (DFT)** ko‘phadning $x = w_{n, k}$ nuqtalardagi qiymatlari sifatida aniqlanadi, ya’ni u quyidagi vektor:
 
-$$\begin{align}
+$$
+\begin{align}
 \text{DFT}(a_0, a_1, \dots, a_{n-1}) &= (y_0, y_1, \dots, y_{n-1}) \\
 &= (A(w_{n, 0}), A(w_{n, 1}), \dots, A(w_{n, n-1})) \\
 &= (A(w_n^0), A(w_n^1), \dots, A(w_n^{n-1}))
-\end{align}$$
+\end{align}
+$$
 
 Xuddi shunday, **teskari diskret Fourier almashtirishi** aniqlanadi:
 ko‘phadning $(y_0, y_1, \dots, y_{n-1})$ qiymatlarining teskari DFT si ko‘phadning $(a_0, a_1, \dots, a_{n-1})$ koeffitsiyentlaridir.
 
-$$\text{InverseDFT}(y_0, y_1, \dots, y_{n-1}) = (a_0, a_1, \dots, a_{n-1})$$
+$$
+\text{InverseDFT}(y_0, y_1, \dots, y_{n-1}) = (a_0, a_1, \dots, a_{n-1})
+$$
 
 Shunday qilib, to‘g‘ri DFT ko‘phadning $n$-darajali birlik ildizlaridagi qiymatlarini hisoblasa, teskari DFT shu qiymatlar yordamida ko‘phad koeffitsiyentlarini tiklaydi.
 
@@ -45,15 +51,21 @@ Ularning har biri uchun DFT ni hisoblaymiz: $\text{DFT}(A)$ va $\text{DFT}(B)$.
 Bu ko‘phadlarni ko‘paytirsak nima bo‘ladi?
 Har bir nuqtada qiymatlar shunchaki ko‘paytirilishi ayon:
 
-$$(A \cdot B)(x) = A(x) \cdot B(x).$$
+$$
+(A \cdot B)(x) = A(x) \cdot B(x).
+$$
 
 Bu shuni anglatadiki, $\text{DFT}(A)$ va $\text{DFT}(B)$ vektorlarini — bir vektorning har bir elementini ikkinchi vektorning mos elementiga ko‘paytirib — ko‘paytirsak, $A \cdot B$ ko‘phadning DFT si bo‘lgan $\text{DFT}(A \cdot B)$ ni olamiz:
 
-$$\text{DFT}(A \cdot B) = \text{DFT}(A) \cdot \text{DFT}(B)$$
+$$
+\text{DFT}(A \cdot B) = \text{DFT}(A) \cdot \text{DFT}(B)
+$$
 
 Nihoyat, teskari DFT ni qo‘llab, quyidagini olamiz:
 
-$$A \cdot B = \text{InverseDFT}(\text{DFT}(A) \cdot \text{DFT}(B))$$
+$$
+A \cdot B = \text{InverseDFT}(\text{DFT}(A) \cdot \text{DFT}(B))
+$$
 
 O‘ng tomondagi ikkita DFT ko‘paytmasi deganda vektor elementlarining juftma-juft ko‘paytmasi nazarda tutiladi.
 Buni $O(n)$ vaqtda hisoblash mumkin.
@@ -73,18 +85,24 @@ Ko‘phad koeffitsiyentlari vektorini ikkita vektorga ajratamiz, ularning har bi
 
 Darajasi $n - 1$ bo‘lgan $A(x)$ ko‘phad berilgan bo‘lsin, bunda $n$ 2 ning darajasi va $n > 1$:
 
-$$A(x) = a_0 x^0 + a_1 x^1 + \dots + a_{n-1} x^{n-1}$$
+$$
+A(x) = a_0 x^0 + a_1 x^1 + \dots + a_{n-1} x^{n-1}
+$$
 
 Uni ikkita kichikroq ko‘phadga — faqat juft pozitsiyalardagi koeffitsiyentlarni saqlaydigan va faqat toq pozitsiyalardagi koeffitsiyentlarni saqlaydigan ko‘phadlarga — ajratamiz:
 
-$$\begin{align}
+$$
+\begin{align}
 A_0(x) &= a_0 x^0 + a_2 x^1 + \dots + a_{n-2} x^{\frac{n}{2}-1} \\
 A_1(x) &= a_1 x^0 + a_3 x^1 + \dots + a_{n-1} x^{\frac{n}{2}-1}
-\end{align}$$
+\end{align}
+$$
 
 Quyidagini ko‘rish oson:
 
-$$A(x) = A_0(x^2) + x A_1(x^2).$$
+$$
+A(x) = A_0(x^2) + x A_1(x^2).
+$$
 
 $A_0$ va $A_1$ ko‘phadlarning koeffitsiyentlari soni $A$ nikidan ikki baravar kam.
 Agar $\text{DFT}(A_0)$ va $\text{DFT}(A_1)$ yordamida $\text{DFT}(A)$ ni chiziqli vaqtda hisoblasak, vaqt murakkabligi uchun $T_{\text{DFT}}(n) = 2 T_{\text{DFT}}\left(\frac{n}{2}\right) + O(n)$ rekurrent munosabatni olamiz. **Master teorema** bo‘yicha bundan $T_{\text{DFT}}(n) = O(n \log n)$ kelib chiqadi.
@@ -95,26 +113,32 @@ $\left(y_k\right)_{k=0}^{n-1} = \text{DFT}(A)$ uchun ifoda topamiz.
 
 Birinchi $\frac{n}{2}$ ta qiymat uchun yuqoridagi $A(x) = A_0(x^2) + x A_1(x^2)$ tenglamadan bevosita foydalanish mumkin:
 
-$$y_k = y_k^0 + w_n^k y_k^1, \quad k = 0 \dots \frac{n}{2} - 1.$$
+$$
+y_k = y_k^0 + w_n^k y_k^1, \quad k = 0 \dots \frac{n}{2} - 1.
+$$
 
 Ikkinchi $\frac{n}{2}$ ta qiymat uchun esa biroz boshqacha ifoda topish kerak:
 
-$$\begin{align}
+$$
+\begin{align}
 y_{k+n/2} &= A\left(w_n^{k+n/2}\right) \\
 &= A_0\left(w_n^{2k+n}\right) + w_n^{k + n/2} A_1\left(w_n^{2k+n}\right) \\
 &= A_0\left(w_n^{2k} w_n^n\right) + w_n^k w_n^{n/2} A_1\left(w_n^{2k} w_n^n\right) \\
 &= A_0\left(w_n^{2k}\right) - w_n^k A_1\left(w_n^{2k}\right) \\
 &= y_k^0 - w_n^k y_k^1
-\end{align}$$
+\end{align}
+$$
 
 Bu yerda yana $A(x) = A_0(x^2) + x A_1(x^2)$ va $w_n^n = 1$, $w_n^{n/2} = -1$ ayniyatlaridan foydalandik.
 
 Shunday qilib, butun $(y_k)$ vektorni hisoblash uchun kerakli formulalarni olamiz:
 
-$$\begin{align}
+$$
+\begin{align}
 y_k &= y_k^0 + w_n^k y_k^1, &\quad k = 0 \dots \frac{n}{2} - 1, \\
 y_{k+n/2} &= y_k^0 - w_n^k y_k^1, &\quad k = 0 \dots \frac{n}{2} - 1.
-\end{align}$$
+\end{align}
+$$
 
 (Bu $a + b$ va $a - b$ ko‘rinishidagi naqsh ba’zan **kapalak** (*butterfly*) deb ataladi.)
 
@@ -178,11 +202,15 @@ $$
 
 Demak, quyidagi formulani olamiz:
 
-$$a_k = \frac{1}{n} \sum_{j=0}^{n-1} y_j w_n^{-k j}$$
+$$
+a_k = \frac{1}{n} \sum_{j=0}^{n-1} y_j w_n^{-k j}
+$$
 
 Buni $y_k$ formulasi bilan taqqoslaymiz:
 
-$$y_k = \sum_{j=0}^{n-1} a_j w_n^{k j}.$$
+$$
+y_k = \sum_{j=0}^{n-1} a_j w_n^{k j}.
+$$
 
 Bu masalalar deyarli bir xil ekanini ko‘ramiz. Shuning uchun $a_k$ koeffitsiyentlarni to‘g‘ri FFT dagi «bo‘lib yechish» algoritmi bilan topish mumkin; faqat $w_n^k$ o‘rniga $w_n^{-k}$ ishlatamiz va oxirida hosil bo‘lgan koeffitsiyentlarni $n$ ga bo‘lamiz.
 Demak, teskari DFT ni hisoblash to‘g‘ri DFT ni hisoblash bilan deyarli bir xil va uni ham $O(n \log n)$ vaqtda bajarish mumkin.
@@ -283,7 +311,9 @@ Shuning uchun har bir koeffitsiyent indeksining bitlarini teskari qilib, element
 
 Masalan, $n = 8$ uchun kerakli tartib quyidagicha:
 
-$$a = \bigg\{ \Big[ (a_0, a_4), (a_2, a_6) \Big], \Big[ (a_1, a_5), (a_3, a_7) \Big] \bigg\}$$
+$$
+a = \bigg\{ \Big[ (a_0, a_4), (a_2, a_6) \Big], \Big[ (a_1, a_5), (a_3, a_7) \Big] \bigg\}
+$$
 
 Haqiqatan ham, birinchi rekursiya darajasida (figurali qavslar bilan o‘ralgan qismda) vektor $[a_0, a_2, a_4, a_6]$ va $[a_1, a_3, a_5, a_7]$ qismlariga ajraladi.
 Ko‘rib turganimizdek, bitlarni teskari tartiblash permutatsiyasida bu vektorni shunchaki ikkita yarmiga: dastlabki $\frac{n}{2}$ ta va oxirgi $\frac{n}{2}$ ta elementga ajratishga mos keladi.
@@ -291,19 +321,25 @@ Keyin har bir yarim uchun rekursiv chaqiruv bajariladi.
 
 Ularning har biri uchun olingan DFT natijasi elementlarning o‘z joyiga — mos ravishda $a$ vektorining birinchi va ikkinchi yarmiga — yozilgan bo‘lsin:
 
-$$a = \bigg\{ \Big[y_0^0, y_1^0, y_2^0, y_3^0\Big], \Big[y_0^1, y_1^1, y_2^1, y_3^1 \Big] \bigg\}$$
+$$
+a = \bigg\{ \Big[y_0^0, y_1^0, y_2^0, y_3^0\Big], \Big[y_0^1, y_1^1, y_2^1, y_3^1 \Big] \bigg\}
+$$
 
 Endi bu ikki DFT ni butun vektor uchun bitta DFT ga birlashtirmoqchimiz.
 Elementlarning tartibi buning uchun aynan qulay va birlashtirishni ham bevosita shu vektorda bajarish mumkin.
 $y_0^0$ va $y_0^1$ elementlarini olib, ular ustida butterfly almashtirishini bajaramiz.
 Hosil bo‘lgan ikki qiymatning joyi boshlang‘ich ikki qiymatning joyi bilan bir xil, shuning uchun quyidagini olamiz:
 
-$$a = \bigg\{ \Big[y_0^0 + w_n^0 y_0^1, y_1^0, y_2^0, y_3^0\Big], \Big[y_0^0 - w_n^0 y_0^1, y_1^1, y_2^1, y_3^1\Big] \bigg\}$$
+$$
+a = \bigg\{ \Big[y_0^0 + w_n^0 y_0^1, y_1^0, y_2^0, y_3^0\Big], \Big[y_0^0 - w_n^0 y_0^1, y_1^1, y_2^1, y_3^1\Big] \bigg\}
+$$
 
 Xuddi shunday, $y_1^0$ va $y_1^1$ uchun butterfly almashtirishini hisoblab, natijalarni ularning joyiga yozamiz va shu tarzda davom etamiz.
 Natijada quyidagini olamiz:
 
-$$a = \bigg\{ \Big[y_0^0 + w_n^0 y_0^1, y_1^0 + w_n^1 y_1^1, y_2^0 + w_n^2 y_2^1, y_3^0 + w_n^3 y_3^1\Big], \Big[y_0^0 - w_n^0 y_0^1, y_1^0 - w_n^1 y_1^1, y_2^0 - w_n^2 y_2^1, y_3^0 - w_n^3 y_3^1\Big] \bigg\}$$
+$$
+a = \bigg\{ \Big[y_0^0 + w_n^0 y_0^1, y_1^0 + w_n^1 y_1^1, y_2^0 + w_n^2 y_2^1, y_3^0 + w_n^3 y_3^1\Big], \Big[y_0^0 - w_n^0 y_0^1, y_1^0 - w_n^1 y_1^1, y_2^0 - w_n^2 y_2^1, y_3^0 - w_n^3 y_3^1\Big] \bigg\}
+$$
 
 Shu tariqa $a$ vektorining kerakli DFT sini hisobladik.
 
@@ -430,19 +466,23 @@ Uni samarali hisoblash uchun ildizlarning xossalaridan keng foydalanamiz (masala
 Xuddi shu xossalar modul arifmetikasidagi birlikning $n$-darajali ildizlari uchun ham bajariladi.
 Tub maydonda birlikning $n$-darajali ildizi deb quyidagilarni qanoatlantiradigan $w_n$ songa aytiladi:
 
-$$\begin{align}
+$$
+\begin{align}
 (w_n)^n &= 1 \pmod{p}, \\
 (w_n)^k &\ne 1 \pmod{p}, \quad 1 \le k < n.
-\end{align}$$
+\end{align}
+$$
 
 Qolgan $n-1$ ta ildiz $w_n$ ning darajalari sifatida olinadi.
 Tez Fourier almashtirishi algoritmida foydalanish uchun ikkining darajasi bo‘lgan biror $n$ uchun va barcha kichikroq ikkining darajalari uchun ildiz mavjud bo‘lishi kerak.
 Quyidagi qiziqarli xossani ko‘rish mumkin:
 
-$$\begin{align}
+$$
+\begin{align}
 (w_n^2)^m = w_n^n &= 1 \pmod{p}, \quad \text{bu yerda } m = \frac{n}{2}\\
 (w_n^2)^k = w_n^{2k} &\ne 1 \pmod{p}, \quad 1 \le k < m.
-\end{align}$$
+\end{align}
+$$
 
 Demak, $w_n$ birlikning $n$-darajali ildizi bo‘lsa, $w_n^2$ birlikning $\frac{n}{2}$-darajali ildizidir.
 Natijada ikkining barcha kichikroq darajalari uchun ham kerakli darajadagi ildizlar mavjud va ularni $w_n$ yordamida hisoblash mumkin.
@@ -510,15 +550,19 @@ Bir yo‘l — $c 2^k + 1$ ko‘rinishidagi bir nechta turli tub son bo‘yicha 
 
 Boshqa yo‘l — $A(x)$ va $B(x)$ ko‘phadlarning har birini ikkita kichikroq ko‘phadga ajratish:
 
-$$\begin{align}
+$$
+\begin{align}
 A(x) &= A_1(x) + A_2(x) \cdot C \\
 B(x) &= B_1(x) + B_2(x) \cdot C
-\end{align}$$
+\end{align}
+$$
 
 bu yerda $C \approx \sqrt{M}$.
 U holda $A(x)$ va $B(x)$ ko‘paytmasi quyidagicha ifodalanadi:
 
-$$A(x) \cdot B(x) = A_1(x) \cdot B_1(x) + \left(A_1(x) \cdot B_2(x) + A_2(x) \cdot B_1(x)\right)\cdot C + \left(A_2(x) \cdot B_2(x)\right)\cdot C^2$$
+$$
+A(x) \cdot B(x) = A_1(x) \cdot B_1(x) + \left(A_1(x) \cdot B_2(x) + A_2(x) \cdot B_1(x)\right)\cdot C + \left(A_2(x) \cdot B_2(x)\right)\cdot C^2
+$$
 
 $A_1(x)$, $A_2(x)$, $B_1(x)$ va $B_2(x)$ ko‘phadlarning koeffitsiyentlari $\sqrt M$ dan kichik bo‘ladi, shuning uchun paydo bo‘ladigan barcha ko‘paytmalarning koeffitsiyentlari $M \cdot n$ dan kichik bo‘ladi; odatda bu sonlar standart suzuvchi nuqtali turlar bilan ishlash uchun yetarlicha kichik.
 Demak, bu yondashuvda kichikroq koeffitsiyentli ko‘phadlar ko‘paytmalari oddiy FFT va teskari FFT orqali hisoblanadi, so‘ng asl ko‘paytma $O(n)$ vaqtda modul bo‘yicha qo‘shish va ko‘paytirish yordamida tiklanadi.
@@ -539,7 +583,9 @@ Massiv elementlari ko‘phaddagi darajalar bo‘ladi ($a[i] \Rightarrow x^{a[i]}
 Bu ikki ko‘phadni $O(n \log n)$ vaqtda ko‘paytirib, $C$ ko‘phadni olamiz; undagi darajalar qaysi yig‘indilarni hosil qilish mumkinligini, koeffitsiyentlar esa ularning necha marta hosil bo‘lishini bildiradi.
 Misolimizda:
 
-$$(1 x^1 + 1 x^2 + 1 x^3) (1 x^2 + 1 x^4) = 1 x^3 + 1 x^4 + 2 x^5 + 1 x^6 + 1 x^7$$
+$$
+(1 x^1 + 1 x^2 + 1 x^3) (1 x^2 + 1 x^4) = 1 x^3 + 1 x^4 + 2 x^5 + 1 x^6 + 1 x^7
+$$
 
 ### Barcha mumkin bo‘lgan skalyar ko‘paytmalar {#all-possible-scalar-products}
 
@@ -551,11 +597,15 @@ $a$ ni teskari aylantirib, oxiriga $n$ ta nol qo‘shamiz.
 $b$ ni esa shunchaki o‘ziga ulaymiz.
 Bu ikki massivni ko‘phadlar sifatida ko‘paytirib, ko‘paytma $c$ ning $c[n-1],~ c[n],~ \dots,~ c[2n-2]$ koeffitsiyentlariga qarasak, quyidagini olamiz:
 
-$$c[k] = \sum_{i+j=k} a[i] b[j]$$
+$$
+c[k] = \sum_{i+j=k} a[i] b[j]
+$$
 
 $i \ge n$ bo‘lgan barcha $a[i] = 0$ ekanini hisobga olsak:
 
-$$c[k] = \sum_{i=0}^{n-1} a[i] b[k-i]$$
+$$
+c[k] = \sum_{i=0}^{n-1} a[i] b[k-i]
+$$
 
 Bu yig‘indi $a$ vektori bilan $b$ ning $(k - (n - 1))$-siklik chapga siljishining skalyar ko‘paytmasi ekanini ko‘rish oson.
 Demak, shu koeffitsiyentlar masala javobidir va ularni hamon $O(n \log n)$ vaqtda oldik.
@@ -576,35 +626,47 @@ Namunani matnda uchraydigan barcha o‘rinlarni hisoblash kerak.
 
 Har bir satr uchun ko‘phad tuzamiz ($T[i]$ va $P[i]$ alifbodagi $26$ harfga mos $0$ dan $25$ gacha bo‘lgan sonlar):
 
-$$A(x) = a_0 x^0 + a_1 x^1 + \dots + a_{n-1} x^{n-1}, \quad n = |T|$$
+$$
+A(x) = a_0 x^0 + a_1 x^1 + \dots + a_{n-1} x^{n-1}, \quad n = |T|
+$$
 
 bu yerda
 
-$$a_i = \cos(\alpha_i) + i \sin(\alpha_i), \quad \alpha_i = \frac{2 \pi T[i]}{26}.$$
+$$
+a_i = \cos(\alpha_i) + i \sin(\alpha_i), \quad \alpha_i = \frac{2 \pi T[i]}{26}.
+$$
 
 Va
 
-$$B(x) = b_0 x^0 + b_1 x^1 + \dots + b_{m-1} x^{m-1}, \quad m = |P|$$
+$$
+B(x) = b_0 x^0 + b_1 x^1 + \dots + b_{m-1} x^{m-1}, \quad m = |P|
+$$
 
 bu yerda
 
-$$b_i = \cos(\beta_i) - i \sin(\beta_i), \quad \beta_i = \frac{2 \pi P[m-i-1]}{26}.$$
+$$
+b_i = \cos(\beta_i) - i \sin(\beta_i), \quad \beta_i = \frac{2 \pi P[m-i-1]}{26}.
+$$
 
 $P[m-i-1]$ ifodasi namunani aniq ravishda teskari aylantirishiga e’tibor bering.
 
 Ikki ko‘phadning $C(x) = A(x) \cdot B(x)$ ko‘paytmasidagi $(m-1+i)$-koeffitsiyent namuna matnning $i$ o‘rnida uchrash-uchramasligini ko‘rsatadi:
 
-$$c_{m-1+i} = \sum_{j = 0}^{m-1} a_{i+j} \cdot b_{m-1-j} = \sum_{j=0}^{m-1} \left(\cos(\alpha_{i+j}) + i \sin(\alpha_{i+j})\right) \cdot \left(\cos(\beta_j) - i \sin(\beta_j)\right)$$
+$$
+c_{m-1+i} = \sum_{j = 0}^{m-1} a_{i+j} \cdot b_{m-1-j} = \sum_{j=0}^{m-1} \left(\cos(\alpha_{i+j}) + i \sin(\alpha_{i+j})\right) \cdot \left(\cos(\beta_j) - i \sin(\beta_j)\right)
+$$
 
 bu yerda $\alpha_{i+j} = \frac{2 \pi T[i+j]}{26}$ va $\beta_j = \frac{2 \pi P[j]}{26}$.
 
 Moslik mavjud bo‘lsa, $T[i+j] = P[j]$ va demak $\alpha_{i+j} = \beta_j$.
 Pifagorning trigonometrik ayniyatidan foydalanib quyidagini olamiz:
 
-$$\begin{align}
+$$
+\begin{align}
 c_{m-1+i} &= \sum_{j = 0}^{m-1}  \left(\cos(\alpha_{i+j}) + i \sin(\alpha_{i+j})\right) \cdot \left(\cos(\alpha_{i+j}) - i \sin(\alpha_{i+j})\right) \\
 &= \sum_{j = 0}^{m-1} \cos(\alpha_{i+j})^2 + \sin(\alpha_{i+j})^2 = \sum_{j = 0}^{m-1} 1 = m
-\end{align}$$
+\end{align}
+$$
 
 Moslik bo‘lmasa, kamida bitta belgi farq qiladi; natijada ko‘paytmalardan kamida bittasi $a_{i+j} \cdot b_{m-1-j}$ birga teng bo‘lmaydi va $c_{m-1+i} \ne m$ kelib chiqadi.
 

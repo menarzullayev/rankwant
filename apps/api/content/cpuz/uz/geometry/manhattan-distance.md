@@ -4,7 +4,9 @@
 
 Tekislikdagi $p$ va $q$ nuqtalar uchun ular orasidagi masofani $x$ va $y$ koordinatalari ayirmalari modullarining yig‘indisi sifatida aniqlash mumkin:
 
-$$d(p,q) = |x_p - x_q| + |y_p - y_q|$$
+$$
+d(p,q) = |x_p - x_q| + |y_p - y_q|
+$$
 
 Shunday aniqlangan masofa [Manhattan (taksikab) geometriyasi](https://en.wikipedia.org/wiki/Taxicab_geometry) deb ataladigan modelga mos keladi. Unda nuqtalar Manhattan kabi yaxshi rejalashtirilgan shahardagi chorrahalar sifatida qaraladi va faqat ko‘chalar bo‘ylab — gorizontal yoki vertikal — yurish mumkin, quyidagi rasmda ko‘rsatilgandek:
 
@@ -20,15 +22,21 @@ $n$ ta $P$ nuqta berilgan. Bir-biridan eng uzoq bo‘lgan $p,q$ nuqtalar juftini
 
 Avval bir o‘lchamli holatni, ya’ni $y=0$ ni ko‘raylik. Asosiy kuzatuv shuki, $|x_p - x_q|$ qiymati $x_p - x_q$ ga teng yoki $-x_p + x_q$ ga tengligini to‘liq ko‘rib chiqish (bruteforce) mumkin: modul ishorasini “adashtirsak”, faqat kichikroq qiymat olamiz va u javobga ta’sir qila olmaydi. Aniqroq aytganda:
 
-$$|x_p - x_q| = \max(x_p - x_q, -x_p + x_q)$$
+$$
+|x_p - x_q| = \max(x_p - x_q, -x_p + x_q)
+$$
 
 Shunday qilib, masalan, $x_p$ musbat ishorali bo‘ladigan $p$ ni tanlashga urinib ko‘rish mumkin, u holda $q$ manfiy ishorali bo‘lishi kerak. Bu yo‘l bilan quyidagini topamiz:
 
-$$\max\limits_{p, q \in P}(x_p + (-x_q)) = \max\limits_{p \in P}(x_p) + \max\limits_{q \in P}( - x_q ).$$
+$$
+\max\limits_{p, q \in P}(x_p + (-x_q)) = \max\limits_{p \in P}(x_p) + \max\limits_{q \in P}( - x_q ).
+$$
 
 E’tibor bering, bu g‘oyani 2 (yoki undan ko‘p!) o‘lchamga ham kengaytirish mumkin. $d$ o‘lchamda ishoralarning $2^d$ ta mumkin bo‘lgan qiymatini to‘liq ko‘rib chiqish kerak. Masalan, $2$ o‘lchamda $p$ ning ikkala ishorasi musbat bo‘lsin deb olsak, quyidagini topamiz:
 
-$$\max\limits_{p, q \in P} [(x_p + (-x_q)) + (y_p + (-y_q))] = \max\limits_{p \in P}(x_p + y_p) + \max\limits_{q \in P}(-x_q - y_q).$$
+$$
+\max\limits_{p, q \in P} [(x_p + (-x_q)) + (y_p + (-y_q))] = \max\limits_{p \in P}(x_p + y_p) + \max\limits_{q \in P}(-x_q - y_q).
+$$
 
 $p$ va $q$ ni bir-biridan mustaqil qilganimiz uchun ifodani maksimal qiladigan $p$ va $q$ ni topish endi oson.
 
@@ -55,17 +63,23 @@ for (int msk = 0; msk < (1 << d); msk++) {
 
 Barcha $m, n \in \mathbb{R}$ uchun quyidagi tenglik yaxshi ma’lum:
 
-$$|m| + |n| = \text{max}(|m + n|, |m - n|).$$
+$$
+|m| + |n| = \text{max}(|m + n|, |m - n|).
+$$
 
 Buni isbotlash uchun $m$ va $n$ ning ishoralarini tahlil qilish kifoya. Bu mashq sifatida qoldiriladi.
 
 Bu tenglikni Manhattan masofasi formulasiga qo‘llab, quyidagini olamiz:
 
-$$d((x_1, y_1), (x_2, y_2)) = |x_1 - x_2| + |y_1 - y_2| = \text{max}(|(x_1 + y_1) - (x_2 + y_2)|, |(y_1 - x_1) - (y_2 - x_2)|).$$
+$$
+d((x_1, y_1), (x_2, y_2)) = |x_1 - x_2| + |y_1 - y_2| = \text{max}(|(x_1 + y_1) - (x_2 + y_2)|, |(y_1 - x_1) - (y_2 - x_2)|).
+$$
 
 Oldingi tenglikdagi oxirgi ifoda $(x_1 + y_1, y_1 - x_1)$ va $(x_2 + y_2, y_2 - x_2)$ nuqtalarning [Chebyshev masofasi](https://en.wikipedia.org/wiki/Chebyshev_distance)dir. Bu degani,
 
-$$\alpha : (x, y) \to (x + y, y - x)$$
+$$
+\alpha : (x, y) \to (x + y, y - x)
+$$
 
 almashtirishni qo‘llaganimizdan keyin $p$ va $q$ nuqtalar orasidagi Manhattan masofasi $\alpha(p)$ va $\alpha(q)$ orasidagi Chebyshev masofasiga aylanadi.
 

@@ -2,7 +2,9 @@
 
 Diskret logarifm — berilgan $a$, $b$ va $m$ butun sonlar uchun
 
-$$a^x \equiv b \pmod m$$
+$$
+a^x \equiv b \pmod m
+$$
 
 tenglamani qanoatlantiradigan $x$ butun sonidir.
 
@@ -13,7 +15,9 @@ Ushbu maqolada 1971-yilda Shanks taklif qilgan, diskret logarifmni $O(\sqrt m)$ 
 
 Quyidagi tenglamani ko‘rib chiqamiz:
 
-$$a^x \equiv b \pmod m,$$
+$$
+a^x \equiv b \pmod m,
+$$
 
 bu yerda $a$ va $m$ o‘zaro tub.
 
@@ -23,15 +27,21 @@ Ravshanki, $[0;m)$ oraliqdagi istalgan $x$ sonini shu ko‘rinishda ifodalash mu
 
 U holda tenglama:
 
-$$a^{np-q}\equiv b\pmod m.$$
+$$
+a^{np-q}\equiv b\pmod m.
+$$
 
 $a$ va $m$ o‘zaro tub ekanidan foydalanib:
 
-$$a^{np}\equiv ba^q\pmod m$$
+$$
+a^{np}\equiv ba^q\pmod m
+$$
 
 ni olamiz. Bu yangi tenglamani soddalashtirib:
 
-$$f_1(p)=f_2(q).$$
+$$
+f_1(p)=f_2(q).
+$$
 
 ko‘rinishida yozish mumkin.
 
@@ -46,19 +56,27 @@ $f_1(p)$ ni [ikkilik darajaga oshirish algoritmi](/algorithms/algebra/binary-exp
 
 Algoritmning birinchi qadamida har bir mumkin bo‘lgan $p$ uchun $f_1$ ni hisoblash, keyin qiymatlarni saralash kerak. Demak, bu qadamning murakkabligi:
 
-$$O\left(\left\lceil \frac{m}{n} \right\rceil \left(\log m + \log \left\lceil \frac{m}{n} \right\rceil \right)\right) = O\left( \left\lceil \frac {m}{n} \right\rceil \log m\right)$$
+$$
+O\left(\left\lceil \frac{m}{n} \right\rceil \left(\log m + \log \left\lceil \frac{m}{n} \right\rceil \right)\right) = O\left( \left\lceil \frac {m}{n} \right\rceil \log m\right)
+$$
 
 Ikkinchi qadamda har bir mumkin bo‘lgan $q$ uchun $f_2(q)$ ni hisoblash va $f_1$ qiymatlari massivida ikkilik qidiruv bajarish kerak; shu sababli uning murakkabligi:
 
-$$O\left(n \left(\log m + \log \frac{m}{n} \right) \right) = O\left(n \log m\right).$$
+$$
+O\left(n \left(\log m + \log \frac{m}{n} \right) \right) = O\left(n \log m\right).
+$$
 
 Bu ikki murakkablikni qo‘shsak, $\log m$ soni $n$ va $m/n$ yig‘indisiga ko‘paytiriladi. Yig‘indi $n=m/n$ bo‘lganda minimum bo‘ladi. Demak, optimal ishlash uchun:
 
-$$n=\sqrt m.$$
+$$
+n=\sqrt m.
+$$
 
 Shunda algoritmning murakkabligi:
 
-$$O(\sqrt m\log m).$$
+$$
+O(\sqrt m\log m).
+$$
 
 ## Implementatsiya {#implementation}
 

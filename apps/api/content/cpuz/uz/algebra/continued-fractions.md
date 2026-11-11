@@ -9,7 +9,9 @@ Bundan tashqari, uzluksiz kasrlar Evklid algoritmi bilan chambarchas bog‘langa
 >
 > $a_0, a_1, \dots, a_k \in \mathbb Z$ va $a_1, a_2, \dots, a_k \geq 1$ bo‘lsin. U holda
 >
-> $$r=a_0 + \frac{1}{a_1 + \frac{1}{\dots + \frac{1}{a_k}}},$$
+> $$
+> r=a_0 + \frac{1}{a_1 + \frac{1}{\dots + \frac{1}{a_k}}},
+> $$
 >
 > ifoda $r$ ratsional sonining **uzluksiz kasr ko‘rinishi** deb ataladi va qisqacha $r=[a_0;a_1,a_2,\dots,a_k]$ tarzida belgilanadi.
 
@@ -23,7 +25,9 @@ Bundan tashqari, uzluksiz kasrlar Evklid algoritmi bilan chambarchas bog‘langa
 
 Har qanday ratsional sonni uzluksiz kasr ko‘rinishida aynan $2$ usulda ifodalash mumkinligini isbotlash mumkin:
 
-$$r = [a_0;a_1,\dots,a_k,1] = [a_0;a_1,\dots,a_k+1].$$
+$$
+r = [a_0;a_1,\dots,a_k,1] = [a_0;a_1,\dots,a_k+1].
+$$
 
 Bundan tashqari, $r=\frac{p}{q}$ uchun bunday uzluksiz kasrning $k$ uzunligi $k = O(\log \min(p, q))$ deb baholanadi.
 Buning sababi uzluksiz kasrni qurish tafsilotlarini ko‘rib chiqqanimizda ayon bo‘ladi.
@@ -32,7 +36,9 @@ Buning sababi uzluksiz kasrni qurish tafsilotlarini ko‘rib chiqqanimizda ayon 
 >
 > $a_0,a_1,a_2, \dots$ — $a_1, a_2, \dots \geq 1$ shartni qanoatlantiruvchi butun sonlar ketma-ketligi bo‘lsin. $r_k = [a_0; a_1, \dots, a_k]$ deb olamiz. U holda
 >
-> $$r = a_0 + \frac{1}{a_1 + \frac{1}{a_2+\dots}} = \lim\limits_{k \to \infty} r_k$$
+> $$
+> r = a_0 + \frac{1}{a_1 + \frac{1}{a_2+\dots}} = \lim\limits_{k \to \infty} r_k
+> $$
 >
 > ifoda $r$ irratsional sonining **uzluksiz kasr ko‘rinishi** deb ataladi va qisqacha $r = [a_0;a_1,a_2,\dots]$ tarzida belgilanadi.
 
@@ -48,15 +54,21 @@ Yana bir muhim kuzatuv: $a_0 > 0$ bo‘lsa, $\frac{1}{r}=[0;a_0, a_1, \dots]$; $
 
 > $r = [1; 1, 1, 1, \dots]$ ni ko‘rib chiqamiz. Induksiya yordamida $r_k = \frac{F_{k+2}}{F_{k+1}}$ ekanini isbotlash mumkin; bu yerda $F_k$ — $F_0 = 0$, $F_1 = 1$ va $F_{k} = F_{k-1} + F_{k-2}$ orqali aniqlangan Fibonacci ketma-ketligi. Binet formulasidan
 >
-> $$r_k = \frac{\phi^{k+2} - \psi^{k+2}}{\phi^{k+1} - \psi^{k+1}},$$
+> $$
+> r_k = \frac{\phi^{k+2} - \psi^{k+2}}{\phi^{k+1} - \psi^{k+1}},
+> $$
 >
 > ekani ma’lum; bu yerda $\phi = \frac{1+\sqrt{5}}{2} \approx 1.618$ — oltin nisbat va $\psi = \frac{1-\sqrt{5}}{2} = -\frac{1}{\phi} \approx -0.618$. Demak,
 >
-> $$r = 1+\frac{1}{1+\frac{1}{1+\dots}}=\lim\limits_{k \to \infty} r_k = \phi = \frac{1+\sqrt{5}}{2}.$$
+> $$
+> r = 1+\frac{1}{1+\frac{1}{1+\dots}}=\lim\limits_{k \to \infty} r_k = \phi = \frac{1+\sqrt{5}}{2}.
+> $$
 >
 > Aynan shu holatda $r$ ni topishning boshqa yo‘li
 >
-> $$r = 1+\frac{1}{r} \implies r^2 = r + 1$$
+> $$
+> r = 1+\frac{1}{r} \implies r^2 = r + 1
+> $$
 >
 > tenglamani yechishdan iborat bo‘lishi mumkinligiga e’tibor bering.
 
@@ -75,13 +87,17 @@ Yuqoridagi ta’riflardan $k \geq 1$ uchun $s_k \geq 1$ ekani kelib chiqadi.
 
 $[a_0; a_1, \dots, a_k]$ ni formal algebraik ifoda sifatida qarab, $a_i$ lar o‘rnida ixtiyoriy haqiqiy sonlarga ruxsat bersak,
 
-$$r = [a_0; a_1, \dots, a_{k-1}, s_k]$$
+$$
+r = [a_0; a_1, \dots, a_{k-1}, s_k]
+$$
 
 ni olamiz.
 
 Xususan, $r = [s_0] = s_0$. Boshqa tomondan, $s_k$ ni
 
-$$s_k = [a_k; s_{k+1}] = a_k + \frac{1}{s_{k+1}}$$
+$$
+s_k = [a_k; s_{k+1}] = a_k + \frac{1}{s_{k+1}}
+$$
 
 ko‘rinishida yozish mumkin. Demak, $s_k$ dan $a_k = \lfloor s_k \rfloor$ va $s_{k+1} = (s_k - a_k)^{-1}$ ni hisoblaymiz.
 $s_k=a_k$ bo‘lmasa, $a_0, a_1, \dots$ ketma-ketlik yaxshi aniqlangan; tenglik faqat $r$ ratsional son bo‘lganda yuz beradi.
@@ -94,13 +110,17 @@ Kod namunalarida asosan chekli uzluksiz kasrlarni qaraymiz.
 
 $s_k$ dan $s_{k+1}$ ga o‘tish
 
-$$s_k =\left\lfloor s_k \right\rfloor + \frac{1}{s_{k+1}}$$
+$$
+s_k =\left\lfloor s_k \right\rfloor + \frac{1}{s_{k+1}}
+$$
 
 ko‘rinishiga ega.
 
 Bu ifodadan keyingi to‘liq bo‘linma
 
-$$s_{k+1} = \left(s_k-\left\lfloor s_k\right\rfloor\right)^{-1}$$
+$$
+s_{k+1} = \left(s_k-\left\lfloor s_k\right\rfloor\right)^{-1}
+$$
 
 sifatida topiladi.
 
@@ -148,7 +168,9 @@ Uzluksiz kasrlarni keyinroq batafsil o‘rganishga turtki berish uchun hozir bir
 >
 > $r_k = \frac{p_k}{q_k}$ konvergentlari uchun ularni tez hisoblash imkonini beradigan quyidagi rekurrent formula o‘rinli:
 >
-> $$\frac{p_k}{q_k}=\frac{a_k p_{k-1} + p_{k-2}}{a_k q_{k-1} + q_{k-2}},$$
+> $$
+> \frac{p_k}{q_k}=\frac{a_k p_{k-1} + p_{k-2}}{a_k q_{k-1} + q_{k-2}},
+> $$
 >
 > bu yerda $\frac{p_{-1}}{q_{-1}}=\frac{1}{0}$ va $\frac{p_{-2}}{q_{-2}}=\frac{0}{1}$.
 
@@ -156,13 +178,17 @@ Uzluksiz kasrlarni keyinroq batafsil o‘rganishga turtki berish uchun hozir bir
 >
 > $r_k = \frac{p_k}{q_k}$ ning $r$ dan og‘ishini umumiy holda
 >
-> $$\left|\frac{p_k}{q_k}-r\right| \leq \frac{1}{q_k q_{k+1}} \leq \frac{1}{q_k^2}$$
+> $$
+> \left|\frac{p_k}{q_k}-r\right| \leq \frac{1}{q_k q_{k+1}} \leq \frac{1}{q_k^2}
+> $$
 >
 > tarzida baholash mumkin.
 >
 > Ikkala tomonni $q_k$ ga ko‘paytirib, muqobil bahoni olamiz:
 >
-> $$|p_k - q_k r| \leq \frac{1}{q_{k+1}}.$$
+> $$
+> |p_k - q_k r| \leq \frac{1}{q_{k+1}}.
+> $$
 >
 > Yuqoridagi rekurrent formuladan $q_k$ kamida Fibonacci sonlaridek tez o‘sishi kelib chiqadi.
 > Quyidagi rasmda konvergentlarning $r=\frac{1+\sqrt 5}{2}$ ga qanday yaqinlashishi tasvirlangan:
@@ -179,7 +205,9 @@ Uzluksiz kasrlarni keyinroq batafsil o‘rganishga turtki berish uchun hozir bir
 >
 > Qobiqlardagi barcha butun koordinatali uchlar $(q;p)$ ko‘rinishida bo‘lib,
 >
-> $$\frac{p}{q} = \frac{tp_{k-1} + p_{k-2}}{tq_{k-1} + q_{k-2}}$$
+> $$
+> \frac{p}{q} = \frac{tp_{k-1} + p_{k-2}}{tq_{k-1} + q_{k-2}}
+> $$
 >
 > tenglikni biror butun $0 \leq t \leq a_k$ uchun qanoatlantiradi. Boshqacha aytganda, qobiqdagi panjara nuqtalari to‘plami yarim konvergentlar to‘plamiga mos keladi.
 > Quyidagi rasmda $r=\frac{9}{7}$ ning konvergentlari va yarim konvergentlari (oraliq kulrang nuqtalar) ko‘rsatilgan.
@@ -200,9 +228,11 @@ Quyida bu faktlarning batafsil izohi hamda ularning bir oz sezgi va talqini kelt
 
 Oldin aniqlangan konvergentlarni yaqindan ko‘rib chiqamiz. $r=[a_0, a_1, a_2, \dots]$ uchun uning konvergentlari
 
+$$
 \begin{gather}
 r_0=[a_0],\\r_1=[a_0, a_1],\\ \dots,\\ r_k=[a_0, a_1, \dots, a_k]
 \end{gather}
+$$
 
 bo‘ladi.
 
@@ -210,17 +240,21 @@ Konvergentlar uzluksiz kasrlarning asosiy tushunchasidir, shu sababli ularning x
 
 $r$ sonining $k$-konvergenti $r_k = \frac{p_k}{q_k}$ ni
 
-$$r_k = \frac{P_k(a_0,a_1,\dots,a_k)}{P_{k-1}(a_1,\dots,a_k)} = \frac{a_k p_{k-1} + p_{k-2}}{a_k q_{k-1} + q_{k-2}},$$
+$$
+r_k = \frac{P_k(a_0,a_1,\dots,a_k)}{P_{k-1}(a_1,\dots,a_k)} = \frac{a_k p_{k-1} + p_{k-2}}{a_k q_{k-1} + q_{k-2}},
+$$
 
 ko‘rinishida hisoblash mumkin. Bu yerda $P_k(a_0,\dots,a_k)$ — [kontinuant](https://en.wikipedia.org/wiki/Continuant_(mathematics)), ya’ni
 
-$$P_k(x_0,x_1,\dots,x_k) = \det \begin{bmatrix}
+$$
+P_k(x_0,x_1,\dots,x_k) = \det \begin{bmatrix}
 x_k & 1 & 0 & \dots & 0 \\
 -1 & x_{k-1} & 1 & \dots & 0 \\
 0 & -1 & x_2 & . & \vdots \\
 \vdots & \vdots & . & \ddots & 1 \\
 0 & 0 & \dots & -1 & x_0
-\end{bmatrix}_{\textstyle .}$$
+\end{bmatrix}_{\textstyle .}
+$$
 
 orqali aniqlangan ko‘p o‘zgaruvchili ko‘phad.
 
@@ -233,49 +267,63 @@ Izchillik uchun yana ikkita konvergent: $r_{-1} = \frac{1}{0}$ va $r_{-2} = \fra
 >
 > $r_k$ ning surat va maxrajini $a_0, a_1, \dots, a_k$ ning ko‘p o‘zgaruvchili ko‘phadlari sifatida qarash mumkin:
 >
-> $$r_k = \frac{P_k(a_0, a_1, \dots, a_k)}{Q_k(a_0,a_1, \dots, a_k)}.$$
+> $$
+> r_k = \frac{P_k(a_0, a_1, \dots, a_k)}{Q_k(a_0,a_1, \dots, a_k)}.
+> $$
 >
 > Konvergent ta’rifidan
 >
-> $$r_k = a_0 + \frac{1}{[a_1;a_2,\dots, a_k]}= a_0 + \frac{Q_{k-1}(a_1, \dots, a_k)}{P_{k-1}(a_1, \dots, a_k)} = \frac{a_0 P_{k-1}(a_1, \dots, a_k) + Q_{k-1}(a_1, \dots, a_k)}{P_{k-1}(a_1, \dots, a_k)}$$
+> $$
+> r_k = a_0 + \frac{1}{[a_1;a_2,\dots, a_k]}= a_0 + \frac{Q_{k-1}(a_1, \dots, a_k)}{P_{k-1}(a_1, \dots, a_k)} = \frac{a_0 P_{k-1}(a_1, \dots, a_k) + Q_{k-1}(a_1, \dots, a_k)}{P_{k-1}(a_1, \dots, a_k)}
+> $$
 >
 > kelib chiqadi.
 >
 > Bundan $Q_k(a_0, \dots, a_k) = P_{k-1}(a_1, \dots, a_k)$ va
 >
-> $$P_k(a_0, \dots, a_k) = a_0 P_{k-1}(a_1, \dots, a_k) + P_{k-2}(a_2, \dots, a_k)$$
+> $$
+> P_k(a_0, \dots, a_k) = a_0 P_{k-1}(a_1, \dots, a_k) + P_{k-2}(a_2, \dots, a_k)
+> $$
 >
 > munosabatlari olinadi.
 >
 > Dastlab $r_0 = \frac{a_0}{1}$ va $r_1 = \frac{a_0 a_1 + 1}{a_1}$, demak
 >
-> $$\begin{align}P_0(a_0)&=a_0,\\ P_1(a_0, a_1) &= a_0 a_1 + 1.\end{align}$$
+> $$
+> \begin{align}P_0(a_0)&=a_0,\\ P_1(a_0, a_1) &= a_0 a_1 + 1.\end{align}
+> $$
 >
 > Izchillik uchun $P_{-1} = 1$ va $P_{-2}=0$ deb olish hamda formal ravishda $r_{-1} = \frac{1}{0}$ va $r_{-2}=\frac{0}{1}$ deyish qulay.
 >
 > Sonli analizdan ixtiyoriy uch diagonalli matritsaning determinanti
 >
-> $$T_k = \det \begin{bmatrix}
+> $$
+> T_k = \det \begin{bmatrix}
 > a_0 & b_0 & 0 & \dots & 0 \\
 > c_0 & a_1 & b_1 & \dots & 0 \\
 > 0 & c_1 & a_2 & . & \vdots \\
 > \vdots & \vdots & . & \ddots & c_{k-1} \\
 > 0 & 0 & \dots & b_{k-1} & a_k
-> \end{bmatrix}$$
+> \end{bmatrix}
+> $$
 >
 > ni $T_k = a_k T_{k-1} - b_{k-1} c_{k-1} T_{k-2}$ rekurrent formulasi orqali hisoblash mumkinligi ma’lum. Uni $P_k$ bilan solishtirib, bevosita ifodani olamiz:
 >
-> $$P_k = \det \begin{bmatrix}
+> $$
+> P_k = \det \begin{bmatrix}
 > x_k & 1 & 0 & \dots & 0 \\
 > -1 & x_{k-1} & 1 & \dots & 0 \\
 > 0 & -1 & x_2 & . & \vdots \\
 > \vdots & \vdots & . & \ddots & 1 \\
 > 0 & 0 & \dots & -1 & x_0
-> \end{bmatrix}_{\textstyle .}$$
+> \end{bmatrix}_{\textstyle .}
+> $$
 >
 > Bu ko‘phad uzluksiz kasrlar bilan yaqin aloqasi sababli [kontinuant](https://en.wikipedia.org/wiki/Continuant_(mathematics)) nomi bilan ham tanilgan. Bosh diagonal ketma-ketligi teskari aylantirilganda kontinuant o‘zgarmaydi. Bu uni hisoblashning muqobil formulasini beradi:
 >
-> $$P_k(a_0, \dots, a_k) = a_k P_{k-1}(a_0, \dots, a_{k-1}) + P_{k-2}(a_0, \dots, a_{k-2}).$$
+> $$
+> P_k(a_0, \dots, a_k) = a_k P_{k-1}(a_0, \dots, a_{k-1}) + P_{k-2}(a_0, \dots, a_{k-2}).
+> $$
 
 ### Implementatsiya {#implementation}
 
@@ -499,58 +547,82 @@ Demak, Stern–Brocot va Calkin–Wilf daraxtlarining bir xil darajalaridagi son
 
 $r$ soni va uning $k$-konvergenti $r_k=\frac{p_k}{q_k}$ uchun quyidagi formula o‘rinli:
 
-$$r_k = a_0 + \sum\limits_{i=1}^k \frac{(-1)^{i-1}}{q_i q_{i-1}}.$$
+$$
+r_k = a_0 + \sum\limits_{i=1}^k \frac{(-1)^{i-1}}{q_i q_{i-1}}.
+$$
 
 Xususan,
 
-$$r_k - r_{k-1} = \frac{(-1)^{k-1}}{q_k q_{k-1}}$$
+$$
+r_k - r_{k-1} = \frac{(-1)^{k-1}}{q_k q_{k-1}}
+$$
 
 va
 
-$$p_k q_{k-1} - p_{k-1} q_k = (-1)^{k-1}.$$
+$$
+p_k q_{k-1} - p_{k-1} q_k = (-1)^{k-1}.
+$$
 
 Bundan
 
-$$\left| r-\frac{p_k}{q_k} \right| \leq \frac{1}{q_{k+1}q_k} \leq \frac{1}{q_k^2}$$
+$$
+\left| r-\frac{p_k}{q_k} \right| \leq \frac{1}{q_{k+1}q_k} \leq \frac{1}{q_k^2}
+$$
 
 kelib chiqadi.
 
 Oxirgi tengsizlik $r_k$ va $r_{k+1}$ odatda $r$ ning turli tomonlarida yotishidan kelib chiqadi, shuning uchun
 
-$$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
+$$
+|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.
+$$
 
 > **Batafsil tushuntirish**
 >
 >
 > $|r-r_k|$ ni baholash uchun avval qo‘shni konvergentlar orasidagi farqni baholaymiz. Ta’rifga ko‘ra,
 >
-> $$\frac{p_k}{q_k} - \frac{p_{k-1}}{q_{k-1}} = \frac{p_k q_{k-1} - p_{k-1} q_k}{q_k q_{k-1}}.$$
+> $$
+> \frac{p_k}{q_k} - \frac{p_{k-1}}{q_{k-1}} = \frac{p_k q_{k-1} - p_{k-1} q_k}{q_k q_{k-1}}.
+> $$
 >
 > Suratdagi $p_k$ va $q_k$ ni rekurrent formulalar bilan almashtirsak,
 >
-> $$\begin{align} p_k q_{k-1} - p_{k-1} q_k &= (a_k p_{k-1} + p_{k-2}) q_{k-1} - p_{k-1} (a_k q_{k-1} + q_{k-2})
-> \\&= p_{k-2} q_{k-1} - p_{k-1} q_{k-2},\end{align}$$
+> $$
+> \begin{align} p_k q_{k-1} - p_{k-1} q_k &= (a_k p_{k-1} + p_{k-2}) q_{k-1} - p_{k-1} (a_k q_{k-1} + q_{k-2})
+> \\&= p_{k-2} q_{k-1} - p_{k-1} q_{k-2},\end{align}
+> $$
 >
 > ni olamiz. Demak, $r_k - r_{k-1}$ suratining qiymati doimo $r_{k-1} - r_{k-2}$ suratining qarama-qarshi ishoralisidir. U esa
 >
-> $$r_1 - r_0=\left(a_0+\frac{1}{a_1}\right)-a_0=\frac{1}{a_1}$$
+> $$
+> r_1 - r_0=\left(a_0+\frac{1}{a_1}\right)-a_0=\frac{1}{a_1}
+> $$
 >
 > uchun $1$ ga teng. Shuning uchun
 >
-> $$r_k - r_{k-1} = \frac{(-1)^{k-1}}{q_k q_{k-1}}.$$
+> $$
+> r_k - r_{k-1} = \frac{(-1)^{k-1}}{q_k q_{k-1}}.
+> $$
 >
 > Bu $r_k$ ni cheksiz qatorning qism yig‘indisi sifatida muqobil ifodalash imkonini beradi:
 >
-> $$r_k = (r_k - r_{k-1}) + \dots + (r_1 - r_0) + r_0
-> = a_0 + \sum\limits_{i=1}^k \frac{(-1)^{i-1}}{q_i q_{i-1}}.$$
+> $$
+> r_k = (r_k - r_{k-1}) + \dots + (r_1 - r_0) + r_0
+> = a_0 + \sum\limits_{i=1}^k \frac{(-1)^{i-1}}{q_i q_{i-1}}.
+> $$
 >
 > Rekurrent munosabatdan $q_k$ kamida Fibonacci sonlaridek tez monoton o‘sishi kelib chiqadi. Shu sababli
 >
-> $$r = \lim\limits_{k \to \infty} r_k = a_0 + \sum\limits_{i=1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}$$
+> $$
+> r = \lim\limits_{k \to \infty} r_k = a_0 + \sum\limits_{i=1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}
+> $$
 >
 > doimo yaxshi aniqlangan, chunki mos qator har doim yaqinlashadi. E’tiborlisi, qoldiq qator
 >
-> $$r-r_k = \sum\limits_{i=k+1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}$$
+> $$
+> r-r_k = \sum\limits_{i=k+1}^\infty \frac{(-1)^{i-1}}{q_i q_{i-1}}
+> $$
 >
 > $q_i q_{i-1}$ lar qanchalik tez kamayishi sababli $(-1)^k$ bilan bir xil ishoraga ega. Demak, juft indeksli $r_k$ lar $r$ ga pastdan, toq indekslilari esa yuqoridan yaqinlashadi:
 >
@@ -561,11 +633,15 @@ $$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
 >
 > Rasmdan
 >
-> $$|r-r_k| = |r_k - r_{k+1}| - |r-r_{k+1}| \leq |r_k - r_{k+1}|$$
+> $$
+> |r-r_k| = |r_k - r_{k+1}| - |r-r_{k+1}| \leq |r_k - r_{k+1}|
+> $$
 >
 > ekanini ko‘ramiz. Ya’ni $r$ va $r_k$ orasidagi masofa hech qachon $r_k$ va $r_{k+1}$ orasidagi masofadan katta emas:
 >
-> $$\left|r-\frac{p_k}{q_k}\right| \leq \frac{1}{q_k q_{k+1}} \leq \frac{1}{q_k^2}.$$
+> $$
+> \left|r-\frac{p_k}{q_k}\right| \leq \frac{1}{q_k q_{k+1}} \leq \frac{1}{q_k^2}.
+> $$
 
 > **Kengaytirilgan Evklidmi?**
 >
@@ -577,7 +653,9 @@ $$|r-r_k| = |r_k-r_{k+1}|-|r-r_{k+1}| \leq |r_k - r_{k+1}|.$$
 >
 > $\frac{A}{B}=[a_0; a_1, \dots, a_k]$ bo‘lsin. Yuqorida $p_k q_{k-1} - p_{k-1} q_k = (-1)^{k-1}$ isbotlandi. $p_k$ va $q_k$ o‘rniga $A$ va $B$ ni qo‘ysak,
 >
-> $$Aq_{k-1} - Bp_{k-1} = (-1)^{k-1} g,$$
+> $$
+> Aq_{k-1} - Bp_{k-1} = (-1)^{k-1} g,
+> $$
 >
 > ni olamiz; bu yerda $g = \gcd(A, B)$. Agar $C$ soni $g$ ga bo‘linsa, yechim $x = (-1)^{k-1}\frac{C}{g} q_{k-1}$ va $y = (-1)^{k}\frac{C}{g} p_{k-1}$ bo‘ladi.
 >
@@ -604,11 +682,15 @@ Uzluksiz kasrlar uchun yana bir muhim tushuncha — [chiziqli-kasrli almashtiris
 
 $L_0(x)=\frac{a_0 x + b_0}{c_0 x + d_0}$ va $L_1(x)=\frac{a_1 x + b_1}{c_1 x + d_1}$ chiziqli-kasrli almashtirishlarining $(L_0 \circ L_1)(x) = L_0(L_1(x))$ kompozitsiyasi ham chiziqli-kasrli almashtirishdir:
 
-$$\frac{a_0\frac{a_1 x + b_1}{c_1 x + d_1} + b_0}{c_0 \frac{a_1 x + b_1}{c_1 x + d_1} + d_0} = \frac{a_0(a_1 x + b_1) + b_0 (c_1 x + d_1)}{c_0 (a_1 x + b_1) + d_0 (c_1 x + d_1)} = \frac{(a_0 a_1 + b_0 c_1) x + (a_0 b_1 + b_0 d_1)}{(c_0 a_1 + d_0 c_1) x + (c_0 b_1 + d_0 d_1)}.$$
+$$
+\frac{a_0\frac{a_1 x + b_1}{c_1 x + d_1} + b_0}{c_0 \frac{a_1 x + b_1}{c_1 x + d_1} + d_0} = \frac{a_0(a_1 x + b_1) + b_0 (c_1 x + d_1)}{c_0 (a_1 x + b_1) + d_0 (c_1 x + d_1)} = \frac{(a_0 a_1 + b_0 c_1) x + (a_0 b_1 + b_0 d_1)}{(c_0 a_1 + d_0 c_1) x + (c_0 b_1 + d_0 d_1)}.
+$$
 
 Chiziqli-kasrli almashtirishning teskarisi ham chiziqli-kasrli almashtirishdir:
 
-$$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
+$$
+y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.
+$$
 
 > **[DMOPC '19 Contest 7 P4 - Bob and Continued Fractions](https://dmoj.ca/problem/dmopc19c7p4)**
 >
@@ -622,13 +704,17 @@ $$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
 >
 > $L_{k}(x) = [a_k; x] = a_k + \frac{1}{x} = \frac{a_k\cdot x+1}{1\cdot x + 0}$ deb belgilaymiz. $L_k(\infty) = a_k$ ekaniga e’tibor bering. Bu belgilashda
 >
-> $$[a_0; a_1, \dots, a_k, x] = [a_0; [a_1; [\dots; [a_k; x]]]] = (L_0 \circ L_1 \circ \dots \circ L_k)(x) = \frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}$$
+> $$
+> [a_0; a_1, \dots, a_k, x] = [a_0; [a_1; [\dots; [a_k; x]]]] = (L_0 \circ L_1 \circ \dots \circ L_k)(x) = \frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}
+> $$
 >
 > bo‘ladi.
 >
 > Demak, masala
 >
-> $$(L_l \circ L_{l+1} \circ \dots \circ L_r)(\infty)$$
+> $$
+> (L_l \circ L_{l+1} \circ \dots \circ L_r)(\infty)
+> $$
 >
 > ni hisoblashga keldi.
 >
@@ -646,7 +732,9 @@ $$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
 >
 > Shunday qilib, $L_{a_0}$, $L_{a_1}$ va hokazolarni ketma-ket qo‘shib,
 >
-> $$(L \circ L_{a_0} \circ \dots \circ L_{a_k})(x) = L\left(\frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}\right)=\frac{a_k x + b_k}{c_k x + d_k}$$
+> $$
+> (L \circ L_{a_0} \circ \dots \circ L_{a_k})(x) = L\left(\frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}\right)=\frac{a_k x + b_k}{c_k x + d_k}
+> $$
 >
 > ni hisoblay olamiz.
 >
@@ -667,7 +755,9 @@ $$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
 >
 > Keyin $\lfloor \frac{a}{e} \rfloor = \lfloor \frac{b}{f} \rfloor = \lfloor \frac{c}{g} \rfloor = \lfloor \frac{d}{h} \rfloor$ ekanini tekshirasiz. Agar ularning barchasi bir xil bo‘lsa, bu qiymatni natijaviy kasrdagi $c_k$ sifatida olasiz va almashtirishni
 >
-> $$L(x, y) \mapsto \frac{1}{L(x, y) - c_k}$$
+> $$
+> L(x, y) \mapsto \frac{1}{L(x, y) - c_k}
+> $$
 >
 > ko‘rinishiga o‘zgartirasiz.
 
@@ -679,25 +769,33 @@ $$y = \frac{ax+b}{cx+d} \iff y(cx+d) = ax + b \iff x = -\frac{dy-b}{cy-a}.$$
 
 $x = [1; 1, 1, \dots]$ uchun $x = 1 + \frac{1}{x}$, demak $x^2 = x + 1$. Davriy uzluksiz kasrlar bilan kvadrat tenglamalar orasida umumiy bog‘lanish bor. Quyidagi tenglamani ko‘rib chiqamiz:
 
-$$ x = [a_0; a_1, \dots, a_k, x].$$
+$$
+x = [a_0; a_1, \dots, a_k, x].
+$$
 
 Bir tomondan, bu tenglama $x$ ning uzluksiz kasr ko‘rinishi $k+1$ davrga ega ekanini anglatadi.
 
 Boshqa tomondan, konvergentlar formulasidan bu tenglama
 
-$$x = \frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}$$
+$$
+x = \frac{p_k x + p_{k-1}}{q_k x + q_{k-1}}
+$$
 
 degani.
 
 Ya’ni $x$ o‘zining chiziqli-kasrli almashtirilishiga teng. Tenglamadan $x$ ikkinchi darajali
 
-$$q_k x^2 + (q_{k-1}-p_k)x - p_{k-1} = 0$$
+$$
+q_k x^2 + (q_{k-1}-p_k)x - p_{k-1} = 0
+$$
 
 tenglamaning ildizi ekani kelib chiqadi.
 
 Xuddi shunday mulohaza oxir-oqibat davriy uzluksiz kasrlar uchun ham o‘rinli: $x = [a_0; a_1, \dots, a_k, y]$, bu yerda $y=[b_0; b_1, \dots, b_k, y]$. Birinchi tenglamadan $x = L_0(y)$, ikkinchisidan $y = L_1(y)$ ni chiqaramiz; bu yerda $L_0$ va $L_1$ — chiziqli-kasrli almashtirishlar. Demak,
 
-$$x = (L_0 \circ L_1)(y) = (L_0 \circ L_1 \circ L_0^{-1})(x).$$
+$$
+x = (L_0 \circ L_1)(y) = (L_0 \circ L_1 \circ L_0^{-1})(x).
+$$
 
 Bundan ham kuchliroq faktni isbotlash mumkin; uni birinchi bo‘lib Lagrange isbotlagan: butun koeffitsiyentli ixtiyoriy $ax^2+bx+c=0$ kvadrat tenglamaning $x$ yechimi oxir-oqibat davriy uzluksiz kasrdir.
 
@@ -709,17 +807,23 @@ Bundan ham kuchliroq faktni isbotlash mumkin; uni birinchi bo‘lib Lagrange isb
 >
 > Bu sonning $k$-to‘liq bo‘linmasi $s_k$ uchun umumiy holda
 >
-> $$\alpha = [a_0; a_1, \dots, a_{k-1}, s_k] = \frac{s_k p_{k-1} + p_{k-2}}{s_k q_{k-1} + q_{k-2}}$$
+> $$
+> \alpha = [a_0; a_1, \dots, a_{k-1}, s_k] = \frac{s_k p_{k-1} + p_{k-2}}{s_k q_{k-1} + q_{k-2}}
+> $$
 >
 > o‘rinli.
 >
 > Demak,
 >
-> $$s_k = -\frac{\alpha q_{k-1} - p_{k-1}}{\alpha q_k - p_k} = -\frac{q_{k-1} y \sqrt n + (x q_{k-1} - z p_{k-1})}{q_k y \sqrt n + (xq_k-zp_k)}.$$
+> $$
+> s_k = -\frac{\alpha q_{k-1} - p_{k-1}}{\alpha q_k - p_k} = -\frac{q_{k-1} y \sqrt n + (x q_{k-1} - z p_{k-1})}{q_k y \sqrt n + (xq_k-zp_k)}.
+> $$
 >
 > Surat va maxrajni $(xq_k - zp_k) - q_k y \sqrt n$ ga ko‘paytirib, maxrajdagi $\sqrt n$ dan xalos bo‘lamiz. Shunday qilib, to‘liq bo‘linmalar
 >
-> $$s_k = \frac{x_k + y_k \sqrt n}{z_k}$$
+> $$
+> s_k = \frac{x_k + y_k \sqrt n}{z_k}
+> $$
 >
 > ko‘rinishiga ega.
 >
@@ -727,11 +831,15 @@ Bundan ham kuchliroq faktni isbotlash mumkin; uni birinchi bo‘lib Lagrange isb
 >
 > Avvalo, $a_k = \lfloor s_k \rfloor = \left\lfloor \frac{x_k + y_k \lfloor \sqrt n \rfloor}{z_k} \right\rfloor$. So‘ngra
 >
-> $$s_{k+1} = \frac{1}{s_k-a_k} = \frac{z_k}{(x_k - z_k a_k) + y_k \sqrt n} = \frac{z_k (x_k - y_k a_k) - y_k z_k \sqrt n}{(x_k - y_k a_k)^2 - y_k^2 n}.$$
+> $$
+> s_{k+1} = \frac{1}{s_k-a_k} = \frac{z_k}{(x_k - z_k a_k) + y_k \sqrt n} = \frac{z_k (x_k - y_k a_k) - y_k z_k \sqrt n}{(x_k - y_k a_k)^2 - y_k^2 n}.
+> $$
 >
 > $t_k = x_k - y_k a_k$ deb belgilasak,
 >
+> $$
 > \begin{align}x_{k+1} &=& z_k t_k, \\ y_{k+1} &=& -y_k z_k, \\ z_{k+1} &=& t_k^2 - y_k^2 n.\end{align}
+> $$
 >
 > Bunday ko‘rinishning qulay tomoni shundaki, $x_{k+1}, y_{k+1}, z_{k+1}$ ni ularning eng katta umumiy bo‘luvchisiga qisqartirsak, natija yagona bo‘ladi. Demak, undan joriy holat oldin takrorlangan-takrorlanmaganini va bu holat avval qaysi indeksda bo‘lganini tekshirish uchun foydalanish mumkin.
 >
@@ -808,45 +916,61 @@ Bundan ham kuchliroq faktni isbotlash mumkin; uni birinchi bo‘lib Lagrange isb
 
 $r_k = \frac{p_k}{q_k}$ konvergent uchun $\vec r_k = (q_k;p_k)$ deb olamiz. U holda quyidagi rekurrent formula o‘rinli:
 
-$$\vec r_k = a_k \vec r_{k-1} + \vec r_{k-2}.$$
+$$
+\vec r_k = a_k \vec r_{k-1} + \vec r_{k-2}.
+$$
 
 $\vec r = (1;r)$ bo‘lsin. U holda har bir $(x;y)$ vektor qiyalik koeffitsiyenti $\frac{y}{x}$ ga teng bo‘lgan songa mos keladi.
 
 [Psevdoskalyar ko‘paytma](/algorithms/geometry/basic-geometry) $(x_1;y_1) \times (x_2;y_2) = x_1 y_2 - x_2 y_1$ tushunchasi yordamida
 
-$$s_k = -\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r} = \left|\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r}\right|$$
+$$
+s_k = -\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r} = \left|\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r}\right|
+$$
 
 ekanini ko‘rsatish mumkin (quyidagi tushuntirishga qarang).
 
 Oxirgi tenglik $r_{k-1}$ va $r_{k-2}$ sonlari $r$ ning turli tomonlarida yotishi, demak, $\vec r_{k-1}$ va $\vec r_{k-2}$ ning $\vec r$ bilan psevdoskalyar ko‘paytmalari qarama-qarshi ishoraga ega bo‘lishidan kelib chiqadi. $a_k = \lfloor s_k \rfloor$ ni hisobga olsak, $\vec r_k$ formulasi
 
-$$\vec r_k = \vec r_{k-2} + \left\lfloor \left| \frac{\vec r \times \vec r_{k-2}}{\vec r \times \vec r_{k-1}}\right|\right\rfloor \vec r_{k-1}$$
+$$
+\vec r_k = \vec r_{k-2} + \left\lfloor \left| \frac{\vec r \times \vec r_{k-2}}{\vec r \times \vec r_{k-1}}\right|\right\rfloor \vec r_{k-1}
+$$
 
 ko‘rinishini oladi.
 
 $\vec r_k \times r = (q;p) \times (1;r) = qr - p$ ekaniga e’tibor bering. Demak,
 
-$$a_k = \left\lfloor \left| \frac{q_{k-1}r-p_{k-1}}{q_{k-2}r-p_{k-2}} \right| \right\rfloor.$$
+$$
+a_k = \left\lfloor \left| \frac{q_{k-1}r-p_{k-1}}{q_{k-2}r-p_{k-2}} \right| \right\rfloor.
+$$
 
 > **Tushuntirish**
 >
 > Yuqorida $a_k = \lfloor s_k \rfloor$ ekanini qayd etdik; bu yerda $s_k = [a_k; a_{k+1}, a_{k+2}, \dots]$. Boshqa tomondan, konvergentlar rekurrent formulasidan
 >
-> $$r = [a_0; a_1, \dots, a_{k-1}, s_k] = \frac{s_k p_{k-1} + p_{k-2}}{s_k q_{k-1} + q_{k-2}}$$
+> $$
+> r = [a_0; a_1, \dots, a_{k-1}, s_k] = \frac{s_k p_{k-1} + p_{k-2}}{s_k q_{k-1} + q_{k-2}}
+> $$
 >
 > ni olamiz.
 >
 > Vektor ko‘rinishida bu
 >
-> $$\vec r \parallel s_k \vec r_{k-1} + \vec r_{k-2}$$
+> $$
+> \vec r \parallel s_k \vec r_{k-1} + \vec r_{k-2}
+> $$
 >
 > tarzida yoziladi; ya’ni $\vec r$ va $s_k \vec r_{k-1} + \vec r_{k-2}$ kollinear — ularning qiyalik koeffitsiyenti bir xil. Tenglikning ikkala tomonini $\vec r$ bilan [psevdoskalyar ko‘paytirib](/algorithms/geometry/basic-geometry),
 >
-> $$0 = s_k (\vec r_{k-1} \times \vec r) + (\vec r_{k-2} \times \vec r)$$
+> $$
+> 0 = s_k (\vec r_{k-1} \times \vec r) + (\vec r_{k-2} \times \vec r)
+> $$
 >
 > ni olamiz. Bundan yakuniy formula
 >
-> $$s_k = -\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r}$$
+> $$
+> s_k = -\frac{\vec r_{k-2} \times \vec r}{\vec r_{k-1} \times \vec r}
+> $$
 >
 > kelib chiqadi.
 
@@ -872,7 +996,9 @@ $$a_k = \left\lfloor \left| \frac{q_{k-1}r-p_{k-1}}{q_{k-2}r-p_{k-2}} \right| \r
 
 $\vec r_{k-2}$, $\vec r_k$ va $\vec 0$ nuqtalarda qurilgan uchburchakka qarasak, uning ikkilangan yuzi
 
-$$|\vec r_{k-2} \times \vec r_k| = |\vec r_{k-2} \times (\vec r_{k-2} + a_k \vec r_{k-1})| = a_k |\vec r_{k-2} \times \vec r_{k-1}| = a_k$$
+$$
+|\vec r_{k-2} \times \vec r_k| = |\vec r_{k-2} \times (\vec r_{k-2} + a_k \vec r_{k-1})| = a_k |\vec r_{k-2} \times \vec r_{k-1}| = a_k
+$$
 
 bo‘lishini ko‘ramiz.
 
@@ -1083,7 +1209,9 @@ Endi eng muhim fakt va tushunchalar kiritildi; aniq masala misollarini ko‘rib 
 >
 > $a \bmod b = a - \lfloor \frac{a}{b} \rfloor b$ ekanini hisobga olsak, bu masala oldingi masalaga kamayadi. Ushbu faktdan foydalanib, yig‘indi
 >
-> $$\sum\limits_{i=1}^n \left(p \cdot i - \left\lfloor \frac{p \cdot i}{q} \right\rfloor q\right) = \frac{pn(n+1)}{2}-q\sum\limits_{i=1}^n \left\lfloor \frac{p \cdot i}{q}\right\rfloor$$
+> $$
+> \sum\limits_{i=1}^n \left(p \cdot i - \left\lfloor \frac{p \cdot i}{q} \right\rfloor q\right) = \frac{pn(n+1)}{2}-q\sum\limits_{i=1}^n \left\lfloor \frac{p \cdot i}{q}\right\rfloor
+> $$
 >
 > ko‘rinishiga keladi.
 >

@@ -70,7 +70,9 @@ Agar $s\neq0$ bo‘lsa, $t=0$ bo‘lgan holatga olib boruvchi yurish mavjudligin
     Bu yurish bir uyumning $x$ o‘lchamini $y$ gacha kamaytiradi.
     $\oplus$ amalining elementar xossalaridan foydalanib, quyidagini olamiz:
 
-    $$ t = s \oplus x \oplus y = 0 \oplus x \oplus y = x \oplus y $$
+    $$
+    t = s \oplus x \oplus y = 0 \oplus x \oplus y = x \oplus y
+    $$
 
     $y<x$ bo‘lgani uchun $y\oplus x$ nol bo‘la olmaydi, demak $t\neq0$.
     Induksiya faraziga ko‘ra, erishish mumkin bo‘lgan har qanday holat yutuvchi; shuning uchun joriy holat yutqazuvchi.
@@ -84,7 +86,9 @@ Agar $s\neq0$ bo‘lsa, $t=0$ bo‘lgan holatga olib boruvchi yurish mavjudligin
     Shuning uchun $y<x$ va yurish qonuniy.
     Endi:
 
-    $$ t = s \oplus x \oplus y = s \oplus x \oplus (s \oplus x) = 0 $$
+    $$
+    t = s \oplus x \oplus y = s \oplus x \oplus (s \oplus x) = 0
+    $$
 
     Demak, induksiya faraziga ko‘ra yutqazuvchi bo‘lgan erishiladigan holatni topdik; joriy holat yutuvchi.
 
@@ -128,7 +132,9 @@ $x$ soni $v$ holatining **Grundy qiymati** yoki **nim-qiymati** deb ataladi.
 
 Bundan tashqari, bu sonni quyidagi rekursiv formula bilan topish mumkin:
 
-$$ x = \text{mex}\ \{ x_1, \ldots, x_k \}, $$
+$$
+x = \text{mex}\ \{ x_1, \ldots, x_k \},
+$$
 
 bu yerda $x_i$ — $v_i$ holatining Grundy qiymati, $\text{mex}$ — *minimum excludant* — esa berilgan to‘plamda uchramaydigan eng kichik manfiy bo‘lmagan butun son.
 
@@ -194,7 +200,9 @@ Xoch 1- yoki $n$-pozitsiyaga qo‘yilgan chekka holatda $n-2$ o‘yiniga o‘tam
 
 Demak, $g(n)$ Grundy qiymati quyidagi ko‘rinishga ega:
 
-$$g(n) = \text{mex} \Bigl( \{ g(n-2) \} \cup \{g(i-2) \oplus g(n-i-1) \mid 2 \leq i \leq n-1\} \Bigr) .$$
+$$
+g(n) = \text{mex} \Bigl( \{ g(n-2) \} \cup \{g(i-2) \oplus g(n-i-1) \mid 2 \leq i \leq n-1\} \Bigr) .
+$$
 
 Shu tariqa $O(n^2)$ yechimga ega bo‘ldik.
 

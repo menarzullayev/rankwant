@@ -20,13 +20,15 @@ $\mathtt{tin}[v]$ qiymat $v$ tugunga kirish vaqtini bildirsin. Bundan tashqari, 
 
 $\mathtt{low}[v]$ — $\mathtt{tin}[v]$, $(v,p)$ orqa qirra bilan $v$ ga ulangan har bir $p$ tugunning $\mathtt{tin}[p]$ kirish vaqti hamda DFS daraxtida $v$ ning bevosita avlodi bo‘lgan har bir $to$ tugunning $\mathtt{low}[to]$ qiymatlari minimumidir:
 
-$$\mathtt{low}[v] = \min \left\{
+$$
+\mathtt{low}[v] = \min \left\{
     \begin{array}{ll}
     \mathtt{tin}[v] \\
     \mathtt{tin}[p]  &\text{ barcha }p\text{ uchun, agar }(v,p)\text{ orqa qirra bo‘lsa} \\
     \mathtt{low}[to] &\text{ barcha }to\text{ uchun, agar }(v,to)\text{ daraxt qirrasi bo‘lsa}
     \end{array}
-\right\}$$
+\right\}
+$$
 
 $v$ tugundan yoki uning biror avlodidan $v$ ning biror ajdodiga orqa qirra mavjud bo‘lishi uchun va faqat shundagina $v$ ning shunday $to$ farzandi mavjud bo‘ladiki, $\mathtt{low}[to] \leq \mathtt{tin}[v]$. Agar $\mathtt{low}[to] = \mathtt{tin}[v]$ bo‘lsa, orqa qirra bevosita $v$ ga keladi; aks holda u $v$ ning ajdodlaridan biriga keladi.
 

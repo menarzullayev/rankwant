@@ -6,7 +6,9 @@ Yulduzlar va ajratgichlar (*stars and bars*) — ayrim kombinatorik masalalarni 
 
 $n$ ta bir xil obyektni belgilangan $k$ ta qutiga joylashtirish usullari soni
 
-$$\binom{n + k - 1}{n}.$$
+$$
+\binom{n + k - 1}{n}.
+$$
 
 Isbotda obyektlar yulduzlarga aylantiriladi, qutilar esa ajratgichlar bilan bir-biridan ajratiladi; usulning nomi ham shundan kelib chiqqan.
 Masalan, $\bigstar | \bigstar \bigstar |~| \bigstar \bigstar$ yozuvi quyidagi holatni ifodalaydi:
@@ -23,7 +25,9 @@ Bu masala teoremaning bevosita qo‘llanishidir.
 
 Quyidagi tenglamaning yechimlari sonini hisoblash kerak:
 
-$$x_1 + x_2 + \dots + x_k = n$$
+$$
+x_1 + x_2 + \dots + x_k = n
+$$
 
 bunda $x_i \ge 0$.
 
@@ -37,7 +41,9 @@ Shuning uchun javob $\binom{n + k - 1}{n}$ ga teng.
 
 Ikkinchi teorema musbat butun sonlar uchun qulay talqin beradi. Quyidagi tenglamaning yechimlarini ko‘rib chiqamiz:
 
-$$x_1 + x_2 + \dots + x_k = n$$
+$$
+x_1 + x_2 + \dots + x_k = n
+$$
 
 bunda $x_i \ge 1$.
 
@@ -49,15 +55,21 @@ Yulduzlar orasida $n-1$ ta bo‘shliq bor va ulardan $k-1$ tasiga ajratgich qo�
 Bu natijani turli quyi chegaralarga ega butun sonlar yig‘indilariga ham osongina umumlashtirish mumkin.
 Ya’ni quyidagi tenglamaning yechimlari sonini hisoblamoqchimiz:
 
-$$x_1 + x_2 + \dots + x_k = n$$
+$$
+x_1 + x_2 + \dots + x_k = n
+$$
 
 bunda $x_i \ge a_i$.
 
 $x_i' := x_i - a_i$ almashtirishdan so‘ng quyidagi o‘zgartirilgan tenglamani olamiz:
 
-$$(x_1' + a_i) + (x_2' + a_i) + \dots + (x_k' + a_k) = n$$
+$$
+(x_1' + a_i) + (x_2' + a_i) + \dots + (x_k' + a_k) = n
+$$
 
-$$\Leftrightarrow ~ ~ x_1' + x_2' + \dots + x_k' = n - a_1 - a_2 - \dots - a_k$$
+$$
+\Leftrightarrow ~ ~ x_1' + x_2' + \dots + x_k' = n - a_1 - a_2 - \dots - a_k
+$$
 
 bunda $x_i' \ge 0$.
 Shunday qilib, masalani $x_i' \ge 0$ bo‘lgan soddaroq holatga keltirdik va yana yulduzlar va ajratgichlar teoremasini qo‘llashimiz mumkin.

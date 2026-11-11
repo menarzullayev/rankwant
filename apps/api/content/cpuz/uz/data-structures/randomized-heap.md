@@ -73,18 +73,22 @@ $h(T)$ tasodifiy miqdorni kiritamiz. U $T$ uyumning ildizidan barggacha tasodifi
 
 $h(T)$ ning matematik kutilmasi uyumdagi tugunlar soni logarifmi bilan yuqoridan baholanadi:
 
-$$\mathbf{E} h(T) \le \log(n+1)$$
+$$
+\mathbf{E} h(T) \le \log(n+1)
+$$
 
 Buni induksiya bilan oson isbotlash mumkin. $L$ va $R$ — $T$ ildizining chap va o‘ng ost-daraxtlari, $n_L$ va $n_R$ esa ulardagi tugunlar soni bo‘lsin; demak, $n = n_L + n_R + 1$.
 
 Induksiya qadami quyidagicha:
 
-$$\begin{align}
+$$
+\begin{align}
 \mathbf{E} h(T) &= 1 + \frac{\mathbf{E} h(L) + \mathbf{E} h(R)}{2}
 \le 1 + \frac{\log(n_L + 1) + \log(n_R + 1)}{2} \\
 &= 1 + \log\sqrt{(n_L + 1)(n_R + 1)} = \log 2\sqrt{(n_L + 1)(n_R + 1)} \\
 &\le \log \frac{2\left((n_L + 1) + (n_R + 1)\right)}{2} = \log(n_L + n_R + 2) = \log(n+1)
-\end{align}$$
+\end{align}
+$$
 
 ### Kutilgan qiymatdan oshib ketish {#exceeding-the-expected-value}
 
@@ -92,13 +96,17 @@ Faqat kutilgan qiymatning o‘zi eng yomon holat haqida yetarli ma’lumot berma
 
 Endi kutilgan qiymatdan sezilarli oshib ketish ehtimoli juda kichik ekanini isbotlaymiz:
 
-$${\cal P}(h(T) > (c+1) \log n) < \frac{1}{n^c}$$
+$$
+{\cal P}(h(T) > (c+1) \log n) < \frac{1}{n^c}
+$$
 
 ixtiyoriy musbat o‘zgarmas $c$ uchun.
 
 $P$ bilan uyum ildizidan barglargacha bo‘lgan va uzunligi $(c+1)\log n$ dan katta yo‘llar to‘plamini belgilaymiz. Uzunligi $|p|$ bo‘lgan har bir $p$ yo‘l tasodifiy yo‘l sifatida tanlanish ehtimoli $2^{-|p|}$ ga teng. Shuning uchun:
 
-$${\cal P}(h(T) > (c+1) \log n) = \sum_{p \in P} 2^{-|p|} < \sum_{p \in P} 2^{-(c+1) \log n} = |P| n^{-(c+1)} \le n^{-c}$$
+$$
+{\cal P}(h(T) > (c+1) \log n) = \sum_{p \in P} 2^{-|p|} < \sum_{p \in P} 2^{-(c+1) \log n} = |P| n^{-(c+1)} \le n^{-c}
+$$
 
 ### Algoritm murakkabligi {#complexity-of-the-algorithm}
 

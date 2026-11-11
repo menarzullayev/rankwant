@@ -46,7 +46,9 @@ Endi algoritmning ishlash vaqti $O(n \log \log n)$ ekanini isbotlaymiz.
 Algoritm har bir $p \le n$ tub soni uchun ichki siklda $\frac{n}{p}$ ta amal bajaradi.
 Demak, quyidagi ifodani baholashimiz kerak:
 
-$$\sum_{\substack{p \le n, \\\ p \text{ tub}}} \frac n p = n \cdot \sum_{\substack{p \le n, \\\ p \text{ tub}}} \frac 1 p.$$
+$$
+\sum_{\substack{p \le n, \\\ p \text{ tub}}} \frac n p = n \cdot \sum_{\substack{p \le n, \\\ p \text{ tub}}} \frac 1 p.
+$$
 
 Ikki mashhur faktni eslaylik:
 
@@ -55,21 +57,29 @@ Ikki mashhur faktni eslaylik:
 
 Shunday qilib, yig‘indini quyidagicha yozish mumkin:
 
-$$\sum_{\substack{p \le n, \\\ p \text{ tub}}} \frac 1 p \approx \frac 1 2 + \sum_{k = 2}^{\frac n {\ln n}} \frac 1 {k \ln k}.$$
+$$
+\sum_{\substack{p \le n, \\\ p \text{ tub}}} \frac 1 p \approx \frac 1 2 + \sum_{k = 2}^{\frac n {\ln n}} \frac 1 {k \ln k}.
+$$
 
 Bu yerda yig‘indidan birinchi tub son — 2 ni alohida ajratdik, chunki $k \ln k$ yaqinlashuvida $k = 1$ bo‘lsa, qiymat $0$ chiqib, nolga bo‘lish yuz beradi.
 
 Endi bu yig‘indini xuddi shu funksiyaning $2$ dan $\frac n {\ln n}$ gacha integrali yordamida baholaymiz (bunday yaqinlashtirish mumkin, chunki aslida yig‘indi to‘g‘ri to‘rtburchaklar usuli bilan integralning yaqinlashuvi hisoblanadi):
 
-$$\sum_{k = 2}^{\frac n {\ln n}} \frac 1 {k \ln k} \approx \int_2^{\frac n {\ln n}} \frac 1 {k \ln k} dk.$$
+$$
+\sum_{k = 2}^{\frac n {\ln n}} \frac 1 {k \ln k} \approx \int_2^{\frac n {\ln n}} \frac 1 {k \ln k} dk.
+$$
 
 Integral ostidagi funksiyaning boshlang‘ich funksiyasi $\ln \ln k$. Almashtirish kiritib, kichik tartibli hadlarni tashlasak, quyidagi natijani olamiz:
 
-$$\int_2^{\frac n {\ln n}} \frac 1 {k \ln k} dk = \ln \ln \frac n {\ln n} - \ln \ln 2 = \ln(\ln n - \ln \ln n) - \ln \ln 2 \approx \ln \ln n.$$
+$$
+\int_2^{\frac n {\ln n}} \frac 1 {k \ln k} dk = \ln \ln \frac n {\ln n} - \ln \ln 2 = \ln(\ln n - \ln \ln n) - \ln \ln 2 \approx \ln \ln n.
+$$
 
 Endi dastlabki yig‘indiga qaytsak, uning taxminiy bahosi quyidagicha bo‘ladi:
 
-$$\sum_{\substack{p \le n, \\\ p\ is\ prime}} \frac n p \approx n \ln \ln n + o(n).$$
+$$
+\sum_{\substack{p \le n, \\\ p\ is\ prime}} \frac n p \approx n \ln \ln n + o(n).
+$$
 
 Bundan qat’iyroq isbotni (doimiy ko‘paytuvchilar aniqligigacha yetadigan yanada aniq bahoni) Hardy va Wrightning “An Introduction to the Theory of Numbers” kitobidan (349-bet) topish mumkin.
 

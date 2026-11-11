@@ -6,11 +6,15 @@ Knuth's optimization, also known as the Knuth-Yao Speedup, is a special case of 
 
 The Speedup is applied for transitions of the form
 
-$$dp(i, j) = \min_{i \leq k < j} [ dp(i, k) + dp(k+1, j) + C(i, j) ].$$
+$$
+dp(i, j) = \min_{i \leq k < j} [ dp(i, k) + dp(k+1, j) + C(i, j) ].
+$$
 
 Similar to [divide and conquer DP](/algorithms/dynamic-programming/divide-and-conquer-dp), let $opt(i, j)$ be the maximum value of $k$ that minimizes the expression in the transition ($opt$ is referred to as the "optimal splitting point" further in this article). The optimization requires that the following holds:
 
-$$opt(i, j-1) \leq opt(i, j) \leq opt(i+1, j).$$
+$$
+opt(i, j-1) \leq opt(i, j) \leq opt(i+1, j).
+$$
 
 We can show that it is true when the cost function $C$ satisfies the following conditions for $a \leq b \leq c \leq d$:
 
@@ -157,21 +161,25 @@ Setting $q = opt(i, j-1)$, by definition, $dp_{p}(i, j-1) \geq dp_{q}(i, j-1)$. 
 
 Now, using the QI on some indices $p+1 \leq q+1 \leq j-1 \leq j$, we get
 
-$$\begin{align}
+$$
+\begin{align}
 &dp(p+1, j-1) + dp(q+1, j) ≤ dp(q+1, j-1) + dp(p+1, j) \\
 \implies& (dp(i, p) + dp(p+1, j-1) + C(i, j-1)) + (dp(i, q) + dp(q+1, j) + C(i, j)) \\  
 \leq& (dp(i, q) + dp(q+1, j-1) + C(i, j-1)) + (dp(i, p) + dp(p+1, j) + C(i, j)) \\  
 \implies& dp_{p}(i, j-1) + dp_{q}(i, j) ≤ dp_{p}(i, j) + dp_{q}(i, j-1) \\
 \implies& dp_{p}(i, j-1) - dp_{q}(i, j-1) ≤ dp_{p}(i, j) - dp_{q}(i, j) \\
-\end{align}$$
+\end{align}
+$$
 
 Finally,
 
-$$\begin{align}
+$$
+\begin{align}
 &dp_{p}(i, j-1) \geq dp_{q}(i, j-1) \\
 &\implies 0 \leq dp_{p}(i, j-1) - dp_{q}(i, j-1) \leq dp_{p}(i, j) - dp_{q}(i, j) \\
 &\implies dp_{p}(i, j) \geq dp_{q}(i, j)
-\end{align}$$  
+\end{align}
+$$
 
 This proves the first part of the inequality, i.e., $opt(i, j-1) \leq opt(i, j)$. The second part $opt(i, j) \leq opt(i+1, j)$ can be shown with the same idea, starting with the inequality 
 $dp(i, p) + dp(i+1, q) ≤ dp(i+1, p) + dp(i, q)$.
