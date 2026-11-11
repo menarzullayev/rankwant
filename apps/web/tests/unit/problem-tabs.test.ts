@@ -22,6 +22,7 @@ describe("problem tabs", () => {
       "editorial",
       "statistics",
       "solvers",
+      "discussion",
     ]);
   });
 

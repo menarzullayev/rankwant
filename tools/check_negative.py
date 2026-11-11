@@ -5021,6 +5021,66 @@ def neg_decisions_generator_queues_ahead() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_discussion_hides_late() -> tuple[bool, str]:
+    """Reports would hide a comment only after five people."""
+    return _decision_broken(
+        "apps/api/community/services.py",
+        "AUTO_HIDE_REPORTS = 3" + "\n",
+        "AUTO_HIDE_REPORTS = 5" + "\n",
+        "avto-yashirish 3 ta shikoyatda emas",
+    )
+
+
+def neg_decisions_discussion_new_flood() -> tuple[bool, str]:
+    """A new account could write fifty comments a day."""
+    return _decision_broken(
+        "apps/api/community/services.py",
+        "NEW_DAILY_COMMENTS = 5" + "\n",
+        "NEW_DAILY_COMMENTS = 50" + "\n",
+        "kunlik chegarasi 5 emas",
+    )
+
+
+def neg_decisions_discussion_links_free() -> tuple[bool, str]:
+    """An unconfirmed account could post links."""
+    return _decision_broken(
+        "apps/api/community/services.py",
+        "if LINK.search(text) and not user.email_verified:",
+        "if False:",
+        "havola email tasdiqisiz",
+    )
+
+
+def neg_decisions_discussion_code_open() -> tuple[bool, str]:
+    """Code would reach readers who have not solved the problem."""
+    return _decision_broken(
+        "apps/api/community/services.py",
+        "elif not code_open and row.author_id != viewer_id:",
+        "elif False:",
+        "kod yechmaganlarga serverda yashirilmaydi",
+    )
+
+
+def neg_decisions_discussion_during_contest() -> tuple[bool, str]:
+    """A problem still inside a contest would have an open discussion."""
+    return _decision_broken(
+        "apps/api/community/services.py",
+        "problem = public_problem(ref)",
+        "problem = any_problem(ref)",
+        "arxivda bo'lmagan masalada ham ochiq",
+    )
+
+
+def neg_decisions_discussion_guest_writes() -> tuple[bool, str]:
+    """A guest could post."""
+    return _decision_broken(
+        "apps/api/community/views.py",
+        'return [IsAuthenticated()] if self.request.method == "POST" else [AllowAny()]',
+        "return [AllowAny()]",
+        "kirmasdan yoziladi",
+    )
+
+
 def neg_decisions_classroom_skips_request() -> tuple[bool, str]:
     """A classroom that asks for approval lets the student straight in."""
     return _decision_broken(
@@ -8917,6 +8977,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/community/services.py",
+    "apps/api/community/views.py",
     "apps/api/problems/generation.py",
     "apps/api/quizzes/services.py",
     "apps/api/quizzes/views.py",
@@ -13306,6 +13368,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("generator natijasi tashlansa tutilsin", neg_decisions_generator_unrouted),
             ("generator kvotasiz yursa tutilsin", neg_decisions_generator_no_quota),
             ("generator navbatni to'ldirsa tutilsin", neg_decisions_generator_queues_ahead),
+            ("muhokama 5 shikoyatda yashirsa tutilsin", neg_decisions_discussion_hides_late),
+            ("yangi hisob 50 izoh yozsa tutilsin", neg_decisions_discussion_new_flood),
+            ("tasdiqsiz havola o'tsa tutilsin", neg_decisions_discussion_links_free),
+            ("kod yechmaganga ochilsa tutilsin", neg_decisions_discussion_code_open),
+            ("musobaqa paytida muhokama ochilsa tutilsin", neg_decisions_discussion_during_contest),
+            ("mehmon izoh yozsa tutilsin", neg_decisions_discussion_guest_writes),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

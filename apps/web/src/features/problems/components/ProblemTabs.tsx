@@ -27,6 +27,7 @@ const LABEL: Record<ProblemTab, MessageKey> = {
   editorial: "editorial.title",
   statistics: "problem.tab.stats",
   solvers: "problem.tab.solvers",
+  discussion: "problem.tab.discussion",
 };
 
 /** Masala bo'limlari — KEP va RoboContest'dagi kabi sahifa tepasida.

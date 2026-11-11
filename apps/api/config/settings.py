@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "content",
     "classroom",
     "coaching",
+    "community",
     "quizzes",
     "arena",
     "duels",
