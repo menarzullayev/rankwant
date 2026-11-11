@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3349 strings.**
+**3360 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1616,6 +1616,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.verdictLayout.modal` | Oyna | Termin |  |
 | `problem.solveTimer` | Yechish | Sheshiw waqtı |  |
 | `problem.roundTimer` | Raund | Tur |  |
+| `timer.pause` | To'xtatish | Toqtatıw |  |
+| `timer.resume` | Davom ettirish | Dawam ettiriw |  |
+| `timer.reset` | Qaytadan | Jańadan |  |
+| `timer.set` | Taymer | Waqıt ólshegish |  |
+| `timer.minutes` | {count} daq | {count} minut |  |
+| `timer.done` | Vaqt tugadi | Waqıt tamamlandı |  |
+| `timer.stop` | O'chirish | Óshiriw |  |
+| `problem.focus` | Fokus rejimi | Dıqqat rejimi |  |
+| `problem.focusExit` | Fokusdan chiqish | Fokustan shıǵıw |  |
+| `problem.focusHint` | Menyu va sarlavhasiz faqat masala va muharrir; Esc — chiqish | Menyu hám sarlawhasız tek másele hám redaktor; Esc — shıǵıw |  |
+| `submit.fileTooLarge` | Fayl {kb} KB dan oshmasligi kerak | Fayl {kb} KB dan aspawı kerek |  |
 | `problem.copy` | Nusxalash | Kóshiriw |  |
 | `problem.copied` | Nusxalandi | Kóshirildi |  |
 | `problem.copyFailed` | Nusxa olinmadi | Kóshirilmedi |  |

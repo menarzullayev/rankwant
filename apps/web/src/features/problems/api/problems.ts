@@ -102,6 +102,8 @@ export type ProblemDetail = Problem & {
     index_letter: string;
     is_running: boolean;
     is_frozen: boolean;
+    /** When the contest ends: the countdown beside the statement. */
+    end_at: string;
     registered: boolean;
     /** Before the start — only an insider gets this far: what they send
      *  is a testing attempt that counts nowhere (ADR-0055, part 2). */

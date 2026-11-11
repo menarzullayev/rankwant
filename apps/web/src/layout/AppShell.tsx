@@ -18,6 +18,7 @@ import { NavBadgesProvider } from "@/context/NavBadgesContext";
 import type { AppearancePrefs, Me } from "@/lib/api";
 import { OverlayProvider } from "@/components/overlay/OverlayHost";
 import { startChiziq } from "@/lib/chiziq";
+import { useFocusMode } from "@/lib/focus-mode";
 import { lockBodyScroll } from "@/lib/scroll";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
@@ -93,7 +94,9 @@ function Shell({ children }: { children: React.ReactNode }) {
   const bare = BARE.includes(pathname);
   const full = FULL.includes(pathname);
   const wide = isExpanded || isHovered;
-  const sidenav = navMode === "sidenav" && !bare;
+  // Focus mode (decision 2026-11-11 ①): the problem page alone, no chrome.
+  const focused = useFocusMode();
+  const sidenav = navMode === "sidenav" && !bare && !focused;
   // The rail replaces the side menu on wide screens only; the drawer stays.
   const rail = sidenav && RAIL;
 
@@ -155,18 +158,18 @@ function Shell({ children }: { children: React.ReactNode }) {
               : ""
         }`}
       >
-        {full ? null : navMode === "topnav" && !bare ? (
+        {full || focused ? null : navMode === "topnav" && !bare ? (
           <AppTopNav shape={navShape} />
         ) : (
           <AppHeader />
         )}
-        {!bare && <WelcomeNotice />}
-        {!bare && <ContestInvite />}
-        {!bare && <VerifyBanner />}
+        {!bare && !focused && <WelcomeNotice />}
+        {!bare && !focused && <ContestInvite />}
+        {!bare && !focused && <VerifyBanner />}
         {/* Kontekstli nudge (qaror 16): mavjud hisoblarda mamlakat bo'sh —
             banner shu bo'shliqni yumshoq yo'l bilan yopadi. Faqat kirgan
             va to'ldirmagan odamga ko'rinadi, yopilsa qaytmaydi. */}
-        {!bare && <GeoNudge />}
+        {!bare && !focused && <GeoNudge />}
         {/* Kenglik `--rw-content-width` dan (D48) — sozlagichda erkin
             tanlanadi. Tailwind sinfi qotib qolgan edi va katta monitorda
             odam o'qish uchun tor/keng qilib o'zgartira olmasdi. */}
@@ -178,7 +181,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         >
           {children}
         </main>
-        {!full && <AppFooter />}
+        {!full && !focused && <AppFooter />}
       </div>
     </div>
   );

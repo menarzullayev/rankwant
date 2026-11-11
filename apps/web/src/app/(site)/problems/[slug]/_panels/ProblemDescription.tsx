@@ -53,7 +53,10 @@ export function ProblemDescription({
 
   return (
     <article className="min-w-0 space-y-6">
-      <ProblemSolveTimer contest={contest} />
+      <ProblemSolveTimer
+        slug={slug}
+        contestEndsAt={problem.contest?.is_running ? problem.contest.end_at : undefined}
+      />
       <VerdictPresentationLayer placement="column" />
       <header>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
