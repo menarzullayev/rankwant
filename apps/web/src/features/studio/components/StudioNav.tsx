@@ -15,6 +15,9 @@ const SECTIONS: readonly { href: Route; key: MessageKey }[] = [
   { href: "/studio/problems", key: "studio.nav.problems" },
   { href: "/studio/contests", key: "studio.nav.contests" },
   { href: "/studio/courses", key: "studio.nav.courses" },
+  // A teacher's quizzes and question bank (ADR-0061 § 5).
+  { href: "/studio/quizzes", key: "studio.nav.quizzes" },
+  { href: "/studio/questions", key: "studio.nav.questions" },
 ];
 
 export function StudioNav() {

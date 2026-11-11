@@ -4901,6 +4901,76 @@ def neg_decisions_teacher_not_hideable() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_teacher_quiz_pays_qvant() -> tuple[bool, str]:
+    """A teacher's quiz would pay Qvant."""
+    return _decision_broken(
+        "apps/api/quizzes/services.py",
+        "if first_time and quiz.owner_id is None and quiz.reward_qvant and total:",
+        "if first_time and quiz.reward_qvant and total:",
+        "o'qituvchi testi Qvant beradi",
+    )
+
+
+def neg_decisions_quiz_late_counts() -> tuple[bool, str]:
+    """Answers sent after the time limit would count."""
+    return _decision_broken(
+        "apps/api/quizzes/services.py",
+        "if ends is not None and timezone.now() > ends + GRACE:",
+        "if False:",
+        "vaqt tugagandan keyingi javob hisoblanadi",
+    )
+
+
+def neg_decisions_class_quiz_in_catalogue() -> tuple[bool, str]:
+    """A teacher's quiz would show in the public catalogue."""
+    return _decision_broken(
+        "apps/api/quizzes/views.py",
+        "base = Quiz.objects.filter(owner=None, is_published=True)",
+        "base = Quiz.objects.all()",
+        "ochiq katalogga chiqadi",
+    )
+
+
+def neg_decisions_quiz_answers_early() -> tuple[bool, str]:
+    """The right answers would show before `answers_after`."""
+    return _decision_broken(
+        "apps/api/quizzes/views.py",
+        'data["review"] = review if shown else services.hidden(review)',
+        'data["review"] = review',
+        "belgilangan vaqtdan oldin ko'rinadi",
+    )
+
+
+def neg_decisions_timed_questions_early() -> tuple[bool, str]:
+    """A timed quiz's questions would show before the clock starts."""
+    return _decision_broken(
+        "apps/api/quizzes/serializers.py",
+        'if quiz.time_limit_minutes is not None and not self._state(quiz)["started"]:',
+        "if False:",
+        "boshlashdan oldin ko'rinadi",
+    )
+
+
+def neg_decisions_quiz_free_limit() -> tuple[bool, str]:
+    """The free plan's quiz count drifts from the owner's 3."""
+    return _decision_broken(
+        "apps/api/core/quotas.py",
+        '    "quizzes": 3,\n',
+        '    "quizzes": 10,\n',
+        "bepul rejada testlar 3 emas",
+    )
+
+
+def neg_decisions_quiz_report_open() -> tuple[bool, str]:
+    """An assistant or a student would read the class quiz report."""
+    return _decision_broken(
+        "apps/api/classroom/views.py",
+        '            return _not_owner("Only the classroom owner can see results")\n',
+        "            pass\n",
+        "test hisoboti egasidan boshqaga ochiq",
+    )
+
+
 def neg_decisions_classroom_skips_request() -> tuple[bool, str]:
     """A classroom that asks for approval lets the student straight in."""
     return _decision_broken(
@@ -8797,6 +8867,11 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/quizzes/services.py",
+    "apps/api/quizzes/views.py",
+    "apps/api/quizzes/serializers.py",
+    "apps/api/quizzes/author_serializers.py",
+    "apps/api/quizzes/author_views.py",
     "apps/api/coaching/services.py",
     "apps/api/coaching/access.py",
     "apps/api/profiles/public.py",
@@ -13168,6 +13243,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ruxsatsiz kod ochilsa tutilsin", neg_decisions_coach_reads_without_consent),
             ("musobaqada kod ochilsa tutilsin", neg_decisions_coach_reads_live_contest),
             ("o'qituvchi yashirilmasa tutilsin", neg_decisions_teacher_not_hideable),
+            ("o'qituvchi testi Qvant bersa tutilsin", neg_decisions_teacher_quiz_pays_qvant),
+            ("kech javob hisoblansa tutilsin", neg_decisions_quiz_late_counts),
+            ("sinf testi katalogga chiqsa tutilsin", neg_decisions_class_quiz_in_catalogue),
+            ("javoblar erta ko'rinsa tutilsin", neg_decisions_quiz_answers_early),
+            ("vaqtli savollar erta ko'rinsa tutilsin", neg_decisions_timed_questions_early),
+            ("bepul test chegarasi o'zgarsa tutilsin", neg_decisions_quiz_free_limit),
+            ("test hisoboti ochilsa tutilsin", neg_decisions_quiz_report_open),
             ("musobaqaga begona masala qo'shilsa tutilsin", neg_decisions_contest_takes_any_problem),
             ("organizator D8-F'ni chetlasa tutilsin", neg_decisions_contest_skips_readiness_gate),
             ("participants yana 500 bersa tutilsin", neg_decisions_contest_participants_500),

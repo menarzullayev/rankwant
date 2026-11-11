@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3104 strings.**
+**3176 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -410,6 +410,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `quiz.start` | Boshlash | Баштоо |  |
 | `quiz.submit` | Topshirish | Тапшыруу |  |
 | `quiz.result` | Natija | Жыйынтык |  |
+| `quiz.pickAll` | Barcha to'g'ri variantlarni belgilang | Бардык туура варианттарды белгилеңиз |  |
+| `quiz.numberAnswer` | Javob (son) | Жооп (сан) |  |
+| `quiz.textAnswer` | Javob | Жооп |  |
+| `quiz.rightAnswer` | To'g'ri javob: {answer} | Туура жооп: {answer} |  |
+| `quiz.answersAfter` | To'g'ri javoblar {date} dan keyin ko'rinadi. | Туура жооптор {date} кийин көрүнөт. |  |
+| `quiz.taken` | Bu testni topshirgansiz — faqat bitta urinish. | Бул тестти тапшырдыңыз — бир гана аракет. |  |
+| `quiz.startHint` | Savollar boshlaganingizdan keyin ko'rinadi va vaqt hisoblana boshlaydi. | Суроолор баштагандан кийин көрүнөт жана убакыт башталат. |  |
+| `quiz.timeLeft` | Qolgan vaqt: {time} | Калган убакыт: {time} |  |
+| `quiz.classQuiz` | Sinf testi | Класс тести |  |
+| `quiz.timeLimit` | Vaqt: {minutes} daqiqa | Убакыт: {minutes} мүн |  |
+| `quiz.oneAttempt` | Bitta urinish | Бир аракет |  |
 | `quiz.questions` | savol | суроо |  |
 | `quiz.best` | Eng yaxshi | Эң жакшы |  |
 | `arena.join` | Qo'shilish | Кошулуу |  |
@@ -2857,6 +2868,53 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.courses.sendBack` | Muallifga qaytarish | Авторго кайтаруу |  |
 | `admin.courses.sentBack` | Kurs qaytarildi, muallifga sabab yuborildi. | Курс кайтарылды, авторго себеби жөнөтүлдү. |  |
 | `studio.nav.courses` | Kurslar | Курстар |  |
+| `studio.nav.quizzes` | Testlarim | Тесттерим |  |
+| `studio.nav.questions` | Savollar banki | Суроолор банкы |  |
+| `studio.quizzes.intro` | O'z testingizni savollar bankidan tuzing va sinf sahifasida o'quvchilarga bering. O'qituvchi testi Qvant bermaydi. | Тестти өз суроолор банкыңыздан түзүп, класс бетинде окуучуларга бериңиз. Мугалимдин тести Qvant бербейт. |  |
+| `studio.quizzes.new` | Yangi test | Жаңы тест |  |
+| `studio.quizzes.count` | {count} / {limit} test — rejangiz chegarasi | Тарифиңизде {count} / {limit} тест |  |
+| `studio.quizzes.full` | Rejangizdagi testlar chegarasi: {count} / {limit}. | Тарифтеги тесттердин чегине жеттиңиз: {count} / {limit}. |  |
+| `studio.quizzes.empty` | Hali test yo'q. | Азырынча тест жок. |  |
+| `studio.quizzes.questionCount` | {count} savol | {count} суроо |  |
+| `studio.quizzes.attempts` | {count} urinish | {count} аракет |  |
+| `studio.quizzes.settings` | Sozlamalar | Жөндөөлөр |  |
+| `studio.quizzes.timeLimit` | Vaqt chegarasi (daqiqa, ixtiyoriy) | Убакыт чеги (мүнөт, милдеттүү эмес) |  |
+| `studio.quizzes.answersAfter` | To'g'ri javoblarni ko'rsatish vaqti (ixtiyoriy) | Туура жоопторду көрсөтүү убактысы (милдеттүү эмес) |  |
+| `studio.quizzes.oneAttempt` | Bitta urinish | Бир аракет |  |
+| `studio.quizzes.questions` | Testdagi savollar | Тесттеги суроолор |  |
+| `studio.quizzes.fixed` | O'quvchilar topshirgan — savollar endi o'zgarmaydi. | Окуучулар тапшырган — суроолор мындан ары өзгөрбөйт. |  |
+| `studio.quizzes.remove` | Olib tashlash | Алып салуу |  |
+| `studio.quizzes.addFromBank` | Bankdan qo'shish | Банктан кошуу |  |
+| `studio.quizzes.save` | Saqlash | Сактоо |  |
+| `studio.quizzes.saved` | Saqlandi | Сакталды |  |
+| `studio.questions.intro` | Savollaringiz faqat sizga ko'rinadi. Papkalarga ajrating va testlarda qayta ishlating. | Сурооңузду сиз гана көрөсүз. Папкаларга бөлүп, тесттерде кайра колдонуңуз. |  |
+| `studio.questions.new` | Yangi savol | Жаңы суроо |  |
+| `studio.questions.edit` | Savolni tahrirlash | Суроону оңдоо |  |
+| `studio.questions.delete` | O'chirish | Өчүрүү |  |
+| `studio.questions.deleteConfirm` | Savol o'chirilsinmi? | Суроо өчүрүлсүнбү? |  |
+| `studio.questions.allFolders` | Barcha papkalar | Бардык папкалар |  |
+| `studio.questions.noFolder` | Papkasiz | Папкасыз |  |
+| `studio.questions.newFolder` | Yangi papka | Жаңы папка |  |
+| `studio.questions.folder` | Papka | Папка |  |
+| `studio.questions.kind` | Turi | Түрү |  |
+| `studio.questions.kind.single` | Bitta to'g'ri javob | Бир туура жооп |  |
+| `studio.questions.kind.multiple` | Bir nechta to'g'ri javob | Бир нече туура жооп |  |
+| `studio.questions.kind.number` | Son | Сан |  |
+| `studio.questions.kind.text` | Qisqa matn | Кыска текст |  |
+| `studio.questions.text` | Savol matni (Markdown) | Суроонун тексти (Markdown) |  |
+| `studio.questions.code` | Kod parchasi (ixtiyoriy) | Код үзүндүсү (милдеттүү эмес) |  |
+| `studio.questions.codeLanguage` | Kod tili | Коддун тили |  |
+| `studio.questions.choices` | Variantlar | Варианттар |  |
+| `studio.questions.addChoice` | Variant qo'shish | Вариант кошуу |  |
+| `studio.questions.correct` | To'g'ri | Туура |  |
+| `studio.questions.answerNumber` | To'g'ri son | Туура сан |  |
+| `studio.questions.tolerance` | Aniqlik (±) | Тактык (±) |  |
+| `studio.questions.answerText` | Qabul qilinadigan javoblar (har biri yangi qatorda) | Кабыл алынуучу жооптор (ар бири жаңы сапта) |  |
+| `studio.questions.explanation` | Izoh (javobdan keyin ko'rsatiladi) | Түшүндүрмө (жооптон кийин көрсөтүлөт) |  |
+| `studio.questions.save` | Savolni saqlash | Суроону сактоо |  |
+| `studio.questions.cancel` | Bekor qilish | Жокко чыгаруу |  |
+| `studio.questions.empty` | Bankda hali savol yo'q. | Банкта азырынча суроо жок. |  |
+| `studio.questions.used` | {count} testda | {count} тестте |  |
 | `studio.courses.intro` | Kurs yozing: modullar, bo'limlar va darslar (matn, masala, test, video). Xodim ko'rib chiqib nashr qiladi va narxini belgilaydi. | Курс жазыңыз: модулдар, бөлүмдөр жана сабактар (текст, маселе, тест, видео). Кызматкер текшерип, жарыялайт жана баасын белгилейт. |  |
 | `studio.courses.empty` | Hali kurs yozmagansiz | Сиз азырынча курс жаза элексиз |  |
 | `studio.courses.emptyHint` | Quyida nom va tilni tanlang — qolganini kurs sahifasida yozasiz. | Төмөндө аталыш менен тилди тандаңыз — калганын курстун барагында жазасыз. |  |
@@ -2984,6 +3042,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.course.optional` | ixtiyoriy | милдеттүү эмес |  |
 | `classroom.course.lessonDone` | bajarilgan | аткарылды |  |
 | `classroom.course.lessonOpen` | bajarilmagan | аткарыла элек |  |
+| `classroom.quiz.give` | Test berish | Тест берүү |  |
+| `classroom.quiz.pick` | Test tanlash | Тест тандоо |  |
+| `classroom.quiz.none` | Hali testingiz yo'q — uni studiyada yarating: | Азырынча тестиңиз жок — аны студияда түзүңүз: |  |
+| `classroom.quiz.submit` | Sinfga berish | Класска берүү |  |
+| `classroom.quiz.results` | Test natijalari | Тест жыйынтыктары |  |
+| `classroom.quiz.attempts` | Urinishlar | Аракеттер |  |
+| `classroom.quiz.notTaken` | Topshirmagan | Тапшырган эмес |  |
+| `classroom.quiz.questions` | Savollar bo'yicha | Суроолор боюнча |  |
+| `classroom.quiz.wrong` | {wrong} / {answered} xato | {wrong} / {answered} ката |  |
 | `classroom.joinMode` | Qo'shilish tartibi | Кошулуу тартиби |  |
 | `classroom.joinMode.approval` | Tasdiq bilan | Ырастоо менен |  |
 | `classroom.joinMode.instant` | Darhol | Дароо |  |
@@ -3071,6 +3138,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Эң көп дегенде 3 машыктыруучу болушу мүмкүн |  |
 | `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Бул байланыш бүткөн |  |
 | `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Маселе табылган жок же ачык эмес |  |
+| `error.quiz_taken` | Bu testni faqat bir marta topshirish mumkin | Бул тестти бир гана жолу тапшырууга болот |  |
+| `error.quiz_not_started` | Avval testni boshlang | Адегенде тестти баштаңыз |  |
+| `error.quiz_in_use` | Test sinfga berilgan yoki topshirilgan — o'chirib bo'lmaydi | Тест класска берилген же тапшырылган — өчүрүүгө болбойт |  |
+| `error.question_in_quiz` | Savol testlarda ishlatilgan — avval testlardan olib tashlang | Суроо тесттерде колдонулат — адегенде алардан алып салыңыз |  |
+| `error.classroom_quiz_unavailable` | Bunday testingiz yoki ochiq test yo'q | Мындай даректе сиздин же ачык тест жок |  |
 | `billing.plan.plus` | Plus | Plus |  |
 | `billing.plan.pro` | Pro | Pro |  |
 | `billing.plan.judge` | Judge | Judge |  |

@@ -1288,6 +1288,34 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/classrooms/{slug}/assignments/{id}/quiz/:
+    get:
+      operationId: classrooms_assignments_quiz_retrieve
+      description: Each student's best result and the questions most got wrong.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassQuizReport'
+          description: ''
   /api/v1/classrooms/{slug}/leave/:
     post:
       operationId: classrooms_leave_create
@@ -6112,6 +6140,268 @@ paths:
       responses:
         '200':
           description: Mavzu bo'yicha kuch
+  /api/v1/question-folders/:
+    get:
+      operationId: question_folders_list
+      summary: savol papkalari ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - question-folders
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+          description: ''
+    post:
+      operationId: question_folders_create
+      summary: Yangi savol papkasi yaratish
+      tags:
+      - question-folders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Folder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Folder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Folder'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+          description: ''
+  /api/v1/question-folders/{id}/:
+    get:
+      operationId: question_folders_retrieve
+      summary: Bitta savol papkasi
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question folder.
+        required: true
+      tags:
+      - question-folders
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+          description: ''
+    patch:
+      operationId: question_folders_partial_update
+      summary: savol papkasini qisman yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question folder.
+        required: true
+      tags:
+      - question-folders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFolder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFolder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFolder'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+          description: ''
+    delete:
+      operationId: question_folders_destroy
+      summary: savol papkasini o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question folder.
+        required: true
+      tags:
+      - question-folders
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/questions/mine/:
+    get:
+      operationId: questions_mine_list
+      summary: o'z savollarim ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - questions
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuthorQuestionList'
+          description: ''
+    post:
+      operationId: questions_mine_create
+      summary: Yangi o'z savolim yaratish
+      tags:
+      - questions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorQuestion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthorQuestion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthorQuestion'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorQuestion'
+          description: ''
+  /api/v1/questions/mine/{id}/:
+    get:
+      operationId: questions_mine_retrieve
+      summary: Bitta o'z savolim
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question.
+        required: true
+      tags:
+      - questions
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorQuestion'
+          description: ''
+    patch:
+      operationId: questions_mine_partial_update
+      summary: o'z savolimni qisman yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question.
+        required: true
+      tags:
+      - questions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAuthorQuestion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAuthorQuestion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAuthorQuestion'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorQuestion'
+          description: ''
+    delete:
+      operationId: questions_mine_destroy
+      summary: o'z savolimni o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question.
+        required: true
+      tags:
+      - questions
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/quizzes/:
     get:
       operationId: quizzes_list
@@ -6173,6 +6463,52 @@ paths:
               schema:
                 $ref: '#/components/schemas/QuizDetail'
           description: ''
+  /api/v1/quizzes/{slug}/result/:
+    get:
+      operationId: quizzes_result_retrieve
+      description: The latest finished attempt, with its review once answers are shown.
+      summary: Oxirgi natija
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - quizzes
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizResult'
+          description: ''
+  /api/v1/quizzes/{slug}/start/:
+    post:
+      operationId: quizzes_start_create
+      description: Open an attempt; a timed quiz shows its questions after this.
+      summary: Vaqtli testni boshlash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - quizzes
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizStart'
+          description: ''
   /api/v1/quizzes/{slug}/submit/:
     post:
       operationId: quizzes_submit_create
@@ -6208,6 +6544,129 @@ paths:
               schema:
                 $ref: '#/components/schemas/QuizResult'
           description: ''
+  /api/v1/quizzes/mine/:
+    get:
+      operationId: quizzes_mine_list
+      summary: o'z testlarim ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - quizzes
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthorQuiz'
+          description: ''
+    post:
+      operationId: quizzes_mine_create
+      summary: Yangi o'z testim yaratish
+      tags:
+      - quizzes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorQuiz'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthorQuiz'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthorQuiz'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorQuiz'
+          description: ''
+  /api/v1/quizzes/mine/{slug}/:
+    get:
+      operationId: quizzes_mine_retrieve
+      summary: Bitta o'z testim
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - quizzes
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorQuiz'
+          description: ''
+    patch:
+      operationId: quizzes_mine_partial_update
+      summary: o'z testimni qisman yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - quizzes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAuthorQuiz'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAuthorQuiz'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAuthorQuiz'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorQuiz'
+          description: ''
+    delete:
+      operationId: quizzes_mine_destroy
+      summary: o'z testimni o'chirish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - quizzes
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/qvant/inventory/:
     get:
       operationId: qvant_inventory_list
@@ -15302,6 +15761,11 @@ components:
           - $ref: '#/components/schemas/AssignmentCourse'
           nullable: true
           readOnly: true
+        quiz:
+          allOf:
+          - $ref: '#/components/schemas/AssignmentQuiz'
+          nullable: true
+          readOnly: true
         due_at:
           type: string
           format: date-time
@@ -15315,6 +15779,7 @@ components:
       - created_at
       - id
       - problems
+      - quiz
       - title
     AssignmentCourse:
       type: object
@@ -15356,11 +15821,35 @@ components:
             pattern: ^[-a-zA-Z0-9_]+$
           - type: string
             maxLength: 0
+        quiz:
+          oneOf:
+          - type: string
+            default: ''
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
         due_at:
           type: string
           format: date-time
           nullable: true
       required:
+      - title
+    AssignmentQuiz:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        time_limit_minutes:
+          type: integer
+          nullable: true
+        one_attempt:
+          type: boolean
+      required:
+      - one_attempt
+      - slug
+      - time_limit_minutes
       - title
     Attachment:
       type: object
@@ -15629,6 +16118,130 @@ components:
       required:
       - display_name
       - username
+    AuthorChoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order:
+          type: integer
+          minimum: 1
+        text:
+          type: string
+          maxLength: 500
+        is_correct:
+          type: boolean
+      required:
+      - id
+      - order
+      - text
+    AuthorQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/QuestionKindEnum'
+        text:
+          type: string
+          description: Markdown + LaTeX
+        code:
+          type: string
+        code_language:
+          type: string
+          maxLength: 20
+        explanation:
+          type: string
+          description: Javobdan keyin ko'rsatiladi
+        folder:
+          type: integer
+          nullable: true
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorChoice'
+        answer_number:
+          type: number
+          format: double
+          nullable: true
+        tolerance:
+          type: number
+          format: double
+        answer_text:
+          type: string
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        used:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - text
+      - used
+    AuthorQuiz:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        time_limit_minutes:
+          type: integer
+          maximum: 600
+          minimum: 1
+          nullable: true
+        one_attempt:
+          type: boolean
+        answers_after:
+          type: string
+          format: date-time
+          nullable: true
+        question_ids:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+        questions:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+        attempt_count:
+          type: integer
+          readOnly: true
+          default: 0
+        assignment_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - assignment_count
+      - attempt_count
+      - created_at
+      - questions
+      - slug
+      - title
     AvatarImport:
       type: object
       properties:
@@ -15952,6 +16565,26 @@ components:
       - percent
       - total
       - username
+    ClassQuizReport:
+      type: object
+      properties:
+        quiz:
+          type: string
+        title:
+          type: string
+        students:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizReportStudent'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizReportQuestion'
+      required:
+      - questions
+      - quiz
+      - students
+      - title
     Classroom:
       type: object
       properties:
@@ -17143,6 +17776,28 @@ components:
       required:
       - awarded
       - rewards_applied_at
+    Folder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        question_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - question_count
     Follower:
       type: object
       description: Obunachilar jadvali — maxfiylik qoidasi bilan (maktab, onlayn holat).
@@ -18898,6 +19553,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Attempt'
+    PaginatedAuthorQuestionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorQuestion'
     PaginatedCertificateList:
       type: object
       required:
@@ -20348,6 +21026,100 @@ components:
           maxLength: 254
       required:
       - login
+    PatchedAuthorQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/QuestionKindEnum'
+        text:
+          type: string
+          description: Markdown + LaTeX
+        code:
+          type: string
+        code_language:
+          type: string
+          maxLength: 20
+        explanation:
+          type: string
+          description: Javobdan keyin ko'rsatiladi
+        folder:
+          type: integer
+          nullable: true
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorChoice'
+        answer_number:
+          type: number
+          format: double
+          nullable: true
+        tolerance:
+          type: number
+          format: double
+        answer_text:
+          type: string
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        used:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedAuthorQuiz:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        time_limit_minutes:
+          type: integer
+          maximum: 600
+          minimum: 1
+          nullable: true
+        one_attempt:
+          type: boolean
+        answers_after:
+          type: string
+          format: date-time
+          nullable: true
+        question_ids:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+        questions:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+        attempt_count:
+          type: integer
+          readOnly: true
+          default: 0
+        assignment_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
     PatchedClassroom:
       type: object
       properties:
@@ -20381,6 +21153,23 @@ components:
       properties:
         can_view_attempts:
           type: boolean
+    PatchedFolder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        question_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
     PatchedMe:
       type: object
       properties:
@@ -22841,15 +23630,34 @@ components:
       - reward
       - title_uz
       - type
+    QuestionKindEnum:
+      enum:
+      - single
+      - multiple
+      - number
+      - text
+      type: string
+      description: |-
+        * `single` - Bitta to'g'ri
+        * `multiple` - Bir nechta to'g'ri
+        * `number` - Son
+        * `text` - Qisqa matn
     QuestionPublic:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        kind:
+          $ref: '#/components/schemas/QuestionKindEnum'
         text:
           type: string
           description: Markdown + LaTeX
+        code:
+          type: string
+        code_language:
+          type: string
+          maxLength: 20
         difficulty:
           type: integer
           maximum: 9223372036854775807
@@ -22898,9 +23706,25 @@ components:
           type: string
           format: date-time
           readOnly: true
+        is_class:
+          type: boolean
+          readOnly: true
+        time_limit_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        one_attempt:
+          type: boolean
+        answers_after:
+          type: string
+          format: date-time
+          nullable: true
       required:
       - best_score
       - created_at
+      - is_class
       - question_count
       - slug
       - title
@@ -22932,19 +23756,80 @@ components:
           type: string
           format: date-time
           readOnly: true
+        is_class:
+          type: boolean
+          readOnly: true
+        time_limit_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        one_attempt:
+          type: boolean
+        answers_after:
+          type: string
+          format: date-time
+          nullable: true
         questions:
           type: array
           items:
-            type: object
-            additionalProperties: {}
+            $ref: '#/components/schemas/QuestionPublic'
+          readOnly: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/QuizState'
           readOnly: true
       required:
       - best_score
       - created_at
+      - is_class
       - question_count
       - questions
       - slug
+      - state
       - title
+    QuizReportQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        order:
+          type: integer
+        text:
+          type: string
+        wrong:
+          type: integer
+        answered:
+          type: integer
+      required:
+      - answered
+      - id
+      - order
+      - text
+      - wrong
+    QuizReportStudent:
+      type: object
+      properties:
+        username:
+          type: string
+        attempts:
+          type: integer
+        score:
+          type: integer
+          nullable: true
+        total:
+          type: integer
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - attempts
+      - finished_at
+      - score
+      - total
+      - username
     QuizResult:
       type: object
       properties:
@@ -22975,17 +23860,48 @@ components:
           type: string
           format: date-time
           readOnly: true
+        answers_hidden:
+          type: boolean
+          readOnly: true
+          default: false
       required:
+      - answers_hidden
       - created_at
       - id
       - review
+    QuizStart:
+      type: object
+      properties:
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - deadline
+    QuizState:
+      type: object
+      properties:
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        started:
+          type: boolean
+        finished:
+          type: integer
+        taken:
+          type: boolean
+      required:
+      - deadline
+      - finished
+      - started
+      - taken
     QuizSubmit:
       type: object
       properties:
         answers:
           type: object
-          additionalProperties:
-            type: integer
+          additionalProperties: {}
       required:
       - answers
     QuotaRow:
@@ -23301,13 +24217,19 @@ components:
         correct:
           type: integer
           nullable: true
+        chosen_value:
+          nullable: true
+        correct_value:
+          nullable: true
         is_correct:
           type: boolean
         explanation:
           type: string
       required:
       - chosen
+      - chosen_value
       - correct
+      - correct_value
       - explanation
       - is_correct
       - question_id

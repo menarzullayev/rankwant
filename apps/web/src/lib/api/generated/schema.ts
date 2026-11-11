@@ -852,6 +852,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/classrooms/{slug}/assignments/{id}/quiz/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Each student's best result and the questions most got wrong. */
+        get: operations["classrooms_assignments_quiz_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/classrooms/{slug}/leave/": {
         parameters: {
             query?: never;
@@ -3538,6 +3555,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/question-folders/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** savol papkalari ro'yxati */
+        get: operations["question_folders_list"];
+        put?: never;
+        /** Yangi savol papkasi yaratish */
+        post: operations["question_folders_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/question-folders/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitta savol papkasi */
+        get: operations["question_folders_retrieve"];
+        put?: never;
+        post?: never;
+        /** savol papkasini o'chirish */
+        delete: operations["question_folders_destroy"];
+        options?: never;
+        head?: never;
+        /** savol papkasini qisman yangilash */
+        patch: operations["question_folders_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/questions/mine/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** o'z savollarim ro'yxati */
+        get: operations["questions_mine_list"];
+        put?: never;
+        /** Yangi o'z savolim yaratish */
+        post: operations["questions_mine_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/questions/mine/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitta o'z savolim */
+        get: operations["questions_mine_retrieve"];
+        put?: never;
+        post?: never;
+        /** o'z savolimni o'chirish */
+        delete: operations["questions_mine_destroy"];
+        options?: never;
+        head?: never;
+        /** o'z savolimni qisman yangilash */
+        patch: operations["questions_mine_partial_update"];
+        trace?: never;
+    };
     "/api/v1/quizzes/": {
         parameters: {
             query?: never;
@@ -3578,6 +3669,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/quizzes/{slug}/result/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Oxirgi natija
+         * @description The latest finished attempt, with its review once answers are shown.
+         */
+        get: operations["quizzes_result_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quizzes/{slug}/start/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Vaqtli testni boshlash
+         * @description Open an attempt; a timed quiz shows its questions after this.
+         */
+        post: operations["quizzes_start_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/quizzes/{slug}/submit/": {
         parameters: {
             query?: never;
@@ -3596,6 +3727,43 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quizzes/mine/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** o'z testlarim ro'yxati */
+        get: operations["quizzes_mine_list"];
+        put?: never;
+        /** Yangi o'z testim yaratish */
+        post: operations["quizzes_mine_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quizzes/mine/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitta o'z testim */
+        get: operations["quizzes_mine_retrieve"];
+        put?: never;
+        post?: never;
+        /** o'z testimni o'chirish */
+        delete: operations["quizzes_mine_destroy"];
+        options?: never;
+        head?: never;
+        /** o'z testimni qisman yangilash */
+        patch: operations["quizzes_mine_partial_update"];
         trace?: never;
     };
     "/api/v1/qvant/inventory/": {
@@ -7302,6 +7470,7 @@ export interface components {
             description?: string;
             readonly problems: string[];
             readonly course: components["schemas"]["AssignmentCourse"] | null;
+            readonly quiz: components["schemas"]["AssignmentQuiz"] | null;
             /** Format: date-time */
             due_at?: string | null;
             /** Format: date-time */
@@ -7320,8 +7489,15 @@ export interface components {
             description: string;
             problems?: string[];
             course?: string;
+            quiz?: string;
             /** Format: date-time */
             due_at?: string | null;
+        };
+        AssignmentQuiz: {
+            slug: string;
+            title: string;
+            time_limit_minutes: number | null;
+            one_attempt: boolean;
         };
         Attachment: {
             name: string;
@@ -7411,6 +7587,54 @@ export interface components {
         Author: {
             username: string;
             display_name: string;
+        };
+        AuthorChoice: {
+            readonly id: number;
+            order: number;
+            text: string;
+            is_correct?: boolean;
+        };
+        AuthorQuestion: {
+            readonly id: number;
+            kind?: components["schemas"]["QuestionKindEnum"];
+            /** @description Markdown + LaTeX */
+            text: string;
+            code?: string;
+            code_language?: string;
+            /** @description Javobdan keyin ko'rsatiladi */
+            explanation?: string;
+            folder?: number | null;
+            choices?: components["schemas"]["AuthorChoice"][];
+            /** Format: double */
+            answer_number?: number | null;
+            /** Format: double */
+            tolerance?: number;
+            answer_text?: string;
+            /** Format: int64 */
+            difficulty?: number;
+            /** @default 0 */
+            readonly used: number;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        AuthorQuiz: {
+            slug: string;
+            title: string;
+            description?: string;
+            time_limit_minutes?: number | null;
+            one_attempt?: boolean;
+            /** Format: date-time */
+            answers_after?: string | null;
+            question_ids?: number[];
+            readonly questions: {
+                [key: string]: unknown;
+            }[];
+            /** @default 0 */
+            readonly attempt_count: number;
+            /** @default 0 */
+            readonly assignment_count: number;
+            /** Format: date-time */
+            readonly created_at: string;
         };
         AvatarImport: {
             provider: components["schemas"]["AvatarImportProviderEnum"];
@@ -7541,6 +7765,12 @@ export interface components {
             /** Format: date-time */
             last_activity: string | null;
             lessons: number[];
+        };
+        ClassQuizReport: {
+            quiz: string;
+            title: string;
+            students: components["schemas"]["QuizReportStudent"][];
+            questions: components["schemas"]["QuizReportQuestion"][];
         };
         Classroom: {
             slug: string;
@@ -8002,6 +8232,14 @@ export interface components {
             awarded: number;
             /** Format: date-time */
             rewards_applied_at: string | null;
+        };
+        Folder: {
+            readonly id: number;
+            name: string;
+            /** @default 0 */
+            readonly question_count: number;
+            /** Format: date-time */
+            readonly created_at: string;
         };
         /** @description Obunachilar jadvali — maxfiylik qoidasi bilan (maktab, onlayn holat). */
         Follower: {
@@ -8758,6 +8996,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Attempt"][];
+        };
+        PaginatedAuthorQuestionList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["AuthorQuestion"][];
         };
         PaginatedCertificateList: {
             /** @example 123 */
@@ -9701,6 +9954,48 @@ export interface components {
         PasswordResetRequest: {
             login: string;
         };
+        PatchedAuthorQuestion: {
+            readonly id?: number;
+            kind?: components["schemas"]["QuestionKindEnum"];
+            /** @description Markdown + LaTeX */
+            text?: string;
+            code?: string;
+            code_language?: string;
+            /** @description Javobdan keyin ko'rsatiladi */
+            explanation?: string;
+            folder?: number | null;
+            choices?: components["schemas"]["AuthorChoice"][];
+            /** Format: double */
+            answer_number?: number | null;
+            /** Format: double */
+            tolerance?: number;
+            answer_text?: string;
+            /** Format: int64 */
+            difficulty?: number;
+            /** @default 0 */
+            readonly used: number;
+            /** Format: date-time */
+            readonly created_at?: string;
+        };
+        PatchedAuthorQuiz: {
+            slug?: string;
+            title?: string;
+            description?: string;
+            time_limit_minutes?: number | null;
+            one_attempt?: boolean;
+            /** Format: date-time */
+            answers_after?: string | null;
+            question_ids?: number[];
+            readonly questions?: {
+                [key: string]: unknown;
+            }[];
+            /** @default 0 */
+            readonly attempt_count: number;
+            /** @default 0 */
+            readonly assignment_count: number;
+            /** Format: date-time */
+            readonly created_at?: string;
+        };
         PatchedClassroom: {
             slug?: string;
             name?: string;
@@ -9715,6 +10010,14 @@ export interface components {
         };
         PatchedConsent: {
             can_view_attempts?: boolean;
+        };
+        PatchedFolder: {
+            readonly id?: number;
+            name?: string;
+            /** @default 0 */
+            readonly question_count: number;
+            /** Format: date-time */
+            readonly created_at?: string;
         };
         PatchedMe: {
             readonly id?: number;
@@ -10780,10 +11083,21 @@ export interface components {
             /** @default false */
             readonly done: boolean;
         };
+        /**
+         * @description * `single` - Bitta to'g'ri
+         *     * `multiple` - Bir nechta to'g'ri
+         *     * `number` - Son
+         *     * `text` - Qisqa matn
+         * @enum {string}
+         */
+        QuestionKindEnum: "single" | "multiple" | "number" | "text";
         QuestionPublic: {
             readonly id: number;
+            kind?: components["schemas"]["QuestionKindEnum"];
             /** @description Markdown + LaTeX */
             text: string;
+            code?: string;
+            code_language?: string;
             /** Format: int64 */
             difficulty?: number;
             readonly topics: string[];
@@ -10799,6 +11113,12 @@ export interface components {
             readonly best_score: number | null;
             /** Format: date-time */
             readonly created_at: string;
+            readonly is_class: boolean;
+            /** Format: int64 */
+            time_limit_minutes?: number | null;
+            one_attempt?: boolean;
+            /** Format: date-time */
+            answers_after?: string | null;
         };
         QuizDetail: {
             slug: string;
@@ -10810,9 +11130,29 @@ export interface components {
             readonly best_score: number | null;
             /** Format: date-time */
             readonly created_at: string;
-            readonly questions: {
-                [key: string]: unknown;
-            }[];
+            readonly is_class: boolean;
+            /** Format: int64 */
+            time_limit_minutes?: number | null;
+            one_attempt?: boolean;
+            /** Format: date-time */
+            answers_after?: string | null;
+            readonly questions: components["schemas"]["QuestionPublic"][];
+            readonly state: components["schemas"]["QuizState"];
+        };
+        QuizReportQuestion: {
+            id: number;
+            order: number;
+            text: string;
+            wrong: number;
+            answered: number;
+        };
+        QuizReportStudent: {
+            username: string;
+            attempts: number;
+            score: number | null;
+            total: number;
+            /** Format: date-time */
+            finished_at: string | null;
         };
         QuizResult: {
             readonly id: number;
@@ -10825,10 +11165,23 @@ export interface components {
             readonly review: components["schemas"]["ReviewItem"][];
             /** Format: date-time */
             readonly created_at: string;
+            /** @default false */
+            readonly answers_hidden: boolean;
+        };
+        QuizStart: {
+            /** Format: date-time */
+            deadline: string | null;
+        };
+        QuizState: {
+            /** Format: date-time */
+            deadline: string | null;
+            started: boolean;
+            finished: number;
+            taken: boolean;
         };
         QuizSubmit: {
             answers: {
-                [key: string]: number;
+                [key: string]: unknown;
             };
         };
         QuotaRow: {
@@ -10970,6 +11323,8 @@ export interface components {
             question_id: number;
             chosen: number | null;
             correct: number | null;
+            chosen_value: unknown;
+            correct_value: unknown;
             is_correct: boolean;
             explanation: string;
         };
@@ -13715,6 +14070,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    classrooms_assignments_quiz_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClassQuizReport"];
+                };
             };
         };
     };
@@ -17587,6 +17964,246 @@ export interface operations {
             };
         };
     };
+    question_folders_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Folder"][];
+                };
+            };
+        };
+    };
+    question_folders_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Folder"];
+                "application/x-www-form-urlencoded": components["schemas"]["Folder"];
+                "multipart/form-data": components["schemas"]["Folder"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Folder"];
+                };
+            };
+        };
+    };
+    question_folders_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this question folder. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Folder"];
+                };
+            };
+        };
+    };
+    question_folders_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this question folder. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    question_folders_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this question folder. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedFolder"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedFolder"];
+                "multipart/form-data": components["schemas"]["PatchedFolder"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Folder"];
+                };
+            };
+        };
+    };
+    questions_mine_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAuthorQuestionList"];
+                };
+            };
+        };
+    };
+    questions_mine_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuthorQuestion"];
+                "application/x-www-form-urlencoded": components["schemas"]["AuthorQuestion"];
+                "multipart/form-data": components["schemas"]["AuthorQuestion"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorQuestion"];
+                };
+            };
+        };
+    };
+    questions_mine_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this question. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorQuestion"];
+                };
+            };
+        };
+    };
+    questions_mine_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this question. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    questions_mine_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this question. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedAuthorQuestion"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedAuthorQuestion"];
+                "multipart/form-data": components["schemas"]["PatchedAuthorQuestion"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorQuestion"];
+                };
+            };
+        };
+    };
     quizzes_list: {
         parameters: {
             query?: {
@@ -17634,6 +18251,48 @@ export interface operations {
             };
         };
     };
+    quizzes_result_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuizResult"];
+                };
+            };
+        };
+    };
+    quizzes_start_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuizStart"];
+                };
+            };
+        };
+    };
     quizzes_submit_create: {
         parameters: {
             query?: never;
@@ -17657,6 +18316,121 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QuizResult"];
+                };
+            };
+        };
+    };
+    quizzes_mine_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorQuiz"][];
+                };
+            };
+        };
+    };
+    quizzes_mine_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuthorQuiz"];
+                "application/x-www-form-urlencoded": components["schemas"]["AuthorQuiz"];
+                "multipart/form-data": components["schemas"]["AuthorQuiz"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorQuiz"];
+                };
+            };
+        };
+    };
+    quizzes_mine_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorQuiz"];
+                };
+            };
+        };
+    };
+    quizzes_mine_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    quizzes_mine_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedAuthorQuiz"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedAuthorQuiz"];
+                "multipart/form-data": components["schemas"]["PatchedAuthorQuiz"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorQuiz"];
                 };
             };
         };

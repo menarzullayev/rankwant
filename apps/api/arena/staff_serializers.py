@@ -53,7 +53,13 @@ class StaffArenaSerializer(serializers.ModelSerializer[ArenaRound]):
     def validate_questions(self, ids: list[int]) -> list[int]:
         if len(set(ids)) != len(ids):
             raise serializers.ValidationError("Question ids must be unique")
-        found = set(Question.objects.filter(pk__in=ids).values_list("pk", flat=True))
+        # The staff bank's one-answer questions: the arena grades only those,
+        # and a teacher's bank is private (ADR-0061 § 5).
+        found = set(
+            Question.objects.filter(owner=None, kind=Question.Kind.SINGLE, pk__in=ids).values_list(
+                "pk", flat=True
+            )
+        )
         missing = [i for i in ids if i not in found]
         if missing:
             raise serializers.ValidationError(f"Question not found: {missing}")

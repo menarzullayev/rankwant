@@ -3123,6 +3123,45 @@ def coaching_is_chosen_and_consented() -> str | None:
     return None
 
 
+def teacher_quizzes_stay_in_class() -> str | None:
+    """2026-11-11 (HITL, 4 raund; ADR-0061 § 5): savollar banki va o'qituvchi testi.
+
+    ⑨ Har kim yozadi, kvota bilan (bepul 3, Judge 50). ⑪ Qvant bermaydi —
+    o'z testini yozib o'ziga Qvant ishlash yopiq (ADR-0002). ⑫ Faqat sinfga
+    ko'rinadi, vaqt chegarasi server tomonda, bitta urinish, to'g'ri javoblar
+    belgilangan vaqtgacha yashirin; natija sinf egasining hisobotida.
+    """
+    services = read("apps/api/quizzes/services.py")
+    if "if first_time and quiz.owner_id is None and quiz.reward_qvant and total:" not in services:
+        return "quizzes/services.py: o'qituvchi testi Qvant beradi"
+    if "if ends is not None and timezone.now() > ends + GRACE:" not in services:
+        return "quizzes/services.py: vaqt tugagandan keyingi javob hisoblanadi"
+    if "_refuse_second(user, quiz)" not in services.split("def submit(", 1)[-1]:
+        return "quizzes/services.py: bitta urinishli test qayta topshiriladi"
+    views = read("apps/api/quizzes/views.py")
+    if "base = Quiz.objects.filter(owner=None, is_published=True)" not in views:
+        return "quizzes/views.py: o'qituvchi testi ochiq katalogga chiqadi"
+    if 'data["review"] = review if shown else services.hidden(review)' not in views:
+        return "quizzes/views.py: to'g'ri javoblar belgilangan vaqtdan oldin ko'rinadi"
+    serializers_py = read("apps/api/quizzes/serializers.py")
+    if 'if quiz.time_limit_minutes is not None and not self._state(quiz)["started"]:' not in serializers_py:
+        return "quizzes/serializers.py: vaqtli test savollari boshlashdan oldin ko'rinadi"
+    author = read("apps/api/quizzes/author_serializers.py")
+    if "owner=self.context[\"user\"], reward_qvant=0, is_published=False" not in author:
+        return "quizzes/author_serializers.py: o'qituvchi testi Qvant yoki ommaviylik bilan yaratiladi"
+    if 'quotas.enforce(_user(self.request), "quizzes")' not in read("apps/api/quizzes/author_views.py"):
+        return "quizzes/author_views.py: yangi test reja kvotasidan o'tmaydi"
+    free = read("apps/api/core/quotas.py").split("_FREE = {", 1)[-1].split("}", 1)[0]
+    if '"quizzes": 3,' not in free:
+        return "core/quotas.py: bepul rejada testlar 3 emas"
+    classroom = read("apps/api/classroom/views.py")
+    report = classroom.split("def quiz_report(", 1)[-1].split("\n    @", 1)[0]
+    guard = 'if classroom.owner_id != request.user.pk:\n            return _not_owner("Only the classroom owner can see results")'
+    if guard not in report:
+        return "classroom/views.py: test hisoboti egasidan boshqaga ochiq"
+    return None
+
+
 def course_given_to_a_class() -> str | None:
     """2026-11-10 (HITL, ADR-0056 8-qism): sinfga kurs berish.
 
@@ -5522,6 +5561,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sinfga kurs: faqat bepul ochiladi, hisobot egasiga, kutilayotgan ish", course_given_to_a_class),
     ("sinf: tasdiq bilan qo'shilish, reja kvotasi, arxivlash", classroom_joins_and_quotas),
     ("murabbiy: ≤3, ruxsat har biriga, musobaqada kod yopiq", coaching_is_chosen_and_consented),
+    ("o'qituvchi testi: sinfga, Qvant'siz, vaqt va bitta urinish serverda", teacher_quizzes_stay_in_class),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

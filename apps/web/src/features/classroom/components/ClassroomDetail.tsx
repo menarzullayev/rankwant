@@ -25,12 +25,14 @@ import { isOn } from "@/lib/flags";
 
 import { AssignmentProgress } from "./AssignmentProgress";
 import { ClassCourseReport } from "./ClassCourseReport";
+import { ClassQuizReport } from "./ClassQuizReport";
 import { ClassroomSettings } from "./ClassroomSettings";
 import { CourseAssignForm } from "./CourseAssignForm";
 import { failure } from "./failure";
 import { JoinRequests } from "./JoinRequests";
 import { MembersCard } from "./MembersCard";
 import { ProblemAssignForm } from "./ProblemAssignForm";
+import { QuizAssignForm } from "./QuizAssignForm";
 import { RoleBadge } from "./RoleBadge";
 
 const ACCESS_KEYS: Record<string, string> = {
@@ -135,6 +137,22 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                   )}
                 </div>
               )}
+              {a.quiz && (
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/quizzes/${encodeURIComponent(a.quiz.slug)}` as Route}
+                    className="font-medium rw-accent-ink hover:underline"
+                  >
+                    {a.quiz.title}
+                  </Link>
+                  {a.quiz.time_limit_minutes !== null && (
+                    <Badge>
+                      {fill(t(locale, "quiz.timeLimit"), { minutes: a.quiz.time_limit_minutes })}
+                    </Badge>
+                  )}
+                  {a.quiz.one_attempt && <Badge>{t(locale, "quiz.oneAttempt")}</Badge>}
+                </div>
+              )}
               <div className="mt-2 flex flex-wrap gap-2">
                 {a.problems.map((p) => (
                   <Link
@@ -149,7 +167,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                   <span className="text-theme-xs rw-faint">→ {numericDate(a.due_at)}</span>
                 )}
               </div>
-              {owner && (a.course || a.problems.length > 0) && (
+              {owner && (a.course || a.quiz || a.problems.length > 0) && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {a.problems.length > 0 && (
                     <Button
@@ -159,6 +177,16 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                       onClick={() => toggle(`p${a.id}`)}
                     >
                       {t(locale, "classroom.progress")}
+                    </Button>
+                  )}
+                  {a.quiz && (
+                    <Button
+                      variant="outline"
+                      aria-expanded={open === `q${a.id}`}
+                      aria-controls={`class-quiz-${a.id}`}
+                      onClick={() => toggle(`q${a.id}`)}
+                    >
+                      {t(locale, "classroom.quiz.results")}
                     </Button>
                   )}
                   {a.course && (
@@ -176,6 +204,11 @@ export function ClassroomDetail({ slug }: { slug: string }) {
               {open === `p${a.id}` && (
                 <div id={`class-problems-${a.id}`} className="mt-3">
                   <AssignmentProgress slug={slug} assignmentId={a.id} />
+                </div>
+              )}
+              {open === `q${a.id}` && (
+                <div id={`class-quiz-${a.id}`} className="mt-3">
+                  <ClassQuizReport slug={slug} assignmentId={a.id} />
                 </div>
               )}
               {open === `c${a.id}` && (
@@ -196,6 +229,12 @@ export function ClassroomDetail({ slug }: { slug: string }) {
       {owner && (
         <Card title={t(locale, "classroom.problems.give")}>
           <ProblemAssignForm slug={slug} onCreated={added} />
+        </Card>
+      )}
+
+      {owner && (
+        <Card title={t(locale, "classroom.quiz.give")}>
+          <QuizAssignForm slug={slug} onCreated={added} />
         </Card>
       )}
 

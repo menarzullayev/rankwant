@@ -29,3 +29,9 @@ export { CourseEditor } from "./components/CourseEditor";
 export { CourseReview } from "./components/CourseReview";
 
 export type { StaffCourse, StudioCourse } from "./api/courses";
+
+export { QuizStudio } from "./components/QuizStudio";
+
+export { QuizEditor } from "./components/QuizEditor";
+
+export { QuestionBank } from "./components/QuestionBank";

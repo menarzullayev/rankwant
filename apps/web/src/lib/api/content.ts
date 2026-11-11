@@ -101,9 +101,15 @@ export type RoadmapNextStep = {
 };
 
 export type Choice = { id: number; order: number; text: string };
+/** ADR-0061 § 5: the staff bank and the arena use only `single`. */
+export type QuestionKind = "single" | "multiple" | "number" | "text";
 export type Question = {
   id: number;
+  kind: QuestionKind;
   text: string;
+  /** A code snippet under the text, highlighted. */
+  code: string;
+  code_language: string;
   difficulty: number;
   topics: string[];
   choices: Choice[];
@@ -116,8 +122,23 @@ export type Quiz = {
   question_count: number;
   best_score: number | null;
   created_at: string;
+  /** A teacher's quiz given to a class: no Qvant. */
+  is_class: boolean;
+  time_limit_minutes: number | null;
+  one_attempt: boolean;
+  answers_after: string | null;
 };
-export type QuizDetail = Quiz & { questions: Question[] };
+export type QuizState = {
+  /** An open attempt's deadline (a timed quiz). */
+  deadline: string | null;
+  started: boolean;
+  finished: number;
+  /** A one-attempt quiz already taken. */
+  taken: boolean;
+};
+export type QuizDetail = Quiz & { questions: Question[]; state: QuizState };
+/** A choice id, a list of them, a number or a text, by the question's kind. */
+export type QuizAnswer = number | number[] | string;
 export type QuizResult = {
   id: number;
   score: number;
@@ -127,9 +148,13 @@ export type QuizResult = {
     question_id: number;
     chosen: number | null;
     correct: number | null;
+    chosen_value: unknown;
+    correct_value: unknown;
     is_correct: boolean;
     explanation: string;
   }[];
+  /** The right answers wait for the quiz's `answers_after`. */
+  answers_hidden: boolean;
 };
 
 export type ClassroomJoinMode = "instant" | "approval";
@@ -185,6 +210,8 @@ export type Assignment = {
   problems: string[];
   /** A course given to the class (ADR-0056 part 8). */
   course: AssignmentCourse | null;
+  /** A quiz given to the class (ADR-0061 § 5). */
+  quiz: { slug: string; title: string; time_limit_minutes: number | null; one_attempt: boolean } | null;
   due_at: string | null;
   created_at: string;
 };

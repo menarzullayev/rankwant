@@ -362,6 +362,7 @@ SPECTACULAR_SETTINGS = {
         "RoleEnum": "content.models.ArticleProblemLink.Role",
         "ExternalProfileKindEnum": "profiles.models.ExternalProfile.Kind",
         "TeamRoleEnum": "profiles.models.TeamMember.Role",
+        "QuestionKindEnum": "quizzes.models.Question.Kind",
         # `kind` — to'rtta modelda uchraydi. Nom barqaror bo'lmasa
         # drf-spectacular xesh qo'shib (`Kind598Enum`), generatsiya qilingan
         # TS tipi har safar o'zgarib ketardi.
