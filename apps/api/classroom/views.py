@@ -18,6 +18,7 @@ from classroom.serializers import (
     AssignmentCreateSerializer,
     AssignmentSerializer,
     ClassCourseReportSerializer,
+    ClassQuizReportSerializer,
     ClassroomCreateSerializer,
     ClassroomManagerSerializer,
     ClassroomOwnerSerializer,
@@ -305,7 +306,7 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
         context = {"locale": content_locale(request)}
 
         if request.method == "GET":
-            rows = classroom.assignments.select_related("course").prefetch_related(
+            rows = classroom.assignments.select_related("course", "quiz").prefetch_related(
                 "problems", "course__translations"
             )
             return Response(AssignmentSerializer(rows, many=True, context=context).data)
@@ -315,6 +316,22 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
         serializer = AssignmentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
+        quiz = None
+        if data["quiz"]:
+            from quizzes.services import assignable
+
+            quiz = assignable(request.user, data["quiz"])
+            if quiz is None:
+                return Response(
+                    {
+                        "error": {
+                            "code": "classroom_quiz_unavailable",
+                            "message": "No quiz of yours or public quiz has this slug.",
+                            "details": {},
+                        }
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         course = None
         if data["course"]:
             course = teaching.assignable(data["course"])
@@ -335,6 +352,7 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
                 title=data["title"],
                 description=data.get("description", ""),
                 course=course,
+                quiz=quiz,
                 due_at=data.get("due_at"),
             )
             assignment.problems.set(Problem.objects.filter(slug__in=data["problems"]))
@@ -369,6 +387,27 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
             assignment.course, [m.user for m in students], content_locale(request)
         )
         return Response(ClassCourseReportSerializer(data).data)
+
+    @extend_schema(responses={200: ClassQuizReportSerializer})
+    @action(detail=True, methods=["get"], url_path=r"assignments/(?P<pk>\d+)/quiz")
+    def quiz_report(
+        self, request: Request, slug: str | None = None, pk: str | None = None
+    ) -> Response:
+        """Each student's best result and the questions most got wrong."""
+        classroom = self.get_object()
+        if classroom.owner_id != request.user.pk:
+            return _not_owner("Only the classroom owner can see results")
+        assignment = get_object_or_404(
+            classroom.assignments.select_related("quiz").exclude(quiz=None), pk=int(pk or 0)
+        )
+        assert assignment.quiz is not None
+        from quizzes.services import class_report
+
+        students = classroom.members.filter(role=ClassroomMember.Role.STUDENT).select_related(
+            "user"
+        )
+        data = class_report(assignment.quiz, [m.user for m in students])
+        return Response(ClassQuizReportSerializer(data).data)
 
     @extend_schema(responses={200: None})
     @action(detail=True, methods=["get"], url_path=r"assignments/(?P<pk>\d+)/progress")

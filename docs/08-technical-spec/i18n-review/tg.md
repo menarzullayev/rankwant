@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3104 strings.**
+**3176 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -410,6 +410,17 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `quiz.start` | Boshlash | Оғоз |  |
 | `quiz.submit` | Topshirish | Супоридан |  |
 | `quiz.result` | Natija | Натиҷа |  |
+| `quiz.pickAll` | Barcha to'g'ri variantlarni belgilang | Ҳамаи вариантҳои дурустро қайд кунед |  |
+| `quiz.numberAnswer` | Javob (son) | Ҷавоб (рақам) |  |
+| `quiz.textAnswer` | Javob | Ҷавоб |  |
+| `quiz.rightAnswer` | To'g'ri javob: {answer} | Ҷавоби дуруст: {answer} |  |
+| `quiz.answersAfter` | To'g'ri javoblar {date} dan keyin ko'rinadi. | Ҷавобҳои дуруст пас аз {date} намоён мешаванд. |  |
+| `quiz.taken` | Bu testni topshirgansiz — faqat bitta urinish. | Шумо ин тестро супоридед — танҳо як кӯшиш. |  |
+| `quiz.startHint` | Savollar boshlaganingizdan keyin ko'rinadi va vaqt hisoblana boshlaydi. | Саволҳо пас аз оғоз намоён мешаванд ва вақт оғоз мегардад. |  |
+| `quiz.timeLeft` | Qolgan vaqt: {time} | Вақти боқимонда: {time} |  |
+| `quiz.classQuiz` | Sinf testi | Тести синф |  |
+| `quiz.timeLimit` | Vaqt: {minutes} daqiqa | Вақт: {minutes} дақ |  |
+| `quiz.oneAttempt` | Bitta urinish | Як кӯшиш |  |
 | `quiz.questions` | savol | савол |  |
 | `quiz.best` | Eng yaxshi | Беҳтарин |  |
 | `arena.join` | Qo'shilish | Ҳамроҳ шудан |  |
@@ -2857,6 +2868,53 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.courses.sendBack` | Muallifga qaytarish | Ба муаллиф баргардонидан |  |
 | `admin.courses.sentBack` | Kurs qaytarildi, muallifga sabab yuborildi. | Курс баргардонида шуд, сабаб ба муаллиф фиристода шуд. |  |
 | `studio.nav.courses` | Kurslar | Курсҳо |  |
+| `studio.nav.quizzes` | Testlarim | Тестҳои ман |  |
+| `studio.nav.questions` | Savollar banki | Бонки саволҳо |  |
+| `studio.quizzes.intro` | O'z testingizni savollar bankidan tuzing va sinf sahifasida o'quvchilarga bering. O'qituvchi testi Qvant bermaydi. | Тестро аз бонки саволҳои худ созед ва дар саҳифаи синф ба хонандагон диҳед. Тести муаллим Qvant намедиҳад. |  |
+| `studio.quizzes.new` | Yangi test | Тести нав |  |
+| `studio.quizzes.count` | {count} / {limit} test — rejangiz chegarasi | Дар тарифи шумо {count} / {limit} тест |  |
+| `studio.quizzes.full` | Rejangizdagi testlar chegarasi: {count} / {limit}. | Ҳадди тестҳои тариф расид: {count} / {limit}. |  |
+| `studio.quizzes.empty` | Hali test yo'q. | Ҳоло тест нест. |  |
+| `studio.quizzes.questionCount` | {count} savol | {count} савол |  |
+| `studio.quizzes.attempts` | {count} urinish | {count} кӯшиш |  |
+| `studio.quizzes.settings` | Sozlamalar | Танзимот |  |
+| `studio.quizzes.timeLimit` | Vaqt chegarasi (daqiqa, ixtiyoriy) | Ҳадди вақт (дақиқа, ихтиёрӣ) |  |
+| `studio.quizzes.answersAfter` | To'g'ri javoblarni ko'rsatish vaqti (ixtiyoriy) | Вақти нишон додани ҷавобҳои дуруст (ихтиёрӣ) |  |
+| `studio.quizzes.oneAttempt` | Bitta urinish | Як кӯшиш |  |
+| `studio.quizzes.questions` | Testdagi savollar | Саволҳои тест |  |
+| `studio.quizzes.fixed` | O'quvchilar topshirgan — savollar endi o'zgarmaydi. | Хонандагон супориданд — саволҳо дигар иваз намешаванд. |  |
+| `studio.quizzes.remove` | Olib tashlash | Хориҷ кардан |  |
+| `studio.quizzes.addFromBank` | Bankdan qo'shish | Аз бонк илова кардан |  |
+| `studio.quizzes.save` | Saqlash | Нигоҳ доштан |  |
+| `studio.quizzes.saved` | Saqlandi | Нигоҳ дошта шуд |  |
+| `studio.questions.intro` | Savollaringiz faqat sizga ko'rinadi. Papkalarga ajrating va testlarda qayta ishlating. | Саволҳои шуморо танҳо шумо мебинед. Онҳоро ба ҷузвдонҳо ҷудо кунед ва дар тестҳо истифода баред. |  |
+| `studio.questions.new` | Yangi savol | Саволи нав |  |
+| `studio.questions.edit` | Savolni tahrirlash | Таҳрири савол |  |
+| `studio.questions.delete` | O'chirish | Нест кардан |  |
+| `studio.questions.deleteConfirm` | Savol o'chirilsinmi? | Савол нест карда шавад? |  |
+| `studio.questions.allFolders` | Barcha papkalar | Ҳамаи ҷузвдонҳо |  |
+| `studio.questions.noFolder` | Papkasiz | Бе ҷузвдон |  |
+| `studio.questions.newFolder` | Yangi papka | Ҷузвдони нав |  |
+| `studio.questions.folder` | Papka | Ҷузвдон |  |
+| `studio.questions.kind` | Turi | Намуд |  |
+| `studio.questions.kind.single` | Bitta to'g'ri javob | Як ҷавоби дуруст |  |
+| `studio.questions.kind.multiple` | Bir nechta to'g'ri javob | Якчанд ҷавоби дуруст |  |
+| `studio.questions.kind.number` | Son | Рақам |  |
+| `studio.questions.kind.text` | Qisqa matn | Матни кӯтоҳ |  |
+| `studio.questions.text` | Savol matni (Markdown) | Матни савол (Markdown) |  |
+| `studio.questions.code` | Kod parchasi (ixtiyoriy) | Пораи код (ихтиёрӣ) |  |
+| `studio.questions.codeLanguage` | Kod tili | Забони код |  |
+| `studio.questions.choices` | Variantlar | Вариантҳо |  |
+| `studio.questions.addChoice` | Variant qo'shish | Илова кардани вариант |  |
+| `studio.questions.correct` | To'g'ri | Дуруст |  |
+| `studio.questions.answerNumber` | To'g'ri son | Рақами дуруст |  |
+| `studio.questions.tolerance` | Aniqlik (±) | Дақиқӣ (±) |  |
+| `studio.questions.answerText` | Qabul qilinadigan javoblar (har biri yangi qatorda) | Ҷавобҳои қабулшаванда (ҳар яке дар сатри нав) |  |
+| `studio.questions.explanation` | Izoh (javobdan keyin ko'rsatiladi) | Шарҳ (пас аз ҷавоб нишон дода мешавад) |  |
+| `studio.questions.save` | Savolni saqlash | Нигоҳ доштани савол |  |
+| `studio.questions.cancel` | Bekor qilish | Бекор кардан |  |
+| `studio.questions.empty` | Bankda hali savol yo'q. | Дар бонк ҳоло савол нест. |  |
+| `studio.questions.used` | {count} testda | Дар {count} тест |  |
 | `studio.courses.intro` | Kurs yozing: modullar, bo'limlar va darslar (matn, masala, test, video). Xodim ko'rib chiqib nashr qiladi va narxini belgilaydi. | Курс нависед: модулҳо, бахшҳо ва дарсҳо (матн, масъала, тест, видео). Корманд месанҷад, нашр мекунад ва нархашро муайян мекунад. |  |
 | `studio.courses.empty` | Hali kurs yozmagansiz | Шумо ҳоло курс нанавиштаед |  |
 | `studio.courses.emptyHint` | Quyida nom va tilni tanlang — qolganini kurs sahifasida yozasiz. | Дар поён ном ва забонро интихоб кунед — боқимондаро дар саҳифаи курс менависед. |  |
@@ -2984,6 +3042,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.course.optional` | ixtiyoriy | ихтиёрӣ |  |
 | `classroom.course.lessonDone` | bajarilgan | иҷрошуда |  |
 | `classroom.course.lessonOpen` | bajarilmagan | иҷронашуда |  |
+| `classroom.quiz.give` | Test berish | Додани тест |  |
+| `classroom.quiz.pick` | Test tanlash | Интихоби тест |  |
+| `classroom.quiz.none` | Hali testingiz yo'q — uni studiyada yarating: | Ҳоло тести шумо нест — онро дар студия созед: |  |
+| `classroom.quiz.submit` | Sinfga berish | Ба синф додан |  |
+| `classroom.quiz.results` | Test natijalari | Натиҷаҳои тест |  |
+| `classroom.quiz.attempts` | Urinishlar | Кӯшишҳо |  |
+| `classroom.quiz.notTaken` | Topshirmagan | Насупоридааст |  |
+| `classroom.quiz.questions` | Savollar bo'yicha | Аз рӯи саволҳо |  |
+| `classroom.quiz.wrong` | {wrong} / {answered} xato | {wrong} / {answered} хато |  |
 | `classroom.joinMode` | Qo'shilish tartibi | Тартиби ҳамроҳшавӣ |  |
 | `classroom.joinMode.approval` | Tasdiq bilan | Бо тасдиқ |  |
 | `classroom.joinMode.instant` | Darhol | Фавран |  |
@@ -3071,6 +3138,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.coach_limit` | Ko'pi bilan 3 ta murabbiy bo'lishi mumkin | Ҳадди аксар 3 мураббӣ |  |
 | `error.coach_ended` | Bu bog'lanish allaqachon tugagan | Ин пайванд аллакай анҷом ёфтааст |  |
 | `error.coach_problem_missing` | Masala topilmadi yoki ochiq emas | Масъала ёфт нашуд ё кушода нест |  |
+| `error.quiz_taken` | Bu testni faqat bir marta topshirish mumkin | Ин тестро танҳо як бор супоридан мумкин аст |  |
+| `error.quiz_not_started` | Avval testni boshlang | Аввал тестро оғоз кунед |  |
+| `error.quiz_in_use` | Test sinfga berilgan yoki topshirilgan — o'chirib bo'lmaydi | Тест ба синф дода шуда ё супорида шудааст — нест кардан мумкин нест |  |
+| `error.question_in_quiz` | Savol testlarda ishlatilgan — avval testlardan olib tashlang | Савол дар тестҳо истифода мешавад — аввал аз онҳо хориҷ кунед |  |
+| `error.classroom_quiz_unavailable` | Bunday testingiz yoki ochiq test yo'q | Бо ин суроға тести шумо ё тести кушода нест |  |
 | `billing.plan.plus` | Plus | Plus |  |
 | `billing.plan.pro` | Pro | Pro |  |
 | `billing.plan.judge` | Judge | Judge |  |

@@ -128,6 +128,15 @@ class Assignment(CreatedModel):
         on_delete=models.PROTECT,
         related_name="classroom_assignments",
     )
+    #: A quiz given to the class (ADR-0061 § 5): the teacher's own or a
+    #: public one.
+    quiz = models.ForeignKey(
+        "quizzes.Quiz",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="classroom_assignments",
+    )
     due_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:

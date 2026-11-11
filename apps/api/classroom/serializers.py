@@ -144,13 +144,66 @@ class AssignmentCourseSerializer(serializers.Serializer[dict[str, Any]]):
     price_qvant = serializers.IntegerField()
 
 
+class QuizReportStudentSerializer(serializers.Serializer[dict[str, Any]]):
+    username = serializers.CharField()
+    attempts = serializers.IntegerField()
+    score = serializers.IntegerField(allow_null=True)
+    total = serializers.IntegerField()
+    finished_at = serializers.DateTimeField(allow_null=True)
+
+
+class QuizReportQuestionSerializer(serializers.Serializer[dict[str, Any]]):
+    id = serializers.IntegerField()
+    order = serializers.IntegerField()
+    text = serializers.CharField()
+    wrong = serializers.IntegerField()
+    answered = serializers.IntegerField()
+
+
+class ClassQuizReportSerializer(serializers.Serializer[dict[str, Any]]):
+    quiz = serializers.CharField()
+    title = serializers.CharField()
+    students = QuizReportStudentSerializer(many=True)
+    questions = QuizReportQuestionSerializer(many=True)
+
+
+class AssignmentQuizSerializer(serializers.Serializer[dict[str, Any]]):
+    slug = serializers.CharField()
+    title = serializers.CharField()
+    time_limit_minutes = serializers.IntegerField(allow_null=True)
+    one_attempt = serializers.BooleanField()
+
+
 class AssignmentSerializer(serializers.ModelSerializer[Assignment]):
     problems = serializers.SlugRelatedField[Problem](many=True, read_only=True, slug_field="slug")
     course = serializers.SerializerMethodField()
+    #: A quiz given to the class (ADR-0061 § 5).
+    quiz = serializers.SerializerMethodField()
 
     class Meta:
         model = Assignment
-        fields = ["id", "title", "description", "problems", "course", "due_at", "created_at"]
+        fields = [
+            "id",
+            "title",
+            "description",
+            "problems",
+            "course",
+            "quiz",
+            "due_at",
+            "created_at",
+        ]
+
+    @extend_schema_field(AssignmentQuizSerializer(allow_null=True))
+    def get_quiz(self, obj: Assignment) -> dict[str, Any] | None:
+        quiz = obj.quiz
+        if quiz is None:
+            return None
+        return {
+            "slug": quiz.slug,
+            "title": quiz.title,
+            "time_limit_minutes": quiz.time_limit_minutes,
+            "one_attempt": quiz.one_attempt,
+        }
 
     @extend_schema_field(AssignmentCourseSerializer(allow_null=True))
     def get_course(self, obj: Assignment) -> dict[str, Any] | None:
@@ -168,11 +221,13 @@ class AssignmentCreateSerializer(serializers.Serializer[dict[str, Any]]):
     )
     #: A published course's slug (ADR-0056 part 8).
     course = serializers.SlugField(required=False, allow_blank=True, default="")
+    #: The teacher's own quiz or a public one (ADR-0061 § 5).
+    quiz = serializers.SlugField(required=False, allow_blank=True, default="")
     due_at = serializers.DateTimeField(required=False, allow_null=True)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        if not attrs.get("problems") and not attrs.get("course"):
-            raise serializers.ValidationError("Give the class problems, a course or both.")
+        if not attrs.get("problems") and not attrs.get("course") and not attrs.get("quiz"):
+            raise serializers.ValidationError("Give the class problems, a course or a quiz.")
         attrs["problems"] = self._resolve(attrs.get("problems") or [])
         return attrs
 

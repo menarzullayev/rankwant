@@ -16,7 +16,8 @@ class StaffQuizViewSet(StaffViewSet):
     # StaffOps — ADR-0025 guruh bo'linishi.
     permission_classes = [StaffOps]
 
-    queryset = Quiz.objects.prefetch_related("items")
+    # Public quizzes only: a teacher's quiz is theirs (ADR-0061 § 5).
+    queryset = Quiz.objects.filter(owner=None).prefetch_related("items")
     serializer_class = StaffQuizSerializer
     lookup_field = "slug"
     search_fields: ClassVar[list[str]] = ["slug", "title"]

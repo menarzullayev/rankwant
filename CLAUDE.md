@@ -248,7 +248,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-public-env-reaches-build.md) · Web o'qiydigan har `NEXT_PUBLIC_*` build'ga uzatiladi; bo'sh `SITE_URL` = API origin'i · `flags_reach_the_web_build`
 - [2026-11-11](docs/decisions/2026-11-11-ai-tutor.md) · AI ustoz: maslahat, yechim yo'q; 5/100/250/500; musobaqada o'chiq; adapter (API + `claude -p` zaxira), 90 kun, byudjet · `hali kod yo'q`
 - [2026-11-11](docs/decisions/2026-11-11-plan-contents.md) · Judge: mualliflik kvotasi, yopiq va GYM musobaqa; Plus: tahlillar tekin, yechim kodlari, profil nishoni · `hali kod yo'q`
-- [2026-11-11](docs/decisions/2026-11-11-teacher-tools.md) · Sinfga tasdiq bilan kirish va murabbiy (kodda), savollar banki va sinfga test, serverdagi test generatori (hali yo'q) · `coaching_is_chosen_and_consented`
+- [2026-11-11](docs/decisions/2026-11-11-teacher-tools.md) · Sinfga tasdiq bilan kirish, murabbiy, savollar banki va sinfga test (kodda), serverdagi test generatori (hali yo'q) · `teacher_quizzes_stay_in_class`
 - [2026-11-11](docs/decisions/2026-11-11-content-and-archive.md) · Traektoriya o'quv rejasi, olimpiada arxivi, cp.uz CC BY-SA, Abramyan (ruxsat bor), norasmiy masalalar reytingsiz · `study_plans_have_sections`
 - [2026-11-11](docs/decisions/2026-11-11-new-alphabet.md) · Yangi alifbo (O'RQ-1184): avtomatik o'giruvchi, hozirdan standart, butun platforma, qidiruvda ikkalasi bir · `alphabets_fold_as_one`
 - [2026-11-11](docs/decisions/2026-11-11-community-and-contests.md) · Muhokama, fayl yuklash, taymer, fokus; hudud filtri, PDF, hamkor/mirror; bloglar va karma; seriya, xarita · `hali kod yo'q`
@@ -257,7 +257,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-11](docs/decisions/2026-11-11-abramyan-import.md) · Abramyan importi: judge'da haqiqiy son solishtiruvi, 64 MB + til ustamasi, norasmiy (raqamsiz, faollik hisoblanadi), «Begin1. Nom», agent bahosi bilan nashr, production'da tungi tekshiruv · `real_numbers_compared_in_the_judge`
 - [2026-11-11](docs/decisions/2026-11-11-abramyan-verification.md) · Abramyan: tekshiruv hozir production judge'da, izi qoladi (o'chirish keyin); 150 × 4 matnni agent tekshiradi, muammolar Report'dan; 19 bo'lim → mavjud mavzular · `abramyan_publishes_only_verified`
 - [2026-11-11](docs/decisions/2026-11-11-next-directions.md) · Abramyan hammasi tuzalguncha kutadi, e'lonsiz; keyingi tartib: o'qituvchi vositalari → jamoa funksiyalari → cp.uz importi → AI agent (prototiplar bilan) · `abramyan_publishes_only_verified`
-- [2026-11-11](docs/decisions/2026-11-11-teacher-tools-details.md) · O'qituvchi vositalari batafsil: eski sinflar darhol, 3×40 / 50×50, murabbiy ≤3 alohida ruxsat bilan, test turlari, Qvant'siz, generator stdin, kvota hammasini sanaydi (1–2-bosqich kodda) · `classroom_joins_and_quotas`
+- [2026-11-11](docs/decisions/2026-11-11-teacher-tools-details.md) · O'qituvchi vositalari batafsil: eski sinflar darhol, 3×40 / 50×50, murabbiy ≤3 alohida ruxsat bilan, test turlari, Qvant'siz, generator stdin, kvota hammasini sanaydi (1–3-bosqich kodda) · `classroom_joins_and_quotas`
 
 ## Tekshiruvlar
 

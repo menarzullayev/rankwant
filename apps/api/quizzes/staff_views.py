@@ -16,7 +16,8 @@ class StaffQuestionViewSet(StaffViewSet):
     # StaffOps — ADR-0025 guruh bo'linishi.
     permission_classes = [StaffOps]
 
-    queryset = Question.objects.prefetch_related("choices", "topics")
+    # The staff bank only: a teacher's questions stay theirs (ADR-0061 § 5).
+    queryset = Question.objects.filter(owner=None).prefetch_related("choices", "topics")
     serializer_class = StaffQuestionSerializer
     search_fields: ClassVar[list[str]] = ["text"]
     ordering_fields: ClassVar[list[str]] = ["pk", "difficulty", "created_at"]
