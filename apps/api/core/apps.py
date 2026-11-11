@@ -19,6 +19,8 @@ class CoreConfig(AppConfig):
         autodiscover_modules("search")
         # The same for side-menu badges (`core.nav_badges`).
         autodiscover_modules("nav_badges")
+        # And for plan quota counters (`core.quotas`).
+        autodiscover_modules("quotas")
 
         # Guruh permission'lari migrate TUGAGACH paydo bo'ladi
         # (`auth_permission` post_migrate'da yaratiladi), shuning uchun

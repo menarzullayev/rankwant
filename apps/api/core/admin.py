@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.http import HttpRequest, HttpResponse
 
 from core import mail_quota
-from core.models import ApiToken, EmailDelivery, School, SiteAppearance, User
+from core.models import ApiToken, EmailDelivery, PlanQuota, School, SiteAppearance, User
 
 
 @admin.register(User)
@@ -164,3 +164,19 @@ class SiteAppearanceAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request: Any, obj: Any = None) -> bool:
         return False
+
+
+@admin.register(PlanQuota)
+class PlanQuotaAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    """What each plan lets an author own (ADR-0061 § 2)."""
+
+    list_display = (
+        "plan",
+        "problems",
+        "contests",
+        "quizzes",
+        "classrooms",
+        "class_members",
+        "storage_mb",
+    )
+    list_editable = ("problems", "contests", "quizzes", "classrooms", "class_members", "storage_mb")

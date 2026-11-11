@@ -13,8 +13,8 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from notifications.models import Notification
-from problems import author_views
 from problems.models import Problem, TestCase
+from tests.quota_utils import set_free_quota
 
 
 def _client(user: User) -> APIClient:
@@ -91,8 +91,8 @@ class TestDraftFields:
 
 @pytest.mark.django_db
 class TestDraftLimit:
-    def test_cap_refuses_the_next_draft(self, user, monkeypatch) -> None:
-        monkeypatch.setattr(author_views, "MAX_DRAFTS", 2)
+    def test_cap_refuses_the_next_draft(self, user) -> None:
+        set_free_quota(problems=2)
         _draft(user, "a1")
         _draft(user, "a2")
         res = _client(user).post(
@@ -101,16 +101,30 @@ class TestDraftLimit:
             format="json",
         )
         assert res.status_code == 400
-        assert res.json()["error"]["code"] == "draft_limit"
+        assert res.json()["error"]["code"] == "quota_exceeded"
         assert not Problem.objects.filter(slug="a3").exists()
 
-    def test_published_problems_do_not_count(self, user, monkeypatch) -> None:
-        monkeypatch.setattr(author_views, "MAX_DRAFTS", 1)
+    def test_published_problems_count_too(self, user) -> None:
+        # ADR-0061 § 2: everything owned counts, not only drafts.
+        set_free_quota(problems=1)
         Problem.objects.filter(pk=_draft(user, "a1").pk).update(is_public=True)
+        res = _client(user).post(
+            reverse("mine-problem-list"),
+            {"slug": "a2", "title": "T", "statement": "s", "difficulty": 800},
+            format="json",
+        )
+        assert res.status_code == 400
+        assert res.json()["error"]["code"] == "quota_exceeded"
+
+    def test_judge_plan_raises_the_cap(self, user) -> None:
+        set_free_quota(problems=1)
+        _draft(user, "a1")
+        User.objects.filter(pk=user.pk).update(plan="judge")
+        user.refresh_from_db()
         _draft(user, "a2")
 
-    def test_staff_are_exempt(self, monkeypatch) -> None:
-        monkeypatch.setattr(author_views, "MAX_DRAFTS", 1)
+    def test_staff_are_exempt(self) -> None:
+        set_free_quota(problems=1)
         staff = User.objects.create_user("ops", password="x", is_staff=True)
         _draft(staff, "a1")
         _draft(staff, "a2")

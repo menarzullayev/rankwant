@@ -13,8 +13,9 @@ The web page is `/studio/contests` (2026-11-10). Measured before it: the
 attach problems. Now the organizer attaches problems of their OWN drafts —
 an unpublished problem is outside the archive, which is what a contest
 problem must be until the contest ends (ADR-0055) — while the contest is a
-draft; once staff-ops publish it, its problem set is theirs. A draft cap
-(`MAX_DRAFTS`) guards the open surface.
+draft; once staff-ops publish it, its problem set is theirs. The plan's
+`contests` quota guards the open surface; it counts every organized
+contest, published or not (ADR-0061 § 2, `contests/quotas.py`).
 
 PAT bilan yozish `contest:manage` scope'ida ishlaydi (`CanManageContest`) —
 ADR-0008 naqshi: sessiya uchun scope cheklovi yo'q.
@@ -39,6 +40,7 @@ from rest_framework.response import Response
 from contests.insiders import notify_new_testers
 from contests.models import Contest, ContestProblem
 from contests.staff_serializers import crew_field
+from core import quotas
 from core.models import User
 from core.openapi_docs import crud_summaries
 from core.permissions import CanManageContest
@@ -46,16 +48,13 @@ from problems.readiness import GRADED_READY, enforcing, graded_gate_error
 
 log = logging.getLogger(__name__)
 
-#: Unpublished contests one organizer may hold. Measured 2026-11-10: nobody
-#: had organized a contest yet, so this guards against a flood rather than
-#: fitting existing use. Staff are exempt.
-MAX_DRAFTS = 5
 
+class QuotaLimit(APIException):
+    """The plan's `contests` quota is used up; staff are not counted."""
 
-class DraftLimit(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
-    default_code = "contest_draft_limit"
-    default_detail = f"At most {MAX_DRAFTS} unpublished contests per organizer"
+    default_code = "quota_exceeded"
+    default_detail = "Your plan's contest limit is reached"
 
 
 class ContestLocked(APIException):
@@ -237,9 +236,10 @@ class OrganizerContestViewSet(
         # Draft: nashr va reyting staff-ops qarori.
         user = self.request.user
         assert isinstance(user, User)
-        drafts = user.organized_contests.filter(is_public=False).count()
-        if not user.is_staff and drafts >= MAX_DRAFTS:
-            raise DraftLimit()
+        try:
+            quotas.enforce(user, "contests")
+        except quotas.QuotaExceeded as exc:
+            raise QuotaLimit(str(exc)) from exc
         contest = serializer.save(is_public=False, is_rated=False)
         contest.organizers.add(user)
 

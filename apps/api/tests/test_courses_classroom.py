@@ -54,7 +54,9 @@ def _course(slug: str = "kurs", **kw) -> tuple[Course, list[Lesson]]:
 
 @pytest.fixture
 def room(user) -> Classroom:
-    return Classroom.objects.create(owner=user, name="9-A", slug="9-a", join_code="J00001")
+    return Classroom.objects.create(
+        owner=user, name="9-A", slug="9-a", join_code="J00001", join_mode="instant"
+    )
 
 
 @pytest.fixture

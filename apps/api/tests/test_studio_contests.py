@@ -14,10 +14,10 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from contests import organizer_views
 from contests.models import Contest, ContestRegistration
 from core.models import User
 from problems.models import Problem
+from tests.quota_utils import set_free_quota
 
 
 def _client(user: User) -> APIClient:
@@ -72,15 +72,15 @@ class TestOrganizerContest:
         detail = _client(user).get(reverse("mine-contest-detail", args=[contest.slug])).json()
         assert detail["participant_count"] == 1
 
-    def test_draft_cap(self, user, monkeypatch) -> None:
-        monkeypatch.setattr(organizer_views, "MAX_DRAFTS", 1)
+    def test_draft_cap(self, user) -> None:
+        set_free_quota(contests=1)
         _contest(user, "a1")
         res = _client(user).post(reverse("mine-contest-list"), _payload("a2"), format="json")
         assert res.status_code == 400
-        assert res.json()["error"]["code"] == "contest_draft_limit"
+        assert res.json()["error"]["code"] == "quota_exceeded"
 
-    def test_staff_are_exempt_from_the_cap(self, monkeypatch) -> None:
-        monkeypatch.setattr(organizer_views, "MAX_DRAFTS", 1)
+    def test_staff_are_exempt_from_the_cap(self) -> None:
+        set_free_quota(contests=1)
         staff = User.objects.create_user("ops", password="x", is_staff=True)
         _contest(staff, "a1")
         _contest(staff, "a2")

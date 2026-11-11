@@ -4,33 +4,34 @@ import { numericDate } from "@rankwant/shared/format";
 import { SignInGate } from "@/components/auth/SignInGate";
 import type { Route } from "next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import {
-  EmptyRow,
-  TBody,
-  TD,
-  TH,
-  THead,
-  TR,
-  Table,
-} from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
 import { inReaderAlphabet } from "@/i18n/alphabet";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import {
   getJson,
+  postJson,
   type Assignment,
   type ClassroomDetail as Detail,
 } from "@/lib/api";
 import { isOn } from "@/lib/flags";
 
+import { AssignmentProgress } from "./AssignmentProgress";
 import { ClassCourseReport } from "./ClassCourseReport";
+import { ClassroomSettings } from "./ClassroomSettings";
 import { CourseAssignForm } from "./CourseAssignForm";
+import { failure } from "./failure";
+import { JoinRequests } from "./JoinRequests";
+import { MembersCard } from "./MembersCard";
+import { ProblemAssignForm } from "./ProblemAssignForm";
+import { RoleBadge } from "./RoleBadge";
 
 const ACCESS_KEYS: Record<string, string> = {
   free: "course.access.free",
@@ -40,24 +41,30 @@ const ACCESS_KEYS: Record<string, string> = {
 
 export function ClassroomDetail({ slug }: { slug: string }) {
   const locale = useLocale();
+  const router = useRouter();
+  const confirm = useConfirm();
   const { user, ready } = useSession();
   const [room, setRoom] = useState<Detail | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [missing, setMissing] = useState(false);
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
+  const [error, setError] = useState("");
+
+  const loadRoom = useCallback(() => {
+    void getJson<Detail>(`/classrooms/${slug}/`)
+      .then(setRoom)
+      .catch(() => setMissing(true));
+  }, [slug]);
 
   useEffect(() => {
     if (!user) return;
-    getJson<Detail>(`/classrooms/${slug}/`)
-      .then(setRoom)
-      .catch(() => setMissing(true));
+    loadRoom();
     getJson<Assignment[]>(`/classrooms/${slug}/assignments/`)
       .then(setAssignments)
       .catch(() => {});
-  }, [user, slug]);
+  }, [user, slug, loadRoom]);
 
-  if (ready && !user)
-    return <SignInGate reason="classroom" />;
+  if (ready && !user) return <SignInGate reason="classroom" />;
   if (missing)
     return (
       <Card>
@@ -65,39 +72,53 @@ export function ClassroomDetail({ slug }: { slug: string }) {
       </Card>
     );
   if (!room) return null;
-  // The owner's view carries the join code (ClassroomOwnerSerializer).
-  const owner = Boolean(room.join_code);
+  const owner = room.my_role === "owner";
+  const manager = owner || room.my_role === "assistant";
   const coursesOpen = isOn("courses") || Boolean(user?.is_staff);
+  const toggle = (key: string) => setOpen(open === key ? null : key);
+  const added = (created: Assignment) => setAssignments((rows) => [created, ...rows]);
+
+  async function leave(origin: HTMLElement) {
+    if (!(await confirm(t(locale, "classroom.leaveConfirm"), {
+        danger: true,
+        kind: "popover",
+        origin,
+        confirmLabel: t(locale, "classroom.leave"),
+      })))
+      return;
+    try {
+      await postJson(`/classrooms/${encodeURIComponent(slug)}/leave/`, {});
+      router.push("/classroom");
+    } catch (err) {
+      setError(failure(locale, err));
+    }
+  }
 
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-title-sm font-bold rw-strong">{room.name}</h1>
-        <p className="mt-1 text-theme-sm rw-dim">{room.description}</p>
-        <div className="mt-2 flex flex-wrap gap-2">
+        {room.description && <p className="mt-1 text-theme-sm rw-dim">{room.description}</p>}
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           <Badge>@{room.owner}</Badge>
-          <Badge>
-            {room.member_count} {t(locale, "classroom.members").toLowerCase()}
-          </Badge>
-          {room.join_code && (
-            <Badge color="brand">
-              {t(locale, "classroom.code")}: {room.join_code}
-            </Badge>
-          )}
+          <Badge>{fill(t(locale, "classroom.students"), { count: room.member_count })}</Badge>
+          <RoleBadge role={room.my_role} />
         </div>
       </header>
+
+      {owner && <ClassroomSettings room={room} onChange={setRoom} />}
+
+      {manager && (room.join_mode === "approval" || (room.pending_count ?? 0) > 0) && (
+        <JoinRequests slug={slug} onDecided={loadRoom} />
+      )}
 
       <Card title={t(locale, "classroom.assignments")} bodyClassName="p-0">
         <ul className="divide-y rw-divide">
           {assignments.map((a) => (
             <li key={a.id} className="px-5 py-3">
               {/* A course given under its own name needs no second title. */}
-              {a.title !== a.course?.title && (
-                <p className="font-medium rw-strong">{a.title}</p>
-              )}
-              {a.description && (
-                <p className="text-theme-sm rw-dim">{a.description}</p>
-              )}
+              {a.title !== a.course?.title && <p className="font-medium rw-strong">{a.title}</p>}
+              {a.description && <p className="text-theme-sm rw-dim">{a.description}</p>}
               {a.course && (
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <Link
@@ -125,26 +146,41 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                   </Link>
                 ))}
                 {a.due_at && (
-                  <span className="text-theme-xs rw-faint">
-                    → {numericDate(a.due_at)}
-                  </span>
+                  <span className="text-theme-xs rw-faint">→ {numericDate(a.due_at)}</span>
                 )}
               </div>
-              {owner && a.course && (
-                <div className="mt-3 space-y-3">
-                  <Button
-                    variant="outline"
-                    aria-expanded={open === a.id}
-                    aria-controls={`class-course-${a.id}`}
-                    onClick={() => setOpen(open === a.id ? null : a.id)}
-                  >
-                    {t(locale, "classroom.course.progress")}
-                  </Button>
-                  {open === a.id && (
-                    <div id={`class-course-${a.id}`}>
-                      <ClassCourseReport slug={slug} assignmentId={a.id} />
-                    </div>
+              {owner && (a.course || a.problems.length > 0) && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {a.problems.length > 0 && (
+                    <Button
+                      variant="outline"
+                      aria-expanded={open === `p${a.id}`}
+                      aria-controls={`class-problems-${a.id}`}
+                      onClick={() => toggle(`p${a.id}`)}
+                    >
+                      {t(locale, "classroom.progress")}
+                    </Button>
                   )}
+                  {a.course && (
+                    <Button
+                      variant="outline"
+                      aria-expanded={open === `c${a.id}`}
+                      aria-controls={`class-course-${a.id}`}
+                      onClick={() => toggle(`c${a.id}`)}
+                    >
+                      {t(locale, "classroom.course.progress")}
+                    </Button>
+                  )}
+                </div>
+              )}
+              {open === `p${a.id}` && (
+                <div id={`class-problems-${a.id}`} className="mt-3">
+                  <AssignmentProgress slug={slug} assignmentId={a.id} />
+                </div>
+              )}
+              {open === `c${a.id}` && (
+                <div id={`class-course-${a.id}`} className="mt-3">
+                  <ClassCourseReport slug={slug} assignmentId={a.id} />
                 </div>
               )}
             </li>
@@ -157,44 +193,33 @@ export function ClassroomDetail({ slug }: { slug: string }) {
         </ul>
       </Card>
 
+      {owner && (
+        <Card title={t(locale, "classroom.problems.give")}>
+          <ProblemAssignForm slug={slug} onCreated={added} />
+        </Card>
+      )}
+
       {owner && coursesOpen && (
         <Card title={t(locale, "classroom.course.give")}>
-          <CourseAssignForm
-            slug={slug}
-            onCreated={(created) => setAssignments((rows) => [created, ...rows])}
-          />
+          <CourseAssignForm slug={slug} onCreated={added} />
         </Card>
       )}
 
       {room.members && (
-        <Card title={t(locale, "classroom.members")} bodyClassName="p-0">
-          <Table>
-            <THead>
-              <TH>{t(locale, "standings.user")}</TH>
-              <TH>{t(locale, "col.role")}</TH>
-              <TH align="right">Skills</TH>
-            </THead>
-            <TBody>
-              {room.members.map((m) => (
-                <TR key={m.username}>
-                  <TD>
-                    <Link
-                      href={`/users/${m.username}`}
-                      className="font-medium rw-link-hover"
-                    >
-                      {m.username}
-                    </Link>
-                  </TD>
-                  <TD className="rw-faint">{m.role}</TD>
-                  <TD align="right">{m.rating_skills}</TD>
-                </TR>
-              ))}
-              {room.members.length === 0 && (
-                <EmptyRow colSpan={3}>{t(locale, "common.empty")}</EmptyRow>
-              )}
-            </TBody>
-          </Table>
-        </Card>
+        <MembersCard slug={slug} members={room.members} owner={owner} onChange={loadRoom} />
+      )}
+
+      {!owner && room.my_role && (
+        <div className="space-y-2">
+          {error && (
+            <p role="alert" className="text-theme-sm rw-bad-ink">
+              {error}
+            </p>
+          )}
+          <Button variant="outline" onClick={(e) => void leave(e.currentTarget)}>
+            {t(locale, "classroom.leave")}
+          </Button>
+        </div>
       )}
     </div>
   );

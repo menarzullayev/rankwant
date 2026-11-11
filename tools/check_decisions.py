@@ -2729,25 +2729,41 @@ def function_harness_is_editable_by_staff() -> str | None:
     return None
 
 
+def _quota_wired(key: str, views_rel: str, counter_rel: str, count: str, page_rel: str) -> str | None:
+    """A studio surface counts `key` against the plan, server and page alike."""
+    create = read(views_rel).split("def perform_create(", 1)[-1].split("\n    def ", 1)[0]
+    if f'quotas.enforce(user, "{key}")' not in create:
+        return f"{views_rel}: yangisi reja kvotasidan (`{key}`) o'tmaydi"
+    counter = read(counter_rel)
+    if count not in counter or f'quotas.register("{key}",' not in counter:
+        return f"{counter_rel}: kvota hammasini emas, faqat qoralamani sanaydi"
+    page = read(page_rel)
+    if 'getWithSession<Quotas>("/me/quotas/")' not in page or f'quotaOf(quotas, "{key}")' not in page:
+        return f"{page_rel}: chegara serverdan (`/me/quotas/`) o'qilmaydi"
+    return None
+
+
 def studio_problems_panel() -> str | None:
     """2026-11-10 (HITL, audit Q-07.2): muallif qoralamasi `/studio/problems` da.
 
     `problems/mine/` API'si bor edi, sahifasi yo'q edi. Egasi tanlovi: har
     kirgan foydalanuvchi, 20 ta qoralama chegarasi, shart + testlar + ko'rik
-    so'rovi; xodim panelida «Ko'rik navbati». Qoida chegarani ikki tomonda
-    tenglab, muallifning test o'chirishi va bitta bildirishnomani qo'riqlaydi.
+    so'rovi; xodim panelida «Ko'rik navbati». Qoida chegarani, muallifning
+    test o'chirishi va bitta bildirishnomani qo'riqlaydi. 2026-11-11 dan
+    chegara — reja kvotasi (ADR-0061 § 2): nashr qilinganlar ham sanaladi va
+    sahifa raqamni serverdan (`/me/quotas/`) o'qiydi, o'z nusxasini emas.
     """
     access = read("apps/web/src/lib/access.ts")
     if not re.search(r'^\s+studio: "user",$', access, re.M):
         return "access.ts: `/studio` kirgan foydalanuvchi darajasida emas"
-    server = re.search(r"^MAX_DRAFTS = (\d+)$", read("apps/api/problems/author_views.py"), re.M)
-    client = re.search(
-        r"^export const STUDIO_DRAFT_LIMIT = (\d+);$",
-        read("apps/web/src/features/studio/api/problems.ts"),
-        re.M,
-    )
-    if not server or not client or server.group(1) != client.group(1):
-        return "qoralama chegarasi server (`MAX_DRAFTS`) va sahifada har xil"
+    if problem := _quota_wired(
+        "problems",
+        "apps/api/problems/author_views.py",
+        "apps/api/problems/quotas.py",
+        "return int(user.authored_problems.count())",
+        "apps/web/src/app/(site)/studio/problems/page.tsx",
+    ):
+        return problem
     views = read("apps/api/problems/author_views.py")
     if "if problem.review_requested_at is None:" not in views.split("def review(", 1)[-1]:
         return "author_views.py: ko'rik so'rovi har bosishda xodimga qayta yuboriladi"
@@ -2771,14 +2787,14 @@ def studio_contests_panel() -> str | None:
     musobaqa qoralama paytida; D8-F tayyorlik darvozasi bu yo'lda ham.
     """
     views = read("apps/api/contests/organizer_views.py")
-    server = re.search(r"^MAX_DRAFTS = (\d+)$", views, re.M)
-    client = re.search(
-        r"^export const STUDIO_CONTEST_LIMIT = (\d+);$",
-        read("apps/web/src/features/studio/api/contests.ts"),
-        re.M,
-    )
-    if not server or not client or server.group(1) != client.group(1):
-        return "musobaqa qoralamasi chegarasi server (`MAX_DRAFTS`) va sahifada har xil"
+    if problem := _quota_wired(
+        "contests",
+        "apps/api/contests/organizer_views.py",
+        "apps/api/contests/quotas.py",
+        "return int(user.organized_contests.count())",
+        "apps/web/src/app/(site)/studio/contests/page.tsx",
+    ):
+        return problem
     if "def participants(self, request: Request, slug: str | None = None)" not in views:
         return "organizer_views.py: `participants` slug'ni qabul qilmaydi — har chaqiruv 500"
     listing = views.split("class OrganizerContestProblemListSerializer", 1)[-1].split("\nclass ", 1)[0]
@@ -3014,6 +3030,54 @@ def problem_translations_fall_back() -> str | None:
         return "problems/author_views.py: muallif nashr qilingan masala tarjimasini o'zgartiradi"
     if '        secondary=("slug", "translated_titles"),\n' not in read("apps/api/problems/search.py"):
         return "problems/search.py: qidiruv tarjima nomlarini topmaydi"
+    return None
+
+
+def classroom_joins_and_quotas() -> str | None:
+    """2026-11-11 (HITL, 4 raund; ADR-0061 § 2–3): sinf va reja kvotasi.
+
+    ① Mavjud sinflar «darhol» qoladi, yangisi «tasdiq bilan»; so'rov alohida
+    qator — a'zo yaratilishi bepul kurslarga yozadi (ADR-0056 § 8), shuning
+    uchun u o'qituvchi qaroridan OLDIN yaratilmasligi kerak. ③ Bepul 3 sinf
+    × 40 o'quvchi, Judge 50 × 50; o'quvchilar chegarasi EGANING rejasidan.
+    Arxivlash o'chirmaydi. Yordamchi kodni ko'rmaydi.
+    """
+    quotas_py = read("apps/api/core/quotas.py")
+    free = quotas_py.split("_FREE = {", 1)[-1].split("}", 1)[0]
+    judge = quotas_py.split('"judge": {', 1)[-1].split("}", 1)[0]
+    for block, name, want in (
+        (free, "bepul", {"classrooms": 3, "class_members": 40, "problems": 20, "contests": 5}),
+        (judge, "Judge", {"classrooms": 50, "class_members": 50, "problems": 2000, "contests": 100}),
+    ):
+        for key, value in want.items():
+            if f'"{key}": {value},' not in block:
+                return f"core/quotas.py: {name} rejada `{key}` {value} emas (qaror 2026-11-11)"
+    migration = read("apps/api/classroom/migrations/0003_join_requests.py")
+    added = migration.split("migrations.AddField(", 1)[-1].split("migrations.AlterField(", 1)[0]
+    if 'default="instant"' not in added:
+        return "classroom 0003: mavjud sinflar «darhol» rejimida qolmaydi"
+    models_py = read("apps/api/classroom/models.py")
+    if "max_length=12, choices=JoinMode.choices, default=JoinMode.APPROVAL" not in models_py:
+        return "classroom/models.py: yangi sinf «tasdiq bilan» boshlanmaydi"
+    services = read("apps/api/classroom/services.py")
+    join = services.split("def join(", 1)[-1].split("\ndef ", 1)[0]
+    instant = join.split("if classroom.join_mode == Classroom.JoinMode.INSTANT:", 1)
+    if len(instant) != 2 or "ClassroomMember.objects.get_or_create" not in instant[1].split("return member", 1)[0]:
+        return "classroom/services.py: «tasdiq bilan» sinfga o'quvchi so'rovsiz kiradi"
+    if 'quotas.check(classroom.owner, "class_members", students(classroom))' not in services:
+        return "classroom/services.py: o'quvchilar chegarasi egasining rejasidan olinmaydi"
+    views = read("apps/api/classroom/views.py")
+    destroy = views.split("def perform_destroy(", 1)[-1].split("\n    def ", 1)[0]
+    if "instance.is_active = False" not in destroy or ".delete()" in destroy:
+        return "classroom/views.py: sinf arxivlanmaydi, o'chiriladi"
+    serializers_py = read("apps/api/classroom/serializers.py")
+    manager = serializers_py.split("class ClassroomManagerSerializer", 1)[-1].split("\nclass ", 1)[0]
+    if "join_code" in manager:
+        return "classroom/serializers.py: yordamchi qo'shilish kodini ko'radi"
+    codes = read("tools/notification-codes.json")
+    for code in ("classroom_join_requested", "classroom_join_approved", "classroom_join_rejected"):
+        if f'"{code}"' not in codes:
+            return f"notification-codes.json: `{code}` yo'q"
     return None
 
 
@@ -5414,6 +5478,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kurs videosi: shifrlangan HLS, kalit eshik ortida, o'z kursi", course_video_is_encrypted_and_own),
     ("kurs sertifikati, bir martalik mukofot, tasdiqlangan Qvant narxi", course_rewards_and_certificate),
     ("sinfga kurs: faqat bepul ochiladi, hisobot egasiga, kutilayotgan ish", course_given_to_a_class),
+    ("sinf: tasdiq bilan qo'shilish, reja kvotasi, arxivlash", classroom_joins_and_quotas),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),
     ("masala tarjimasi: maydonma-maydon, yopiq tahlil yopiq, nashrni xodim", problem_translations_fall_back),
     ("yangi alifbo: qidiruvda ikkalasi bir, ikki o'giruvchi bitta holatlardan", alphabets_fold_as_one),

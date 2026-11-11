@@ -8,3 +8,5 @@
 export { ClassroomDetail } from "./components/ClassroomDetail";
 
 export { ClassroomHub } from "./components/ClassroomHub";
+
+export { ClassroomInvite } from "./components/ClassroomInvite";

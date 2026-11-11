@@ -1288,6 +1288,223 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/classrooms/{slug}/leave/:
+    post:
+      operationId: classrooms_leave_create
+      description: PRD P2-2 — o'qituvchi sinfi.
+      summary: Sinfdan chiqish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/classrooms/{slug}/members/{username}/:
+    patch:
+      operationId: classrooms_members_partial_update
+      description: The owner makes a member an assistant (or a student again) or takes
+        them out.
+      summary: A'zoning rolini o'zgartirish yoki chiqarish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+          pattern: ^[^/]+$
+        required: true
+      tags:
+      - classrooms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMemberRole'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMemberRole'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMemberRole'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+        '204':
+          description: No response body
+    delete:
+      operationId: classrooms_members_destroy
+      description: The owner makes a member an assistant (or a student again) or takes
+        them out.
+      summary: A'zoning rolini o'zgartirish yoki chiqarish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+          pattern: ^[^/]+$
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+        '204':
+          description: No response body
+  /api/v1/classrooms/{slug}/refresh-code/:
+    post:
+      operationId: classrooms_refresh_code_create
+      description: PRD P2-2 — o'qituvchi sinfi.
+      summary: Qo'shilish kodini yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/classrooms/{slug}/requests/:
+    get:
+      operationId: classrooms_requests_list
+      description: PRD P2-2 — o'qituvchi sinfi.
+      summary: Qo'shilish so'rovlari navbati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JoinRequest'
+          description: ''
+  /api/v1/classrooms/{slug}/requests/{id}/approve/:
+    post:
+      operationId: classrooms_requests_approve_create
+      description: PRD P2-2 — o'qituvchi sinfi.
+      summary: So'rovni qabul qilish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinRequest'
+          description: ''
+  /api/v1/classrooms/{slug}/requests/{id}/reject/:
+    post:
+      operationId: classrooms_requests_reject_create
+      description: PRD P2-2 — o'qituvchi sinfi.
+      summary: So'rovni rad etish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinRequest'
+          description: ''
+  /api/v1/classrooms/invite/{code}/:
+    get:
+      operationId: classrooms_invite_retrieve
+      description: 'An invite link''s page: whose classroom it is before joining.'
+      summary: 'Taklif havolasi: sinf haqida qisqa ma''lumot'
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9_-]+$
+        required: true
+      tags:
+      - classrooms
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invite'
+          description: ''
   /api/v1/classrooms/join/:
     post:
       operationId: classrooms_join_create
@@ -1315,7 +1532,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Classroom'
+                $ref: '#/components/schemas/JoinResult'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinResult'
           description: ''
   /api/v1/client-logs/:
     post:
@@ -3681,6 +3904,28 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/me/quotas/:
+    get:
+      operationId: me_quotas_retrieve
+      description: |-
+        How much the signed-in user may own on their plan, and how much they do.
+
+        Each kind counts everything owned, published or not (ADR-0061 § 2); a
+        `null` limit means none (staff). Pages read the limit from here instead
+        of keeping their own copy of the number.
+      summary: 'Reja kvotasi: chegara va band qilingani'
+      tags:
+      - me
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quotas'
+          description: ''
   /api/v1/me/restore/:
     post:
       operationId: me_restore_create
@@ -14876,7 +15121,7 @@ components:
           type: array
           items:
             type: string
-            pattern: ^[-a-zA-Z0-9_]+$
+            maxLength: 100
         course:
           oneOf:
           - type: string
@@ -15503,9 +15748,15 @@ components:
           type: string
           format: date-time
           readOnly: true
+        join_mode:
+          $ref: '#/components/schemas/JoinModeEnum'
+        my_role:
+          type: string
+          readOnly: true
       required:
       - created_at
       - member_count
+      - my_role
       - name
       - owner
       - slug
@@ -15521,6 +15772,8 @@ components:
           maxLength: 150
         description:
           type: string
+        join_mode:
+          $ref: '#/components/schemas/JoinModeEnum'
       required:
       - name
       - slug
@@ -17061,6 +17314,32 @@ components:
       - id
       - item
       - purchased_at
+    Invite:
+      type: object
+      description: |-
+        What an invite link shows before joining.
+
+        The slug is no secret here: whoever holds the code may join anyway.
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        owner:
+          type: string
+        join_mode:
+          type: string
+        member_count:
+          type: integer
+        state:
+          type: string
+      required:
+      - join_mode
+      - member_count
+      - name
+      - owner
+      - slug
+      - state
     Join:
       type: object
       properties:
@@ -17069,6 +17348,89 @@ components:
           maxLength: 12
       required:
       - join_code
+    JoinModeEnum:
+      enum:
+      - instant
+      - approval
+      type: string
+      description: |-
+        * `instant` - Darhol
+        * `approval` - Tasdiq bilan
+    JoinRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        rating_skills:
+          type: integer
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/JoinRequestStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - rating_skills
+      - username
+    JoinRequestStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Kutilmoqda
+        * `approved` - Qabul qilindi
+        * `rejected` - Rad etildi
+    JoinResult:
+      type: object
+      description: |-
+        The classroom, as before, plus `status`: `member` — in it now (201);
+        `pending` — waiting for the teacher (202). `/api/v1/` only grows.
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: string
+        owner:
+          type: string
+          readOnly: true
+        member_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        join_mode:
+          $ref: '#/components/schemas/JoinModeEnum'
+        my_role:
+          type: string
+          readOnly: true
+        status:
+          type: string
+          readOnly: true
+      required:
+      - created_at
+      - member_count
+      - my_role
+      - name
+      - owner
+      - slug
+      - status
     Language:
       type: object
       properties:
@@ -17563,6 +17925,14 @@ components:
       - streak_freeze_until
       - username
       - username_change
+    MemberRoleRoleEnum:
+      enum:
+      - student
+      - assistant
+      type: string
+      description: |-
+        * `student` - O'quvchi
+        * `assistant` - Yordamchi
     MineProblem:
       type: object
       description: |-
@@ -19678,6 +20048,11 @@ components:
           type: string
           format: date-time
           readOnly: true
+        join_mode:
+          $ref: '#/components/schemas/JoinModeEnum'
+        my_role:
+          type: string
+          readOnly: true
     PatchedMe:
       type: object
       properties:
@@ -19867,6 +20242,11 @@ components:
           type: string
           format: date-time
           readOnly: true
+    PatchedMemberRole:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/MemberRoleRoleEnum'
     PatchedMineProblem:
       type: object
       description: |-
@@ -22268,6 +22648,32 @@ components:
             type: integer
       required:
       - answers
+    QuotaRow:
+      type: object
+      properties:
+        key:
+          type: string
+        limit:
+          type: integer
+          nullable: true
+        used:
+          type: integer
+      required:
+      - key
+      - limit
+      - used
+    Quotas:
+      type: object
+      properties:
+        plan:
+          type: string
+        quotas:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuotaRow'
+      required:
+      - plan
+      - quotas
     QvantTop:
       type: object
       description: |-

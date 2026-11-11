@@ -69,8 +69,10 @@ Bundan tashqari hozirgi kod ikki joyda zaif:
   - kodni yangilash va taklif havolasi;
   - yordamchi tayinlash;
   - arxivlash: o'chirish o'rniga `is_active=False`.
-- **Yordamchi o'qituvchi** so'rovlarni qabul qiladi va hisobotlarni ko'radi. Sinf sozlamalarini
-  o'zgartira olmaydi va sinfni arxivlay olmaydi.
+- **Yordamchi o'qituvchi** so'rovlarni qabul qiladi va a'zolar ro'yxatini ko'radi. Sinf
+  sozlamalarini o'zgartira olmaydi va sinfni arxivlay olmaydi. Hisobotlar sinf egasida qoladi
+  ([2026-11-10 qarori](../decisions/2026-11-10-courses-classroom.md): kurs hisoboti faqat egasiga;
+  yordamchiga ochish egasining alohida tasdig'ini talab qiladi).
 - **A'zolar chegarasi** egasining rejasidan olinadi. Qattiq yozilgan `MAX_MEMBERS = 200` o'rniga
   shu chegara ishlaydi.
 

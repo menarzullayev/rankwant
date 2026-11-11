@@ -99,6 +99,7 @@ urlpatterns = [
     ),
     path("me/", views.MeView.as_view(), name="me"),
     path("me/nav-badges/", views.NavBadgesView.as_view(), name="me-nav-badges"),
+    path("me/quotas/", views.QuotasView.as_view(), name="me-quotas"),
     path("me/nav-badges/seen/", views.NavBadgesSeenView.as_view(), name="me-nav-badges-seen"),
     path("me/export/", views.MeExportView.as_view(), name="me-export"),
     path("me/restore/", views.MeRestoreView.as_view(), name="me-restore"),

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3001 strings.**
+**3056 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -854,8 +854,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.too_many` | Juda ko'p — avval borlarini yakunlang | Хеле зиёд — аввал мавҷудаҳоро анҷом диҳед |  |
 | `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Оғоз бояд ҳадди ақал пас аз 5 дақиқа бошад |  |
 | `error.wrong_question` | Bu savol hozir ochiq emas | Ин савол ҳоло кушода нест |  |
-| `error.draft_limit` | Qoralamalar chegarasiga yetdingiz — avval birini yakunlang yoki o'chiring | Ба ҳадди сиёҳнависҳо расидед — аввал якеро анҷом диҳед ё нест кунед |  |
-| `error.contest_draft_limit` | Qoralama musobaqalar chegarasiga yetdingiz — avval birini o'chiring | Ба ҳадди мусобиқаҳои сиёҳнавис расидед — аввал якеро нест кунед |  |
 | `error.contest_locked` | Nashr qilingan musobaqaning masalalarini xodim boshqaradi | Масъалаҳои мусобиқаи нашршударо кормандон идора мекунанд |  |
 | `error.review_not_ready` | Qoralama ko'rikka tayyor emas | Сиёҳнавис барои тафтиш омода нест |  |
 | `error.already_public` | Masala allaqachon nashr qilingan | Масъала аллакай нашр шудааст |  |
@@ -1932,8 +1930,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.problems.new` | Yangi masala | Масъалаи нав |  |
 | `studio.problems.empty` | Hali masalangiz yo'q | Шумо ҳоло масъала надоред |  |
 | `studio.problems.emptyHint` | Shartni yozing, testlarni qo'shing va ko'rikka yuboring. | Шартро нависед, тестҳоро илова кунед ва ба тафтиш фиристед. |  |
-| `studio.problems.count` | {count} / {limit} qoralama | Сиёҳнависҳо: {count} / {limit} |  |
-| `studio.problems.full` | Qoralamalar chegarasi: {count} / {limit}. Yangisini boshlash uchun birini yakunlang yoki o'chiring. | Ба ҳадди сиёҳнависҳо расидед: {count} / {limit}. Барои оғози нав якеро анҷом диҳед ё нест кунед. |  |
+| `studio.problems.count` | {count} / {limit} masala — rejangiz chegarasi | Дар тарифи шумо {count} / {limit} масъала |  |
+| `studio.problems.full` | Rejangizdagi masalalar chegarasi: {count} / {limit}. Nashr qilinganlari ham sanaladi. | Ҳадди масъалаҳои тариф расид: {count} / {limit}. Нашршудаҳо ҳам ҳисоб мешаванд. |  |
 | `studio.col.problem` | Masala | Масъала |  |
 | `studio.col.difficulty` | Qiyinlik | Душворӣ |  |
 | `studio.col.tests` | Testlar | Тестҳо |  |
@@ -2009,7 +2007,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.contests.new` | Yangi musobaqa | Мусобиқаи нав |  |
 | `studio.contests.empty` | Hali musobaqangiz yo'q | Шумо ҳоло мусобиқа надоред |  |
 | `studio.contests.emptyHint` | Vaqtini belgilang, o'z qoralama masalalaringizni qo'shing — nashrni xodim hal qiladi. | Вақтро муайян кунед ва масъалаҳои сиёҳнависи худро илова кунед — дар бораи нашр корманд қарор медиҳад. |  |
-| `studio.contests.full` | Qoralama musobaqalar chegarasi: {count} / {limit}. Yangisi uchun birini o'chiring yoki nashrga tayyorlang. | Ба ҳадди мусобиқаҳои сиёҳнавис расидед: {count} / {limit}. Барои нав якеро нест кунед ё ба нашр омода созед. |  |
+| `studio.contests.full` | Rejangizdagi musobaqalar chegarasi: {count} / {limit}. Nashr qilinganlari ham sanaladi. | Ҳадди мусобиқаҳои тариф расид: {count} / {limit}. Нашршудаҳо ҳам ҳисоб мешаванд. |  |
+| `studio.contests.count` | {count} / {limit} musobaqa — rejangiz chegarasi | Дар тарифи шумо {count} / {limit} мусобиқа |  |
 | `studio.col.contest` | Musobaqa | Мусобиқа |  |
 | `studio.col.start` | Boshlanish | Оғоз |  |
 | `studio.col.problems` | Masalalar | Масъалаҳо |  |
@@ -2821,6 +2820,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.course_published.body` | «{course}» endi kurslar katalogida. | «{course}» акнун дар феҳристи курсҳо. |  |
 | `notif.msg.course_returned.title` | Kurs qaytarildi — {course} | Курс баргардонида шуд — {course} |  |
 | `notif.msg.course_returned.body` | Xodim izohi: {reason} | Шарҳи корманд: {reason} |  |
+| `notif.msg.classroom_join_requested.title` | Sinfga qo'shilish so'rovi — {classroom} | Дархости ҳамроҳшавӣ — {classroom} |  |
+| `notif.msg.classroom_join_requested.body` | @{user} «{classroom}» sinfiga qo'shilmoqchi. | @{user} мехоҳад ба синфи «{classroom}» ҳамроҳ шавад. |  |
+| `notif.msg.classroom_join_approved.title` | Sinfga qabul qilindingiz — {classroom} | Шумо ба синф қабул шудед — {classroom} |  |
+| `notif.msg.classroom_join_approved.body` | O'qituvchi so'rovingizni qabul qildi: sinf topshiriqlari endi sizga ochiq. | Муаллим дархости шуморо қабул кард: супоришҳои синф акнун барои шумо кушодаанд. |  |
+| `notif.msg.classroom_join_rejected.title` | So'rov rad etildi — {classroom} | Дархост рад шуд — {classroom} |  |
+| `notif.msg.classroom_join_rejected.body` | O'qituvchi «{classroom}» sinfiga qo'shilish so'rovingizni rad etdi. | Муаллим дархости шуморо барои ҳамроҳшавӣ ба «{classroom}» рад кард. |  |
 | `admin.section.courses` | Kurslar | Курсҳо |  |
 | `admin.courses.intro` | Mualliflar ko'rikka yuborgan kurslar. Narx qo'ying, nashr qiling yoki sabab bilan qaytaring. | Курсҳое, ки муаллифон ба санҷиш фиристодаанд. Нарх гузоред, нашр кунед ё бо сабаб баргардонед. |  |
 | `admin.courses.queue` | Ko'rik navbati | Навбати санҷиш |  |
@@ -2967,7 +2972,57 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `classroom.course.optional` | ixtiyoriy | ихтиёрӣ |  |
 | `classroom.course.lessonDone` | bajarilgan | иҷрошуда |  |
 | `classroom.course.lessonOpen` | bajarilmagan | иҷронашуда |  |
+| `classroom.joinMode` | Qo'shilish tartibi | Тартиби ҳамроҳшавӣ |  |
+| `classroom.joinMode.approval` | Tasdiq bilan | Бо тасдиқ |  |
+| `classroom.joinMode.instant` | Darhol | Фавран |  |
+| `classroom.joinMode.hint` | «Tasdiq bilan»: kod yoki havola bilan kelgan o'quvchi siz qabul qilgandan keyin sinfga kiradi. | «Бо тасдиқ»: хонандае, ки бо рамз ё пайванд меояд, пас аз қабули шумо ба синф медарояд. |  |
+| `classroom.pending` | So'rov yuborildi. O'qituvchi tasdiqlagach sinf ro'yxatingizda paydo bo'ladi. | Дархост фиристода шуд. Пас аз тасдиқи муаллим синф дар рӯйхати шумо пайдо мешавад. |  |
+| `classroom.joined` | Sinfga qo'shildingiz. | Шумо ба синф ҳамроҳ шудед. |  |
+| `classroom.requests` | Qo'shilish so'rovlari | Дархостҳои ҳамроҳшавӣ |  |
+| `classroom.requests.none` | Kutayotgan so'rov yo'q. | Дархости интизор нест. |  |
+| `classroom.approve` | Qabul qilish | Қабул кардан |  |
+| `classroom.reject` | Rad etish | Рад кардан |  |
+| `classroom.settings` | Sinf sozlamalari | Танзимоти синф |  |
+| `classroom.inviteLink` | Taklif havolasi | Пайванди даъват |  |
+| `classroom.refreshCode` | Kodni yangilash | Рамзи нав |  |
+| `classroom.refreshConfirm` | Eski kod va taklif havolasi ishlamay qoladi. Yangilansinmi? | Рамз ва пайванди кӯҳна кор намекунанд. Нав карда шавад? |  |
+| `classroom.archive` | Sinfni arxivlash | Бойгонӣ кардани синф |  |
+| `classroom.archiveConfirm` | Sinf ro'yxatlardan yo'qoladi, vazifalar va natijalar saqlanadi. Arxivlansinmi? | Синф аз рӯйхатҳо нест мешавад, супоришҳо ва натиҷаҳо нигоҳ дошта мешаванд. Бойгонӣ шавад? |  |
+| `classroom.leave` | Sinfdan chiqish | Баромадан аз синф |  |
+| `classroom.leaveConfirm` | Sinfdan chiqasizmi? Qaytish uchun yana kod kerak bo'ladi. | Аз синф мебароед? Барои баргаштан боз рамз лозим мешавад. |  |
+| `classroom.remove` | Chiqarish | Хориҷ кардан |  |
+| `classroom.removeConfirm` | @{user} sinfdan chiqarilsinmi? | @{user} аз синф хориҷ карда шавад? |  |
+| `classroom.makeAssistant` | Yordamchi qilish | Ёрдамчӣ кардан |  |
+| `classroom.makeStudent` | O'quvchi qilish | Хонанда кардан |  |
+| `classroom.role.owner` | O'qituvchi | Муаллим |  |
+| `classroom.role.assistant` | Yordamchi | Ёрдамчӣ |  |
+| `classroom.role.student` | O'quvchi | Хонанда |  |
+| `classroom.quota` | {count} / {limit} sinf — rejangiz chegarasi | Дар тарифи шумо {count} / {limit} синф |  |
+| `classroom.problems.give` | Masalalar berish | Додани масъалаҳо |  |
+| `classroom.problems.title` | Topshiriq nomi | Номи супориш |  |
+| `classroom.problems.list` | Masalalar | Масъалаҳо |  |
+| `classroom.problems.hint` | Manzil yoki raqam, vergul bilan: a-plus-b, #123 | Суроға ё рақам, бо вергул: a-plus-b, #123 |  |
+| `classroom.problems.missing` | Topilmadi yoki ochiq emas: {items} | Ёфт нашуд ё кушода нест: {items} |  |
+| `classroom.problems.submit` | Topshiriq berish | Додани супориш |  |
+| `classroom.progress` | Kim nechta yechdi | Кӣ чандтоашро ҳал кард |  |
+| `classroom.invite.title` | Sinfga taklif | Даъват ба синф |  |
+| `classroom.invite.by` | O'qituvchi: @{owner} | Муаллим: @{owner} |  |
+| `classroom.invite.join` | Qo'shilish | Ҳамроҳ шудан |  |
+| `classroom.invite.request` | So'rov yuborish | Фиристодани дархост |  |
+| `classroom.invite.open` | Sinfni ochish | Кушодани синф |  |
+| `classroom.invite.invalid` | Havola eskirgan yoki sinf arxivlangan. | Мӯҳлати пайванд гузаштааст ё синф бойгонӣ шудааст. |  |
+| `classroom.invite.approvalNote` | O'qituvchi so'rovingizni tasdiqlagach sinfga kirasiz. | Пас аз тасдиқи дархост аз ҷониби муаллим ба синф медароед. |  |
+| `classroom.invite.pending` | So'rovingiz o'qituvchida — javobni bildirishnomada ko'rasiz. | Дархости шумо назди муаллим аст — ҷавоб ҳамчун огоҳинома меояд. |  |
+| `classroom.students` | {count} o'quvchi | {count} хонанда |  |
 | `error.classroom_course_unavailable` | Bu kurs topilmadi yoki hali nashr qilinmagan. | Ин курс ёфт нашуд ё ҳоло нашр нашудааст. |  |
+| `error.quota_exceeded` | Rejangiz chegarasiga yetdingiz | Шумо ба ҳадди тарифи худ расидед |  |
+| `error.classroom_full` | Sinf to'lgan — o'quvchilar chegarasiga yetildi | Синф пур аст — ҳадди хонандагон расид |  |
+| `error.owner_leaves` | Egasi sinfdan chiqa olmaydi — sinfni arxivlang | Соҳиб аз синф баромада наметавонад — синфро бойгонӣ кунед |  |
+| `error.not_a_member` | Bu foydalanuvchi sinfda emas | Ин корбар дар синф нест |  |
+| `error.request_not_found` | So'rov topilmadi | Дархост ёфт нашуд |  |
+| `error.request_answered` | Bu so'rovga allaqachon javob berilgan | Ба ин дархост аллакай ҷавоб дода шудааст |  |
+| `error.bad_role` | Noma'lum rol | Нақши номаълум |  |
+| `error.code_failed` | Yangi kod yaratilmadi, qayta urinib ko'ring | Рамзи нав сохта нашуд, боз кӯшиш кунед |  |
 | `billing.plan.plus` | Plus | Plus |  |
 | `billing.plan.pro` | Pro | Pro |  |
 | `billing.plan.judge` | Judge | Judge |  |

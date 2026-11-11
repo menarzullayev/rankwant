@@ -9,12 +9,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { fill, t, type Locale, type MessageKey } from "@/i18n/messages";
 
-import {
-  STUDIO_DRAFT_LIMIT,
-  draftStatus,
-  type DraftStatus,
-  type MineProblem,
-} from "../api/problems";
+import { quotaFull, type Quota } from "@/lib/quotas";
+
+import { draftStatus, type DraftStatus, type MineProblem } from "../api/problems";
 
 const STATUS: Record<DraftStatus, { key: MessageKey; color: BadgeColor }> = {
   draft: { key: "studio.status.draft", color: "neutral" },
@@ -28,10 +25,18 @@ export function StatusBadge({ problem, locale }: { problem: MineProblem; locale:
 }
 
 /** The author's problems. Rendered on the server: it reads nothing but the
- *  rows, and every action lives on the problem's own page. */
-export function ProblemList({ rows, locale }: { rows: MineProblem[]; locale: Locale }) {
-  const drafts = rows.filter((row) => !row.is_public).length;
-  const full = drafts >= STUDIO_DRAFT_LIMIT;
+ *  rows and the plan's quota, and every action lives on the problem's own
+ *  page. The quota counts published problems too (ADR-0061 § 2). */
+export function ProblemList({
+  rows,
+  quota,
+  locale,
+}: {
+  rows: MineProblem[];
+  quota: Quota;
+  locale: Locale;
+}) {
+  const full = quotaFull(quota);
   const create = (
     <ButtonLink href={"/studio/problems/new" as Route}>{t(locale, "studio.problems.new")}</ButtonLink>
   );
@@ -92,12 +97,14 @@ export function ProblemList({ rows, locale }: { rows: MineProblem[]; locale: Loc
               ))}
             </TBody>
           </Table>
-          <p className="text-theme-xs rw-faint">
-            {fill(t(locale, full ? "studio.problems.full" : "studio.problems.count"), {
-              count: drafts,
-              limit: STUDIO_DRAFT_LIMIT,
-            })}
-          </p>
+          {quota.limit !== null && (
+            <p className="text-theme-xs rw-faint">
+              {fill(t(locale, full ? "studio.problems.full" : "studio.problems.count"), {
+                count: quota.used,
+                limit: quota.limit,
+              })}
+            </p>
+          )}
         </>
       )}
     </div>

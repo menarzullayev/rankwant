@@ -43,6 +43,7 @@ from core import (
     login_guard,
     nav_badges,
     oauth,
+    quotas,
     recovery,
     sessions,
     usernames,
@@ -77,6 +78,7 @@ from core.serializers import (
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
     PresenceSerializer,
+    QuotasSerializer,
     RegisterSerializer,
     SearchResponseSerializer,
     SocialLinkSerializer,
@@ -337,6 +339,24 @@ class NavBadgesView(APIView):
     @extend_schema(responses={200: NavBadgesSerializer})
     def get(self, request: Request) -> Response:
         return Response(_nav_badges_payload(request.user))  # type: ignore[arg-type]
+
+
+@extend_schema(summary="Reja kvotasi: chegara va band qilingani")
+class QuotasView(APIView):
+    """How much the signed-in user may own on their plan, and how much they do.
+
+    Each kind counts everything owned, published or not (ADR-0061 § 2); a
+    `null` limit means none (staff). Pages read the limit from here instead
+    of keeping their own copy of the number.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={200: QuotasSerializer})
+    def get(self, request: Request) -> Response:
+        return Response(
+            {"plan": quotas.plan_of(request.user), "quotas": quotas.usage(request.user)}
+        )
 
 
 @extend_schema(summary="Yon menyu bo'limi ko'rildi")
