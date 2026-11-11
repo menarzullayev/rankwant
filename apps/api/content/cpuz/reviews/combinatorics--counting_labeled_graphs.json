@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Display formulas now equal the original; the remaining difference is two inline formulas (the range 1,...,n-1 and s-1) in rephrased sentences, which state the same mathematics."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T21:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Turned the display formulas that the translation had added (the edge count binomial and D[i][j], and the split term k binom(n,k) C_k G_{n-k}) back into inline formulas, and removed an added sentence about including or excluding each edge.",
+      "content_sha256": "f39134a7e6ce800cd7f793aa7c80b117c7f1497c33cf44f09cc99fdd0f5c09f1"
+    },
+    {
+      "at": "2026-11-11T21:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "The Uzbek is correct and natural; no changes needed.",
+      "content_sha256": "f39134a7e6ce800cd7f793aa7c80b117c7f1497c33cf44f09cc99fdd0f5c09f1"
+    },
+    {
+      "at": "2026-11-11T21:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Display formula count now equals the original.",
+      "content_sha256": "f39134a7e6ce800cd7f793aa7c80b117c7f1497c33cf44f09cc99fdd0f5c09f1"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T11:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "No omissions or mistranslations found against the English original; code, formulas, numbers and conditions match.",
+      "content_sha256": "5726515267e4c12ddb73eec35ea2586260f509fc2c64441a1ed1dc6c03504eb1"
+    },
+    {
+      "at": "2026-11-12T11:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the English word inside the mixed-radix formula (\\text{ with } became \\text{ bunda }) and added missing blank lines around headings and display formulas so they render.",
+      "content_sha256": "5726515267e4c12ddb73eec35ea2586260f509fc2c64441a1ed1dc6c03504eb1"
+    }
+  ]
+}

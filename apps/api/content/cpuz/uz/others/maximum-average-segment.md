@@ -75,13 +75,13 @@ Endi boshqa algoritmni ko‘ramiz. Uni tushunish biroz qiyinroq, ammo u yuqorida
 
 Massiv bo‘ylab yurib, joriy qisman yig‘indini $s$ o‘zgaruvchida to‘playmiz. Agar biror paytda $s$ manfiy bo‘lsa, $s=0$ deb olamiz. Algoritm davomida $s$ olgan barcha qiymatlarning maksimumi masala javobi bo‘ladi.
 
-**Isbot.** $s$ yig‘indi birinchi marta manfiy bo‘lgan indeksni ko‘ramiz. Nol qisman yig‘indidan boshlanib, oxirida manfiy qisman yig‘indiga keldik. Demak, massivning shu prefiksi va uning istalgan suffiksi manfiy yig‘indiga ega. Shu sababli bu ostkesma o‘zidan boshlanadigan hech bir kattaroq kesmaning yig‘indisini yaxshilamaydi va uni butunlay tashlab yuborish mumkin.
+**Isbot.** $s$ yig‘indi birinchi marta manfiy bo‘lgan indeksni ko‘ramiz. Nol qisman yig‘indidan boshlanib, oxirida manfiy qisman yig‘indiga keldik. Demak, massivning shu prefiksi va uning istalgan suffiksi manfiy yig‘indiga ega. Shu sababli bu ostkesma o‘zi prefiksi bo‘lgan hech bir kattaroq ostkesmaning yig‘indisiga ijobiy hissa qo‘shmaydi va uni butunlay tashlab yuborish mumkin.
 
-Biroq bu hali yetarli isbot emas: algoritm javobni faqat $s<0$ bo‘lgan o‘rinlardan keyin boshlanuvchi kesmalar orasidan izlaydi.
+Biroq bu hali yetarli isbot emas: algoritm javobni faqat $s<0$ bo‘lgan o‘rinlardan keyin darhol boshlanuvchi kesmalar orasidan izlaydi.
 
-Ixtiyoriy $[l,r]$ kesmani olaylik va $l$ “muhim” o‘rin bo‘lmasin, ya’ni $l > p+1$, bu yerda $p$ — $s<0$ bo‘lgan oxirgi o‘rin. Oxirgi muhim o‘rin $l-1$ dan qat’iy oldinda bo‘lgani sababli $a[p+1 \ldots l-1]$ yig‘indi nomanfiy. Demak, $l$ ni $p+1$ o‘ringa surish javobni oshiradi yoki hech bo‘lmasa o‘zgartirmaydi.
+Ixtiyoriy $[l,r]$ kesmani olaylik va $l$ “kritik” o‘rin bo‘lmasin, ya’ni $l > p+1$, bu yerda $p$ — $s<0$ bo‘lgan oxirgi o‘rin. Oxirgi kritik o‘rin $l-1$ dan qat’iy oldinda bo‘lgani sababli $a[p+1 \ldots l-1]$ yig‘indi nomanfiy. Demak, $l$ ni $p+1$ o‘ringa surish javobni oshiradi yoki hech bo‘lmasa o‘zgartirmaydi.
 
-Shunday qilib, javobni faqat $s<0$ bo‘lgan o‘rinlardan keyin boshlanuvchi kesmalar orasidan qidirish yetarli. Bu algoritmning to‘g‘riligini isbotlaydi.
+Shunday qilib, javobni faqat $s<0$ bo‘lgan o‘rinlardan keyin darhol boshlanuvchi kesmalar orasidan qidirish yetarli. Bu algoritmning to‘g‘riligini isbotlaydi.
 
 ### Amalga oshirish
 
@@ -128,7 +128,7 @@ Bu masala tabiiy ravishda yuqori o‘lchamlarga umumlashadi. Masalan, ikki o‘l
 
 Bir o‘lchamli yechim yordamida ikki o‘lchamli masala uchun $O(n^3)$ yechim olish oson. Barcha $l_1$ va $r_1$ qiymatlarini ko‘rib chiqamiz hamda har bir satrda $l_1$ dan $r_1$ gacha yig‘indini hisoblaymiz. Natijada $l_2$ va $r_2$ indekslarini topishga doir bir o‘lchamli masala hosil bo‘ladi va uni chiziqli vaqtda yechish mumkin.
 
-Bu masala uchun **tezroq** algoritmlar ma’lum, ammo ular $O(n^3)$ dan uncha tez emas va juda murakkab. Yashirin koeffitsiyentlari sababli ko‘p hollarda oddiy algoritmdan ham yomon ishlaydi. Hozir ma’lum eng yaxshi algoritmning vaqti $O\left(n^3 \frac{\log^3 \log n}{\log^2 n}\right)$ (T. Chan, 2007, “More algorithms for all-pairs shortest paths in weighted graphs”).
+Bu masala uchun **tezroq** algoritmlar ma’lum, ammo ular $O(n^3)$ dan uncha tez emas va juda murakkab. Ulardan ko‘plari shunchalik murakkabki, yashirin koeffitsiyentlari sababli barcha o‘rinli cheklovlarda oddiy algoritmdan ham yomon ishlaydi. Hozir ma’lum eng yaxshi algoritmning vaqti $O\left(n^3 \frac{\log^3 \log n}{\log^2 n}\right)$ (T. Chan, 2007, “More algorithms for all-pairs shortest paths in weighted graphs”).
 
 Chan algoritmi va bu sohadagi ko‘plab boshqa natijalar aslida **tez matritsa ko‘paytirish**ni tasvirlaydi; bunda oddiy qo‘shish o‘rniga minimum, oddiy ko‘paytirish o‘rniga qo‘shish ishlatiladi. Eng katta yig‘indili ostmatritsa masalasini barcha tugun juftlari orasidagi eng qisqa yo‘llarga, uni esa shunday matritsa ko‘paytirishga keltirish mumkin.
 

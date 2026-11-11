@@ -85,7 +85,7 @@ We will now consistently disassemble every operation that we need to learn to im
   
     In general the total cost can be written in the form of a recurrence:
     
-    \[ T(n) = \max_{k = 1 \ldots n-1} \left\{ T(k) + T(n - k) + O(\min(k, n - k))\right\} \]
+    $$ T(n) = \max_{k = 1 \ldots n-1} \left\{ T(k) + T(n - k) + O(\min(k, n - k))\right\} $$
     
     $T(n)$ is the number of operations necessary to obtain a tree with $n$ vertices by means of re-rooting and unifying trees.
     A tree of size $n$ can be created by combining two smaller trees of size $k$ and $n - k$.

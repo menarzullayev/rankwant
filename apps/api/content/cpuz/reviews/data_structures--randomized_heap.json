@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Only the row separators of the aligned block differ: the original source has '\\\\' (a mkdocs escaping artefact) and the translation has the single '\\' that KaTeX needs; same equations."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked the operations, the merge algorithm, the expectation proof and the tail-probability bound against the original; all formulas and code intact.",
+      "content_sha256": "21a2abecffeab6971f6ff0a034d2f8ee7f2e9336ae9fa98ea4a1357aadf14474"
+    },
+    {
+      "at": "2026-11-12T10:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'heap' by the glossary term 'uyum' (min-heap as 'minimum uyum') and fixed the awkward sentence about checking whether a heap is empty.",
+      "content_sha256": "21a2abecffeab6971f6ff0a034d2f8ee7f2e9336ae9fa98ea4a1357aadf14474"
+    },
+    {
+      "at": "2026-11-12T10:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Aligned-block row separators use '\\' instead of the original's escaped '\\\\'; the equations are identical.",
+      "content_sha256": "21a2abecffeab6971f6ff0a034d2f8ee7f2e9336ae9fa98ea4a1357aadf14474"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Code and display formulas equal the original; the only difference is the number 1 written as inline math in a rephrased sentence."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T21:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Corrected the negative-cycle criterion: a shortest path between i and j fails to exist if and only if some t with d[t][t] < 0 is reachable from i and reaches j; the translation garbled this condition.",
+      "content_sha256": "32d0b7ebd417fa60c62519d05ecc6674be89d4173a7f4bddb038dd16bff8aa19"
+    },
+    {
+      "at": "2026-11-11T21:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary term 'vaznli' for weighted graphs and weights, and fixed the phrase about preventing integer overflow.",
+      "content_sha256": "32d0b7ebd417fa60c62519d05ecc6674be89d4173a7f4bddb038dd16bff8aa19"
+    },
+    {
+      "at": "2026-11-11T21:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Only an inline formula for the number 1 differs from the original.",
+      "content_sha256": "32d0b7ebd417fa60c62519d05ecc6674be89d4173a7f4bddb038dd16bff8aa19"
+    }
+  ]
+}

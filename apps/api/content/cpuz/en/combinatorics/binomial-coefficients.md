@@ -30,35 +30,35 @@ Binomial coefficients have many different properties. Here are the simplest of t
 
 *   Symmetry rule:
 
-    \[ \binom n k = \binom n {n-k} \]
+    $$ \binom n k = \binom n {n-k} $$
 
 *   Factoring in:
 
-    \[ \binom n k = \frac n k \binom {n-1} {k-1} \]
+    $$ \binom n k = \frac n k \binom {n-1} {k-1} $$
 
 *   Sum over $k$:
 
-    \[ \sum_{k = 0}^n \binom n k = 2 ^ n \]
+    $$ \sum_{k = 0}^n \binom n k = 2 ^ n $$
 
 *   Sum over $n$:
 
-    \[ \sum_{m = 0}^n \binom m k = \binom {n + 1} {k + 1} \]
+    $$ \sum_{m = 0}^n \binom m k = \binom {n + 1} {k + 1} $$
 
 *   Sum over $n$ and $k$:
 
-    \[ \sum_{k = 0}^m  \binom {n + k} k = \binom {n + m + 1} m \]
+    $$ \sum_{k = 0}^m  \binom {n + k} k = \binom {n + m + 1} m $$
 
 *   Sum of the squares:
 
-    \[ {\binom n 0}^2 + {\binom n 1}^2 + \cdots + {\binom n n}^2 = \binom {2n} n \]
+    $$ {\binom n 0}^2 + {\binom n 1}^2 + \cdots + {\binom n n}^2 = \binom {2n} n $$
 
 *   Weighted sum:
 
-    \[ 1 \binom n 1 + 2 \binom n 2 + \cdots + n \binom n n = n 2^{n-1} \]
+    $$ 1 \binom n 1 + 2 \binom n 2 + \cdots + n \binom n n = n 2^{n-1} $$
 
 *   Connection with the [Fibonacci numbers](/algorithms/algebra/fibonacci-numbers):
 
-    \[ \binom n 0 + \binom {n-1} 1 + \cdots + \binom {n-k} k + \cdots + \binom 0 n = F_{n+1} \]
+    $$ \binom n 0 + \binom {n-1} 1 + \cdots + \binom {n-k} k + \cdots + \binom 0 n = F_{n+1} $$
 
 ## Calculation
 
@@ -113,15 +113,15 @@ for (int n = 1; n <= maxn; ++n) {
 
 If the entire table of values is not necessary, storing only two last rows of it is sufficient (current $n$-th row and the previous $n-1$-th).
 
-### Calculation in $O(1)$ {data-toc-label="Calculation in O(1)"}
+### Calculation in $O(1)$
 
 Finally, in some situations it is beneficial to precompute all the factorials in order to produce any necessary binomial coefficient with only two divisions later. This can be advantageous when using [long arithmetic](/algorithms/algebra/big-integer), when the memory does not allow precomputation of the whole Pascal's triangle.
 
-## Computing binomial coefficients modulo $m$ {data-toc-label="Computing binomial coefficients modulo m"}
+## Computing binomial coefficients modulo $m$
 
 Quite often you come across the problem of computing binomial coefficients modulo some $m$.
 
-### Binomial coefficient for small $n$ {data-toc-label="Binomial coefficient for small n"}
+### Binomial coefficient for small $n$
 
 The previously discussed approach of Pascal's triangle can be used to calculate all values of $\binom{n}{k} \bmod m$ for reasonably small $n$, since it requires time complexity $\mathcal{O}(n^2)$. This approach can handle any modulo, since only addition operations are used.
 
@@ -192,7 +192,7 @@ We can compute the binomial coefficient modulo $p_i^{e_i}$ for every $i$.
 This gives us $h$ different congruences.
 Since all moduli $p_i^{e_i}$ are coprime, we can apply the [Chinese Remainder Theorem](/algorithms/algebra/chinese-remainder-theorem) to compute the binomial coefficient modulo the product of the moduli, which is the desired binomial coefficient modulo $m$.
 
-### Binomial coefficient for large $n$ and small modulo {data-toc-label="Binomial coefficient for large n and small modulo"}
+### Binomial coefficient for large $n$ and small modulo
 
 When $n$ is too large, the $\mathcal{O}(n)$ algorithms discussed above become impractical. However, if the modulo $m$ is small there are still ways to calculate $\binom{n}{k} \bmod m$.
 

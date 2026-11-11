@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a free rewrite: it dropped the original's Cramer's rule derivation and determinant formulas and invented new sections (normalized line struct, parametric form, numerical precision remarks, extra code). Rewrote the article as a faithful translation containing exactly the original's prose, formulas and code.",
+      "content_sha256": "aec141723622c8adaba0a51a6e42683bc6d2e3b84a3be98fc8c3792760bb757b"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Re-translated into natural Uzbek using 'Kramer qoidasi', 'determinant', 'ustma-ust tushadi' consistently.",
+      "content_sha256": "aec141723622c8adaba0a51a6e42683bc6d2e3b84a3be98fc8c3792760bb757b"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code block and all five display formulas restored from the original; the invented code blocks and formulas were removed.",
+      "content_sha256": "aec141723622c8adaba0a51a6e42683bc6d2e3b84a3be98fc8c3792760bb757b"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T23:58:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the full title (Range Minimum Query and Lowest Common Ancestor) and the original paragraph structure; the translation had split every sentence into its own paragraph, which broke sentences such as the one ending in a colon.",
+      "content_sha256": "63d88f8b467756a9a68c2e2036cc8d988c820b80ba23c94a62c3a32df37bb770"
+    },
+    {
+      "at": "2026-11-11T23:58:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary term 'uyum' for heap and 'ost-daraxt' for subtree (replacing 'qismdaraxt'), 'farzand' for child, and LCA'si instead of 'LCA si'.",
+      "content_sha256": "63d88f8b467756a9a68c2e2036cc8d988c820b80ba23c94a62c3a32df37bb770"
+    }
+  ]
+}

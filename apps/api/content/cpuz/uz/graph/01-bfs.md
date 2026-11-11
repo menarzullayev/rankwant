@@ -81,7 +81,7 @@ while (!q.empty()) {
 
 ## Dial algoritmi
 
-Qirralar og‘irliklariga bundan kattaroq qiymatlarga ega bo‘lishga ruxsat bersak, bu g‘oyani yanada umumlashtirish mumkin.
+Qirralar og‘irliklarining bundan ham kattaroq bo‘lishiga ruxsat bersak, bu g‘oyani yanada umumlashtirish mumkin.
 
 Agar grafdagi har bir qirraning og‘irligi $\le k$ bo‘lsa, navbatdagi tugunlarning boshlang‘ich tugungacha masofalari $v$ tugunning boshlang‘ich tugungacha masofasidan ko‘pi bilan $k$ ga farq qiladi.
 
@@ -89,7 +89,7 @@ Shuning uchun navbatdagi tugunlar uchun $k + 1$ ta savatcha saqlashimiz mumkin; 
 
 Bu umumlashtirish **Dial algoritmi** deb ataladi.
 
-## Amaliy masalalar
+## Mashq masalalari
 
 - [Labyrinth](https://codeforces.com/contest/1063/problem/B)
 - [KATHTHI](http://www.spoj.com/problems/KATHTHI/)

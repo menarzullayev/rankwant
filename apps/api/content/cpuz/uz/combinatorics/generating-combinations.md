@@ -4,7 +4,7 @@ Ushbu maqolada barcha $K$-kombinatsiyalarni hosil qilish masalasini muhokama qil
 $N$ va $K$ natural sonlari hamda $1$ dan $N$ gacha bo‘lgan sonlar to‘plami berilgan.
 Vazifa — **o‘lchami $K$ bo‘lgan barcha qism to‘plamlarni** hosil qilish.
 
-## Keyingi leksikografik $K$-kombinatsiyani hosil qilish {data-toc-label="Keyingi leksikografik K-kombinatsiyani hosil qilish"}
+## Keyingi leksikografik $K$-kombinatsiyani hosil qilish
 
 Avval kombinatsiyalarni leksikografik tartibda hosil qilamiz.
 Buning algoritmi sodda. Birinchi kombinatsiya ${1, 2, ..., K}$ bo‘ladi. Endi undan leksikografik tartibda darhol keyin keladigan kombinatsiyani qanday topishni ko‘ramiz. Buning uchun joriy kombinatsiyani ko‘rib chiqib, hali o‘zining eng katta mumkin bo‘lgan qiymatiga yetmagan eng o‘ng elementni topamiz. Bu elementni topgach, uni $1$ ga oshiramiz va undan keyingi barcha elementlarga ruxsat etilgan eng kichik qiymatlarni beramiz.
@@ -24,16 +24,16 @@ bool next_combination(vector<int>& a, int n) {
 }
 ```
 
-## Qo‘shni kombinatsiyalar bitta element bilan farq qiladigan barcha $K$-kombinatsiyalarni hosil qilish {data-toc-label="Qo‘shni kombinatsiyalar bitta element bilan farq qiladigan barcha K-kombinatsiyalarni hosil qilish"}
+## Qo‘shni kombinatsiyalar bitta element bilan farq qiladigan barcha $K$-kombinatsiyalarni hosil qilish
 
 Bu safar barcha $K$-kombinatsiyalarni shunday tartibda hosil qilmoqchimizki, qo‘shni kombinatsiyalar aynan bitta element bilan farq qilsin.
 
 Buni [Gray kodi](/algorithms/algebra/gray-code) yordamida yechish mumkin:
-har bir qism to‘plamga bitmaska mos qo‘ysak, ushbu bitmaskalarni Gray kodlari tartibida hosil qilib va ko‘rib chiqib, kerakli javobni olishimiz mumkin.
+har bir qism to‘plamga bit niqobini mos qo‘ysak, ushbu bit niqoblarini Gray kodlari tartibida hosil qilib va ko‘rib chiqib, kerakli javobni olishimiz mumkin.
 
 $K$-kombinatsiyalarni hosil qilish masalasini Gray kodlari yordamida boshqacha ham yechish mumkin:
 $0$ dan $2^N-1$ gacha bo‘lgan sonlar uchun Gray kodlarini hosil qilib, tarkibida aynan $K$ ta `1` bo‘lgan kodlarnigina qoldiramiz.
-Ajablanarli jihati shundaki, hosil bo‘lgan, $K$ ta yoqilgan bitga ega maskalar ketma-ketligida istalgan ikkita qo‘shni maska — birinchi va oxirgi maska ham siklik ma’noda qo‘shni hisoblanadi — aynan ikkita bit bilan farq qiladi. Bu aynan bizga kerak bo‘lgan o‘zgarishdir: bitta sonni olib tashlash va bitta sonni qo‘shish.
+Ajablanarli jihati shundaki, hosil bo‘lgan, $K$ ta yoqilgan bitga ega niqoblar ketma-ketligida istalgan ikkita qo‘shni niqob — birinchi va oxirgi niqob ham siklik ma’noda qo‘shni hisoblanadi — aynan ikkita bit bilan farq qiladi. Bu aynan bizga kerak bo‘lgan o‘zgarishdir: bitta sonni olib tashlash va bitta sonni qo‘shish.
 
 Buni isbotlaymiz.
 
@@ -41,16 +41,16 @@ Isbot uchun $G(N)$ ketma-ketlikni ($N$-Gray kodini ifodalovchi ketma-ketlikni) q
 
 $$G(N) = 0G(N-1) \cup 1G(N-1)^\text{R}$$
 
-Ya’ni $N-1$ uchun Gray kodlari ketma-ketligini olib, har bir hadning boshiga `0` qo‘yamiz. So‘ng $N-1$ uchun Gray kodlari ketma-ketligini teskari tartibda olib, har bir maskaning boshiga `1` qo‘yamiz va bu ikki ketma-ketlikni birlashtiramiz.
+Ya’ni $N-1$ uchun Gray kodlari ketma-ketligini olib, har bir hadning boshiga `0` qo‘yamiz. So‘ng $N-1$ uchun Gray kodlari ketma-ketligini teskari tartibda olib, har bir niqobning boshiga `1` qo‘yamiz va bu ikki ketma-ketlikni birlashtiramiz.
 
 Endi isbotni keltirishimiz mumkin.
 
-Avval birinchi va oxirgi maskalar aynan ikkita bitda farq qilishini isbotlaymiz. Buning uchun $G(N)$ ketma-ketligining birinchi maskasi $N-K$ ta `0` va ulardan keyin $K$ ta `1` dan iborat bo‘lishini qayd etish kifoya. Ya’ni uning birinchi biti `0`, undan keyin $(N-K-1)$ ta `0`, so‘ng $K$ ta yoqilgan bit keladi. Oxirgi maska esa `1`, undan keyin $(N-K)$ ta `0` va so‘ng $K-1$ ta `1` ko‘rinishida bo‘ladi.
+Avval birinchi va oxirgi niqoblar aynan ikkita bitda farq qilishini isbotlaymiz. Buning uchun $G(N)$ ketma-ketligining birinchi niqobi $N-K$ ta `0` va ulardan keyin $K$ ta `1` dan iborat bo‘lishini qayd etish kifoya. Ya’ni uning birinchi biti `0`, undan keyin $(N-K-1)$ ta `0`, so‘ng $K$ ta yoqilgan bit keladi. Oxirgi niqob esa `1`, undan keyin $(N-K)$ ta `0` va so‘ng $K-1$ ta `1` ko‘rinishida bo‘ladi.
 Matematik induksiya prinsipini va $G(N)$ formulasini qo‘llash isbotni yakunlaydi.
 
 Endi istalgan ikkita qo‘shni kod ham aynan ikkita bitda farq qilishini ko‘rsatishimiz kerak. Buni Gray kodlarini hosil qilishning rekursiv tenglamasini ko‘rib chiqish orqali amalga oshirish mumkin. $G(N-1)$ dan tuzilgan ikki yarimning ichida tasdiq to‘g‘ri deb faraz qilamiz. Endi ushbu ikki yarim birlashtiriladigan chegarada hosil bo‘lgan yangi qo‘shni juft ham to‘g‘ri ekanini, ya’ni ular aynan ikkita bitda farq qilishini isbotlashimiz kerak.
 
-Buni birinchi yarimning oxirgi maskasi va ikkinchi yarimning birinchi maskasi ma’lum bo‘lgani uchun qilish mumkin. Birinchi yarimning oxirgi maskasi `1`, undan keyin $(N-K-1)$ ta `0`, so‘ng $K-1$ ta `1` ko‘rinishida bo‘ladi. Ikkinchi yarimning birinchi maskasi esa `0`, undan keyin $(N-K-2)$ ta `0` va so‘ng $K$ ta `1` ko‘rinishida bo‘ladi. Demak, bu ikki maskani taqqoslaganda aynan ikkita farqli bitni topamiz.
+Buni birinchi yarimning oxirgi niqobi va ikkinchi yarimning birinchi niqobi ma’lum bo‘lgani uchun qilish mumkin. Birinchi yarimning oxirgi niqobi `1`, undan keyin $(N-K-1)$ ta `0`, so‘ng $K-1$ ta `1` ko‘rinishida bo‘ladi. Ikkinchi yarimning birinchi niqobi esa `0`, undan keyin $(N-K-2)$ ta `0` va so‘ng $K$ ta `1` ko‘rinishida bo‘ladi. Demak, bu ikki niqobni taqqoslaganda aynan ikkita farqli bitni topamiz.
 
 Quyida barcha $2^n$ ta mumkin bo‘lgan qism to‘plamni hosil qilib, o‘lchami $K$ bo‘lganlarini tanlaydigan sodda amalga oshirish keltirilgan.
 

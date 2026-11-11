@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked properties, algorithm description, complexity analysis, code and proof against the original; all present and correct.",
+      "content_sha256": "c03a5c14538bc7f9fece8dbecae65606d20be3eacc916fed78073dab27d68f8a"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'og‘irlik' with the glossary term 'vazn' (vaznli graf) throughout.",
+      "content_sha256": "c03a5c14538bc7f9fece8dbecae65606d20be3eacc916fed78073dab27d68f8a"
+    }
+  ]
+}

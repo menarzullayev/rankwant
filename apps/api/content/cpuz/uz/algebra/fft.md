@@ -10,6 +10,7 @@ Bu yerda keltiriladigan FFT algoritmi $O(n \log n)$ vaqtda ishlashiga, lekin ixt
 U kichik koeffitsiyentli $10^5$ o‘lchamli ko‘phadlarni yoki uzunligi $10^6$ bo‘lgan ikkita sonni oson qayta ishlaydi; bu odatda musobaqa dasturlash masalalari uchun yetarli. $10^6$ bitli sonlarni ko‘paytirish miqyosidan oshganda, hisoblashda ishlatiladigan suzuvchi nuqtali sonlarning diapazoni va aniqligi yakuniy natijani aniq olish uchun yetarli bo‘lmaydi. Biroq ixtiyoriy katta ko‘phad yoki butun sonlarni ko‘paytira oladigan murakkabroq variantlar mavjud.
 Masalan, 1971-yilda Schönhage va Strassen halqa tuzilmalarida FFT ni rekursiv qo‘llaydigan va $O(n \log n \log \log n)$ vaqtda ishlaydigan ixtiyoriy katta sonlarni ko‘paytirish variantini ishlab chiqdi.
 Yaqinda esa (2019-yilda) Harvey va van der Hoeven haqiqiy $O(n \log n)$ vaqtda ishlaydigan algoritmni e’lon qildi.
+
 ## Diskret Fourier almashtirishi
 
 Darajasi $n - 1$ bo‘lgan ko‘phad berilgan bo‘lsin:
@@ -28,12 +29,14 @@ $$\begin{align}
 &= (A(w_{n, 0}), A(w_{n, 1}), \dots, A(w_{n, n-1})) \\
 &= (A(w_n^0), A(w_n^1), \dots, A(w_n^{n-1}))
 \end{align}$$
+
 Xuddi shunday, **teskari diskret Fourier almashtirishi** aniqlanadi:
 ko‘phadning $(y_0, y_1, \dots, y_{n-1})$ qiymatlarining teskari DFT si ko‘phadning $(a_0, a_1, \dots, a_{n-1})$ koeffitsiyentlaridir.
 
 $$\text{InverseDFT}(y_0, y_1, \dots, y_{n-1}) = (a_0, a_1, \dots, a_{n-1})$$
 
 Shunday qilib, to‘g‘ri DFT ko‘phadning $n$-darajali birlik ildizlaridagi qiymatlarini hisoblasa, teskari DFT shu qiymatlar yordamida ko‘phad koeffitsiyentlarini tiklaydi.
+
 ### DFT qo‘llanilishi: ko‘phadlarni tez ko‘paytirish
 
 $A$ va $B$ ko‘phadlar berilgan bo‘lsin.
@@ -43,6 +46,7 @@ Bu ko‘phadlarni ko‘paytirsak nima bo‘ladi?
 Har bir nuqtada qiymatlar shunchaki ko‘paytirilishi ayon:
 
 $$(A \cdot B)(x) = A(x) \cdot B(x).$$
+
 Bu shuni anglatadiki, $\text{DFT}(A)$ va $\text{DFT}(B)$ vektorlarini — bir vektorning har bir elementini ikkinchi vektorning mos elementiga ko‘paytirib — ko‘paytirsak, $A \cdot B$ ko‘phadning DFT si bo‘lgan $\text{DFT}(A \cdot B)$ ni olamiz:
 
 $$\text{DFT}(A \cdot B) = \text{DFT}(A) \cdot \text{DFT}(B)$$
@@ -50,6 +54,7 @@ $$\text{DFT}(A \cdot B) = \text{DFT}(A) \cdot \text{DFT}(B)$$
 Nihoyat, teskari DFT ni qo‘llab, quyidagini olamiz:
 
 $$A \cdot B = \text{InverseDFT}(\text{DFT}(A) \cdot \text{DFT}(B))$$
+
 O‘ng tomondagi ikkita DFT ko‘paytmasi deganda vektor elementlarining juftma-juft ko‘paytmasi nazarda tutiladi.
 Buni $O(n)$ vaqtda hisoblash mumkin.
 Agar DFT va teskari DFT ni $O(n \log n)$ vaqtda hisoblay olsak, ikkita ko‘phadning (demak, ikkita uzun sonning ham) ko‘paytmasini shu vaqt murakkabligida hisoblaymiz.
@@ -59,13 +64,15 @@ Buni qiymati $0$ bo‘lgan koeffitsiyentlarni qo‘shish orqali ta’minlash mum
 
 Bundan tashqari, ikkita ko‘phad ko‘paytmasining darajasi $2 (n - 1)$ bo‘lgani uchun har bir ko‘phadning darajasini ikki baravar oshirishimiz kerak (yana $0$ lar bilan to‘ldirib).
 $n$ ta qiymatli vektordan $2n - 1$ ta koeffitsiyentli kerakli ko‘phadni tiklab bo‘lmaydi.
+
 ### Tez Fourier almashtirishi
 
 **Tez Fourier almashtirishi** DFT ni $O(n \log n)$ vaqtda hisoblash imkonini beradigan usuldir.
-FFT ning asosiy g‘oyasi bo‘lib tashla va hukmronlik qil usulini qo‘llashdir.
+FFT ning asosiy g‘oyasi «bo‘lib yechish» usulini qo‘llashdir.
 Ko‘phad koeffitsiyentlari vektorini ikkita vektorga ajratamiz, ularning har biri uchun DFT ni rekursiv hisoblaymiz va natijalarni birlashtirib butun ko‘phadning DFT sini olamiz.
 
 Darajasi $n - 1$ bo‘lgan $A(x)$ ko‘phad berilgan bo‘lsin, bunda $n$ 2 ning darajasi va $n > 1$:
+
 $$A(x) = a_0 x^0 + a_1 x^1 + \dots + a_{n-1} x^{n-1}$$
 
 Uni ikkita kichikroq ko‘phadga — faqat juft pozitsiyalardagi koeffitsiyentlarni saqlaydigan va faqat toq pozitsiyalardagi koeffitsiyentlarni saqlaydigan ko‘phadlarga — ajratamiz:
@@ -78,6 +85,7 @@ A_1(x) &= a_1 x^0 + a_3 x^1 + \dots + a_{n-1} x^{\frac{n}{2}-1}
 Quyidagini ko‘rish oson:
 
 $$A(x) = A_0(x^2) + x A_1(x^2).$$
+
 $A_0$ va $A_1$ ko‘phadlarning koeffitsiyentlari soni $A$ nikidan ikki baravar kam.
 Agar $\text{DFT}(A_0)$ va $\text{DFT}(A_1)$ yordamida $\text{DFT}(A)$ ni chiziqli vaqtda hisoblasak, vaqt murakkabligi uchun $T_{\text{DFT}}(n) = 2 T_{\text{DFT}}\left(\frac{n}{2}\right) + O(n)$ rekurrent munosabatni olamiz. **Master teorema** bo‘yicha bundan $T_{\text{DFT}}(n) = O(n \log n)$ kelib chiqadi.
 
@@ -90,6 +98,7 @@ Birinchi $\frac{n}{2}$ ta qiymat uchun yuqoridagi $A(x) = A_0(x^2) + x A_1(x^2)$
 $$y_k = y_k^0 + w_n^k y_k^1, \quad k = 0 \dots \frac{n}{2} - 1.$$
 
 Ikkinchi $\frac{n}{2}$ ta qiymat uchun esa biroz boshqacha ifoda topish kerak:
+
 $$\begin{align}
 y_{k+n/2} &= A\left(w_n^{k+n/2}\right) \\
 &= A_0\left(w_n^{2k+n}\right) + w_n^{k + n/2} A_1\left(w_n^{2k+n}\right) \\
@@ -101,6 +110,7 @@ y_{k+n/2} &= A\left(w_n^{k+n/2}\right) \\
 Bu yerda yana $A(x) = A_0(x^2) + x A_1(x^2)$ va $w_n^n = 1$, $w_n^{n/2} = -1$ ayniyatlaridan foydalandik.
 
 Shunday qilib, butun $(y_k)$ vektorni hisoblash uchun kerakli formulalarni olamiz:
+
 $$\begin{align}
 y_k &= y_k^0 + w_n^k y_k^1, &\quad k = 0 \dots \frac{n}{2} - 1, \\
 y_{k+n/2} &= y_k^0 - w_n^k y_k^1, &\quad k = 0 \dots \frac{n}{2} - 1.
@@ -109,6 +119,7 @@ y_{k+n/2} &= y_k^0 - w_n^k y_k^1, &\quad k = 0 \dots \frac{n}{2} - 1.
 (Bu $a + b$ va $a - b$ ko‘rinishidagi naqsh ba’zan **kapalak** (*butterfly*) deb ataladi.)
 
 Shu tariqa DFT ni $O(n \log n)$ vaqtda hisoblashni o‘rgandik.
+
 ### Teskari FFT
 
 Darajasi $n - 1$ bo‘lgan $A$ ko‘phadning $x = w_n^k$ nuqtalardagi qiymatlari — $(y_0, y_1, \dots y_{n-1})$ vektori — berilgan bo‘lsin.
@@ -116,6 +127,7 @@ Ko‘phadning $(a_0, a_1, \dots, a_{n-1})$ koeffitsiyentlarini tiklamoqchimiz.
 Bu ma’lum masala **interpolyatsiya** deb ataladi va uni yechish uchun umumiy algoritmlar mavjud.
 Ammo ushbu maxsus holatda (nuqtalar birlik ildizlari ekanini bilganimiz uchun) ancha sodda, amalda to‘g‘ri FFT bilan bir xil algoritmni olish mumkin.
 DFT ni ta’rifiga ko‘ra matritsa ko‘rinishida yozishimiz mumkin:
+
 $$
 \begin{pmatrix}
 w_n^0 & w_n^0 & w_n^0 & w_n^0 & \cdots & w_n^0 \\
@@ -130,9 +142,11 @@ a_0 \\ a_1 \\ a_2 \\ a_3 \\ \vdots \\ a_{n-1}
 y_0 \\ y_1 \\ y_2 \\ y_3 \\ \vdots \\ y_{n-1}
 \end{pmatrix}
 $$
+
 Bu matritsa **Vandermonde matritsasi** deb ataladi.
 
 Shunday qilib, $(y_0, y_1, \dots y_{n-1})$ vektorni chapdan matritsaning teskarisiga ko‘paytirib, $(a_0, a_1, \dots, a_{n-1})$ vektorni hisoblash mumkin:
+
 $$
 \begin{pmatrix}
 a_0 \\ a_1 \\ a_2 \\ a_3 \\ \vdots \\ a_{n-1}
@@ -147,7 +161,9 @@ w_n^0 & w_n^{n-1} & w_n^{2(n-1)} & w_n^{3(n-1)} & \cdots & w_n^{(n-1)(n-1)}
 y_0 \\ y_1 \\ y_2 \\ y_3 \\ \vdots \\ y_{n-1}
 \end{pmatrix}
 $$
+
 Tez tekshiruv matritsaning teskarisi quyidagi ko‘rinishga ega ekanini ko‘rsatadi:
+
 $$
 \frac{1}{n}
 \begin{pmatrix}
@@ -161,14 +177,16 @@ w_n^0 & w_n^{-(n-1)} & w_n^{-2(n-1)} & w_n^{-3(n-1)} & \cdots & w_n^{-(n-1)(n-1)
 $$
 
 Demak, quyidagi formulani olamiz:
+
 $$a_k = \frac{1}{n} \sum_{j=0}^{n-1} y_j w_n^{-k j}$$
 
 Buni $y_k$ formulasi bilan taqqoslaymiz:
 
 $$y_k = \sum_{j=0}^{n-1} a_j w_n^{k j}.$$
 
-Bu masalalar deyarli bir xil ekanini ko‘ramiz. Shuning uchun $a_k$ koeffitsiyentlarni to‘g‘ri FFT dagi bo‘lib tashla va hukmronlik qil algoritmi bilan topish mumkin; faqat $w_n^k$ o‘rniga $w_n^{-k}$ ishlatamiz va oxirida hosil bo‘lgan koeffitsiyentlarni $n$ ga bo‘lamiz.
+Bu masalalar deyarli bir xil ekanini ko‘ramiz. Shuning uchun $a_k$ koeffitsiyentlarni to‘g‘ri FFT dagi «bo‘lib yechish» algoritmi bilan topish mumkin; faqat $w_n^k$ o‘rniga $w_n^{-k}$ ishlatamiz va oxirida hosil bo‘lgan koeffitsiyentlarni $n$ ga bo‘lamiz.
 Demak, teskari DFT ni hisoblash to‘g‘ri DFT ni hisoblash bilan deyarli bir xil va uni ham $O(n \log n)$ vaqtda bajarish mumkin.
+
 ### Implementatsiya
 
 Bu yerda FFT va teskari FFT ning sodda rekursiv **implementatsiyasini** bitta funksiyada keltiramiz, chunki to‘g‘ri va teskari FFT o‘rtasidagi farq juda kichik.
@@ -203,6 +221,7 @@ void fft(vector<cd> & a, bool invert) {
     }
 }
 ```
+
 Funksiyaga koeffitsiyentlar vektori beriladi; u DFT yoki teskari DFT ni hisoblab, natijani yana shu vektorda saqlaydi.
 $\text{invert}$ argumenti to‘g‘ri yoki teskari DFT hisoblanishini ko‘rsatadi.
 Funksiya ichida avval vektor uzunligi birga tengligini tekshiramiz; teng bo‘lsa, hech narsa qilish shart emas.
@@ -212,6 +231,7 @@ So‘ng yuqoridagi formulalar yordamida natijaviy DFT qiymatlarini hisoblaymiz.
 Agar $\text{invert}$ bayrog‘i o‘rnatilgan bo‘lsa, $wn$ ni $wn^{-1}$ bilan almashtiramiz va natijaning har bir qiymatini $2$ ga bo‘lamiz (bu rekursiyaning har bir darajasida bajarilgani uchun yakuniy qiymatlar $n$ ga bo‘linadi).
 
 Ushbu funksiya yordamida **ikkita ko‘phadni ko‘paytirish** funksiyasini yaratish mumkin:
+
 ```cpp
 vector<int> multiply(vector<int> const& a, vector<int> const& b) {
     vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
@@ -233,11 +253,13 @@ vector<int> multiply(vector<int> const& a, vector<int> const& b) {
     return result;
 }
 ```
+
 Bu funksiya butun koeffitsiyentli ko‘phadlar bilan ishlaydi, ammo uni boshqa turlar bilan ishlashga ham moslashtirish mumkin.
 Kompleks sonlar bilan ishlashda ma’lum xato yuzaga kelgani uchun, oxirida natijaviy koeffitsiyentlarni yaxlitlashimiz kerak.
 
 Nihoyat, ikkita uzun sonni **ko‘paytirish** funksiyasi ko‘phadlarni ko‘paytirish funksiyasidan deyarli farq qilmaydi.
 Keyin bajarishimiz kerak bo‘lgan yagona ish — sonni normallashtirish:
+
 ```cpp
     int carry = 0;
     for (int i = 0; i < n; i++)
@@ -248,6 +270,7 @@ Keyin bajarishimiz kerak bo‘lgan yagona ish — sonni normallashtirish:
 ```
 
 Ikki son ko‘paytmasining uzunligi hech qachon ularning uzunliklari yig‘indisidan oshmagani uchun, vektor o‘lchami barcha ko‘chirish amallarini bajarishga yetarli.
+
 ### Yaxshilangan implementatsiya: joyida hisoblash
 
 Samaradorlikni oshirish uchun rekursiv implementatsiyadan iterativ implementatsiyaga o‘tamiz.
@@ -430,7 +453,7 @@ Shunday qilib, kompleks ildizlardan talab qiladigan barcha xossalar modul arifme
 Masalan, $p = 7340033$ modul va $w_{2^{20}} = 5$ qiymatlarini olish mumkin.
 Bu modul yetarli bo‘lmasa, boshqa juftlik topish kerak.
 $p = c 2^k + 1$ ko‘rinishidagi modullar uchun ($p$ tub bo‘lsa) birlikning $2^k$-darajali ildizi doimo mavjudligidan foydalanish mumkin.
-$p$ ning [primitive root](/algorithms/algebra/primitive-root) elementi $g$ bo‘lsa, $g^c$ shunday $2^k$-darajali birlik ildizi ekanini ko‘rsatish mumkin.
+$p$ ning [primitiv ildiz](/algorithms/algebra/primitive-root) elementi $g$ bo‘lsa, $g^c$ shunday $2^k$-darajali birlik ildizi ekanini ko‘rsatish mumkin.
 
 ```cpp
 const int mod = 7340033;
@@ -483,7 +506,7 @@ ikkita $A(x)$ va $B(x)$ ko‘phadni ko‘paytirib, koeffitsiyentlarni biror $M$ 
 Sonlar nazariyasidagi almashtirish faqat muayyan tub sonlar uchun ishlaydi.
 Modul kerakli ko‘rinishda bo‘lmasa nima qilamiz?
 
-Bir yo‘l — $c 2^k + 1$ ko‘rinishidagi bir nechta turli tub son bo‘yicha NTT bajarib, so‘ng yakuniy koeffitsiyentlarni hisoblash uchun [Xitoy qoldiqlar teoremasi](/algorithms/algebra/chinese-remainder-theorem)ni qo‘llash.
+Bir yo‘l — $c 2^k + 1$ ko‘rinishidagi bir nechta turli tub son bo‘yicha NTT bajarib, so‘ng yakuniy koeffitsiyentlarni hisoblash uchun [Xitoy qoldiqlari teoremasi](/algorithms/algebra/chinese-remainder-theorem)ni qo‘llash.
 
 Boshqa yo‘l — $A(x)$ va $B(x)$ ko‘phadlarning har birini ikkita kichikroq ko‘phadga ajratish:
 
@@ -580,7 +603,7 @@ Pifagorning trigonometrik ayniyatidan foydalanib quyidagini olamiz:
 
 $$\begin{align}
 c_{m-1+i} &= \sum_{j = 0}^{m-1}  \left(\cos(\alpha_{i+j}) + i \sin(\alpha_{i+j})\right) \cdot \left(\cos(\alpha_{i+j}) - i \sin(\alpha_{i+j})\right) \\
-&= \sum_{j = 0}^{m-1} \cos(\alpha_{i+j})^2 + \sin(\alpha_{i+j})^2 = \sum_{j = 0}^{m-1} 1 = m.
+&= \sum_{j = 0}^{m-1} \cos(\alpha_{i+j})^2 + \sin(\alpha_{i+j})^2 = \sum_{j = 0}^{m-1} 1 = m
 \end{align}$$
 
 Moslik bo‘lmasa, kamida bitta belgi farq qiladi; natijada ko‘paytmalardan kamida bittasi $a_{i+j} \cdot b_{m-1-j}$ birga teng bo‘lmaydi va $c_{m-1+i} \ne m$ kelib chiqadi.

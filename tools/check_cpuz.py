@@ -135,6 +135,20 @@ def compare(uz: str, en: str) -> list[str]:
         problems.append(
             f"inline formulas not in the original: {[f[:60] for f in invented][:3]}"
         )
+    # Markup the renderer reads differently from mkdocs: printed as text, or
+    # a formula left unrendered (`\[ … \]`).
+    leftovers = [
+        name
+        for name, pattern in (
+            ("heading attribute list", r"(?m)^#{1,6}\s.*\{\s*[^}#]*\}\s*$"),
+            ("\\[ display math", r"(?<!\\)\\\["),
+            ("jinja tag", r"\{%"),
+            ("mkdocs admonition", r"(?m)^\s*(?:!!!|\?\?\?)\s"),
+        )
+        if re.search(pattern, uz_prose)
+    ]
+    if leftovers:
+        problems.append(f"mkdocs leftovers in prose: {leftovers}")
     tags = re.findall(
         r"</?[a-zA-Z][a-zA-Z0-9]*\b[^>\n]*>",
         re.sub(r"\$[^$\n]*\$", "", re.sub(r"`[^`\n]+`", "", uz_prose)),

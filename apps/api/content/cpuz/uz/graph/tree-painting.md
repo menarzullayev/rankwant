@@ -7,13 +7,13 @@ Dastlabki ishlov berish bosqichi $O(N)$ vaqt oladi.
 
 ## Algoritm
 
-Avval ikkinchi turdagi har bir $(i,j)$ so‘rovni $(l,i)$ va $(l,j)$ ko‘rinishidagi ikkita so‘rovga ajratish uchun [LCA](/algorithms/graph/lca)ni topishimiz kerak; bu yerda $l$ — $i$ va $j$ ning eng quyi umumiy ajdodi.
+Avval ikkinchi turdagi har bir $(i,j)$ so‘rovni $(l,i)$ va $(l,j)$ ko‘rinishidagi ikkita so‘rovga ajratish uchun [LCA](/algorithms/graph/lca)ni topishimiz kerak; bu yerda $l$ — $i$ va $j$ ning eng yaqin umumiy ajdodi.
 $(i,j)$ so‘rovining javobi ikkala qism-so‘rov javoblarining yig‘indisiga teng bo‘ladi.
 Bu ikki so‘rov maxsus tuzilishga ega: birinchi tugun ikkinchi tugunning ajdodidir.
 Maqolaning qolgan qismida faqat mana shunday maxsus so‘rovlar haqida gapiramiz.
 
 Avval **dastlabki ishlov berish** bosqichini tasvirlaymiz.
-Daraxt ildizidan chuqurlik bo‘yicha qidiruvni ishga tushiring va ushbu DFS ning Euler aylanib chiqishini yozib boring (qidiruv tugunga birinchi marta kirganida va uning har bir farzandidan qaytganimizda tugun ro‘yxatga qo‘shiladi).
+Daraxt ildizidan chuqurlik bo‘yicha qidiruvni ishga tushiring va ushbu DFS ning Eyler aylanib chiqishini yozib boring (qidiruv tugunga birinchi marta kirganida va uning har bir farzandidan qaytganimizda tugun ro‘yxatga qo‘shiladi).
 Xuddi shu usuldan LCA uchun dastlabki ishlov berishda ham foydalanish mumkin.
 Bu ro‘yxat har bir qirrani o‘z ichiga oladi (ya’ni, agar $i$ va $j$ qirraning uchlari bo‘lsa, ro‘yxatning biror joyida $i$ va $j$ yonma-yon turadi) va qirra unda aynan ikki marta paydo bo‘ladi: to‘g‘ri yo‘nalishda ($i$ dan $j$ ga, bunda $i$ tugun ildizga $j$ dan yaqinroq) va teskari yo‘nalishda ($j$ dan $i$ ga).
 Bu qirralar uchun ikkita ro‘yxat quramiz.
@@ -23,14 +23,14 @@ Bu ikki ro‘yxatning har biri ustida yig‘indi va bitta elementni o‘zgartiri
 
 Endi $i$ tugun $j$ tugunning ajdodi bo‘lgan $(i,j)$ so‘roviga javob beraylik.
 $i$ va $j$ orasidagi yo‘lda nechta qirra bo‘yalganini aniqlashimiz kerak.
-Euler aylanib chiqishida $i$ va $j$ ning birinchi uchrashgan joylarini topamiz; ularning pozitsiyalari mos ravishda $p$ va $q$ bo‘lsin (agar bu pozitsiyalar dastlabki ishlov berishda oldindan hisoblab qo‘yilsa, buni $O(1)$ vaqtda bajarish mumkin).
+Eyler aylanib chiqishida $i$ va $j$ ning birinchi uchrashgan joylarini topamiz; ularning pozitsiyalari mos ravishda $p$ va $q$ bo‘lsin (agar bu pozitsiyalar dastlabki ishlov berishda oldindan hisoblab qo‘yilsa, buni $O(1)$ vaqtda bajarish mumkin).
 U holda so‘rovning **javobi** $T1[p..q-1]$ yig‘indisidan $T2[p..q-1]$ yig‘indisini ayirishga teng.
 
 **Nega?**
-Euler aylanib chiqishidagi $[p;q]$ kesmani qaraymiz.
+Eyler aylanib chiqishidagi $[p;q]$ kesmani qaraymiz.
 U $i$ dan $j$ gacha bizga kerak bo‘lgan yo‘lning barcha qirralarini, shuningdek $i$ dan boshlanuvchi boshqa yo‘llarda yotgan ayrim qirralarni ham o‘z ichiga oladi.
 Biroq bizga kerak bo‘lgan qirralar bilan qolgan qirralar orasida bitta muhim farq bor: kerakli qirralar faqat bir marta, to‘g‘ri yo‘nalishda yozilgan bo‘ladi; qolgan barcha qirralar esa ikki marta — bir marta to‘g‘ri va bir marta teskari yo‘nalishda — paydo bo‘ladi.
-Shuning uchun $T1[p..q-1] - T2[p..q-1]$ ayirmasi to‘g‘ri javobni beradi ($-1$ kerak, aks holda $j$ tugundan chiqib ketuvchi bitta ortiqcha qirra ham hisobga olinadi).
+Shuning uchun $T1[p..q-1] - T2[p..q-1]$ ayirmasi to‘g‘ri javobni beradi (oxirgi indeksdan bir birlik ayiriladi, ya’ni $q$ emas, undan oldingi pozitsiyagacha olinadi, aks holda $j$ tugundan chiqib ketuvchi bitta ortiqcha qirra ham hisobga olinadi).
 Segment daraxtidagi yig‘indi so‘rovi $O(\log N)$ vaqtda bajariladi.
 
 **Birinchi turdagi so‘rov**ga (qirrani bo‘yashga) javob berish yanada oson: $T1$ va $T2$ ni yangilash, ya’ni qirramizga mos elementni bittadan o‘zgartirish kifoya (qirrani ro‘yxatda topish ham, agar bu qidiruv dastlabki ishlov berish paytida bajarilsa, $O(1)$ vaqtda mumkin).

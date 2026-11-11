@@ -55,8 +55,8 @@ public boolean hasCycle(ListNode head) {
 // Sikl bor, slow va fast esa uchrashgan nuqtani ko‘rsatmoqda deb olamiz
 slow = head;
 while(slow!=fast){
-    slow = slow.next;
-    fast = fast.next;
+	slow = slow.next;
+	fast = fast.next;
 }
 
 return slow; // siklning boshlanish nuqtasi
@@ -93,13 +93,13 @@ $fastDist = a + yL + b$, bu yerda $y \ge 0$.
 - $x$ — `slow` ko‘rsatkichning **C** dan boshlab yana **C** ga qaytguncha siklni to‘liq aylanishlari soni;
 - $y$ — `fast` ko‘rsatkichning shunday to‘liq aylanishlari soni.
 
-$fastDist = 2 \cdot slowDist$ bo‘lgani uchun:
+$fastDist = 2 \cdot (slowDist)$ bo‘lgani uchun:
 
-$$a + yL + b = 2(a + xL + b)$$
+$a + yL + b = 2(a + xL + b)$
 
 Ifodani yechsak:
 
-$$a = (y - 2x)L - b$$
+$a = (y - 2x)L - b$
 
 bu yerda $y - 2x$ — butun son.
 

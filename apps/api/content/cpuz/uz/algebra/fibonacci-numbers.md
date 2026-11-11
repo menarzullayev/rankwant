@@ -68,7 +68,7 @@ $n$ butun sonini oddiy ochko‘z algoritm yordamida kodlash mumkin:
 
 Kod so‘zini dekodlash uchun avval oxirgi $1$ ni olib tashlang. So‘ng, agar $i$-bit o‘rnatilgan bo‘lsa (o‘rinlar chapdagi eng birinchi bitdan o‘ngdagi eng oxirgi bitga qarab 0 dan raqamlanadi), songa $F_{i+2}$ ni qo‘shing.
 
-## $n$-Fibonacci sonini topish formulalari { data-toc-label="$n$-Fibonacci sonini topish formulalari" }
+## $n$-Fibonacci sonini topish formulalari
 
 ### Yopiq ko‘rinishdagi ifoda
 
@@ -103,7 +103,7 @@ int fib(int n) {
 }
 ```
 
-Shu tarzda $O(n)$ vaqt ishlaydigan chiziqli yechimga ega bo‘lamiz; bunda ketma-ketlikdagi $n$ dan oldingi qiymatlar hisoblanadi.
+Shu tarzda $O(n)$ vaqt ishlaydigan chiziqli yechimga ega bo‘lamiz; bunda ketma-ketlikdagi $n$ dan oldingi barcha qiymatlar saqlab boriladi.
 
 ### Matritsaviy ko‘rinish
 
@@ -256,7 +256,7 @@ Yuqoridagi kod juftlik sifatida $F_n$ va $F_{n+1}$ ni qaytaradi.
 
 Fibonacci ketma-ketligini $p$ modul bo‘yicha qaraylik. Ketma-ketlik davriy ekanini isbotlaymiz.
 
-Buni teskarisini faraz qilish orqali isbotlaymiz. $p$ modul bo‘yicha olingan Fibonacci sonlarining dastlabki $p^2 + 1$ ta juftligini qaraylik:
+Buni ziddiyat yordamida isbotlaymiz. $p$ modul bo‘yicha olingan Fibonacci sonlarining dastlabki $p^2 + 1$ ta juftligini qaraylik:
 
 $$(F_0,\ F_1),\ (F_1,\ F_2),\ \ldots,\ (F_{p^2},\ F_{p^2 + 1})$$
 

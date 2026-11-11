@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "All formulas, Legendre's formula, complexity and code match the original.",
+      "content_sha256": "7cd5c0bd9e7c4f9c40dc05ed797cf1306001e68a6ba4d6b16bc0252ad9a018e0"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the calque 'har bir k-elementi' with 'har k-chi element' in three places.",
+      "content_sha256": "7cd5c0bd9e7c4f9c40dc05ed797cf1306001e68a6ba4d6b16bc0252ad9a018e0"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Restored the factorisation of k as inline math, as in the original, instead of an extra display formula.",
+      "content_sha256": "7cd5c0bd9e7c4f9c40dc05ed797cf1306001e68a6ba4d6b16bc0252ad9a018e0"
+    }
+  ]
+}

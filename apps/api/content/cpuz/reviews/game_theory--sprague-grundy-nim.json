@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The two display formulas in the proof of Bouton's theorem were written with \\[ ... \\] in the original, which the site's renderer (remark-math) does not parse; they are now $$ ... $$ with identical mathematics. The inline set condition is written exactly as in the original."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Reworded the sentence of the proof that the translation had turned into 'cannot keep the xor-sum non-zero' back to the original meaning (the player cannot make it non-zero), and replaced 'asiklik' by 'siklsiz' per the glossary.",
+      "content_sha256": "c1103cadc2b3a182b11a1dbc9eaafd5f3ceb1ac73177b548a6761eb8b05b0696"
+    },
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Language was correct and natural; only the term for acyclic was aligned with the glossary.",
+      "content_sha256": "c1103cadc2b3a182b11a1dbc9eaafd5f3ceb1ac73177b548a6761eb8b05b0696"
+    },
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Inline formula for the index set restored to the original form; the two \\[ \\] display formulas were converted to $$ so that KaTeX renders them.",
+      "content_sha256": "c1103cadc2b3a182b11a1dbc9eaafd5f3ceb1ac73177b548a6761eb8b05b0696"
+    }
+  ]
+}

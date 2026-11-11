@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Prose, complexity O(VE + V^2 sqrt(E)) and the code match the original.",
+      "content_sha256": "6dc1350e7bb4f893fd875976543cd3086f1c01f7d0c522da7b8f927dc3a91a57"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Smoothed three phrases ('murakkablik yaxshilanishi ma’lum bo‘ladi', the list-recalculation clause, 'Aniqroq aytganda').",
+      "content_sha256": "6dc1350e7bb4f893fd875976543cd3086f1c01f7d0c522da7b8f927dc3a91a57"
+    }
+  ]
+}

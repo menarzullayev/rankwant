@@ -48,11 +48,11 @@ Also, here are some more interesting results related to the number of repetition
   - If we encode repetitions with tuples of numbers (called Crochemore triples) $(i,~ p,~ r)$ (where $i$ is the position of the beginning, $p$ the length of the repeating substring, and $r$ the number of repetitions), then all repetitions can be described with $O(n \log n)$ such triples.
   - Fibonacci strings, defined as 
     
-    \[\begin{align}
-    t_0 &= a, \\\\
-    t_1 &= b, \\\\
+    $$\begin{align}
+    t_0 &= a, \\
+    t_1 &= b, \\
     t_i &= t_{i-1} + t_{i-2},
-    \end{align}\]
+    \end{align}$$
     
     are "strongly" periodic.
     The number of repetitions in the Fibonacci string $f_i$, even in the compressed with Crochemore triples, is $O(f_n \log f_n)$.
@@ -134,8 +134,8 @@ $$
 
 $$
   \begin{align}
-  l_1 &\le k_1, \\\\
-  l_2 &\le k_2. \\\\
+  l_1 &\le k_1, \\
+  l_2 &\le k_2. \\
   \end{align}
 $$
 
@@ -149,9 +149,9 @@ To summarize:
 
 $$
   \begin{align}
-  l_1 + l_2 &= l = |u| - cntr \\\\
-  l_1 &\le k_1, \\\\
-  l_2 &\le k_2. \\\\
+  l_1 + l_2 &= l = |u| - cntr \\
+  l_1 &\le k_1, \\
+  l_2 &\le k_2. \\
   \end{align}
 $$
 

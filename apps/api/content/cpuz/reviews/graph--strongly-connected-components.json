@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T22:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the example SCC set as an inline formula (it had become a display formula), aligned the not-equal sign and Tarjan t_in/t_low notation and the implication labels with the original, and removed an added sentence ('Aksincha, t_low = t_in...') that the original does not contain.",
+      "content_sha256": "ef24c08636d9091972ce547279ee7425b4fa2e414ea0df66bd5fb627581958cd"
+    },
+    {
+      "at": "2026-11-11T22:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed the awkward phrasing of the condensation-graph edge definition and an unidiomatic 'ayni' (replaced with 'bir xil'); the rest of the translation was accurate.",
+      "content_sha256": "ef24c08636d9091972ce547279ee7425b4fa2e414ea0df66bd5fb627581958cd"
+    },
+    {
+      "at": "2026-11-11T22:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "ef24c08636d9091972ce547279ee7425b4fa2e414ea0df66bd5fb627581958cd"
+    }
+  ]
+}

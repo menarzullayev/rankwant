@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation compressed both algorithms and dropped detail: restored the full prose for Graham scan and Monotone chain (collinear-point handling, upper and lower hull rules, the degenerate case) and the original code exactly (the translation had reformatted it and added a cast in the last loop). Restored the original practice problem list, including the omitted Latin American Regionals problem and the correct Codeforces link, and removed the added closing complexity paragraph.",
+      "content_sha256": "86079f45feb485211476dd90d63cef8efa8340b73c1ca6071835d7ec6a70512a"
+    },
+    {
+      "at": "2026-11-12T10:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original; the difference listed in the allow-list was removed.",
+      "content_sha256": "86079f45feb485211476dd90d63cef8efa8340b73c1ca6071835d7ec6a70512a"
+    },
+    {
+      "at": "2026-11-12T10:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated the restored text into Uzbek with consistent terms (qavariq qobiq, soat mili yo‘nalishi, orientatsiya).",
+      "content_sha256": "86079f45feb485211476dd90d63cef8efa8340b73c1ca6071835d7ec6a70512a"
+    }
+  ]
+}

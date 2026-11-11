@@ -1,147 +1,111 @@
 # Uchlik qidiruv
 
-$[l,r]$ oraliqda **unimodal** $f(x)$ funksiya berilgan bo‘lsin. Unimodallik quyidagi ikki holatdan birini anglatadi:
+Bizga $[l, r]$ oraliqda **unimodal** bo‘lgan $f(x)$ funksiya berilgan. Unimodal funksiya deganda funksiyaning ikki xatti-harakatidan biri tushuniladi:
 
-1. funksiya avval qat’iy o‘sadi, bitta nuqta yoki biror oraliqda maksimumga erishadi, keyin qat’iy kamayadi;
-2. funksiya avval qat’iy kamayadi, minimumga erishadi, keyin qat’iy o‘sadi.
+1. Funksiya avval qat’iy o‘sadi, maksimumga erishadi (bitta nuqtada yoki oraliqda), so‘ng qat’iy kamayadi.
 
-Quyida birinchi holatda $[l,r]$ dagi maksimumni topamiz. Minimum uchun barcha taqqoslashlar simmetrik ravishda teskarilanadi.
+2. Funksiya avval qat’iy kamayadi, minimumga erishadi, so‘ng qat’iy o‘sadi.
+
+Ushbu maqolada birinchi holatni nazarda tutamiz.
+Ikkinchi holat birinchisiga to‘liq simmetrik.
+
+Vazifa — $f(x)$ funksiyaning $[l, r]$ oraliqdagi maksimumini topish.
 
 ## Algoritm
 
-Oraliq ichidan
+Shu oraliqdagi ixtiyoriy 2 ta $m_1$ va $m_2$ nuqtani ko‘rib chiqamiz: $l < m_1 < m_2 < r$. Funksiyani $m_1$ va $m_2$ nuqtalarda hisoblaymiz, ya’ni $f(m_1)$ va $f(m_2)$ qiymatlarini topamiz. Endi uch variantdan biri chiqadi:
 
-$$l<m_1<m_2<r$$
+-   $f(m_1) < f(m_2)$
 
-bo‘ladigan ikkita nuqta tanlab, $f(m_1)$ va $f(m_2)$ ni hisoblaymiz. Uch holat mavjud.
+    Izlanayotgan maksimum $m_1$ ning chap tomonida, ya’ni $[l, m_1]$ oraliqda bo‘la olmaydi, chunki yo $m_1$ va $m_2$ nuqtalarning ikkalasi, yo faqat $m_1$ funksiya o‘suvchi sohaga tegishli. Har ikki holatda ham maksimumni $[m_1, r]$ kesmada izlash kerak bo‘ladi.
 
-- **$f(m_1)<f(m_2)$.** Maksimum $[l,m_1]$ da bo‘la olmaydi. Ikkala nuqta ham o‘suvchi qismda yoki faqat $m_1$ o‘suvchi qismda yotadi. Qidiruv $[m_1,r]$ da davom etadi.
-- **$f(m_1)>f(m_2)$.** Oldingi holatga simmetrik: maksimum $[m_2,r]$ da bo‘la olmaydi va yangi oraliq $[l,m_2]$ bo‘ladi.
-- **$f(m_1)=f(m_2)$.** Ikkala nuqta maksimal plato ichida yoki $m_1$ o‘suvchi, $m_2$ kamayuvchi qismda turadi. Maksimum $[m_1,m_2]$ da saqlanadi. Kodni soddalashtirish uchun bu holat yuqoridagi ikki holatdan biriga qo‘shib yuborilishi mumkin.
+-   $f(m_1) > f(m_2)$
 
-Har taqqoslashdan keyin $[l,r]$ qisqaroq $[l',r']$ bilan almashtiriladi. Jarayon takrorlansa, oraliq istalgan aniqlikkacha torayadi.
+    Bu vaziyat avvalgisiga simmetrik: maksimum $m_2$ ning o‘ng tomonida, ya’ni $[m_2, r]$ oraliqda bo‘la olmaydi va qidiruv sohasi $[l, m_2]$ kesmagacha qisqaradi.
 
-Odatda nuqtalar oraliqni uchta teng qismga bo‘ladigan qilib olinadi:
+-   $f(m_1) = f(m_2)$
 
-$$m_1=l+\frac{r-l}{3},$$
+    Ko‘rish mumkinki, yo bu ikki nuqtaning ikkalasi funksiya qiymati maksimal bo‘lgan sohaga tegishli, yo $m_1$ qiymatlar o‘sayotgan, $m_2$ esa kamayayotgan sohada (bu yerda funksiyaning qat’iy o‘sishi/kamayishidan foydalandik). Demak, qidiruv sohasi $[m_1, m_2]$ gacha qisqaradi. Kodni soddalashtirish uchun bu holatni oldingi holatlarning biri bilan birlashtirish mumkin.
 
-$$m_2=r-\frac{r-l}{3}.$$
+Shunday qilib, ikkita ichki nuqtadagi qiymatlarni taqqoslash asosida joriy $[l, r]$ oraliqni yangi, qisqaroq $[l^\prime, r^\prime]$ oraliq bilan almashtirishimiz mumkin. Tavsiflangan jarayonni oraliqqa qayta-qayta qo‘llab, ixtiyoriy darajada qisqa oraliq hosil qilish mumkin. Oxir-oqibat uning uzunligi oldindan belgilangan biror o‘zgarmasdan (aniqlikdan) kichik bo‘ladi va jarayonni to‘xtatish mumkin. Bu sonli usul, shuning uchun shundan keyin funksiya oxirgi $[l, r]$ oraliqning barcha nuqtalarida o‘zining maksimumiga erishadi deb hisoblash mumkin. Umumiylikni yo‘qotmasdan, qaytariladigan qiymat sifatida $f(l)$ ni olish mumkin.
 
-$m_1$ va $m_2$ bir-biriga yaqinroq tanlansa, bir iteratsiyadagi qisqarish biroz tezlashishi mumkin, ammo funksiyani qayta hisoblash va sonli aniqlik masalalari ham hisobga olinadi.
+Biz $m_1$ va $m_2$ nuqtalarni tanlashga hech qanday cheklov qo‘ymadik. Bu tanlov implementatsiyaning yaqinlashish tezligi va aniqligini belgilaydi. Eng keng tarqalgan usul — nuqtalarni $[l, r]$ oraliqni uchta teng qismga bo‘ladigan qilib tanlash. Shunda
 
-## Murakkablik
+$$m_1 = l + \frac{(r - l)}{3}$$
 
-Har iteratsiyada qidiruv oralig‘ining taxminan uchdan biri tashlanadi:
+$$m_2 = r - \frac{(r - l)}{3}$$
 
-$$T(n)=T(2n/3)+O(1)=\Theta(\log n).$$
+Agar $m_1$ va $m_2$ bir-biriga yaqinroq tanlansa, yaqinlashish tezligi biroz oshadi.
 
-Bu bahoni [Master teoremasi](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms)) orqali ham olish mumkin.
+### Ishlash vaqtini tahlil qilish
 
-Demak, iteratsiyalar soni oraliq uzunligiga nisbatan logarifmik. Haqiqiy sonlarda murakkablik boshlang‘ich uzunlik va talab qilingan mutlaq xato $\varepsilon$ ga bog‘liq:
+$$T(n) = T({2n}/{3}) + O(1) = \Theta(\log n)$$
 
-$$O\left(\log\frac{r-l}{\varepsilon}\right).$$
+Buni quyidagicha tasavvur qilish mumkin: funksiyani $m_1$ va $m_2$ nuqtalarda hisoblagandan so‘ng har safar oraliqning taxminan uchdan birini, chap yoki o‘ng qismini, e’tiborga olmaymiz. Shunday qilib, qidiruv sohasi o‘lchami asl o‘lchamning ${2n}/{3}$ qismiga teng bo‘ladi.
 
-Bitta $f(x)$ hisoblash $C$ vaqt olsa, oddiy implementatsiyaning umumiy vaqti $O(C\log((r-l)/\varepsilon))$ bo‘ladi.
+[Master teoremasini](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms)) qo‘llab, kerakli murakkablik bahosini olamiz.
 
-## Butun argumentli funksiya
+### Butun argumentli holat
 
-$x$ faqat butun qiymat olsa, $[l,r]$ diskret oraliq bo‘ladi. $m_1$ va $m_2$ ni oraliqni taxminan uchga bo‘ladigan butun nuqtalar sifatida tanlash algoritm to‘g‘riligini o‘zgartirmaydi.
+Agar $f(x)$ butun parametr qabul qilsa, $[l, r]$ oraliq diskret bo‘ladi. $m_1$ va $m_2$ nuqtalarni tanlashga hech qanday cheklov qo‘ymaganimiz uchun algoritmning to‘g‘riligiga ta’sir qilmaydi. $m_1$ va $m_2$ ni baribir $[l, r]$ ni taxminan teng 3 qismga bo‘ladigan qilib tanlash mumkin.
 
-Farq to‘xtash shartida: $r-l<3$ bo‘lganda $m_1$ va $m_2$ ni bir-biridan hamda chegaralardan farqli tanlash imkonsiz. Sikl davom ettirilsa, chegaralar o‘zgarmay qolib, cheksiz sikl yuz berishi mumkin. Shuning uchun kichik oraliq qolishi bilan $l,l+1,\ldots,r$ nuqtalarning barchasi bevosita tekshiriladi.
+Farq algoritmning to‘xtash shartida yuzaga keladi. Uchlik qidiruv $(r - l) < 3$ bo‘lganda to‘xtashi kerak, chunki bu holda $m_1$ va $m_2$ ni bir-biridan hamda $l$ va $r$ dan farqli qilib tanlab bo‘lmaydi, bu esa cheksiz siklga olib kelishi mumkin. $(r - l) < 3$ bo‘lgach, $f(x)$ ning maksimal qiymatini beradigan nuqtani topish uchun nomzod nuqtalarning qolgan to‘plamini $(l, l + 1, \ldots, r)$ tekshirish kerak.
 
-```cpp
-long long ternary_search_integer(long long l, long long r) {
-    while (r - l >= 3) {
-        long long m1 = l + (r - l) / 3;
-        long long m2 = r - (r - l) / 3;
-        if (f(m1) < f(m2))
-            l = m1;
-        else
-            r = m2;
-    }
+### Oltin kesim bo‘yicha qidiruv
 
-    long long best = l;
-    for (long long x = l + 1; x <= r; ++x)
-        if (f(x) > f(best))
-            best = x;
-    return best;
-}
-```
+Ba’zi hollarda $f(x)$ ni hisoblash ancha sekin bo‘lishi mumkin, lekin aniqlik muammolari tufayli iteratsiyalar sonini kamaytirib bo‘lmaydi. Yaxshiyamki, $f(x)$ ni har bir iteratsiyada (birinchisidan tashqari) faqat bir marta hisoblash mumkin.
 
-## Oltin kesim bo‘yicha qidiruv
+Buni qanday qilishni ko‘rish uchun $m_1$ va $m_2$ ni tanlash usuliga qaytamiz. Faraz qilaylik, $m_1$ va $m_2$ ni $[l, r]$ da shunday tanlaymizki, $\frac{r - l}{r - m_1} = \frac{r - l}{m_2 - l} = \varphi$ bo‘lsin, bu yerda $\varphi$ — qandaydir o‘zgarmas. Hisoblashlar hajmini kamaytirish uchun keyingi iteratsiyada yangi hisoblanadigan $m_1'$, $m_2'$ nuqtalardan biri $m_1$ yoki $m_2$ bilan ustma-ust tushadigan $\varphi$ ni tanlamoqchimiz, shunda allaqachon hisoblangan funksiya qiymatidan qayta foydalanish mumkin bo‘ladi.
 
-Ba’zi masalalarda $f(x)$ ni hisoblash qimmat, lekin aniqlik sabab iteratsiyalar sonini kamaytirib bo‘lmaydi. Oltin kesim usuli birinchi iteratsiyadan keyin har qadamda funksiyani faqat bitta yangi nuqtada hisoblash imkonini beradi.
+Endi joriy iteratsiyadan keyin $l = m_1$ deb o‘rnatdik deylik. Unda $m_1'$ nuqta $\frac{r - m_1}{r - m_1'} = \varphi$ ni qanoatlantiradi. Biz bu nuqta $m_2$ bilan ustma-ust tushishini istaymiz, ya’ni $\frac{r - m_1}{r - m_2} = \varphi$ bo‘lishi kerak.
 
-$m_1$ va $m_2$ quyidagi nisbatni saqlasin:
+$\frac{r - m_1}{r - m_2} = \varphi$ tenglikning ikkala tomonini $\frac{r - m_2}{r - l}$ ga ko‘paytirib, $\frac{r - m_1}{r - l} = \varphi\frac{r - m_2}{r - l}$ ni olamiz. Shunga e’tibor bering: $\frac{r - m_1}{r - l} = \frac{1}{\varphi}$ va $\frac{r - m_2}{r - l} = \frac{r - l + l - m_2}{r - l} = 1 - \frac{1}{\varphi}$. Buni o‘rniga qo‘yib va $\varphi$ ga ko‘paytirib, quyidagi tenglamani olamiz:
 
-$$\frac{r-l}{r-m_1}=\frac{r-l}{m_2-l}=\varphi.$$
+$\varphi^2 - \varphi - 1 = 0$
 
-$l=m_1$ qilib yangilanganda yangi $m_1'$ eski $m_2$ bilan ustma-ust tushishini istaymiz. Bundan
+Bu mashhur oltin kesim tenglamasi. Uni yechsak, $\frac{1 \pm \sqrt{5}}{2}$ chiqadi. $\varphi$ musbat bo‘lishi kerakligi uchun $\varphi = \frac{1 + \sqrt{5}}{2}$ ni olamiz. Xuddi shu mulohazani $r = m_2$ deb o‘rnatib, $m_2'$ ning $m_1$ bilan ustma-ust tushishini istagan holatga qo‘llasak, $\varphi$ ning aynan shu qiymati chiqadi. Demak, $m_1 = l + \frac{r - l}{1 + \varphi}$ va $m_2 = r - \frac{r - l}{1 + \varphi}$ ni tanlasak, har iteratsiyada oldingi iteratsiyada hisoblangan $f(x)$ qiymatlaridan birini qayta ishlatish mumkin.
 
-$$\frac{r-m_1}{r-m_2}=\varphi$$
-
-kelib chiqadi. Nisbatlarni almashtirib soddalashtirsak,
-
-$$\varphi^2-\varphi-1=0$$
-
-tenglama hosil bo‘ladi. Musbat yechim — mashhur oltin nisbat:
-
-$$\varphi=\frac{1+\sqrt5}{2}.$$
-
-Shunda
-
-$$m_1=l+\frac{r-l}{1+\varphi},\qquad
-m_2=r-\frac{r-l}{1+\varphi}.$$
-
-Har yangilanishda yangi ichki nuqtalardan biri avvalgi nuqta bilan bir xil bo‘ladi va uning $f$ qiymati qayta ishlatiladi. $r=m_2$ bo‘lgan simmetrik holatda ham ayni $\varphi$ chiqadi.
-
-## Haqiqiy sonlar uchun C++ implementatsiyasi
+## Implementatsiya
 
 ```cpp
 double ternary_search(double l, double r) {
-    const double eps = 1e-9;
-
-    while (r - l > eps) {
-        double m1 = l + (r - l) / 3;
-        double m2 = r - (r - l) / 3;
-        double f1 = f(m1);
-        double f2 = f(m2);
-
-        if (f1 < f2)
-            l = m1;
-        else
-            r = m2;
-    }
-
-    return f(l);
+	double eps = 1e-9;				//xato chegarasini shu yerda belgilang
+	while (r - l > eps) {
+		double m1 = l + (r - l) / 3;
+		double m2 = r - (r - l) / 3;
+		double f1 = f(m1);		//funksiyani m1 nuqtada hisoblaydi
+		double f2 = f(m2);		//funksiyani m2 nuqtada hisoblaydi
+		if (f1 < f2)
+			l = m1;
+		else
+			r = m2;
+	}
+	return f(l);					//[l, r] dagi f(x) maksimumini qaytaradi
 }
 ```
 
-Bu yerdagi `eps` funksiya qiymatidagi emas, $x$ koordinatasidagi mutlaq xatoni nazorat qiladi. `f` ning o‘zi noaniq hisoblanishidan keladigan xato bunga kirmaydi.
+Bu yerdagi `eps` aslida mutlaq xato (funksiyani noaniq hisoblashdan kelib chiqadigan xatolar hisobga olinmaydi).
 
-Muqobil to‘xtash sharti sifatida qat’iy iteratsiyalar sonini ishlatish mumkin. Bu chegaralarning kattaligidan mustaqil va talab qilingan nisbiy aniqlikni bashorat qilishni osonlashtiradi. Sport dasturlash masalalarida xato chegarasi ko‘pincha $10^{-6}$ bo‘ladi; `double` uchun 200–300 iteratsiya odatda yetarli, lekin masala sharti va $f$ hisobining barqarorligi albatta tekshiriladi.
-
-## Qachon ishlatmaslik kerak?
-
-Uchlik qidiruv faqat unimodallik isbotlanganida ishonchli. Bir nechta mahalliy maksimum yoki minimumli funksiyada u global optimumni tashlab yuborishi mumkin. Diskret funksiyada keng plato va yaxlitlashlar ham to‘xtash shartiga ehtiyotkorlik talab qiladi. Predikat monoton bo‘lsa, uchlik qidiruv emas, ikkilik qidiruv odatda sodda va tezroq yechimdir.
+`r - l > eps` mezoni o‘rniga to‘xtash mezoni sifatida iteratsiyalarning o‘zgarmas sonini tanlash mumkin. Iteratsiyalar soni kerakli aniqlikni ta’minlaydigan qilib tanlanishi kerak. Odatda ko‘pchilik dasturlash musobaqalarida xato chegarasi ${10}^{-6}$ bo‘ladi, shuning uchun 200 - 300 iteratsiya yetarli. Bundan tashqari, iteratsiyalar soni $l$ va $r$ qiymatlariga bog‘liq emas, shuning uchun iteratsiyalar soni kerakli nisbiy xatoga mos keladi.
 
 ## Mashq masalalari
 
-- [Codeforces 1978B — New Bakery](https://codeforces.com/problemset/problem/1978/B)
-- [CodeChef — Race Time](https://www.codechef.com/problems/AMCS03)
-- [HackerEarth — Rescuer](https://www.hackerearth.com/problem/algorithm/rescuer-2d2495cb/)
-- [SPOJ — Building Construction](http://www.spoj.com/problems/KOPC12A/)
-- [Codeforces 578C — Weakness and Poorness](http://codeforces.com/problemset/problem/578/C)
-- [LightOJ 1146 — Closest Distance](http://lightoj.com/volume_showproblem.php?problem=1146)
-- [Codeforces Gym 101309D — Dome of Circus](http://codeforces.com/gym/101309)
-- [UVA — Galactic Taxes](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=4898)
-- [Codeforces Gym 100829A — Chasing the Cheetahs](http://codeforces.com/gym/100829)
-- [UVA 12197 — Trick or Treat](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=3349)
-- [Codeforces 439D — Devu and His Brother](https://codeforces.com/problemset/problem/439/D)
-- [CodeChef — Is This JEE](https://www.codechef.com/problems/ICM2003)
-- [Codeforces 1355E — Restorer Distance](https://codeforces.com/contest/1355/problem/E)
-- [Timus 1058 — Chocolate](https://acm.timus.ru/problem.aspx?space=1&num=1058)
-- [Timus 1436 — Billboard](https://acm.timus.ru/problem.aspx?space=1&num=1436)
-- [Timus 1451 — Beerhouse Tale](https://acm.timus.ru/problem.aspx?space=1&num=1451)
-- [Timus 1719 — Kill the Shaitan-Boss](https://acm.timus.ru/problem.aspx?space=1&num=1719)
-- [Timus 1913 — Titan Ruins](https://acm.timus.ru/problem.aspx?space=1&num=1913)
+- [Codeforces - New Bakery](https://codeforces.com/problemset/problem/1978/B)
+- [Codechef - Race time](https://www.codechef.com/problems/AMCS03)
+- [Hackerearth - Rescuer](https://www.hackerearth.com/problem/algorithm/rescuer-2d2495cb/)
+- [Spoj - Building Construction](http://www.spoj.com/problems/KOPC12A/)
+- [Codeforces - Weakness and Poorness](http://codeforces.com/problemset/problem/578/C)
+* [LOJ - Closest Distance](http://lightoj.com/volume_showproblem.php?problem=1146)
+* [GYM - Dome of Circus (D)](http://codeforces.com/gym/101309)
+* [UVA - Galactic Taxes](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=4898)
+* [GYM - Chasing the Cheetahs (A)](http://codeforces.com/gym/100829)
+* [UVA - 12197 - Trick or Treat](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=3349)
+* [SPOJ - Building Construction](http://www.spoj.com/problems/KOPC12A/)
+* [Codeforces - Devu and his Brother](https://codeforces.com/problemset/problem/439/D)
+* [Codechef - Is This JEE ](https://www.codechef.com/problems/ICM2003)
+* [Codeforces - Restorer Distance](https://codeforces.com/contest/1355/problem/E)
+* [TIMUS 1058 Chocolate](https://acm.timus.ru/problem.aspx?space=1&num=1058)
+* [TIMUS 1436 Billboard](https://acm.timus.ru/problem.aspx?space=1&num=1436)
+* [TIMUS 1451 Beerhouse Tale](https://acm.timus.ru/problem.aspx?space=1&num=1451)
+* [TIMUS 1719 Kill the Shaitan-Boss](https://acm.timus.ru/problem.aspx?space=1&num=1719)
+* [TIMUS 1913 Titan Ruins: Alignment of Forces](https://acm.timus.ru/problem.aspx?space=1&num=1913)

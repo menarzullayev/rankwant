@@ -1,17 +1,20 @@
 # Suffiks daraxti. Ukkonen algoritmi
 
 *Ushbu maqola qoralama bo‘lib, algoritmning tavsifini o‘z ichiga olmaydi. Algoritm tavsifi uchun boshqa manbalarga, masalan, Dan Gusfieldning [Algorithms on Strings, Trees, and Sequences](https://www.cs.cmu.edu/afs/cs/project/pscico-guyb/realworld/www/slidesF06/cmuonly/gusfield.pdf) kitobiga murojaat qiling.*
+
 Ushbu algoritm uzunligi $n$ bo‘lgan berilgan $s$ satr uchun suffiks daraxtini $O(n\log(k))$ vaqt ichida quradi, bu yerda $k$ — alifbo o‘lchami (agar $k$ o‘zgarmas deb hisoblansa, asimptotik murakkablik chiziqli bo‘ladi).
 
 Algoritmga kirish sifatida $s$ satri va uning $n$ uzunligi beriladi; ular global o‘zgaruvchilar orqali uzatiladi.
 
 Asosiy `build_tree` funksiyasi suffiks daraxtini quradi. Daraxt `node` strukturalari massivi ko‘rinishida saqlanadi, bunda `node[0]` daraxt ildizidir.
-Kodni soddalashtirish uchun qirralar ham shu strukturalarda saqlanadi: har bir tugunning `node` strukturasi u bilan ota tuguni orasidagi qirra haqidagi ma’lumotni saqlaydi. Umuman olganda, har bir `node` quyidagi axborotni saqlaydi:
+
+Kodni soddalashtirish uchun qirralar ham shu strukturalarda saqlanadi: har bir tugunning `node` strukturasi u bilan ota tugun orasidagi qirra haqidagi ma’lumotni saqlaydi. Umuman olganda, har bir `node` quyidagi axborotni saqlaydi:
 
 * `(l, r)` — ushbu tugunga olib boruvchi qirraga mos `s[l..r-1]` qism satrining chap va o‘ng chegaralari;
 * `par` — ota tugun;
 * `link` — suffiks havolasi;
 * `next` — ushbu tugundan chiqadigan qirralar ro‘yxati.
+
 ```cpp
 string s;
 int n;
@@ -101,9 +104,11 @@ void build_tree() {
 		tree_extend (i);
 }
 ```
+
 ## Siqilgan implementatsiya
 
 Ushbu siqilgan implementatsiyani [freopen](http://codeforces.com/profile/freopen) taklif qilgan.
+
 ```cpp
 const int N=1000000,INF=1000000000;
 string a;
@@ -143,7 +148,9 @@ void build() {
 		ukkadd (a[la]-'a');
 }
 ```
+
 Izohlar qo‘shilgan ayni kod:
+
 ```cpp
 const int N=1000000,    // maximum possible number of nodes in suffix tree
 	INF=1000000000; // infinity constant
@@ -205,6 +212,7 @@ void build() {
 		ukkadd (a[la]-'a');
 }
 ```
+
 ## Amaliy masalalar
 
 * [UVA 10679 - I Love Strings!!!](http://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1620)

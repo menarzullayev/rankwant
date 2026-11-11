@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The original writes one display formula (the chain of equalities in property 5 of the cross product) with \\[ ... \\], which the site's renderer does not parse; it is now $$ ... $$ with the same mathematics. Code blocks and all other formulas are the original's."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a rewrite, not a translation: it dropped the proofs, the unit-vector derivation of the dot and cross products, the pseudo-scalar discussion, the plane-intersection solution by Cramer's rule and the original code, and it added formulas the original does not have. Rewrote the whole article from the original with its code and formulas restored verbatim.",
+      "content_sha256": "7de2348dbe4a79c761e3f34071a9a37e38786dcde6ed4ca339f8d515ad8bf293"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Wrote natural Uzbek for the whole article using glossary terms (skalyar ko‘paytma, vektor ko‘paytma, to‘g‘ri chiziq) and standard terms such as aralash ko‘paytma, komplanar and kollinear.",
+      "content_sha256": "7de2348dbe4a79c761e3f34071a9a37e38786dcde6ed4ca339f8d515ad8bf293"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "All code blocks now match the original; the only remaining difference is the \\[ \\] display formula rendered as $$.",
+      "content_sha256": "7de2348dbe4a79c761e3f34071a9a37e38786dcde6ed4ca339f8d515ad8bf293"
+    }
+  ]
+}

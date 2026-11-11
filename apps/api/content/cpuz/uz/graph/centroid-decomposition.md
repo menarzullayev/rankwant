@@ -1,17 +1,18 @@
 # Centroid dekompozitsiyasi
 
-Oldindan bilish tavsiya etiladi: [chuqurlik bo‘yicha qidiruv (DFS)](/algorithms/graph/depth-first-search), [bo‘lib tashla va hukmronlik qil](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm), [daraxtlar](https://en.wikipedia.org/wiki/Tree_(graph_theory)>).
+Oldindan bilish tavsiya etiladi: [chuqurlik bo‘yicha qidiruv (DFS)](/algorithms/graph/depth-first-search), [bo‘lib yechish](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm), [daraxtlar](https://en.wikipedia.org/wiki/Tree_(graph_theory)>).
 
 ## Kirish
 
-**Centroid dekompozitsiyasi** — daraxtlarda qo‘llanadigan bo‘lib tashla va hukmronlik qil usuli. U daraxtdagi yo‘llar bilan bog‘liq turli masalalarni, masalan, ma’lum xossalarga ega yo‘llarni sanash, masofalarni topish yoki daraxt yo‘llari bo‘yicha so‘rovlarga javob berishni yechishda ishlatiladi.
+**Centroid dekompozitsiyasi** — daraxtlarda qo‘llanadigan bo‘lib yechish usuli. U daraxtdagi yo‘llar bilan bog‘liq turli masalalarni, masalan, ma’lum xossalarga ega yo‘llarni sanash, masofalarni topish yoki daraxt yo‘llari bo‘yicha so‘rovlarga javob berishni yechishda ishlatiladi.
+
 Asosiy g‘oya — daraxtning **centroid**ini topib, daraxtni rekursiv ravishda ajratish. Ushbu maxsus tugun olib tashlanganda daraxt komponentlarga bo‘linadi va ularning har biri asl daraxt tugunlarining ko‘pi bilan yarmini o‘z ichiga oladi. Bu rekursiya chuqurligining logarifmik bo‘lishini kafolatlaydi va samarali algoritmlarga olib keladi.
 
 ## Centroidning ta’rifi va xossalari
 
 Avval centroid nima ekanini tushunib olaylik. Daraxtning **centroidi** — olib tashlanganda hosil bo‘ladigan ost-daraxtlarning hech birida $\frac{N}{2}$ tadan ortiq tugun qolmaydigan tugun; bu yerda $N$ — daraxtdagi tugunlarning umumiy soni.
 
-    ![Daraxt centroidi](/algorithms-media/graph/centroid-definition.png)
+![Daraxt centroidi](/algorithms-media/graph/centroid-definition.png)
 
 $N$ ta tugunli istalgan daraxtda bitta yoki ikkita centroid mavjud. Agar ikkita centroid bo‘lsa, ular o‘zaro qo‘shni bo‘lishi shart.
 
@@ -22,10 +23,10 @@ $N$ ta tugunli istalgan daraxtda bitta yoki ikkita centroid mavjud. Agar ikkita 
 > **Isbot**
 >
 > _Mavjudlik_: Istalgan tugundan boshlang va eng katta ost-daraxtga ega farzand tomon yurishda davom eting. Hech bir farzandda $\frac{N}{2}$ tadan ortiq tugun qolmaganida to‘xtang. Shu paytda joriy $v$ tugun centroid bo‘ladi, chunki (1) to‘xtash shartiga ko‘ra hech bir farzandning ost-daraxtida $\frac{N}{2}$ tadan ortiq tugun yo‘q; (2) “ota-ona tomoni”da ($v$ farzand bo‘lgan paytda $v$ ning ost-daraxtiga kirmagan barcha tugunlar) ham ko‘pi bilan $\frac{N}{2}$ ta tugun bor, aks holda ota-onadan $v$ ga o‘tmagan bo‘lardik.
+>
 > Bu jarayon doimo tugashini ko‘rish oson; demak, kamida bitta centroid mavjud.
-> _Yagonalik_: Ikkita centroid $u$ va $v$ mavjud deb faraz qilaylik. Ular orasidagi yo‘lni qaraymiz. $u$ olib tashlanganida $v$ ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda bo‘lishi kerak. Xuddi shunday, $v$ olib tashlanganida $u$ ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda bo‘lishi kerak. Bu faqat $u$ va $v$ qo‘shni bo‘lgandagina mumkin; aks holda ulardan birini olib tashlash ikkinchisini $\frac{N}{2}$ tadan ortiq tugunli komponentda qoldirardi.
-
-Bu ikkala centroid ham ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda joylashadi degan boshlang‘ich bayonotimizga zid. Bundan tashqari, agar ikkita centroid mavjud bo‘lsa, ular daraxtni har biri aynan $\frac{N}{2}$ ta tugundan iborat ikkita komponentga ajratishi kerak; bu faqat $N$ juft bo‘lganda mumkin.
+>
+> _Yagonalik_: Ikkita centroid $u$ va $v$ mavjud deb faraz qilaylik. Ular orasidagi yo‘lni qaraymiz. $u$ olib tashlanganida $v$ ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda bo‘lishi kerak. Xuddi shunday, $v$ olib tashlanganida $u$ ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda bo‘lishi kerak. Bu faqat $u$ va $v$ qo‘shni bo‘lgandagina mumkin; aks holda ulardan birini olib tashlash ikkinchisini $\frac{N}{2}$ tadan ortiq tugunli komponentda qoldirardi. Bu ikkala centroid ham ko‘pi bilan $\frac{N}{2}$ ta tugunli komponentda joylashadi degan boshlang‘ich bayonotimizga zid. Bundan tashqari, agar ikkita centroid mavjud bo‘lsa, ular daraxtni har biri aynan $\frac{N}{2}$ ta tugundan iborat ikkita komponentga ajratishi kerak; bu faqat $N$ juft bo‘lganda mumkin.
 
 ## Centroid dekompozitsiyasining ta’rifi va xossalari
 
@@ -44,6 +45,7 @@ Daraxtni “dekompozitsiya qilish” mohiyatan centroidlarni rekursiv topish va 
 > Asl daraxtdagi istalgan $v$ tugunni qaraymiz. Dekompozitsiya jarayonida $v$ necha marta biror komponent tarkibida bo‘lishi mumkinligini kuzatamiz.
 >
 > Birinchi sathda $v$ o‘lchami $N$ bo‘lgan komponentda joylashadi. Ushbu komponent centroidini olib tashlaganimizda, muvozanat xossasiga ko‘ra $v$ o‘lchami ko‘pi bilan $\frac{N}{2}$ bo‘lgan komponentga tushadi.
+>
 > Ikkinchi sathda $v$ o‘lchami ko‘pi bilan $\frac{N}{2}$ bo‘lgan komponentda joylashadi. Bu komponent centroidini olib tashlash $v$ ni o‘lchami ko‘pi bilan $\frac{N}{4}$ bo‘lgan komponentga joylashtiradi.
 >
 > Shu tartibda davom etsak, $k$-sathda $v$ o‘lchami ko‘pi bilan $\frac{N}{2^{k-1}}$ bo‘lgan komponentda joylashadi.
@@ -64,9 +66,11 @@ Daraxtni “dekompozitsiya qilish” mohiyatan centroidlarni rekursiv topish va 
 > Asl daraxtda $u$ tugundan $v$ tugungacha bo‘lgan istalgan $P$ yo‘lni qaraymiz. Bu yo‘l dekompozitsiya jarayonida tanlangan kamida bitta centroiddan o‘tishini ko‘rsatishimiz kerak.
 >
 > Buni dekompozitsiya jarayoni bo‘yicha induksiya bilan isbotlaymiz.
+>
 > _Baza_: Dekompozitsiyaning birinchi sathida butun daraxtning $c_1$ centroidini tanlaymiz. Agar $P$ yo‘l $c_1$ dan o‘tsa, isbot tugadi.
 >
 > _Induktiv qadam_: $P$ yo‘l $c_1$ dan o‘tmaydi deb faraz qilaylik. $c_1$ ni olib tashlaganimizda daraxt bir nechta komponentga bo‘linadi. $P$ bog‘langan yo‘l bo‘lgani sababli, $c_1$ olib tashlangandan keyin $u$ va $v$ bir xil $C$ komponentda qolishi kerak; aks holda ularni ulash uchun $P$ yo‘l $c_1$ dan o‘tishi kerak bo‘lardi, bu farazimizga zid.
+>
 > Endi $C$ komponentni rekursiv dekompozitsiya qilamiz. $C$ komponentga qo‘llangan induktiv farazga ko‘ra, to‘liq $C$ ichida joylashgan $P$ yo‘l $C$ dekompozitsiyasidagi biror komponent centroididan o‘tishi shart.
 >
 > Bu jarayon $P$ o‘tadigan centroidni topgunimizcha davom etadi. Jarayon albatta tugaydi, chunki har bir sathda $P$ ni o‘z ichiga olgan komponent muvozanat xossasiga ko‘ra qat’iy kichrayadi va oxir-oqibat bitta qirra yoki tugungacha qisqaradi.
@@ -98,7 +102,7 @@ Centroid dekompozitsiyasidan foydalanganda umumiy jarayon quyidagicha:
 
 Bu **centroid daraxti**ni hosil qiladi. Ushbu daraxtdagi har bir tugun dekompozitsiyaning biror bosqichida topilgan centroidni ifodalaydi. Demak, centroidning, ya’ni istalgan tugunning, ota-onasi uni o‘z ichiga olgan kattaroq komponentda topilgan centroiddir. Yuqorida isbotlanganidek, bu daraxtning balandligi $O(\log N)$.
 
-    ![Centroid daraxti](/algorithms-media/graph/CentroidTree.png)
+![Centroid daraxti](/algorithms-media/graph/CentroidTree.png)
 
 Masalan, yuqoridagi rasmda centroid daraxti ko‘rsatilgan. Daraxtning har bir sathidagi har bir tugun tegishli komponentning centroididir (masalan, ildiz butun daraxtning centroidi, ildizning eng chapdagi farzandi esa ildizning eng chap ost-daraxti centroidi va hokazo).
 
@@ -182,7 +186,7 @@ void decompose(int v) {
 ```
 
 Ushbu shablonni centroid dekompozitsiyasidan foydalanuvchi boshqa masalalarga moslashtirish mumkin. Bu aniq holatda u uzunligi $K$ bo‘lgan barcha yo‘llarni sanash masalasini yechadi. Strategiya quyidagicha: har bir centroid uchun turli ost-daraxtlarda joylashgan va centroidgacha masofalari $d_1$ hamda $d_2$ bo‘lib, yig‘indisi $K$ ga teng tugunlar juftlarini topish orqali centroiddan o‘tuvchi yo‘llarni sanaymiz (ya’ni centroiddan o‘tuvchi yo‘l bir ost-daraxtdagi centroiddan $d_1$ masofadagi tugun va boshqa ost-daraxtdagi centroiddan $d_2$ masofadagi tugundan tuziladi, bunda $d_1+d_2=K$).
-Joriy ost-daraxtdagi har bir $d$ masofa uchun kod avvalgi ost-daraxtlarda $K-d$ masofada nechta tugun borligini sanaydi. Optimallashtirish keraksiz rekursiyani oldini olish uchun $K$ dan katta masofalarni tashlab yuboradi.
+Joriy ost-daraxtdagi har bir $d$ masofa uchun kod avvalgi ost-daraxtlarda $K-d$ masofada nechta tugun borligini sanaydi. Optimallashtirish keraksiz rekursiyaning oldini olish uchun $K$ dan katta masofalarni tashlab yuboradi.
 
 ### Centroid daraxtini qurish
 

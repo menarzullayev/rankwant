@@ -1,124 +1,93 @@
-# Panjaraviy bo‘lmagan ko‘pburchakdagi panjara nuqtalari
+# Panjaraviy bo‘lmagan ko‘pburchak ichidagi panjara nuqtalari
 
-Uchlari ixtiyoriy ratsional yoki haqiqiy koordinatalarda yotadigan ko‘pburchak ichidagi butun koordinatali nuqtalar sonini sanash kerak. Barcha uchlari panjara nuqtalari bo‘lganda [Pick teoremasi](/algorithms/geometry/picks-theorem) mavjud, ammo ixtiyoriy uchlar uchun boshqa yondashuv zarur.
+Panjaraviy ko‘pburchaklar uchun ko‘pburchak ichidagi panjara nuqtalarini sanash uchun Pick formulasi mavjud.
+Uchlari ixtiyoriy bo‘lgan ko‘pburchaklar-chi?
 
-Asosiy g‘oya ko‘pburchakning har bir qirrasini alohida ko‘rib, uning ostidagi panjara nuqtalar sonini orientatsiyaga qarab musbat yoki manfiy ishora bilan qo‘shishdir. Bu ko‘pburchak yuzini trapesiyalar orqali hisoblashga o‘xshaydi.
+Ko‘pburchakning har bir qirrasini alohida ko‘rib chiqamiz, so‘ng har bir qirra ostidagi panjara nuqtalar sonini qo‘shib chiqamiz; bunda ishorani qirraning yo‘nalishiga qarab tanlaymiz (ko‘pburchak yuzini trapesiyalar yordamida hisoblashdagi kabi).
 
-## Bitta qirra ostidagi nuqtalar
+Avvalo shuni ta’kidlaymizki, agar joriy qirraning uchlari $A=(x_1;y_1)$ va $B=(x_2;y_2)$ nuqtalarda bo‘lsa, uni chiziqli funksiya ko‘rinishida yozish mumkin:
 
-$A=(x_1,y_1)$ va $B=(x_2,y_2)$ qirra vertikal bo‘lmasin. Uni chiziqli funksiya sifatida yozamiz:
+$$y=y_1+(y_2-y_1) \cdot \dfrac{x-x_1}{x_2-x_1}=\left(\dfrac{y_2-y_1}{x_2-x_1}\right)\cdot x + \left(\dfrac{y_1x_2-x_1y_2}{x_2-x_1}\right)$$
 
-$$
-y=y_1+(y_2-y_1)\frac{x-x_1}{x_2-x_1}
- =kx+b,
-$$
+$$y = k \cdot x + b,~k = \dfrac{y_2-y_1}{x_2-x_1},~b = \dfrac{y_1x_2-x_1y_2}{x_2-x_1}$$
 
-bu yerda
+Endi $x=x'+\lceil x_1 \rceil$ almashtirishni bajaramiz, shunda $b' = b + k \cdot \lceil x_1 \rceil$ bo‘ladi.
+Bu bizga $x_1'=0$ va $x_2'=x_2 - \lceil x_1 \rceil$ bilan ishlash imkonini beradi.
+$n = \lfloor x_2' \rfloor$ deb belgilaymiz.
 
-$$
-k=\frac{y_2-y_1}{x_2-x_1},
-\qquad
-b=\frac{y_1x_2-x_1y_2}{x_2-x_1}.
-$$
+Algoritmning yaxlitligi uchun $x = n$ dagi va $y = 0$ dagi nuqtalarni yig‘indiga qo‘shmaymiz.
+Ularni keyinroq qo‘lda qo‘shish mumkin.
+Shunday qilib, biz $\sum\limits_{x'=0}^{n - 1} \lfloor k' \cdot x' + b'\rfloor$ yig‘indini hisoblashimiz kerak. Shuningdek, $k' \geq 0$ va $b'\geq 0$ deb faraz qilamiz.
+Aks holda $x'=-t$ almashtirishni bajarib, $b'$ ga $\lceil|b'|\rceil$ ni qo‘shish kerak.
 
-$x=x'+\lceil x_1\rceil$ almashtirish orqali chap chegarani $x'=0$ ga ko‘chiramiz. Yangi ozod had
+$\sum\limits_{x=0}^{n - 1} \lfloor k \cdot x + b\rfloor$ yig‘indini qanday hisoblash mumkinligini ko‘rib chiqamiz.
+Ikki holat mavjud:
 
-$$
-b'=b+k\lceil x_1\rceil
-$$
+  - $k \geq 1$ yoki $b \geq 1$.
 
-bo‘ladi. $n=\lfloor x_2-\lceil x_1\rceil\rfloor$ deb olamiz. Chegaralarda ikki marta sanashdan qochish uchun masala odatda
+    U holda avval $y=\lfloor k \rfloor \cdot x + \lfloor b \rfloor$ chiziq ostidagi nuqtalarni yig‘ib chiqishdan boshlaymiz. Ularning soni quyidagiga teng:
 
-$$
-\sum_{x=0}^{n-1}\lfloor kx+b\rfloor
-$$
+    $$
+    \sum\limits_{x=0}^{n - 1} \lfloor k \rfloor \cdot x + \lfloor b \rfloor=\dfrac{(\lfloor k \rfloor(n-1)+2\lfloor b \rfloor) n}{2}.
+    $$
 
-ko‘rinishdagi floor-sum ni hisoblashga keltiriladi. Qaysi chegara ochiq yoki yopiq ekanini barcha qirralar uchun bir xil qoidada tanlash, vertikal qirralar va chegaradagi nuqtalarni alohida qo‘shish kerak.
+    Endi bizni faqat $\lfloor k \rfloor \cdot x + \lfloor b \rfloor < y \leq k\cdot x + b$ shartni qanoatlantiruvchi $(x;y)$ nuqtalar qiziqtiradi.
+    Bu miqdor $0 < y \leq (k - \lfloor k \rfloor) \cdot x + (b - \lfloor b \rfloor)$ shartni qanoatlantiruvchi nuqtalar soniga teng.
+    Demak, masalani $k'= k - \lfloor k \rfloor$, $b' = b - \lfloor b \rfloor$ ga keltirdik, va endi $k'$ ham, $b'$ ham $1$ dan kichik.
+    Mana rasm: biz ko‘k nuqtalarni yig‘ib chiqdik va $k$ hamda $b$ uchun kichikroq qiymatlarga o‘tish maqsadida qora chiziqli funksiyadan ko‘k chiziqli funksiyani ayirdik:
 
-Quyida $k\ge0$ va $b\ge0$ deb faraz qilinadi. Manfiy qiyalikda qirra yo‘nalishini almashtirish yoki $x=-t$ almashtirishdan foydalanish mumkin. Manfiy $b$ esa butun siljish bilan musbat diapazonga keltiriladi.
+  ![Subtracting floored linear function](/algorithms-media/geometry/lattice.png)
 
-## Floor-sum ni rekursiv hisoblash
+  - $k < 1$ va $b < 1$.
 
-Hisoblash kerak bo‘lgan funksiya:
+    Agar $\lfloor k \cdot n + b\rfloor$ nolga teng bo‘lsa, ishonch bilan $0$ qaytarishimiz mumkin.
+    Aks holda $x < 0$ va $0 < y \leq k \cdot x + b$ shartni qanoatlantiruvchi panjara nuqtalari yo‘q deyish mumkin.
+    Bu shuni anglatadiki, $O'=(n;\lfloor k\cdot n + b\rfloor)$ bo‘lgan, $x'$ o‘qi pastga, $y'$ o‘qi esa chapga yo‘nalgan yangi koordinatalar sistemasini qaralsa ham javob o‘zgarmaydi.
+    Bu sistemada bizni quyidagi to‘plamdagi panjara nuqtalari qiziqtiradi:
 
-$$
-F(k,b,n)=\sum_{x=0}^{n-1}\lfloor kx+b\rfloor.
-$$
+    $$
+    \left\{(x;y)~\bigg|~0 \leq x < \lfloor k \cdot n + b\rfloor,~ 0 < y \leq \dfrac{x+(k\cdot n+b)-\lfloor k\cdot n + b \rfloor}{k}\right\}
+    $$
 
-Ikki asosiy holat mavjud.
+    bu esa bizni yana $k>1$ holiga qaytaradi.
+    Quyidagi rasmda yangi $O'$ boshlang‘ich nuqta va $X'$ hamda $Y'$ o‘qlarni ko‘rishingiz mumkin:
 
-### $k\ge1$ yoki $b\ge1$
+  ![New reference and axes](/algorithms-media/geometry/mirror.png)
 
-Butun qismlarni ajratamiz:
+    Ko‘rib turganingizdek, yangi koordinatalar sistemasida chiziqli funksiyaning koeffitsiyenti $\tfrac 1 k$ bo‘ladi va uning nol nuqtasi $\lfloor k\cdot n + b \rfloor-(k\cdot n+b)$ nuqtada joylashadi; bu yuqoridagi formulani to‘g‘ri qiladi.
 
-$$
-k=\lfloor k\rfloor+\{k\},
-\qquad
-b=\lfloor b\rfloor+\{b\}.
-$$
+## Murakkablik tahlili
 
-Shunda
-
-$$
-F(k,b,n)=
-\lfloor k\rfloor\frac{n(n-1)}2+
-\lfloor b\rfloor n+
-F(\{k\},\{b\},n).
-$$
-
-Birinchi ikki had chiziq ostidagi butun “qatlamlar” sonini beradi, qolgan masalada esa $0\le k,b<1$.
-
-### $0\le k<1$ va $0\le b<1$
-
-$m=\lfloor kn+b\rfloor$ deb olamiz. Agar $m=0$ bo‘lsa, barcha hadlar nol va javob nol.
-
-$m>0$ bo‘lsa, panjara nuqtalar to‘plamini koordinatalar sistemasini almashtirib sanaymiz: yangi boshlang‘ich nuqta $(n,m)$, yangi o‘qlar esa eski sistemada pastga va chapga yo‘naladi. Natijada qiyalik $1/k$ bo‘lgan kichikroq masala hosil bo‘ladi:
-
-$$
-F(k,b,n)=F\left(\frac1k,\frac{kn+b-\lfloor kn+b\rfloor}{k},\lfloor kn+b\rfloor\right)
-$$
-
-va oldingi bosqichda ajratilgan butun qatlamlar bilan qo‘shiladi.
-
-Bu transformatsiya Evklid algoritmiga o‘xshaydi: katta qiyalikning butun qismi olib tashlanadi, keyin qiyalik teskarilanadi. Shu sababli rekursiya chuqurligi logarifmik.
+Biz ko‘pi bilan $\dfrac{(k(n-1)+2b)n}{2}$ ta nuqtani sanashimiz kerak.
+Ularning ichidan birinchi qadamdayoq $\dfrac{\lfloor k \rfloor (n-1)+2\lfloor b \rfloor}{2}$ tasini sanaymiz.
+$b$ ni juda kichik deb hisoblash mumkin, chunki uni avvalo $1$ dan kichik qilib boshlash mumkin.
+Bu holda barcha nuqtalarning taxminan $\dfrac{\lfloor k \rfloor}{k} \geq \dfrac 1 2$ qismini sanaymiz, deyish mumkin.
+Shunday qilib, $O(\log n)$ qadamda tugatamiz.
 
 ## Implementatsiya
 
-`Fraction` aniq ratsional sonlar sinfi bo‘lib, qo‘shish, ayirish, ko‘paytirish, bo‘lish, taqqoslash va `floor()` ni qo‘llab-quvvatlaydi deb hisoblaymiz.
+Quyida $0 \leq x < n$ va $0 < y \leq \lfloor k x+b\rfloor$ shartlarni qanoatlantiruvchi butun $(x;y)$ nuqtalar sonini hisoblaydigan sodda funksiya keltirilgan:
 
 ```cpp
-long long count_lattices(Fraction k, Fraction b, long long n) {
+int count_lattices(Fraction k, Fraction b, long long n) {
     auto fk = k.floor();
     auto fb = b.floor();
-    long long cnt = 0;
-
+    auto cnt = 0LL;
     if (k >= 1 || b >= 1) {
         cnt += (fk * (n - 1) + 2 * fb) * n / 2;
         k -= fk;
         b -= fb;
     }
-
     auto t = k * n + b;
     auto ft = t.floor();
     if (ft >= 1) {
-        cnt += count_lattices(1 / k,
-                              (t - t.floor()) / k,
-                              t.floor());
+        cnt += count_lattices(1 / k, (t - t.floor()) / k, t.floor());
     }
     return cnt;
 }
 ```
 
-Funksiya $0\le x<n$ va $0<y\le\lfloor kx+b\rfloor$ shartlarni qanoatlantiradigan butun $(x,y)$ nuqtalarni sanaydi. Chegaradagi $y=0$, oxirgi $x=n$ va qirraning o‘zidagi nuqtalar umumiy polygon algoritmida tanlangan yarim ochiq konvensiyaga muvofiq qo‘shiladi yoki chiqariladi.
-
-## Ko‘pburchak bo‘yicha yig‘ish
-
-Ko‘pburchak qirralari orientatsiyalangan bo‘lsin. Har bir vertikal bo‘lmagan qirra uchun chapdan o‘ngga yo‘nalishda qirra ostidagi panjara nuqtalar sonini topamiz. Qirra asl chegara bo‘ylab chapdan o‘ngga ketsa hissani qo‘shamiz, o‘ngdan chapga ketsa ayiramiz. Ichki bo‘lmagan ustunlar va tashqi hududlar qarama-qarshi qirralar hissasi bilan bekor bo‘ladi, ko‘pburchak ichidagi har bir panjara nuqta bir marta qoladi.
-
-Chegaradagi nuqtalar masala ta’rifiga qarab kiritilishi yoki chiqarilishi mumkin. Eng ishonchli usul barcha qirralarni yarim ochiq oraliq sifatida, masalan chap uchni kiritib o‘ng uchni chiqargan holda qayta ishlashdir. Vertikal qirralar floor-sum ga hissa bermaydi, lekin chegarani hisoblashda alohida ko‘riladi.
-
-## Murakkablik va aniqlik
-
-Har bir rekursiv qadamda sanalayotgan nuqtalarning sezilarli qismi ajratiladi yoki Evklid algoritmidagi kabi parametrlar kamayadi. Rekursiya $O(\log C)$ qadamda tugaydi, bu yerda $C$ ratsional koeffitsiyentlarning son va maxraj o‘lchamiga bog‘liq. $n$ qirrali ko‘pburchak uchun umumiy murakkablik $O(n\log C)$.
-
-Aniq natija kerak bo‘lsa `Fraction` son va maxrajni `gcd` ga qisqartirib saqlashi kerak. Agar boshlang‘ich son va maxrajlar moduli $C$ dan oshmasa, rekursiyadagi qiymatlar taxminan $C^2$ gacha o‘sishi mumkin. `double` ishlatilsa, butun songa juda yaqin qiymatlarni `floor` qilishda alohida `EPS` qoidasi zarur; noto‘g‘ri yumaloqlash butun bir panjara qatorini xato sanashi mumkin.
+Bu yerda `Fraction` ratsional sonlar bilan ishlaydigan biror sinfdir.
+Amalda, agar barcha maxraj va suratlar absolyut qiymati bo‘yicha ko‘pi bilan $C$ bo‘lsa, suratlar va maxrajlarni eng katta umumiy bo‘luvchiga bo‘lib borilganda, rekursiv chaqiruvlarda ular ko‘pi bilan $C^2$ bo‘lishi ko‘rinadi.
+Shu farazga asosan, `double` ishlatib, $\varepsilon^2$ aniqlikni talab qilish mumkin, bunda $\varepsilon$ — $k$ va $b$ berilgan aniqlik.
+Bu shuni anglatadiki, `floor` da sonlar butun sondan ko‘pi bilan $\varepsilon^2$ ga farq qilsa, ularni butun deb hisoblash kerak.

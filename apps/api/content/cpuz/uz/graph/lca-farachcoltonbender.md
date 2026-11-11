@@ -18,7 +18,7 @@ LCA masalasini RMQ masalasiga klassik keltirishdan foydalanamiz.
 
 Daraxtning barcha tugunlarini [DFS](/algorithms/graph/depth-first-search) yordamida aylanib chiqamiz va barcha tashrif buyurilgan tugunlar hamda ularning balandliklari saqlanadigan massiv tuzamiz.
 
-Ikki $u$ va $v$ tugunning LCA si turdagi $u$ va $v$ uchrashlari orasida joylashgan, balandligi eng kichik tugundir.
+Ikki $u$ va $v$ tugunning LCA si — aylanib chiqishda $u$ va $v$ uchrashgan joylar orasida joylashgan, balandligi eng kichik tugundir.
 
 Quyidagi rasmda graf uchun mumkin bo‘lgan Euler turini, uning ostidagi ro‘yxatda esa tashrif buyurilgan tugunlar va ularning balandliklarini ko‘rishingiz mumkin.
 
@@ -34,7 +34,7 @@ Bu keltirish haqida [Eng yaqin umumiy ajdod](/algorithms/graph/lca) maqolasida b
 
 O‘sha maqolada oraliq minimumi sqrt-dekompozitsiya yordamida $O(\sqrt{N})$ vaqtda yoki segment daraxti yordamida $O(\log N)$ vaqtda topilgan.
 
-Ushbu maqolada berilgan oraliq minimum so‘rovlarini oldindan ishlov uchun hamon atigi $O(N)$ vaqt sarflagan holda, $O(1)$ vaqtda qanday yechish mumkinligini ko‘rib chiqamiz.
+Ushbu maqolada oldindan ishlov berishga hamon atigi $O(N)$ vaqt sarflagan holda, berilgan oraliq minimum so‘rovlarini $O(1)$ vaqtda qanday yechish mumkinligini ko‘rib chiqamiz.
 
 Keltirilgan RMQ masalasi juda maxsus ekaniga e’tibor bering:
 
@@ -46,11 +46,11 @@ Oraliq minimum so‘rovlarini bajaradigan massivni $A$ bilan belgilaylik.
 
 $N$ esa $A$ ning o‘lchami bo‘lsin.
 
-RMQ masalasini $O(N \log N)$ oldindan ishlov va har bir so‘rov uchun $O(1)$ vaqtda yechadigan sodda ma’lumotlar tuzilmasi mavjud: [Sparse Table](/algorithms/data-structures/sparse-table).
+RMQ masalasini $O(N \log N)$ oldindan ishlov va har bir so‘rov uchun $O(1)$ vaqtda yechadigan sodda ma’lumotlar tuzilmasi mavjud: [Siyrak jadval](/algorithms/data-structures/sparse-table).
 
 Har bir $T[i][j]$ elementi $A$ massivning $[i, i + 2^j - 1]$ oralig‘idagi minimumiga teng bo‘lgan $T$ jadvalini yaratamiz.
 
-Ravshanki, $0 \leq j \leq \lceil \log N \rceil$, demak Sparse Table o‘lchami $O(N \log N)$ bo‘ladi.
+Ravshanki, $0 \leq j \leq \lceil \log N \rceil$, demak siyrak jadval o‘lchami $O(N \log N)$ bo‘ladi.
 
 $T[i][j] = \min(T[i][j-1], T[i+2^{j-1}][j-1])$ ekanini qayd etib, jadvalni $O(N \log N)$ vaqtda oson qurish mumkin.
 
@@ -74,7 +74,7 @@ Har bir blok uchun minimal elementni hisoblab, ularni $B$ massivda saqlaymiz.
 
 $B$ ning o‘lchami $\frac{N}{K}$.
 
-$B$ massivdan Sparse Table quramiz.
+$B$ massivdan siyrak jadval quramiz.
 
 Uning o‘lchami va vaqt murakkabligi quyidagicha bo‘ladi:
 
@@ -88,7 +88,7 @@ Darhaqiqat, olingan oraliq minimum so‘rovi $[l, r]$ bo‘lib, $l$ va $r$ turli
 
 $l$ blokining $l$ dan boshlanuvchi suffiksi minimumi, $r$ blokining $r$ da tugaydigan prefiksi minimumi va ular orasidagi bloklar minimumi.
 
-Oradagi bloklar minimumiga Sparse Table yordamida $O(1)$ vaqtda javob berish mumkin.
+Oradagi bloklar minimumiga siyrak jadval yordamida $O(1)$ vaqtda javob berish mumkin.
 
 Demak, faqat bloklar ichidagi oraliq minimum so‘rovlari qoladi.
 

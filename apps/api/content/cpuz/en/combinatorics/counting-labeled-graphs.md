@@ -35,7 +35,7 @@ And finally the number of connected graphs is:
 
 $$C_n = G_n - \frac{1}{n} \sum_{k=1}^{n-1} k \binom{n}{k} C_k G_{n-k}$$
 
-## Labeled graphs with $k$ connected components {data-toc-label="Labeled graphs with k connected components"}
+## Labeled graphs with $k$ connected components
 
 Based on the formula from the previous section, we will learn how to count the number of labeled graphs with $n$ vertices and $k$ connected components.
 

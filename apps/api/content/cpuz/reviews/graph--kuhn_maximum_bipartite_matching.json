@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The original writes \\textrm{try_kuhn}, which KaTeX cannot render because of the bare underscore in text mode; the translation uses \\texttt{try\\_kuhn} for the same identifier, so the mathematics and code are unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The problem statement asked for the 'maximal' matching instead of the maximum one, the same slip was in the closing note on vertex cover; also a simple path was described as 'edgeless' instead of 'without repeated vertices or edges'. All three now follow the original.",
+      "content_sha256": "10c9ee7ad773458d48cc05c3ccd8fa4d988b23c5d9c2c3ecbf956b4b4e1e6da2"
+    },
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Applied the glossary term 'juftlashtirish' for 'matching' throughout (kept 'matching' once as a gloss at the definition) and fixed 'Dirichlet prinsipi' to the glossary spelling 'Dirixle prinsipi'.",
+      "content_sha256": "10c9ee7ad773458d48cc05c3ccd8fa4d988b23c5d9c2c3ecbf956b4b4e1e6da2"
+    },
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Only the inline \\textrm{try_kuhn} formulas differ, rewritten as \\texttt{try\\_kuhn} so that KaTeX renders them; the code blocks are identical to the original.",
+      "content_sha256": "10c9ee7ad773458d48cc05c3ccd8fa4d988b23c5d9c2c3ecbf956b4b4e1e6da2"
+    }
+  ]
+}

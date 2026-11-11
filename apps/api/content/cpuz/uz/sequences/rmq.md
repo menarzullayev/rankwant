@@ -1,92 +1,34 @@
 # RMQ — oraliqdagi eng kichik element
 
-$A[1\ldots N]$ massiv berilgan. Har bir $(L,R)$ so‘rov uchun $L$ dan $R$ gacha, ikkala chegara ham kiradigan oraliqdagi eng kichik elementni topish kerak:
+$A[1..N]$ massiv berilgan.
+Siz $(L, R)$ ko‘rinishidagi so‘rovlarga javob berishingiz kerak: $A$ massivning $L$ va $R$ pozitsiyalari orasidagi (chegaralar ham kiradi) eng kichik elementini topish.
 
-$$\operatorname{RMQ}(L,R)=\min_{L\le i\le R}A_i.$$
+RMQ masalalarda bevosita uchrashi yoki boshqa vazifalarda qo‘llanishi mumkin, masalan, [eng yaqin umumiy ajdod](/algorithms/graph/lca) masalasida.
 
-RMQ (Range Minimum Query) masalasi bevosita uchrashi yoki boshqa algoritmning ichki qismi bo‘lishi mumkin. Masalan, daraxtdagi [eng yaqin umumiy ajdod](/algorithms/graph/lca) masalasini Eyler yurishi orqali RMQ ga keltirish mumkin.
+## Yechim
 
-## Qaysi yechimni tanlash kerak?
+RMQ masalasini yechish uchun ishlatish mumkin bo‘lgan ko‘plab yondashuvlar va ma’lumotlar tuzilmalari mavjud.
 
-Eng yaxshi tuzilma massiv o‘zgaradimi, barcha so‘rovlar oldindan ma’lummi va xotira cheklovi qandayligiga bog‘liq. Oddiy $O(N)$ ko‘rish kichik kirish yoki juda kam so‘rov uchun yetarli; ko‘p so‘rovda esa oldindan ishlov berish o‘zini oqlaydi.
+Ushbu saytda tushuntirilganlari quyida keltirilgan.
 
-Quyidagi jadval asosiy variantlarni solishtiradi:
+Avval so‘rovlarga javob berish orasida massivni o‘zgartirishga imkon beradigan yondashuvlar.
 
-| Usul | Qurish | So‘rov | Yangilash | Shart |
-|---|---:|---:|---:|---|
-| Oddiy ko‘rish | $O(1)$ | $O(N)$ | $O(1)$ | So‘rovlar kam |
-| Kvadrat ildizli dekompozitsiya | $O(N)$ | $O(\sqrt N)$ | $O(1)$ yoki $O(\sqrt N)$ | Sodda dinamik yechim |
-| Segment daraxti | $O(N)$ | $O(\log N)$ | $O(\log N)$ | Umumiy dinamik RMQ |
-| Siyrak jadval | $O(N\log N)$ | $O(1)$ | Qo‘llanmaydi | Statik massiv |
-| Sqrt tree | $O(N\log\log N)$ | $O(1)$ | Odatda yo‘q | Murakkab, tez statik yechim |
-| Arpa usuli + DSU | $O(N+Q)$ | Amortizatsion $O(1)$ | Yo‘q | Barcha so‘rovlar oflayn |
-| Dekart daraxti + LCA | $O(N)$ | $O(1)$ | Yo‘q | Optimal statik murakkablik |
+- [Kvadrat ildizli dekompozitsiya](/algorithms/data-structures/sqrt-decomposition) — har bir so‘rovga $O(\sqrt{N})$ da javob beradi, oldindan ishlov berish $O(N)$ da bajariladi.
+  Afzalligi: juda sodda ma’lumotlar tuzilmasi. Kamchiligi: murakkabligi yomonroq.
+- [Segment daraxti](/algorithms/data-structures/segment-tree) — har bir so‘rovga $O(\log N)$ da javob beradi, oldindan ishlov berish $O(N)$ da bajariladi.
+  Afzalligi: yaxshi vaqt murakkabligi. Kamchiligi: boshqa ma’lumotlar tuzilmalariga nisbatan kod hajmi kattaroq.
+- [Fenwick daraxti](/algorithms/data-structures/fenwick) — har bir so‘rovga $O(\log N)$ da javob beradi, oldindan ishlov berish $O(N \log N)$ da bajariladi.
+  Afzalligi: eng qisqa kod, yaxshi vaqt murakkabligi. Kamchiligi: Fenwick daraxtini faqat $L = 1$ bo‘lgan so‘rovlar uchun ishlatish mumkin, shuning uchun u ko‘plab masalalarga mos kelmaydi.
 
-## Yangilanishli massiv
+Quyida esa faqat statik massivlar bilan ishlaydigan yondashuvlar keltirilgan, ya’ni butun ma’lumotlar tuzilmasini qayta hisoblamasdan massivdagi qiymatni o‘zgartirib bo‘lmaydi.
 
-So‘rovlar orasida $A_i$ qiymatlari o‘zgarsa, oldindan hisoblangan statik minimumlar eskiradi. Bunday vaziyatda quyidagi tuzilmalar ishlatiladi.
+- [Siyrak jadval](/algorithms/data-structures/sparse-table) — har bir so‘rovga $O(1)$ da javob beradi, oldindan ishlov berish $O(N \log N)$ da bajariladi.
+  Afzalligi: sodda ma’lumotlar tuzilmasi, a’lo vaqt murakkabligi.
+- [Sqrt daraxti](/algorithms/data-structures/sqrt-tree) — so‘rovlarga $O(1)$ da javob beradi, oldindan ishlov berish $O(N \log \log N)$ da bajariladi. Afzalligi: tez. Kamchiligi: amalga oshirish murakkab.
+- [Ajralgan to‘plamlar birlashmasi (DSU) / Arpa usuli](/algorithms/data-structures/disjoint-set-union#arpa) — so‘rovlarga $O(1)$ da javob beradi, oldindan ishlov berish $O(n)$ da bajariladi. Afzalligi: qisqa, tez. Kamchiligi: faqat barcha so‘rovlar oldindan ma’lum bo‘lganda ishlaydi, ya’ni so‘rovlarni faqat oflayn qayta ishlashni qo‘llab-quvvatlaydi.
+- [Dekart daraxti](/algorithms/graph/rmq-linear) va [Farach-Colton va Bender algoritmi](/algorithms/graph/lca-farachcoltonbender) — so‘rovlarga $O(1)$ da javob beradi, oldindan ishlov berish $O(n)$ da bajariladi. Afzalligi: optimal murakkablik. Kamchiligi: kod hajmi katta.
 
-### Kvadrat ildizli dekompozitsiya
-
-[Kvadrat ildizli dekompozitsiya](/algorithms/data-structures/sqrt-decomposition) massivni taxminan $\sqrt N$ o‘lchamli bloklarga ajratadi va har blok minimumini saqlaydi. So‘rov ikki chekkadagi to‘liq bo‘lmagan qismlarni elementma-element, o‘rtadagi to‘liq bloklarni esa tayyor minimumlar orqali ko‘radi.
-
-- qurish: $O(N)$;
-- so‘rov: $O(\sqrt N)$;
-- bitta qiymatni yangilash: tegishli blokni qayta sanash bilan $O(\sqrt N)$, qo‘shimcha tuzilma bilan ayrim holatda tezroq.
-
-Afzalligi — kodning soddaligi; kamchiligi — katta $N,Q$ da logarifmik tuzilmalardan sekinligi.
-
-### Segment daraxti
-
-[Segment daraxti](/algorithms/data-structures/segment-tree) har tugunda unga tegishli kesma minimumini saqlaydi. So‘rov $[L,R]$ ni $O(\log N)$ ta daraxt tuguniga ajratadi, bitta element yangilanganda esa ildizgacha bo‘lgan yo‘l qayta hisoblanadi.
-
-- qurish: $O(N)$;
-- so‘rov: $O(\log N)$;
-- yangilash: $O(\log N)$.
-
-Bu dinamik RMQ uchun eng universal tanlov. Kod kvadrat ildizli dekompozitsiyadan uzunroq, lekin murakkablik kafolati yaxshiroq va oraliq yangilashlarga kengaytirish mumkin.
-
-### Fenwick daraxti haqida
-
-[Fenwick daraxti](/algorithms/data-structures/fenwick) prefiks agregatlari uchun juda ixcham va $O(\log N)$ ishlaydi. Biroq minimumda yig‘indidagidek teskari amal yo‘q: ikki prefiks minimumidan $[L,R]$ minimumini chiqarib bo‘lmaydi. Shu sabab oddiy Fenwick daraxti faqat $L=1$ ko‘rinishidagi prefiks minimumlari yoki yangilanishlar monoton bo‘lgan maxsus holatlarga mos; umumiy RMQ uchun segment daraxti kerak.
-
-## Statik massiv
-
-Massiv qurilgandan keyin o‘zgarmasa, ko‘proq oldindan hisoblab, so‘rovni tezlashtirish mumkin.
-
-### Siyrak jadval
-
-[Siyrak jadval](/algorithms/data-structures/sparse-table) uzunligi $2^k$ bo‘lgan barcha oraliqlar minimumini saqlaydi. Minimum idempotent bo‘lgani uchun $[L,R]$ ni bir-birini qoplashi mumkin bo‘lgan ikkita $2^k$ oraliq bilan yopish mumkin:
-
-$$k=\lfloor\log_2(R-L+1)\rfloor,$$
-
-$$\operatorname{RMQ}(L,R)=\min(st[k][L],st[k][R-2^k+1]).$$
-
-Qurish $O(N\log N)$ vaqt va xotira, har so‘rov $O(1)$ oladi. Statik RMQ uchun soddalik va tezlik muvozanati ko‘pincha eng yaxshi shu usulda.
-
-### Sqrt tree
-
-[Sqrt tree](/algorithms/data-structures/sqrt-tree) $O(N\log\log N)$ oldindan ishlov va $O(1)$ so‘rov beradi. Nazariy jihatdan siyrak jadvaldan qurilishi tezroq, ammo implementatsiyasi ancha murakkab. Odatda cheklovlar siyrak jadvalni sig‘dirmaganda yoki tuzilma boshqa assotsiativ amallar uchun ham kerak bo‘lganda tanlanadi.
-
-### Oflayn DSU — Arpa usuli
-
-Barcha so‘rovlar oldindan ma’lum bo‘lsa, [DSU va Arpa usuli](/algorithms/data-structures/disjoint-set-union#arpa) so‘rovlarni o‘ng chegarasi bo‘yicha qayta ishlaydi. Monoton stek keyingi kichik element bog‘lanishlarini yaratadi, DSU esa joriy minimum vakilini tez topadi.
-
-Oldindan ishlov va barcha so‘rovlar jami $O((N+Q)\alpha(N))$, amalda deyarli chiziqli. Afzalligi — tez va ixchamligi; cheklovi — so‘rovlarga kelish tartibida onlayn javob bera olmasligi.
-
-### Dekart daraxti va LCA
-
-Massivdan minimum-uyum xossali [Dekart daraxti](/algorithms/graph/rmq-linear) qurilsa, $[L,R]$ minimumi $L$ va $R$ tugunlarning eng yaqin umumiy ajdodiga mos keladi. [Farach–Colton–Bender](/algorithms/graph/lca-farachcoltonbender) algoritmi bilan birga qurish $O(N)$, so‘rov $O(1)$ bo‘ladi. Bu optimal asimptotika beradi, lekin kod hajmi katta va oddiy siyrak jadvalga qaraganda xatoga moyilroq.
-
-## Amaliy tanlov
-
-- Massiv o‘zgaradi: odatda segment daraxti.
-- Massiv statik, xotira yetarli: siyrak jadval.
-- Kod soddaligi ustun va cheklov o‘rtacha: kvadrat ildizli dekompozitsiya.
-- Barcha so‘rovlar oldindan ma’lum: Arpa usulini ko‘rib chiqing.
-- Chiziqli qurish va $O(1)$ so‘rov qat’iy talab qilinsa: Dekart daraxti + LCA.
-
-Indekslar bazasi (`0` yoki `1`) va $[L,R]$ ning yopiq oraliq ekanini implementatsiya boshida aniq belgilash ko‘plab chegaraviy xatolarni oldini oladi. Bo‘sh oraliq uchun neytral qiymat sifatida $+\infty$ ishlatiladi.
+Izoh: oldindan ishlov berish — berilgan massiv uchun mos ma’lumotlar tuzilmasini qurish orqali uni dastlabki qayta ishlashdir.
 
 ## Mashq masalalari
 

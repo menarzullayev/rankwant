@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Fixed the awkward sentence about the overflow-safe LCM implementation so that it says the implementation avoids integer overflow by first dividing a by the GCD; all formulas, complexity claims and code already matched the original.",
+      "content_sha256": "88c0cefdb5d008fa22663ce2f78d61f2c537ec3bdda3588f73feee55d7f87816"
+    },
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Restored blank lines that separate paragraphs, display formulas, headings and code fences (they had been run together), so the Markdown renders as in the original.",
+      "content_sha256": "88c0cefdb5d008fa22663ce2f78d61f2c537ec3bdda3588f73feee55d7f87816"
+    }
+  ]
+}

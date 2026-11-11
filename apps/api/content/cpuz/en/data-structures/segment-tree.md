@@ -1037,7 +1037,7 @@ To use a specific version of the Segment Tree we simply call the query using the
 
 With the approach described above almost any Segment Tree can be turned into a persistent data structure.
 
-#### Finding the $k$-th smallest number in a range {data-toc-label="Finding the k-th smallest number in a range"}
+#### Finding the $k$-th smallest number in a range
 
 This time we have to answer queries of the form "What is the $k$-th smallest element in the range $a[l \dots r]$. 
 This query can be answered using a binary search and a Merge Sort Tree, but the time complexity for a single query would be $O(\log^3 n)$.

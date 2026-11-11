@@ -34,11 +34,11 @@ Bu formula $n$ ta to‘plam birlashmasiga ham umumlashtiriladi.
 
 ### Ehtimollar nazariyasi orqali ifoda
 
-$A_i$ ($i=1,2,\ldots,n$) hodisalar, ${\cal P}(A_i)$ esa $A_i$ hodisaning yuz berish ehtimoli bo‘lsin. Ularning birlashmasi ehtimoli, ya’ni kamida bitta hodisa yuz berish ehtimoli:
+$A_i$ $(i = 1,2...n)$ hodisalar, ${\cal P}(A_i)$ esa $A_i$ hodisaning yuz berish ehtimoli bo‘lsin. Ularning birlashmasi ehtimoli, ya’ni kamida bitta hodisa yuz berish ehtimoli:
 
 $$\begin{aligned}
-{\cal P}\left(\bigcup_{i=1}^n A_i\right)&=&\sum_{i=1}^n{\cal P}(A_i)-\sum_{1\le i<j\le n}{\cal P}(A_i\cap A_j)+\\
-&+&\sum_{1\le i<j<k\le n}{\cal P}(A_i\cap A_j\cap A_k)-\cdots+(-1)^{n-1}{\cal P}(A_1\cap\cdots\cap A_n)
+{\cal P}\left(\bigcup_{i=1}^n A_i\right)&=\sum_{i=1}^n{\cal P}(A_i)-\sum_{1\le i<j\le n}{\cal P}(A_i\cap A_j)+\\
+&+\sum_{1\le i<j<k\le n}{\cal P}(A_i\cap A_j\cap A_k)-\cdots+(-1)^{n-1}{\cal P}(A_1\cap\cdots\cap A_n)
 \end{aligned}$$
 
 Ixcham ko‘rinishi:
@@ -59,28 +59,20 @@ $x$ elementi $k\ge1$ ta $A_i$ to‘plamga tegishli bo‘lsin. U formulada aynan 
 - $|J|=2$ bo‘lgan hadlarda $x$ elementi **$-\binom{k}{2}$** marta hisoblanadi, chunki $x$ ni o‘z ichiga olgan $k$ ta to‘plamdan ikkitasini tanlagan hadlarda qatnashadi;
 - $|J|=3$ bo‘lgan hadlarda $x$ elementi **$+\binom{k}{3}$** marta hisoblanadi;
 - va hokazo;
-- $|J|=k$ bo‘lgan hadlarda $x$ elementi **$(-1)^{k-1}\binom{k}{k}$** marta hisoblanadi;
-- $|J|>k$ bo‘lgan hadlarda $x$ elementi **nol** marta hisoblanadi.
+- $|J|=k$ bo‘lgan hadlarda $x$ elementi **$(-1)^{k-1}\cdot \binom{k}{k}$** marta hisoblanadi;
+- $|J| \gt k$ bo‘lgan hadlarda $x$ elementi **nol** marta hisoblanadi.
 
 Natijada [binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients) yig‘indisini olamiz:
 
-$$T=\binom{k}{1}-\binom{k}{2}+\binom{k}{3}-\cdots+(-1)^{i-1}\binom{k}{i}+\cdots+(-1)^{k-1}\binom{k}{k}$$
+$$T=\binom{k}{1}-\binom{k}{2}+\binom{k}{3}-\cdots+(-1)^{i-1}\cdot\binom{k}{i}+\cdots+(-1)^{k-1}\cdot\binom{k}{k}$$
 
 Bu ifoda $(1-x)^k$ binomial yoyilmasiga juda o‘xshaydi:
 
-$$(1-x)^k=\binom{k}{0}-\binom{k}{1}x+\binom{k}{2}x^2-\binom{k}{3}x^3+\cdots+(-1)^k\binom{k}{k}x^k$$
+$$(1-x)^k=\binom{k}{0}-\binom{k}{1}\cdot x+\binom{k}{2}\cdot x^2-\binom{k}{3}\cdot x^3+\cdots+(-1)^k\cdot\binom{k}{k}\cdot x^k$$
 
-$x=1$ bo‘lganda bu ifoda $T$ ga deyarli teng. Faqat unda qo‘shimcha $\binom{k}{0}=1$ hadi bor va qolgan qism $-1$ ga ko‘paytirilgan. Demak,
+$x=1$ bo‘lganda bu ifoda $T$ ga deyarli teng. Faqat unda qo‘shimcha $\binom{k}{0}=1$ hadi bor va qolgan qism $-1$ ga ko‘paytirilgan. Bu bizni $(1 - 1)^k = 1 - T$ ga olib keladi. Demak, $T = 1 - (1 - 1)^k = 1$, isbotlash talab qilingan narsa shu edi. Element aynan bir marta hisoblanadi.
 
-$$(1-1)^k=1-T.$$
-
-Shundan
-
-$$T=1-(1-1)^k=1$$
-
-kelib chiqadi. Isbot talab qilinganidek, element aynan bir marta hisoblandi.
-
-## Aynan $r$ ta to‘plamga tegishli elementlar sonini hisoblashga umumlashtirish {data-toc-label="Aynan r ta to‘plamga tegishli elementlar soni"}
+## Aynan $r$ ta to‘plamga tegishli elementlar sonini hisoblashga umumlashtirish
 
 Kiritish–chiqarish prinsipini hech bir to‘plamga tegishli bo‘lmagan elementlar sonini hisoblash uchun quyidagicha yozish mumkin:
 
@@ -120,13 +112,13 @@ $$2\cdot9!+2\cdot9!-2\cdot2\cdot8!$$
 
 ni olamiz. “Yaxshi” permutatsiyalar sonini topish uchun bu qiymatni jami $10!$ dan ayirish qoladi.
 
-### $(0,1,2)$ ketma-ketliklariga oid sodda masala
+### (0, 1, 2) ketma-ketliklariga oid sodda masala
 
 **Masala.** Faqat $0$, $1$, $2$ sonlaridan tuzilgan, har bir son **kamida bir marta** qatnashadigan uzunligi $n$ bo‘lgan ketma-ketliklar sonini toping.
 
 Yana teskari masalaga o‘tamiz: sonlardan **kamida bittasi qatnashmaydigan** ketma-ketliklar sonini hisoblaymiz.
 
-$i$ raqami qatnashmaydigan ketma-ketliklar to‘plamini $A_i$ ($i=0,1,2$) bilan belgilaymiz. “Yomon” ketma-ketliklar uchun kiritish–chiqarish formulasi:
+$i$ raqami qatnashmaydigan ketma-ketliklar to‘plamini $A_i (i = 0,1,2)$ bilan belgilaymiz. “Yomon” ketma-ketliklar uchun kiritish–chiqarish formulasi:
 
 $$|A_0\cup A_1\cup A_2|=|A_0|+|A_1|+|A_2|-|A_0\cap A_1|-|A_0\cap A_2|-|A_1\cap A_2|+|A_0\cap A_1\cap A_2|$$
 
@@ -144,9 +136,7 @@ Quyidagi tenglamani ko‘rib chiqamiz:
 
 $$x_1+x_2+x_3+x_4+x_5+x_6=20,$$
 
-bu yerda
-
-$$0\le x_i\le8\qquad(i=1,2,\ldots,6).$$
+bu yerda $0 \le x_i \le 8 ~ (i = 1,2,\ldots 6)$.
 
 **Masala.** Tenglama yechimlari sonini toping.
 
@@ -154,11 +144,11 @@ Bir muddat $x_i$ lar uchun yuqori chegara mavjudligini unutib, tenglamaning barc
 
 $$N_0=\binom{25}{5}$$
 
-Endi kiritish–chiqarish prinsipi yordamida “yomon” yechimlar sonini hisoblaymiz. Bir yoki bir nechta $x_i\ge9$ bo‘lgan yechimlar “yomon” hisoblanadi.
+Endi kiritish–chiqarish prinsipi yordamida “yomon” yechimlar sonini hisoblaymiz. Bir yoki bir nechta $x_i$ qiymati $9$ dan katta yoki unga teng bo‘lgan yechimlar “yomon” hisoblanadi.
 
-$x_k\ge9$ va qolgan barcha $x_i\ge0$ ($i\ne k$) bo‘lgan yechimlar to‘plamini $A_k$ ($k=1,2,\ldots,6$) bilan belgilaymiz. Qolgan o‘zgaruvchilar ham $9$ yoki undan katta bo‘lishi mumkin.
+$x_k \ge 9$ va qolgan barcha $x_i \ge 0 ~ (i \ne k)$ bo‘lgan (ular $\ge 9$ bo‘lishi ham, bo‘lmasligi ham mumkin) yechimlar to‘plamini $A_k ~ (k = 1,2\ldots 6)$ bilan belgilaymiz.
 
-$|A_k|$ ni hisoblashda yuqoridagi masalaga juda o‘xshash masala hosil bo‘ladi. Faqat $9$ ta birlik joylashtiriladigan birliklardan olib tashlangan va aniq $k$-guruhga tegishli. Shuning uchun:
+$A_k$ hajmini hisoblashda yuqoridagi masalaga juda o‘xshash masala hosil bo‘ladi. Faqat endi $9$ ta birlik joylardan chiqarib tashlangan va ular aniq birinchi guruhga tegishli. Shuning uchun:
 
 $$|A_k|=\binom{16}{5}$$
 
@@ -178,17 +168,17 @@ $$\sum_{i=0}^d(-1)^i\binom di\binom{s+d-1-(b+1)i}{d-1}$$
 
 Yuqoridagidek, yuqori indeksi manfiy bo‘lgan binomial koeffitsiyentlarni nol deb qaraymiz.
 
-Bu masalani dinamik dasturlash yoki hosil qiluvchi funksiyalar bilan ham yechish mumkin. Binomial koeffitsiyent kabi matematik amallar $O(1)$ deb olinsa, kiritish–chiqarish javobi $O(d)$ vaqtda hisoblanadi, sodda dinamik dasturlash esa $O(ds)$ vaqt oladi.
+Bu masalani dinamik dasturlash yoki hosil qiluvchi funksiyalar bilan ham yechish mumkin. Binomial koeffitsiyent kabi matematik amallar doimiy vaqtda bajariladi deb olinsa, kiritish–chiqarish javobi $O(d)$ vaqtda hisoblanadi, sodda dinamik dasturlash esa $O(ds)$ vaqt oladi.
 
 ### Berilgan oraliqdagi o‘zaro tub sonlar soni
 
-**Masala.** $n$ va $r$ sonlari berilgan. $[1,r]$ oraliqda $n$ bilan o‘zaro tub, ya’ni eng katta umumiy bo‘luvchisi $1$ bo‘lgan butun sonlar sonini toping.
+**Masala.** $n$ va $r$ sonlari berilgan. $[1;r]$ oraliqda $n$ bilan o‘zaro tub, ya’ni eng katta umumiy bo‘luvchisi $1$ bo‘lgan butun sonlar sonini toping.
 
 Teskari masalani yechamiz: $n$ bilan o‘zaro tub bo‘lmagan sonlar sonini hisoblaymiz.
 
-$n$ ning turli tub bo‘luvchilarini $p_i$ ($i=1,\ldots,k$) bilan belgilaymiz.
+$n$ ning turli tub bo‘luvchilarini $p_i (i = 1\cdots k)$ bilan belgilaymiz.
 
-$[1,r]$ oraliqdagi nechta son $p_i$ ga bo‘linadi? Javob:
+$[1;r]$ oraliqdagi nechta son $p_i$ ga bo‘linadi? Javob:
 
 $$\left\lfloor\frac r{p_i}\right\rfloor$$
 
@@ -235,13 +225,12 @@ Yechimning asimptotik murakkabligi $O(\sqrt n)$.
 
 ### Berilgan oraliqda berilgan sonlardan kamida bittasiga karrali sonlar miqdori
 
-$n$ ta $a_i$ son va $r$ soni berilgan. $[1,r]$ oraliqda $a_i$ lardan kamida bittasiga karrali bo‘lgan butun sonlar sonini topish kerak.
+$n$ ta $a_i$ son va $r$ soni berilgan. $[1;r]$ oraliqda $a_i$ lardan kamida bittasiga karrali bo‘lgan butun sonlar sonini topish kerak.
 
 Yechim algoritmi oldingi masaladagiga deyarli bir xil: $a_i$ sonlar uchun kiritish–chiqarish formulasini tuzamiz. Formuladagi har bir had $a_i$ larning biror qism to‘plamidagi barcha sonlarga bo‘linadigan, boshqacha aytganda ularning [eng kichik umumiy karralisiga](/algorithms/algebra/euclid-algorithm) bo‘linadigan sonlar miqdoridir.
 
-$a_i$ sonlarning barcha $2^n$ ta qism to‘plamini ko‘rib chiqamiz. Har biri uchun $O(n\log r)$ amal bilan EKUKni topib, oraliqdagi shu EKUKka karrali sonlar miqdorini qo‘shamiz yoki ayiramiz. Umumiy murakkablik:
+$a_i$ sonlarning barcha $2^n$ ta qism to‘plamini ko‘rib chiqamiz. Har biri uchun $O(n\log r)$ amal bilan EKUKni topib, oraliqdagi shu EKUKka karrali sonlar miqdorini qo‘shamiz yoki ayiramiz. Umumiy murakkablik $O(2^n\cdot n\cdot\log r)$.
 
-$$O(2^n\cdot n\cdot\log r).$$
 
 ### Berilgan andozalarni qanoatlantiradigan satrlar soni
 
@@ -274,27 +263,27 @@ Biroq bu yechimning murakkabligi $O(3^k\cdot k)$. Uni yaxshilash uchun turli $an
 
 Kiritish–chiqarish yig‘indilarining tartibini almashtirib, $Y$ lar bo‘yicha yig‘amiz. Bir xil $Y$ to‘plam bir xil $(-1)^{|Y|-k}$ ishora bilan $\binom{|Y|}{k}$ ta turli $ans(X)$ hisobida qatnashishi ravshan bo‘ladi:
 
-$$ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\binom{|Y|}{k}f(Y)$$
+$$ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\cdot\binom{|Y|}{k}\cdot f(Y)$$
 
 Endi yechimning murakkabligi $O(2^k\cdot k)$.
 
 Ikkinchi masalani — kamida $k$ ta andozaga mos keladigan satrlar sonini — yechamiz.
 
-Albatta, birinchi masala yechimidan foydalanib, aynan $k$, $k+1$ va undan ko‘p andozaga mos keladigan holatlar javoblarini qo‘shish mumkin. Biroq bu masalada biror $Y$ to‘plam formulada $Y$ ichidagi o‘lchami kamida $k$ bo‘lgan barcha qism to‘plamlar uchun hisobga olinadi. Shuning uchun $f(Y)$ ga ko‘paytiriladigan qismni quyidagicha yozish mumkin:
+Albatta, birinchi masala yechimidan foydalanib, o‘lchami $k$ dan katta to‘plamlar uchun javoblarni qo‘shish mumkin. Biroq bu masalada biror $Y$ to‘plam formulada $Y$ ichidagi o‘lchami kamida $k$ bo‘lgan barcha qism to‘plamlar uchun hisobga olinadi. Shuning uchun $f(Y)$ ga ko‘paytiriladigan qismni quyidagicha yozish mumkin:
 
-$$(-1)^{|Y|-k}\binom{|Y|}{k}+(-1)^{|Y|-k-1}\binom{|Y|}{k+1}+(-1)^{|Y|-k-2}\binom{|Y|}{k+2}+\cdots+(-1)^{|Y|-|Y|}\binom{|Y|}{|Y|}$$
+$$(-1)^{|Y|-k}\cdot\binom{|Y|}{k}+(-1)^{|Y|-k-1}\cdot\binom{|Y|}{k+1}+(-1)^{|Y|-k-2}\cdot\binom{|Y|}{k+2}+\cdots+(-1)^{|Y|-|Y|}\cdot\binom{|Y|}{|Y|}$$
 
 Graham, Knuth va Patashnikning *Concrete Mathematics* (1998) kitobidagi [binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients) uchun mashhur formulani ishlatamiz:
 
-$$\sum_{k=0}^m(-1)^k\binom nk=(-1)^m\binom{n-1}m$$
+$$\sum_{k=0}^m(-1)^k\cdot\binom nk=(-1)^m\cdot\binom{n-1}m$$
 
 Uni qo‘llab, yuqoridagi binomial koeffitsiyentlar yig‘indisini quyidagicha qisqartiramiz:
 
-$$(-1)^{|Y|-k}\binom{|Y|-1}{|Y|-k}$$
+$$(-1)^{|Y|-k}\cdot\binom{|Y|-1}{|Y|-k}$$
 
 Demak, bu masala uchun ham $O(2^k\cdot k)$ murakkablikdagi yechim olamiz:
 
-$$ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\binom{|Y|-1}{|Y|-k}f(Y)$$
+$$ans=\sum_{Y:\,|Y|\ge k}(-1)^{|Y|-k}\cdot\binom{|Y|-1}{|Y|-k}\cdot f(Y)$$
 
 ### Bir katakdan boshqasiga borish usullari soni
 
@@ -336,22 +325,18 @@ $d$ bo‘luvchiga bo‘linadigan barcha mumkin bo‘lgan to‘rttaliklar bo‘yi
 
 $$ans=\sum_{d\ge2}(-1)^{deg(d)-1}\cdot f(d)$$
 
-Bu yerda $deg(d)$ — $d$ ning tub ko‘paytuvchilarga ajratilishidagi turli tub sonlar miqdori, $f(d)$ esa barcha elementlari $d$ ga bo‘linadigan to‘rttaliklar soni.
+Bu yerda $deg(d)$ — $d$ ning tub ko‘paytuvchilarga ajratilishidagi tub sonlar miqdori, $f(d)$ esa barcha elementlari $d$ ga bo‘linadigan to‘rttaliklar soni.
 
-$f(d)$ ni hisoblash uchun $d$ ga karrali elementlar sonini topish va ulardan to‘rttasini tanlash usullari sonini [binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients) yordamida hisoblash kifoya.
+$f(d)$ ni hisoblash uchun (oldingi masalada aytilganidek) $d$ ga karrali elementlar sonini topish va ulardan to‘rttasini tanlash usullari sonini [binomial koeffitsiyentlar](/algorithms/combinatorics/binomial-coefficients) yordamida hisoblash kifoya.
 
 Shunday qilib, kiritish–chiqarish formulasida avval bir tub songa bo‘linadigan to‘rttaliklar sonini qo‘shamiz, ikki tub son ko‘paytmasiga bo‘linadiganlarini ayiramiz, uchta tub son ko‘paytmasiga bo‘linadiganlarini qo‘shamiz va hokazo.
 
 ### Garmonik uchliklar soni
 
-$n\le10^6$ soni berilgan. Quyidagi shartlardan birini qanoatlantiradigan
+$n\le10^6$ soni berilgan. Quyidagi shartlardan birini qanoatlantiradigan $2 \le a < b < c \le n$ uchliklar sonini topish kerak:
 
-$$2\le a<b<c\le n$$
-
-uchliklar sonini topish kerak:
-
-- ${\rm gcd}(a,b)={\rm gcd}(a,c)={\rm gcd}(b,c)=1$;
-- yoki ${\rm gcd}(a,b)>1$, ${\rm gcd}(a,c)>1$, ${\rm gcd}(b,c)>1$.
+- yoki ${\rm gcd}(a,b) = {\rm gcd}(a,c) = {\rm gcd}(b,c) = 1$,
+- yoki ${\rm gcd}(a,b) > 1, {\rm gcd}(a,c) > 1, {\rm gcd}(b,c) > 1$.
 
 Avval teskari masalaga o‘tamiz, ya’ni garmonik bo‘lmagan uchliklar sonini sanaymiz.
 
@@ -359,24 +344,20 @@ Har qanday garmonik bo‘lmagan uchlik o‘zaro tub bo‘lgan bir juft va shu ju
 
 Shuning uchun $i$ ni o‘z ichiga olgan garmonik bo‘lmagan uchliklar soni $2$ dan $n$ gacha $i$ bilan o‘zaro tub sonlar miqdorining $i$ bilan o‘zaro tub bo‘lmagan sonlar miqdoriga ko‘paytmasiga teng.
 
-Ikki mumkin holat bor:
+Ikki mumkin holat bor. Yoki $gcd(a,b) = 1 \wedge gcd(a,c) > 1 \wedge gcd(b,c) > 1$
 
-$$gcd(a,b)=1\wedge gcd(a,c)>1\wedge gcd(b,c)>1,$$
+yoki $gcd(a,b) = 1 \wedge gcd(a,c) = 1 \wedge gcd(b,c) > 1$
 
- yoki
+Har ikkala holatda ham uchlik ikki marta hisoblanadi. Birinchi holat $i=a$ va $i=b$ bo‘lganda, ikkinchi holat esa $i=b$ va $i=c$ bo‘lganda sanaladi. Demak, garmonik bo‘lmagan uchliklar sonini topish uchun $2$ dan $n$ gacha barcha $i$ lar bo‘yicha bu hisoblarni qo‘shib, $2$ ga bo‘lamiz.
 
-$$gcd(a,b)=1\wedge gcd(a,c)=1\wedge gcd(b,c)>1.$$
-
-Har ikkala holatda ham uchlik ikki marta hisoblanadi. Birinchi holat $i=a$ va $i=b$ bo‘lganda, ikkinchi holat esa $i=b$ va $i=c$ bo‘lganda sanaladi. Demak, garmonik bo‘lmagan uchliklar sonini topish uchun $i=2$ dan $n$ gacha barcha hisoblarni qo‘shib, $2$ ga bo‘lamiz.
-
-Endi $[2,n]$ oraliqda $i$ bilan o‘zaro tub sonlar miqdorini tez hisoblash qoladi. Bu masala yuqorida ko‘rilgan bo‘lsa-da, o‘sha yechim bu yerda mos emas: $2$ dan $n$ gacha har bir sonni tub ko‘paytuvchilarga ajratish va bu tub sonlarning barcha qism to‘plamlarini ko‘rish talab qilinardi.
+Endi $[2;n]$ oraliqda $i$ bilan o‘zaro tub sonlar miqdorini tez hisoblash qoladi. Bu masala yuqorida ko‘rilgan bo‘lsa-da, o‘sha yechim bu yerda mos emas: $2$ dan $n$ gacha har bir sonni tub ko‘paytuvchilarga ajratish va bu tub sonlarning barcha qism to‘plamlarini ko‘rish talab qilinardi.
 
 Eratosthen elagini quyidagicha o‘zgartirish orqali tezroq yechim olish mumkin:
 
-1. Avval $[2,n]$ oraliqdagi tub ko‘paytuvchilarga ajratilishida hech bir tub ko‘paytuvchi ikki marta qatnashmaydigan barcha sonlarni topamiz. Bu sonlar nechta tub ko‘paytuvchiga ega ekanini ham bilishimiz kerak.
-   - $deg[i]$ massivida $i$ ning tub ko‘paytuvchilari sonini saqlaymiz. $good[i]$ esa har bir tub ko‘paytuvchi ko‘pi bilan bir marta qatnashsa `1`, aks holda `0` bo‘ladi. $2$ dan $n$ gacha yurishda $deg=0$ bo‘lgan songa yetib kelsak, u tub son va uning $deg$ qiymati $1$.
-   - Eratosthen elagida $i=2$ dan $n$ gacha yuramiz. Tub sonni qayta ishlaganda uning barcha karralilariga o‘tib, ularning `deg[]` qiymatini oshiramiz. Karralilardan biri $i^2$ ga ham karrali bo‘lsa, uning `good` qiymatini `false` qilamiz.
-2. So‘ng $i=2$ dan $n$ gacha barcha sonlar uchun javobni, ya’ni $i$ bilan o‘zaro tub bo‘lmagan sonlar miqdorini bildiruvchi `cnt[]` massivini hisoblaymiz.
+1. Avval $[2;n]$ oraliqdagi tub ko‘paytuvchilarga ajratilishida hech bir tub ko‘paytuvchi ikki marta qatnashmaydigan barcha sonlarni topamiz. Bu sonlar nechta tub ko‘paytuvchiga ega ekanini ham bilishimiz kerak.
+   - $deg[i]$ massivida $i$ ning tub ko‘paytuvchilari sonini saqlaymiz. $good[i]$ esa har bir tub ko‘paytuvchi ko‘pi bilan bir marta qatnashsa `1`, aks holda `0` bo‘ladi. $2$ dan $n$ gacha yurishda $deg$ qiymati $0$ bo‘lgan songa yetib kelsak, u tub son va uning $deg$ qiymati $1$.
+   - Eratosthen elagida $i$ ni $2$ dan $n$ gacha yuritamiz. Tub sonni qayta ishlaganda uning barcha karralilariga o‘tib, ularning `deg[]` qiymatini oshiramiz. Karralilardan biri $i$ ning kvadratiga ham karrali bo‘lsa, uning `good` qiymatini `false` qilamiz.
+2. So‘ng $2$ dan $n$ gacha barcha $i$ lar uchun javobni, ya’ni $i$ bilan o‘zaro tub bo‘lmagan sonlar miqdorini bildiruvchi `cnt[]` massivini hisoblaymiz.
    - Kiritish–chiqarish formulasi qanday ishlashini eslaymiz. Bu yerda o‘sha g‘oyani teskari yo‘nalishda amalga oshiramiz: tub ko‘paytuvchilar ko‘paytmasidan iborat komponent bo‘yicha yurib, uning har bir karralisi uchun kiritish–chiqarish formulasidagi hadni qo‘shamiz yoki ayiramiz.
    - $good[i]=true$ bo‘lgan, ya’ni kiritish–chiqarish formulasida qatnashadigan $i$ sonni qayta ishlayapmiz deb olaylik. $i$ ning barcha karralilarini ko‘rib, ularning `cnt[]` qiymatiga $\lfloor N/i\rfloor$ ni qo‘shamiz yoki ayiramiz. Ishora $deg[i]$ ga bog‘liq: $deg[i]$ toq bo‘lsa qo‘shamiz, juft bo‘lsa ayiramiz.
 
@@ -391,6 +372,7 @@ long long solve() {
 	memset (good, 1, sizeof good);
 	memset (deg, 0, sizeof deg);
 	memset (cnt, 0, sizeof cnt);
+
 	long long ans_bad = 0;
 	for (int i=2; i<=n; ++i) {
 		if (good[i]) {
@@ -411,7 +393,7 @@ long long solve() {
 }
 ```
 
-Deyarli har bir $i\le n$ uchun ichki siklda $n/i$ ta iteratsiya bajarilganligi sababli yechimning asimptotik murakkabligi $O(n\log n)$.
+$n$ gacha bo‘lgan deyarli har bir son uchun ichki siklda $n/i$ ta iteratsiya bajarilganligi sababli yechimning asimptotik murakkabligi $O(n\log n)$.
 
 ### Qo‘zg‘almas nuqtasiz permutatsiyalar soni — derangementlar
 
@@ -430,13 +412,13 @@ $A_k$ bilan $k$-o‘rinda qo‘zg‘almas nuqtaga ega, ya’ni $k$ elementi $k$-
 Kamida bitta qo‘zg‘almas nuqtali permutatsiyalar sonini hisoblash uchun kiritish–chiqarish formulasidan foydalanamiz. Buning uchun $A_i$ to‘plamlar kesishmalarining o‘lchamlarini hisoblaymiz:
 
 $$\begin{aligned}
-|A_p|&=&(n-1)!,\\
-|A_p\cap A_q|&=&(n-2)!,\\
-|A_p\cap A_q\cap A_r|&=&(n-3)!,\\
-&\cdots&
+|A_p|&=(n-1)!,\\
+|A_p\cap A_q|&=(n-2)!,\\
+|A_p\cap A_q\cap A_r|&=(n-3)!,\\
+&\cdots
 \end{aligned}$$
 
-Haqiqatan ham, qo‘zg‘almas nuqtalar soni $x$ bo‘lsa, permutatsiyaning $x$ ta elementi qayerda turishi ma’lum, qolgan $n-x$ ta elementni esa istalgan tartibda joylashtirish mumkin.
+Haqiqatan ham, qo‘zg‘almas nuqtalar soni $x$ bo‘lsa, permutatsiyaning $x$ ta elementi qayerda turishi ma’lum, qolgan $(n-x)$ ta elementni esa istalgan tartibda joylashtirish mumkin.
 
 Bu qiymatlarni kiritish–chiqarish formulasiga qo‘yib va $n$ elementli to‘plamdan $x$ elementli qism to‘plam tanlash usullari soni $\binom nx$ ekanini hisobga olib, kamida bitta qo‘zg‘almas nuqtali permutatsiyalar sonini olamiz:
 

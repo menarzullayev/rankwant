@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the original text: the problem statement, the 'why is the MEC unique' argument, the complexity sum, the four-case angle analysis, the two figures and the Library Checker submission link; removed claims the original does not make (n=0/1 remark, worst-case remark, centre computation, overflow remark).",
+      "content_sha256": "ca73764189308884f53b6474cda5611bf1b4946a9d824c01178232d92f1e73e6"
+    },
+    {
+      "at": "2026-11-12T10:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Re-translated the article section by section into natural Uzbek, using the glossary terms (aylana, nuqta, ko‘pburchak etc.).",
+      "content_sha256": "ca73764189308884f53b6474cda5611bf1b4946a9d824c01178232d92f1e73e6"
+    },
+    {
+      "at": "2026-11-12T10:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Restored the original code placeholders ('{...}', 'gen(...)') and the original display formulas; the invented Re(I_0) and I_2 displays were removed.",
+      "content_sha256": "ca73764189308884f53b6474cda5611bf1b4946a9d824c01178232d92f1e73e6"
+    }
+  ]
+}

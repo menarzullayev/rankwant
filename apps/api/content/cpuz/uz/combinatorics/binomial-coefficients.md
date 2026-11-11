@@ -22,7 +22,7 @@ $$ \binom n k = \binom {n-1} {k-1} + \binom {n-1} k $$
 
 Buni analitik formuladan osongina keltirib chiqarish mumkin.
 
-$n<k$ bo‘lganda $\binom n k$ ning qiymati nol deb qabul qilinishiga e’tibor bering.
+$n \lt k$ bo‘lganda $\binom n k$ ning qiymati nol deb qabul qilinishiga e’tibor bering.
 
 ## Xossalar
 
@@ -30,35 +30,35 @@ Binomial koeffitsiyentlarning ko‘plab xossalari mavjud. Quyida ulardan eng sod
 
 *   Simmetriya qoidasi:
 
-    \[ \binom n k = \binom n {n-k} \]
+    $$ \binom n k = \binom n {n-k} $$
 
 *   Ko‘paytuvchini tashqariga chiqarish:
 
-    \[ \binom n k = \frac n k \binom {n-1} {k-1} \]
+    $$ \binom n k = \frac n k \binom {n-1} {k-1} $$
 
 *   $k$ bo‘yicha yig‘indi:
 
-    \[ \sum_{k = 0}^n \binom n k = 2 ^ n \]
+    $$ \sum_{k = 0}^n \binom n k = 2 ^ n $$
 
 *   $n$ bo‘yicha yig‘indi:
 
-    \[ \sum_{m = 0}^n \binom m k = \binom {n + 1} {k + 1} \]
+    $$ \sum_{m = 0}^n \binom m k = \binom {n + 1} {k + 1} $$
 
 *   $n$ va $k$ bo‘yicha yig‘indi:
 
-    \[ \sum_{k = 0}^m  \binom {n + k} k = \binom {n + m + 1} m \]
+    $$ \sum_{k = 0}^m  \binom {n + k} k = \binom {n + m + 1} m $$
 
 *   Kvadratlar yig‘indisi:
 
-    \[ {\binom n 0}^2 + {\binom n 1}^2 + \cdots + {\binom n n}^2 = \binom {2n} n \]
+    $$ {\binom n 0}^2 + {\binom n 1}^2 + \cdots + {\binom n n}^2 = \binom {2n} n $$
 
 *   Vaznli yig‘indi:
 
-    \[ 1 \binom n 1 + 2 \binom n 2 + \cdots + n \binom n n = n 2^{n-1} \]
+    $$ 1 \binom n 1 + 2 \binom n 2 + \cdots + n \binom n n = n 2^{n-1} $$
 
 *   [Fibonacci sonlari](/algorithms/algebra/fibonacci-numbers) bilan bog‘lanish:
 
-    \[ \binom n 0 + \binom {n-1} 1 + \cdots + \binom {n-k} k + \cdots + \binom 0 n = F_{n+1} \]
+    $$ \binom n 0 + \binom {n-1} 1 + \cdots + \binom {n-k} k + \cdots + \binom 0 n = F_{n+1} $$
 
 ## Hisoblash usullari
 
@@ -96,7 +96,7 @@ Bu yerda yig‘ilib borgan xatolar sababli suzuvchi nuqtali son haqiqiy qiymatda
 
 ### Pascal uchburchagi
 
-Rekurrent munosabatdan foydalanib, binomial koeffitsiyentlar jadvalini — Pascal uchburchagini — qurish va javobni undan olish mumkin. Ushbu usulning afzalligi shundaki, oraliq natijalar hech qachon javobdan oshmaydi va jadvalning har bir yangi elementini hisoblash uchun faqat bitta qo‘shish amali kerak. Kamchiligi esa, agar butun jadval emas, faqat bitta qiymat kerak bo‘lsa, katta $n$ va $k$ uchun sekin ishlashidir. Chunki $\binom n k$ ni hisoblash uchun barcha $\binom i j$, $1\le i\le n$, $1\le j\le n$ qiymatlar jadvalini yoki hech bo‘lmaganda $1\le j\le\min(i,2k)$ gacha bo‘lgan qismini qurish kerak. Vaqt murakkabligini $\mathcal{O}(n^2)$ deb hisoblash mumkin.
+Rekurrent munosabatdan foydalanib, binomial koeffitsiyentlar jadvalini — Pascal uchburchagini — qurish va javobni undan olish mumkin. Ushbu usulning afzalligi shundaki, oraliq natijalar hech qachon javobdan oshmaydi va jadvalning har bir yangi elementini hisoblash uchun faqat bitta qo‘shish amali kerak. Kamchiligi esa, agar butun jadval emas, faqat bitta qiymat kerak bo‘lsa, katta $n$ va $k$ uchun sekin ishlashidir. Chunki $\binom n k$ ni hisoblash uchun barcha $\binom i j, 1 \le i \le n, 1 \le j \le n$ qiymatlar jadvalini yoki hech bo‘lmaganda $1 \le j \le \min (i, 2k)$ gacha bo‘lgan qismini qurish kerak. Vaqt murakkabligini $\mathcal{O}(n^2)$ deb hisoblash mumkin.
 
 C++ da amalga oshirish:
 
@@ -111,17 +111,17 @@ for (int n = 1; n <= maxn; ++n) {
 }
 ```
 
-Agar qiymatlarning butun jadvali kerak bo‘lmasa, uning faqat oxirgi ikkita satrini — joriy $n$-satr va oldingi $(n-1)$-satrni — saqlash kifoya.
+Agar qiymatlarning butun jadvali kerak bo‘lmasa, uning faqat oxirgi ikkita satrini — joriy $n$-satr va oldingi $n-1$-satrni — saqlash kifoya.
 
-### $O(1)$ da hisoblash {data-toc-label="O(1) da hisoblash"}
+### $O(1)$ da hisoblash
 
 Nihoyat, ayrim holatlarda barcha faktoriallarni oldindan hisoblab, keyin kerakli binomial koeffitsiyentni faqat ikkita bo‘lish amali bilan olish foydali. Bu [uzun arifmetika](/algorithms/algebra/big-integer) ishlatilganda va xotira butun Pascal uchburchagini oldindan hisoblashga yetmaganda qulay bo‘lishi mumkin.
 
-## Binomial koeffitsiyentlarni $m$ moduli bo‘yicha hisoblash {data-toc-label="Binomial koeffitsiyentlarni m moduli bo‘yicha hisoblash"}
+## Binomial koeffitsiyentlarni $m$ moduli bo‘yicha hisoblash
 
 Binomial koeffitsiyentlarni biror $m$ moduli bo‘yicha hisoblash masalasi juda ko‘p uchraydi.
 
-### Kichik $n$ uchun binomial koeffitsiyent {data-toc-label="Kichik n uchun binomial koeffitsiyent"}
+### Kichik $n$ uchun binomial koeffitsiyent
 
 Oldin muhokama qilingan Pascal uchburchagi yondashuvidan yetarlicha kichik $n$ uchun barcha $\binom{n}{k}\bmod m$ qiymatlarini hisoblashda foydalanish mumkin, chunki uning vaqt murakkabligi $\mathcal{O}(n^2)$. Bu yondashuv istalgan modul bilan ishlaydi, chunki unda faqat qo‘shish amallari qo‘llanadi.
 
@@ -170,11 +170,8 @@ Shunga qaramay, binomial koeffitsiyentni hisoblash mumkin.
 G‘oya quyidagicha.
 Har bir $x!$ uchun $p^c$ soni $x!$ ni bo‘ladigan eng katta $c$ darajani, ya’ni $p^c~|~x!$ ni hisoblaymiz.
 Bu sonni $c(x)$ deb belgilaymiz.
-Shuningdek,
-
-$$g(x):=\frac{x!}{p^{c(x)}}$$
-
-deb olamiz. Shunda binomial koeffitsiyentni quyidagicha yozish mumkin:
+Shuningdek, $g(x) := \frac{x!}{p^{c(x)}}$ deb olamiz.
+Shunda binomial koeffitsiyentni quyidagicha yozish mumkin:
 
 $$\binom n k = \frac {g(n) p^{c(n)}} {g(k) p^{c(k)} g(n-k) p^{c(n-k)}} = \frac {g(n)} {g(k) g(n-k)}p^{c(n) - c(k) - c(n-k)}$$
 
@@ -190,15 +187,12 @@ Agar $c(n)-c(k)-c(n-k)\ge b$ bo‘lsa, $p^b~|~p^{c(n)-c(k)-c(n-k)}$ bo‘ladi va
 
 Endi binomial koeffitsiyentni ixtiyoriy $m$ moduli bo‘yicha hisoblaymiz.
 
-$m$ ning tub ko‘paytuvchilarga ajralishi
-
-$$m=p_1^{e_1}p_2^{e_2}\cdots p_h^{e_h}$$
-
-bo‘lsin. Har bir $i$ uchun binomial koeffitsiyentni $p_i^{e_i}$ moduli bo‘yicha hisoblashimiz mumkin.
+$m$ ning tub ko‘paytuvchilarga ajralishi $m = p_1^{e_1} p_2^{e_2} \cdots p_h^{e_h}$ bo‘lsin.
+Har bir $i$ uchun binomial koeffitsiyentni $p_i^{e_i}$ moduli bo‘yicha hisoblashimiz mumkin.
 Natijada $h$ ta turli taqqoslama olamiz.
-Barcha $p_i^{e_i}$ modullar o‘zaro tub bo‘lgani sababli, [Xitoy qoldiqlar teoremasi](/algorithms/algebra/chinese-remainder-theorem) yordamida binomial koeffitsiyentni modullar ko‘paytmasi bo‘yicha, ya’ni kerakli $m$ moduli bo‘yicha hisoblashimiz mumkin.
+Barcha $p_i^{e_i}$ modullar o‘zaro tub bo‘lgani sababli, [Xitoy qoldiqlari teoremasi](/algorithms/algebra/chinese-remainder-theorem) yordamida binomial koeffitsiyentni modullar ko‘paytmasi bo‘yicha, ya’ni kerakli $m$ moduli bo‘yicha hisoblashimiz mumkin.
 
-### Katta $n$ va kichik modul uchun binomial koeffitsiyent {data-toc-label="Katta n va kichik modul uchun binomial koeffitsiyent"}
+### Katta $n$ va kichik modul uchun binomial koeffitsiyent
 
 $n$ juda katta bo‘lganda, yuqorida muhokama qilingan $\mathcal{O}(n)$ algoritmlar amaliy bo‘lmay qoladi. Biroq $m$ modul kichik bo‘lsa, $\binom{n}{k}\bmod m$ ni hisoblashning boshqa usullari mavjud.
 
@@ -207,7 +201,7 @@ $m$ tub bo‘lganda ikkita imkoniyat bor:
 * [Lucas teoremasi](https://en.wikipedia.org/wiki/Lucas's_theorem) qo‘llanishi mumkin. U $\binom{n}{k}\bmod m$ ni hisoblash masalasini $x_i,y_i<m$ bo‘lgan $\binom{x_i}{y_i}\bmod m$ ko‘rinishidagi $\log_m n$ ta masalaga ajratadi. Agar har bir kichraytirilgan koeffitsiyent oldindan hisoblangan faktoriallar va teskari faktoriallar yordamida topilsa, murakkablik $\mathcal{O}(m+\log_m n)$ bo‘ladi.
 * [Faktorialni P moduli bo‘yicha](/algorithms/algebra/factorial-modulo) hisoblash usuli kerakli $g$ va $c$ qiymatlarini olish hamda ularni [tub son darajasi moduli](#mod-prime-pow) bo‘limida bayon qilinganidek ishlatish uchun qo‘llanishi mumkin. Bu $\mathcal{O}(m\log_m n)$ vaqt oladi.
 
-Agar $m$ tub bo‘lmasa, ammo kvadratlardan holi bo‘lsa, $m$ ning tub bo‘luvchilarini topish, koeffitsiyentni har bir tub bo‘luvchi moduli bo‘yicha yuqoridagi usullardan biri bilan hisoblash va umumiy javobni Xitoy qoldiqlar teoremasi yordamida olish mumkin.
+Agar $m$ tub bo‘lmasa, ammo kvadratlardan holi bo‘lsa, $m$ ning tub bo‘luvchilarini topish, koeffitsiyentni har bir tub bo‘luvchi moduli bo‘yicha yuqoridagi usullardan biri bilan hisoblash va umumiy javobni Xitoy qoldiqlari teoremasi yordamida olish mumkin.
 
 Agar $m$ kvadratlardan holi bo‘lmasa, Lucas teoremasi o‘rniga uning [tub son darajalari uchun umumlashmasi](https://web.archive.org/web/20170202003812/http://www.dms.umontreal.ca/~andrew/PDF/BinCoeff.pdf) qo‘llanishi mumkin.
 

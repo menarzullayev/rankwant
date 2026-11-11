@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph, formula, number and code block with the original; nothing omitted or altered.",
+      "content_sha256": "ffd995a7456337ffbdcafc6ceef59a6b2f6452f81d833886138531cffa46f41d"
+    },
+    {
+      "at": "2026-11-11T14:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed the leftover mkdocs attribute '{ data-toc-label=... }' from the Pollard p-1 heading and smoothed one clumsy clause about when the repetition starts in Pollard's rho.",
+      "content_sha256": "ffd995a7456337ffbdcafc6ceef59a6b2f6452f81d833886138531cffa46f41d"
+    }
+  ]
+}

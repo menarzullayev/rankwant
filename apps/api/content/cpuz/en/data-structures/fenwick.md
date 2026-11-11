@@ -74,7 +74,7 @@ We could also take the function $g(i) = 0$.
 This would correspond to prefix sum arrays (in which case, finding the sum of the range $[0, i]$ will only take constant time; however, updates are slow).
 The clever part of the algorithm for Fenwick trees is how it uses a special definition of the function $g$ which can handle both operations in $O(\log N)$ time.
 
-### Definition of $g(i)$ { data-toc-label='Definition of $g(i)$' }
+### Definition of $g(i)$
 
 The computation of $g(i)$ is defined using the following simple operation:
 we replace all trailing $1$ bits in the binary representation of $i$ with $0$ bits.
@@ -85,11 +85,11 @@ And otherwise the least significant digit is a $1$, and we take this $1$ and all
 For instance we get
 
 $$\begin{align}
-g(11) = g(1011_2) = 1000_2 &= 8 \\\\
-g(12) = g(1100_2) = 1100_2 &= 12 \\\\
-g(13) = g(1101_2) = 1100_2 &= 12 \\\\
-g(14) = g(1110_2) = 1110_2 &= 14 \\\\
-g(15) = g(1111_2) = 0000_2 &= 0 \\\\
+g(11) = g(1011_2) = 1000_2 &= 8 \\
+g(12) = g(1100_2) = 1100_2 &= 12 \\
+g(13) = g(1101_2) = 1100_2 &= 12 \\
+g(14) = g(1110_2) = 1110_2 &= 14 \\
+g(15) = g(1111_2) = 0000_2 &= 0 \\
 \end{align}$$
 
 There exists a simple implementation using bitwise operations for the non-trivial operation described above:
@@ -105,11 +105,11 @@ We will call this operation $h(j)$.
 For example, for $i = 10$ we have:
 
 $$\begin{align}
-10 &= 0001010_2 \\\\
-h(10) = 11 &= 0001011_2 \\\\
-h(11) = 15 &= 0001111_2 \\\\
-h(15) = 31 &= 0011111_2 \\\\
-h(31) = 63 &= 0111111_2 \\\\
+10 &= 0001010_2 \\
+h(10) = 11 &= 0001011_2 \\
+h(11) = 15 &= 0001111_2 \\
+h(15) = 31 &= 0011111_2 \\
+h(31) = 63 &= 0111111_2 \\
 \vdots &
 \end{align}$$
 
@@ -187,7 +187,7 @@ FenwickTree(vector<int> const &a) : FenwickTree(a.size()){
 }
 ```
 
-### Finding minimum of $[0, r]$ in one-dimensional array { data-toc-label='Finding minimum of $[0, r]$ in one-dimensional array' }
+### Finding minimum of $[0, r]$ in one-dimensional array
 
 It is obvious that there is no easy way of finding minimum of range $[l, r]$ using Fenwick tree, as Fenwick tree can only answer queries of type $[0, r]$.
 Additionally, each time a value is `update`'d, the new value has to be smaller than the current value.
@@ -278,9 +278,9 @@ The computation of $g(i)$ is defined as:
 toggling of the last set $1$ bit in the binary representation of $i$.
 
 $$\begin{align}
-g(7) = g(111_2) = 110_2 &= 6 \\\\
-g(6) = g(110_2) = 100_2 &= 4 \\\\
-g(4) = g(100_2) = 000_2 &= 0 \\\\
+g(7) = g(111_2) = 110_2 &= 6 \\
+g(6) = g(110_2) = 100_2 &= 4 \\
+g(4) = g(100_2) = 000_2 &= 0 \\
 \end{align}$$
 
 The last set bit can be extracted using $i ~\&~ (-i)$, so the operation can be expressed as:
@@ -398,9 +398,9 @@ After the range update $(l, r, x)$ the range sum query should return the followi
 $$
 sum[0, i]=
 \begin{cases}
-0 & i < l \\\\
-x \cdot (i-(l-1)) & l \le i \le r \\\\
-x \cdot (r-l+1) & i > r \\\\
+0 & i < l \\
+x \cdot (i-(l-1)) & l \le i \le r \\
+x \cdot (r-l+1) & i > r \\
 \end{cases}
 $$
 
@@ -408,11 +408,11 @@ We can write the range sum as difference of two terms, where we use $B_1$ for fi
 The difference of the queries will give us prefix sum over $[0, i]$.
 
 $$\begin{align}
-sum[0, i] &= sum(B_1, i) \cdot i - sum(B_2, i) \\\\
+sum[0, i] &= sum(B_1, i) \cdot i - sum(B_2, i) \\
 &= \begin{cases}
-0 \cdot i - 0 & i < l\\\\
-x \cdot i - x \cdot (l-1) & l \le i \le r \\\\
-0 \cdot i - (x \cdot (l-1) - x \cdot r) & i > r \\\\
+0 \cdot i - 0 & i < l\\
+x \cdot i - x \cdot (l-1) & l \le i \le r \\
+0 \cdot i - (x \cdot (l-1) - x \cdot r) & i > r \\
 \end{cases}
 \end{align}
 $$

@@ -1,127 +1,72 @@
 # Aylana va to‘g‘ri chiziq kesishmasi
 
-Markazi koordinatalar boshida, radiusi $r$ bo‘lgan aylana va
+Aylana markazining koordinatalari va radiusi hamda to‘g‘ri chiziq tenglamasi berilgan; kesishish nuqtalarini topish talab qilinadi.
 
-$$
-ax+by+c=0
-$$
+## Yechim
 
-to‘g‘ri chiziq berilgan. Ularning kesishish nuqtalarini topish talab qilinadi. Markazi boshqa nuqtada bo‘lgan aylana uchun avval koordinatalarni markazga siljitish, javobdan so‘ng nuqtalarni orqaga siljitish kifoya.
+Ikki tenglamadan iborat sistemani yechish o‘rniga masalaga geometrik yondashamiz. Bu usul sonli turg‘unlik nuqtayi nazaridan aniqroq yechim beradi.
 
-## Geometrik yechim
+Umumiylikni yo‘qotmasdan aylana markazi koordinatalar boshida deb faraz qilamiz. Agar bunday bo‘lmasa, aylanani u yerga ko‘chiramiz va to‘g‘ri chiziq tenglamasidagi $C$ o‘zgarmasini to‘g‘rilaymiz. Demak, markazi $(0,0)$ nuqtada, radiusi $r$ bo‘lgan aylana va tenglamasi $Ax+By+C=0$ bo‘lgan to‘g‘ri chiziq berilgan.
 
-Koordinatalar boshidan chiziqqa tushirilgan perpendikulyarning asosini $(x_0,y_0)$ deb belgilaymiz. Chiziq normal vektori $(a,b)$ bo‘lgani uchun eng yaqin nuqta shu yo‘nalishda yotadi. Standart proyeksiya formulasi:
+Avval to‘g‘ri chiziqda koordinatalar boshiga eng yaqin $(x_0, y_0)$ nuqtani topamiz. Birinchidan, u
 
-$$
-x_0=-\frac{ac}{a^2+b^2},
-\qquad
-y_0=-\frac{bc}{a^2+b^2}.
-$$
+$$ d_0 = \frac{|C|}{\sqrt{A^2+B^2}} $$
 
-Koordinatalar boshidan chiziqqacha masofaning kvadrati
+masofada bo‘lishi kerak.
 
-$$
-d_0^2=\frac{c^2}{a^2+b^2}
-$$
+Ikkinchidan, $(A, B)$ vektor to‘g‘ri chiziqqa perpendikulyar bo‘lgani uchun nuqtaning koordinatalari bu vektorning koordinatalariga proporsional bo‘lishi kerak. Nuqtadan koordinatalar boshigacha bo‘lgan masofani bilganimiz uchun $(A, B)$ vektorni shu uzunlikka masshtablashtirish kifoya, shunda quyidagini olamiz:
 
-bo‘ladi.
+$$\begin{align}
+x_0 &= - \frac{AC}{A^2 + B^2} \\
+y_0 &= - \frac{BC}{A^2 + B^2} 
+\end{align}$$
 
-Uch holat mavjud:
+Minus ishoralari ochiq-oydin emas, lekin $x_0$ va $y_0$ ni to‘g‘ri chiziq tenglamasiga qo‘yib, ularni osongina tekshirish mumkin.
 
-1. $d_0>r$ bo‘lsa, chiziq aylana tashqarisidan o‘tadi va kesishma yo‘q;
-2. $d_0=r$ bo‘lsa, chiziq urinma va yagona nuqta $(x_0,y_0)$;
-3. $d_0<r$ bo‘lsa, ikkita kesishish nuqtasi mavjud.
+Bu bosqichda kesishish nuqtalari sonini aniqlash, hatto nuqta bitta yoki nol bo‘lganda yechimni topish ham mumkin. Haqiqatan, agar $(x_0, y_0)$ nuqtadan koordinatalar boshigacha bo‘lgan masofa $d_0$ radius $r$ dan katta bo‘lsa, javob — **nol nuqta**. Agar $d_0=r$ bo‘lsa, javob — **bitta nuqta** $(x_0, y_0)$. Agar $d_0<r$ bo‘lsa, ikkita kesishish nuqtasi bor va endi ularning koordinatalarini topishimiz kerak.
 
-Uchinchi holatda kesishish nuqtalarining $(x_0,y_0)$ dan chiziq bo‘ylab masofasi
+Demak, $(x_0, y_0)$ nuqta aylana ichida. Ikkita kesishish nuqtasi, $(a_x, a_y)$ va $(b_x, b_y)$, $Ax+By+C=0$ to‘g‘ri chiziqqa tegishli bo‘lishi va $(x_0, y_0)$ dan bir xil $d$ masofada yotishi kerak; bu masofani topish oson:
 
-$$
-d=\sqrt{r^2-d_0^2}
-$$
+$$ d = \sqrt{r^2 - \frac{C^2}{A^2 + B^2}} $$
 
-ga teng. Chiziqning birlik yo‘nalish vektori
+E’tibor bering, $(-B, A)$ vektor to‘g‘ri chiziqqa kollinear, shuning uchun kerakli nuqtalarni $(x_0, y_0)$ nuqtaga $d$ uzunlikka masshtablangan $(-B,A)$ vektorni qo‘shib va ayirib topish mumkin.
 
-$$
-\frac{(-b,a)}{\sqrt{a^2+b^2}}
-$$
+Nihoyat, ikkita kesishish nuqtasining formulalari quyidagicha:
 
-bo‘lgani uchun siljish komponentlari
+$$\begin{align}
+m &= \sqrt{\frac{d^2}{A^2 + B^2}} \\
+a_x &= x_0 + B \cdot m, a_y = y_0 - A \cdot m \\
+b_x &= x_0 - B \cdot m, b_y = y_0 + A \cdot m
+\end{align}$$
 
-$$
-\Delta x=-b\sqrt{\frac{r^2-d_0^2}{a^2+b^2}},
-\qquad
-\Delta y=a\sqrt{\frac{r^2-d_0^2}{a^2+b^2}}
-$$
-
-bo‘ladi. Javoblar:
-
-$$
-(x_0+\Delta x,y_0+\Delta y),
-\qquad
-(x_0-\Delta x,y_0-\Delta y).
-$$
+Dastlabki sistemani algebraik usullar bilan yechganimizda, ehtimol, javobni boshqacha ko‘rinishda va kattaroq xato bilan olgan bo‘lardik. Bu yerda tavsiflangan geometrik usul ko‘rgazmaliroq va aniqroq.
 
 ## Implementatsiya
 
+Boshida aytilganidek, aylana markazi koordinatalar boshida deb faraz qilamiz, shuning uchun dasturning kirishi — aylananing radiusi $r$ va to‘g‘ri chiziq tenglamasining $A$, $B$, $C$ parametrlari.
+
 ```cpp
-const double EPS = 1e-9;
-
-struct point {
-    double x, y;
-};
-
-vector<point> circle_line_intersection(double r,
-                                       double a,
-                                       double b,
-                                       double c) {
-    vector<point> ans;
-    double den = a * a + b * b;
-    double x0 = -a * c / den;
-    double y0 = -b * c / den;
-    double lhs = c * c;
-    double rhs = r * r * den;
-
-    if (lhs > rhs + EPS)
-        return ans;
-
-    if (abs(lhs - rhs) < EPS) {
-        ans.push_back({x0, y0});
-        return ans;
-    }
-
-    double mult = sqrt((rhs - lhs) / den) / sqrt(den);
-    double ax = x0 + b * mult;
-    double ay = y0 - a * mult;
-    double bx = x0 - b * mult;
-    double by = y0 + a * mult;
-    ans.push_back({ax, ay});
-    ans.push_back({bx, by});
-    return ans;
+double r, a, b, c; // kirish sifatida beriladi
+double x0 = -a*c/(a*a+b*b), y0 = -b*c/(a*a+b*b);
+if (c*c > r*r*(a*a+b*b)+EPS)
+    puts ("no points");
+else if (abs (c*c - r*r*(a*a+b*b)) < EPS) {
+    puts ("1 point");
+    cout << x0 << ' ' << y0 << '\n';
+}
+else {
+    double d = r*r - c*c/(a*a+b*b);
+    double mult = sqrt (d / (a*a+b*b));
+    double ax, ay, bx, by;
+    ax = x0 + b * mult;
+    bx = x0 - b * mult;
+    ay = y0 - a * mult;
+    by = y0 + a * mult;
+    puts ("2 points");
+    cout << ax << ' ' << ay << '\n' << bx << ' ' << by << '\n';
 }
 ```
 
-Formulani quyidagicha ham yozish mumkin:
+## Amaliy masalalar
 
-```cpp
-double d = r * r - c * c / (a * a + b * b);
-double mult = sqrt(d / (a * a + b * b));
-point p1 = {x0 + b * mult, y0 - a * mult};
-point p2 = {x0 - b * mult, y0 + a * mult};
-```
-
-Haqiqiy sonlarda $d$ nazariy jihatdan nol bo‘lsa ham hisoblash xatosi sababli ozgina manfiy chiqishi mumkin. Shuning uchun holatlarni `EPS` bilan ajratib, `sqrt` ga uzatishdan oldin $d$ ni kamida nolga tenglashtirish mumkin.
-
-## Nega geometrik usul afzal
-
-Aylana tenglamasi $x^2+y^2=r^2$ ga chiziq tenglamasidan bir o‘zgaruvchini qo‘yib, kvadrat tenglama yechish ham mumkin. Biroq bu usul ko‘proq algebraik amallarni talab qiladi va ayrim yo‘nalishlarda, masalan $b\approx0$ bo‘lganda, alohida shartlar yoki sonli beqarorlik keltirib chiqaradi. Perpendikulyar proyeksiyaga asoslangan formula simmetrik, qisqa va barcha chiziq yo‘nalishlari uchun bir xil ishlaydi.
-
-## Siljitilgan aylana
-
-Aylana markazi $(x_c,y_c)$ bo‘lsa, $X=x-x_c$, $Y=y-y_c$ deb olamiz. Chiziq
-
-$$
-aX+bY+(ax_c+by_c+c)=0
-$$
-
-ko‘rinishga keladi. Yuqoridagi algoritmda yangi $c'=ax_c+by_c+c$ ishlatiladi va topilgan $(X,Y)$ nuqtalarga markaz qo‘shiladi.
-
-Murakkablik $O(1)$ vaqt va $O(1)$ qo‘shimcha xotiradir.
+- [CODECHEF: ANDOOR](https://www.codechef.com/problems/ANDOOR)

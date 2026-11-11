@@ -1,125 +1,50 @@
-# Pick teoremasi — panjaraviy ko‘pburchak yuzi
+# Pick teoremasi
 
-Barcha uchlari butun koordinatali nuqtalarda yotadigan sodda ko‘pburchak **panjaraviy ko‘pburchak** deyiladi. Uning ichidagi panjara nuqtalari sonini $I$, chegarasidagi panjara nuqtalari sonini $B$ bilan belgilaymiz. Pick teoremasi ko‘pburchak yuzini juda sodda formula bilan beradi:
+O‘zini o‘zi kesmaydigan ko‘pburchak, agar uning barcha uchlari tekislikdagi biror butun koordinatali to‘rda butun koordinatalarga ega bo‘lsa, **panjaraviy** deyiladi. Pick teoremasi bunday ko‘pburchakning yuzini uning chegarasida yotgan nuqtalar soni va qat’iy ichida yotgan nuqtalar soni orqali hisoblash imkonini beradi.
 
-$$
-\boxed{S=I+\frac{B}{2}-1}.
-$$
+## Formula
 
-Ekvivalent ravishda,
+Yuzi noldan farqli biror panjaraviy ko‘pburchak berilgan bo‘lsin.
 
-$$
-2S=2I+B-2.
-$$
+Uning yuzini $S$ bilan, ko‘pburchak ichida qat’iy yotgan butun koordinatali nuqtalar sonini $I$ bilan, ko‘pburchak tomonlarida yotgan nuqtalar sonini esa $B$ bilan belgilaymiz.
 
-Formula ko‘pburchakning shakli, qavariqligi yoki qirralar qiyaligiga bog‘liq emas; faqat ko‘pburchak sodda va barcha uchlar panjara nuqtalari bo‘lishi kerak.
+U holda **Pick formulasi** quyidagini tasdiqlaydi:
 
-## Misollar
+$$S=I+\frac{B}{2}-1$$
 
-Birlik kvadrat uchun $I=0$, $B=4$:
+Xususan, agar ko‘pburchak uchun $I$ va $B$ qiymatlari berilgan bo‘lsa, uchlarini bilmasdan turib ham yuzni $O(1)$ da hisoblash mumkin.
 
-$$
-S=0+\frac42-1=1.
-$$
+Bu formulani 1899-yilda avstriyalik matematik Georg Aleksandr Pick kashf etgan va isbotlagan.
 
-Tomonlari $a$ va $b$ bo‘lgan o‘qlarga parallel to‘g‘ri to‘rtburchakda
+## Isbot
 
-$$
-I=(a-1)(b-1),
-\qquad
-B=2a+2b.
-$$
+Isbot bir necha bosqichda, sodda ko‘pburchaklardan ixtiyoriy ko‘pburchaklarga qarab olib boriladi:
 
-Pick formulasi
+- Bitta kvadrat: $S=1, I=0, B=4$, bu formulani qanoatlantiradi.
 
-$$
-(a-1)(b-1)+a+b-1=ab
-$$
+- Tomonlari koordinata o‘qlariga parallel bo‘lgan ixtiyoriy aynimagan to‘g‘ri to‘rtburchak: $a$ va $b$ to‘rtburchak tomonlarining uzunliklari bo‘lsin. U holda $S=ab, I=(a-1)(b-1), B=2(a+b)$. O‘rniga qo‘yib, formula to‘g‘ri ekanini ko‘ramiz.
 
-natijani beradi.
+- Katetlari o‘qlarga parallel bo‘lgan to‘g‘ri burchakli uchburchak: buni isbotlash uchun har qanday bunday uchburchakni to‘g‘ri to‘rtburchakni diagonal bo‘yicha kesib hosil qilish mumkinligini payqang. Diagonalda yotgan butun nuqtalar sonini $c$ bilan belgilasak, Pick formulasi $c$ ga bog‘liq bo‘lmagan holda bu uchburchak uchun ham o‘rinli ekanini ko‘rsatish mumkin.
 
-## Chegaradagi panjara nuqtalarini hisoblash
+- Ixtiyoriy uchburchak: har qanday bunday uchburchakni katetlari o‘qlarga parallel bo‘lgan to‘g‘ri burchakli uchburchaklarni uning tomonlariga yopishtirish orqali to‘g‘ri to‘rtburchakka aylantirish mumkinligini payqang (buning uchun 3 tadan ortiq bunday uchburchak kerak bo‘lmaydi). Bundan istalgan uchburchak uchun to‘g‘ri formulani olamiz.
 
-Butun nuqtalar $A=(x_1,y_1)$ va $B=(x_2,y_2)$ orasidagi kesmada, ikkala uchni ham hisoblaganda,
+- Ixtiyoriy ko‘pburchak: buni isbotlash uchun uni triangulyatsiya qilamiz, ya’ni uchlari butun koordinatali uchburchaklarga bo‘lamiz. Keyin esa uchburchakka ko‘pburchak qo‘shilganda Pick teoremasi o‘z kuchini saqlashini isbotlash mumkin. Shunday qilib, Pick formulasini ixtiyoriy ko‘pburchak uchun isbotladik.
 
-$$
-\gcd(|x_2-x_1|,|y_2-y_1|)+1
-$$
+## Yuqori o‘lchamlarga umumlashtirish
 
-ta panjara nuqta yotadi. Ko‘pburchak qirralari bo‘yicha uchlar ikki marta sanalmasligi uchun chegaradagi umumiy nuqtalar soni
+Afsuski, bu sodda va go‘zal formulani yuqori o‘lchamlarga umumlashtirib bo‘lmaydi.
 
-$$
-B=\sum_{i=0}^{n-1}
-\gcd(|x_{i+1}-x_i|,|y_{i+1}-y_i|)
-$$
+Buni 1957-yilda Jon Riv quyidagi uchlarga ega tetraedr (**Riv tetraedri**) taklif qilib ko‘rsatgan:
 
-bo‘ladi.
+$$A=(0,0,0),
+B=(1,0,0),
+C=(0,1,0),
+D=(1,1,k),$$
 
-Yuzaning ikki baravari shoelace formulasi bilan aniq butun son sifatida topiladi:
+bu yerda $k$ istalgan natural son bo‘lishi mumkin. U holda har qanday $k$ uchun $ABCD$ tetraedr ichida butun nuqta yo‘q va chegarasida faqat $4$ ta nuqta, ya’ni $A, B, C, D$ bor. Shunday qilib, ichkarisidagi va chegarasidagi nuqtalar soni o‘zgarmasa ham, hajm va sirt yuzi turlicha bo‘lishi mumkin. Demak, Pick teoremasini umumlashtirib bo‘lmaydi.
 
-$$
-2S=\left|\sum_i x_i y_{i+1}-y_i x_{i+1}\right|.
-$$
+Biroq yuqori o‘lchamlar uchun baribir **Ehrhart ko‘phadlari** yordamida umumlashtirish mavjud, lekin ular ancha murakkab va nafaqat ichkaridagi nuqtalarga, balki ko‘pyoqlining chegarasiga ham bog‘liq.
 
-Shundan ichki nuqtalar soni
+## Qo‘shimcha manbalar
 
-$$
-I=\frac{2S-B+2}{2}
-$$
-
-kelib chiqadi.
-
-## Implementatsiya
-
-```cpp
-struct point {
-    long long x, y;
-};
-
-long long boundary_lattice_points(const vector<point>& p) {
-    long long B = 0;
-    int n = p.size();
-    for (int i = 0; i < n; ++i) {
-        int j = (i + 1) % n;
-        B += std::gcd(llabs(p[j].x - p[i].x),
-                      llabs(p[j].y - p[i].y));
-    }
-    return B;
-}
-
-long long doubled_area(const vector<point>& p) {
-    long long a = 0;
-    int n = p.size();
-    for (int i = 0; i < n; ++i) {
-        int j = (i + 1) % n;
-        a += p[i].x * p[j].y - p[i].y * p[j].x;
-    }
-    return llabs(a);
-}
-
-long long interior_lattice_points(const vector<point>& p) {
-    long long A2 = doubled_area(p);
-    long long B = boundary_lattice_points(p);
-    return (A2 - B + 2) / 2;
-}
-```
-
-## Isbot g‘oyasi
-
-Pick formulasini panjaraviy uchburchaklardan boshlab, ko‘pburchakni qirra bilan ikkiga bo‘lishda invariant saqlanishini ko‘rsatish orqali isbotlash mumkin.
-
-Agar ikkita panjaraviy ko‘pburchak umumiy qirra bo‘ylab birlashtirilsa, yuzalar qo‘shiladi. Ichki va chegaradagi nuqtalar sonlari ham shunday o‘zgaradiki,
-
-$$
-I+\frac B2-1
-$$
-
-ifoda additiv bo‘lib qoladi: umumiy qirraning ichki panjara nuqtalari yangi birlashgan ko‘pburchakda ichki nuqtalarga aylanadi, qirra uchlari esa chegarada qoladi. Shuning uchun formula triangulyatsiya orqali butun ko‘pburchakka yoyiladi.
-
-Eng sodda panjaraviy uchburchak — ichida ham, qirralarining uchlaridan boshqa panjara nuqtalari ham bo‘lmagan primitive uchburchak — yuzi $1/2$ ga teng. Unda $I=0$, $B=3$ va formula bajariladi. Panjaraviy uchburchakni primitive uchburchaklarga ajratish orqali asosiy holat olinadi.
-
-## Cheklovlar
-
-Teorema o‘zini kesuvchi ko‘pburchaklarga bevosita qo‘llanmaydi. Uchlari butun bo‘lmagan ko‘pburchak uchun ham oddiy $I,B$ formulasi yetarli emas; bunday holat [panjaraviy bo‘lmagan ko‘pburchakdagi panjara nuqtalari](/algorithms/geometry/lattice-points) masalasiga olib keladi.
-
-Hisoblash murakkabligi $O(n\log C)$, bu yerda $C$ koordinatalar farqining maksimal moduli; logarifm qirralardagi `gcd` hisoblaridan keladi.
+Pick teoremasining bir nechta sodda misollari va oddiy isbotini [bu yerda](http://www.geometer.org/mathcircles/pick.pdf) topish mumkin.

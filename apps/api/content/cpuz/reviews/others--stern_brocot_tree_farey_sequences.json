@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the original pseudocode line in the build() code block that had been translated, restored the original formulas (\\lt, z > 0 <=> z >= 1, no trailing period in the align block) and corrected the warning about the naive search so that it again says the algorithm should not be used unless O(p+q) is acceptable.",
+      "content_sha256": "6680759127a2eb87d756dc8b302971cadf5a78332e9999671ba755194098e741"
+    },
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Reworded the (n-1)-order sentence and the warning sentence so that they read naturally in Uzbek; the rest of the translation was accurate.",
+      "content_sha256": "6680759127a2eb87d756dc8b302971cadf5a78332e9999671ba755194098e741"
+    },
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code blocks and formulas now match the original.",
+      "content_sha256": "6680759127a2eb87d756dc8b302971cadf5a78332e9999671ba755194098e741"
+    }
+  ]
+}

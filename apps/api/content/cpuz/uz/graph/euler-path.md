@@ -1,26 +1,26 @@
-# Euler yo‘lini $O(M)$ vaqtda topish
+# Eyler yo‘lini $O(M)$ vaqtda topish
 
-Euler yo‘li — grafning barcha qirralaridan aynan bir marta o‘tadigan yo‘l.
+Eyler yo‘li — grafning barcha qirralaridan aynan bir marta o‘tadigan yo‘l.
 
-Euler sikli — sikl bo‘lgan Euler yo‘lidir.
+Eyler sikli — sikl bo‘lgan Eyler yo‘lidir.
 
-Masala — **ilmoqlari bo‘lishi mumkin bo‘lgan yo‘naltirilmagan multigrafda** Euler yo‘lini topish.
+Masala — **ilmoqlari bo‘lishi mumkin bo‘lgan yo‘naltirilmagan multigrafda** Eyler yo‘lini topish.
 
 ## Algoritm
 
-Avval Euler yo‘li mavjud yoki yo‘qligini tekshirishimiz mumkin.
+Avval Eyler yo‘li mavjud yoki yo‘qligini tekshirishimiz mumkin.
 
-Quyidagi teoremadan foydalanamiz. Euler sikli mavjud bo‘lishi uchun va faqat shuning uchun barcha tugunlarning darajalari juft bo‘lishi kerak.
+Quyidagi teoremadan foydalanamiz. Eyler sikli mavjud bo‘lishi uchun barcha tugunlarning darajalari juft bo‘lishi zarur va yetarli.
 
-Euler yo‘li mavjud bo‘lishi uchun va faqat shuning uchun toq darajali tugunlar soni ikki bo‘lishi kerak (yoki Euler sikli mavjud bo‘lgan holatda nol).
+Eyler yo‘li mavjud bo‘lishi uchun toq darajali tugunlar soni ikkita bo‘lishi (Eyler sikli mavjud bo‘lgan holatda esa nol bo‘lishi) zarur va yetarli.
 
-Bundan tashqari, albatta, graf yetarlicha bog‘langan bo‘lishi kerak (ya’ni undan barcha ajratilgan tugunlar olib tashlansa, bog‘langan graf qolishi kerak).
+Bundan tashqari, albatta, graf yetarlicha bog‘langan bo‘lishi kerak (ya’ni undan barcha yakkalangan tugunlar olib tashlansa, bog‘langan graf qolishi kerak).
 
-Euler yo‘li yoki Euler siklini topish uchun quyidagi strategiyadan foydalanish mumkin:
+Eyler yo‘li yoki Eyler siklini topish uchun quyidagi strategiyadan foydalanish mumkin:
 
-Barcha sodda sikllarni topib, ularni bitta siklga birlashtiramiz — bu Euler sikli bo‘ladi.
+Barcha sodda sikllarni topib, ularni bitta siklga birlashtiramiz — bu Eyler sikli bo‘ladi.
 
-Agar grafdagi Euler yo‘li sikl bo‘lmasa, yetishmayotgan qirrani qo‘shamiz, Euler siklini topamiz, keyin ortiqcha qirrani olib tashlaymiz.
+Agar grafdagi Eyler yo‘li sikl bo‘lmasa, yetishmayotgan qirrani qo‘shamiz, Eyler siklini topamiz, keyin ortiqcha qirrani olib tashlaymiz.
 
 Barcha sikllarni qidirish va birlashtirish sodda rekursiv protsedura yordamida bajarilishi mumkin:
 
@@ -54,27 +54,27 @@ Algoritmning bu ikki ko‘rinishi ekvivalentligini tekshirish oson. Biroq ikkinc
 
 ## Domino masalasi
 
-Bu yerda klassik Euler sikli masalasini — Domino masalasini keltiramiz.
+Bu yerda klassik Eyler sikli masalasini — Domino masalasini keltiramiz.
 
 $N$ ta domino mavjud; ma’lumki, har bir dominoning ikki uchida bittadan son yozilgan (odatda 1 dan 6 gacha, lekin bizning holatda bu muhim emas). Barcha dominolarni bir qatorga shunday joylashtirmoqchisizki, istalgan ikkita qo‘shni dominoning umumiy tomonida yozilgan sonlar bir xil bo‘lsin. Dominolarni aylantirishga ruxsat beriladi.
 
-Masalani boshqacha ifodalaymiz. Dominolarda yozilgan sonlar graf tugunlari, dominolar esa graf qirralari bo‘lsin (raqamlari $(a,b)$ bo‘lgan har bir domino $(a,b)$ va $(b,a)$ qirralarni ifodalaydi). U holda masalamiz shu grafda Euler yo‘lini topish masalasiga keltiriladi.
+Masalani boshqacha ifodalaymiz. Dominolarning yarmlarida yozilgan sonlar graf tugunlari, dominolar esa graf qirralari bo‘lsin (raqamlari $(a,b)$ bo‘lgan har bir domino $(a,b)$ va $(b,a)$ qirralarni ifodalaydi). U holda masalamiz shu grafda Eyler yo‘lini topish masalasiga keltiriladi.
 
 ## Implementatsiya
 
-Quyidagi dastur grafda Euler sikli yoki yo‘lini qidirib chiqaradi; agar mavjud bo‘lmasa, $-1$ chiqaradi.
+Quyidagi dastur grafda Eyler siklini yoki yo‘lini qidirib topadi va chiqaradi; agar mavjud bo‘lmasa, $-1$ chiqaradi.
 
-Dastlab dastur tugunlar darajasini tekshiradi: toq darajali tugunlar bo‘lmasa, grafda Euler sikli bor; toq darajali tugunlar soni $2$ bo‘lsa, grafda faqat Euler yo‘li bor (Euler sikli yo‘q); bunday tugunlar soni $2$ dan ko‘p bo‘lsa, grafda Euler sikli ham, Euler yo‘li ham mavjud emas.
+Dastlab dastur tugunlar darajasini tekshiradi: toq darajali tugunlar bo‘lmasa, grafda Eyler sikli bor; toq darajali tugunlar soni $2$ bo‘lsa, grafda faqat Eyler yo‘li bor (Eyler sikli yo‘q); bunday tugunlar soni $2$ dan ko‘p bo‘lsa, grafda Eyler sikli ham, Eyler yo‘li ham mavjud emas.
 
-Euler yo‘lini (sikl bo‘lmaganini) topish uchun quyidagini qilamiz: $V1$ va $V2$ — toq darajali ikki tugun bo‘lsa, shunchaki $(V1, V2)$ qirrani qo‘shamiz, hosil bo‘lgan grafda Euler siklini topamiz (u albatta mavjud bo‘ladi), keyin javobdan “soxta” $(V1, V2)$ qirrani olib tashlaymiz.
+Eyler yo‘lini (sikl bo‘lmaganini) topish uchun quyidagini qilamiz: $V1$ va $V2$ — toq darajali ikki tugun bo‘lsa, shunchaki $(V1, V2)$ qirrani qo‘shamiz, hosil bo‘lgan grafda Eyler siklini topamiz (u albatta mavjud bo‘ladi), keyin javobdan “soxta” $(V1, V2)$ qirrani olib tashlaymiz.
 
-Euler siklini aynan yuqorida tavsiflangan usulda (rekursiyasiz ko‘rinishda) qidiramiz va shu bilan birga algoritm oxirida graf bog‘langan yoki yo‘qligini tekshiramiz (graf bog‘lanmagan bo‘lsa, algoritm oxirida unda ayrim qirralar qoladi va bu holda $-1$ chiqarish kerak).
+Eyler siklini aynan yuqorida tavsiflangan usulda (rekursiyasiz ko‘rinishda) qidiramiz va shu bilan birga algoritm oxirida graf bog‘langan yoki yo‘qligini tekshiramiz (graf bog‘lanmagan bo‘lsa, algoritm oxirida unda ayrim qirralar qoladi va bu holda $-1$ chiqarish kerak).
 
-Nihoyat, dastur grafda ajratilgan tugunlar bo‘lishi mumkinligini ham hisobga oladi.
+Nihoyat, dastur grafda yakkalangan tugunlar bo‘lishi mumkinligini ham hisobga oladi.
 
 Ushbu masalada qo‘shnilik matritsasidan foydalanayotganimizga e’tibor bering.
 
-Bundan tashqari, bu implementatsiya keyingi qirrani to‘liq qidiruv bilan topadi, buning uchun matritsaning butun satri qayta-qayta ko‘rib chiqiladi.
+Bundan tashqari, bu implementatsiya keyingi qirrani to‘liq ko‘rib chiqish (brute-force) yordamida topadi, buning uchun matritsaning butun satri qayta-qayta ko‘rib chiqiladi.
 
 Yaxshiroq usul — grafni qo‘shnilik ro‘yxati sifatida saqlash, qirralarni $O(1)$ vaqtda olib tashlash va teskari qirralarni alohida ro‘yxatda belgilashdir.
 

@@ -39,7 +39,7 @@ Davriy qism satrlar guruhlarini to‘rtta sondan iborat kortejlar bilan ifodalay
 
 Takrorlanishlar soniga oid yana bir nechta qiziqarli natija:
 
-* **Primitiv takrorlanishlar** — ya’ni yarmilarining o‘zi takrorlanish bo‘lmagan takrorlanishlar — soni ko‘pi bilan $O(n\log n)$.
+* **Primitiv takrorlanishlar** — ya’ni yarmlarining o‘zi takrorlanish bo‘lmagan takrorlanishlar — soni ko‘pi bilan $O(n\log n)$.
 * Takrorlanishlarni **Crochemore uchliklari** deb ataladigan $(i,\,p,\,r)$ sonlar uchligi bilan kodlasak — bu yerda $i$ boshlanish pozitsiyasi, $p$ takrorlanuvchi qism satr uzunligi, $r$ esa takrorlanishlar soni — barcha takrorlanishlarni $O(n\log n)$ ta shunday uchlik bilan ifodalash mumkin.
 * Quyidagicha aniqlanadigan Fibonacci satrlari
 
@@ -55,11 +55,11 @@ $$
 
 ## Main–Lorentz algoritmi
 
-Main–Lorentz algoritmining asosiy g‘oyasi — bo‘lib tashla va hukmronlik qil usuli.
+Main–Lorentz algoritmining asosiy g‘oyasi — **bo‘lib yechish** usuli.
 
-Algoritm boshlang‘ich satrni ikki yarmiga bo‘ladi va ikki rekursiv chaqiruv yordamida har bir yarm ichida to‘liq joylashgan takrorlanishlarni hisoblaydi. Keyin qiyin qism keladi: birinchi yarmda boshlanib, ikkinchi yarmda tugaydigan barcha takrorlanishlar topiladi. Ularni **kesib o‘tuvchi takrorlanishlar** deb ataymiz. Bu Main–Lorentz algoritmining asosiy qismi bo‘lib, uni batafsil ko‘rib chiqamiz.
+Algoritm boshlang‘ich satrni ikki yarmiga bo‘ladi va ikki rekursiv chaqiruv yordamida har bir yarim ichida to‘liq joylashgan takrorlanishlarni hisoblaydi. Keyin qiyin qism keladi: birinchi yarmda boshlanib, ikkinchi yarmda tugaydigan barcha takrorlanishlar topiladi. Ularni **kesib o‘tuvchi takrorlanishlar** deb ataymiz. Bu Main–Lorentz algoritmining asosiy qismi bo‘lib, uni batafsil ko‘rib chiqamiz.
 
-Bo‘lib tashla va hukmronlik qil algoritmlarining murakkabligi yaxshi o‘rganilgan. [Master teoremasi](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms))ga ko‘ra, kesib o‘tuvchi takrorlanishlarni $O(n)$ vaqtda topa olsak, umumiy algoritm $O(n\log n)$ vaqtda ishlaydi.
+Bo‘lib yechish algoritmlarining murakkabligi yaxshi o‘rganilgan. [Master teoremasi](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms))ga ko‘ra, kesib o‘tuvchi takrorlanishlarni $O(n)$ vaqtda topa olsak, umumiy algoritm $O(n\log n)$ vaqtda ishlaydi.
 
 ### Kesib o‘tuvchi takrorlanishlarni qidirish
 
@@ -67,7 +67,7 @@ Demak, satrning $u$ deb ataladigan birinchi yarmida boshlanib, $v$ deb ataladiga
 
 $$s=u+v$$
 
-$u$ va $v$ uzunliklari taxminan $|s|/2$ ga teng.
+Ularning uzunliklari taxminan $s$ uzunligining yarmiga teng.
 
 Ixtiyoriy takrorlanishni ko‘rib, uning o‘rta belgisiga — aniqrog‘i, takrorlanishning ikkinchi yarmidagi birinchi belgiga — qaraylik. Agar takrorlanish $s[i\dots j]$ qism satri bo‘lsa, uning o‘rta belgisi $(i+j+1)/2$ pozitsiyada joylashadi.
 
@@ -85,15 +85,7 @@ $$c~\underset{cntr}{a}~c~|~a~d~a$$
 
 Vertikal chiziq satrning ikki yarmini ajratadi. Bu yerda $cntr=1$ pozitsiya qayd etilgan va shu pozitsiyada $caca$ takrorlanishi topiladi.
 
-$cntr$ pozitsiyani qayd etishimiz bilan mumkin bo‘lgan takrorlanishlar uzunligi ham aniqlanishi ravshan:
-
-$$l=|u|-cntr.$$
-
-Bu takrorlanishlarni qanday topishni bilganimizdan so‘ng, $cntr$ ning $0$ dan $|u|-1$ gacha bo‘lgan barcha qiymatlarini ko‘rib chiqamiz va uzunligi mos ravishda
-
-$$l=|u|,\ |u|-1,\ \dots,\ 1$$
-
-bo‘lgan barcha chap kesib o‘tuvchi takrorlanishlarni topamiz.
+$cntr$ pozitsiyani qayd etishimiz bilan mumkin bo‘lgan takrorlanishlar uzunligi ham aniqlanishi ravshan: $l=|u|-cntr$. Bu takrorlanishlarni qanday topishni bilganimizdan so‘ng, $cntr$ ning $0$ dan $|u|-1$ gacha bo‘lgan barcha qiymatlarini ko‘rib chiqamiz va uzunligi mos ravishda $l=|u|,\ |u|-1,\ \dots,\ 1$ bo‘lgan barcha chap kesib o‘tuvchi takrorlanishlarni topamiz.
 
 ### Chap kesib o‘tuvchi takrorlanishlar mezoni
 
@@ -103,17 +95,9 @@ Yana bir tasviriy misolga, bu safar $abcabc$ takrorlanishiga qaraylik:
 
 $$\overbrace{a}^{l_1}~\overbrace{\underset{cntr}{b}~c}^{l_2}~\overbrace{a}^{l_1}~|~\overbrace{b~c}^{l_2}$$
 
-Bu yerda takrorlanish qismlarining uzunliklarini $l_1$ va $l_2$ bilan belgiladik: $l_1$ — takrorlanishning $cntr-1$ pozitsiyagacha bo‘lgan qismi uzunligi, $l_2$ esa $cntr$ dan takrorlanish yarmining oxirigacha bo‘lgan qism uzunligi. Takrorlanishning jami uzunligi
+Bu yerda takrorlanish qismlarining uzunliklarini $l_1$ va $l_2$ bilan belgiladik: $l_1$ — takrorlanishning $cntr-1$ pozitsiyagacha bo‘lgan qismi uzunligi, $l_2$ esa $cntr$ dan takrorlanish yarmining oxirigacha bo‘lgan qism uzunligi. Takrorlanishning jami uzunligi $2l=l_1+l_2+l_1+l_2$ bo‘ladi.
 
-$$2l=l_1+l_2+l_1+l_2$$
-
-bo‘ladi.
-
-$cntr$ pozitsiyadagi uzunligi
-
-$$2l=2(l_1+l_2)=2(|u|-cntr)$$
-
-bo‘lgan takrorlanish uchun zarur va yetarli shartlarni hosil qilamiz:
+$cntr$ pozitsiyadagi uzunligi $2l=2(l_1+l_2)=2(|u|-cntr)$ bo‘lgan takrorlanish uchun zarur va yetarli shartlarni hosil qilamiz:
 
 * $k_1$ — $cntr$ pozitsiyasidan oldingi dastlabki $k_1$ ta belgi $u$ satrining oxirgi $k_1$ ta belgisi bilan mos tushadigan eng katta son bo‘lsin:
 

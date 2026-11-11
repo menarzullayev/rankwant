@@ -1,4 +1,4 @@
-# Buzilgan profil bo‘yicha DP: “Parquet” masalasi
+# Buzilgan profil bo‘yicha DP. “Parket” masalasi
 
 Buzilgan profil bo‘yicha DP yordamida odatda quyidagi turdagi masalalar yechiladi:
 
@@ -16,7 +16,7 @@ $i$ joriy ko‘rib chiqilgan panjaradagi qatorlar sonini, $mask$ esa joriy panja
 
 Masalaning javobi, ravshanki, $dp[N, 0]$ bo‘ladi.
 
-DP holatlarini $i = 1, \cdots N$ va $mask = 0, \ldots 2^M - 1$ bo‘yicha ko‘rib chiqamiz. Har bir `mask` uchun faqat oldinga o‘tishlar qilamiz, ya’ni joriy panjaraga shakllar _qo‘shamiz_.
+DP holatlarini $i = 1, \cdots N$ va $mask = 0, \ldots 2^M - 1$ bo‘yicha iteratsiya qilib quramiz. Har bir $mask$ uchun faqat oldinga o‘tishlar qilamiz, ya’ni joriy panjaraga shakllar _qo‘shamiz_.
 
 ### Implementatsiya
 

@@ -1,0 +1,40 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Rewrote the article as a faithful translation: restored the omitted images (distance, rotation, octants, uniqueness, two sweep-line figures) with captions, the Chebyshev and spiral-similarity links, the Zhou-Shenoy-Nichollos and Stolfi references, the remark on the x-y sweep order, the 'x_q1 != x_q2' fact and the last two practice problems; removed the invented case form of |x_p - x_q| and the invented proof of the octant claim.",
+      "content_sha256": "d0f0e6313b22065f33ef3f3a7ea1cde6b5f772b5c950af2ed304b2447462ad4c"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the original MST code block exactly (its edges.push_back and for-loop lines had been re-wrapped) and corrected two problem links (Codeforces contest URLs and the gym 104639 ICPC link, which had been changed to 104591).",
+      "content_sha256": "d0f0e6313b22065f33ef3f3a7ea1cde6b5f772b5c950af2ed304b2447462ad4c"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated the sections that were rewritten, using the glossary terms (supuruvchi chiziq, kesishmaydigan to'plamlar birlashmasi) and natural Uzbek.",
+      "content_sha256": "d0f0e6313b22065f33ef3f3a7ea1cde6b5f772b5c950af2ed304b2447462ad4c"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code blocks and all display and inline formulas now match the original.",
+      "content_sha256": "d0f0e6313b22065f33ef3f3a7ea1cde6b5f772b5c950af2ed304b2447462ad4c"
+    }
+  ]
+}

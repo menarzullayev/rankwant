@@ -50,11 +50,7 @@ bo‘ladi.
 
 Obyekt ta’rifidan kelib chiqib barcha invariant permutatsiyalarni, ya’ni tasvirga qo‘llanganda obyektni o‘zgartirmaydigan barcha permutatsiyalarni topish mumkin.
 
-So‘ng ikkita $f_1$ va $f_2$ funksiya ekvivalentligini, ya’ni bir xil obyektga mos kelishini, har bir invariant permutatsiya uchun
-
-$$f_2\pi\equiv f_1$$
-
-shartini yoki unga teng kuchli $f_1\pi\equiv f_2$ shartini tekshirish orqali aniqlash mumkin. Shartni qanoatlantiradigan kamida bitta permutatsiya topilsa, $f_1$ va $f_2$ ekvivalent; aks holda ekvivalent emas.
+So‘ng ikkita $f_1$ va $f_2$ funksiya ekvivalentligini, ya’ni bir xil obyektga mos kelishini, har bir invariant permutatsiya uchun $f_2\pi\equiv f_1$ shartini yoki unga teng kuchli $f_1\pi\equiv f_2$ shartini tekshirish orqali aniqlash mumkin. Shartni qanoatlantiradigan kamida bitta permutatsiya topilsa, $f_1$ va $f_2$ ekvivalent; aks holda ekvivalent emas.
 
 Obyekt ta’rifiga nisbatan barcha invariant permutatsiyalarni topish Burnside lemmasi va Pólya sanash teoremasini qo‘llashdagi asosiy qadamdir.
 
@@ -68,9 +64,7 @@ Invariant permutatsiyalar guruhini $G$ bilan belgilaymiz.
 
 Lemmani ifodalash uchun algebradan yana bitta ta’rif kerak.
 
-$\pi$ permutatsiyaning **qo‘zg‘almas nuqtasi** $f$ — shu permutatsiya ta’sirida o‘zgarmaydigan element:
-
-$$f\equiv f\pi.$$
+$\pi$ permutatsiyaning **qo‘zg‘almas nuqtasi** $f$ — shu permutatsiya ta’sirida o‘zgarmaydigan element: $f\equiv f\pi$.
 
 Masalan, yuqoridagi misolda $\pi$ qo‘llanganda o‘zgarmaydigan bo‘yalishlarga mos funksiyalar $f$ qo‘zg‘almas nuqtalardir. Bu yerda “o‘zgarmaslik” funksiyalar tengligining formal ma’nosida tushuniladi.
 
@@ -170,11 +164,7 @@ $C(\pi_i)$ ni hisoblash uchun aniq formula topamiz.
 
 Avval $\pi_i$ permutatsiyaning $j$-o‘rnida $i+j$ qiymati, $n$ modul bo‘yicha olingan holda, turishiga e’tibor beramiz. $\pi_i$ ning sikl tuzilishini ko‘rsak, $1$ elementi $1+i$ ga, $1+i$ elementi $1+2i$ ga, u $1+3i$ ga va hokazo, $1+kn$ ko‘rinishidagi songa yetguncha o‘tadi. Qolgan elementlar uchun ham xuddi shunday mulohaza o‘rinli.
 
-Demak, barcha sikllarning uzunligi bir xil va:
-
-$$\frac{\operatorname{lcm}(i,n)}i=\frac n{\gcd(i,n)}$$
-
-ga teng. Shuning uchun $\pi_i$ dagi sikllar soni $\gcd(i,n)$ ga teng.
+Demak, barcha sikllarning uzunligi bir xil, ya’ni $\frac{\text{lcm}(i, n)}{i} = \frac{n}{\gcd(i, n)}$ ga teng. Shuning uchun $\pi_i$ dagi sikllar soni $\gcd(i,n)$ ga teng.
 
 Bu qiymatlarni Pólya sanash teoremasiga qo‘ysak, masala javobini olamiz:
 
@@ -184,21 +174,17 @@ Formulani shu ko‘rinishda qoldirish yoki yanada soddalashtirish mumkin.
 
 Yig‘indini $n$ ning barcha bo‘luvchilari bo‘yicha yuradigan qilib o‘zgartiramiz. Dastlabki yig‘indida ko‘plab teng hadlar bor: $i$ soni $n$ ning bo‘luvchisi bo‘lmasa ham, $\gcd(i,n)$ ni hisoblash orqali shunday bo‘luvchi olinadi.
 
-Shuning uchun har bir $d\mid n$ bo‘luvchining $k^{\gcd(d,n)}=k^d$ hadi yig‘indida bir necha marta uchraydi. Javobni quyidagicha yozish mumkin:
+Shuning uchun har bir $d ~|~ n$ bo‘luvchining $k^{\gcd(d,n)}=k^d$ hadi yig‘indida bir necha marta uchraydi. Javobni quyidagicha yozish mumkin:
 
-$$\frac1n\sum_{d\mid n}C_dk^d,$$
+$$\frac1n\sum_{d ~|~ n}C_dk^d,$$
 
 bu yerda $C_d$ — $\gcd(i,n)=d$ bo‘lgan $i$ sonlar miqdori.
 
-Bu qiymat uchun aniq ifoda topamiz. Har qanday shunday $i$ son
-
-$$i=dj,\qquad\gcd\left(j,\frac nd\right)=1$$
-
-ko‘rinishga ega; aks holda $\gcd(i,n)>d$ bo‘lardi. Demak, shunday $j$ lar sonini hisoblash kerak.
+Bu qiymat uchun aniq ifoda topamiz. Har qanday shunday $i$ son $i=dj$, $\gcd(j, n / d) = 1$ ko‘rinishga ega; aks holda $\gcd(i,n)>d$ bo‘lardi. Demak, shunday $j$ lar sonini hisoblash kerak.
 
 [Eulerning phi funksiyasi](/algorithms/algebra/phi-function) $C_d=\phi(n/d)$ natijani beradi. Shunday qilib, javob:
 
-$$\frac1n\sum_{d\mid n}\phi\left(\frac nd\right)k^d$$
+$$\frac1n\sum_{d ~|~ n}\phi\left(\frac nd\right)k^d$$
 
 ## Qo‘llanish: torusni bo‘yash
 
@@ -216,17 +202,13 @@ Yana $n\times m$ qog‘oz varaqdan boshlaymiz. Quyidagi o‘zgartirishlar ekviva
 
 - qatorlarni siklik siljitish;
 - ustunlarni siklik siljitish;
-- varaqni $180^\circ$ ga burish.
+- varaqni 180 gradusga burish.
 
 Shuningdek, bu o‘zgartirishlar invariant o‘zgartirishlarning butun guruhini hosil qila oladi.
 
 Qog‘oz kataklarini biror usulda raqamlasak, ushbu uch turdagi o‘zgartirishga mos $p_1$, $p_2$, $p_3$ permutatsiyalarni yozish mumkin. Keyin faqat ularning ko‘paytmalari orqali hosil bo‘ladigan barcha permutatsiyalarni yaratish qoladi.
 
-Barcha bunday permutatsiyalar
-
-$$p_1^{i_1}p_2^{i_2}p_3^{i_3}$$
-
-ko‘rinishida bo‘ladi, bu yerda $i_1=0\ldots m-1$, $i_2=0\ldots n-1$, $i_3=0\ldots1$.
+Barcha bunday permutatsiyalar $p_1^{i_1}p_2^{i_2}p_3^{i_3}$ ko‘rinishida bo‘ladi, bu yerda $i_1=0\dots m-1$, $i_2=0\dots n-1$, $i_3=0\dots1$.
 
 Masala implementatsiyasi:
 

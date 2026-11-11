@@ -70,6 +70,7 @@ Amalda yuqorida tasvirlanganidan biroz boshqacha yondashuv ishlatiladi. $x$ ni k
 $$
 x (2^{a_1}+1)\dots(2^{a_k}+1) \equiv 1 \pmod {2^d}.
 $$
+
 Buning uchun $1 < n < d$ bo‘lgan $n$ larni ko‘rib chiqamiz. Agar joriy $x$ sonining $n$-biti o‘rnatilgan bo‘lsa, $x$ ni $2^n+1$ ga ko‘paytiramiz; C++ da buni qulay tarzda `x = x + (x << n)` deb yozish mumkin. Bu $n$ dan kichik bitlarni o‘zgartirmaydi, ammo $x$ toq bo‘lgani sababli $n$-bitni nolga aylantiradi.
 
 Bularning barchasini hisobga olsak, `mbin_log_32(r, x)` funksiyasi quyidagicha implementatsiya qilinadi:
@@ -106,7 +107,7 @@ $$
 natijani olish mumkin.
 
 Bu natijani $a=2^n+1$ va $b=d-k$ ga qo‘llab, $2^n+1$ ning multiplikativ tartibi $2^{d-n}$ ning bo‘luvchisi ekanini olamiz.
-Bu esa o‘z navbatida $L(2^n+1)$ soni $2^{n}$ ga bo‘linishi kerakligini anglatadi, chunki $b$ ning tartibi $2^{d-2}$, $b^y$ ning tartibi esa $2^{d-2-v}$ ga teng; bu yerda $2^v$ — $y$ ni bo‘ladigan ikkilikning eng katta darajasi. Shuning uchun
+Bu esa o‘z navbatida $L(2^n+1)$ soni $2^{n}$ ga bo‘linishi kerakligini anglatadi, chunki $b$ ning tartibi $2^{d-2}$, $b^y$ ning tartibi esa $2^{d-2-v}$ ga teng; bu yerda $2^v$ — $y$ ni bo‘ladigan $2$ ning eng katta darajasi. Shuning uchun
 
 $$
 2^{d-k} \equiv 0 \pmod{2^{d-2-v}},
@@ -171,7 +172,7 @@ uint32_t mbin_exp_32(uint32_t r, uint32_t x) {
 ```
 ## Logarifmlar jadvalini hisoblash
 
-Logarifmlar jadvalini hisoblash uchun [Pohlig–Hellman algoritmini](https://en.wikipedia.org/wiki/Pohlig–Hellman_algorithm) modul ikkilikning darajasi bo‘lgan holga moslashtirish mumkin.
+Logarifmlar jadvalini hisoblash uchun [Pohlig–Hellman algoritmini](https://en.wikipedia.org/wiki/Pohlig–Hellman_algorithm) modul $2$ ning darajasi bo‘lgan holga moslashtirish mumkin.
 
 Bu yerdagi asosiy vazifamiz $g^x \equiv y \pmod{2^d}$ tenglikni qanoatlantiradigan $x$ ni hisoblashdir; bu yerda $g=5$, $y$ esa $2^n+1$ ko‘rinishidagi son.
 
@@ -190,6 +191,7 @@ g^{x_0+2^k x_1} \equiv y \pmod{2^d}.
 $$
 
 Tenglikning ikkala tomonini $g^{-x_0}$ ga ko‘paytirib,
+
 $$
 g^{2^k x_1} \equiv (g^{-x_0} y) \pmod{2^d}.
 $$

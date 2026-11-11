@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "All paragraphs, tables, both worked examples and formulas match the original.",
+      "content_sha256": "c50a95897a874bdd7a8bdeea2a6414445b4ea06713c22c412a6464e4d53d3971"
+    },
+    {
+      "at": "2026-11-12T10:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "The Uzbek text is correct; only blank lines were added around headings, lists, fences and display formulas so that they render correctly.",
+      "content_sha256": "c50a95897a874bdd7a8bdeea2a6414445b4ea06713c22c412a6464e4d53d3971"
+    }
+  ]
+}

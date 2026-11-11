@@ -1,111 +1,62 @@
 # Kesma uchun to‘g‘ri chiziq tenglamasini topish
 
-Tekislikda uchlari $(x_1,y_1)$ va $(x_2,y_2)$ bo‘lgan kesma berilgan. Shu ikki nuqtadan o‘tuvchi cheksiz to‘g‘ri chiziqning
+Masala: kesma uchlarining koordinatalari berilgan; shu kesma orqali o‘tuvchi to‘g‘ri chiziqni qurish kerak.
 
-$$
-ax+by+c=0
-$$
+Kesma aynimagan (degenerat emas), ya’ni uzunligi noldan katta deb faraz qilamiz (aks holda, albatta, u orqali cheksiz ko‘p turli to‘g‘ri chiziqlar o‘tadi).
 
-ko‘rinishdagi tenglamasini topish talab qilinadi.
+### Ikki o‘lchamli holat
 
-## Ikki nuqtadan chiziq tenglamasini chiqarish
+Berilgan kesma $PQ$ bo‘lsin, ya’ni uning uchlarining $P_x , P_y , Q_x , Q_y$ koordinatalari ma’lum.
 
-Chiziq bo‘ylab yo‘nalish vektori
+Shu kesma orqali o‘tuvchi **tekislikdagi to‘g‘ri chiziq tenglamasini** qurish kerak, ya’ni to‘g‘ri chiziq tenglamasidagi $A , B , C$ koeffitsiyentlarni topish lozim:
 
-$$
-\mathbf d=(x_2-x_1,\ y_2-y_1)
-$$
+$$A x + B y + C = 0.$$
 
-bo‘ladi. Chiziqning normal vektori unga perpendikulyar bo‘lishi kerak. Masalan,
+E’tibor bering: izlanayotgan $(A, B, C)$ uchliklar uchun berilgan kesmani tasvirlaydigan **cheksiz ko‘p** yechim mavjud:
+uchala koeffitsiyentni ixtiyoriy nolga teng bo‘lmagan songa ko‘paytirib, xuddi shu to‘g‘ri chiziqni olish mumkin.
+Shuning uchun vazifamiz shu uchliklardan birini topishdir.
 
-$$
-\mathbf n=(y_1-y_2,\ x_2-x_1)
-$$
+Quyidagi koeffitsiyentlar to‘plami mos kelishini tekshirish oson (bu ifodalarni va $P$ hamda $Q$ nuqtalarning koordinatalarini to‘g‘ri chiziq tenglamasiga qo‘yib ko‘rish kifoya):
 
-vektorni olish mumkin, chunki
+$$\begin{align}
+A &= P_y - Q_y, \\
+B &= Q_x - P_x, \\
+C &= - A P_x - B P_y.
+\end{align}$$
 
-$$
-(x_2-x_1)(y_1-y_2)+(y_2-y_1)(x_2-x_1)=0.
-$$
+### Butun sonli holat
 
-Shuning uchun
+To‘g‘ri chiziqni qurishning bu usulining muhim afzalligi shundaki, uchlarning koordinatalari butun bo‘lsa, hosil bo‘ladigan koeffitsiyentlar ham **butun** bo‘ladi. Ayrim hollarda bu geometrik amallarni haqiqiy sonlarga umuman murojaat qilmasdan bajarishga imkon beradi.
 
-$$
-a=y_1-y_2,\qquad b=x_2-x_1.
-$$
+Biroq kichik kamchilik ham bor: bir xil to‘g‘ri chiziq uchun turli koeffitsiyentlar uchliklarini olish mumkin.
+Buning oldini olish va shu bilan birga butun koeffitsiyentlardan chiqib ketmaslik uchun ko‘pincha **normallashtirish** deb ataladigan quyidagi usulni qo‘llash mumkin. $| A | , | B | , | C |$ sonlarining [eng katta umumiy bo‘luvchisi](/algorithms/algebra/euclid-algorithm) topiladi, uchala koeffitsiyent unga bo‘linadi, so‘ng ishora normallashtiriladi: agar $A <0$ yoki $A = 0, B <0$ bo‘lsa, uchala koeffitsiyent $-1$ ga ko‘paytiriladi.
+Natijada bir xil to‘g‘ri chiziqlar uchun bir xil koeffitsiyentlar uchliklari hosil bo‘ladi, bu esa to‘g‘ri chiziqlarning tengligini tekshirishni osonlashtiradi.
 
-Chiziq birinchi nuqtadan o‘tishi uchun
+### Haqiqiy sonli holat
 
-$$
-a x_1+b y_1+c=0,
-$$
+Haqiqiy sonlar bilan ishlaganda doimo xatoliklarni hisobga olish kerak.
 
-demak
+$A$ va $B$ koeffitsiyentlar boshlang‘ich koordinatalar tartibida, $C$ koeffitsiyent esa ularning kvadrati tartibida bo‘ladi. Bu allaqachon ancha katta sonlar bo‘lishi mumkin va, masalan, [to‘g‘ri chiziqlarni kesishtirganda](/algorithms/geometry/lines-intersection) ular yanada kattalashadi; bu uchlarning koordinatalari $10^3$ tartibida bo‘lganda ham katta yaxlitlash xatoliklariga olib kelishi mumkin.
 
-$$
-c=-a x_1-b y_1=x_1y_2-x_2y_1.
-$$
+Shu sababli haqiqiy sonlar bilan ishlaganda **normallashtirish** deb ataladigan amalni bajarish tavsiya etiladi; u sodda: koeffitsiyentlarni $A ^ 2 + B ^ 2 = 1$ bo‘ladigan qilib tanlash kerak. Buning uchun $Z$ sonini hisoblaymiz:
 
-Natijada tayyor formula:
+$$Z = \sqrt{A ^ 2 + B ^ 2},$$
 
-$$
-\boxed{
- a=y_1-y_2,\qquad
- b=x_2-x_1,\qquad
- c=x_1y_2-x_2y_1
-}
-$$
+va uchala $A , B , C$ koeffitsiyentni unga bo‘lamiz.
 
-bo‘ladi.
+Shunday qilib, $A$ va $B$ koeffitsiyentlar tartibi kirish koordinatalari tartibiga bog‘liq bo‘lmaydi, $C$ koeffitsiyent esa kirish koordinatalari bilan bir xil tartibda bo‘ladi. Amalda bu hisob-kitoblar aniqligini sezilarli darajada oshiradi.
 
-Bu koeffitsiyentlarni istalgan nol bo‘lmagan songa bir vaqtda ko‘paytirish yoki bo‘lish chiziqni o‘zgartirmaydi. Masalan, $(a,b,c)$ va $(ka,kb,kc)$ bir xil geometrik chiziqni ifodalaydi.
+Nihoyat, to‘g‘ri chiziqlarni **taqqoslash** haqida: aslida bunday normallashtirishdan keyin bir xil to‘g‘ri chiziq uchun koeffitsiyentlarning faqat ikkita uchligi — $-1$ ga ko‘paytirish aniqligida — hosil bo‘lishi mumkin.
+Shunga ko‘ra, ishorani hisobga olib qo‘shimcha normallashtirishni bajarsak (agar $A < -\varepsilon$ yoki $| A | < \varepsilon$, $B <- \varepsilon$ bo‘lsa, $-1$ ga ko‘paytiramiz), hosil bo‘lgan koeffitsiyentlar yagona bo‘ladi.
 
-## Butun koordinatalar uchun implementatsiya
+### Uch o‘lchamli va ko‘p o‘lchamli holat
 
-Agar kirish koordinatalari butun bo‘lsa, koeffitsiyentlarni ham butun sonlarda hisoblash mumkin. Koordinatalar katta bo‘lishi mumkinligi sababli ko‘paytmalarga `long long` ishlatish ma’qul.
+Uch o‘lchamli holatdayoq to‘g‘ri chiziqni tasvirlaydigan **oddiy tenglama yo‘q** (uni ikki tekislikning kesishmasi, ya’ni ikkita tenglamalar sistemasi sifatida berish mumkin, ammo bu noqulay usul).
 
-```cpp
-struct point {
-    long long x, y;
-};
+Shuning uchun uch o‘lchamli va ko‘p o‘lchamli holatlarda to‘g‘ri chiziqni berishning **parametrik usulidan** foydalanish kerak, ya’ni uni $p$ nuqta va $v$ vektor orqali ifodalash:
 
-struct line {
-    long long a, b, c;
-};
+$$p + v t, ~~~ t \in \mathbb{R}.$$
 
-line line_from_segment(point p, point q) {
-    line l;
-    l.a = p.y - q.y;
-    l.b = q.x - p.x;
-    l.c = p.x * q.y - q.x * p.y;
-    return l;
-}
-```
+Ya’ni to‘g‘ri chiziq — $p$ nuqtaga $v$ vektorni ixtiyoriy koeffitsiyent bilan qo‘shib hosil qilish mumkin bo‘lgan barcha nuqtalardir.
 
-Koeffitsiyentlarni kanonik ko‘rinishga keltirish kerak bo‘lsa, $g=\gcd(|a|,|b|,|c|)$ ga bo‘lish mumkin. So‘ng birinchi nol bo‘lmagan koeffitsiyent musbat bo‘lishi uchun uchalasining ishorasi bir vaqtda almashtiriladi. Bu chiziqlarni taqqoslash yoki `set`/`map` kaliti sifatida saqlashda qulay.
-
-```cpp
-line normalize(line l) {
-    long long g = std::gcd(std::gcd(llabs(l.a), llabs(l.b)), llabs(l.c));
-    if (g != 0) {
-        l.a /= g;
-        l.b /= g;
-        l.c /= g;
-    }
-    if (l.a < 0 || (l.a == 0 && l.b < 0) ||
-        (l.a == 0 && l.b == 0 && l.c < 0)) {
-        l.a = -l.a;
-        l.b = -l.b;
-        l.c = -l.c;
-    }
-    return l;
-}
-```
-
-## Maxsus holatlar
-
-Agar ikkala uch bir xil nuqta bo‘lsa, $a=b=c=0$ chiqadi va bu to‘g‘ri chiziqni aniqlamaydi. Masala shartida kesma uzunligi musbat ekanini tekshirish yoki bu degenerativ holatni alohida qayta ishlash kerak.
-
-Vertikal chiziqda $x_1=x_2$ bo‘ladi. Formula avtomatik ravishda $b=0$ va $a\ne0$ beradi; chiziq $x=x_1$ ko‘rinishga keladi. Gorizontal chiziqda esa $a=0$ bo‘lib, $y=y_1$ hosil bo‘ladi. Shu sababli qiyalik $k$ ishlatadigan $y=kx+b$ ko‘rinishidan farqli ravishda $ax+by+c=0$ barcha yo‘nalishlar uchun bir xil ishlaydi.
-
-Nuqtaning chiziqning qaysi tomonida yotishini $ax+by+c$ iforasi ishorasi orqali aniqlash mumkin. Qiymat nol bo‘lsa nuqta chiziqda, musbat va manfiy qiymatlar esa chiziqning ikki turli tomonini bildiradi.
+To‘g‘ri chiziqni kesma uchlarining koordinatalari bo‘yicha parametrik ko‘rinishda **qurish** oddiy: $p$ nuqta sifatida kesmaning bir uchini, $v$ vektor sifatida esa birinchi uchdan ikkinchisiga yo‘nalgan vektorni olamiz.

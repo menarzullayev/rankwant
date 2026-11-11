@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation had added sections (convergence caveats, complexity, Babylonian method, benchmark note) and rewritten all three code blocks, and dropped the figure. Removed the additions, restored the original code and the figure, and put the missing statements back.",
+      "content_sha256": "4dc699fc87acf77358b0e19efd41b318276b461ee3e52aae0042ee7897f926d6"
+    },
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated the restored text into natural Uzbek and translated nothing but the prose.",
+      "content_sha256": "4dc699fc87acf77358b0e19efd41b318276b461ee3e52aae0042ee7897f926d6"
+    },
+    {
+      "at": "2026-11-11T14:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code blocks and display formulas are the original's again.",
+      "content_sha256": "4dc699fc87acf77358b0e19efd41b318276b461ee3e52aae0042ee7897f926d6"
+    }
+  ]
+}

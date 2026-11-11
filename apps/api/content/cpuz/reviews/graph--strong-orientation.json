@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Corrected the bridge argument to say one end of a bridge cannot be reached from the other, as in the original; restored the original italic *n* and *m* instead of inline math in the input description.",
+      "content_sha256": "71c035c099242e36230902f2a383c31ad6e68c7b1a49bde923af5fcf8a7e55e1"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Translation read correctly and naturally; no language changes needed beyond the sentence above.",
+      "content_sha256": "71c035c099242e36230902f2a383c31ad6e68c7b1a49bde923af5fcf8a7e55e1"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code identical to the original; inline math n and m restored to the original italics, so the pending difference is gone.",
+      "content_sha256": "71c035c099242e36230902f2a383c31ad6e68c7b1a49bde923af5fcf8a7e55e1"
+    }
+  ]
+}

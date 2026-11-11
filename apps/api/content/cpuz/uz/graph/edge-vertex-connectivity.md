@@ -17,7 +17,7 @@ Grafning qirra bog‘liqligi barcha mumkin bo‘lgan $(s,t)$ juftlari orasida ik
 ### Tugun bog‘liqligi
 
 $G$ grafning **tugun bog‘liqligi** $\kappa$ — $G$ graf uzilib qolishi uchun olib tashlash kerak bo‘lgan tugunlarning eng kichik soni.
-Masalan, avvaldan uzilgan grafning tugun bog‘liqligi $0$, artikulyatsiya nuqtasi bor bog‘langan grafniki esa $1$.
+Masalan, avvaldan uzilgan grafning tugun bog‘liqligi $0$, ajratuvchi tuguni bor bog‘langan grafniki esa $1$.
 To‘liq grafning tugun bog‘liqligini $n-1$ deb aniqlaymiz.
 Boshqa barcha graflar uchun tugun bog‘liqligi $n-2$ dan oshmaydi, chunki qirra bilan bog‘lanmagan ikkita tugunni topib, qolgan $n-2$ ta tugunning barchasini olib tashlash mumkin.
 Agar $G$ grafdan $T$ dagi barcha tugunlarni olib tashlagach, $s$ va $t$ tugunlar turli bog‘langan komponentlarda qolsa, $T$ tugunlar to‘plami $s$ va $t$ tugunlarni **ajratadi** deymiz.
@@ -73,6 +73,8 @@ Ulardan biri $O(V^3)$ yoki $O(VE+V^2\log V)$ vaqtda ishlaydigan [Stoer–Wagner 
 Yana barcha $s$ va $t$ tugunlar juftlari bo‘yicha yuramiz va har bir juft uchun $s$ va $t$ ni ajratadigan tugunlarning minimal sonini topamiz.
 
 Bunda avvalgi bo‘limlarda tasvirlangan maksimal oqim yondashuvini qo‘llashimiz mumkin.
-$x\ne s$ va $x\ne t$ bo‘lgan har bir $x$ tugunni $x_1$ va $x_2$ ikkita tugunga ajratamiz.
+$x\neq s$ va $x\neq t$ bo‘lgan har bir $x$ tugunni $x_1$ va $x_2$ ikkita tugunga ajratamiz.
 Bu ikki tugunni sig‘imi $1$ bo‘lgan $(x_1,x_2)$ yo‘naltirilgan qirra bilan bog‘laymiz va barcha $(u,v)$ qirralarni har ikkisining sig‘imi $1$ bo‘lgan $(u_2,v_1)$ va $(v_2,u_1)$ yo‘naltirilgan qirralarga almashtiramiz.
 Qurilishdan kelib chiqib, maksimal oqim qiymati $s$ va $t$ ni ajratish uchun kerak bo‘ladigan tugunlarning minimal soniga teng bo‘ladi.
+
+Bu yondashuvning murakkabligi qirra bog‘liqligini topishdagi oqim yondashuvi bilan bir xil.

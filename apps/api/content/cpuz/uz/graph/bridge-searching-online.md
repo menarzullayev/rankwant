@@ -4,7 +4,7 @@ Bizga yo‘naltirilmagan graf berilgan. Olib tashlanganda grafni uzib qo‘yadig
 
 Norasmiy aytganda, yo‘llar xaritasidagi barcha «muhim» yo‘llarni topishimiz kerak: ulardan istalgan bittasi olib tashlansa, ayrim shaharlar boshqa shaharlardan yetib bo‘lmaydigan bo‘lib qoladi.
 
-Bu masalani [Ko‘priklarni $O(N+M)$ vaqtda topish](/algorithms/graph/bridge-searching) maqolasi [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) yordamida yechadi. Bu maqoladagi algoritm ancha murakkabroq, ammo uning muhim afzalligi bor: u **onlayn** ishlaydi, ya’ni kiruvchi grafni oldindan to‘liq bilish shart emas. Qirralar birma-bir qo‘shiladi va har bir qo‘shishdan so‘ng algoritm joriy grafdagi ko‘priklar sonini qayta hisoblaydi. Boshqacha aytganda, algoritm dinamik, o‘zgarib turadigan grafda samarali ishlash uchun mo‘ljallangan.
+Bu masalani [Ko‘priklarni $O(N+M)$ vaqtda topish](/algorithms/graph/bridge-searching) maqolasi [chuqurlik bo‘yicha qidiruv](/algorithms/graph/depth-first-search) yordamida yechadi. Bu maqoladagi algoritm ancha murakkabroq, ammo uning muhim afzalligi bor: u **onlayn** ishlaydi, ya’ni kirish grafini oldindan to‘liq bilish shart emas. Qirralar birma-bir qo‘shiladi va har bir qo‘shishdan so‘ng algoritm joriy grafdagi ko‘priklar sonini qayta hisoblaydi. Boshqacha aytganda, algoritm dinamik, o‘zgarib turadigan grafda samarali ishlash uchun mo‘ljallangan.
 
 Masalaning qat’iy bayoni quyidagicha. Dastlab graf bo‘sh va $n$ ta tugundan iborat. Keyin grafga qo‘shiladigan qirrani bildiruvchi $(a,b)$ tugunlar juftlarini ketma-ket qabul qilamiz. Har bir qirra qo‘shilgandan so‘ng grafdagi ko‘priklarning joriy sonini chiqarish kerak.
 
@@ -38,11 +38,11 @@ Endi kerak bo‘ladigan amallarni ketma-ket ko‘rib chiqamiz.
 
 * **$(a,b)$ qirra bilan ikki daraxtni birlashtirish.** $a$ ham, $b$ ham o‘z daraxtlarining ildizi bo‘lmasligi mumkin. Shuning uchun ikki daraxtni ulash uchun ulardan birini qayta ildizlash kerak. Masalan, $a$ tugun joylashgan daraxtni $a$ ga qayta ildizlab, so‘ng `par[a] = b` deb belgilab uni boshqa daraxtga ulash mumkin.
 
-  Qayta ildizlash samaradorligi masalasi paydo bo‘ladi. Ildizi $r$ bo‘lgan daraxtni $v$ tugunga qayta ildizlash uchun $v$ bilan $r$ orasidagi barcha tugunlardan o‘tish, `par[]` ko‘rsatkichlarini teskari yo‘nalishga burish va bog‘langan komponentlar uchun javob beruvchi DSUdagi ajdod ko‘rsatkichlarini ham yangilash kerak. Qayta ildizlash narxi $O(h)$, bu yerda $h$ — daraxt balandligi. Uni daraxtdagi tugunlar soni bo‘lgan $	ext{size}$ orqali $O(\text{size})$ deb ham yuqoridan baholash mumkin; yakuniy murakkablik o‘zgarmaydi.
+  Qayta ildizlash samaradorligi masalasi paydo bo‘ladi. Ildizi $r$ bo‘lgan daraxtni $v$ tugunga qayta ildizlash uchun $v$ bilan $r$ orasidagi barcha tugunlardan o‘tish, `par[]` ko‘rsatkichlarini teskari yo‘nalishga burish va bog‘langan komponentlar uchun javob beruvchi DSUdagi ajdod ko‘rsatkichlarini ham yangilash kerak. Qayta ildizlash narxi $O(h)$, bu yerda $h$ — daraxt balandligi. Uni daraxtdagi tugunlar soni bo‘lgan $\text{size}$ orqali $O(\text{size})$ deb ham yuqoridan baholash mumkin; yakuniy murakkablik o‘zgarmaydi.
 
   Endi standart usulni qo‘llaymiz: kamroq tugunga ega daraxtni qayta ildizlaymiz. Eng yomon holat taxminan teng hajmli ikki daraxt birlashtirilganda yuz berishi intuitiv ravishda ravshan, ammo natijada ikki baravar katta daraxt hosil bo‘ladi va shu holat ko‘p marta takrorlana olmaydi. Umumiy xarajat quyidagi rekurrent formula bilan yoziladi:
 
-  \[T(n)=\max_{k=1\ldots n-1}\left\{T(k)+T(n-k)+O(\min(k,n-k))\right\}.\]
+  $$T(n)=\max_{k=1\ldots n-1}\left\{T(k)+T(n-k)+O(\min(k,n-k))\right\}.$$
 
   Bu yerda $T(n)$ — daraxtlarni qayta ildizlash va birlashtirish orqali $n$ tugunli daraxt hosil qilish uchun zarur amallar soni. $n$ o‘lchamli daraxt $k$ va $n-k$ o‘lchamli ikki kichik daraxtni birlashtirishdan hosil bo‘ladi. Ushbu rekurrentlikning yechimi $T(n)=O(n\log n)$. Demak har safar kichikroq daraxtni qayta ildizlasak, barcha qayta ildizlash amallariga sarflangan umumiy vaqt $O(n\log n)$ bo‘ladi. Har bir bog‘langan komponent hajmini saqlash kerak, buni DSU oson qo‘llab-quvvatlaydi.
 

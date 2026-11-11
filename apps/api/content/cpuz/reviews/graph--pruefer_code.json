@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Only the line breaks inside substack/aligned constructs differ: the original source has four backslashes where KaTeX needs two; the mathematics is identical."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T12:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph, code block and formula with the original; nothing omitted or added, code identical.",
+      "content_sha256": "fc8ce2a865ca030ec7719b09333e314ae40565e8561bc4492b80bd5b0fa7b075"
+    },
+    {
+      "at": "2026-11-11T12:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "The Uzbek is correct and natural; no changes needed.",
+      "content_sha256": "fc8ce2a865ca030ec7719b09333e314ae40565e8561bc4492b80bd5b0fa7b075"
+    },
+    {
+      "at": "2026-11-11T12:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "The substack line breaks use `\\` where the original source has four backslashes (an escaping artefact); the formulas are the same.",
+      "content_sha256": "fc8ce2a865ca030ec7719b09333e314ae40565e8561bc4492b80bd5b0fa7b075"
+    }
+  ]
+}

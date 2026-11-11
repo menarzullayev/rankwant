@@ -29,13 +29,13 @@ Qatorlarni ko‘rib chiqib, ostmatritsaning barcha mumkin bo‘lgan chap va o‘
 
 Kerakli nollardan iborat ostmatritsa to‘rt tomondan uni kengaytirishga va javobni yaxshilashga to‘sqinlik qiluvchi birlar bilan chegaralangan bo‘lishi ravshan. Shuning uchun quyidagicha ish tutsak, javobni o‘tkazib yubormaymiz: `i`-qatorning har bir `j` katagi uchun — bu ehtimoliy nolli ostmatritsaning pastki qatori — `d[i][j]` ni joriy ostmatritsaning yuqori chegarasi deb olamiz. Endi uning optimal chap va o‘ng chegaralarini aniqlash, ya’ni ostmatritsani `j`-ustundan imkon qadar chapga va o‘ngga kengaytirish qoladi.
 
-Imkon qadar chapga kengaytirish nimani anglatadi? `d[i][k1] > d[i][j]` shartini qanoatlantiradigan indeksni topish kerak. Ya’ni `k1` — `j` indeksining chap tomonida unga eng yaqin indeks. Bu yerda `k1` `j` dan chapda joylashadi. Shunda `k1 + 1` kerakli nolli ostmatritsaning chap ustuni bo‘ladi. Agar bunday indeks umuman mavjud bo‘lmasa, `k1` ni `-1` ga teng deb olamiz. Bu joriy nolli ostmatritsani chapga, `a` matritsasining chegarasigacha kengaytira olganimizni anglatadi.
+Imkon qadar chapga kengaytirish nimani anglatadi? `d[i][k1] > d[i][j]` shartini qanoatlantiradigan indeksni topish kerak. Ya’ni `k1` — `j` indeksining chap tomonidagi unga eng yaqin shunday indeks. Shunda `k1 + 1` kerakli nolli ostmatritsaning chap ustuni bo‘ladi. Agar bunday indeks umuman mavjud bo‘lmasa, `k1` ni `-1` ga teng deb olamiz. Bu joriy nolli ostmatritsani chapga, `a` matritsasining chegarasigacha kengaytira olganimizni anglatadi.
 
 Xuddi shunday, o‘ng chegara uchun `k2` indeksini aniqlaymiz: bu `j` ning o‘ng tomonidagi, `d[i][k2] > d[i][j]` shartini qanoatlantiruvchi eng yaqin indeks. Agar bunday indeks bo‘lmasa, `k2 = m` deb olamiz.
 
 Demak, `k1` va `k2` indekslarini samarali topa olsak, joriy nolli ostmatritsa haqidagi barcha zarur ma’lumotga ega bo‘lamiz. Xususan, uning yuzi `(i - d[i][j]) * (k2 - k1 - 1)` ga teng bo‘ladi.
 
-`i` va `j` belgilanganida `k1` va `k2` indekslarini qanday samarali topish mumkin? Buni amortizatsiyalangan $O(1)$ vaqtda bajarish mumkin.
+`i` va `j` belgilanganida `k1` va `k2` indekslarini qanday samarali topish mumkin? Buni o‘rtacha $O(1)$ vaqtda bajarish mumkin.
 
 Bunday murakkablikka erishish uchun stekdan quyidagicha foydalanamiz. Avval `k1` indeksini topishni o‘rganamiz va joriy `i` qatoridagi har bir `j` uchun uning qiymatini `d1[i][j]` da saqlaymiz. Buning uchun ustunlarni chapdan o‘ngga ko‘rib chiqamiz va stekda faqat `d[][]` qiymati `d[i][j]` dan qat’iy katta bo‘lgan ustunlarni saqlaymiz. `j` ustundan keyingi ustunga o‘tayotganda stek tarkibini yangilash kerakligi ravshan. Stek tepasidagi element mos kelmasa, ya’ni `d[][] <= d[i][j]` bo‘lsa, uni stekdan chiqaramiz. Elementlarni faqat stekning tepasidan olib tashlash kifoya: stekdagi ustunlarning `d` qiymatlari o‘suvchi ketma-ketlik hosil qiladi.
 

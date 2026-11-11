@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Fixed the mistranslated 'query size 2^k' (it read as the query length) and restored the 'Yes, we can do it' step in the tree section. Display formulas that the original has inline were returned to inline form.",
+      "content_sha256": "62357e05d92fcdc65e3e7c52f6dd334da0645a4d47014dd0a232687e7287ae2c"
+    },
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original; the difference listed in the allow-list was removed.",
+      "content_sha256": "62357e05d92fcdc65e3e7c52f6dd334da0645a4d47014dd0a232687e7287ae2c"
+    },
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used glossary terms (segment daraxti, kechiktirib tarqatish, ikkilik qidiruv) instead of untranslated 'segment tree' and 'binary search', and fixed 'otasi' to 'ota tuguni'.",
+      "content_sha256": "62357e05d92fcdc65e3e7c52f6dd334da0645a4d47014dd0a232687e7287ae2c"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T12:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Replaced an invented inline formula with the original's description of the cost as the sum over the subarray S[i, i+1, ..., j]; all other formulas, inequalities and code were checked against the original.",
+      "content_sha256": "2065dec5a0b819b7b796e18b865ce0ef51e529ae050783bbcaa37101c99eee6b"
+    },
+    {
+      "at": "2026-11-11T12:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed an ungrammatical phrase in the proof ('kelib chiqaramiz' became 'xulosa qilamiz').",
+      "content_sha256": "2065dec5a0b819b7b796e18b865ce0ef51e529ae050783bbcaa37101c99eee6b"
+    },
+    {
+      "at": "2026-11-11T12:05:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Inline formulas now match the original.",
+      "content_sha256": "2065dec5a0b819b7b796e18b865ce0ef51e529ae050783bbcaa37101c99eee6b"
+    }
+  ]
+}

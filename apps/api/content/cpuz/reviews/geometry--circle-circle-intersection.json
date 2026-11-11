@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T23:59:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Removed content the original does not have (the whole C++ implementation, the list of special cases by center distance, and the alternative geometric formula) and restored the original derivation: the system of two equations, the subtraction giving Ax + By + C = 0, the reduction to the circle-line article, and the single degenerate case. The translation had also moved the center to (x_2', y_2'); restored the original formulas.",
+      "content_sha256": "2a9fb01a117645ac93f6e03de23db0d3dacf7fd3367888b8cd271afaeb63dc34"
+    },
+    {
+      "at": "2026-11-11T23:59:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Translated the restored text into natural Uzbek with the glossary terms (aylana, to'g'ri chiziq, kesishma).",
+      "content_sha256": "2a9fb01a117645ac93f6e03de23db0d3dacf7fd3367888b8cd271afaeb63dc34"
+    },
+    {
+      "at": "2026-11-11T23:59:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code (none in the original) and formulas now match the original, so the pending row is no longer needed.",
+      "content_sha256": "2a9fb01a117645ac93f6e03de23db0d3dacf7fd3367888b8cd271afaeb63dc34"
+    }
+  ]
+}

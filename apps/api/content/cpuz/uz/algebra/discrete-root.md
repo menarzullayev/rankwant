@@ -3,14 +3,16 @@
 Diskret ildizni topish masalasi quyidagicha ta’riflanadi. Tub $n$ hamda ikkita $a$ va $k$ butun son berilgan bo‘lsin. Quyidagi tenglikni qanoatlantiradigan barcha $x$ larni topish kerak:
 
 $x^k \equiv a \pmod n$
+
 ## Algoritm
 
 Masalani [diskret logarifm masalasi](/algorithms/algebra/discrete-log)ga keltirib yechamiz.
 
-$n$ modul bo‘yicha [primitiv ildiz](/algorithms/algebra/primitive-root) tushunchasidan foydalanamiz. $g$ soni $n$ modul bo‘yicha primitiv ildiz bo‘lsin. $n$ tub bo‘lgani uchun u albatta mavjud va uni $O(Ans\cdot\log\phi(n)\cdot\log n)=O(Ans\cdot\log^2n)$ va $\phi(n)$ ni faktorizatsiya qilish vaqtida topish mumkin.
+$n$ modul bo‘yicha [primitiv ildiz](/algorithms/algebra/primitive-root) tushunchasidan foydalanamiz. $g$ soni $n$ modul bo‘yicha primitiv ildiz bo‘lsin. $n$ tub bo‘lgani uchun u albatta mavjud va uni $O(Ans\cdot\log\phi(n)\cdot\log n)=O(Ans\cdot\log^2n)$ vaqtda hamda $\phi(n)$ ni faktorlarga ajratish vaqtida topish mumkin.
 
-$a=0$ holini oson alohida ko‘rib chiqish mumkin. Bu holda ravshanki, yagona javob $x=0$.
-$n$ tub ekanini va $1$ dan $n-1$ gacha bo‘lgan istalgan sonni primitiv ildizning darajasi sifatida ifodalash mumkinligini bilganimiz uchun, diskret ildiz masalasini quyidagicha yozamiz:
+$a=0$ holini oson chetlab o‘tish mumkin. Bu holda ravshanki, yagona javob $x=0$.
+
+$n$ tub ekanini va 1 dan $n-1$ gacha bo‘lgan istalgan sonni primitiv ildizning darajasi sifatida ifodalash mumkinligini bilganimiz uchun, diskret ildiz masalasini quyidagicha yozamiz:
 
 $(g^y)^k \equiv a \pmod n$
 
@@ -21,16 +23,19 @@ $x \equiv g^y \pmod n$
 Bu o‘z navbatida quyidagi ko‘rinishga keltiriladi:
 
 $(g^k)^y \equiv a \pmod n$
+
 Endi faqat bitta noma’lum $y$ qoldi va bu diskret logarifm masalasidir. Yechimni Shanksning baby-step giant-step algoritmi yordamida $O(\sqrt n\log n)$ vaqtda topish mumkin (yoki yechim yo‘qligini aniqlash mumkin).
 
 Bitta $y_0$ yechim topilgach, diskret ildiz masalasining yechimlaridan biri $x_0=g^{y_0}\pmod n$ bo‘ladi.
+
 ## Ma’lum bitta yechimdan barcha yechimlarni topish
 
 Berilgan masalani to‘liq yechish uchun yechimlardan biri $x_0=g^{y_0}\pmod n$ ma’lum bo‘lganda barcha yechimlarni topishimiz kerak.
 
-Primitiv ildizning tartibi har doim $\phi(n)$ ga tengligini, ya’ni $g$ ning $1$ beradigan eng kichik darajasi $\phi(n)$ ekanini eslaylik. Shuning uchun daraja ko‘rsatkichiga $\phi(n)$ ni qo‘shsak ham ayni qiymatni olamiz:
+Primitiv ildizning tartibi har doim $\phi(n)$ ga tengligini, ya’ni $g$ ning 1 beradigan eng kichik darajasi $\phi(n)$ ekanini eslaylik. Shuning uchun daraja ko‘rsatkichiga $\phi(n)$ ni qo‘shsak ham ayni qiymatni olamiz:
 
 $x^k \equiv g^{ y_0 \cdot k + l \cdot \phi (n)} \equiv a \pmod n \forall l \in Z$
+
 Demak, barcha yechimlar quyidagi ko‘rinishda:
 
 $x = g^{y_0 + \frac {l \cdot \phi (n)}{k}} \pmod n \forall l \in Z$.
@@ -40,9 +45,11 @@ Bu yerda kasr butun son bo‘lishi uchun $l$ tanlanadi. Buning uchun surat $\phi
 $x = g^{y_0 + i \frac {\phi (n)}{gcd(k, \phi (n))}} \pmod n \forall i \in Z$.
 
 ni olamiz. Bu diskret ildiz masalasining barcha yechimlari uchun yakuniy formula.
+
 ## Implementatsiya
 
 Quyida primitiv ildiz va diskret logarifmni topish, so‘ng barcha yechimlarni topib chiqarish protseduralari bilan birga to‘liq implementatsiya keltirilgan.
+
 ```cpp
 int gcd(int a, int b) {
 	return a ? gcd(b % a, a) : b;
@@ -128,6 +135,7 @@ int main() {
 		printf("%d ", answer);
 }
 ```
+
 ## Mashq masalalari
 
 * [Codeforces - Lunar New Year and a Recursive Sequence](https://codeforces.com/contest/1106/problem/F)

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph, lemma, formula, example and code block with the original; nothing was missing or wrong.",
+      "content_sha256": "972e9478b829cf35268b3c95e8258aa7b8b07897ef39d8d3c5c803ab8574b32f"
+    },
+    {
+      "at": "2026-11-11T14:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the loanword 'matching' with the glossary term 'juftlashtirish' in all 40 places, with correct suffixes.",
+      "content_sha256": "972e9478b829cf35268b3c95e8258aa7b8b07897ef39d8d3c5c803ab8574b32f"
+    }
+  ]
+}

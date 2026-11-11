@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "All text and both code listings match the original; the article remains a stub as in the source.",
+      "content_sha256": "23010aebd7b9f2e8be17ee39e948a2c84e2019249ead486e28702bdd9ef60c5a"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed paragraph and fence spacing (italic note, list before code fences, headings after fences) and 'ota tuguni' to 'ota tugun'.",
+      "content_sha256": "23010aebd7b9f2e8be17ee39e948a2c84e2019249ead486e28702bdd9ef60c5a"
+    }
+  ]
+}

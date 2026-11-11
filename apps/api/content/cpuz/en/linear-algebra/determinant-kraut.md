@@ -12,11 +12,11 @@ Let $A$ be the matrix and $N$ - its size. We will find the elements of the matri
  2. For each $j = 1, 2, ..., N$ perform:
       - For $i = 1, 2, ..., j$ find values 
         
-        \[U_{ij} = A_{ij} - \sum_{k=1}^{i-1} L_{ik} \cdot U_{kj}\]
+        $$U_{ij} = A_{ij} - \sum_{k=1}^{i-1} L_{ik} \cdot U_{kj}$$
  
       - Next, for $i = j+1, j+2, ..., N$ find values
  
-        \[L_{ij} = \frac{1}{U_{jj}} \left(A_{ij} - \sum_{k=1}^{j-1} L_{ik} \cdot U_{kj} \right).\]
+        $$L_{ij} = \frac{1}{U_{jj}} \left(A_{ij} - \sum_{k=1}^{j-1} L_{ik} \cdot U_{kj} \right).$$
 
 ## Implementation
 

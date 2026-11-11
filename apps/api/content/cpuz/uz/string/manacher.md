@@ -70,7 +70,7 @@ Endi navbatdagi $i$ uchun $d_{odd}[i]$ ni hisoblamoqchimiz va $d_{odd}[]$ ning b
 
     Shunday qilib, $d_{odd}[i]$ ni ketma-ket oshiramiz va har safar joriy eng o‘ngdagi $[i - d_{odd}[i]\dots i + d_{odd}[i]]$ ostsatr palindrom ekanini tekshiramiz. Birinchi mos kelmaslikni topganimizda yoki $s$ chegarasiga yetganimizda to‘xtaymiz. Shu paytda $d_{odd}[i]$ to‘liq hisoblangan bo‘ladi. Shundan keyin $(l, r)$ ni yangilashni unutmaslik kerak. $r$ joriy eng o‘ngdagi ostpalindromning oxirgi indeksini ifodalaydigan qilib yangilanishi lozim.
 
-* Endi $i \le r$ bo‘lgan holatni ko‘rib chiqamiz. $d_{odd}[]$ ning oldin hisoblangan qiymatlaridan ma’lumot olishga harakat qilamiz. $(l, r)$ ostpalindrom ichida $i$ ning “oynadagi” pozitsiyasini topamiz, ya’ni $j = l + (r - i)$ pozitsiyani olamiz va $d_{odd}[j]$ qiymatini tekshiramiz. $j$ pozitsiyasi $(l+r)/2$ ga nisbatan $i$ ga simmetrik bo‘lgani uchun **deyarli har doim** $d_{odd}[i] = d_{odd}[j]$ deb olishimiz mumkin. Quyidagi rasmiy ifoda buni ko‘rsatadi ($j$ atrofidagi palindrom amalda $i$ atrofidagi palindromga “ko‘chiriladi”):
+* Endi $i \le r$ bo‘lgan holatni ko‘rib chiqamiz. $d_{odd}[]$ ning oldin hisoblangan qiymatlaridan ma’lumot olishga harakat qilamiz. $(l, r)$ ostpalindrom ichida $i$ ning “oynadagi” pozitsiyasini topamiz, ya’ni $j = l + (r - i)$ pozitsiyani olamiz va $d_{odd}[j]$ qiymatini tekshiramiz. $j$ pozitsiyasi $(l+r)/2$ ga nisbatan $i$ ga simmetrik bo‘lgani uchun **deyarli har doim** $d_{odd}[i] = d_{odd}[j]$ deb olishimiz mumkin. Buning tasviri quyida keltirilgan ($j$ atrofidagi palindrom amalda $i$ atrofidagi palindromga “ko‘chiriladi”):
 
     $$
     \ldots\ 
@@ -129,7 +129,7 @@ Manacher algoritmining qolgan qismlari ham ravshanki chiziqli vaqtda ishlaydi. S
 $d_{odd}[]$ ni hisoblash uchun quyidagi kodni olamiz. E’tibor berish kerak bo‘lgan jihatlar:
 
  - $i$ — joriy palindromning markaziy belgisi indeksi.
- - Agar $i$ $r$ dan oshsa, $d_{odd}[i]$ qiymati $0$ ga teng qilib boshlanadi.
+ - Agar $i$ $r$ dan oshsa, $d_{odd}[i]$ qiymati 0 ga teng qilib boshlanadi.
  - Agar $i$ $r$ dan oshmasa, $d_{odd}[i]$ yoki $(l,r)$ da $i$ ning oynadagi pozitsiyasi bo‘lgan $j$ uchun $d_{odd}[j]$ qiymati bilan boshlanadi, yoki $d_{odd}[i]$ “tashqi” palindrom o‘lchami bilan cheklanadi.
  - `while` sikli sodda algoritmni anglatadi. Uni $k$ qiymatidan qat’i nazar ishga tushiramiz.
  - Markazi $i$ da bo‘lgan palindrom o‘lchami $x$ bo‘lsa, $d_{odd}[i]$ qiymati $\frac{x+1}{2}$ ni saqlaydi.

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T22:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Replaced 'ildizli bloklar' with 'sqrt ta blok' in the introduction, removed added wording about 'agregatlar' and 'dangasa yangilanishlar' in the update-classes paragraph, removed an invented 'Ilon' ordering remark and an inline N/S formula the original lacks.",
+      "content_sha256": "2c5769bb6cec9b6ea2cc5eed51dae167b01db3292213c2407f49e8fe326019bb"
+    },
+    {
+      "at": "2026-11-11T22:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary term 'ikkilik qidiruv daraxti' for binary search tree and fixed phrasing of the Mo's-algorithm sorting tip.",
+      "content_sha256": "2c5769bb6cec9b6ea2cc5eed51dae167b01db3292213c2407f49e8fe326019bb"
+    },
+    {
+      "at": "2026-11-11T22:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "2c5769bb6cec9b6ea2cc5eed51dae167b01db3292213c2407f49e8fe326019bb"
+    }
+  ]
+}

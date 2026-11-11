@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T21:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a free rewrite. Restored all original content: definitions of planar graphs and faces, the facts section (Euler's theorem, edge and face bounds, minimum degree), the next-edge and outer-face subsections, complexity, the disconnected-graph discussion with its image, the segments-to-graph section with its image, and both original code blocks. Removed the added shoelace formula, the invented area function and the invented traversal code.",
+      "content_sha256": "210b588c20e23fcf8a572a66ab6e6e4036e792e6a44da534b979915e7f51b758"
+    },
+    {
+      "at": "2026-11-11T21:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the whole article in Uzbek following the original and the glossary (tugun, qirra, daraja, kesma, vektor/qutb burchagi, xesh jadvali).",
+      "content_sha256": "210b588c20e23fcf8a572a66ab6e6e4036e792e6a44da534b979915e7f51b758"
+    },
+    {
+      "at": "2026-11-11T21:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Both code blocks restored to the original; the n - m + f = 1 + k formula restored and the invented display formulas removed.",
+      "content_sha256": "210b588c20e23fcf8a572a66ab6e6e4036e792e6a44da534b979915e7f51b758"
+    }
+  ]
+}

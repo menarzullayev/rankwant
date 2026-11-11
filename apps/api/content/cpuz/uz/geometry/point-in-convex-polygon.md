@@ -1,152 +1,119 @@
-# Nuqtaning qavariq ko‘pburchakka tegishliligini $O(\log N)$ da tekshirish
+# Nuqta qavariq ko‘pburchakka tegishli ekanini $O(\log N)$ da tekshirish
 
-Qavariq ko‘pburchak va ko‘plab so‘rov nuqtalari berilgan. Har bir nuqta ko‘pburchak ichida yoki chegarasida yotishini $O(\log n)$ vaqtda aniqlash kerak. Ko‘pburchak uchlari soat miliga teskari tartibda berilgan deb hisoblaymiz.
+Quyidagi masalani ko‘rib chiqamiz: butun koordinatali uchlarga ega qavariq ko‘pburchak va ko‘plab so‘rovlar berilgan.
+Har bir so‘rov — bitta nuqta; uning ko‘pburchak ichida yoki chegarasida yotishi yoki yotmasligini aniqlash kerak.
+Ko‘pburchak soat miliga teskari yo‘nalishda tartiblangan deb faraz qilamiz. Har bir so‘rovga $O(\log n)$ da onlayn javob beramiz.
 
-## G‘oya
+## Algoritm
+Eng kichik x-koordinatali nuqtani tanlaymiz. Bunday nuqtalar bir nechta bo‘lsa, eng kichik y-koordinatalisini olamiz. Uni $p_0$ deb belgilaymiz.
+Endi ko‘pburchakning qolgan barcha $p_1,\dots,p_n$ nuqtalari tanlangan nuqtadan olingan qutb burchagi bo‘yicha tartiblangan (chunki ko‘pburchak soat miliga teskari yo‘nalishda tartiblangan).
 
-$p_0$ uchini tayanch nuqta sifatida olamiz. Qavariqlik sababli $p_0$ dan qolgan uchlarga chizilgan nurlar ko‘pburchakni
+Agar nuqta ko‘pburchakka tegishli bo‘lsa, u biror $p_0, p_i, p_{i + 1}$ uchburchakka tegishli bo‘ladi (agar nuqta uchburchaklar chegarasida yotsa, bunday uchburchak bittadan ko‘p bo‘lishi mumkin).
+$p$ shu uchburchakka tegishli bo‘ladigan va $i$ barcha shunday uchburchaklar orasida eng katta bo‘lgan $p_0, p_i, p_{i + 1}$ uchburchakni ko‘rib chiqamiz.
 
-$$
-(p_0,p_1,p_2),
-(p_0,p_2,p_3),\dots,
-(p_0,p_{n-2},p_{n-1})
-$$
+Bitta maxsus holat bor: $p$ nuqta $(p_0, p_n)$ kesmada yotadi. Bu holatni alohida tekshiramiz.
+Aks holda $i$ dan oshmaydigan indeksli barcha $p_j$ nuqtalar $p_0$ ga nisbatan $p$ dan soat miliga teskari tomonda joylashadi, qolgan nuqtalar esa soat miliga teskari tomonda emas.
+Demak, $p_0$ ga nisbatan $p$ dan soat miliga teskari tomonda bo‘lmagan va $i$ eng katta bo‘lgan $p_i$ nuqtani binar qidiruv bilan topish mumkin.
+Keyin esa nuqta haqiqatan ham aniqlangan uchburchak ichida ekanini tekshiramiz.
 
-uchburchaklar yelpig‘ichiga ajratadi.
+$(a - c) \times (b - c)$ ning ishorasi $a$ nuqta $c$ nuqtaga nisbatan $b$ nuqtadan soat mili bo‘yicha yoki soat miliga teskari tomonda joylashganini bildiradi.
+Agar $(a - c) \times (b - c) > 0$ bo‘lsa, $a$ nuqta $c$ dan $b$ ga yo‘nalgan vektorning o‘ng tomonida bo‘ladi, ya’ni $c$ ga nisbatan $b$ dan soat mili bo‘yicha joylashadi.
+Agar $(a - c) \times (b - c) < 0$ bo‘lsa, nuqta chap tomonda, ya’ni soat miliga teskari tomonda bo‘ladi.
+Va nuqta aynan $b$ va $c$ nuqtalar orasidagi to‘g‘ri chiziqda yotadi.
 
-So‘rov nuqta $q$ avval $p_0p_1$ va $p_0p_{n-1}$ chegaraviy nurlar orasida ekanini tekshiramiz. Ya’ni
+Algoritmga qaytamiz:
+$p$ so‘rov nuqtasini ko‘rib chiqamiz.
+Avvalo nuqta $p_1$ va $p_n$ orasida yotishini tekshirishimiz kerak.
+Aks holda uning ko‘pburchakka tegishli bo‘la olmasligini allaqachon bilamiz.
+Buni $(p_1 - p_0)\times(p - p_0)$ vektor ko‘paytmasi nolga teng ekanini yoki $(p_1 - p_0)\times(p_n - p_0)$ bilan bir xil ishorali ekanini, shuningdek $(p_n - p_0)\times(p - p_0)$ nolga teng ekanini yoki $(p_n - p_0)\times(p_1 - p_0)$ bilan bir xil ishorali ekanini tekshirish orqali bajarish mumkin.
+Keyin $p$ nuqta $(p_0, p_1)$ chiziqning qismi bo‘lgan maxsus holatni ko‘rib chiqamiz.
+Shundan so‘ng $p_1,\dots p_n$ orasidan $p_0$ ga nisbatan $p$ dan soat miliga teskari tomonda bo‘lmagan oxirgi nuqtani binar qidiruv bilan topamiz.
+Bitta $p_i$ nuqta uchun bu shartni $(p_i - p_0)\times(p - p_0) \le 0$ ekanini tekshirish orqali bilish mumkin. Bunday $p_i$ nuqtani topgach, $p$ nuqta $p_0, p_i, p_{i + 1}$ uchburchak ichida yotadimi yoki yo‘qmi, tekshirishimiz kerak.
+Nuqtaning uchburchakka tegishli ekanini tekshirish uchun shunchaki $|(p_i - p_0)\times(p_{i + 1} - p_0)| = |(p_0 - p)\times(p_i - p)| + |(p_i - p)\times(p_{i + 1} - p)| + |(p_{i + 1} - p)\times(p_0 - p)|$ tengligini tekshirish kifoya.
+Bu $p_0, p_i, p_{i+1}$ uchburchakning yuzi $p_0, p_i, p$ uchburchak, $p_0, p, p_{i+1}$ uchburchak va $p_i, p_{i+1}, p$ uchburchak yuzlari yig‘indisiga aniq teng ekanini tekshiradi.
+Agar $p$ tashqarida bo‘lsa, bu uchta uchburchak yuzlarining yig‘indisi uchburchak yuzidan katta bo‘ladi.
+Agar ichkarida bo‘lsa, ular teng bo‘ladi.
 
-$$
-(p_1-p_0)\times(q-p_0)\ge0
-$$
+## Implementatsiya
 
-va
-
-$$
-(p_{n-1}-p_0)\times(q-p_0)\le0
-$$
-
-bo‘lishi kerak. So‘ng $q$ yo‘nalishi qaysi ketma-ket nurlar orasida ekanini binary search bilan topamiz. Agar indeks $i$ topilib,
-
-$$
-(p_i-p_0)\times(q-p_0)\ge0,
-\qquad
-(p_{i+1}-p_0)\times(q-p_0)\le0
-$$
-
-bo‘lsa, $q$ faqat $(p_0,p_i,p_{i+1})$ uchburchagida bo‘lishi mumkin. Oxirida nuqtaning shu uchburchak ichida yoki chegarasida ekanini yuza/orientatsiya orqali tekshiramiz.
-
-## Oldindan tayyorlash
-
-Maqoladagi implementatsiya barcha koordinatalarni $p_0$ ga nisbatan siljitadi va `seq[i] = p[i+1] - p[0]` vektorlarni saqlaydi. `translation` tayanch nuqta bo‘ladi.
+`prepare` funksiyasi leksikografik jihatdan eng kichik nuqta (eng kichik x qiymatli, x teng bo‘lsa eng kichik y qiymatli) $p_0$ bo‘lishini ta’minlaydi va $p_i - p_0$ vektorlarni hisoblaydi.
+Keyin `pointInConvexPolygon` funksiyasi so‘rov natijasini hisoblaydi.
+Bundan tashqari, biz $p_0$ nuqtani eslab qolamiz va masofalarni to‘g‘ri hisoblash uchun barcha so‘ralgan nuqtalarni u bilan siljitamiz, chunki vektorlarning boshlang‘ich nuqtasi yo‘q.
+So‘rov nuqtalarini siljitish orqali barcha vektorlar koordinata boshi $(0, 0)$ dan boshlanadi deb hisoblash mumkin, bu esa masofa va uzunliklarni hisoblashni soddalashtiradi.
 
 ```cpp
 struct pt {
     long long x, y;
-
-    pt operator+(const pt& p) const { return {x + p.x, y + p.y}; }
-    pt operator-(const pt& p) const { return {x - p.x, y - p.y}; }
-    long long cross(const pt& p) const { return x * p.y - y * p.x; }
-    long long dot(const pt& p) const { return x * p.x + y * p.y; }
+    pt() {}
+    pt(long long _x, long long _y) : x(_x), y(_y) {}
+    pt operator+(const pt &p) const { return pt(x + p.x, y + p.y); }
+    pt operator-(const pt &p) const { return pt(x - p.x, y - p.y); }
+    long long cross(const pt &p) const { return x * p.y - y * p.x; }
+    long long dot(const pt &p) const { return x * p.x + y * p.y; }
+    long long cross(const pt &a, const pt &b) const { return (a - *this).cross(b - *this); }
+    long long dot(const pt &a, const pt &b) const { return (a - *this).dot(b - *this); }
     long long sqrLen() const { return this->dot(*this); }
 };
 
-pt translation;
-vector<pt> seq;
+bool lexComp(const pt &l, const pt &r) {
+    return l.x < r.x || (l.x == r.x && l.y < r.y);
+}
 
-void prepare(vector<pt>& points) {
-    int n = points.size();
+int sgn(long long val) { return val > 0 ? 1 : (val == 0 ? 0 : -1); }
+
+vector<pt> seq;
+pt translation;
+int n;
+
+bool pointInTriangle(pt a, pt b, pt c, pt point) {
+    long long s1 = abs(a.cross(b, c));
+    long long s2 = abs(point.cross(a, b)) + abs(point.cross(b, c)) + abs(point.cross(c, a));
+    return s1 == s2;
+}
+
+void prepare(vector<pt> &points) {
+    n = points.size();
     int pos = 0;
     for (int i = 1; i < n; i++) {
-        if (points[i].x < points[pos].x ||
-            (points[i].x == points[pos].x &&
-             points[i].y < points[pos].y))
+        if (lexComp(points[i], points[pos]))
             pos = i;
     }
     rotate(points.begin(), points.begin() + pos, points.end());
 
-    // Agar kirish soat mili bo‘yicha bo‘lsa, tartibni aylantirish kerak.
-    if ((points[1] - points[0]).cross(points.back() - points[0]) < 0)
-        reverse(points.begin() + 1, points.end());
-
+    n--;
+    seq.resize(n);
+    for (int i = 0; i < n; i++)
+        seq[i] = points[i + 1] - points[0];
     translation = points[0];
-    seq.resize(n - 1);
-    for (int i = 0; i < n - 1; i++)
-        seq[i] = points[i + 1] - translation;
-}
-```
-
-## So‘rovni tekshirish
-
-```cpp
-long long abs_cross(pt a, pt b) {
-    return llabs(a.cross(b));
 }
 
-bool pointInTriangle(pt a, pt b, pt c, pt p) {
-    long long s1 = abs_cross(b - a, c - a);
-    long long s2 = abs_cross(a - p, b - p)
-                 + abs_cross(b - p, c - p)
-                 + abs_cross(c - p, a - p);
-    return s1 == s2;
-}
-
-bool point_in_convex_polygon(pt point) {
+bool pointInConvexPolygon(pt point) {
     point = point - translation;
-    int n = seq.size();
-
     if (seq[0].cross(point) != 0 &&
-        ((seq[0].cross(point) > 0) !=
-         (seq[0].cross(seq[n - 1]) > 0)))
+            sgn(seq[0].cross(point)) != sgn(seq[0].cross(seq[n - 1])))
         return false;
-
     if (seq[n - 1].cross(point) != 0 &&
-        ((seq[n - 1].cross(point) > 0) !=
-         (seq[n - 1].cross(seq[0]) > 0)))
+            sgn(seq[n - 1].cross(point)) != sgn(seq[n - 1].cross(seq[0])))
         return false;
 
     if (seq[0].cross(point) == 0)
-        return point.sqrLen() <= seq[0].sqrLen();
-    if (seq[n - 1].cross(point) == 0)
-        return point.sqrLen() <= seq[n - 1].sqrLen();
+        return seq[0].sqrLen() >= point.sqrLen();
 
     int l = 0, r = n - 1;
     while (r - l > 1) {
         int mid = (l + r) / 2;
-        if (seq[mid].cross(point) >= 0)
+        int pos = mid;
+        if (seq[pos].cross(point) >= 0)
             l = mid;
         else
             r = mid;
     }
-
-    return pointInTriangle({0, 0}, seq[l], seq[l + 1], point);
+    int pos = l;
+    return pointInTriangle(seq[pos], seq[pos + 1], pt(0, 0), point);
 }
 ```
 
-Yuqoridagi kodning ishora shartlari orientatsiyaga bog‘liq. Amaliyotda ko‘pburchakni aniq CCW tartibga keltirib, quyidagi soddaroq shartlardan foydalanish osonroq:
-
-```cpp
-bool inside_convex(const vector<pt>& p, pt q) {
-    int n = p.size();
-    if ((p[1] - p[0]).cross(q - p[0]) < 0) return false;
-    if ((p[n - 1] - p[0]).cross(q - p[0]) > 0) return false;
-
-    int l = 1, r = n - 1;
-    while (r - l > 1) {
-        int m = (l + r) / 2;
-        if ((p[m] - p[0]).cross(q - p[0]) >= 0)
-            l = m;
-        else
-            r = m;
-    }
-    return (p[r] - p[l]).cross(q - p[l]) >= 0;
-}
-```
-
-Chegarani ichki deb hisoblash uchun tengliklar `>=`/`<=` bilan qabul qilinadi. Faqat qat’iy ichki nuqtalar kerak bo‘lsa, qirralarda yotish holatlari chiqarib tashlanadi.
-
-## To‘g‘rilik va murakkablik
-
-Qavariq ko‘pburchakda $p_0$ dan uchlarga yo‘nalishlar polar burchak bo‘yicha monoton. Shu sababli so‘rov yo‘nalishini binary search bilan ikkita qo‘shni nur orasiga joylashtirish mumkin. Yelpig‘ich uchburchaklari ko‘pburchakni ustma-ust tushmaydigan qismlarga ajratadi; shuning uchun topilgan uchburchakdagi tekshiruv butun ko‘pburchak uchun zarur va yetarli.
-
-Oldindan tayyorlash $O(n)$, har bir so‘rov $O(\log n)$ vaqt va $O(1)$ qo‘shimcha xotira oladi.
+## Masalalar
+* [SGU253 Theodore Roosevelt](https://codeforces.com/problemsets/acmsguru/problem/99999/253)
+* [Codeforces 55E Very simple problem](https://codeforces.com/contest/55/problem/E)
+* [Codeforces 166B Polygons](https://codeforces.com/problemset/problem/166/B)

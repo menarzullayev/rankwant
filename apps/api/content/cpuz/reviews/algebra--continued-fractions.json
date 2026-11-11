@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Three inline formulas are rephrasings, not changes of meaning: (t+1)q_k>N and alpha restate the original sentence in other words, and (q,k) names the pair the original calls (q, m) where k, not the constant modulus m, is the quotient meant by qr = km + b."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T15:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Rewrote the sentence on comparing irrational continued fractions so the condition a_k<b_k / a_k>b_k attaches to deciding A<B as in the original, and restated the A-eps / A+eps elements as smaller (greater) than A but greater (smaller) than any other real number. Code, display formulas and all sections otherwise match the original.",
+      "content_sha256": "1a5bd36b61181d510ab5e2ab171291602875aa03791c6f77b19d93b01f36e2e1"
+    },
+    {
+      "at": "2026-11-11T15:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'aniq aniqlangan' (twice) with 'yaxshi aniqlangan' for well-defined, replaced the calque 'sezgir talqini va intuitiv tushuntirishlari' with natural wording, and used 'emulyatsiya qilish' for 'emulate'.",
+      "content_sha256": "1a5bd36b61181d510ab5e2ab171291602875aa03791c6f77b19d93b01f36e2e1"
+    },
+    {
+      "at": "2026-11-11T15:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Only the three inline rephrasings listed above remain; code blocks and display formulas are identical to the original.",
+      "content_sha256": "1a5bd36b61181d510ab5e2ab171291602875aa03791c6f77b19d93b01f36e2e1"
+    }
+  ]
+}

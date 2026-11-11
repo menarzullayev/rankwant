@@ -51,19 +51,19 @@ def increase(int i, int delta):
 
 1. Avval $[g(r),r]$ oralig‘ining yig‘indisini, ya’ni $T[r]$ ni `res` ga qo‘shadi.
 2. So‘ng $[g(g(r)-1),g(r)-1]$ oralig‘iga “sakraydi” va uning yig‘indisini ham javobga qo‘shadi.
-3. Jarayon $[0,g(g(\dots g(r)-1\dots)-1)]$ oralig‘idan $[g(-1),-1]$ ga o‘tilguncha davom etadi; shu paytda funksiya to‘xtaydi.
+3. Jarayon $[0, g(g( \dots g(r)-1 \dots -1)-1)]$ oralig‘idan $[g(-1),-1]$ ga o‘tilguncha davom etadi; shu paytda funksiya to‘xtaydi.
 
 `increase` xuddi shu g‘oyani indekslar o‘sishi yo‘nalishida qo‘llaydi. $g(j)\le i\le j$ bo‘lgan har bir $[g(j),j]$ oralig‘ining yig‘indisi `delta` ga oshiriladi, ya’ni `t[j] += delta` bajariladi. Shunday qilib, $A_i$ kiradigan barcha oraliqlarga mos $T$ elementlari yangilanadi.
 
-`sum` va `increase` ning murakkabligi $g$ funksiyasining tanlanishiga bog‘liq. $0\le g(i)\le i$ shartini qanoatlantiruvchi ko‘plab variantlar mavjud. Masalan, $g(i)=i$ olinsa, $T=A$ bo‘ladi va yangilash tez, ammo yig‘indi so‘rovlari sekin ishlaydi. $g(i)=0$ olinsa, $T$ prefiks yig‘indilari massiviga aylanadi: $[0,i]$ yig‘indisi $O(1)$ da topiladi, ammo yangilash sekinlashadi.
+`sum` va `increase` ning murakkabligi $g$ funksiyasining tanlanishiga bog‘liq. $0\le g(i)\le i$ shartini qanoatlantiruvchi ko‘plab variantlar mavjud. Masalan, $g(i)=i$ olinsa, $T=A$ bo‘ladi va yangilash tez, ammo yig‘indi so‘rovlari sekin ishlaydi. $g(i)=0$ olinsa, $T$ prefiks yig‘indilari massiviga aylanadi: $[0,i]$ oralig‘ining yig‘indisini topish doimiy vaqt oladi, ammo yangilash sekinlashadi.
 
 Fenwick daraxtining asosiy hiylasi shundaki, $g$ maxsus tanlanib, ikkala amal ham $O(\log N)$ vaqtda bajariladi.
 
-### $g(i)$ funksiyasining ta’rifi {data-toc-label="Definition of g(i)"}
+### $g(i)$ funksiyasining ta’rifi
 
 $g(i)$ ni hisoblash uchun $i$ sonining ikkilik yozuvidagi oxirgi ketma-ket barcha $1$ bitlarni $0$ ga almashtiramiz.
 
-Boshqacha aytganda, $i$ ning eng kichik razryadli biti $0$ bo‘lsa, $g(i)=i$. Aks holda eng oxirgi $1$ va undan keyingi barcha oxirgi $1$ bitlar nolga aylantiriladi.
+Boshqacha aytganda, $i$ ning eng kichik razryadli biti $0$ bo‘lsa, $g(i)=i$. Aks holda eng kichik razryadli bit $1$ bo‘ladi va biz shu $1$ hamda boshqa barcha oxirgi $1$ bitlarni nolga aylantiramiz.
 
 Masalan:
 
@@ -162,7 +162,7 @@ FenwickTree(vector<int> const &a) : FenwickTree(a.size()){
 }
 ```
 
-### Bir o‘lchamli massivda $[0,r]$ minimumini topish {data-toc-label="Finding minimum of [0, r] in one-dimensional array"}
+### Bir o‘lchamli massivda $[0,r]$ minimumini topish
 
 Fenwick daraxti orqali umumiy $[l,r]$ minimumini oddiy usulda topib bo‘lmaydi, chunki ushbu variant faqat $[0,r]$ turidagi so‘rovlarga javob beradi. Bundan tashqari, har bir `update` da yangi qiymat joriy qiymatdan kichik bo‘lishi kerak.
 
@@ -227,7 +227,7 @@ struct FenwickTree2D {
 
 ### Birga asoslangan indekslash
 
-Bu yondashuvda $T[]$ va $g()$ ning ta’rifi biroz o‘zgaradi. Endi $T[i]$ $[g(i)+1,i]$ oralig‘ining yig‘indisini saqlasin. Shunda psevdokod quyidagicha ko‘rinadi:
+Bu yondashuvda $T[]$ va $g()$ ning ta’rifi biroz o‘zgaradi. Endi $T[i]$ $[g(i)+1; i]$ oralig‘ining yig‘indisini saqlasin. Shunda psevdokod quyidagicha ko‘rinadi:
 
 ```python
 def sum(int r):
@@ -346,7 +346,7 @@ Albatta, bitta $A[i]$ nuqtani ham `range_add(i, i, val)` orqali oshirish mumkin.
 
 Ham oraliq yangilash, ham oraliq yig‘indi so‘rovini qo‘llab-quvvatlash uchun dastlab nollardan iborat ikkita BIT — $B_1[]$ va $B_2[]$ — saqlaymiz.
 
-$[l,r]$ oralig‘ini $x$ ga oshirmoqchi bo‘laylik. Oldingi usuldagidek $B_1$ da `add(B1, l, x)` va `add(B1, r+1, -x)` nuqtaviy yangilashlarini bajaramiz. Bundan tashqari, quyidagicha $B_2$ ni ham yangilaymiz:
+$[l,r]$ oralig‘ini $x$ ga oshirmoqchi bo‘laylik. Oldingi usuldagidek $B_1$ da `add(B1, l, x)` va `add(B1, r+1, -x)` nuqtaviy yangilashlarini bajaramiz. Bundan tashqari, $B_2$ ni ham yangilaymiz; tafsilotlari keyinroq tushuntiriladi.
 
 ```python
 def range_add(l, r, x):

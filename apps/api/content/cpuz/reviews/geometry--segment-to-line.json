@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a rewrite, not a translation: it invented two code blocks and derivation formulas and omitted the real-number, normalization, comparison and multidimensional sections. Retranslated the whole article from the English original.",
+      "content_sha256": "8bba1b74b96aac7f47bf0147c44c1812b12b73cea5e8f1aebbd62fe4caeb3b14"
+    },
+    {
+      "at": "2026-11-12T11:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated into correct Uzbek following the original's structure and terminology (kesma, to‘g‘ri chiziq, normallashtirish).",
+      "content_sha256": "8bba1b74b96aac7f47bf0147c44c1812b12b73cea5e8f1aebbd62fe4caeb3b14"
+    },
+    {
+      "at": "2026-11-12T11:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code blocks removed and formulas restored to the original's; gate reports no difference.",
+      "content_sha256": "8bba1b74b96aac7f47bf0147c44c1812b12b73cea5e8f1aebbd62fe4caeb3b14"
+    }
+  ]
+}

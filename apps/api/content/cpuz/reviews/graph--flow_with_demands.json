@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The remaining differences are inline notation only: the original has typos d(i) and c(i)-d(i) where the translation correctly writes the edge e, and a missing dash in the path s-...-t; the mathematics is the same and there is no code."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T22:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every paragraph and formula with the original; the content was complete and correct, so only the terminology of the final binary-search remark changed.",
+      "content_sha256": "7f5a7285fa841ee88a9683a3899f6730fa56a4dc689684911597ac0fbab4f32a"
+    },
+    {
+      "at": "2026-11-11T22:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the English 'binary search' with 'ikkilik qidiruv' per the glossary; the remaining text read naturally.",
+      "content_sha256": "7f5a7285fa841ee88a9683a3899f6730fa56a4dc689684911597ac0fbab4f32a"
+    },
+    {
+      "at": "2026-11-11T22:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "The remaining differences are inline notation only: the original has typos d(i) and c(i)-d(i) where the translation correctly writes the edge e, and a missing dash in the path s-...-t; the mathematics is the same and there is no code.",
+      "content_sha256": "7f5a7285fa841ee88a9683a3899f6730fa56a4dc689684911597ac0fbab4f32a"
+    }
+  ]
+}

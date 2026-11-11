@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T12:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "All paragraphs, numbers, images and code match the original.",
+      "content_sha256": "e77d85585b097817733dcd184b68289c0c224c5a9019ecd539bd4fd2c54e4f5b"
+    },
+    {
+      "at": "2026-11-11T12:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced single-digit inline math such as $0$ and $5$ with plain digits, as in the original prose, so no extra formulas are introduced.",
+      "content_sha256": "e77d85585b097817733dcd184b68289c0c224c5a9019ecd539bd4fd2c54e4f5b"
+    },
+    {
+      "at": "2026-11-11T12:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Inline formulas now match the original; code and display formulas were already identical.",
+      "content_sha256": "e77d85585b097817733dcd184b68289c0c224c5a9019ecd539bd4fd2c54e4f5b"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Corrected the sentence about the triangular Toeplitz matrix (the translation said the matrix 'is called' something instead of saying it is a so-called triangular Toeplitz matrix) and restored the sentence period of the display formula in the equivalence definition.",
+      "content_sha256": "eb17ca5732bc7b7388eb2ddc2cbd269c72281d9b55697d58541b1ffb19fd56ce"
+    },
+    {
+      "at": "2026-11-11T14:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'Bo‘lib tashla va hukmronlik qil' with the glossary term 'bo‘lib yechish', fixed paragraph, list, heading and quote spacing so the Markdown renders as in the original, and removed the leftover mkdocs attribute '{ data-toc-label=... }' from a heading.",
+      "content_sha256": "eb17ca5732bc7b7388eb2ddc2cbd269c72281d9b55697d58541b1ffb19fd56ce"
+    },
+    {
+      "at": "2026-11-11T14:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Display formula in the equivalence definition now matches the original; the pending row is no longer needed.",
+      "content_sha256": "eb17ca5732bc7b7388eb2ddc2cbd269c72281d9b55697d58541b1ffb19fd56ce"
+    }
+  ]
+}

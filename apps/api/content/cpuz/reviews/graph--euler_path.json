@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Reworded the existence theorem for Eulerian cycles and paths as 'necessary and sufficient' instead of an awkward literal calque; clarified that the domino numbers sit on the halves of a domino and that the program finds the cycle or path by brute-force scanning. All paragraphs, pseudocode and the C++ code match the original.",
+      "content_sha256": "8f5399245550fcc4d1b8dfe43fcecd406bf5548b31e59a8b0c14a32d996c3d87"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Switched to the glossary spelling 'Eyler' (prose only, code and pseudocode keep 'Euler') and 'yakkalangan tugun' for isolated vertex; smoothed several phrases.",
+      "content_sha256": "8f5399245550fcc4d1b8dfe43fcecd406bf5548b31e59a8b0c14a32d996c3d87"
+    }
+  ]
+}

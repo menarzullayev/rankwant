@@ -1,32 +1,30 @@
 # Ma’lumotlar tuzilmasidan $O(T(n)\log n)$ vaqtda o‘chirish
 
-Element qo‘shishni amortizatsiyalangan emas, balki **haqiqiy** $O(T(n))$ vaqtda bajaradigan ma’lumotlar tuzilmasi mavjud deb faraz qilamiz. Ushbu usul offline sharoitda o‘chirish amalini $O(T(n)\log n)$ vaqtda qo‘llab-quvvatlash imkonini beradi.
+Faraz qilaylik, sizda elementlarni **haqiqiy** $O(T(n))$ vaqtda qo‘shishga imkon beradigan ma’lumotlar tuzilmasi bor.
+Ushbu maqolada o‘chirishni offline rejimda $O(T(n)\log n)$ vaqtda bajarishga imkon beradigan usul tasvirlanadi.
 
 ## Algoritm
 
-Har bir element qo‘shilgan va o‘chirilgan vaqtlar orasidagi bir yoki bir nechta vaqt oralig‘ida ma’lumotlar tuzilmasida “tirik” bo‘ladi. So‘rovlar vaqt o‘qining nuqtalari deb qaraladi va shu o‘q ustida segment tree quriladi.
-
-Muayyan element faol bo‘lgan har bir vaqt oralig‘i segment treening $O(\log n)$ ta tuguniga ajratiladi. Element aynan shu tugunlarning ro‘yxatlariga yoziladi. Tuzilma holati haqida javob talab qiladigan har bir so‘rov esa vaqtiga mos bargga joylashtiriladi.
-
-Barcha so‘rovlarni qayta ishlash uchun segment tree bo‘ylab DFS bajaramiz:
-
-1. Tugunga kirganda uning ro‘yxatidagi barcha elementlarni ma’lumotlar tuzilmasiga qo‘shamiz.
-2. Tugun ichki tugun bo‘lsa, farzandlariga o‘tamiz; barg bo‘lsa, shu vaqtdagi so‘rovga javob beramiz.
-3. Tugundan chiqayotganda kirishda bajarilgan barcha o‘zgarishlarni orqaga qaytaramiz.
-
-Agar tuzilmani o‘zgartirish $O(T(n))$ vaqt olsa, bajarilgan o‘zgarishlarni stackda saqlab, ularni ham $O(T(n))$ vaqtda rollback qilish mumkin.
-
-Muhim ogohlantirish: rollback ishlatilganda amortizatsiyalangan murakkablik kafolati odatda saqlanmaydi. Shuning uchun asosiy qo‘shish amali **haqiqiy**, ya’ni har bir chaqiruv uchun alohida $O(T(n))$ bo‘lishi kerak.
+Har bir element ma’lumotlar tuzilmasida qo‘shilish va o‘chirilish orasidagi bir necha vaqt oralig‘ida “tirik” bo‘ladi.
+Keling, so‘rovlar ustida segment daraxti quraylik.
+Biror element tirik bo‘lgan har bir oraliq daraxtning $O(\log n)$ ta tuguniga bo‘linadi.
+Tuzilma haqida nimanidir bilmoqchi bo‘lgan har bir so‘rovni mos bargga joylashtiramiz.
+Endi barcha so‘rovlarni qayta ishlash uchun segment daraxtida DFS yuritamiz.
+Tugunga kirganda shu tugun ichidagi barcha elementlarni qo‘shamiz.
+So‘ng shu tugunning farzandlariga o‘tamiz yoki (tugun barg bo‘lsa) so‘rovlarga javob beramiz.
+Tugundan chiqayotganda qo‘shishlarni bekor qilishimiz (undo) kerak.
+E’tibor bering: agar tuzilmani $O(T(n))$ vaqtda o‘zgartira olsak, o‘zgarishlar stekini saqlab, o‘zgarishlarni ham $O(T(n))$ vaqtda orqaga qaytara (rollback qila) olamiz.
+E’tibor bering: rollbacklar amortizatsion murakkablikni buzadi.
 
 ## Izohlar
 
-Biror obyekt “tirik” bo‘lgan vaqt oraliqlari ustida segment tree qurish g‘oyasi faqat ma’lumotlar tuzilmalari masalalariga xos emas. U vaqt bo‘yicha faollashadigan obyektlar, qirralar yoki cheklovlarni offline qayta ishlashga oid boshqa masalalarda ham qo‘llanadi. Quyidagi mashq masalalari bunga misol bo‘ladi.
+Biror narsa tirik bo‘lgan oraliqlar ustida segment daraxti qurish g‘oyasi faqat ma’lumotlar tuzilmalari masalalarida emas, boshqa masalalarda ham qo‘llanishi mumkin.
+Quyidagi masalalarga qarang.
 
 ## Implementatsiya
 
-Quyidagi implementatsiya [dinamik bog‘langanlik](https://en.wikipedia.org/wiki/Dynamic_connectivity) masalasiga mo‘ljallangan. U qirralarni qo‘shish va o‘chirish hamda har bir vaqtda bog‘langan komponentlar sonini topishni qo‘llab-quvvatlaydi.
-
-`dsu_with_rollbacks` path compression ishlatmaydi, chunki path compression ko‘plab ota ko‘rsatkichlarini o‘zgartirib, rollbackni qimmatlashtiradi. Union by rank esa har bir muvaffaqiyatli birlashtirishda faqat doimiy sondagi qiymatlarni o‘zgartiradi; ular `op` stackiga yoziladi. `QueryTree` har bir qirrani u faol bo‘lgan vaqt oralig‘ini qoplaydigan segment tree tugunlariga qo‘shadi, so‘ng DFS davomida ularni vaqtincha DSUga kiritadi.
+Bu implementatsiya [dinamik bog‘langanlik](https://en.wikipedia.org/wiki/Dynamic_connectivity) masalasi uchun.
+U qirra qo‘sha oladi, qirrani o‘chira oladi va bog‘langan komponentlar sonini hisoblay oladi.
 
 ```cpp
 struct dsu_save {
@@ -42,6 +40,7 @@ struct dsu_with_rollbacks {
     vector<int> p, rnk;
     int comps;
     stack<dsu_save> op;
+
     dsu_with_rollbacks() {}
 
     dsu_with_rollbacks(int n) {
@@ -57,6 +56,7 @@ struct dsu_with_rollbacks {
     int find_set(int v) {
         return (v == p[v]) ? v : find_set(p[v]);
     }
+
     bool unite(int v, int u) {
         v = find_set(v);
         u = find_set(u);
@@ -71,6 +71,7 @@ struct dsu_with_rollbacks {
             rnk[u]++;
         return true;
     }
+
     void rollback() {
         if (op.empty())
             return;
@@ -97,6 +98,7 @@ struct QueryTree {
     int T;
 
     QueryTree() {}
+
     QueryTree(int _T, int n) : T(_T) {
         dsu = dsu_with_rollbacks(n);
         t.resize(4 * T + 4);
@@ -113,9 +115,11 @@ struct QueryTree {
         add_to_tree(2 * v, l, mid, ul, min(ur, mid), q);
         add_to_tree(2 * v + 1, mid + 1, r, max(ul, mid + 1), ur, q);
     }
+
     void add_query(query q, int l, int r) {
         add_to_tree(1, 0, T - 1, l, r, q);
     }
+
     void dfs(int v, int l, int r, vector<int>& ans) {
         for (query& q : t[v]) {
             q.united = dsu.unite(q.v, q.u);
@@ -132,6 +136,7 @@ struct QueryTree {
                 dsu.rollback();
         }
     }
+
     vector<int> solve() {
         vector<int> ans(T);
         dfs(1, 0, T - 1, ans);
@@ -139,8 +144,6 @@ struct QueryTree {
     }
 };
 ```
-
-`unite` muvaffaqiyatsiz bo‘lsa, ya’ni ikki uch allaqachon bitta komponentda bo‘lsa, hech narsa stackka qo‘shilmaydi. Shu sababli `query.united` qiymati DFSdan qaytishda faqat haqiqatan bajarilgan birlashtirishlarni rollback qilish uchun ishlatiladi. Har bir faol qirra $O(\log T)$ ta tugunda paydo bo‘lgani uchun umumiy qo‘shish va rollbacklar soni ham shu ko‘paytuvchiga ega.
 
 ## Masalalar
 

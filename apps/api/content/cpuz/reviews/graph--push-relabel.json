@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T15:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every definition, rule, complexity claim (O(V^2 E), O(V^2) relabels, O(VE) saturating pushes) and formula with the original; none was missing or altered. Restored the original code block verbatim (blank lines between functions) and the original structure of the preflow constraints sentence.",
+      "content_sha256": "d0142dfd9e62a2cdf40a1d7926dccd11a65bad0605c0e38982595de0f832d862"
+    },
+    {
+      "at": "2026-11-11T15:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed the typo 'Belgilanganning yaroqliligi' to 'Belgilashning yaroqliligi', reworded the sentence introducing the height function, and merged one-sentence paragraphs back into the original paragraph structure.",
+      "content_sha256": "d0142dfd9e62a2cdf40a1d7926dccd11a65bad0605c0e38982595de0f832d862"
+    }
+  ]
+}

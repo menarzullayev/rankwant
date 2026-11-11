@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The Uzbek text was not a translation of the original: it added a C++ implementation, an invented proof sketch, an invented examples section and a link to a non-existent page, and omitted the staged proof, the Reeve tetrahedron generalization, the Ehrhart polynomials remark, the 1899 attribution and the extra resource. Rewrote the article as a faithful translation of the original.",
+      "content_sha256": "973880236e58631310eba74d42abe71243f5bf9eec0d3054288962ec9afa377f"
+    },
+    {
+      "at": "2026-11-11T14:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated the whole article into natural Uzbek with the glossary terms (isbot, panjaraviy ko'pburchak, triangulyatsiya).",
+      "content_sha256": "973880236e58631310eba74d42abe71243f5bf9eec0d3054288962ec9afa377f"
+    },
+    {
+      "at": "2026-11-11T14:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "The added code block and the added display formulas are gone; the formulas now match the original.",
+      "content_sha256": "973880236e58631310eba74d42abe71243f5bf9eec0d3054288962ec9afa377f"
+    }
+  ]
+}

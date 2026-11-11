@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the original inline formulas that had been rewritten as two extra display formulas (definition of g(x), factorisation of m) and the original index ranges in the Pascal's triangle paragraph.",
+      "content_sha256": "188427a345c3a4a60a555c8a8f7cee58bf49b9348982b1a913ee7f234e22e06a"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Aligned 'Xitoy qoldiqlari teoremasi' with the glossary.",
+      "content_sha256": "188427a345c3a4a60a555c8a8f7cee58bf49b9348982b1a913ee7f234e22e06a"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Display and inline formulas now match the original; the earlier extra display formulas and split index conditions were removed.",
+      "content_sha256": "188427a345c3a4a60a555c8a8f7cee58bf49b9348982b1a913ee7f234e22e06a"
+    }
+  ]
+}

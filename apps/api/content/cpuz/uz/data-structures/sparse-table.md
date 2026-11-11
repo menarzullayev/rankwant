@@ -1,6 +1,6 @@
 # Sparse Table
 
-Sparse Table — oraliq so‘rovlariga javob berishga imkon beruvchi ma’lumotlar tuzilmasi. U aksariyat oraliq so‘rovlariga $O(\log n)$ vaqtda javob bera oladi, ammo uning haqiqiy kuchi oraliq minimumi so‘rovlarida yoki ularga ekvivalent bo‘lgan oraliq maksimumi so‘rovlarida namoyon bo‘ladi. Bunday so‘rovlar uchun javobni $O(1)$ vaqtda hisoblash mumkin.
+Sparse Table (siyrak jadval) — oraliq so‘rovlariga javob berishga imkon beruvchi ma’lumotlar tuzilmasi. U aksariyat oraliq so‘rovlariga $O(\log n)$ vaqtda javob bera oladi, ammo uning haqiqiy kuchi oraliq minimumi so‘rovlarida yoki ularga ekvivalent bo‘lgan oraliq maksimumi so‘rovlarida namoyon bo‘ladi. Bunday so‘rovlar uchun javobni $O(1)$ vaqtda hisoblash mumkin.
 
 Ushbu ma’lumotlar tuzilmasining yagona asosiy kamchiligi — undan faqat _o‘zgarmas_ massivlarda foydalanish mumkin. Ya’ni ikki so‘rov orasida massivni o‘zgartirib bo‘lmaydi. Massivning biror elementi o‘zgarsa, butun tuzilmani qaytadan hisoblash kerak.
 

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Formulas, invariants, complexity claims and both code blocks match the original; nothing was omitted.",
+      "content_sha256": "a058aadbff9e25043b2cba4bd9c182c33dc77c7b42e18412385f5a3f38217287"
+    },
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'hadlarining' with 'sonlarining' in the Bezout example and restored the blank lines between paragraphs, display formulas, headings and code fences.",
+      "content_sha256": "a058aadbff9e25043b2cba4bd9c182c33dc77c7b42e18412385f5a3f38217287"
+    }
+  ]
+}

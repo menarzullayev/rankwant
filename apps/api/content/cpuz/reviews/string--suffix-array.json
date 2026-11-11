@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Display formulas and code are identical to the original except that the words inside \\text{} labels of the overbrace diagrams are translated (length/class/first/second); the checker also mis-pairs the escaped dollar sign (\\$) in the original prose with the next $$, so it reports prose as formulas. Mathematics and code unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the second half of the cyclic-substring diagram and the two display diagrams for comparing overlapping blocks that the translation had dropped, restored the original array example, made the minimum-of-lcp formula inline as in the original, and corrected 'at least k-1' to 'equal to k-1' in the Kasai explanation.",
+      "content_sha256": "349c9a7b3be958bd6df3e5f61c0ad0fb4e87afe10530c448baff07e4b8d6c0bf"
+    },
+    {
+      "at": "2026-11-12T11:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Restored the omitted remarks (preprocessing array is itself useful for other tasks; the Sparse Table article computes all log values) and the original's escaped dollar notation; rephrased the sentence about appending a smaller character to s.",
+      "content_sha256": "349c9a7b3be958bd6df3e5f61c0ad0fb4e87afe10530c448baff07e4b8d6c0bf"
+    },
+    {
+      "at": "2026-11-12T11:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Display formulas and code are identical to the original except that the words inside \\text{} labels of the overbrace diagrams are translated (length/class/first/second); the checker also mis-pairs the escaped dollar sign (\\$) in the original prose with the next $$, so it reports prose as formulas. Mathematics and code unchanged.",
+      "content_sha256": "349c9a7b3be958bd6df3e5f61c0ad0fb4e87afe10530c448baff07e4b8d6c0bf"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The original's '...' is written as \\ldots (renders as the same ellipsis in KaTeX), and the row index K = (z - 1) div 4 + 1 uses \\mathbin{\\mathrm{div}} instead of the original's \\div sign, which in the original means integer division; the mathematics and the code are unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Statement, the inversion-count criterion N + K even, the code and the history of the proof match the original.",
+      "content_sha256": "792797ad9c2a4ab7511899afc8659e3137918d68f9870fa8ff2d14968a9dea00"
+    },
+    {
+      "at": "2026-11-11T14:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "The Uzbek is correct and natural; no changes were needed.",
+      "content_sha256": "792797ad9c2a4ab7511899afc8659e3137918d68f9870fa8ff2d14968a9dea00"
+    },
+    {
+      "at": "2026-11-11T14:10:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Remaining differences are notation only (\\ldots for '...', \\mathrm{div} for the integer division sign).",
+      "content_sha256": "792797ad9c2a4ab7511899afc8659e3137918d68f9870fa8ff2d14968a9dea00"
+    }
+  ]
+}

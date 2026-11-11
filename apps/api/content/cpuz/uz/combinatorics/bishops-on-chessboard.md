@@ -44,13 +44,7 @@ Barcha `D[i][j]` qiymatlarini hisoblaganimizdan so‘ng javobni quyidagicha olam
 
 Qora va oq diagonallarga qo‘yilgan fillar bir-biriga hech qachon hujum qilmaydi, shuning uchun bu joylashtirishlarni mustaqil bajarish mumkin. Oxirgi qora diagonal indeksi `2N-1`, oxirgi oq diagonal indeksi esa `2N-2`.
 
-Har bir `i` uchun javobga
-
-```text
-D[2N-1][i] * D[2N-2][K-i]
-```
-
-qiymatini qo‘shamiz.
+Har bir `i` uchun javobga `D[2N-1][i] * D[2N-2][K-i]` qiymatini qo‘shamiz.
 
 ## Implementatsiya
 

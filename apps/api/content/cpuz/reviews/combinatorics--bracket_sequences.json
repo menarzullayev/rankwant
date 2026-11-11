@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Turned four display formulas that the original keeps inline back into inline math, rewrote the 'n smaller than 12' remark with the original wording and fixed the 'next sequence' fallback sentence so that it says the given sequence is already the largest.",
+      "content_sha256": "48e544450f8521634825efd69efcabb0dc08fa428b1a410d886e5c48e938057f"
+    },
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed a leftover mkdocs {data-toc-label} attribute from the k-th sequence heading and smoothed the sentence about generating sequences with the counting ideas.",
+      "content_sha256": "48e544450f8521634825efd69efcabb0dc08fa428b1a410d886e5c48e938057f"
+    },
+    {
+      "at": "2026-11-11T14:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code blocks and all display and inline formulas now match the original.",
+      "content_sha256": "48e544450f8521634825efd69efcabb0dc08fa428b1a410d886e5c48e938057f"
+    }
+  ]
+}

@@ -5,13 +5,14 @@ $x y \bmod n$ kabi ko‘paytmani odatiy algoritmlar bilan hisoblash ancha sekin,
 Bo‘lish esa, ayniqsa katta sonlarda, juda qimmat amal.
 **Montgomery (modul) ko‘paytirishi** bunday ko‘paytmalarni tezroq hisoblash imkonini beradigan usuldir.
 Ko‘paytmani bo‘lib, undan $n$ ni bir necha marta ayirish o‘rniga, u quyi bitlarni bekor qilish uchun $n$ ning karralilarini qo‘shadi va so‘ng quyi bitlarni shunchaki tashlab yuboradi.
+
 ## Montgomery ifodasi
 
 Biroq Montgomery ko‘paytirishi tekin kelmaydi.
 Algoritm faqat **Montgomery fazosi**da ishlaydi.
 Ko‘paytirishni boshlashdan oldin sonlarimizni shu fazoga o‘tkazishimiz kerak.
 Fazo uchun $n$ bilan o‘zaro tub bo‘lgan, ya’ni $\gcd(n,r)=1$ shartini qanoatlantiradigan musbat $r\ge n$ butun soni kerak.
-Amalda har doim $r=2^m$ ni tanlaymiz, bu yerda $m$ — musbat butun son; chunki u holda $r$ ga ko‘paytirish, bo‘lish va modul olishni siljitishlar hamda boshqa bit amallari bilan samarali bajarish mumkin.
+Amalda har doim $r$ ni musbat butun $m$ uchun $2^m$ qilib tanlaymiz; chunki u holda $r$ ga ko‘paytirish, bo‘lish va modul olishni siljitishlar hamda boshqa bit amallari bilan samarali bajarish mumkin.
 Deyarli barcha qo‘llanishlarda $n$ toq bo‘ladi, chunki juft sonni faktorizatsiya qilish qiyin emas.
 Shu sababli $2$ ning istalgan darajasi $n$ bilan o‘zaro tub bo‘ladi.
 $x$ sonining Montgomery fazosidagi vakili $\bar{x}$ quyidagicha aniqlanadi:
@@ -33,6 +34,7 @@ Ammo ko‘paytirish uchun bunday emas.
 Natija quyidagicha bo‘lishini kutamiz:
 
 $$\bar{x} * \bar{y} = \overline{x \cdot y} = (x \cdot y) \cdot r \bmod n.$$
+
 Oddiy ko‘paytirish esa:
 
 $$\bar{x} \cdot \bar{y} = (x \cdot y) \cdot r \cdot r \bmod n.$$
@@ -40,6 +42,7 @@ $$\bar{x} \cdot \bar{y} = (x \cdot y) \cdot r \cdot r \bmod n.$$
 ni beradi. Shuning uchun Montgomery fazosidagi ko‘paytirish quyidagicha aniqlanadi:
 
 $$\bar{x} * \bar{y} := \bar{x} \cdot \bar{y} \cdot r^{-1} \bmod n.$$
+
 ## Montgomery reduksiyasi
 
 Montgomery fazosidagi ikki sonni ko‘paytirish $x\cdot r^{-1}\bmod n$ ni samarali hisoblashni talab qiladi.
@@ -72,12 +75,14 @@ function reduce(x):
         a += n
     return a
 ```
+
 $x<n\cdot n<r\cdot n$ (hatto $x$ ko‘paytirish natijasi bo‘lsa ham) va $q\cdot n<r\cdot n$ bo‘lgani sababli, $-n<(x-q\cdot n)/r<n$ ekanini bilamiz.
 Shuning uchun yakuniy modul amali bitta tekshiruv va bitta qo‘shish bilan bajariladi.
 
 Ko‘rib turganimizdek, Montgomery reduksiyasini og‘ir modul amallarisiz bajarish mumkin.
 $r$ ni $2$ ning darajasi qilib tanlasak, algoritmdagi modul va bo‘lish amallarini bitmaska hamda siljitishlar bilan hisoblash mumkin.
 Montgomery reduksiyasining ikkinchi qo‘llanishi sonni Montgomery fazosidan oddiy fazoga qaytarishdir.
+
 ## Tez teskari element hiylasi
 
 $n^{\prime}:=n^{-1}\bmod r$ teskari elementni samarali hisoblash uchun Newton usulidan ilhomlangan quyidagi hiyladan foydalanish mumkin:
@@ -95,9 +100,10 @@ a \cdot x \cdot (2 - a \cdot x) &= 2 \cdot a \cdot x - (a \cdot x)^2 \\
 \end{aligned}$$
 
 Demak, $a$ ning $2^1$ modul bo‘yicha teskari elementi sifatida $x=1$ dan boshlashimiz, hiylani bir necha marta qo‘llashimiz va har iteratsiyada $x$ ning to‘g‘ri bitlari sonini ikki baravar oshirishimiz mumkin.
+
 ## Implementatsiya
 
-GCC kompilyatori `__int128` va `__uint128` turlari orqali 128 bitli butun sonlarni qo‘llab-quvvatlagani sababli, $x$, $y$ va $n$ uchalasi 64 bitli bo‘lsa, $x\cdot y\bmod n$ ni hali ham samarali hisoblash mumkin:
+GCC kompilyatori `__int128` va `__uint128` turlari orqali 128 bitli butun sonlarni qo‘llab-quvvatlagani sababli, uchala son ham 64 bitli butun son bo‘lsa, $x \cdot y \bmod n$ ni hali ham samarali hisoblash mumkin:
 
 ```cpp
 long long result = (__int128)x * y % n;
@@ -157,6 +163,7 @@ struct Montgomery {
     u128 mod, inv;
 };
 ```
+
 ## Tez o‘tkazish
 
 Sonni Montgomery fazosiga o‘tkazishning hozirgi usuli ancha sekin.

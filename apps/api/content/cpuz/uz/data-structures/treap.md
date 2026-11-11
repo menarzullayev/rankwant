@@ -1,8 +1,8 @@
 # Treap (Cartesian tree)
 
-Treap — binary tree va binary heap xususiyatlarini birlashtiruvchi ma’lumotlar tuzilmasi. Uning nomi ham aynan `tree + heap` birikmasidan kelib chiqqan.
+Treap — ikkilik daraxt va ikkilik uyum xususiyatlarini birlashtiruvchi ma’lumotlar tuzilmasi. Uning nomi ham aynan `tree + heap` birikmasidan kelib chiqqan.
 
-Aniqroq aytganda, treap $(X,Y)$ juftliklarini shunday ikkilik daraxtda saqlaydiki, u $X$ bo‘yicha binary search tree, $Y$ bo‘yicha esa binary heap bo‘ladi. Agar daraxtning biror tugunida $(X_0,Y_0)$ qiymatlari saqlansa, chap ost-daraxtdagi barcha tugunlar uchun $X\le X_0$, o‘ng ost-daraxtdagi barcha tugunlar uchun $X_0\le X$, ikkala ost-daraxtdagi barcha tugunlar uchun esa $Y\le Y_0$ bo‘ladi.
+Aniqroq aytganda, treap $(X,Y)$ juftliklarini shunday ikkilik daraxtda saqlaydiki, u $X$ bo‘yicha ikkilik qidiruv daraxti, $Y$ bo‘yicha esa ikkilik uyum bo‘ladi. Agar daraxtning biror tugunida $(X_0,Y_0)$ qiymatlari saqlansa, chap ost-daraxtdagi barcha tugunlar uchun $X\le X_0$, o‘ng ost-daraxtdagi barcha tugunlar uchun $X_0\le X$, ikkala ost-daraxtdagi barcha tugunlar uchun esa $Y\le Y_0$ bo‘ladi.
 
 Treapni ko‘pincha «Cartesian tree» deb ham atashadi, chunki uni Dekart tekisligiga tabiiy joylashtirish mumkin:
 
@@ -12,7 +12,7 @@ Treap Raimund Seidel va Cecilia Aragon tomonidan 1989-yilda taklif qilingan.
 
 ## Bunday tashkil etishning afzalliklari
 
-Ushbu implementatsiyada $X$ qiymatlari kalitlar va bir vaqtning o‘zida treapda saqlanadigan qiymatlar hisoblanadi; $Y$ qiymatlari esa **prioritetlar** deyiladi. Prioritetlar bo‘lmaganda treap oddiy $X$ bo‘yicha binary search tree bo‘lar edi. Bitta $X$ qiymatlar to‘plamiga ko‘plab turli daraxtlar mos kelishi, ularning ayrimlari degeneratsiyalashgan — masalan, linked list shaklida — bo‘lishi mumkin. Bunday daraxtlarda asosiy amallar $O(N)$ vaqt talab qiladi.
+Ushbu implementatsiyada $X$ qiymatlari kalitlar va bir vaqtning o‘zida treapda saqlanadigan qiymatlar hisoblanadi; $Y$ qiymatlari esa **prioritetlar** deyiladi. Prioritetlar bo‘lmaganda treap oddiy $X$ bo‘yicha ikkilik qidiruv daraxti bo‘lar edi. Bitta $X$ qiymatlar to‘plamiga ko‘plab turli daraxtlar mos kelishi, ularning ayrimlari degeneratsiyalashgan — masalan, bog‘langan ro‘yxat shaklida — bo‘lishi mumkin. Bunday daraxtlarda asosiy amallar $O(N)$ vaqt talab qiladi.
 
 Boshqa tomondan, prioritetlar o‘zaro turli bo‘lsa, quriladigan daraxtni **yagona** tarzda aniqlaydi; bu daraxtga qiymatlar qaysi tartibda qo‘shilganiga bog‘liq emas. Tegishli teorema bilan buni isbotlash mumkin. Agar prioritetlar **tasodifiy tanlansa**, o‘rtacha holatda degeneratsiyalashmagan daraxt olinadi va asosiy amallarning $O(\log N)$ murakkabligi ta’minlanadi. Shu sababli ushbu tuzilma **randomized binary search tree** deb ham ataladi.
 
@@ -21,13 +21,13 @@ Boshqa tomondan, prioritetlar o‘zaro turli bo‘lsa, quriladigan daraxtni **ya
 Treap quyidagi amallarni qo‘llab-quvvatlaydi:
 
 - **Insert $(X,Y)$** — $O(\log N)$. Daraxtga yangi tugun qo‘shadi. Variantlardan birida funksiyaga faqat $X$ berilib, $Y$ amal ichida tasodifiy hosil qilinadi.
-- **Search $(X)$** — $O(\log N)$. Berilgan $X$ kalitli tugunni qidiradi. Implementatsiya oddiy binary search tree dagi kabi.
+- **Search $(X)$** — $O(\log N)$. Berilgan $X$ kalitli tugunni qidiradi. Implementatsiya oddiy ikkilik qidiruv daraxtidagi kabi.
 - **Erase $(X)$** — $O(\log N)$. Berilgan $X$ kalitli tugunni topib, daraxtdan o‘chiradi.
 - **Build $(X_1,\dots,X_N)$** — $O(N)$. Qiymatlar ro‘yxatidan daraxt quradi. $X_1,\dots,X_N$ saralangan bo‘lsa, buni chiziqli vaqtda bajarish mumkin.
 - **Union $(T_1,T_2)$** — $O(M\log(N/M))$. Barcha elementlar turli deb faraz qilib, ikki daraxtni birlashtiradi. Birlashtirish paytida takroriy elementlarni o‘chirish kerak bo‘lganda ham xuddi shu murakkablikka erishish mumkin.
 - **Intersect $(T_1,T_2)$** — $O(M\log(N/M))$. Ikki daraxt kesishmasini, ya’ni umumiy elementlarini topadi. Ushbu amal implementatsiyasi bu maqolada ko‘rib chiqilmaydi.
 
-Bundan tashqari, treap binary search tree bo‘lgani sababli $K$-eng katta elementni topish yoki element indeksini aniqlash kabi boshqa amallarni ham bajarishi mumkin.
+Bundan tashqari, treap ikkilik qidiruv daraxti bo‘lgani sababli $K$-eng katta elementni topish yoki element indeksini aniqlash kabi boshqa amallarni ham bajarishi mumkin.
 
 ## Implementatsiya tavsifi
 
@@ -62,7 +62,7 @@ Buning uchun ildizidagi $Y$ prioriteti kattaroq bo‘lgan daraxtni yangi ildiz s
 
 ![](https://upload.wikimedia.org/wikipedia/commons/3/35/Treap_insert.svg)
 
-Endi **Insert $(X,Y)$** implementatsiyasi tabiiy. Avval daraxt bo‘ylab oddiy $X$ bo‘yicha binary search tree dagidek pastga tushamiz va prioriteti $Y$ dan kichik bo‘lgan birinchi tugunda to‘xtaymiz. Yangi element qo‘yiladigan joy topildi. So‘ng shu tugundan boshlanuvchi ost-daraxt uchun **Split $(T,X)$** ni chaqirib, qaytgan $L$ va $R$ daraxtlarini yangi tugunning chap va o‘ng farzandlari qilamiz.
+Endi **Insert $(X,Y)$** implementatsiyasi tabiiy. Avval daraxt bo‘ylab oddiy $X$ bo‘yicha ikkilik qidiruv daraxtidagidek pastga tushamiz va prioriteti $Y$ dan kichik bo‘lgan birinchi tugunda to‘xtaymiz. Yangi element qo‘yiladigan joy topildi. So‘ng shu tugundan boshlanuvchi ost-daraxt uchun **Split $(T,X)$** ni chaqirib, qaytgan $L$ va $R$ daraxtlarini yangi tugunning chap va o‘ng farzandlari qilamiz.
 
 Muqobil usulda boshlang‘ich treapni $X$ bo‘yicha ajratib, yangi tugun bilan ikki marta `merge` bajarish mumkin; rasmda shu variant ko‘rsatilgan.
 
@@ -70,7 +70,7 @@ Muqobil usulda boshlang‘ich treapni $X$ bo‘yicha ajratib, yangi tugun bilan 
 
 ![](https://upload.wikimedia.org/wikipedia/commons/6/62/Treap_erase.svg)
 
-**Erase $(X)$** implementatsiyasi ham sodda. Avval oddiy binary search tree dagidek daraxt bo‘ylab tushib, o‘chiriladigan $X$ elementni topamiz. Tugun topilgach, uning farzandlari uchun **Merge** chaqiramiz va natijani o‘chirilayotgan element o‘rniga qo‘yamiz.
+**Erase $(X)$** implementatsiyasi ham sodda. Avval oddiy ikkilik qidiruv daraxtidagidek daraxt bo‘ylab tushib, o‘chiriladigan $X$ elementni topamiz. Tugun topilgach, uning farzandlari uchun **Merge** chaqiramiz va natijani o‘chirilayotgan element o‘rniga qo‘yamiz.
 
 Muqobil ravishda, $X$ ni o‘z ichiga olgan ost-daraxtni ikkita split orqali ajratib, qolgan treaplarni birlashtirish mumkin.
 
@@ -119,7 +119,7 @@ if (l) cout << "Left subtree size: " << (l->size) << endl;
 if (r) cout << "Right subtree size: " << (r->size) << endl;
 ```
 
-`split` funksiyasini tushunish qiyin tuyulishi mumkin, chunki unda ko‘rsatkichlar (`pitem`) ham, shu ko‘rsatkichlarga reference lar (`pitem &l`) ham ishlatiladi. `split(t,k,l,r)` chaqiruvi so‘z bilan quyidagini anglatadi: «`t` treapni `k` qiymati bo‘yicha ikki treapga ajrat; chap treapni `l` ga, o‘ng treapni `r` ga yoz».
+`split` funksiyasini tushunish qiyin tuyulishi mumkin, chunki unda ko‘rsatkichlar (`pitem`) ham, shu ko‘rsatkichlarga havolalar (`pitem &l`) ham ishlatiladi. `split(t,k,l,r)` chaqiruvi so‘z bilan quyidagini anglatadi: «`t` treapni `k` qiymati bo‘yicha ikki treapga ajrat; chap treapni `l` ga, o‘ng treapni `r` ga yoz».
 
 Endi oldingi bo‘limda ko‘rilgan holatlar asosida bu ta’rifni ikki rekursiv chaqiruvga qo‘llaymiz. Birinchi `if` bo‘sh treap uchun oddiy bazaviy holatdir.
 
@@ -169,7 +169,7 @@ pitem unite (pitem l, pitem r) {
 
 ## Ost-daraxt o‘lchamlarini saqlash
 
-Treap imkoniyatlarini kengaytirish uchun ko‘pincha har bir tugun ost-daraxtidagi tugunlar sonini `item` tuzilmasining `int cnt` maydonida saqlash kerak bo‘ladi. Masalan, daraxtdagi $K$-eng katta elementni yoki saralangan ro‘yxatdagi element indeksini $O(\log N)$ vaqtda topish mumkin. Bu amallarning implementatsiyasi oddiy binary search tree dagi bilan bir xil.
+Treap imkoniyatlarini kengaytirish uchun ko‘pincha har bir tugun ost-daraxtidagi tugunlar sonini `item` tuzilmasining `int cnt` maydonida saqlash kerak bo‘ladi. Masalan, daraxtdagi $K$-eng katta elementni yoki saralangan ro‘yxatdagi element indeksini $O(\log N)$ vaqtda topish mumkin. Bu amallarning implementatsiyasi oddiy ikkilik qidiruv daraxtidagi bilan bir xil.
 
 Daraxt o‘zgarganda — tugun qo‘shilganda, o‘chirilganda va hokazo — ayrim tugunlarning `cnt` qiymatlarini yangilash kerak. Ikki funksiya yaratamiz: `cnt()` tugun mavjud bo‘lsa uning `cnt` qiymatini, aks holda 0 ni qaytaradi; `upd_cnt()` esa chap va o‘ng farzandlarining `cnt` qiymatlari allaqachon yangilangan deb olib, joriy tugun `cnt` qiymatini hisoblaydi. `cnt` qiymatlarini doim to‘g‘ri saqlash uchun `insert`, `erase`, `split` va `merge` oxiriga `upd_cnt()` chaqiruvlarini qo‘shish kifoya.
 
@@ -184,9 +184,9 @@ void upd_cnt (pitem t) {
 }
 ```
 
-## Offline rejimda treapni $O(N)$ da qurish {data-toc-label="Building a Treap in O(N) in offline mode"}
+## Offline rejimda treapni $O(N)$ da qurish
 
-Saralangan kalitlar ro‘yxati berilganda treapni kalitlarni bittadan qo‘shishning $O(N\log N)$ vaqtidan tezroq qurish mumkin. Kalitlar saralanganligi sababli muvozanatlangan binary search tree ni chiziqli vaqtda oson quramiz. $Y$ heap qiymatlarini tasodifiy boshlang‘ich qiymatlar bilan to‘ldiramiz, keyin ularni $X$ kalitlardan mustaqil ravishda heapify qilib, [heapni $O(N)$ da quramiz](https://en.wikipedia.org/wiki/Binary_heap#Building_a_heap).
+Saralangan kalitlar ro‘yxati berilganda treapni kalitlarni bittadan qo‘shishning $O(N\log N)$ vaqtidan tezroq qurish mumkin. Kalitlar saralanganligi sababli muvozanatlangan ikkilik qidiruv daraxtini chiziqli vaqtda oson quramiz. $Y$ heap qiymatlarini tasodifiy boshlang‘ich qiymatlar bilan to‘ldiramiz, keyin ularni $X$ kalitlardan mustaqil ravishda heapify qilib, [uyumni $O(N)$ da quramiz](https://en.wikipedia.org/wiki/Binary_heap#Building_a_heap).
 
 ```cpp
 void heapify (pitem t) {

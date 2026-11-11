@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "All paragraphs, complexities, the segment-tree descent condition and the three code blocks agree with the original.",
+      "content_sha256": "41b2d74b88c0940324960c73b6185fa86e449bdd59842ff84285f08d75047dbc"
+    },
+    {
+      "at": "2026-11-11T14:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "The Uzbek is correct and natural; no changes needed.",
+      "content_sha256": "41b2d74b88c0940324960c73b6185fa86e449bdd59842ff84285f08d75047dbc"
+    }
+  ]
+}

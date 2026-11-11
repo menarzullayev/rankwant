@@ -152,7 +152,7 @@ Now we consider how the answer will change if we have $k$ types of brackets.
 We have $2n - i - 1$ undefined positions, of which $\text{ndepth}$ are already predetermined because of the opening brackets.
 But all the other brackets ($(2n - i - 1 - \text{ndepth})/2$ pairs) can be of any type, therefore we multiply the number by such a power of $k$.
 
-## Finding the $k$-th sequence {data-toc-label="Finding the k-th sequence"}
+## Finding the $k$-th sequence
 
 Let $n$ be the number of bracket pairs in the sequence.
 We have to find the $k$-th balanced sequence in lexicographically sorted list of all balanced sequences for a given $k$.

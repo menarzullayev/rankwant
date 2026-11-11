@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The original ends the aligned rows with a triple backslash left by mkdocs escaping; the translation uses the single '\\\\' row break that KaTeX needs. The three substitutions a = g alpha, b = g beta, m = g nu are now one inline formula as in the original."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T23:54:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every step, formula, complexity bound and code block with the original; all are present and correct, and the code is identical apart from comments.",
+      "content_sha256": "253e4a701fbfdf6153a97ce0059da9b4379df24a4c42db3d03470f4e38807b9b"
+    },
+    {
+      "at": "2026-11-11T23:54:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Used the glossary terms 'o'rtada uchrashish' and 'xesh jadvali', rephrased the sentence about the sum of n and m/n without a formula the original lacks, added the original's 'obviously' (ravshanki), and removed the mkdocs attribute list from a heading.",
+      "content_sha256": "253e4a701fbfdf6153a97ce0059da9b4379df24a4c42db3d03470f4e38807b9b"
+    },
+    {
+      "at": "2026-11-11T23:54:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "passed",
+      "notes": "Only difference left is the row-break escaping inside the aligned block; the mathematics is unchanged.",
+      "content_sha256": "253e4a701fbfdf6153a97ce0059da9b4379df24a4c42db3d03470f4e38807b9b"
+    }
+  ]
+}

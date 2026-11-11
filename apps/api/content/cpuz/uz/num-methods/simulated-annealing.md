@@ -1,215 +1,194 @@
 # Simulyatsiyalangan toblash
 
-**Simulyatsiyalangan toblash** (Simulated Annealing, SA) — funksiyaning global optimumiga yaqin yechim izlaydigan tasodifiy algoritm. Qidiruvda tasodifiylik ishlatilgani uchun ayni kirishda turli ishga tushirishlar turli javob berishi mumkin.
+**Simulyatsiyalangan toblash (Simulated Annealing, SA)** — funksiyaning global optimumini yaqinlashtiradigan tasodifiy algoritm. U tasodifiy algoritm deb ataladi, chunki qidiruvda ma’lum miqdorda tasodifiylikdan foydalanadi, shuning uchun bir xil kirish uchun ham uning chiqishi har xil bo‘lishi mumkin.
 
-## Masala modeli
+## Masala
 
-Har bir $s$ holat uchun energiyani hisoblaydigan $E(s)$ funksiya berilgan. Maqsad
+Bizga $s$ holatning energiyasini hisoblaydigan $E(s)$ funksiya berilgan. $E(s)$ minimal bo‘ladigan $s_{best}$ holatni topish talab qilinadi. **SA** holatlar diskret va $E(s)$ bir nechta lokal minimumga ega bo‘lgan masalalar uchun mos keladi. Misol sifatida [kommivoyajer masalasi (TSP)](https://en.wikipedia.org/wiki/Travelling_salesman_problem)ni olamiz.
 
-$$s_{best}=\arg\min_s E(s)$$
+### Kommivoyajer masalasi (TSP)
 
-holatni topish. SA holatlar diskret, qidiruv fazosi juda katta va $E(s)$ ko‘plab mahalliy minimumlarga ega masalalarda ayniqsa foydali. U aniq global optimumni kafolatlamaydi, ammo yaxshi modellashtirilsa vaqt chegarasi ichida sifatli yaqinlashuv topishi mumkin.
+Sizga 2 o‘lchamli fazodagi tugunlar to‘plami berilgan. Har bir tugun $x$ va $y$ koordinatalari bilan xarakterlanadi. Vazifangiz — tugunlarga shu tartibda tashrif buyurganda bosib o‘tiladigan masofani minimallashtiradigan tugunlar tartibini topish.
 
-### Misol: kommivoyajer masalasi
+## Motivatsiya
+Toblash — metallurgiya jarayoni bo‘lib, unda material qizdiriladi va sovishga qo‘yib yuboriladi, shunda ichidagi atomlar minimal ichki energiyali joylashuvga qayta joylashadi, bu esa o‘z navbatida materialning xossalari boshqacha bo‘lishiga olib keladi. Holat — atomlarning joylashuvi, ichki energiya esa minimallashtirilayotgan funksiyadir. Atomlarning dastlabki holatini ularning ichki energiyasi uchun lokal minimum deb tasavvur qilish mumkin. Materialni atomlarini qayta joylashtirishga undash uchun, global minimumga yetish maqsadida, uning ichki energiyasi minimal bo‘lmagan sohadan o‘tishga rag‘batlantirish kerak. Bu rag‘bat materialni yuqoriroq haroratgacha qizdirish orqali beriladi.
 
-[Kommivoyajer masalasida](https://en.wikipedia.org/wiki/Travelling_salesman_problem) tekislikda koordinatalari bilan berilgan nuqtalar mavjud. Barcha nuqtalarga bir marta tashrif buyurib, boshlang‘ich nuqtaga qaytadigan eng qisqa tartibni topish kerak. Bu yerda:
+Simulyatsiyalangan toblash aynan shu jarayonni simulyatsiya qiladi. Biz tasodifiy holat (material) bilan boshlaymiz va yuqori temperatura o‘rnatamiz (uni qizdiramiz). Endi algoritm joriy holatdan yuqoriroq energiyali holatlarni qabul qilishga tayyor, chunki uni yuqori temperatura rag‘batlantiradi. Bu algoritmning lokal minimumlarda tiqilib qolishiga to‘sqinlik qiladi va global minimum tomon harakatlanishiga yordam beradi. Vaqt o‘tishi bilan algoritm soviydi, yuqoriroq energiyali holatlarni rad eta boshlaydi va o‘zi topgan eng yaqin minimumga o‘tadi.
 
-- holat — nuqtalarning biror permutatsiyasi;
-- $E(s)$ — shu tartibda qurilgan yopiq yo‘l uzunligi;
-- qo‘shni holat — masalan, ikkita nuqtaning o‘rnini almashtirish orqali olingan yangi permutatsiya.
+### $E(s)$ energiya funksiyasi
 
-## Fizik o‘xshatish
+$E(s)$ — minimallashtirilishi (yoki maksimallashtirilishi) kerak bo‘lgan funksiya. U har bir holatni haqiqiy songa akslantiradi. TSP holida $E(s)$ holatdagi tugunlar tartibida bitta to‘liq aylanib chiqish masofasini qaytaradi.
 
-Metallurgiyadagi toblash jarayonida material qizdirilib, asta sovitiladi. Yuqori harorat atomlarga hozirgi past energiyali tuzilishdan chiqib, vaqtincha yuqoriroq energiyali holatlardan o‘tishga imkon beradi. Sekin sovish davomida ular ichki energiyasi yanada kichik tuzilishga joylashishi mumkin.
+### Holat
 
-SA shu jarayonni modellashtiradi. Algoritm tasodifiy holat va yuqori temperatura bilan boshlanadi. Yuqori temperaturada energiyasi yomonroq qo‘shni holatlar ham qabul qilinadi; bu qidiruvni mahalliy minimumdan chiqaradi. Temperatura pasaygani sari bunday o‘tish ehtimoli kamayadi va qidiruv topilgan yaxshi minimum atrofida jamlanadi.
+Holatlar fazosi — $E(s)$ energiya funksiyasining aniqlanish sohasi, holat esa holatlar fazosiga tegishli har qanday elementdir. TSP holida barcha tugunlarga tashrif buyurish uchun bosib o‘tish mumkin bo‘lgan barcha yo‘llar holatlar fazosini tashkil qiladi, bu yo‘llarning har bir alohida birini esa holat deb hisoblash mumkin.
 
-![Ko‘p mahalliy optimumli funksiyada simulyatsiyalangan toblash](https://upload.wikimedia.org/wikipedia/commons/d/d5/Hill_Climbing_with_Simulated_Annealing.gif)
+### Qo‘shni holat
 
-## Asosiy tushunchalar
-
-### Energiya funksiyasi
-
-$E(s)$ minimallashtiriladigan maqsad funksiyasidir. Maksimallashtirish masalasini $E(s)=-F(s)$ qilib minimallashtirishga aylantirish mumkin. Energiya tez hisoblanishi juda muhim; imkon bo‘lsa, qo‘shni holat energiyasi butun holatni qayta sanamasdan, faqat o‘zgargan qismlar orqali yangilanadi.
-
-### Holat va qo‘shnichilik
-
-Holatlar fazosi $E$ funksiyaning aniqlanish sohasidir. Qo‘shni holat joriy holatdan sodda lokal o‘zgarish bilan olinadi. Qo‘shnichilik juda tor bo‘lsa qidiruv sekin yuradi, juda keskin bo‘lsa yaxshi hudud atrofida barqarorlashish qiyinlashadi. Kommivoyajerda ikki nuqtani almashtirish, kesmani teskari aylantirish (`2-opt`) yoki nuqtani boshqa joyga ko‘chirish keng tarqalgan variantlardir.
-
-### Temperatura va sovish
-
-$T$ temperatura yomonroq holatni qabul qilishga tayyorlikni bildiradi. $u$ esa sovish koeffitsiyenti:
-
-$$T\leftarrow T\cdot u,\qquad 0<u<1.$$
-
-$u$ birga qancha yaqin bo‘lsa, sovish shuncha sekin va iteratsiyalar soni ko‘proq bo‘ladi. Sekin sovish odatda yechim sifatini oshiradi, ammo ko‘proq vaqt talab qiladi.
-
-## Qabul qilish ehtimoli
-
-Joriy energiya $E$, qo‘shni energiya $E_{next}$ bo‘lsin. Yaxshiroq holat, ya’ni $E_{next}<E$, doim qabul qilinadi. Yomonroq holat esa
-
-$$p=\exp\left(-\frac{E_{next}-E}{T}\right)$$
-
-ehtimol bilan qabul qilinadi. Bu ehtimol [Gibbs taqsimoti](https://en.wikipedia.org/wiki/Gibbs_measure) bilan bog‘liq. $\mathcal U_{[0,1]}$ bir jinsli tasodifiy son bo‘lsa, o‘tish $\mathcal U_{[0,1]}\le p$ bo‘lganda amalga oshadi. Temperatura katta bo‘lsa $p$ birga yaqin; temperatura tushganda ayni energiya yo‘qotishining qabul qilinish ehtimoli kichrayadi.
-
-```cpp
-bool accept(double energy, double next_energy, double temperature,
-            mt19937& rng) {
-    if (next_energy < energy)
-        return true;
-
-    double probability = exp(-(next_energy - energy) / temperature);
-    bernoulli_distribution take(probability);
-    return take(rng);
-}
-```
-
-Generator havola bo‘yicha uzatiladi; aks holda har chaqiruv generator nusxasining bir xil boshlang‘ich holatidan foydalanishi mumkin.
+Bu holatlar fazosidagi oldingi holatga yaqin bo‘lgan holat. Odatda qo‘shni holatni dastlabki holatdan oddiy almashtirish yordamida olish mumkin. Kommivoyajer masalasida qo‘shni holat tasodifiy ravishda 2 ta tugun tanlab, ularning joriy holatdagi o‘rinlarini almashtirish orqali olinadi.
 
 ## Algoritm
 
-1. Boshlang‘ich $s$ holat, $T_0$ temperatura va $u$ sovish koeffitsiyentini tanlang.
-2. Joriy holatdan tasodifiy $s_{next}$ qo‘shni holat yarating.
-3. U yaxshiroq bo‘lsa yoki ehtimollik funksiyasi ruxsat bersa, joriy holatni yangilang.
-4. Barcha iteratsiyalar bo‘yicha eng yaxshi $s_{best}$ ni alohida saqlang.
-5. Temperaturani kamaytiring va vaqt yoki temperatura chegarasigacha takrorlang.
+Biz tasodifiy $s$ holatdan boshlaymiz. Har qadamda joriy $s$ holatning $s_{next}$ qo‘shni holatini tanlaymiz. Agar $E(s_{next}) < E(s)$ bo‘lsa, $s = s_{next}$ deb yangilaymiz. Aks holda $s_{next}$ ga o‘tish yoki $s$ da qolishni hal qiluvchi $P(E(s),E(s_{next}),T)$ qabul qilish ehtimoli funksiyasidan foydalanamiz. Bu yerda $T$ — temperatura; u boshida yuqori qiymatga o‘rnatiladi va har qadamda asta-sekin kamayadi. Temperatura qancha yuqori bo‘lsa, $s_{next}$ ga o‘tish ehtimoli shuncha katta.
+Shu bilan birga barcha iteratsiyalar bo‘yicha eng yaxshi $s_{best}$ holatni ham kuzatib boramiz. Jarayon yaqinlashguncha yoki vaqt tugaguncha davom etadi.
 
-Eng yaxshi holatni joriy holatdan alohida saqlash zarur: algoritm yaxshi yechimdan yomonrog‘iga ataylab o‘tishi mumkin.
+![](https://upload.wikimedia.org/wikipedia/commons/d/d5/Hill_Climbing_with_Simulated_Annealing.gif)
 
-## C++ shablon
+*Bir nechta lokal maksimumga ega funksiyaning maksimumini izlayotgan simulyatsiyalangan toblashning vizual ko‘rinishi.*
+
+
+### Temperatura ($T$) va sovish ($u$)
+
+Tizim temperaturasi algoritmning yuqoriroq energiyali holatni qabul qilishga tayyorligini miqdoriy ifodalaydi. Sovish (decay) — algoritmning «sovish tezligi»ni ifodalovchi o‘zgarmas. Sekin sovish (kattaroq $u$) yaxshiroq natija berishi ma’lum.
+
+## Qabul qilish ehtimoli funksiyasi (PAF)
+
+$P(E,E_{next},T) =
+    \begin{cases}
+       \text{True} &\quad\text{if }  \mathcal{U}_{[0,1]} \le \exp(-\frac{E_{next}-E}{T}) \\
+       \text{False} &\quad\text{otherwise}\\
+     \end{cases}$
+
+Bu yerda $\mathcal{U}_{[0,1]}$ — $[0,1]$ oraliqdagi uzluksiz tekis taqsimlangan tasodifiy qiymat. Bu funksiya joriy holatni, keyingi holatni va temperaturani qabul qilib, qidiruvga $s_{next}$ ga o‘tish yoki $s$ da qolishni bildiruvchi mantiqiy qiymat qaytaradi. E’tibor bering, $E_{next} < E$ bo‘lganda bu funksiya doim True qaytaradi, aks holda u baribir $\exp(-\frac{E_{next}-E}{T})$ ehtimol bilan o‘tishni amalga oshirishi mumkin, bu [Gibbs o‘lchoviga](https://en.wikipedia.org/wiki/Gibbs_measure) mos keladi.
 
 ```cpp
-class State {
-public:
-    State() {
-        // Boshlang‘ich holatni yarating.
+bool P(double E,double E_next,double T,mt19937 rng){
+    double prob =  exp(-(E_next-E)/T);
+    if(prob > 1) return true;
+    else{
+        bernoulli_distribution d(prob); 
+        return d(rng);
     }
-
-    State next(mt19937& rng) const {
-        State candidate = *this;
-        // candidate ichida tasodifiy lokal o‘zgarish bajaring.
-        return candidate;
-    }
-
-    double energy() const {
-        // Maqsad funksiyasini hisoblang.
-    }
-};
-
-pair<double, State> simulated_annealing() {
-    mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-
-    State current;
-    State best = current;
-    double temperature = 10000.0;
-    const double decay = 0.995;
-    double energy = current.energy();
-    double best_energy = energy;
-
-    while (temperature > 1.0) {
-        State candidate = current.next(rng);
-        double next_energy = candidate.energy();
-
-        if (accept(energy, next_energy, temperature, rng)) {
-            current = std::move(candidate);
-            energy = next_energy;
-
-            if (energy < best_energy) {
-                best = current;
-                best_energy = energy;
-            }
-        }
-
-        temperature *= decay;
-    }
-
-    return {best_energy, best};
 }
 ```
-
-Maksimum izlash uchun `energy()` asl funksiyaning manfiy qiymatini qaytarishi va yakuniy energiya ishorasi yana teskarilanishi mumkin.
-
-## Parametrlarni tanlash
-
-- **Boshlang‘ich $T$.** Dastlabki yomonroq qadamlarning sezilarli qismi qabul qilinadigan darajada katta bo‘lishi kerak. Energiya farqlari masshtabiga moslashtiriladi.
-- **Sovish $u$.** Keng va ko‘p minimumli fazoda `0.998`–`0.999` kabi sekin sovish, torroq fazoda `0.99` atrofidagi qiymat yetarli bo‘lishi mumkin. Bu qat’iy qoida emas; tajriba bilan sozlanadi.
-- **To‘xtash.** Faqat temperaturaga emas, qat’iy vaqt limitiga ham tayanish sport dasturlashda qulay. Shu orqali yechim mavjud vaqtning deyarli barchasidan foydalanadi.
-- **Qayta ishga tushirish.** Bir uzun yugurish o‘rniga turli seed va boshlang‘ich holatlarda bir nechta qisqaroq yugurish ba’zan yaxshiroq natija beradi.
-
-$T_0$ dan $1$ gacha $T\leftarrow Tu$ bilan sovitilsa, iteratsiyalar soni taxminan
-
-$$N=\left\lceil-\log_u T_0\right\rceil.$$
-
-Agar bitta iteratsiya narxi va ruxsat etilgan $N$ ma’lum bo‘lsa, boshlang‘ich temperaturani
-
-$$T_0=u^{-N}$$
-
-orqali baholash mumkin. Amalda vaqt bo‘yicha to‘xtash va energiya farqlari taqsimotidan $T_0$ tanlash ishonchliroq.
-
-## TSP uchun soddalashtirilgan holat
+## Kod shabloni
 
 ```cpp
-class State {
-public:
+class state {
+    public:
+    state() {
+        // Generate the initial state
+    }
+    state next() {
+        state s_next;
+        // Modify s_next to a random neighboring state
+        return s_next;
+    }
+    double E() {
+        // Implement the energy function here
+    };
+};
+
+pair<double, state> simAnneal() {
+    state s = state();
+    state best = s;
+    double T = 10000; // Initial temperature
+    double u = 0.995; // decay rate
+    double E = s.E();
+    double E_next;
+    double E_best = E;
+    mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+    while (T > 1) {
+        state next = s.next();
+        E_next = next.E();
+        if (P(E, E_next, T, rng)) {
+            s = next;
+            if (E_next < E_best) {
+                best = s;
+                E_best = E_next;
+            }
+            E = E_next;
+        }
+        T *= u;
+    }
+    return {E_best, best};
+}
+
+```
+## Qanday foydalanish:
+State sinfining funksiyalarini kerakli tarzda to‘ldiring. Agar minimum emas, global maksimumni topmoqchi bo‘lsangiz, $E()$ funksiya maksimallashtirilayotgan funksiyaning manfiy qiymatini qaytarishiga ishonch hosil qiling va oxirida $-E_{best}$ ni chop eting. Quyidagi parametrlarni ehtiyojingizga qarab o‘rnating.
+
+### Parametrlar
+- $T$ : Boshlang‘ich temperatura. Qidiruv uzoqroq ishlashini istasangiz, uni kattaroq qiymatga o‘rnating.
+- $u$ : Sovish. Sovish tezligini belgilaydi. Sekinroq sovish ($u$ ning kattaroq qiymati) odatda yaxshiroq natija beradi, lekin uzoqroq ishlash evaziga. $u < 1$ ekaniga ishonch hosil qiling.
+
+Sikl bajaradigan iteratsiyalar soni quyidagi ifoda bilan beriladi
+
+$N =   \lceil -\log_{u}{T} \rceil$
+
+$T$ va $u$ ni tanlash bo‘yicha maslahatlar: agar lokal minimumlar ko‘p va holatlar fazosi keng bo‘lsa, algoritm ko‘proq imkoniyatlarni o‘rganishi uchun sekin sovish tezligi uchun $u = 0.999$ qilib o‘rnating. Aksincha, holatlar fazosi tor bo‘lsa, $u = 0.99$ yetarli bo‘lishi kerak. Ishonchingiz komil bo‘lmasa, $u = 0.998$ yoki undan yuqori qiymat o‘rnatib, xavfsiz yo‘ldan boring. Algoritmning bitta iteratsiyasi vaqt murakkabligini hisoblang va undan TLE bo‘lmasligini ta’minlaydigan $N$ qiymatini taxminan aniqlash uchun foydalaning, so‘ng $T$ ni olish uchun quyidagi formuladan foydalaning.
+
+$T = u^{-N}$
+
+### TSP uchun namunaviy implementatsiya
+```cpp
+
+class state {
+    public:
     vector<pair<int, int>> points;
-
-    State() : points{{0, 0}, {2, 2}, {0, 2}, {2, 0},
-                     {0, 1}, {1, 2}, {2, 1}, {1, 0}} {}
-
-    State next(mt19937& rng) const {
-        State candidate = *this;
-        uniform_int_distribution<int> choose(0, (int)points.size() - 1);
-        int a = choose(rng);
-        int b = choose(rng);
-        swap(candidate.points[a], candidate.points[b]);
-        return candidate;
+	std::mt19937 mt{ static_cast<std::mt19937::result_type>(
+		std::chrono::steady_clock::now().time_since_epoch().count()
+		) };
+    state() {
+        points = {{0,0},{2,2},{0,2},{2,0},{0,1},{1,2},{2,1},{1,0}};
+    }
+    state next() {
+        state s_next;
+        s_next.points = points;
+        uniform_int_distribution<> choose(0, points.size()-1);
+        int a = choose(mt);
+        int b = choose(mt);
+        s_next.points[a].swap(s_next.points[b]);
+        return s_next;
     }
 
-    static double distance(pair<int, int> a, pair<int, int> b) {
+    double euclidean(pair<int, int> a, pair<int, int> b) {
         return hypot(a.first - b.first, a.second - b.second);
     }
-
-    double energy() const {
-        double result = 0;
-        int n = (int)points.size();
-        for (int i = 0; i < n; ++i)
-            result += distance(points[i], points[(i + 1) % n]);
-        return result;
-    }
+    
+    double E() {
+        double dist = 0;
+        int n = points.size();
+        for (int i = 0;i < n; i++)
+            dist += euclidean(points[i], points[(i+1)%n]);
+        return dist;
+    };
 };
-```
 
-Bu sodda qo‘shnichilik faqat ikkita nuqtani almashtiradi. Katta TSP holatlarida `2-opt` o‘zgarishi va yo‘l uzunligini $O(1)$ da yangilash ancha samarali.
-
-## Foydali modifikatsiyalar
-
-- Vaqt limitidan oshmaslik uchun `while` ichiga vaqt bo‘yicha to‘xtash sharti qo‘shing.
-- Eksponensial sovishni chiziqli, logarifmik yoki qayta qizdirishli jadval bilan almashtirish mumkin.
-- Energiya farqining ta’sirini o‘zgartirish uchun eksponent asosini yoki masshtabini almashtiring. Masalan:
-
-```cpp
-bool accept_with_base(double energy, double next_energy, double temperature,
-                      mt19937& rng) {
-    const double base = 2.0; // istalgan 1 dan katta haqiqiy son
-    double probability = pow(base, -(next_energy - energy) / temperature);
-    if (probability >= 1.0)
-        return true;
-    return bernoulli_distribution(probability)(rng);
+int main() {
+    pair<double, state> res;
+    res = simAnneal();
+    double E_best = res.first;
+    state best = res.second;
+    cout << "Length of shortest path found : " << E_best << "\n";
+    cout << "Order of points in shortest path : \n";
+    for(auto x: best.points) {
+        cout << x.first << " " << x.second << "\n";
+    }
 }
 ```
 
-  Energiya farqini butunlay olib tashlash katta va kichik yomonlashuvlarni bir xil ehtimolda qabul qiladi va odatda kamroq ma’lumotdan foydalanadi.
-- Energiya hisobini inkremental qiling va holat nusxalashini kamaytiring.
-- Yakuniy yechimni deterministik lokal qidiruv bilan yaxshilang.
+## Algoritmga qo‘shimcha o‘zgartirishlar:
 
-SA tasodifiy evristika bo‘lgani uchun uni bir nechta seed bilan sinash, javoblar taqsimotini o‘lchash va eng yomon vaqtni emas, qat’iy vaqt limitini boshqarish muhim.
+- TLE bo‘lmasligi uchun while siklga vaqtga asoslangan chiqish shartini qo‘shing
+- Yuqorida amalga oshirilgan sovish eksponensial sovishdir. Uni ehtiyojingizga mos sovish funksiyasi bilan almashtirishingiz mumkin.
+- Yuqorida berilgan qabul qilish ehtimoli funksiyasi eksponent suratidagi $E_{next} - E$ ko‘paytuvchisi tufayli energiyasi pastroq holatlarni qabul qilishni afzal ko‘radi. Qabul qilish ehtimoli funksiyasini energiyalar farqiga bog‘liq bo‘lmagan qilish uchun bu ko‘paytuvchini shunchaki olib tashlashingiz mumkin.
+- $E_{next} - E$ energiyalar farqining qabul qilish ehtimoli funksiyasiga ta’sirini quyida ko‘rsatilgandek eksponent asosini oshirish/kamaytirish orqali kuchaytirish/susaytirish mumkin:
+```cpp
+bool P(double E, double E_next, double T, mt19937 rng) {
+    double e = 2; // set e to any real number greater than 1
+    double prob =  pow(e,-(E_next-E)/T);
+    if (prob > 1)
+        return true;
+    else {
+        bernoulli_distribution d(prob); 
+        return d(rng);
+    }
+}
+```
 
-## Murakkablik
+## Masalalar
 
-$N$ iteratsiya va bitta qo‘shni holatni yaratib baholash narxi $C$ bo‘lsa, vaqt $O(NC)$. Xotira holat hajmiga bog‘liq. Global optimum kafolati va universal parametrlar yo‘q; algoritm sifati holat modeli, qo‘shnichilik, temperatura jadvali va ajratilgan vaqtga bog‘liq.
-
-## Mashq masalalari
-
-- [USACO 2017 January — Subsequence Reversal](https://usaco.org/index.php?page=viewproblem2&cpid=698)
-- [Codeforces 1556H — DIY Tree](https://codeforces.com/contest/1556/problem/H)
-- [AtCoder — Contest Scheduling](https://atcoder.jp/contests/intro-heuristics/tasks/intro_heuristics_a)
+- [USACO Jan 2017 - Subsequence Reversal](https://usaco.org/index.php?page=viewproblem2&cpid=698)
+- [Deltix Summer 2021 - DIY Tree](https://codeforces.com/contest/1556/problem/H)
+- [AtCoder Contest Scheduling](https://atcoder.jp/contests/intro-heuristics/tasks/intro_heuristics_a)

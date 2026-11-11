@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Code blocks, the initialisation d[i] = 0, the N iterations and the Floyd-Warshall condition match the original; nothing was missing.",
+      "content_sha256": "c7d4254a627687be0304d4af07f503fc30e9fa9fd7a165f34e299ead080714d7"
+    },
+    {
+      "at": "2026-11-11T14:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'og‘irlik' with the glossary term 'vazn' (vaznli graf, manfiy vaznli sikl) throughout.",
+      "content_sha256": "c7d4254a627687be0304d4af07f503fc30e9fa9fd7a165f34e299ead080714d7"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T22:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked every paragraph, example, code block and formula against the original; the content was complete and correct, so only the leading phrase of the 'clear the rightmost set bit' explanation was clarified.",
+      "content_sha256": "781d8e2bfc1b33941af8962bf498391f24e7d997d08a1a1eee21b36df49ab191"
+    },
+    {
+      "at": "2026-11-11T22:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed a duplicated word ('bir bir pozitsiyali'), the wording of the AND explanation, and added missing blank lines before headings, display formulas and code fences so the Markdown renders correctly.",
+      "content_sha256": "781d8e2bfc1b33941af8962bf498391f24e7d997d08a1a1eee21b36df49ab191"
+    }
+  ]
+}

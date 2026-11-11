@@ -5,14 +5,14 @@
 - $A[1..N, 1..N]$ kvadrat matritsa berilgan. Undan shunday $N$ ta element tanlash kerakki, har bir satr va har bir ustundan aynan bittadan element tanlansin hamda shu elementlar qiymatlari yig‘indisi eng kichik bo‘lsin.
 - $N$ ta buyurtma va $N$ ta mashina bor. Har bir buyurtmani har bir mashinada ishlab chiqarish narxi ma’lum. Har bir mashinada faqat bitta buyurtma bajarilishi mumkin. Barcha buyurtmalarni mashinalarga umumiy narx minimal bo‘ladigan qilib tayinlash talab etiladi.
 
-Bu yerda masalani [minimal narxli oqim](/algorithms/graph/min-cost-flow) topish algoritmiga asoslanib yechamiz; tayinlash masalasi $\mathcal{O}(N^3)$ vaqtda yechiladi.
+Bu yerda masalani [minimal narxli oqim (min-cost-flow)](/algorithms/graph/min-cost-flow) topish algoritmiga asoslanib yechamiz; tayinlash masalasi $\mathcal{O}(N^3)$ vaqtda yechiladi.
 
 ## Tavsif
 
-Ikki bo‘lakli tarmoq quramiz: $S$ manba, $T$ qabul qiluvchi bor; birinchi qismda $N$ ta tugun (matritsa satrlari yoki buyurtmalarga mos), ikkinchi qismda ham $N$ ta tugun (matritsa ustunlari yoki mashinalarga mos) mavjud. Birinchi to‘plamdagi har bir $i$ tugun bilan ikkinchi to‘plamdagi har bir $j$ tugun orasida sig‘imi $1$ va narxi $A_{ij}$ bo‘lgan qirra chizamiz. $S$ manbadan birinchi to‘plamdagi barcha $i$ tugunlarga sig‘imi $1$ va narxi $0$ bo‘lgan qirralar chizamiz.
-Ikkinchi to‘plamdagi har bir $j$ tugundan $T$ qabul qiluvchiga sig‘imi $1$ va narxi $0$ bo‘lgan qirra chizamiz.
-Hosil bo‘lgan tarmoqda minimal narxli maksimal oqimni topamiz. Ravshanki, oqim qiymati $N$ ga teng bo‘ladi. Shundan so‘ng birinchi qismdagi har bir $i$ tugun uchun ikkinchi qismda $F_{ij}=1$ bo‘lgan aynan bitta $j$ tugun mavjud.
-Nihoyat, bu birinchi qism tugunlari bilan ikkinchi qism tugunlari orasidagi o‘zaro bir qiymatli moslik bo‘lib, masalaning yechimidir (topilgan oqim minimal narxga ega bo‘lgani uchun tanlangan qirralar narxlari yig‘indisi mumkin bo‘lgan eng kichik qiymatga ega; bu optimallik mezonidir).
+Ikki bo‘lakli tarmoq quramiz: $S$ manba, $T$ qabul qiluvchi bor; birinchi qismda $N$ ta tugun (matritsa satrlari yoki buyurtmalarga mos), ikkinchi qismda ham $N$ ta tugun (matritsa ustunlari yoki mashinalarga mos) mavjud. Birinchi to‘plamdagi har bir $i$ tugun bilan ikkinchi to‘plamdagi har bir $j$ tugun orasida sig‘imi 1 va narxi $A_{ij}$ bo‘lgan qirra chizamiz. $S$ manbadan birinchi to‘plamdagi barcha $i$ tugunlarga sig‘imi 1 va narxi 0 bo‘lgan qirralar chizamiz. Ikkinchi to‘plamdagi har bir $j$ tugundan $T$ qabul qiluvchiga sig‘imi 1 va narxi 0 bo‘lgan qirra chizamiz.
+
+Hosil bo‘lgan tarmoqda minimal narxli maksimal oqimni topamiz. Ravshanki, oqim qiymati $N$ ga teng bo‘ladi. Shundan so‘ng birinchi qismdagi har bir $i$ tugun uchun ikkinchi qismda $F_{ij}$ = 1 bo‘lgan aynan bitta $j$ tugun mavjud. Nihoyat, bu birinchi qism tugunlari bilan ikkinchi qism tugunlari orasidagi o‘zaro bir qiymatli moslik bo‘lib, masalaning yechimidir (topilgan oqim minimal narxga ega bo‘lgani uchun tanlangan qirralar narxlari yig‘indisi mumkin bo‘lgan eng kichik qiymatga ega; bu optimallik mezonidir).
+
 Tayinlash masalasi uchun ushbu yechimning murakkabligi minimal narxli maksimal oqim qaysi algoritm bilan topilishiga bog‘liq. [Dijkstra](/algorithms/graph/dijkstra) ishlatilsa murakkablik $\mathcal{O}(N^3)$, [Bellman–Ford](/algorithms/graph/bellman-ford) ishlatilsa $\mathcal{O}(N^4)$ bo‘ladi. Sababi, oqim hajmi $O(N)$, Dijkstra algoritmining har bir iteratsiyasini $O(N^2)$, Bellman–Ford iteratsiyasini esa $O(N^3)$ vaqtda bajarish mumkin.
 
 ## Implementatsiya

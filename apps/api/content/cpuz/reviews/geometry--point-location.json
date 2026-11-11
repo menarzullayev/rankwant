@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T22:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation had replaced the original implementation with three invented C++ fragments, dropped both figures, the Notes wording and the exact comparator pseudocode; re-translated the whole article from the original and restored the original code verbatim.",
+      "content_sha256": "a05e8bdee94a290eb826e1909f29d07f1ce22fbe3fda40efa093182186e5900b"
+    },
+    {
+      "at": "2026-11-11T22:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the article in consistent Uzbek with glossary terms (supuruvchi chiziq, yuz, qirra).",
+      "content_sha256": "a05e8bdee94a290eb826e1909f29d07f1ce22fbe3fda40efa093182186e5900b"
+    },
+    {
+      "at": "2026-11-11T22:06:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "a05e8bdee94a290eb826e1909f29d07f1ce22fbe3fda40efa093182186e5900b"
+    }
+  ]
+}

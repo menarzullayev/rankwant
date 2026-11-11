@@ -1,16 +1,16 @@
 # Floyd–Warshall algoritmi
 
-Bizga $n$ ta tugunga ega yo‘naltirilgan yoki yo‘naltirilmagan og‘irlikli $G$ grafi berilgan.
+Bizga $n$ ta tugunga ega yo‘naltirilgan yoki yo‘naltirilmagan vaznli $G$ grafi berilgan.
 
 Vazifa — har bir $i$ va $j$ tugunlar jufti orasidagi eng qisqa yo‘l uzunligi $d_{ij}$ ni topish.
 
-Grafda manfiy og‘irlikli qirralar bo‘lishi mumkin, ammo manfiy og‘irlikli sikllar bo‘lmasligi kerak.
+Grafda manfiy vaznli qirralar bo‘lishi mumkin, ammo manfiy vaznli sikllar bo‘lmasligi kerak.
 
 Agar shunday manfiy sikl mavjud bo‘lsa, uni qayta-qayta aylanib o‘tish va har bir iteratsiyada yo‘l narxini kamaytirish mumkin.
 
 Shu sababli ayrim yo‘llarning qiymatini istalgancha kichik qilish mumkin, boshqacha aytganda, ular uchun eng qisqa yo‘l aniqlanmagan bo‘ladi.
 
-Bu avtomatik ravishda yo‘naltirilmagan grafda manfiy og‘irlikli qirra bo‘la olmasligini anglatadi, chunki bunday qirra bo‘ylab oldinga va orqaga istalgancha yurishning o‘zi manfiy sikl hosil qiladi.
+Bu avtomatik ravishda yo‘naltirilmagan grafda manfiy vaznli qirra bo‘la olmasligini anglatadi, chunki bunday qirra bo‘ylab oldinga va orqaga istalgancha yurishning o‘zi manfiy sikl hosil qiladi.
 
 Ushbu algoritmdan manfiy sikllar mavjudligini aniqlash uchun ham foydalanish mumkin.
 
@@ -32,7 +32,7 @@ $k$-fazadan oldin ($k = 1 \dots n$), istalgan $i$ va $j$ tugunlar uchun $d[i][j]
 
 Boshqacha aytganda, $k$-fazadan oldin $d[i][j]$ qiymati $i$ tugundan $j$ tugungacha eng qisqa yo‘l uzunligiga teng bo‘ladi, bunda yo‘lga faqat raqami $k$ dan kichik tugunlar ichki tugun sifatida kirishi mumkin (yo‘lning boshi va oxiri bu cheklovga bo‘ysunmaydi).
 
-Bu xossa birinchi faza uchun bajarilishini tekshirish oson. $k = 0$ uchun, agar $i$ va $j$ orasida og‘irligi $w_{i j}$ bo‘lgan qirra mavjud bo‘lsa, $d[i][j] = w_{i j}$; qirra mavjud bo‘lmasa, $d[i][j] = \infty$ qilib matritsani to‘ldirish mumkin.
+Bu xossa birinchi faza uchun bajarilishini tekshirish oson. $k = 0$ uchun, agar $i$ va $j$ orasida vazni $w_{i j}$ bo‘lgan qirra mavjud bo‘lsa, $d[i][j] = w_{i j}$; qirra mavjud bo‘lmasa, $d[i][j] = \infty$ qilib matritsani to‘ldirish mumkin.
 
 Amalda $\infty$ o‘rniga yetarlicha katta bir son olinadi.
 
@@ -84,11 +84,11 @@ Agar istalgan $i$ va $j$ tugunlar orasida qirra bo‘lmasa, $d[i][j]$ matritsa e
 
 U holda bu mavjud bo‘lmagan qirradan foydalanish hech qachon foydali bo‘lmaydi va algoritm to‘g‘ri ishlaydi.
 
-Biroq grafda manfiy og‘irlikli qirralar mavjud bo‘lsa, maxsus choralar ko‘rish kerak.
+Biroq grafda manfiy vaznli qirralar mavjud bo‘lsa, maxsus choralar ko‘rish kerak.
 
 Aks holda matritsadagi natijaviy qiymatlar $\infty - 1$, $\infty - 2$ va hokazo ko‘rinishda bo‘lishi mumkin; albatta, bu ham tegishli tugunlar orasida yo‘l mavjud emasligini bildiradi.
 
-Shuning uchun grafda manfiy og‘irlikli qirralar bo‘lsa, mavjud bo‘lmagan yo‘llar orqali o‘tishlar bajarilmasligi uchun Floyd–Warshall algoritmini quyidagicha yozish yaxshiroq:
+Shuning uchun grafda manfiy vaznli qirralar bo‘lsa, mavjud bo‘lmagan yo‘llar orqali o‘tishlar bajarilmasligi uchun Floyd–Warshall algoritmini quyidagicha yozish yaxshiroq:
 
 ```cpp
 for (int k = 0; k < n; ++k) {
@@ -113,9 +113,9 @@ Endi faqat $i$ bilan $p[i][j]$ orasidagi hamda $p[i][j]$ bilan $j$ orasidagi eng
 
 Bu eng qisqa yo‘lni tiklaydigan sodda rekursiv algoritmga olib keladi.
 
-## Haqiqiy sonli og‘irliklar holati
+## Haqiqiy sonli vaznlar holati
 
-Qirra og‘irliklari butun emas, balki haqiqiy sonlar bo‘lsa, suzuvchi nuqtali turlar bilan ishlashda yuz beradigan xatolarni hisobga olish kerak.
+Qirra vaznlari butun emas, balki haqiqiy sonlar bo‘lsa, suzuvchi nuqtali turlar bilan ishlashda yuz beradigan xatolarni hisobga olish kerak.
 
 Floyd–Warshall algoritmida xatolar juda tez yig‘ilib boradigan noxush xususiyat mavjud.
 
@@ -130,7 +130,7 @@ if (d[i][k] + d[k][j] < d[i][j] - EPS)
 
 ## Manfiy sikllar holati
 
-Formal jihatdan Floyd–Warshall algoritmi manfiy og‘irlikli sikl yoki sikllarni o‘z ichiga olgan graflarga qo‘llanmaydi.
+Formal jihatdan Floyd–Warshall algoritmi manfiy vaznli sikl yoki sikllarni o‘z ichiga olgan graflarga qo‘llanmaydi.
 
 Ammo $i$ dan boshlanib, manfiy siklga kirib, $j$ da tugaydigan yo‘l mavjud bo‘lmagan barcha $(i, j)$ tugunlar juftlari uchun algoritm baribir to‘g‘ri ishlaydi.
 
@@ -142,11 +142,11 @@ Buni quyidagicha amalga oshirish mumkin:
 
 Berilgan graf uchun oddiy Floyd–Warshall algoritmini ishga tushiramiz.
 
-Shundan keyin $i$ va $j$ tugunlar orasida eng qisqa yo‘l mavjud emasligi uchun va faqat shuning uchun $i$ dan yetib boriladigan va undan $j$ ga yetib borish mumkin bo‘lgan hamda $d[t][t] < 0$ shartini qanoatlantiradigan biror $t$ tugun mavjud bo‘lishi kerak.
+Shundan keyin $i$ va $j$ tugunlar orasida eng qisqa yo‘l mavjud bo‘lmasligi uchun, va faqat shu holda, $i$ dan $t$ ga yetib borish mumkin, $t$ dan $j$ ga yetib borish mumkin va $d[t][t] < 0$ bo‘ladigan biror $t$ tugun mavjud bo‘lishi zarur va yetarli.
 
 Bundan tashqari, Floyd–Warshall algoritmini manfiy siklli graflarda qo‘llaganda masofalar eksponensial tezlikda manfiy tomonga ketib qoladigan vaziyatlar yuz berishi mumkinligini unutmaslik kerak.
 
-Shuning uchun eng kichik masofani biror qiymat (masalan, $-\text{INF}$) bilan chegaralab, butun son toshib ketishini oldini olish kerak.
+Shuning uchun eng kichik masofani biror qiymat (masalan, $-\text{INF}$) bilan chegaralab, butun son toshib ketishining oldini olish kerak.
 
 Grafda manfiy sikllarni topish haqida batafsil ma’lumot uchun alohida [Grafda manfiy siklni topish](/algorithms/graph/finding-negative-cycle-in-graph) maqolasiga qarang.
 

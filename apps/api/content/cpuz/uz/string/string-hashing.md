@@ -126,7 +126,7 @@ Natijada ikkala xesh ham $p$ ning bir xil darajasiga — $i$ va $j$ ning maksimu
 Xeshlashning odatiy qo‘llanishlari:
 
 * satr ichida andoza qidirish uchun $O(n)$ vaqtli [Rabin–Karp algoritmi](/algorithms/string/rabin-karp);
-* satrdagi turli qism satrlar sonini $O(n^2)$ vaqtda hisoblash (quyiga qarang);
+* satrdagi turli qism satrlar sonini $O(n^2)$ vaqtda hisoblash (pastga qarang);
 * palindrom qism satrlar sonini hisoblash.
 
 ### Satrdagi turli qism satrlar sonini aniqlash

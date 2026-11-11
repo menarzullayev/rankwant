@@ -8,10 +8,10 @@ $$\begin{align}
 a_{11} x_1 + a_{12} x_2 + &\dots + a_{1m} x_m = b_1 \\
 a_{21} x_1 + a_{22} x_2 + &\dots + a_{2m} x_m = b_2\\
 &\vdots \\
-a_{n1} x_1 + a_{n2} x_2 + &\dots + a_{nm} x_m = b_n.
+a_{n1} x_1 + a_{n2} x_2 + &\dots + a_{nm} x_m = b_n
 \end{align}$$
 
-Bu yerda $a_{ij}$ ($1 \le i \le n$, $1 \le j \le m$) va $b_i$ ($1 \le i \le n$) ma’lum koeffitsiyentlar, $x_i$ lar esa noma’lumlardir.
+Bu yerda $a_{ij}$ ($i$ — $1$ dan $n$ gacha, $j$ — $1$ dan $m$ gacha) va $b_i$ ($i$ — $1$ dan $n$ gacha) ma’lum koeffitsiyentlar, $x_i$ lar ($i$ — $1$ dan $m$ gacha) esa noma’lumlardir.
 
 Matritsa ko‘rinishida sistema yanada ixcham yoziladi:
 
@@ -25,7 +25,7 @@ $$\begin{align}
 a_{11} x_1 + a_{12} x_2 + &\dots + a_{1m} x_m \equiv b_1 \pmod p \\
 a_{21} x_1 + a_{22} x_2 + &\dots + a_{2m} x_m \equiv b_2 \pmod p \\
 &\vdots \\
-a_{n1} x_1 + a_{n2} x_2 + &\dots + a_{nm} x_m \equiv b_n \pmod p.
+a_{n1} x_1 + a_{n2} x_2 + &\dots + a_{nm} x_m \equiv b_n \pmod p
 \end{align}$$
 
 ## Gauss–Jordan eliminatsiyasi
@@ -41,7 +41,7 @@ Gauss eliminatsiyasi yechimlar to‘plamini o‘zgartirmaydigan ikki elementar a
 - ikki tenglamaning o‘rnini almashtirish mumkin;
 - istalgan tenglamani o‘zining noldan farqli koeffitsiyentdagi nusxasi va boshqa satrlarning ixtiyoriy koeffitsiyentli chiziqli kombinatsiyasi bilan almashtirish mumkin.
 
-Birinchi qadamda birinchi satr $a_{11}$ ga bo‘linadi. So‘ng birinchi ustundagi qolgan koeffitsiyentlarni nol qilish uchun har bir $i$-satrga birinchi satrning $-a_{i1}$ ga ko‘paytirilgan nusxasi qo‘shiladi. Xuddi shu amallar $b$ vektoriga ham bajariladi; amalda $b$ ni $A$ matritsaning $(m+1)$-ustuni deb qarash qulay.
+Birinchi qadamda birinchi satr $a_{11}$ ga bo‘linadi. So‘ng birinchi ustundagi qolgan koeffitsiyentlarni nol qilish uchun har bir $i$-satrga birinchi satrning $-a_{i1}$ ga ko‘paytirilgan nusxasi qo‘shiladi. Xuddi shu amallar $b$ vektoriga ham bajariladi; amalda $b$ ni $A$ matritsaning $m+1$-ustuni deb qarash qulay.
 
 Natijada birinchi ustunning birinchi elementi $1$, qolgan elementlari $0$ bo‘ladi. Keyin ikkinchi satr va ikkinchi ustun uchun ayni jarayon takrorlanadi: satr $a_{22}$ ga bo‘linadi va u boshqa satrlardan kerakli koeffitsiyentlarda ayrilib, ikkinchi ustun tozalanadi. Barcha ustunlarga ishlov berilgach, kvadrat va buzilmagan sistemada $A$ birlik matritsaga aylanadi.
 
@@ -51,7 +51,7 @@ Yuqoridagi sodda tavsifda muhim holat chetda qoldi: $i$-qadamda $a_{ii}=0$ bo‘
 
 Bu yerda ustunlar emas, faqat satrlar almashtiriladi. Ustunlar almashtirilsa, ular noma’lumlarning tartibini ham o‘zgartiradi va javobni qaytarishda bu almashtirishlarni teskari bajarish kerak bo‘ladi.
 
-Hatto $a_{ii}\ne0$ bo‘lganda ham, suzuvchi nuqtali hisoblarda odatda joriy ustundagi moduli eng katta $a_{ji}$ elementi tayanch qilib olinadi. **Qisman tayanchlash** deb ataladigan bu evristika keyingi hisoblarda sonlar diapazoni va yaxlitlash xatosini kamaytiradi. Tayanchlashsiz hatto taxminan $20\times20$ matritsada ham xato sezilarli kattalashishi yoki suzuvchi nuqtali tur diapazonidan chiqib ketishi mumkin.
+Hatto $a_{ii}\ne0$ bo‘lganda ham, suzuvchi nuqtali hisoblarda odatda joriy ustundagi moduli eng katta $a_{ji}$ elementi tayanch qilib olinadi. **Qisman tayanchlash** deb ataladigan bu evristika keyingi hisoblarda sonlar diapazoni va yaxlitlash xatosini kamaytiradi. Tayanchlashsiz hatto taxminan $20$ o‘lchamli matritsada ham xato sezilarli kattalashishi yoki suzuvchi nuqtali tur diapazonidan chiqib ketishi mumkin.
 
 ## Buzilgan va to‘g‘ri to‘rtburchak sistemalar
 
@@ -127,11 +127,9 @@ Muhim tafsilotlar:
 
 ## Murakkablik
 
-Algoritm ko‘pi bilan $m$ fazadan iborat. Har fazada tayanch satrni qidirish va almashtirish $O(n+m)$, tayanch topilsa uni boshqa satrlardan yo‘qotish esa $O(nm)$ vaqt oladi. Umumiy murakkablik
+Algoritm ko‘pi bilan $m$ fazadan iborat. Har fazada tayanch satrni qidirish va almashtirish $O(n+m)$, tayanch topilsa uni boshqa satrlardan yo‘qotish esa $O(nm)$ vaqt oladi. Umumiy murakkablik $O(\min(n,m)\cdot nm)$.
 
-$$O(\min(n,m)\cdot n\cdot m).$$
-
-$n=m$ bo‘lgan kvadrat sistemada bu $O(n^3)$ ga teng. Ikki moduldagi sistemani bitlar yordamida ancha tez ishlash mumkin.
+$n=m$ bo‘lgan kvadrat sistemada bu $O(n^3)$ ga teng. Sistema haqiqiy sonlar ustida emas, modul 2 bo‘yicha bo‘lsa, uni ancha tezroq yechish mumkin; bu quyida tavsiflanadi.
 
 ## Oldinga va orqaga yurish bilan tezlatish
 
@@ -144,7 +142,7 @@ Orqaga yurish $O(nm)$ vaqt oladi. Asosiy yutuq oldinga yurishda satrlarning faqa
 
 ## Modul bo‘yicha sistema
 
-Gauss–Jordan usuli modul bo‘yicha sistemalarda ham ishlaydi. Modul $2$ ga teng bo‘lsa, satrlarni `bitset` ko‘rinishida saqlab, ayirish va qo‘shishni XOR bilan bajarish ayniqsa samarali:
+Gauss–Jordan usuli modul bo‘yicha sistemalarda ham ishlaydi. Modul 2 ga teng bo‘lsa, satrlarni `bitset` ko‘rinishida saqlab, ayirish va qo‘shishni XOR bilan bajarish ayniqsa samarali:
 
 ```cpp
 int gauss(vector<bitset<N>> a, int n, int m, bitset<N>& ans) {
@@ -168,7 +166,7 @@ int gauss(vector<bitset<N>> a, int n, int m, bitset<N>& ans) {
 }
 ```
 
-Bitlarni bir so‘zga zich joylash tufayli kod qisqaradi va amaliy tezlik mashina so‘zi kengligiga qarab taxminan $32$ yoki $64$ baravar oshishi mumkin.
+Bitlarni bir so‘zga zich joylash tufayli kod qisqaradi va amaliy tezlik taxminan 32 baravar oshadi.
 
 ## Tayanch tanlash evristikalari
 
@@ -178,7 +176,7 @@ Shunga qaramay, ikkala yondashuv ham tenglamalarning qanday masshtablanganiga bo
 
 ## Yechim aniqligini yaxshilash
 
-Tayanchlash evristikalariga qaramay, maxsus tuzilgan $50$–$100$ o‘lchamli matritsalarda Gauss–Jordan sezilarli sonli xato berishi mumkin. Bunday vaziyatda olingan yechimni sodda iteratsion sonli usul bilan aniqlashtirish mumkin.
+Tayanchlash evristikalariga qaramay, maxsus tuzilgan $50 - 100$ o‘lchamli matritsalarda Gauss–Jordan sezilarli sonli xato berishi mumkin. Bunday vaziyatda olingan yechimni sodda iteratsion sonli usul bilan aniqlashtirish mumkin.
 
 Amaliy jarayon ikki bosqichli bo‘ladi: avval Gauss–Jordan boshlang‘ich yechimni topadi, keyin iteratsion usul shu yechimdan boshlab qoldiqni kamaytiradi.
 

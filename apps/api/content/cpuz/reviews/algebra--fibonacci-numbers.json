@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "eqnarray rewritten as aligned because KaTeX has no eqnarray, and 2x2 written as 2\\times 2; the equations and the matrix size are the same as in the original."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "In the linear-time section the original says all values before n are saved, but the translation said they are 'calculated'; restored the meaning.",
+      "content_sha256": "d8aa098cfaa2a5bae076ed2b9292dd0df2ea72762e34940b58ae2b874dc7ffff"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed the leftover mkdocs attribute '{ data-toc-label=... }' from a heading and changed 'teskarisini faraz qilish orqali' to 'ziddiyat yordamida' for 'by contradiction' in the periodicity proof.",
+      "content_sha256": "d8aa098cfaa2a5bae076ed2b9292dd0df2ea72762e34940b58ae2b874dc7ffff"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Only notation differs: eqnarray became aligned (KaTeX has no eqnarray) and 2x2 became 2\\times 2; code and equations are the original's.",
+      "content_sha256": "d8aa098cfaa2a5bae076ed2b9292dd0df2ea72762e34940b58ae2b874dc7ffff"
+    }
+  ]
+}

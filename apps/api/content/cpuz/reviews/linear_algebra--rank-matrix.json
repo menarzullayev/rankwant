@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T21:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Removed sections and remarks the translation had added (correctness argument, pivoting advice, memory notes, a separate display formula for the complexity) and restored the original complexity statement O(n^3). Restored the code exactly as in the original (no added casts).",
+      "content_sha256": "a0e07cde11b264d9d9ae62a3673e61a1f1172ba0495d00ec192186ba531996b4"
+    },
+    {
+      "at": "2026-11-11T21:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated the algorithm description closely following the original and fixed the heading wording.",
+      "content_sha256": "a0e07cde11b264d9d9ae62a3673e61a1f1172ba0495d00ec192186ba531996b4"
+    },
+    {
+      "at": "2026-11-11T21:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code block now equals the original; no invented display formula remains.",
+      "content_sha256": "a0e07cde11b264d9d9ae62a3673e61a1f1172ba0495d00ec192186ba531996b4"
+    }
+  ]
+}

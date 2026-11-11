@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The only new inline formula is $1$ in 'o‘lchamlari $1$ ga yetganda' (original: 'reach 1'); same meaning, code and display formulas unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked the definitions, both proofs, the algorithm, code and complexities against the original; all present and correct.",
+      "content_sha256": "c2f4f9c15f131d6b0148f3546e717a8fdbbe4b38aee472b88a02855d3e2152ac"
+    },
+    {
+      "at": "2026-11-12T10:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced the calque 'bo‘lib tashla va hukmronlik qil' with the glossary term 'bo‘lib yechish', fixed 'rekursiyani oldini olish', and joined the sentences of the uniqueness proof back into its blockquote.",
+      "content_sha256": "c2f4f9c15f131d6b0148f3546e717a8fdbbe4b38aee472b88a02855d3e2152ac"
+    },
+    {
+      "at": "2026-11-12T10:02:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Inline formula $1$ is a rephrasing of the original's plain-text '1'; no mathematical change.",
+      "content_sha256": "c2f4f9c15f131d6b0148f3546e717a8fdbbe4b38aee472b88a02855d3e2152ac"
+    }
+  ]
+}

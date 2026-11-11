@@ -6,7 +6,7 @@ $G=(V,E)$ — tugunlari $V$ va qirralari $E\subseteq V\times V$ bo‘lgan yo‘n
 
 $C\subseteq V$ tugunlar to‘plami quyidagi shartlar bajarilsa **kuchli bog‘langan komponent** deb ataladi:
 
-- barcha $u,v\in C$, $u\ne v$ uchun $u$ dan $v$ ga ham, $v$ dan $u$ ga ham yo‘l mavjud;
+- barcha $u,v\in C$, $u\neq v$ uchun $u$ dan $v$ ga ham, $v$ dan $u$ ga ham yo‘l mavjud;
 - $C$ maksimaldir, ya’ni yuqoridagi shartni buzmasdan unga boshqa tugun qo‘shib bo‘lmaydi.
 
 $G$ grafning kuchli bog‘langan komponentlari to‘plamini $\text{SCC}(G)$ bilan belgilaymiz. Bu komponentlar o‘zaro kesishmaydi va grafning barcha tugunlarini qoplaydi. Demak $\text{SCC}(G)$ to‘plam $V$ ning bo‘linishidir.
@@ -15,16 +15,12 @@ Quyidagi $G_\text{example}$ grafda kuchli bog‘langan komponentlar ajratib ko�
 
 ![drawing](/algorithms-media/graph/graph.svg)
 
-Bu yerda
-
-$$\text{SCC}(G_\text{example})=\{\{0,7\},\{1,2,3,5,6\},\{4,9\},\{8\}\}.$$
-
-Har bir kuchli bog‘langan komponent ichida barcha tugunlardan bir-biriga yetib borish mumkinligini tekshirish mumkin.
+Bu yerda $\text{SCC}(G_\text{example})=\{\{0,7\},\{1,2,3,5,6\},\{4,9\},\{8\}\}.$ Har bir kuchli bog‘langan komponent ichida barcha tugunlardan bir-biriga yetib borish mumkinligini tekshirish mumkin.
 
 **Kondensatsiya grafi** $G^{\text{SCC}}=(V^{\text{SCC}},E^{\text{SCC}})$ ni quyidagicha ta’riflaymiz:
 
 - $G^{\text{SCC}}$ ning tugunlari $G$ ning kuchli bog‘langan komponentlaridir, ya’ni $V^{\text{SCC}}=\text{SCC}(G)$;
-- kondensatsiya grafidagi har bir $C_i,C_j$ tugunlar uchun $C_i$ dan $C_j$ ga qirra bo‘lishi uchun va faqat shundagina $C_i\ne C_j$ bo‘lib, $a\in C_i$ va $b\in C_j$ shunday tugunlar mavjud bo‘lishi kerakki, $G$ da $a$ dan $b$ ga qirra bo‘lsin.
+- kondensatsiya grafining har bir $C_i,C_j$ tugunlari uchun $C_i$ dan $C_j$ ga qirra bo‘lishi faqat va faqat $C_i\neq C_j$ bo‘lib, $G$ da $a$ dan $b$ ga qirra mavjud bo‘ladigan $a\in C_i$ va $b\in C_j$ tugunlar bor bo‘lgandagina o‘rinli.
 
 $G_\text{example}$ grafning kondensatsiya grafi quyidagicha:
 
@@ -217,18 +213,18 @@ Ikki tugun bitta komponentga tegishli bo‘lsa, ularning ildizi ikkala tugunning
 > **Isbot**
 >
 >
-> - $1\implies2$. $v$ ost-daraxtidagi $u$ tugun tashqaridagi biriktirilmagan $w$ tugunga yetsin. $u$ va $w$ bitta komponentga tegishli, ularning ildizi esa ikkalasining umumiy ajdodi bo‘lishi kerak. Bu umumiy ajdod albatta $v$ ost-daraxtidan tashqarida va $v$ ning ham ajdodidir. $v$ ildizdan $u$ gacha bo‘lgan yo‘lda yotgani sababli ayni komponentga tegishli, ammo uning ildizi $v$ emas.
-> - $\neg1\implies\neg2$. $v$ ost-daraxtidagi hech bir tugun tashqaridagi biriktirilmagan tugunga yetmaydi deb faraz qilaylik. Demak ost-daraxtdan $v$ ning ajdodiga ham yetib bo‘lmaydi. Ost-daraxt tashqarisiga boruvchi yagona mumkin qirralar allaqachon biriktirilgan tugunlarga ko‘ndalang qirralardir. Bu tugunlar $v$ ning ajdodiga yeta olmaydi; aks holda ular $v$ bilan bitta komponentga tegishli bo‘lar edi, bu esa ularning komponenti oldin aniqlangani bilan zid. $v$ ning ost-daraxtidan uning hech bir ajdodiga yetib bo‘lmagani uchun $v$ ning ildizi $v$ ning o‘zi bo‘lishi kerak.
+> - $1. \implies 2.$: $v$ ost-daraxtidagi $u$ tugun tashqaridagi biriktirilmagan $w$ tugunga yetsin. $u$ va $w$ bitta komponentga tegishli, ularning ildizi esa ikkalasining umumiy ajdodi bo‘lishi kerak. Bu umumiy ajdod albatta $v$ ost-daraxtidan tashqarida va $v$ ning ham ajdodidir. $v$ ildizdan $u$ gacha bo‘lgan yo‘lda yotgani sababli ayni komponentga tegishli, ammo uning ildizi $v$ emas.
+> - $\neg 1. \implies \neg 2.$: $v$ ost-daraxtidagi hech bir tugun tashqaridagi biriktirilmagan tugunga yetmaydi deb faraz qilaylik. Demak ost-daraxtdan $v$ ning ajdodiga ham yetib bo‘lmaydi. Ost-daraxt tashqarisiga boruvchi yagona mumkin qirralar allaqachon biriktirilgan tugunlarga ko‘ndalang qirralardir. Bu tugunlar $v$ ning ajdodiga yeta olmaydi; aks holda ular $v$ bilan bitta komponentga tegishli bo‘lar edi, bu esa ularning komponenti oldin aniqlangani bilan zid. $v$ ning ost-daraxtidan uning hech bir ajdodiga yetib bo‘lmagani uchun $v$ ning ildizi $v$ ning o‘zi bo‘lishi kerak.
 
 Endi tugun ildiz yoki ildiz emasligini aniqlash usulini topamiz. Biriktirish jarayonining yuqoridagi xossalari uning to‘g‘riligi uchun zarur.
 
-Har bir $v\in G$ tugun uchun $t_\text{in}[v]$ kirish vaqtini, ya’ni `dfs(v)` chaqirilgan vaqt tamg‘asini belgilaymiz. Ta’rif bo‘yicha ildiz DFS tashrif buyurgan komponentning birinchi tuguni, shuning uchun uning $t_\text{in}$ qiymati komponent ichida eng kichik bo‘ladi.
+Har bir $v\in G$ tugun uchun $t_{in}[v]$ kirish vaqtini, ya’ni `dfs(v)` chaqirilgan vaqt tamg‘asini belgilaymiz. Ta’rif bo‘yicha ildiz DFS tashrif buyurgan komponentning birinchi tuguni, shuning uchun uning $t_{in}$ qiymati komponent ichida eng kichik bo‘ladi.
 
-$v$ tugun va uning ost-daraxtini ko‘raylik. Qo‘shnilik ro‘yxatini ko‘rib chiqish tugagan paytda, ost-daraxt tashqarisida DFS oldin tashrif buyurgan har bir tugunning $t_\text{in}$ qiymati kichikroq bo‘ladi, chunki DFS ularda $v$ dan oldin boshlangan. Biriktirish jarayonini hisobga olganda, $v$ ost-daraxtidan tashqaridagi barcha hali biriktirilmagan tugunlarning $t_\text{in}$ qiymati $t_\text{in}[v]$ dan kichik.
+$v$ tugun va uning ost-daraxtini ko‘raylik. Qo‘shnilik ro‘yxatini ko‘rib chiqish tugagan paytda, ost-daraxt tashqarisida DFS oldin tashrif buyurgan har bir tugunning $t_{in}$ qiymati kichikroq bo‘ladi, chunki DFS ularda $v$ dan oldin boshlangan. Biriktirish jarayonini hisobga olganda, $v$ ost-daraxtidan tashqaridagi barcha hali biriktirilmagan tugunlarning $t_{in}$ qiymati $t_{in}[v]$ dan kichik.
 
-Endi ildizlarni aniqlash uchun $t_\text{in}$ dan qanday foydalanish mumkinligi ko‘rinadi. Yetib borish mumkin bo‘lgan biriktirilmagan tugunlarning eng kichik $t_\text{in}$ qiymatini ko‘rib, bu ma’lumotni daraxt qirralari orqali ajdodlarga uzatamiz. Uzatiladigan qiymatni $t_\text{low}$ deb ataymiz. Aniqroq aytganda, $t_\text{low}[v]$ — $v$ ning ost-daraxtidagi biror tugun bitta bevosita qirra orqali yetishi mumkin bo‘lgan tugunlarning eng kichik $t_\text{in}$ qiymati.
+Endi ildizlarni aniqlash uchun $t_{in}$ dan qanday foydalanish mumkinligi ko‘rinadi. Yetib borish mumkin bo‘lgan biriktirilmagan tugunlarning eng kichik $t_{in}$ qiymatini ko‘rib, bu ma’lumotni daraxt qirralari orqali ajdodlarga uzatamiz. Uzatiladigan qiymatni $t_{low}$ deb ataymiz. Aniqroq aytganda, $t_{low}[v]$ — $v$ ning ost-daraxtidagi biror tugun bitta bevosita qirra orqali yetishi mumkin bo‘lgan tugunlarning eng kichik $t_{in}$ qiymati.
 
-Shunday qilib, $v$ ildiz emasligini $t_\text{low}[v] < t_\text{in}[v]$ sharti bilan aniqlaymiz. Aksincha, $t_\text{low}[v]=t_\text{in}[v]$ bo‘lsa, $v$ komponent ildizidir.
+Shunday qilib, $v$ ildiz emasligini $t_{low}[v] < t_{in}[v]$ sharti bilan aniqlaymiz.
 
 Komponent tugunlarini biriktirish uchun boshqa graf bo‘ylab yurish kabi ko‘p usullar bor, ammo hali biriktirilmagan tugunlarni oddiy ma’lumotlar tuzilmasida saqlash mumkin. Tuzilma faqat ikki amalni bajarishi kerak:
 
@@ -340,13 +336,13 @@ for (auto u : adj[v]) {
 }
 ```
 
-$t_\text{low}$ ma’lumotni ildizga uzatish uchun ishlatiladi. `t_low[v] = min(t_low[v], t_in[u])` bajarilganda $u$ va $v$ bitta kuchli bog‘langan komponentga tegishli ekanini bilamiz. Agar $t_\text{low}[u]$ qiymat $u$ ning ildizigacha uzatilishi mumkin bo‘lsa, ildiz ayni bo‘lgani sababli u $v$ orqali ham uzatilishi mumkin. $t_\text{low}[u]\le t_\text{in}[u]$ bo‘lgani uchun bu hech qanday ziddiyat keltirib chiqarmaydi, faqat $v$ ildizi uchun chegarani yaxshilaydi.
+$t_{low}$ ma’lumotni ildizga uzatish uchun ishlatiladi. `t_low[v] = min(t_low[v], t_in[u])` bajarilganda $u$ va $v$ bitta kuchli bog‘langan komponentga tegishli ekanini bilamiz. Agar $t_{low}[u]$ qiymat $u$ ning ildizigacha uzatilishi mumkin bo‘lsa, ildiz bir xil bo‘lgani sababli u $v$ orqali ham uzatilishi mumkin. $t_{low}[u]\le t_{in}[u]$ bo‘lgani uchun bu hech qanday ziddiyat keltirib chiqarmaydi, faqat $v$ ildizi uchun chegarani yaxshilaydi.
 
 ## Kondensatsiya grafini qurish
 
 Kondensatsiya grafning qo‘shnilik ro‘yxatini qurishda har bir komponentning tugunlar ro‘yxatidagi birinchi tugunni uning **ildizi** sifatida tanlaymiz; bu ixtiyoriy tanlov. Ildiz tugun butun komponentni ifodalaydi. Har bir `v` tugun uchun `roots[v]` qiymat `v` tegishli bo‘lgan kuchli bog‘langan komponentning ildiz tugunini ko‘rsatadi.
 
-Endi kondensatsiya grafning tugunlari `components` da, qo‘shnilik ro‘yxati esa `adj_cond` da berilgan; `adj_cond` faqat komponentlarning ildiz tugunlaridan foydalanadi. $G$ da biror $a\in C$ dan biror $b\in C'$ ga qirra mavjud bo‘lgan har bir holat uchun, $C\ne C'$ bo‘lsa, $G^\text{SCC}$ da $C$ dan $C'$ ga qirra hosil qilamiz. Shu sababli ushbu implementatsiyada kondensatsiya grafning ikki komponenti orasida parallel qirralar paydo bo‘lishi mumkin.
+Endi kondensatsiya grafning tugunlari `components` da, qo‘shnilik ro‘yxati esa `adj_cond` da berilgan; `adj_cond` faqat komponentlarning ildiz tugunlaridan foydalanadi. $G$ da biror $a\in C$ dan biror $b\in C'$ ga qirra mavjud bo‘lgan har bir holat uchun, $C\neq C'$ bo‘lsa, $G^\text{SCC}$ da $C$ dan $C'$ ga qirra hosil qilamiz. Shu sababli ushbu implementatsiyada kondensatsiya grafning ikki komponenti orasida parallel qirralar paydo bo‘lishi mumkin.
 
 ## Adabiyotlar
 

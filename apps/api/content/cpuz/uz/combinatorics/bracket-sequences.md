@@ -71,7 +71,7 @@ Kerakli o‘rinni topish uchun belgilarni o‘ngdan chapga qarab ko‘rib, ochuv
 
 Belgini almashtiramiz, o‘ng tomonga nechta ochuvchi va nechta yopuvchi qavs qo‘shish kerakligini hisoblaymiz va ularni leksikografik jihatdan eng kichik tartibda joylashtiramiz.
 
-Mos o‘rin topilmasa, berilgan ketma-ketlik allaqachon eng katta mumkin bo‘lgan ketma-ketlik va undan keyingi javob mavjud emas.
+Mos o‘rin topilmasa, berilgan ketma-ketlik allaqachon mumkin bo‘lgan eng katta ketma-ketlikdir va javob mavjud emas.
 
 ```cpp
 bool next_balanced_sequence(string & s) {
@@ -104,9 +104,9 @@ Ba’zan berilgan uzunlikdagi barcha muvozanatlangan qavslar ketma-ketliklarini 
 
 Ularni hosil qilish uchun leksikografik jihatdan eng kichik ketma-ketlik $((\dots(())\dots))$ dan boshlash va oldingi bo‘limda tasvirlangan algoritm bilan ketma-ket ravishda navbatdagi leksikografik ketma-ketlikni topish mumkin.
 
-Agar ketma-ketlik uzunligi juda katta bo‘lmasa, masalan $n<12$ bo‘lsa, C++ STL dagi `next_permutation` funksiyasi yordamida barcha permutatsiyalarni hosil qilib, har birining muvozanatlanganligini tekshirish ham qulay.
+Agar ketma-ketlik uzunligi juda katta bo‘lmasa (masalan, $n$ soni $12$ dan kichik bo‘lsa), C++ STL dagi `next_permutation` funksiyasi yordamida barcha permutatsiyalarni hosil qilib, har birining muvozanatlanganligini tekshirish ham qulay.
 
-Ularni barcha ketma-ketliklarni dinamik dasturlash bilan sanashda qo‘llagan g‘oyalarimiz yordamida ham hosil qilish mumkin. Bu g‘oyalarni keyingi ikki bo‘limda ko‘rib chiqamiz.
+Ularni, shuningdek, barcha ketma-ketliklarni dinamik dasturlash bilan sanashda qo‘llagan g‘oyalar yordamida ham hosil qilish mumkin. Bu g‘oyalarni keyingi ikki bo‘limda ko‘rib chiqamiz.
 
 ## Ketma-ketlik indeksi
 
@@ -128,11 +128,7 @@ Endi berilgan ketma-ketlikning indeksini topamiz.
 
 Avval faqat bitta qavs turi bo‘lsin. Joriy ichma-ichlik darajasini bildiruvchi $\text{depth}$ hisoblagichini saqlab, ketma-ketlik belgilarini chapdan o‘ngga ko‘ramiz.
 
-Agar joriy $s[i]$ belgisi `(` bo‘lsa, $\text{depth}$ ni bittaga oshiramiz. Agar $s[i]$ belgisi `)` bo‘lsa, javobga
-
-$$d[2n-i-1][\text{depth}+1]$$
-
-ni qo‘shishimiz kerak. Bu qiymat joriy o‘rinda `(` bilan boshlanadigan barcha mumkin bo‘lgan davomlarni, ya’ni berilgan ketma-ketlikdan leksikografik jihatdan kichik ketma-ketliklarni hisobga oladi. Shundan keyin $\text{depth}$ ni bittaga kamaytiramiz.
+Agar joriy $s[i]$ belgisi `(` bo‘lsa, $\text{depth}$ ni bittaga oshiramiz. Agar $s[i]$ belgisi `)` bo‘lsa, javobga $d[2n-i-1][\text{depth}+1]$ ni qo‘shishimiz kerak. Bu qiymat joriy o‘rinda `(` bilan boshlanadigan barcha mumkin bo‘lgan davomlarni, ya’ni berilgan ketma-ketlikdan leksikografik jihatdan kichik ketma-ketliklarni hisobga oladi. Shundan keyin $\text{depth}$ ni bittaga kamaytiramiz.
 
 Endi $k$ ta turli qavs turi mavjud bo‘lsin.
 
@@ -142,13 +138,9 @@ $$d[2n - i - 1][\text{ndepth}] \cdot k^{\frac{2n - i - 1 - ndepth}{2}}$$
 
 Bu formula quyidagicha keltirib chiqariladi. Avval bir nechta qavs turi borligini “unutib”, faqat $d[2n-i-1][\text{ndepth}]$ javobini olamiz. Endi $k$ turdagi qavsga ruxsat berilsa javob qanday o‘zgarishini ko‘ramiz.
 
-Hali aniqlanmagan $2n-i-1$ ta o‘rin bor. Ularning $\text{ndepth}$ tasi ochuvchi qavslar sababli oldindan belgilangan. Qolgan qavslarning
+Hali aniqlanmagan $2n-i-1$ ta o‘rin bor. Ularning $\text{ndepth}$ tasi ochuvchi qavslar sababli oldindan belgilangan. Lekin qolgan barcha qavslar ($(2n-i-1-\text{ndepth})/2$ juft) istalgan turga tegishli bo‘lishi mumkin, shu sababli sonni $k$ ning tegishli darajasiga ko‘paytiramiz.
 
-$$\frac{2n-i-1-\text{ndepth}}{2}$$
-
-juftining har biri istalgan turga tegishli bo‘lishi mumkin. Shu sababli sonni $k$ ning tegishli darajasiga ko‘paytiramiz.
-
-## $k$-ketma-ketlikni topish {data-toc-label="k-ketma-ketlikni topish"}
+## $k$-ketma-ketlikni topish
 
 $n$ — ketma-ketlikdagi qavs juftlari soni bo‘lsin. Barcha muvozanatlangan ketma-ketliklarning leksikografik tartiblangan ro‘yxatidagi $k$-ketma-ketlikni topish kerak.
 
@@ -158,11 +150,7 @@ Avval faqat bitta qavs turi bo‘lsin.
 
 Hosil qilayotgan satrimizning belgilarini chapdan o‘ngga ko‘ramiz. Oldingi masaladagidek, joriy ichma-ichlik darajasini bildiruvchi $\text{depth}$ hisoblagichini saqlaymiz. Har bir o‘rinda ochuvchi yoki yopuvchi qavs qo‘yishni tanlash kerak.
 
-Ochuvchi qavs qo‘yish uchun
-
-$$d[2n-i-1][\text{depth}+1]\ge k$$
-
-sharti bajarilishi kerak. Shart bajarilsa, $\text{depth}$ ni oshirib, keyingi belgiga o‘tamiz. Aks holda $k$ dan $d[2n-i-1][\text{depth}+1]$ ni ayiramiz, yopuvchi qavs qo‘yamiz va davom etamiz.
+Ochuvchi qavs qo‘yish uchun $d[2n-i-1][\text{depth}+1]\ge k$ sharti bajarilishi kerak. Shart bajarilsa, $\text{depth}$ ni oshirib, keyingi belgiga o‘tamiz. Aks holda $k$ dan $d[2n-i-1][\text{depth}+1]$ ni ayiramiz, yopuvchi qavs qo‘yamiz va davom etamiz.
 
 ```cpp
 string kth_balanced(int n, int k) {
@@ -192,11 +180,7 @@ string kth_balanced(int n, int k) {
 }
 ```
 
-Endi $k$ turdagi qavs mavjud bo‘lsin. Yechim faqat biroz o‘zgaradi: $d[2n-i-1][\text{ndepth}]$ qiymatini
-
-$$k^{(2n-i-1-\text{ndepth})/2}$$
-
-ga ko‘paytirish va keyingi belgi uchun bir nechta qavs turi bo‘lishi mumkinligini hisobga olish kerak.
+Endi $k$ turdagi qavs mavjud bo‘lsin. Yechim faqat biroz o‘zgaradi: $d[2n-i-1][\text{ndepth}]$ qiymatini $k^{(2n-i-1-\text{ndepth})/2}$ ga ko‘paytirish va keyingi belgi uchun bir nechta qavs turi bo‘lishi mumkinligini hisobga olish kerak.
 
 Quyidagi implementatsiyada ikki turdagi — yumaloq va kvadrat — qavslar ishlatiladi:
 

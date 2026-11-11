@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T22:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation had changed the determinant formula to different vectors, added an overflow section with a second code block, an unrelated 'geometric meaning' section and extra claims; re-translated from the original and restored the single code block and the original formula.",
+      "content_sha256": "9ccab0bbd8f9451aacb714d0a4a54c00f31bd453cca6b99b6258c480206b396a"
+    },
+    {
+      "at": "2026-11-11T22:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the sentences in natural Uzbek and restored the headings.",
+      "content_sha256": "9ccab0bbd8f9451aacb714d0a4a54c00f31bd453cca6b99b6258c480206b396a"
+    },
+    {
+      "at": "2026-11-11T22:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "9ccab0bbd8f9451aacb714d0a4a54c00f31bd453cca6b99b6258c480206b396a"
+    }
+  ]
+}

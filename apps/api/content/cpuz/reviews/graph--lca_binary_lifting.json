@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked the algorithm description, jump-table logic, code and complexities against the original; nothing omitted or altered.",
+      "content_sha256": "0beead4aa0375908aa71cef8079bc5e329073a8bab2f3d7bf8053fa3956d4cc6"
+    },
+    {
+      "at": "2026-11-12T10:08:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'bolalar' (children) with 'farzand tugunlar' to keep the tree terminology consistent.",
+      "content_sha256": "0beead4aa0375908aa71cef8079bc5e329073a8bab2f3d7bf8053fa3956d4cc6"
+    }
+  ]
+}

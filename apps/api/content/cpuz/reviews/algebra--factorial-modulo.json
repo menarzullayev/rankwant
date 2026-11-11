@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "eqnarray rewritten as aligned (KaTeX has no eqnarray) and the original triple-backslash row separators written as ordinary double-backslash row breaks; the formulas themselves are unchanged, so the mathematics is the same."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T15:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "All claims, the example 7!_{%p}, Wilson's theorem, the O(p log_p n) and O(p + log_p n) complexities and Legendre's formula match the original; the two code blocks are identical. The translation states that the multiplicity is of p in n!, where the original says 'in n' (an evident slip in the original, since the formula is for n!).",
+      "content_sha256": "3f0c36b93368840a5322bf58ea6a997ff7dede569bb301821406bfaa78e89249"
+    },
+    {
+      "at": "2026-11-11T15:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Restored the original paragraph, heading, display-formula and code-fence separation (they had been run together without blank lines, which risks breaking the display math and headings on the site).",
+      "content_sha256": "3f0c36b93368840a5322bf58ea6a997ff7dede569bb301821406bfaa78e89249"
+    },
+    {
+      "at": "2026-11-11T15:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "eqnarray to aligned is the only remaining difference; same mathematics.",
+      "content_sha256": "3f0c36b93368840a5322bf58ea6a997ff7dede569bb301821406bfaa78e89249"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation had replaced the article with different content (shoelace formula, __int128 code, correctness and complexity sections); restored the original: Method 1 with its formula and code, and Method 2 with the generalisation remark.",
+      "content_sha256": "9dd99afe78043f530640acc90382b073ea8988e6649e6f7e75e4022f69085961"
+    },
+    {
+      "at": "2026-11-12T10:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Re-translated the short article faithfully in natural Uzbek.",
+      "content_sha256": "9dd99afe78043f530640acc90382b073ea8988e6649e6f7e75e4022f69085961"
+    },
+    {
+      "at": "2026-11-12T10:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Display formula, code block and heading now match the original; the invented formulas and second code block were removed.",
+      "content_sha256": "9dd99afe78043f530640acc90382b073ea8988e6649e6f7e75e4022f69085961"
+    }
+  ]
+}

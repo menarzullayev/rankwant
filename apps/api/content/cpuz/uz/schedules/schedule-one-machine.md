@@ -32,7 +32,7 @@ Hadlarni qayta joylashtirsak:
 
 $$\frac{c_{\pi_i}}{t_{\pi_i}} \ge \frac{c_{\pi_{i+1}}}{t_{\pi_{i+1}}} \quad \forall i = 1 \dots n-1$$
 
-Shunday qilib, ishlarni $\frac{c_i}{t_i}$ nisbatining kamaymaslik emas, **kamayish tartibida saralash** orqali **optimal jadval**ni olamiz.
+Shunday qilib, ishlarni $\frac{c_i}{t_i}$ nisbatining **o‘smaslik tartibida saralash** orqali **optimal jadval**ni olamiz.
 
 Bu algoritm **almashtirish usuli** deb ataladigan yondashuv orqali qurilganini ta’kidlash kerak: ikkita qo‘shni elementning o‘rni almashtirildi, jarima o‘zgarishi hisoblandi va undan optimal tartibni topish qoidasi chiqarildi.
 
@@ -44,7 +44,7 @@ $$f_i(t) = c_i \cdot e^{\alpha \cdot t},$$
 
 bu yerda barcha $c_i$ sonlar nomanfiy, $\alpha$ o‘zgarmas esa musbat.
 
-Almashtirish usulini qo‘llab, ishlarni quyidagi qiymatning kamayish tartibida saralash kerakligini oson aniqlash mumkin:
+Almashtirish usulini qo‘llab, ishlarni quyidagi qiymatning o‘smaslik tartibida saralash kerakligini oson aniqlash mumkin:
 
 $$v_i = \frac{1 - e^{\alpha \cdot t_i}}{c_i}$$
 
@@ -52,13 +52,13 @@ $$v_i = \frac{1 - e^{\alpha \cdot t_i}}{c_i}$$
 
 Bu holatda barcha $f_i(t)$ funksiyalar bir xil va monoton o‘suvchi bo‘ladi.
 
-Bunda optimal permutatsiya ishlarni bajarilish vaqti $t_i$ ning o‘sish tartibida joylashtirishdan iborat ekani ravshan.
+Bunda optimal permutatsiya ishlarni bajarilish vaqti $t_i$ ning kamaymaslik tartibida joylashtirishdan iborat ekani ravshan.
 
 ## Livshits–Kladov teoremasi
 
 Livshits–Kladov teoremasi almashtirish usuli faqat yuqorida sanalgan uch holatda qo‘llanishini belgilaydi:
 
-- chiziqli holat: $f_i(t) = c_i(t) + d_i$, bu yerda $c_i$ lar nomanfiy o‘zgarmaslar;
+- chiziqli holat: $f_i(t) = c_i \cdot t + d_i$, bu yerda $c_i$ lar nomanfiy o‘zgarmaslar;
 - eksponensial holat: $f_i(t) = c_i \cdot e^{\alpha \cdot t} + d_i$, bu yerda $c_i$ va $\alpha$ musbat o‘zgarmaslar;
 - bir xil funksiyalar holati: $f_i(t) = \phi(t)$, bu yerda $\phi$ monoton o‘suvchi funksiya.
 

@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:17:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation described a different algorithm with invented formulas and three different code blocks. Restored the original algorithm (smallest-x point as p_0, binary search by polar angle, triangle-area test), the original single code block and the problem list.",
+      "content_sha256": "59faec72fd9c8f87f10c83b2138ecc74201dadab350d96e15c9d5285d0471860"
+    },
+    {
+      "at": "2026-11-12T11:17:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Re-translated from the original; used glossary terms (qavariq ko'pburchak, vektor ko'paytma, binar qidiruv).",
+      "content_sha256": "59faec72fd9c8f87f10c83b2138ecc74201dadab350d96e15c9d5285d0471860"
+    },
+    {
+      "at": "2026-11-12T11:17:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original.",
+      "content_sha256": "59faec72fd9c8f87f10c83b2138ecc74201dadab350d96e15c9d5285d0471860"
+    }
+  ]
+}

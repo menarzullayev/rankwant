@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "Code is the original code again; the remaining differences are inline variables (H, S, k-1) that the Uzbek text sets in math where the original used plain text."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation covered only about a third of the article and had rewritten the code. Restored all omitted sections (parallel half-planes, the worked example with images, implementation discussion, applications, practice problems, references) and the original code.",
+      "content_sha256": "dbc4acd43e38319586e7c75b33b87dc4c0935124b8b822b47f1475364ba5779a"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Translated the restored text into natural Uzbek with the established terms (yarim tekislik, qavariq ko'pburchak, ikkilik qidiruv) and translated the code comments.",
+      "content_sha256": "dbc4acd43e38319586e7c75b33b87dc4c0935124b8b822b47f1475364ba5779a"
+    },
+    {
+      "at": "2026-11-11T14:04:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Code blocks now match; inline-only differences do not change the mathematics.",
+      "content_sha256": "dbc4acd43e38319586e7c75b33b87dc4c0935124b8b822b47f1475364ba5779a"
+    }
+  ]
+}

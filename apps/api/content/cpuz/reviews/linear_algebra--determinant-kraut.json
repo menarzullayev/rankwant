@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The original writes its two display formulas with \\[ \\] delimiters, which the site's remark-math pipeline does not render; they are kept with identical content in $$ delimiters, and the Java code is the original's."
+  },
+  "log": [
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The translation was a rewrite: it added explanatory sections on LU decomposition, pivoting and complexity, reformatted the Java code and changed the zero-row test from '> 0' to '!= 0'. Removed the added material and restored the original prose structure and the original code verbatim (including its '> 0' test).",
+      "content_sha256": "95c0a488cd32765daee7705d31d545d52fb06bd3261c3c3fff75479c66ea734a"
+    },
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Re-translated the short original into natural Uzbek with the glossary terms (determinant, teskarilanuvchi matritsa, bosh minor).",
+      "content_sha256": "95c0a488cd32765daee7705d31d545d52fb06bd3261c3c3fff75479c66ea734a"
+    },
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Code now equals the original; only the delimiters of the two display formulas changed from \\[ \\] to $$ so that they render on the site.",
+      "content_sha256": "95c0a488cd32765daee7705d31d545d52fb06bd3261c3c3fff75479c66ea734a"
+    }
+  ]
+}

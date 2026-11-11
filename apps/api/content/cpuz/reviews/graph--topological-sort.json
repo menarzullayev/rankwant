@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Restored the eight practice problems that were cut to one, the missing blank line in the code and the missing 'agar' in the non-uniqueness example, and corrected 'oxiri' to the edge endpoints 'uchlari' in the DFS description; 'foydali' became 'mazmunli' for 'meaningful'.",
+      "content_sha256": "b972517b8f7645db9ce995b9d226e2707104fb1ee113e2b11356c09761c2d3eb"
+    },
+    {
+      "at": "2026-11-11T14:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'asiklik' with the glossary-style 'siklsiz', translated the difficulty labels and separated paragraphs that had been merged.",
+      "content_sha256": "b972517b8f7645db9ce995b9d226e2707104fb1ee113e2b11356c09761c2d3eb"
+    }
+  ]
+}

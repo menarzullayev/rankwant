@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T20:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Checked definitions, both lemmas, the unit network arguments and the code against the original; nothing missing or changed.",
+      "content_sha256": "552103df860813ed1ef3ee3c88ba9c4f0e12066522b65f86e140dfff4fd77409"
+    },
+    {
+      "at": "2026-11-11T20:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Fixed the grammar of the layered network definition, used siklsiz and the glossary term juftlashtirish instead of the English word matching.",
+      "content_sha256": "552103df860813ed1ef3ee3c88ba9c4f0e12066522b65f86e140dfff4fd77409"
+    }
+  ]
+}

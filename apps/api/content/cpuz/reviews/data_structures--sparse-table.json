@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The extra inline formulas K and R-L+1 are the original's plain-text K and R - L + 1 written as math; code and display formulas are unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared with the original; all paragraphs, code blocks, the RMQ formula and the practice list are present with the same indices and complexities. No technical errors found.",
+      "content_sha256": "ad0dcd23be76bf25ead18471fea5a659a2dbdd3a774d8fd3f26a557e83fc86a5"
+    },
+    {
+      "at": "2026-11-12T10:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Added the glossary term 'siyrak jadval' on first mention and normalised blank lines; the translation was otherwise correct natural Uzbek.",
+      "content_sha256": "ad0dcd23be76bf25ead18471fea5a659a2dbdd3a774d8fd3f26a557e83fc86a5"
+    },
+    {
+      "at": "2026-11-12T10:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Inline K and R-L+1 are the same expressions as in the original, only wrapped in math delimiters.",
+      "content_sha256": "ad0dcd23be76bf25ead18471fea5a659a2dbdd3a774d8fd3f26a557e83fc86a5"
+    }
+  ]
+}

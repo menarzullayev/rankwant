@@ -335,7 +335,7 @@ $$F'(Q) = Q^{-1}$$
 
 $$\boxed{Q_{k+1} \equiv Q_k(1 + P - \ln Q_k) \pmod{x^{2^{k+1}}}}$$
 
-### $k$-th power { data-toc-label="k-th power" }
+### $k$-th power
 
 Now we need to calculate $P^k(x)=Q$. This may be done via the following formula:
 

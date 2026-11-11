@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The display formulas use a single \\ row break inside \\substack (the original has \\\\, which would add an empty row in KaTeX), and the inline formulas only differ in spacing of \\dots and the index letter in 'for all l = 1..n'; the mathematics is the same."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T11:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "No omissions or mistranslations found against the English original; code, formulas, numbers and conditions match.",
+      "content_sha256": "c391db0fad1bf714fd884a53223bfc8fc1addc367d1ec8fa972f6989e032da15"
+    },
+    {
+      "at": "2026-11-12T11:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed the leftover mkdocs attribute {data-toc-label=...} from three headings so it is not rendered as literal text.",
+      "content_sha256": "c391db0fad1bf714fd884a53223bfc8fc1addc367d1ec8fa972f6989e032da15"
+    },
+    {
+      "at": "2026-11-12T11:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Formula differences are notation only (\\substack row break, \\dots spacing); same mathematics, code unchanged.",
+      "content_sha256": "c391db0fad1bf714fd884a53223bfc8fc1addc367d1ec8fa972f6989e032da15"
+    }
+  ]
+}

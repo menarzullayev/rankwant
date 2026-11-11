@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-11T20:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Retranslated the article from the original: the Uzbek version had restructured it, dropped both figures, the angle-direction and non-negative dot product explanation, the first-normal-vector query rule and the Problems section, replaced the helper f with dot, and added an unsourced section on the DP-to-line reduction and dynamic Li Chao tree. All six code blocks are now the original's code and the formulas are the original's.",
+      "content_sha256": "4fdef0d74124e8a06c6df74fd01c75cd8ce269a6b23a72aa13f1072e400daced"
+    },
+    {
+      "at": "2026-11-11T20:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Rewrote the prose in natural Uzbek with glossary terms (qavariq qobiq, segment daraxti, skalyar ko‘paytma) and restored the heading of the problems section as Mashq masalalari.",
+      "content_sha256": "4fdef0d74124e8a06c6df74fd01c75cd8ce269a6b23a72aa13f1072e400daced"
+    },
+    {
+      "at": "2026-11-11T20:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Restored original code blocks (f helper, six blocks) and the original display and inline formulas; difference removed.",
+      "content_sha256": "4fdef0d74124e8a06c6df74fd01c75cd8ce269a6b23a72aa13f1072e400daced"
+    }
+  ]
+}

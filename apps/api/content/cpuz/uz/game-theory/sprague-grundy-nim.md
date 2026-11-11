@@ -11,7 +11,7 @@ O‘yin **chekli** deb olinadi, ya’ni ma’lum sondagi yurishdan keyin o‘yin
 Bunday holatni raqibiga qoldirgan o‘yinchi yutadi.
 Tabiiyki, bu o‘yinda durang bo‘lmaydi.
 
-Bunday o‘yinlarni *yo‘naltirilgan asiklik graf* yordamida to‘liq tasvirlash mumkin: tugunlar o‘yin holatlari, qirralar esa o‘tishlar — yurishlar — dir.
+Bunday o‘yinlarni *yo‘naltirilgan siklsiz graf* yordamida to‘liq tasvirlash mumkin: tugunlar o‘yin holatlari, qirralar esa o‘tishlar — yurishlar — dir.
 Chiquvchi qirrasi bo‘lmagan tugun yutqazuvchi tugun: shu tugundan yurish qilishi kerak bo‘lgan o‘yinchi yutqazadi.
 
 Durang bo‘lmagani sababli barcha o‘yin holatlarini **yutuvchi** yoki **yutqazuvchi** deb tasniflash mumkin.
@@ -53,14 +53,14 @@ $a$ ketma-ketligining XOR-yig‘indisi $a_1 \oplus a_2 \oplus \ldots \oplus a_n$
 
 **Isbot.**
 Isbotning asosiy g‘oyasi raqib uchun **simmetrik strategiya** mavjudligidir.
-XOR-yig‘indisi nol bo‘lgan holatga tushgan o‘yinchi uzoq muddatda uni noldan farqli qilib saqlab qola olmasligini ko‘rsatamiz: u XOR-yig‘indisi noldan farqli holatga o‘tsa, raqib doimo XOR-yig‘indisini yana nolga qaytaradigan yurishga ega bo‘ladi.
+XOR-yig‘indisi nol bo‘lgan holatga tushgan o‘yinchi uni uzoq muddatda noldan farqli qila olmasligini ko‘rsatamiz: u XOR-yig‘indisi noldan farqli holatga o‘tsa, raqib doimo XOR-yig‘indisini yana nolga qaytaradigan yurishga ega bo‘ladi.
 
 Teoremani matematik induksiya yordamida isbotlaymiz.
 
 Bo‘sh Nim uchun — barcha uyumlar bo‘sh, ya’ni multito‘plam bo‘sh bo‘lganda — XOR-yig‘indi nolga teng va teorema to‘g‘ri.
 
 Endi bo‘sh bo‘lmagan holatda turibmiz, deb faraz qilaylik.
-Induksiya faraziga va o‘yinning asiklikligiga tayangan holda, joriy holatdan erishish mumkin bo‘lgan barcha holatlar uchun teorema isbotlangan deb olamiz.
+Induksiya faraziga va o‘yinning siklsizligiga tayangan holda, joriy holatdan erishish mumkin bo‘lgan barcha holatlar uchun teorema isbotlangan deb olamiz.
 
 Isbot ikki qismga bo‘linadi:
 agar joriy holat uchun XOR-yig‘indi $s=0$ bo‘lsa, bu holat yutqazuvchi ekanini, ya’ni erishish mumkin bo‘lgan barcha holatlarda XOR-yig‘indi $t\neq0$ bo‘lishini ko‘rsatish kerak.
@@ -70,7 +70,7 @@ Agar $s\neq0$ bo‘lsa, $t=0$ bo‘lgan holatga olib boruvchi yurish mavjudligin
     Bu yurish bir uyumning $x$ o‘lchamini $y$ gacha kamaytiradi.
     $\oplus$ amalining elementar xossalaridan foydalanib, quyidagini olamiz:
 
-    \[ t = s \oplus x \oplus y = 0 \oplus x \oplus y = x \oplus y \]
+    $$ t = s \oplus x \oplus y = 0 \oplus x \oplus y = x \oplus y $$
 
     $y<x$ bo‘lgani uchun $y\oplus x$ nol bo‘la olmaydi, demak $t\neq0$.
     Induksiya faraziga ko‘ra, erishish mumkin bo‘lgan har qanday holat yutuvchi; shuning uchun joriy holat yutqazuvchi.
@@ -84,7 +84,7 @@ Agar $s\neq0$ bo‘lsa, $t=0$ bo‘lgan holatga olib boruvchi yurish mavjudligin
     Shuning uchun $y<x$ va yurish qonuniy.
     Endi:
 
-    \[ t = s \oplus x \oplus y = s \oplus x \oplus (s \oplus x) = 0 \]
+    $$ t = s \oplus x \oplus y = s \oplus x \oplus (s \oplus x) = 0 $$
 
     Demak, induksiya faraziga ko‘ra yutqazuvchi bo‘lgan erishiladigan holatni topdik; joriy holat yutuvchi.
 
@@ -110,7 +110,7 @@ Endi istalgan xolis o‘yinning har bir holati uchun unga mos Nim holatini qanda
 ### Uyumni kattalashtirishga ruxsat berilgan Nim haqidagi lemma
 
 Nimning quyidagi modifikatsiyasini ko‘rib chiqamiz: tanlangan uyumga **tosh qo‘shishga** ham ruxsat beriladi.
-Qachon va qanday kattalashtirishga ruxsat berilishi haqidagi aniq qoidalar **biz uchun muhim emas**, biroq qoidalar o‘yinning **asiklik** bo‘lib qolishini ta’minlashi kerak. Keyingi bo‘limlarda misol o‘yinlar ko‘riladi.
+Qachon va qanday kattalashtirishga ruxsat berilishi haqidagi aniq qoidalar **biz uchun muhim emas**, biroq qoidalar o‘yinning **siklsiz** bo‘lib qolishini ta’minlashi kerak. Keyingi bo‘limlarda misol o‘yinlar ko‘riladi.
 
 **Lemma.**
 Nimga kattalashtirish yurishlarini qo‘shish yutuvchi va yutqazuvchi holatlarni aniqlash usulini o‘zgartirmaydi.
@@ -118,11 +118,11 @@ Boshqacha aytganda, kattalashtirishlar foydasiz va yutuvchi strategiyada ulardan
 
 **Isbot.**
 O‘yinchi bir uyumga tosh qo‘shdi, deb faraz qilaylik. Raqibi uning yurishini oddiygina bekor qilishi — uyumdagi toshlar sonini avvalgi qiymatgacha kamaytirishi — mumkin.
-O‘yin asiklik bo‘lgani uchun ertami-kechmi joriy o‘yinchi kattalashtirish yurishidan foydalana olmaydi va odatiy Nim yurishini qilishga majbur bo‘ladi.
+O‘yin siklsiz bo‘lgani uchun ertami-kechmi joriy o‘yinchi kattalashtirish yurishidan foydalana olmaydi va odatiy Nim yurishini qilishga majbur bo‘ladi.
 
 ### Sprague–Grundy teoremasi
 
-Ikki o‘yinchili xolis o‘yinning $v$ holatini va undan bevosita erishish mumkin bo‘lgan $v_i$ holatlarni ko‘rib chiqamiz; bu yerda $i\in\{1,2,\dots,k\}$ va $k\geq0$.
+Ikki o‘yinchili xolis o‘yinning $v$ holatini va undan bevosita erishish mumkin bo‘lgan $v_i$ holatlarni ko‘rib chiqamiz; bu yerda $i \in \{ 1, 2, \dots, k \} , k \ge 0$.
 $v$ holatiga o‘lchami $x$ bo‘lgan bitta uyumli, unga to‘liq ekvivalent Nim o‘yinini mos qo‘yish mumkin.
 $x$ soni $v$ holatining **Grundy qiymati** yoki **nim-qiymati** deb ataladi.
 

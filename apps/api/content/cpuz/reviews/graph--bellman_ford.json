@@ -1,0 +1,33 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "accepted",
+    "reason": "The only new inline formulas are $(n-1)$ and $b$, from rephrased sentences ('(n-1)-faza', 'b tugun'); code and display formulas are unchanged."
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared every section, code block and formula with the original; nothing omitted or altered.",
+      "content_sha256": "15ec9099168f08ab88ec15796681e91c9b735967edccbd8b6a21fda48a4c3b60"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "passed",
+      "notes": "Terminology matches the glossary (relaksatsiya, tugun, qirra, sikl); no corrections needed.",
+      "content_sha256": "15ec9099168f08ab88ec15796681e91c9b735967edccbd8b6a21fda48a4c3b60"
+    },
+    {
+      "at": "2026-11-12T10:00:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "accepted",
+      "notes": "Inline formulas $(n-1)$ and $b$ come from rephrasing only; they state nothing the original does not.",
+      "content_sha256": "15ec9099168f08ab88ec15796681e91c9b735967edccbd8b6a21fda48a4c3b60"
+    }
+  ]
+}

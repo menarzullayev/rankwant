@@ -6,7 +6,7 @@ Bu ketma-ketlik XIX asrda yashagan belgiyalik matematik [Catalan](https://en.wik
 
 Noldan boshlab dastlabki Catalan sonlari $C_n$:
 
-$$1, 1, 2, 5, 14, 42, 132, 429, 1430, \ldots$$
+$1, 1, 2, 5, 14, 42, 132, 429, 1430, \ldots$
 
 ### Ayrim kombinatorik masalalardagi qo‘llanishlar
 

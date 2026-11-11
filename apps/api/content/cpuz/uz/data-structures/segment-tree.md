@@ -1,30 +1,30 @@
 # Segment daraxti
 
-Segment Tree — massiv oraliqlari haqidagi ma’lumotni daraxt ko‘rinishida saqlaydigan ma’lumotlar tuzilmasi. U massivdagi oraliq so‘rovlariga samarali javob berish bilan birga, massivni tez o‘zgartirish imkonini ham saqlab qoladi.
+Segment daraxti — massiv oraliqlari haqidagi ma’lumotni daraxt ko‘rinishida saqlaydigan ma’lumotlar tuzilmasi. U massivdagi oraliq so‘rovlariga samarali javob berish bilan birga, massivni tez o‘zgartirish imkonini ham saqlab qoladi.
 Masalan, ketma-ket joylashgan $a[l \dots r]$ elementlar yig‘indisini yoki shunday oraliqdagi eng kichik elementni $O(\log n)$ vaqtda topish mumkin.
-Bunday so‘rovlar orasida Segment Tree massivni bitta elementni almashtirish orqali, hatto butun bir ostkesma elementlarini o‘zgartirish orqali ham yangilashga imkon beradi. Masalan, $a[l \dots r]$ elementlarning barchasiga ixtiyoriy qiymat berish yoki ostkesmadagi barcha elementlarga biror qiymat qo‘shish mumkin.
+Bunday so‘rovlar orasida segment daraxti massivni bitta elementni almashtirish orqali, hatto butun bir ostkesma elementlarini o‘zgartirish orqali ham yangilashga imkon beradi. Masalan, $a[l \dots r]$ elementlarning barchasiga ixtiyoriy qiymat berish yoki ostkesmadagi barcha elementlarga biror qiymat qo‘shish mumkin.
 
-Umuman olganda, Segment Tree juda moslashuvchan ma’lumotlar tuzilmasi bo‘lib, uning yordamida nihoyatda ko‘p masalalarni yechish mumkin.
-Bundan tashqari, murakkabroq amallarni bajarish va murakkabroq so‘rovlarga javob berish ham mumkin; [Segment Tree’ning ilg‘or ko‘rinishlari](/algorithms/data-structures/segment-tree#advanced-versions-of-segment-trees) bo‘limiga qarang.
-Xususan, Segment Tree’ni kattaroq o‘lchamlarga oson umumlashtirish mumkin.
-Masalan, ikki o‘lchamli Segment Tree yordamida berilgan matritsaning biror to‘g‘ri to‘rtburchak ostqismidagi yig‘indi yoki minimum so‘roviga atigi $O(\log^2 n)$ vaqtda javob berish mumkin.
+Umuman olganda, segment daraxti juda moslashuvchan ma’lumotlar tuzilmasi bo‘lib, uning yordamida nihoyatda ko‘p masalalarni yechish mumkin.
+Bundan tashqari, murakkabroq amallarni bajarish va murakkabroq so‘rovlarga javob berish ham mumkin; [segment daraxtining ilg‘or ko‘rinishlari](/algorithms/data-structures/segment-tree#advanced-versions-of-segment-trees) bo‘limiga qarang.
+Xususan, segment daraxtini kattaroq o‘lchamlarga oson umumlashtirish mumkin.
+Masalan, ikki o‘lchamli segment daraxti yordamida berilgan matritsaning biror to‘g‘ri to‘rtburchak ostqismidagi yig‘indi yoki minimum so‘roviga atigi $O(\log^2 n)$ vaqtda javob berish mumkin.
 
-Segment Tree’ning muhim xususiyatlaridan biri — unga faqat chiziqli miqdorda xotira kerak bo‘lishidir.
-Standart Segment Tree o‘lchami $n$ bo‘lgan massiv uchun $4n$ ta tugun talab qiladi.
+Segment daraxtining muhim xususiyatlaridan biri — unga faqat chiziqli miqdorda xotira kerak bo‘lishidir.
+Standart segment daraxti o‘lchami $n$ bo‘lgan massiv uchun $4n$ ta tugun talab qiladi.
 
-## Segment Tree’ning eng sodda ko‘rinishi
+## Segment daraxtining eng sodda ko‘rinishi
 
-Avval Segment Tree’ning eng sodda ko‘rinishini ko‘rib chiqamiz.
+Avval segment daraxtining eng sodda ko‘rinishini ko‘rib chiqamiz.
 Yig‘indi so‘rovlariga samarali javob bermoqchimiz.
 Masalaning rasmiy ta’rifi quyidagicha:
-$a[0 \dots n-1]$ massiv berilgan. Segment Tree indekslari $l$ va $r$ orasidagi elementlar yig‘indisini, ya’ni $\sum_{i=l}^r a[i]$ qiymatni topa olishi, shuningdek massiv elementlari qiymatining o‘zgarishini — $a[i] = x$ ko‘rinishidagi qiymat berish amallarini — qo‘llab-quvvatlashi kerak.
-Segment Tree **har ikkala** turdagi so‘rovni $O(\log n)$ vaqtda bajarishi lozim.
+$a[0 \dots n-1]$ massiv berilgan. Segment daraxti indekslari $l$ va $r$ orasidagi elementlar yig‘indisini, ya’ni $\sum_{i=l}^r a[i]$ qiymatni topa olishi, shuningdek massiv elementlari qiymatining o‘zgarishini — $a[i] = x$ ko‘rinishidagi qiymat berish amallarini — qo‘llab-quvvatlashi kerak.
+Segment daraxti **har ikkala** turdagi so‘rovni $O(\log n)$ vaqtda bajarishi lozim.
 
 Bu sodda yondashuvlarga nisbatan yaxshilanishdir.
 Oddiy massivdan foydalanadigan sodda implementatsiya elementni $O(1)$ vaqtda yangilaydi, ammo har bir yig‘indi so‘rovini hisoblash uchun $O(n)$ vaqt talab qiladi.
 Oldindan hisoblangan prefiks yig‘indilari esa yig‘indi so‘roviga $O(1)$ vaqtda javob beradi, lekin bitta massiv elementi yangilanganda prefiks yig‘indilarida $O(n)$ ta o‘zgarish qilish kerak bo‘ladi.
 
-### Segment Tree tuzilishi
+### Segment daraxti tuzilishi
 
 Massiv kesmalariga “bo‘lib tashla va hukmronlik qil” yondashuvini qo‘llash mumkin.
 Avval butun massiv elementlari yig‘indisini, ya’ni $a[0 \dots n-1]$ kesma yig‘indisini hisoblab saqlaymiz.
@@ -35,32 +35,32 @@ Bu kesmalarni ikkilik daraxt hosil qiladi deb qarash mumkin:
 daraxt ildizi $a[0 \dots n-1]$ kesmaga mos keladi, har bir tugunda esa — barg tugunlardan tashqari — aynan ikkita farzand bor.
 Shuning uchun ma’lumotlar tuzilmasi “Segment Tree” deb ataladi, garchi ko‘pchilik implementatsiyalarda daraxt oshkora qurilmasa ham; [Implementatsiya](/algorithms/data-structures/segment-tree#implementation) bo‘limiga qarang.
 
-$a = [1, 3, -2, 8, -7]$ massiv ustida qurilgan bunday Segment Tree’ning ko‘rinishi quyidagicha:
+$a = [1, 3, -2, 8, -7]$ massiv ustida qurilgan bunday segment daraxtining ko‘rinishi quyidagicha:
 
-![Yig‘indi Segment Tree’si](/algorithms-media/data-structures/sum-segment-tree.png)
+![Yig‘indi segment daraxti](/algorithms-media/data-structures/sum-segment-tree.png)
 
-Tuzilmaning shu qisqa tavsifidanoq Segment Tree uchun tugunlar soni chiziqli ekanini xulosa qilish mumkin.
+Tuzilmaning shu qisqa tavsifidanoq segment daraxti uchun tugunlar soni chiziqli ekanini xulosa qilish mumkin.
 Daraxtning birinchi darajasida bitta tugun — ildiz, ikkinchi darajasida ikkita, uchinchi darajasida to‘rtta tugun bo‘ladi va tugunlar soni $n$ ga yetguncha shu tarzda davom etadi.
 Demak, eng yomon holatdagi tugunlar sonini $1 + 2 + 4 + \dots + 2^{\lceil\log_2 n\rceil} \lt 2^{\lceil\log_2 n\rceil + 1} \lt 4n$ yig‘indi bilan baholash mumkin.
 
-$n$ ikkilik daraja bo‘lmasa, Segment Tree’ning barcha darajalari to‘liq to‘lmasligini qayd etish kerak.
+$n$ ikkilik daraja bo‘lmasa, segment daraxtining barcha darajalari to‘liq to‘lmasligini qayd etish kerak.
 Rasmda aynan shu holatni ko‘rish mumkin.
 Hozircha bu faktni chetga surish mumkin, ammo implementatsiya vaqtida u muhim bo‘ladi.
 
-Segment Tree balandligi $O(\log n)$ ga teng, chunki ildizdan barglarga tushishda kesmalar o‘lchami har safar taxminan ikki baravar kamayadi.
+Segment daraxti balandligi $O(\log n)$ ga teng, chunki ildizdan barglarga tushishda kesmalar o‘lchami har safar taxminan ikki baravar kamayadi.
 
 ### Qurish
 
-Segment Tree’ni qurishdan oldin ikki narsani aniqlab olish kerak:
+Segment daraxtini qurishdan oldin ikki narsani aniqlab olish kerak:
 
-1. Segment Tree’ning har bir tugunida saqlanadigan *qiymat*.
-   Masalan, yig‘indi Segment Tree’sida tugun o‘zining $[l, r]$ oralig‘idagi elementlar yig‘indisini saqlaydi.
-2. Segment Tree’dagi aka-uka ikki tugunni birlashtiradigan *merge* amali.
-   Masalan, yig‘indi Segment Tree’sida $a[l_1 \dots r_1]$ va $a[l_2 \dots r_2]$ oraliqlarga mos tugunlar qiymatlarini qo‘shish orqali $a[l_1 \dots r_2]$ oraliqqa mos tugunga birlashtiriladi.
+1. Segment daraxtining har bir tugunida saqlanadigan *qiymat*.
+   Masalan, yig‘indi segment daraxtida tugun o‘zining $[l, r]$ oralig‘idagi elementlar yig‘indisini saqlaydi.
+2. Segment daraxtidagi aka-uka ikki tugunni birlashtiradigan *merge* amali.
+   Masalan, yig‘indi segment daraxtida $a[l_1 \dots r_1]$ va $a[l_2 \dots r_2]$ oraliqlarga mos tugunlar qiymatlarini qo‘shish orqali $a[l_1 \dots r_2]$ oraliqqa mos tugunga birlashtiriladi.
 
-Agar tugunga mos kesma boshlang‘ich massivning faqat bitta qiymatini qoplasa, u **barg tugun** hisoblanadi. Bunday tugun Segment Tree’ning eng quyi darajasida joylashadi va uning qiymati mos $a[i]$ elementga teng bo‘ladi.
+Agar tugunga mos kesma boshlang‘ich massivning faqat bitta qiymatini qoplasa, u **barg tugun** hisoblanadi. Bunday tugun segment daraxtining eng quyi darajasida joylashadi va uning qiymati mos $a[i]$ elementga teng bo‘ladi.
 
-Segment Tree’ni qurishda eng quyi darajadan — barg tugunlardan — boshlaymiz va ularga mos qiymatlarni beramiz. Shu qiymatlar asosida `merge` funksiyasi yordamida yuqoridagi daraja qiymatlarini hisoblaymiz.
+Segment daraxtini qurishda eng quyi darajadan — barg tugunlardan — boshlaymiz va ularga mos qiymatlarni beramiz. Shu qiymatlar asosida `merge` funksiyasi yordamida yuqoridagi daraja qiymatlarini hisoblaymiz.
 Keyin shu natijalar asosida navbatdagi yuqori darajani hisoblaymiz va ildizga yetguncha jarayonni takrorlaymiz.
 
 Bu amalni teskari yo‘nalishda, ya’ni ildizdan barglarga qarab rekursiv tasvirlash qulayroq. Barg bo‘lmagan tugunda chaqirilgan qurish amali quyidagilarni bajaradi:
@@ -68,15 +68,15 @@ Bu amalni teskari yo‘nalishda, ya’ni ildizdan barglarga qarab rekursiv tasvi
 1. ikki farzand tugun qiymatlarini rekursiv quradi;
 2. hisoblangan farzand qiymatlarini birlashtiradi.
 
-Qurishni ildiz tugundan boshlaganimiz uchun butun Segment Tree’ni hisoblay olamiz.
+Qurishni ildiz tugundan boshlaganimiz uchun butun segment daraxtini hisoblay olamiz.
 
-Birlashtirish amali o‘zgarmas vaqt olsa, qurishning vaqt murakkabligi $O(n)$ bo‘ladi. Birlashtirish amali Segment Tree’dagi ichki tugunlar soniga teng bo‘lgan $n$ marta chaqiriladi.
+Birlashtirish amali o‘zgarmas vaqt olsa, qurishning vaqt murakkabligi $O(n)$ bo‘ladi. Birlashtirish amali segment daraxtidagi ichki tugunlar soniga teng bo‘lgan $n$ marta chaqiriladi.
 
 ### Yig‘indi so‘rovlari
 
 Hozircha yig‘indi so‘rovlariga javob beramiz. Kirishda $l$ va $r$ butun sonlari beriladi, $a[l \dots r]$ kesma yig‘indisini $O(\log n)$ vaqtda hisoblash kerak.
 
-Buning uchun Segment Tree bo‘ylab yuramiz va kesmalarning oldindan hisoblangan yig‘indilaridan foydalanamiz.
+Buning uchun segment daraxti bo‘ylab yuramiz va kesmalarning oldindan hisoblangan yig‘indilaridan foydalanamiz.
 Aytaylik, hozir $a[tl \dots tr]$ kesmani qoplaydigan tugundamiz.
 Uchta holat bo‘lishi mumkin.
 
@@ -97,14 +97,14 @@ Bu holda daraxt tugunida saqlangan, shu kesma uchun oldindan hisoblangan yig‘i
 
 Ya’ni so‘rovni hisoblash daraxt bo‘ylab yurishdan iborat: yurish daraxtning barcha zarur shoxlariga tarqaladi va tugunlarda saqlangan oldindan hisoblangan kesma yig‘indilaridan foydalanadi.
 
-Tabiiyki, yurishni Segment Tree ildizidan boshlaymiz.
+Tabiiyki, yurishni segment daraxti ildizidan boshlaymiz.
 
 Jarayon quyidagi rasmda ko‘rsatilgan.
 Yana $a = [1, 3, -2, 8, -7]$ massividan foydalanamiz va bu safar $\sum_{i=2}^4 a[i]$ yig‘indini hisoblamoqchimiz.
 Rangli tugunlarga tashrif buyuriladi, yashil tugunlarning oldindan hisoblangan qiymatlaridan foydalaniladi.
 Natija $-2 + 1 = -1$ bo‘ladi.
 
-![Segment Tree’da yig‘indi so‘rovi](/algorithms-media/data-structures/sum-segment-tree-query.png)
+![segment daraxtida yig‘indi so‘rovi](/algorithms-media/data-structures/sum-segment-tree-query.png)
 
 Nega bu algoritm murakkabligi $O(\log n)$?
 Buni ko‘rsatish uchun daraxtning har bir darajasini alohida ko‘ramiz.
@@ -127,15 +127,15 @@ Bitta shox so‘rovning chap chegarasiga, ikkinchi shox esa o‘ng chegarasiga y
 Demak, jami ko‘pi bilan $4 \log n$ ta tugunga tashrif buyuriladi va ishlash vaqti $O(\log n)$ bo‘ladi.
 
 Xulosa qilib aytganda, so‘rov kirish kesmasini yig‘indilari daraxtda oldindan hisoblangan va saqlangan bir nechta ostkesmaga ajratadi.
-So‘rov kesmasi tugun kesmasiga tenglashgan zahoti ajratishni to‘xtatsak, atigi $O(\log n)$ ta shunday kesma kerak bo‘ladi. Segment Tree samaradorligi shundan kelib chiqadi.
+So‘rov kesmasi tugun kesmasiga tenglashgan zahoti ajratishni to‘xtatsak, atigi $O(\log n)$ ta shunday kesma kerak bo‘ladi. Segment daraxti samaradorligi shundan kelib chiqadi.
 
 ### Yangilash so‘rovlari
 
 Endi massivning muayyan elementini o‘zgartirmoqchimiz; masalan, $a[i] = x$ qiymat berish amalini bajaramiz.
-Segment Tree yangi o‘zgartirilgan massivga mos kelishi uchun uni yangilashimiz kerak.
+Segment daraxti yangi o‘zgartirilgan massivga mos kelishi uchun uni yangilashimiz kerak.
 
 Bu so‘rov yig‘indi so‘rovidan sodda.
-Segment Tree’ning har bir darajasi massivni kesmalarga bo‘ladi.
+Segment daraxtining har bir darajasi massivni kesmalarga bo‘ladi.
 Shuning uchun $a[i]$ element har bir darajadagi faqat bitta kesma qiymatiga hissa qo‘shadi.
 Demak, faqat $O(\log n)$ ta tugunni yangilash kerak.
 
@@ -146,11 +146,11 @@ Quyidagi rasmda yana shu massivdan foydalanilgan.
 Bu yerda $a[2] = 3$ yangilashini bajaramiz.
 Yashil tugunlarga tashrif buyuriladi va ular yangilanadi.
 
-![Segment Tree’da yig‘indi qiymatini yangilash](/algorithms-media/data-structures/sum-segment-tree-update.png)
+![segment daraxtida yig‘indi qiymatini yangilash](/algorithms-media/data-structures/sum-segment-tree-update.png)
 
 ### Implementatsiya ### {#implementation}
 
-Asosiy masala Segment Tree’ni qanday saqlashdir.
+Asosiy masala segment daraxtini qanday saqlashdir.
 Albatta, $\text{Vertex}$ strukturasini ta’riflab, kesma chegaralari, uning yig‘indisi va farzand tugunlarga ko‘rsatkichlarni saqlaydigan obyektlar yaratish mumkin.
 Biroq bunday usul ko‘rsatkichlar ko‘rinishida juda ko‘p ortiqcha ma’lumot saqlashni talab qiladi.
 Buning o‘rniga ancha samarali oddiy hiyla — **yashirin ma’lumotlar tuzilmasi**dan foydalanamiz: massivda faqat yig‘indilarni saqlaymiz.
@@ -168,13 +168,13 @@ Yuqorida aytilganidek, ko‘pi bilan $4n$ ta tugunni saqlash kerak.
 Amaldagi son bundan kam bo‘lishi mumkin, ammo qulaylik uchun har doim $4n$ o‘lchamli massiv ajratamiz.
 Yig‘indilar massivining ayrim elementlari haqiqiy daraxtdagi hech bir tugunga mos kelmaydi, lekin bu implementatsiyani murakkablashtirmaydi.
 
-Shunday qilib, Segment Tree’ni kirish o‘lchami $n$ dan to‘rt baravar katta $t[]$ massiv sifatida saqlaymiz:
+Shunday qilib, segment daraxtini kirish o‘lchami $n$ dan to‘rt baravar katta $t[]$ massiv sifatida saqlaymiz:
 
 ```cpp
 int n, t[4*MAXN];
 ```
 
-Berilgan $a[]$ massivdan Segment Tree qurish amali quyidagicha.
+Berilgan $a[]$ massivdan segment daraxti qurish amali quyidagicha.
 Bu $a[]$ — kirish massivi, $v$ — joriy tugun indeksi, $tl$ va $tr$ esa joriy kesma chegaralari bo‘lgan rekursiv funksiya.
 Asosiy dasturda u ildiz tugun parametrlari: $v = 1$, $tl = 0$ va $tr = n - 1$ bilan chaqiriladi.
 
@@ -229,7 +229,7 @@ void update(int v, int tl, int tr, int pos, int new_val) {
 Ko‘pchilik avvalgi bo‘limdagi implementatsiyadan foydalanadi. `t` massiviga qaralsa, daraxt tugunlari BFS yurishi — darajalar bo‘yicha yurish — tartibida raqamlanganini ko‘rish mumkin.
 Bu tartibda $v$ tugunning farzandlari mos ravishda $2v$ va $2v + 1$ bo‘ladi.
 Ammo $n$ ikkilik daraja bo‘lmasa, bu usul ayrim indekslarni tashlab ketadi va `t` massivining ba’zi qismlaridan foydalanmaydi.
-O‘lchami $n$ bo‘lgan massiv Segment Tree’si aslida atigi $2n - 1$ ta tugun talab qilsa-da, xotira sarfi $4n$ bilan chegaralanadi.
+O‘lchami $n$ bo‘lgan massiv segment daraxti aslida atigi $2n - 1$ ta tugun talab qilsa-da, xotira sarfi $4n$ bilan chegaralanadi.
 
 Buni kamaytirish mumkin.
 Daraxt tugunlarini Eyler yurishi — preorder yurish — tartibida qayta raqamlab, barcha tugunlarni massivda ketma-ket joylashtiramiz.
@@ -240,14 +240,14 @@ Chap farzand $[l, mid]$ kesma uchun javob beradi, ya’ni uning ost-daraxtida ja
 Shundan $v$ tugunning o‘ng farzandi indeksini hisoblash mumkin: u $v + 2 * (mid - l + 1)$ ga teng.
 Bunday raqamlash zarur xotirani $2n$ gacha kamaytiradi.
 
-## Segment Tree’ning ilg‘or ko‘rinishlari
+## Segment daraxtining ilg‘or ko‘rinishlari
 
-Segment Tree juda moslashuvchan ma’lumotlar tuzilmasi bo‘lib, uni turli yo‘nalishlarda o‘zgartirish va kengaytirish mumkin.
+Segment daraxti juda moslashuvchan ma’lumotlar tuzilmasi bo‘lib, uni turli yo‘nalishlarda o‘zgartirish va kengaytirish mumkin.
 Quyida bu variantlarni guruhlarga ajratishga harakat qilamiz.
 
 ### Murakkabroq so‘rovlar
 
-Segment Tree’ni yig‘indi o‘rniga minimum yoki maksimum kabi boshqa so‘rovlarni hisoblaydigan qilib o‘zgartirish ba’zan juda oson, ba’zan esa ancha murakkab bo‘lishi mumkin.
+Segment daraxtini yig‘indi o‘rniga minimum yoki maksimum kabi boshqa so‘rovlarni hisoblaydigan qilib o‘zgartirish ba’zan juda oson, ba’zan esa ancha murakkab bo‘lishi mumkin.
 
 #### Maksimumni topish
 
@@ -321,11 +321,11 @@ void update(int v, int tl, int tr, int pos, int new_val) {
 
 Bu masalada massivning berilgan oraliqlaridagi barcha sonlarning EKUB yoki EKUKini hisoblamoqchimiz.
 
-Segment Tree’ning bu qiziqarli varianti yig‘indi, minimum yoki maksimum so‘rovlari uchun qurilgan Segment Tree’lar bilan aynan bir xil usulda yechiladi:
+Segment daraxtining bu qiziqarli varianti yig‘indi, minimum yoki maksimum so‘rovlari uchun qurilgan segment daraxtlari bilan aynan bir xil usulda yechiladi:
 har bir daraxt tugunida mos kesmaning EKUBi yoki EKUKini saqlash kifoya.
 Ikki tugun qiymatini ularning EKUBi yoki EKUKini hisoblash orqali birlashtirish mumkin.
 
-#### Nollar sonini sanash va $k$-nolni qidirish {data-toc-label="Counting the number of zeros, searching for the k-th zero"}
+#### Nollar sonini sanash va $k$-nolni qidirish {#counting-zero-search-kth}
 
 Bu masalada berilgan oraliqdagi nollar sonini topish, ikkinchi funksiya yordamida esa $k$-nol indeksini aniqlash kerak.
 
@@ -335,7 +335,7 @@ $\text{build}$, $\text{update}$ va $\texttt{count\_zero}$ funksiyalarini yig‘i
 Shu bilan masalaning birinchi qismi yechildi.
 
 Endi $a[]$ massivdagi $k$-nolni topishni o‘rganamiz.
-Buning uchun ildizdan boshlab Segment Tree bo‘ylab pastga tushamiz va $k$-nol qaysi kesmada yotishiga qarab har safar chap yoki o‘ng farzandga o‘tamiz.
+Buning uchun ildizdan boshlab segment daraxti bo‘ylab pastga tushamiz va $k$-nol qaysi kesmada yotishiga qarab har safar chap yoki o‘ng farzandga o‘tamiz.
 Qaysi farzandga o‘tishni aniqlash uchun chap farzandga mos kesmadagi nollar soniga qarash yetarli.
 Agar oldindan hisoblangan bu son $k$ dan katta yoki unga teng bo‘lsa, chap farzandga tushamiz; aks holda o‘ng farzandga tushamiz.
 O‘ng farzand tanlansa, $k$ dan chap farzanddagi nollar sonini ayirish kerakligini unutmang.
@@ -361,7 +361,7 @@ int find_kth(int v, int tl, int tr, int k) {
 Masala quyidagicha:
 berilgan $x$ qiymat uchun $a[]$ massivining dastlabki $i$ elementi yig‘indisi $x$ dan katta yoki unga teng bo‘ladigan eng kichik $i$ indeksni tez topish kerak. Bunda $a[]$ faqat manfiy bo‘lmagan qiymatlardan iborat deb faraz qilinadi.
 
-Bu masalani Segment Tree yordamida prefiks yig‘indilarini hisoblab, ikkilik qidiruv bilan yechish mumkin.
+Bu masalani segment daraxti yordamida prefiks yig‘indilarini hisoblab, ikkilik qidiruv bilan yechish mumkin.
 Biroq bunday yechim murakkabligi $O(\log^2 n)$ bo‘ladi.
 
 Buning o‘rniga avvalgi bo‘limdagi kabi daraxt bo‘ylab pastga tushib, chap farzand yig‘indisiga qarab har safar chap yoki o‘ng farzandga o‘tish orqali pozitsiyani topish mumkin.
@@ -372,7 +372,7 @@ Shunda javob $O(\log n)$ vaqtda topiladi.
 Masala quyidagicha:
 berilgan $x$ qiymat va $a[l \dots r]$ oraliq uchun $a[l \dots r]$ ichidagi $a[i]$ qiymati $x$ dan katta bo‘ladigan eng kichik $i$ indeksni topish kerak.
 
-Bu masalani Segment Tree’dagi maksimum prefiks so‘rovlari ustida ikkilik qidiruv bajarib yechish mumkin.
+Bu masalani segment daraxtidagi maksimum prefiks so‘rovlari ustida ikkilik qidiruv bajarib yechish mumkin.
 Ammo bu $O(\log^2 n)$ murakkablikli yechim beradi.
 
 Buning o‘rniga avvalgi bo‘limlardagi g‘oyani ishlatib, daraxt bo‘ylab pastga tushish orqali pozitsiyani topamiz:
@@ -399,10 +399,10 @@ Har bir so‘rovda yana $a[l \dots r]$ oraliq beriladi. Bu safar $l \le l^\prime
 Avvalgidek, massivning alohida elementlarini o‘zgartirish imkonini ham saqlab qolmoqchimiz.
 Massiv elementlari manfiy bo‘lishi mumkin; optimal ostkesma bo‘sh ham bo‘lishi mumkin, masalan barcha elementlar manfiy bo‘lsa.
 
-Bu Segment Tree’ning notrivial qo‘llanishidir.
+Bu segment daraxtining notrivial qo‘llanishidir.
 Bu safar har bir tugunda to‘rtta qiymat saqlaymiz:
 kesma yig‘indisi, maksimal prefiks yig‘indisi, maksimal suffiks yig‘indisi va shu kesmadagi maksimal ostkesma yig‘indisi.
-Boshqacha aytganda, Segment Tree’ning har bir kesmasi uchun javob bilan birga kesmaning chap va o‘ng chegaralariga tegib turadigan ostkesmalar javoblari ham oldindan hisoblanadi.
+Boshqacha aytganda, segment daraxtining har bir kesmasi uchun javob bilan birga kesmaning chap va o‘ng chegaralariga tegib turadigan ostkesmalar javoblari ham oldindan hisoblanadi.
 
 Bunday ma’lumotli daraxt qanday quriladi?
 Yana rekursiv usuldan foydalanamiz:
@@ -411,7 +411,7 @@ Joriy tugun javobi quyidagi uch holatdan biriga mos keladi:
 
  * chap farzand javobi — optimal ostkesma to‘liq chap farzand kesmasida yotadi;
  * o‘ng farzand javobi — optimal ostkesma to‘liq o‘ng farzand kesmasida yotadi;
- * chap farzandning maksimal suffiks yig‘indisi bilan o‘ng farzandning maksimal prefiks yig‘indisi yig‘indisi — optimal ostkesma ikkala farzand kesmasini ham kesib o‘tadi.
+ * chap farzand maksimal suffiks yig‘indisining o‘ng farzand maksimal prefiks yig‘indisi bilan yig‘indisi — optimal ostkesma ikkala farzand kesmasini ham kesib o‘tadi.
 
 Demak, joriy tugun javobi shu uch qiymatning maksimumidir.
 Maksimal prefiks va suffiks yig‘indilarini hisoblash bundan ham oson.
@@ -432,7 +432,7 @@ data combine(data l, data r) {
 }
 ```
 
-$\text{combine}$ funksiyasi yordamida Segment Tree’ni qurish oson.
+$\text{combine}$ funksiyasi yordamida segment daraxtini qurish oson.
 Uni avvalgi implementatsiyalar bilan aynan bir xil usulda yozish mumkin.
 Barg tugunlarni boshlang‘ich qiymat bilan to‘ldirish uchun bitta qiymat haqidagi ma’lumotni saqlovchi $\text{data}$ obyektini qaytaradigan yordamchi $\texttt{make\_data}$ funksiyasini ham yaratamiz.
 
@@ -470,8 +470,8 @@ void update(int v, int tl, int tr, int pos, int new_val) {
 ```
 
 Endi faqat so‘rov javobini hisoblash qoldi.
-Avvalgidek daraxt bo‘ylab pastga tushamiz, so‘rovni Segment Tree tugunlari kesmalariga aynan mos keladigan bir nechta ostkesmaga ajratamiz va ulardagi javoblarni so‘rov uchun yagona javobga birlashtiramiz.
-Ish oddiy Segment Tree’dagi bilan aynan bir xil, faqat qiymatlarni qo‘shish, minimum yoki maksimum olish o‘rniga $\text{combine}$ funksiyasidan foydalanamiz.
+Avvalgidek daraxt bo‘ylab pastga tushamiz, so‘rovni segment daraxti tugunlari kesmalariga aynan mos keladigan bir nechta ostkesmaga ajratamiz va ulardagi javoblarni so‘rov uchun yagona javobga birlashtiramiz.
+Ish oddiy segment daraxtidagi bilan aynan bir xil, faqat qiymatlarni qo‘shish, minimum yoki maksimum olish o‘rniga $\text{combine}$ funksiyasidan foydalanamiz.
 
 ```cpp
 data query(int v, int tl, int tr, int l, int r) {
@@ -487,37 +487,37 @@ data query(int v, int tl, int tr, int l, int r) {
 
 ### Har bir tugunda butun ostmassivni saqlash
 
-Bu kichik bo‘lim boshqalaridan ajralib turadi: Segment Tree’ning har bir tugunida mos kesma haqidagi ma’lumotni siqilgan ko‘rinishda — yig‘indi, minimum, maksimum va hokazo — emas, kesmaning barcha elementlarini saqlaymiz.
-Shunday qilib, Segment Tree ildizi massivning barcha elementlarini, chap farzand massivning birinchi yarmini, o‘ng farzand ikkinchi yarmini va shu tarzda davom etib saqlaydi.
+Bu kichik bo‘lim boshqalaridan ajralib turadi: Segment daraxtining har bir tugunida mos kesma haqidagi ma’lumotni siqilgan ko‘rinishda — yig‘indi, minimum, maksimum va hokazo — emas, kesmaning barcha elementlarini saqlaymiz.
+Shunday qilib, segment daraxti ildizi massivning barcha elementlarini, chap farzand massivning birinchi yarmini, o‘ng farzand ikkinchi yarmini va shu tarzda davom etib saqlaydi.
 
 Bu texnikaning eng sodda qo‘llanishida elementlar saralangan tartibda saqlanadi.
 Murakkabroq variantlarda ular ro‘yxatlarda emas, `set`, `map` kabi ilg‘or ma’lumotlar tuzilmalarida saqlanadi.
 Barcha usullarning umumiy jihati shuki, har bir tugun mos kesma uzunligiga mutanosib chiziqli xotira talab qiladi.
 
-Bunday Segment Tree’larni ko‘rganda tug‘iladigan birinchi tabiiy savol xotira sarfi haqidadir.
+Bunday segment daraxtlarini ko‘rganda tug‘iladigan birinchi tabiiy savol xotira sarfi haqidadir.
 Intuitiv ravishda $O(n^2)$ xotira kerakdek tuyulishi mumkin, ammo butun daraxtga atigi $O(n \log n)$ xotira yetadi.
 Nega?
 Chunki massivning har bir elementi $O(\log n)$ ta kesmaga kiradi; daraxt balandligi $O(\log n)$ ekanini eslang.
 
-Demak, bunday Segment Tree tashqi ko‘rinishidan isrofgar tuyulsa ham, odatiy Segment Tree’dan faqat biroz ko‘proq xotira sarflaydi.
+Demak, bunday segment daraxti tashqi ko‘rinishidan isrofgar tuyulsa ham, odatiy segment daraxtidan faqat biroz ko‘proq xotira sarflaydi.
 
 Quyida bu ma’lumotlar tuzilmasining bir nechta odatiy qo‘llanishi tasvirlangan.
-Bunday Segment Tree’larning ikki o‘lchamli ma’lumotlar tuzilmalariga o‘xshashligini ham qayd etish kerak. Aslida bu imkoniyatlari ancha cheklangan ikki o‘lchamli tuzilmadir.
+Bunday segment daraxtlarining ikki o‘lchamli ma’lumotlar tuzilmalariga o‘xshashligini ham qayd etish kerak. Aslida bu imkoniyatlari ancha cheklangan ikki o‘lchamli tuzilmadir.
 
 #### Berilgan sondan katta yoki unga teng eng kichik sonni topish: yangilash so‘rovlari yo‘q
 
 Quyidagi ko‘rinishdagi so‘rovlarga javob bermoqchimiz:
 berilgan $(l, r, x)$ uchlik uchun $a[l \dots r]$ kesmada $x$ dan katta yoki unga teng bo‘lgan eng kichik sonni topish kerak.
 
-Segment Tree quramiz.
+Segment daraxti quramiz.
 Yuqorida aytilganidek, har bir tugunda mos kesmada uchraydigan barcha sonlarning saralangan ro‘yxatini saqlaymiz.
-Bunday Segment Tree’ni imkon qadar samarali qanday qurish mumkin?
+Bunday segment daraxtini imkon qadar samarali qanday qurish mumkin?
 Har doimgidek, masalaga rekursiv yondashamiz: chap va o‘ng farzandlarning ro‘yxatlari allaqachon qurilgan bo‘lsin, joriy tugun ro‘yxatini qurish kerak.
 Bu nuqtai nazardan amal juda sodda va chiziqli vaqtda bajariladi:
 ikki saralangan ro‘yxatni ikkita ko‘rsatkich bilan yurib bitta ro‘yxatga birlashtirish kifoya.
 C++ standart kutubxonasida bu algoritm tayyor implementatsiya qilingan.
 
-Segment Tree’ning ushbu tuzilishi merge sort algoritmiga o‘xshagani uchun ma’lumotlar tuzilmasi ko‘pincha **Merge Sort Tree** deb ham ataladi.
+Segment daraxtining ushbu tuzilishi merge sort algoritmiga o‘xshagani uchun ma’lumotlar tuzilmasi ko‘pincha **Merge Sort Tree** deb ham ataladi.
 
 ```cpp
 vector<int> t[4*MAXN];
@@ -535,15 +535,15 @@ void build(int a[], int v, int tl, int tr) {
 }
 ```
 
-Bunday usulda qurilgan Segment Tree $O(n \log n)$ xotira talab qilishini bilamiz.
+Bunday usulda qurilgan segment daraxti $O(n \log n)$ xotira talab qilishini bilamiz.
 Ushbu implementatsiya tufayli qurish ham $O(n \log n)$ vaqt oladi, chunki har bir ro‘yxat o‘z o‘lchamiga nisbatan chiziqli vaqtda quriladi.
 
 Endi so‘rovga javob berishni ko‘rib chiqamiz.
-Odatiy Segment Tree’dagi kabi daraxt bo‘ylab pastga tushib, $a[l \dots r]$ kesmani bir nechta — ko‘pi bilan $O(\log n)$ ta — ostkesmaga ajratamiz.
+Odatiy segment daraxtidagi kabi daraxt bo‘ylab pastga tushib, $a[l \dots r]$ kesmani bir nechta — ko‘pi bilan $O(\log n)$ ta — ostkesmaga ajratamiz.
 Butun so‘rov javobi ostso‘rovlar javoblarining minimumi bo‘lishi ravshan.
 Endi daraxtning biror tuguniga aynan mos keladigan bitta ostkesma so‘roviga qanday javob berishni tushunish kifoya.
 
-Segment Tree’ning biror tugunidamiz va berilgan $x$ sondan katta yoki unga teng eng kichik sonni topmoqchimiz.
+Segment daraxtining biror tugunidamiz va berilgan $x$ sondan katta yoki unga teng eng kichik sonni topmoqchimiz.
 Tugundagi elementlar ro‘yxati saralangan bo‘lgani uchun unda oddiy ikkilik qidiruv bajarib, $x$ dan katta yoki unga teng birinchi sonni qaytarish mumkin.
 
 Daraxtning bitta kesmasidagi so‘rovga javob $O(\log n)$ vaqt oladi, butun so‘rov esa $O(\log^2 n)$ vaqtda qayta ishlanadi.
@@ -574,10 +574,10 @@ Bu masala oldingisiga o‘xshaydi.
 Avvalgi yondashuvning kamchiligi shuki, so‘rovlarga javob berish orasida massivni o‘zgartirib bo‘lmas edi.
 Endi aynan shuni qo‘llab-quvvatlaymiz: yangilash so‘rovi $a[i] = y$ qiymat berish amalini bajaradi.
 
-Yechim avvalgi masala yechimiga o‘xshaydi, ammo Segment Tree’ning har bir tugunida oddiy ro‘yxat o‘rniga sonni tez qidirish, o‘chirish va qo‘shish imkonini beradigan muvozanatlangan tuzilma saqlaymiz.
+Yechim avvalgi masala yechimiga o‘xshaydi, ammo segment daraxtining har bir tugunida oddiy ro‘yxat o‘rniga sonni tez qidirish, o‘chirish va qo‘shish imkonini beradigan muvozanatlangan tuzilma saqlaymiz.
 Massivda bir xil son bir necha marta uchrashi mumkinligi sababli eng maqbul tanlov $\text{multiset}$ ma’lumotlar tuzilmasidir.
 
-Bunday Segment Tree avvalgi masaladagidek quriladi, faqat endi saralangan ro‘yxatlar emas, $\text{multiset}$ lar birlashtiriladi.
+Bunday segment daraxti avvalgi masaladagidek quriladi, faqat endi saralangan ro‘yxatlar emas, $\text{multiset}$ lar birlashtiriladi.
 Natijada qurish vaqti $O(n \log^2 n)$ bo‘ladi. Umuman olganda, ikkita qizil-qora daraxtni chiziqli vaqtda birlashtirish mumkin, ammo C++ standart kutubxonasi bunday murakkablikni kafolatlamaydi.
 
 $\text{query}$ funksiyasi ham deyarli o‘zgarmaydi, faqat endi $\text{multiset}$ ning $\texttt{lower\_bound}$ funksiyasini chaqirish kerak. $\texttt{std::lower\_bound}$ random-access iteratorlar bilan ishlatilgandagina $O(\log n)$ vaqt ishlaydi.
@@ -626,7 +626,7 @@ Bunday tuzilma uchun faqat ikkita indeksni: elementning asl ro‘yxatdagi indeks
 Natijada yondashuv atigi $O(n)$ xotira sarflaydi va so‘rovlarga hanuz bitta ikkilik qidiruv yordamida javob beradi.
 
 Ammo bizning qo‘llanishimizda fractional cascading’ning barcha imkoniyatlari kerak emas.
-Segment Tree tuguni chap yoki o‘ng ost-daraxtda uchraydigan barcha elementlarning saralangan ro‘yxatini saqlaydi — Merge Sort Tree’dagi kabi.
+Segment daraxti tuguni chap yoki o‘ng ost-daraxtda uchraydigan barcha elementlarning saralangan ro‘yxatini saqlaydi — Merge Sort Tree’dagi kabi.
 Bu saralangan ro‘yxat bilan birga har bir element uchun ikkita pozitsiyani ham saqlaymiz.
 $y$ element uchun chap farzandning saralangan ro‘yxatidagi $i$-element $y$ dan katta yoki unga teng bo‘ladigan eng kichik $i$ indeksni saqlaymiz.
 Xuddi shuningdek, o‘ng farzandning saralangan ro‘yxatidagi $j$-element $y$ dan katta yoki unga teng bo‘ladigan eng kichik $j$ indeksni saqlaymiz.
@@ -659,19 +659,19 @@ Yangilash vaqtida aynan kerakli iteratorlarni oshirish yoki kamaytirish uchun ju
 
 Bu texnika mumkin bo‘lgan qo‘llanishlarning butunlay yangi sinfini beradi.
 Har bir tugunda $\text{vector}$ yoki $\text{multiset}$ saqlash o‘rniga boshqa ma’lumotlar tuzilmalaridan foydalanish mumkin:
-boshqa Segment Tree’lar — bu haqda [Katta o‘lchamlarga umumlashtirish](/algorithms/data-structures/segment-tree#generalization-to-higher-dimensions) bo‘limida qisman so‘z yuritiladi — Fenwick Tree’lar, Dekart daraxtlari va hokazo.
+boshqa segment daraxtlari — bu haqda [Katta o‘lchamlarga umumlashtirish](/algorithms/data-structures/segment-tree#generalization-to-higher-dimensions) bo‘limida qisman so‘z yuritiladi — Fenwick daraxtlari, Dekart daraxtlari va hokazo.
 
-### Oraliq yangilashlari: lazy propagation
+### Oraliq yangilashlari (kechiktirib tarqatish)
 
 Yuqoridagi barcha masalalarda yangilash so‘rovi massivning faqat bitta elementiga ta’sir qilardi.
-Biroq Segment Tree ketma-ket elementlarning butun kesmasiga yangilash qo‘llash va so‘rovni o‘sha $O(\log n)$ vaqtda bajarish imkonini beradi.
+Biroq segment daraxti ketma-ket elementlarning butun kesmasiga yangilash qo‘llash va so‘rovni o‘sha $O(\log n)$ vaqtda bajarish imkonini beradi.
 
 #### Kesmaga qiymat qo‘shish
 
 Eng sodda ko‘rinishdagi masaladan boshlaymiz: yangilash so‘rovi $a[l \dots r]$ kesmadagi barcha sonlarga $x$ sonini qo‘shishi kerak.
 Javob beriladigan ikkinchi turdagi so‘rov esa shunchaki $a[i]$ qiymatini so‘raydi.
 
-Qo‘shish so‘rovini samarali bajarish uchun Segment Tree’ning har bir tugunida mos kesmadagi barcha sonlarga qancha qo‘shish kerakligini saqlaymiz.
+Qo‘shish so‘rovini samarali bajarish uchun segment daraxtining har bir tugunida mos kesmadagi barcha sonlarga qancha qo‘shish kerakligini saqlaymiz.
 Masalan, “butun $a[0 \dots n-1]$ massivga 3 qo‘shish” so‘rovi kelsa, daraxt ildiziga 3 sonini yozamiz.
 Umumiy holatda bu sonni so‘rov kesmasini bo‘laklaydigan bir nechta tugunga yozish kerak.
 Shunday qilib, barcha $O(n)$ ta qiymatni emas, atigi $O(\log n)$ ta tugunni o‘zgartiramiz.
@@ -718,7 +718,7 @@ int get(int v, int tl, int tr, int pos) {
 Endi yangilash so‘rovi muayyan $a[l \dots r]$ kesmaning har bir elementiga biror $p$ qiymatni berishini faraz qilaylik.
 Ikkinchi turdagi so‘rov sifatida yana $a[i]$ massiv elementi qiymatini o‘qishni ko‘ramiz.
 
-Yangilashni butun kesmaga qo‘llash uchun Segment Tree’ning har bir tugunida mos kesma to‘liq bir xil qiymat bilan qoplangan yoki qoplanmaganini saqlash kerak.
+Yangilashni butun kesmaga qo‘llash uchun segment daraxtining har bir tugunida mos kesma to‘liq bir xil qiymat bilan qoplangan yoki qoplanmaganini saqlash kerak.
 Bu **kechiktirilgan**, ya’ni lazy yangilash bajarish imkonini beradi:
 so‘rov kesmasini qoplaydigan daraxtdagi barcha kesmalarni o‘zgartirish o‘rniga faqat ayrimlarini o‘zgartirib, qolganlarini hozircha tegmasdan qoldiramiz.
 Belgilangan tugun mos kesmaning har bir elementiga shu qiymat berilganini, aslida uning butun ost-daraxtida ham faqat shu qiymat bo‘lishi kerakligini bildiradi.
@@ -727,7 +727,7 @@ Bu zerikarli ishni zarur bo‘lgandagina bajarish mumkin.
 
 Shu sababli yangilash so‘rovidan keyin daraxtning ayrim qismlaridagi eski ma’lumot bevosita ishlatib bo‘lmaydigan bo‘ladi: ularda ba’zi yangilashlar hali pastga uzatilmagan.
 
-Masalan, “butun $a[0 \dots n-1]$ massivga biror sonni berish” so‘rovi bajarilsa, Segment Tree’da faqat bitta o‘zgarish qilinadi: son ildizga yoziladi va ildiz belgilanadi.
+Masalan, “butun $a[0 \dots n-1]$ massivga biror sonni berish” so‘rovi bajarilsa, segment daraxtida faqat bitta o‘zgarish qilinadi: son ildizga yoziladi va ildiz belgilanadi.
 Qolgan kesmalar o‘zgarmaydi, garchi aslida son butun daraxt bo‘ylab yozilishi kerak bo‘lsa ham.
 
 Endi ikkinchi yangilash so‘rovi massivning birinchi yarmi — $a[0 \dots n/2]$ — ga boshqa sonni berishni talab qilsin.
@@ -788,7 +788,7 @@ kechiktirilgan yangilashlarni pastga tushirmasdan, $marked[v]$ rost bo‘lsa, da
 
 Endi yangilash so‘rovi oraliqdagi barcha elementlarga son qo‘shadi, o‘qish so‘rovi esa oraliq maksimumini topadi.
 
-Segment Tree’ning har bir tugunida mos ostkesma maksimumini saqlash kerak.
+Segment daraxtining har bir tugunida mos ostkesma maksimumini saqlash kerak.
 Qiziqarli qism — yangilash so‘rovi vaqtida bu qiymatlarni qanday qayta hisoblashdir.
 
 Buning uchun har bir tugunda yana bir qo‘shimcha qiymat saqlaymiz.
@@ -845,25 +845,25 @@ int query(int v, int tl, int tr, int l, int r) {
 
 ### Katta o‘lchamlarga umumlashtirish
 
-Segment Tree’ni tabiiy tarzda kattaroq o‘lchamlarga umumlashtirish mumkin.
-Bir o‘lchamli holatda massiv indekslarini kesmalarga bo‘lsak, ikki o‘lchamli holatda avval birinchi indekslar bo‘yicha odatiy Segment Tree quramiz, so‘ng uning har bir kesmasi uchun ikkinchi indekslar bo‘yicha yana odatiy Segment Tree quramiz.
+Segment daraxtini tabiiy tarzda kattaroq o‘lchamlarga umumlashtirish mumkin.
+Bir o‘lchamli holatda massiv indekslarini kesmalarga bo‘lsak, ikki o‘lchamli holatda avval birinchi indekslar bo‘yicha odatiy segment daraxti quramiz, so‘ng uning har bir kesmasi uchun ikkinchi indekslar bo‘yicha yana odatiy segment daraxti quramiz.
 
-#### Sodda ikki o‘lchamli Segment Tree
+#### Sodda ikki o‘lchamli segment daraxti
 
 $a[0 \dots n-1, 0 \dots m-1]$ matritsa berilgan. Biror $a[x_1 \dots x_2, y_1 \dots y_2]$ ostmatritsada yig‘indi — yoki minimum/maksimum — topish, shuningdek matritsaning alohida elementlarini o‘zgartirish, ya’ni $a[x][y] = p$ ko‘rinishidagi so‘rovlarni bajarish kerak.
 
-Ikki o‘lchamli Segment Tree quramiz: avval birinchi koordinata — $x$ — bo‘yicha, keyin ikkinchi koordinata — $y$ — bo‘yicha Segment Tree.
+Ikki o‘lchamli segment daraxti quramiz: avval birinchi koordinata — $x$ — bo‘yicha, keyin ikkinchi koordinata — $y$ — bo‘yicha segment daraxti.
 
 Qurish jarayonini tushunarliroq qilish uchun matritsaning ikki o‘lchamli ekanini vaqtincha unutib, faqat birinchi koordinatani qoldirish mumkin.
-Faqat birinchi koordinata bo‘yicha oddiy bir o‘lchamli Segment Tree quramiz.
-Ammo kesmada bitta son o‘rniga butun Segment Tree saqlaymiz:
-ya’ni ikkinchi koordinata borligini yana hisobga olamiz. Hozir birinchi koordinata $[l \dots r]$ oraliqda mahkamlanganligi sababli aslida $a[l \dots r, 0 \dots m-1]$ tasma bilan ishlaymiz va uning uchun Segment Tree quramiz.
+Faqat birinchi koordinata bo‘yicha oddiy bir o‘lchamli segment daraxti quramiz.
+Ammo kesmada bitta son o‘rniga butun segment daraxti saqlaymiz:
+ya’ni ikkinchi koordinata borligini yana hisobga olamiz. Hozir birinchi koordinata $[l \dots r]$ oraliqda mahkamlanganligi sababli aslida $a[l \dots r, 0 \dots m-1]$ tasma bilan ishlaymiz va uning uchun segment daraxti quramiz.
 
-Quyida ikki o‘lchamli Segment Tree’ni qurish implementatsiyasi berilgan.
+Quyida ikki o‘lchamli segment daraxtini qurish implementatsiyasi berilgan.
 U aslida ikki alohida qismdan iborat:
-$x$ koordinata bo‘yicha Segment Tree qurish — $\text{build}_x$ — va $y$ koordinata bo‘yicha qurish — $\text{build}_y$.
+$x$ koordinata bo‘yicha segment daraxti qurish — $\text{build}_x$ — va $y$ koordinata bo‘yicha qurish — $\text{build}_y$.
 $\text{build}_y$ ichidagi barg tugunlarda ikki holatni ajratish kerak:
-birinchi koordinataning joriy $[tlx \dots trx]$ kesmasi uzunligi 1 bo‘lgan holat va uzunligi 1 dan katta bo‘lgan holat. Birinchi holatda matritsadan mos qiymatni olamiz; ikkinchisida esa $x$ koordinata bo‘yicha chap va o‘ng farzandlarning ikki Segment Tree qiymatini birlashtiramiz.
+birinchi koordinataning joriy $[tlx \dots trx]$ kesmasi uzunligi 1 bo‘lgan holat va uzunligi 1 dan katta bo‘lgan holat. Birinchi holatda matritsadan mos qiymatni olamiz; ikkinchisida esa $x$ koordinata bo‘yicha chap va o‘ng farzandlarning ikki segment daraxti qiymatini birlashtiramiz.
 
 ```cpp
 void build_y(int vx, int lx, int rx, int vy, int ly, int ry) {
@@ -890,11 +890,11 @@ void build_x(int vx, int lx, int rx) {
 }
 ```
 
-Bunday Segment Tree ham chiziqli xotira ishlatadi, lekin kattaroq o‘zgarmas koeffitsiyent bilan: $16 n m$.
+Bunday segment daraxti ham chiziqli xotira ishlatadi, lekin kattaroq o‘zgarmas koeffitsiyent bilan: $16 n m$.
 Ta’riflangan $\text{build}_x$ amali ham chiziqli vaqtda ishlashi ravshan.
 
 Endi so‘rovlarni qayta ishlashga o‘tamiz. Ikki o‘lchamli so‘rovga ayni tamoyil bilan javob beramiz:
-avval so‘rovni birinchi koordinata bo‘yicha ajratamiz, so‘ng erishilgan har bir tugunda ikkinchi koordinataga mos Segment Tree so‘rovini chaqiramiz.
+avval so‘rovni birinchi koordinata bo‘yicha ajratamiz, so‘ng erishilgan har bir tugunda ikkinchi koordinataga mos segment daraxti so‘rovini chaqiramiz.
 
 ```cpp
 int sum_y(int vx, int vy, int tly, int try_, int ly, int ry) {
@@ -918,11 +918,11 @@ int sum_x(int vx, int tlx, int trx, int lx, int rx, int ly, int ry) {
 }
 ```
 
-Bu funksiya $O(\log n \log m)$ vaqtda ishlaydi: u avval birinchi koordinata bo‘yicha daraxtdan tushadi va tashrif buyurilgan har bir tugun uchun ikkinchi koordinata bo‘yicha mos Segment Tree’da so‘rov bajaradi.
+Bu funksiya $O(\log n \log m)$ vaqtda ishlaydi: u avval birinchi koordinata bo‘yicha daraxtdan tushadi va tashrif buyurilgan har bir tugun uchun ikkinchi koordinata bo‘yicha mos segment daraxtida so‘rov bajaradi.
 
 Nihoyat, yangilash so‘rovini ko‘rib chiqamiz.
-Biror $a[x][y] = p$ element qiymati o‘zgarganda Segment Tree’ni qanday yangilashni o‘rganmoqchimiz.
-O‘zgarishlar birinchi Segment Tree’da faqat $x$ koordinatani qoplaydigan tugunlarda — bunday tugunlar soni $O(\log n)$ — sodir bo‘ladi. Ularga mos Segment Tree’larda esa faqat $y$ koordinatani qoplaydigan tugunlar — ularning soni $O(\log m)$ — o‘zgaradi.
+Biror $a[x][y] = p$ element qiymati o‘zgarganda segment daraxtini qanday yangilashni o‘rganmoqchimiz.
+O‘zgarishlar birinchi segment daraxtida faqat $x$ koordinatani qoplaydigan tugunlarda — bunday tugunlar soni $O(\log n)$ — sodir bo‘ladi. Ularga mos segment daraxtlarida esa faqat $y$ koordinatani qoplaydigan tugunlar — ularning soni $O(\log m)$ — o‘zgaradi.
 Shu sababli implementatsiya bir o‘lchamli holatdan keskin farq qilmaydi: faqat avval birinchi koordinata, keyin ikkinchi koordinata bo‘yicha pastga tushamiz.
 
 ```cpp
@@ -954,41 +954,41 @@ void update_x(int vx, int lx, int rx, int x, int y, int new_val) {
 }
 ```
 
-#### Ikki o‘lchamli Segment Tree’ni siqish
+#### Ikki o‘lchamli segment daraxtini siqish
 
 Quyidagi masala berilgan bo‘lsin: tekislikda koordinatalari $(x_i, y_i)$ bo‘lgan $n$ ta nuqta bor va “$((x_1, y_1), (x_2, y_2))$ to‘g‘ri to‘rtburchak ichida yotgan nuqtalar sonini sanash” ko‘rinishidagi so‘rovlarga javob berish kerak.
-Bunday masalada $O(n^2)$ elementli ikki o‘lchamli Segment Tree qurish haddan tashqari isrofgar bo‘lishi ravshan.
+Bunday masalada $O(n^2)$ elementli ikki o‘lchamli segment daraxti qurish haddan tashqari isrofgar bo‘lishi ravshan.
 Bu xotiraning katta qismi ishlatilmaydi: har bir nuqta birinchi koordinata bo‘yicha daraxtning atigi $O(\log n)$ ta kesmasiga kiradi. Shu bois ikkinchi koordinata bo‘yicha barcha daraxt kesmalarining jami “foydali” o‘lchami $O(n \log n)$ ga teng.
 
 Shuning uchun quyidagicha ish tutamiz:
-birinchi koordinata bo‘yicha Segment Tree’ning har bir tugunida faqat joriy birinchi koordinata kesmasida uchraydigan ikkinchi koordinatalardan qurilgan Segment Tree saqlaymiz.
-Boshqacha aytganda, $vx$ indeksli, chegaralari $tlx$ va $trx$ bo‘lgan tugun ichida Segment Tree qurayotganda faqat $x \in [tlx, trx]$ oraliqqa tushadigan nuqtalarni ko‘rib, daraxtni faqat ular asosida quramiz.
+birinchi koordinata bo‘yicha segment daraxtining har bir tugunida faqat joriy birinchi koordinata kesmasida uchraydigan ikkinchi koordinatalardan qurilgan segment daraxti saqlaymiz.
+Boshqacha aytganda, $vx$ indeksli, chegaralari $tlx$ va $trx$ bo‘lgan tugun ichida segment daraxti qurayotganda faqat $x \in [tlx, trx]$ oraliqqa tushadigan nuqtalarni ko‘rib, daraxtni faqat ular asosida quramiz.
 
-Shunda ikkinchi koordinata bo‘yicha har bir Segment Tree aynan zarur miqdordagi xotirani egallaydi.
+Shunda ikkinchi koordinata bo‘yicha har bir segment daraxti aynan zarur miqdordagi xotirani egallaydi.
 Natijada umumiy xotira sarfi $O(n \log n)$ gacha kamayadi.
 Ikkinchi koordinata bo‘yicha ikkilik qidiruv bajarishga to‘g‘ri kelsa ham, so‘rovlarga $O(\log^2 n)$ vaqtda javob berish mumkin; bu umumiy murakkablikni yomonlashtirmaydi.
 
 Ammo bunday tuzilmada yangilash so‘rovlari imkonsiz bo‘ladi:
-yangi nuqta paydo bo‘lsa, uni ikkinchi koordinata bo‘yicha biror Segment Tree o‘rtasiga yangi element sifatida qo‘shish kerak, buni esa samarali bajarib bo‘lmaydi.
+yangi nuqta paydo bo‘lsa, uni ikkinchi koordinata bo‘yicha biror segment daraxti o‘rtasiga yangi element sifatida qo‘shish kerak, buni esa samarali bajarib bo‘lmaydi.
 
-Xulosa qilib, shu usulda siqilgan ikki o‘lchamli Segment Tree amalda bir o‘lchamli Segment Tree’ning [Har bir tugunda butun ostmassivni saqlash](/algorithms/data-structures/segment-tree#saving-the-entire-subarrays-in-each-vertex) variantiga deyarli teng ekanini qayd etamiz.
-Xususan, ikki o‘lchamli Segment Tree har bir daraxt tugunida ostmassiv saqlashning maxsus holatidir.
-Shundan kelib chiqadiki, biror so‘rovni bajarib bo‘lmagani sababli ikki o‘lchamli Segment Tree’dan voz kechishga to‘g‘ri kelsa, ichki Segment Tree’ni kuchliroq ma’lumotlar tuzilmasi, masalan Dekart daraxti bilan almashtirishni sinab ko‘rish maqsadga muvofiq.
+Xulosa qilib, shu usulda siqilgan ikki o‘lchamli segment daraxti amalda bir o‘lchamli segment daraxtining [Har bir tugunda butun ostmassivni saqlash](/algorithms/data-structures/segment-tree#saving-the-entire-subarrays-in-each-vertex) variantiga deyarli teng ekanini qayd etamiz.
+Xususan, ikki o‘lchamli segment daraxti har bir daraxt tugunida ostmassiv saqlashning maxsus holatidir.
+Shundan kelib chiqadiki, biror so‘rovni bajarib bo‘lmagani sababli ikki o‘lchamli segment daraxtidan voz kechishga to‘g‘ri kelsa, ichki segment daraxtini kuchliroq ma’lumotlar tuzilmasi, masalan Dekart daraxti bilan almashtirishni sinab ko‘rish maqsadga muvofiq.
 
-### Qiymatlar tarixini saqlash: persistent Segment Tree
+### Qiymatlar tarixini saqlash: persistent segment daraxti
 
 **Persistent ma’lumotlar tuzilmasi** har bir yangilashdan oldingi holatini eslab qoladigan tuzilmadir.
 Bu bizni qiziqtirgan istalgan versiyaga murojaat qilish va unda so‘rov bajarish imkonini beradi.
 
-Segment Tree’ni vaqt va xotira jihatidan samarali tarzda persistent tuzilmaga aylantirish mumkin.
+Segment daraxtini vaqt va xotira jihatidan samarali tarzda persistent tuzilmaga aylantirish mumkin.
 Har bir yangilashdan oldin butun daraxt nusxasini ko‘chirishni istamaymiz, oraliq so‘rovlaridagi $O(\log n)$ vaqt xususiyatini ham yo‘qotmasligimiz kerak.
 
-Aslida Segment Tree’dagi istalgan yangilash ildizdan boshlanadigan yo‘ldagi atigi $O(\log n)$ ta tugun ma’lumotini o‘zgartiradi.
-Shuning uchun Segment Tree ko‘rsatkichlar bilan — har bir tugun chap va o‘ng farzandiga ko‘rsatkich saqlaydigan qilib — yozilsa, yangilash vaqtida mavjud tugunlarni o‘zgartirish o‘rniga yangi tugunlar yaratish kifoya.
+Aslida segment daraxtidagi istalgan yangilash ildizdan boshlanadigan yo‘ldagi atigi $O(\log n)$ ta tugun ma’lumotini o‘zgartiradi.
+Shuning uchun segment daraxti ko‘rsatkichlar bilan — har bir tugun chap va o‘ng farzandiga ko‘rsatkich saqlaydigan qilib — yozilsa, yangilash vaqtida mavjud tugunlarni o‘zgartirish o‘rniga yangi tugunlar yaratish kifoya.
 Yangilash ta’sir qilmagan tugunlarni yangi ko‘rsatkichlardan eski tugunlarga ishora qilish orqali qayta ishlatish mumkin.
-Demak, har bir yangilash so‘rovida yangi Segment Tree ildizi bilan birga $O(\log n)$ ta yangi tugun yaratiladi, eski ildizdagi butun avvalgi versiya esa o‘zgarishsiz qoladi.
+Demak, har bir yangilash so‘rovida yangi segment daraxti ildizi bilan birga $O(\log n)$ ta yangi tugun yaratiladi, eski ildizdagi butun avvalgi versiya esa o‘zgarishsiz qoladi.
 
-Eng sodda Segment Tree uchun misol implementatsiya beramiz: unda faqat yig‘indi so‘rovlari va alohida elementlarni yangilash so‘rovlari bor.
+Eng sodda segment daraxti uchun misol implementatsiya beramiz: unda faqat yig‘indi so‘rovlari va alohida elementlarni yangilash so‘rovlari bor.
 
 ```cpp
 struct Vertex {
@@ -1030,17 +1030,17 @@ Vertex* update(Vertex* v, int tl, int tr, int pos, int new_val) {
 }
 ```
 
-Segment Tree’ning har bir yangilanishidan yangi ildiz tugun olamiz.
+Segment daraxtining har bir yangilanishidan yangi ildiz tugun olamiz.
 Turli versiyalar orasida tez o‘tish uchun bu ildizlarni massivda saqlash kerak.
-Muayyan Segment Tree versiyasidan foydalanish uchun so‘rovni tegishli ildiz tugun bilan chaqiramiz.
+Muayyan segment daraxti versiyasidan foydalanish uchun so‘rovni tegishli ildiz tugun bilan chaqiramiz.
 
-Yuqoridagi yondashuv yordamida deyarli istalgan Segment Tree’ni persistent ma’lumotlar tuzilmasiga aylantirish mumkin.
+Yuqoridagi yondashuv yordamida deyarli istalgan segment daraxtini persistent ma’lumotlar tuzilmasiga aylantirish mumkin.
 
-#### Oraliqdagi $k$-kichik sonni topish {data-toc-label="Finding the k-th smallest number in a range"}
+#### Oraliqdagi $k$-kichik sonni topish
 
 Bu safar “$a[l \dots r]$ oraliqdagi $k$-kichik element nima?” ko‘rinishidagi so‘rovlarga javob berish kerak.
 Bu so‘rovga Merge Sort Tree va ikkilik qidiruv yordamida javob berish mumkin, lekin bitta so‘rovning vaqt murakkabligi $O(\log^3 n)$ bo‘ladi.
-Persistent Segment Tree yordamida ayni vazifani $O(\log n)$ vaqtda bajaramiz.
+Persistent segment daraxti yordamida ayni vazifani $O(\log n)$ vaqtda bajaramiz.
 
 Avval soddaroq masala yechimini muhokama qilamiz:
 faqat elementlari $0 \le a[i] \lt n$ bilan chegaralangan massivlarni ko‘ramiz.
@@ -1048,21 +1048,21 @@ Bundan tashqari, faqat $a$ massivning biror prefiksidagi $k$-kichik elementni to
 Keyin ishlab chiqilgan g‘oyalarni qiymatlari cheklanmagan massivlar va ixtiyoriy oraliq so‘rovlariga kengaytirish juda oson bo‘ladi.
 $a$ uchun birlikdan boshlab indekslash ishlatilishiga e’tibor bering.
 
-Barcha uchragan sonlarni sanaydigan, ya’ni massiv gistogrammasini saqlaydigan Segment Tree’dan foydalanamiz.
-Barg tugunlar massivda $0$, $1$, …, $\dots$ qiymatlari necha marta uchrashini saqlaydi, qolgan tugunlar esa muayyan qiymatlar oralig‘iga nechta son tushishini saqlaydi; bu ro‘yxatning oxirgi qiymati $n-1$.
-Boshqacha aytganda, massiv gistogrammasi ustida yig‘indi so‘rovlariga javob beradigan odatiy Segment Tree quramiz.
-Ammo har bir mumkin bo‘lgan prefiks uchun jami $n$ ta alohida Segment Tree qurish o‘rniga ayni ma’lumotni saqlaydigan bitta persistent daraxt yaratamiz.
-Barcha sanoqlar $0$ bo‘lgan, $root_0$ ko‘rsatadigan bo‘sh Segment Tree’dan boshlaymiz va $a[1]$, $a[2]$, …, $\dots$, $a[n]$ elementlarini navbatma-navbat qo‘shamiz.
-Har bir o‘zgarishda yangi ildiz tugun hosil bo‘ladi. $a$ massivning dastlabki $i$ ta elementi kiritilgandan keyingi Segment Tree ildizini $root_i$ deb ataymiz.
-$root_i$ ildizli Segment Tree $a[1 \dots i]$ prefiks gistogrammasini saqlaydi.
+Barcha uchragan sonlarni sanaydigan, ya’ni massiv gistogrammasini saqlaydigan segment daraxtidan foydalanamiz.
+Barg tugunlar massivda $0$, $1$, $\dots$, $n-1$ qiymatlari necha marta uchrashini saqlaydi, qolgan tugunlar esa massivdagi qaysidir oraliqqa tushadigan sonlar nechta ekanini saqlaydi.
+Boshqacha aytganda, massiv gistogrammasi ustida yig‘indi so‘rovlariga javob beradigan odatiy segment daraxti quramiz.
+Ammo har bir mumkin bo‘lgan prefiks uchun jami $n$ ta alohida segment daraxti qurish o‘rniga ayni ma’lumotni saqlaydigan bitta persistent daraxt yaratamiz.
+Barcha sanoqlar $0$ bo‘lgan, $root_0$ ko‘rsatadigan bo‘sh segment daraxtidan boshlaymiz va $a[1]$, $a[2]$, $\dots$, $a[n]$ elementlarini navbatma-navbat qo‘shamiz.
+Har bir o‘zgarishda yangi ildiz tugun hosil bo‘ladi. $a$ massivning dastlabki $i$ ta elementi kiritilgandan keyingi segment daraxti ildizini $root_i$ deb ataymiz.
+$root_i$ ildizli segment daraxti $a[1 \dots i]$ prefiks gistogrammasini saqlaydi.
 Bu daraxt yordamida [Nollar sonini sanash va $k$-nolni qidirish](/algorithms/data-structures/segment-tree#counting-zero-search-kth) bo‘limidagi ayni texnika orqali $k$-element pozitsiyasini $O(\log n)$ vaqtda topish mumkin.
 
 Endi masalaning cheklovlarsiz variantiga o‘tamiz.
 
 Avval so‘rov cheklovini olib tashlaymiz:
 so‘rovlarni faqat $a$ prefikslarida emas, ixtiyoriy $a[l \dots r]$ kesmalarda bajarishni istaymiz.
-Buning uchun $a[l \dots r]$ oraliq elementlari gistogrammasini ifodalovchi Segment Tree kerak.
-Bunday daraxt $root_{r}$ ildizli Segment Tree bilan $root_{l-1}$ ildizli Segment Tree ayirmasiga teng ekanini ko‘rish oson. Ya’ni $[l \dots r]$ Segment Tree’dagi har bir tugun qiymati $root_{r}$ daraxt tuguni qiymatidan $root_{l-1}$ daraxtning mos tuguni qiymatini ayirish orqali hisoblanadi.
+Buning uchun $a[l \dots r]$ oraliq elementlari gistogrammasini ifodalovchi segment daraxti kerak.
+Bunday daraxt $root_{r}$ ildizli segment daraxti bilan $root_{l-1}$ ildizli segment daraxti ayirmasiga teng ekanini ko‘rish oson. Ya’ni $[l \dots r]$ segment daraxtidagi har bir tugun qiymati $root_{r}$ daraxt tuguni qiymatidan $root_{l-1}$ daraxtning mos tuguni qiymatini ayirish orqali hisoblanadi.
 
 $\texttt{find\_kth}$ funksiyasi implementatsiyasida buning uchun ikkita tugun ko‘rsatkichini uzatib, joriy kesma sanog‘i yoki yig‘indisini shu tugunlardagi ikki sanoq yoki yig‘indi ayirmasi sifatida hisoblash mumkin.
 
@@ -1096,8 +1096,8 @@ int find_kth(Vertex* vl, Vertex *vr, int tl, int tr, int k) {
 }
 ```
 
-Yuqorida aytilganidek, boshlang‘ich Segment Tree ildizini ham, har bir yangilashdan keyingi barcha ildizlarni ham saqlash kerak.
-Quyidagi kod elementlari `[0, MAX_VALUE]` oraliqda bo‘lgan `a` vektori ustida persistent Segment Tree quradi.
+Yuqorida aytilganidek, boshlang‘ich segment daraxti ildizini ham, har bir yangilashdan keyingi barcha ildizlarni ham saqlash kerak.
+Quyidagi kod elementlari `[0, MAX_VALUE]` oraliqda bo‘lgan `a` vektori ustida persistent segment daraxti quradi.
 
 ```cpp
 int tl = 0, tr = MAX_VALUE + 1;
@@ -1116,14 +1116,14 @@ indekslarni siqish yordamida istalgan massivni shu ko‘rinishdagi massivga ayla
 Massivdagi eng kichik elementga 0, ikkinchi eng kichik elementga 1 va shu tarzda davom etib qiymatlar beriladi.
 Qiymatni uning siqilgan indeksiga va aksincha o‘giradigan qidiruv jadvallarini, masalan $\text{map}$ yordamida, $O(\log n)$ vaqtda oson tuzish mumkin.
 
-### Dinamik Segment Tree
+### Dinamik segment daraxti
 
 (Uning shakli dinamik va tugunlari odatda dinamik ajratilgani uchun shunday ataladi.
-U **implicit Segment Tree** yoki **sparse Segment Tree** nomlari bilan ham ma’lum.)
+U **implicit segment daraxti** yoki **sparse segment daraxti** nomlari bilan ham ma’lum.)
 
-Yuqorida boshlang‘ich Segment Tree’ni to‘liq qurish mumkin bo‘lgan holatlarni ko‘rdik. Ammo boshlang‘ich oraliq biror standart qiymat bilan to‘ldirilgan bo‘lsa-yu, uning o‘lchami daraxtni oldindan to‘liq qurishga yo‘l qo‘ymasa, nima qilish kerak?
+Yuqorida boshlang‘ich segment daraxtini to‘liq qurish mumkin bo‘lgan holatlarni ko‘rdik. Ammo boshlang‘ich oraliq biror standart qiymat bilan to‘ldirilgan bo‘lsa-yu, uning o‘lchami daraxtni oldindan to‘liq qurishga yo‘l qo‘ymasa, nima qilish kerak?
 
-Bu muammoni Segment Tree’ni kechiktirib, ya’ni bosqichma-bosqich yaratish orqali hal qilamiz. Dastlab faqat ildizni yaratamiz, qolgan tugunlarni esa faqat zarur bo‘lganda hosil qilamiz.
+Bu muammoni segment daraxtini kechiktirib, ya’ni bosqichma-bosqich yaratish orqali hal qilamiz. Dastlab faqat ildizni yaratamiz, qolgan tugunlarni esa faqat zarur bo‘lganda hosil qilamiz.
 Bunda ko‘rsatkichli implementatsiyadan foydalanamiz: tugun farzandlariga o‘tishdan oldin ular yaratilganini tekshiramiz, yaratilmagan bo‘lsa yaratamiz.
 Har bir so‘rov murakkabligi hanuz $O(\log n)$ bo‘ladi; bu ko‘pchilik qo‘llanishlar uchun yetarlicha kichik, masalan $\log_2 10^9 \approx 30$.
 
@@ -1175,7 +1175,7 @@ Bu g‘oyani turli yo‘nalishlarda kengaytirish mumkin. Masalan, lazy propagati
 
 ## Mashq masalalari
 
-* [SPOJ — KQUERY](http://www.spoj.com/problems/KQUERY/) [Persistent Segment Tree / Merge Sort Tree]
+* [SPOJ — KQUERY](http://www.spoj.com/problems/KQUERY/) [Persistent segment daraxti / Merge Sort Tree]
 * [Codeforces — Xenia and Bit Operations](https://codeforces.com/problemset/problem/339/D)
 * [UVA 11402 — Ahoy, Pirates!](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2397)
 * [SPOJ — GSS3](http://www.spoj.com/problems/GSS3/)

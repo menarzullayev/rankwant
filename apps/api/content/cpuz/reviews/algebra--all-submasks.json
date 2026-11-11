@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "Compared with the original; all paragraphs, both proofs, formulas and code are present and correct. No technical errors found.",
+      "content_sha256": "7fb335487ea79ae863671c87ee437fee47d0ddda234ac166e6b13ff2bdcf5f5b"
+    },
+    {
+      "at": "2026-11-12T10:07:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Replaced 'maska/submaska/bitmaska' with the glossary terms (niqob, qism niqob, bit niqobi) and fixed blank lines before headings, lists and display formulas.",
+      "content_sha256": "7fb335487ea79ae863671c87ee437fee47d0ddda234ac166e6b13ff2bdcf5f5b"
+    }
+  ]
+}

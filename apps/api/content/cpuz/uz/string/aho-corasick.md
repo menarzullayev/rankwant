@@ -68,7 +68,7 @@ Aslida, trie tugunlarini chekli deterministik avtomat holatlari deb qarash mumki
 
 Shunday qilib, trie qirralarini tegishli harf bo‘yicha avtomat o‘tishlari deb tushunishimiz mumkin. Ammo avtomatda har bir holat va harf juftligi uchun o‘tish aniqlangan bo‘lishi kerak. Biror harf bilan o‘tishga urinib, trieda unga mos qirra topilmasa ham, baribir qaysidir holatga o‘tishimiz lozim.
 
-Aniqroq aytganda, biz $t$ satriga mos holatda turibmiz va $c$ belgisi orqali boshqa holatga o‘tmoqchimiz, deb faraz qilaylik. Agar $c$ bilan belgilangan qirra mavjud bo‘lsa, shu qirra bo‘ylab o‘tib, $t+c$ satriga mos tugunga boramiz. Bunday qirra bo‘lmasa, joriy holat qayta ishlangan matnning eng uzun qisman mos prefiksi bo‘lib qolishi haqidagi invariantni saqlash uchun, triedagi $t$ satrining eng uzun xos suffiksiga mos satrni topib, o‘tishni o‘sha yerdan bajarishga harakat qilishimiz kerak.
+Aniqroq aytganda, biz $t$ satriga mos holatda turibmiz va $c$ belgisi orqali boshqa holatga o‘tmoqchimiz, deb faraz qilaylik. Agar $c$ bilan belgilangan qirra mavjud bo‘lsa, shu qirra bo‘ylab o‘tib, $t+c$ satriga mos tugunga boramiz. Bunday qirra bo‘lmasa, joriy holat qayta ishlangan matnning eng uzun qisman mos prefiksi bo‘lib qolishi haqidagi invariantni saqlash uchun, triedagi $t$ satrining xos suffiksi bo‘lgan eng uzun satrni topib, o‘tishni o‘sha yerdan bajarishga harakat qilishimiz kerak.
 
 Masalan, trie $ab$ va $bc$ satrlaridan qurilgan bo‘lsin va hozir $ab$ satriga mos, ayni paytda $\text{output}$ ham bo‘lgan tugunda turaylik. $c$ harfi bilan o‘tish uchun avval $b$ satriga mos holatga, so‘ng u yerdan $c$ harfli qirra bo‘ylab o‘tishga majburmiz.
 
@@ -144,7 +144,7 @@ int go(int v, char ch) {
 
 Suffiks havolalari va o‘tishlar memoizatsiya qilingani tufayli, barcha suffiks havolalari va o‘tishlarni topishning jami vaqti chiziqli bo‘lishini ko‘rish oson.
 
-G‘oyaning tasviriy tushuntirishi uchun Stanford slaydlarining 103-slaydiga qarang.
+G‘oyaning tasviriy tushuntirishi uchun [Stanford slaydlari](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Slides02.pdf)ning 103-slaydiga qarang.
 
 ### BFS asosidagi qurish
 
@@ -157,7 +157,7 @@ Ildizdan BFS tugunlarni ularga mos satrlar uzunligi ortib borish tartibida ko‘
 Hozir $v$ tugunda turib, $c$ belgisini ko‘rib chiqayotgan bo‘laylik. Asosan ikki holat mavjud:
 
 1. $go[v][c]=-1$. Bu holda $go[v][c]=go[u][c]$ deb belgilashimiz mumkin; o‘ng tomon induksiya faraziga ko‘ra allaqachon ma’lum.
-2. $go[v][c]=w\ne -1$. Bu holda $link[w]=go[u][c]$ deb belgilashimiz mumkin.
+2. $go[v][c] = w \neq -1$. Bu holda $link[w]=go[u][c]$ deb belgilashimiz mumkin.
 
 Shu tariqa, har bir tugun va belgi juftligi uchun $O(1)$ vaqt sarflab, $O(nk)$ umumiy vaqtga erishamiz. Bu yerdagi asosiy ortiqcha xarajat — birinchi holatda $u$ dan juda ko‘p o‘tishlarni nusxalashimiz; ikkinchi holatdagi o‘tishlar esa trie qirralarini tashkil qiladi va barcha tugunlar bo‘yicha jami $n$ ta bo‘ladi. $go[u][c]$ qiymatlarini nusxalamaslik uchun persistent massivdan foydalanish mumkin: dastlab $go[u]$ ni $go[v]$ ga nusxalaymiz, keyin faqat o‘tishi farq qiladigan belgilar qiymatini yangilaymiz. Bu $O(n\log k)$ algoritmni beradi.
 
@@ -187,19 +187,19 @@ Satrlar to‘plami uchun avtomat quramiz. $\text{output}$ tugunlar to‘plamdagi
 
 Bu yerda ham xuddi shu g‘oyalardan foydalanamiz. Har bir tugunda ayni holatda mos keladigan satrlarni bildiruvchi niqob saqlaymiz. Shunda masalani quyidagicha qayta ifodalash mumkin: dastlab $(v=\text{root},\,\text{mask}=0)$ holatda turib, $(v,\,\text{mask}=2^n-1)$ holatga yetish kerak; bu yerda $n$ — to‘plamdagi satrlar soni. Bir holatdan boshqasiga harf bilan o‘tganda niqobni mos ravishda yangilaymiz. [Kenglik bo‘yicha qidiruv](/algorithms/graph/breadth-first-search) yordamida $(v,\,\text{mask}=2^n-1)$ holatiga olib boradigan eng qisqa yo‘lni topish mumkin.
 
-### Berilgan $k$ ta satrni o‘z ichiga oladigan, uzunligi $L$ bo‘lgan leksikografik eng kichik satrni topish {data-toc-label="Berilgan k ta satrni o‘z ichiga oladigan, uzunligi L bo‘lgan leksikografik eng kichik satrni topish"}
+### Berilgan $k$ ta satrni o‘z ichiga oladigan, uzunligi $L$ bo‘lgan leksikografik eng kichik satrni topish
 
 Oldingi masaladagidek, har bir tugun uchun unga mos mosliklar sonini, ya’ni suffiks havolalari orqali erishiladigan belgilangan tugunlar sonini hisoblaymiz. Masalani qayta ifodalaymiz: joriy holat $(v,\,\text{len},\,\text{cnt})$ uchligi bilan aniqlanadi va $(\text{root},0,0)$ holatdan $v$ ixtiyoriy tugun bo‘lishi mumkin bo‘lgan $(v,L,k)$ holatga yetish kerak. Bunday yo‘lni chuqurlik bo‘yicha qidiruv yordamida topish mumkin. Qidiruv qirralarni tabiiy tartibda ko‘rib chiqsa, topilgan yo‘l avtomatik ravishda leksikografik eng kichik bo‘ladi.
 
 ## Masalalar
 
-* [UVA 11590 — Prefix Lookup](https://onlinejudge.org/)
-* [UVA 11171 — SMS](https://onlinejudge.org/)
-* [UVA 10679 — I Love Strings!!](https://onlinejudge.org/external/106/10679.html)
+* [UVA #11590 — Prefix Lookup](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2637)
+* [UVA #11171 — SMS](https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2112)
+* [UVA #10679 — I Love Strings!!](https://uva.onlinejudge.org/index.php?option=onlinejudge&page=show_problem&problem=1620)
 * [Codeforces — x-prime Substrings](https://codeforces.com/problemset/problem/1400/F)
 * [Codeforces — Frequency of String](https://codeforces.com/problemset/problem/963/D)
 * [CodeChef — TWOSTRS](https://www.codechef.com/MAY20A/problems/TWOSTRS)
 
 ## Manbalar
 
-* [Stanford CS166 — Aho–Corasick Automata](https://web.stanford.edu/class/archive/cs/cs166/cs166.1206/lectures/02/Slides02.pdf) ([qisqartirilgan versiya](https://web.stanford.edu/class/archive/cs/cs166/cs166.1206/lectures/02/Small02.pdf))
+* [Stanford CS166 — Aho–Corasick Automata](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Slides02.pdf) ([qisqartirilgan versiya](http://web.stanford.edu/class/archive/cs/cs166/cs166.1166/lectures/02/Small02.pdf))

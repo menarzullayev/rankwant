@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "The Uzbek text was a rewrite that split the code into several blocks, added an intersect_lines helper, and invented sections on degenerate segments and complexity. Restored the original prose (lines intersection, parallel case, collinear case, bounding box check) and the single original code block, and removed the invented sections.",
+      "content_sha256": "3ae21111545176d032160431fac1a3e68d0a196737629f209c7deeabaeea87b0"
+    },
+    {
+      "at": "2026-11-12T10:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Code and formulas now match the original; the difference listed in the allow-list was removed.",
+      "content_sha256": "3ae21111545176d032160431fac1a3e68d0a196737629f209c7deeabaeea87b0"
+    },
+    {
+      "at": "2026-11-12T10:09:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Retranslated the restored prose into natural Uzbek; kept the internal link to the lines-intersection article.",
+      "content_sha256": "3ae21111545176d032160431fac1a3e68d0a196737629f209c7deeabaeea87b0"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "state": "reviewed",
+  "mechanical": null,
+  "log": [
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "passed",
+      "notes": "All sections, formulas and both code blocks match the original.",
+      "content_sha256": "a1f7ce80d71f8d392db2aecd80d4ce931291224206180489fc2a30f91134c035"
+    },
+    {
+      "at": "2026-11-11T14:03:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Added the missing blank lines so a blockquote no longer swallows the next paragraph and display formulas and headings are separated from text; fixed one awkward phrase ('c soni ham g ga bo'linadi').",
+      "content_sha256": "a1f7ce80d71f8d392db2aecd80d4ce931291224206180489fc2a30f91134c035"
+    }
+  ]
+}

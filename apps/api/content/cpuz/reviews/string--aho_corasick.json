@@ -1,0 +1,32 @@
+{
+  "state": "reviewed",
+  "mechanical": {
+    "status": "fixed"
+  },
+  "log": [
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "technical",
+      "decision": "fixed",
+      "notes": "Reworded the suffix-link sentence to say 'the longest string in the trie that is a proper suffix of t' as in the original, and restored the original UVA and Stanford links that had been replaced by generic ones.",
+      "content_sha256": "3b0f1b07de531570643bd8f154b8743fea495cbf877f14cb759642bf5bc98e96"
+    },
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "language",
+      "decision": "fixed",
+      "notes": "Removed a leftover mkdocs {data-toc-label} attribute from a heading and added the missing Stanford slides link to the slide reference.",
+      "content_sha256": "3b0f1b07de531570643bd8f154b8743fea495cbf877f14cb759642bf5bc98e96"
+    },
+    {
+      "at": "2026-11-12T10:01:00+05:00",
+      "actor": "agent:claude",
+      "stage": "mechanical",
+      "decision": "fixed",
+      "notes": "Rewrote the inline formula as 'w \neq -1' exactly as in the original; code and formulas now match.",
+      "content_sha256": "3b0f1b07de531570643bd8f154b8743fea495cbf877f14cb759642bf5bc98e96"
+    }
+  ]
+}
