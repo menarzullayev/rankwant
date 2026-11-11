@@ -41,7 +41,9 @@ bunday raqamlar dastlabki sonda bo‘lmaydi, ammo ayrim `2` lar oshirilgandan so
 
 **1-misol:** `64` ni muvozanatlangan uchlik tizimiga o‘tkazamiz. Avval sonni odatiy uchlik tizimida yozamiz:
 
-$$ 64_{10} = 02101_{3} $$
+$$
+64_{10} = 02101_{3}
+$$
 
 Uni eng kichik razryadli (eng o‘ngdagi) raqamdan boshlab qayta ishlaymiz:
 
@@ -52,11 +54,15 @@ Yakuniy natija — `1Z101`.
 
 Pozitsion og‘irliklarni qo‘shib, uni o‘nlik tizimga qaytaramiz:
 
-$$ 1Z101 = 81 \cdot 1 + 27 \cdot (-1) + 9 \cdot 1 + 3 \cdot 0 + 1 \cdot 1 = 64_{10} $$
+$$
+1Z101 = 81 \cdot 1 + 27 \cdot (-1) + 9 \cdot 1 + 3 \cdot 0 + 1 \cdot 1 = 64_{10}
+$$
 
 **2-misol:** `237` ni muvozanatlangan uchlik tizimiga o‘tkazamiz. Avval sonni odatiy uchlik tizimida yozamiz:
 
-$$ 237_{10} = 22210_{3} $$
+$$
+237_{10} = 22210_{3}
+$$
 
 Uni eng kichik razryadli (eng o‘ngdagi) raqamdan boshlab qayta ishlaymiz:
 
@@ -69,7 +75,9 @@ Yakuniy natija — `100Z10`.
 
 Pozitsion og‘irliklarni qo‘shib, uni o‘nlik tizimga qaytaramiz:
 
-$$ 100Z10 = 243 \cdot 1 + 81 \cdot 0 + 27 \cdot 0 + 9 \cdot (-1) + 3 \cdot 1 + 1 \cdot 0 = 237_{10} $$
+$$
+100Z10 = 243 \cdot 1 + 81 \cdot 0 + 27 \cdot 0 + 9 \cdot (-1) + 3 \cdot 1 + 1 \cdot 0 = 237_{10}
+$$
 
 ## Mashq masalalari {#practice-problems}
 

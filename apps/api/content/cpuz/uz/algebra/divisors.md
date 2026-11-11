@@ -13,21 +13,25 @@ Agar $p$ tub ko‘paytuvchi $n$ ning tub ko‘paytuvchilarga ajratilishida $e$ m
 Bu $e+1$ xil tanlov borligini anglatadi.
 Shuning uchun, agar $n$ ning tub ko‘paytuvchilarga ajratilishi $p_1^{e_1} \cdot p_2^{e_2} \cdots p_k^{e_k}$ ko‘rinishida bo‘lsa va $p_i$ lar turli tub sonlar bo‘lsa, bo‘luvchilar soni:
 
-$$d(n) = (e_1 + 1) \cdot (e_2 + 1) \cdots (e_k + 1)$$
+$$
+d(n) = (e_1 + 1) \cdot (e_2 + 1) \cdots (e_k + 1)
+$$
 
 Buni quyidagicha tushunish mumkin:
 
 * Agar faqat bitta turli tub bo‘luvchi bo‘lsa, $n = p_1^{e_1}$, unda ravshanki $e_1 + 1$ ta bo‘luvchi bor: $1, p_1, p_1^2, \dots, p_1^{e_1}$.
 * Agar ikkita turli tub bo‘luvchi bo‘lsa, $n = p_1^{e_1} \cdot p_2^{e_2}$, barcha bo‘luvchilarni jadval ko‘rinishida joylashtirish mumkin.
 
-$$\begin{array}{c|ccccc}
+$$
+\begin{array}{c|ccccc}
 & 1 & p_2 & p_2^2 & \dots & p_2^{e_2} \\\hline
 1 & 1 & p_2 & p_2^2 & \dots & p_2^{e_2} \\
 p_1 & p_1 & p_1 \cdot p_2 & p_1 \cdot p_2^2 & \dots & p_1 \cdot p_2^{e_2} \\
 p_1^2 & p_1^2 & p_1^2 \cdot p_2 & p_1^2 \cdot p_2^2 & \dots & p_1^2 \cdot p_2^{e_2} \\
 \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
 p_1^{e_1} & p_1^{e_1} & p_1^{e_1} \cdot p_2 & p_1^{e_1} \cdot p_2^2 & \dots & p_1^{e_1} \cdot p_2^{e_2} \\
-\end{array}$$
+\end{array}
+$$
 
 Demak, bo‘luvchilar soni bevosita $(e_1 + 1) \cdot (e_2 + 1)$ ga teng.
 
@@ -59,19 +63,27 @@ Oldingi bo‘limdagi mulohazaning o‘zidan foydalanish mumkin.
 
 * Agar faqat bitta turli tub bo‘luvchi bo‘lsa, $n = p_1^{e_1}$, yig‘indi:
 
-$$1 + p_1 + p_1^2 + \dots + p_1^{e_1} = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1}$$
+$$
+1 + p_1 + p_1^2 + \dots + p_1^{e_1} = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1}
+$$
 
 * Agar ikkita turli tub bo‘luvchi bo‘lsa, $n = p_1^{e_1} \cdot p_2^{e_2}$, avvalgidek jadval tuzish mumkin.
   Faqat endi elementlar sonini sanash o‘rniga ularning yig‘indisini hisoblamoqchimiz.
   Har bir kombinatsiya yig‘indisi quyidagicha ifodalanishini ko‘rish oson:
 
-$$\left(1 + p_1 + p_1^2 + \dots + p_1^{e_1}\right) \cdot \left(1 + p_2 + p_2^2 + \dots + p_2^{e_2}\right)$$
+$$
+\left(1 + p_1 + p_1^2 + \dots + p_1^{e_1}\right) \cdot \left(1 + p_2 + p_2^2 + \dots + p_2^{e_2}\right)
+$$
 
-$$ = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1} \cdot \frac{p_2^{e_2 + 1} - 1}{p_2 - 1}$$
+$$
+= \frac{p_1^{e_1 + 1} - 1}{p_1 - 1} \cdot \frac{p_2^{e_2 + 1} - 1}{p_2 - 1}
+$$
 
 * Umumiy holda, $n = p_1^{e_1} \cdot p_2^{e_2} \cdots p_k^{e_k}$ uchun quyidagi formula kelib chiqadi:
 
-$$\sigma(n) = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1} \cdot \frac{p_2^{e_2 + 1} - 1}{p_2 - 1} \cdots \frac{p_k^{e_k + 1} - 1}{p_k - 1}$$
+$$
+\sigma(n) = \frac{p_1^{e_1 + 1} - 1}{p_1 - 1} \cdot \frac{p_2^{e_2 + 1} - 1}{p_2 - 1} \cdots \frac{p_k^{e_k + 1} - 1}{p_k - 1}
+$$
 
 ```cpp
 long long SumOfDivisors(long long num) {
@@ -103,7 +115,9 @@ long long SumOfDivisors(long long num) {
 
 Multiplikativ funksiya — o‘zaro tub $a$ va $b$ uchun
 
-$$f(a \cdot b) = f(a) \cdot f(b)$$
+$$
+f(a \cdot b) = f(a) \cdot f(b)
+$$
 
 tenglikni qanoatlantiradigan $f(x)$ funksiyadir.
 

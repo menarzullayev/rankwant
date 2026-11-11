@@ -61,11 +61,15 @@ Algoritm barcha $lp []$ qiymatlarini to‘g‘ri o‘rnatishini va har bir qiyma
 
 Har bir $i$ soni quyidagi ko‘rinishda aynan bitta ifodaga ega ekaniga e’tibor bering:
 
-$$i = lp [i] \cdot x,$$
+$$
+i = lp [i] \cdot x,
+$$
 
 bunda $lp [i]$ — $i$ ning eng kichik tub bo‘luvchisi, $x$ esa $lp [i]$ dan kichik hech qanday tub ko‘paytuvchiga ega emas, ya’ni
 
-$$lp [i] \le lp [x].$$
+$$
+lp [i] \le lp [x].
+$$
 
 Endi buni algoritmimizning amallari bilan solishtiraylik: aslida, har bir $x$ uchun algoritm $x$ ni ko‘paytirish mumkin bo‘lgan barcha tub sonlarni, ya’ni $lp [x]$ gacha (uni ham qo‘shib) bo‘lgan tub sonlarning barchasini, yuqoridagi ko‘rinishdagi sonlarni olish maqsadida ko‘rib chiqadi.
 

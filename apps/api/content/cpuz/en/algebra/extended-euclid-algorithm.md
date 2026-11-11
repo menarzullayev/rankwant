@@ -2,7 +2,9 @@
 
 While the [Euclidean algorithm](/algorithms/algebra/euclid-algorithm) calculates only the greatest common divisor (GCD) of two non-negative integers $a$ and $b$, the extended version also finds a way to represent GCD in terms of $a$ and $b$, i.e. coefficients $x$ and $y$ for which:
 
-$$a \cdot x + b \cdot y = \gcd(a, b)$$
+$$
+a \cdot x + b \cdot y = \gcd(a, b)
+$$
 
 It's important to note that by [Bézout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity) we can always find such a representation. For instance, $\gcd(55, 80) = 5$, therefore we can represent $5$ as a linear combination with the terms $55$ and $80$: $55 \cdot 3 + 80 \cdot (-2) = 5$ 
 
@@ -22,30 +24,42 @@ All we need to do is to figure out how the coefficients $x$ and $y$ change durin
 
 Let us assume we found the coefficients $(x_1, y_1)$ for $(b, a \bmod b)$:
 
-$$b \cdot x_1 + (a \bmod b) \cdot y_1 = g$$
+$$
+b \cdot x_1 + (a \bmod b) \cdot y_1 = g
+$$
 
 and we want to find the pair $(x, y)$ for $(a, b)$:
 
-$$ a \cdot x + b \cdot y = g$$
+$$
+a \cdot x + b \cdot y = g
+$$
 
 We can represent $a \bmod b$ as:
 
-$$ a \bmod b = a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b$$
+$$
+a \bmod b = a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b
+$$
 
 Substituting this expression in the coefficient equation of $(x_1, y_1)$ gives:
 
-$$ g = b \cdot x_1 + (a \bmod b) \cdot y_1 = b \cdot x_1 + \left(a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b \right) \cdot y_1$$
+$$
+g = b \cdot x_1 + (a \bmod b) \cdot y_1 = b \cdot x_1 + \left(a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b \right) \cdot y_1
+$$
 
 and after rearranging the terms:
 
-$$g = a \cdot y_1 + b \cdot \left( x_1 - y_1 \cdot \left\lfloor \frac{a}{b} \right\rfloor \right)$$
+$$
+g = a \cdot y_1 + b \cdot \left( x_1 - y_1 \cdot \left\lfloor \frac{a}{b} \right\rfloor \right)
+$$
 
 We found the values of $x$ and $y$:
 
-$$\begin{cases}
+$$
+\begin{cases}
 x = y_1 \\
 y = x_1 - y_1 \cdot \left\lfloor \frac{a}{b} \right\rfloor
-\end{cases} $$
+\end{cases}
+$$
 
 ## Implementation {#implementation}
 
@@ -91,27 +105,43 @@ If you look closely at the variables `a1` and `b1`, you can notice that they tak
 
 To see why the algorithm computes the correct coefficients, consider that the following invariants hold at any given time (before the while loop begins and at the end of each iteration):
 
-$$x \cdot a + y \cdot b = a_1$$
+$$
+x \cdot a + y \cdot b = a_1
+$$
 
-$$x_1 \cdot a + y_1 \cdot b = b_1$$
+$$
+x_1 \cdot a + y_1 \cdot b = b_1
+$$
 
 Let the values at the end of an iteration be denoted by a prime ($'$), and assume $q = \frac{a_1}{b_1}$. From the [Euclidean algorithm](/algorithms/algebra/euclid-algorithm), we have:
 
-$$a_1' = b_1$$
+$$
+a_1' = b_1
+$$
 
-$$b_1' = a_1 - q \cdot b_1$$
+$$
+b_1' = a_1 - q \cdot b_1
+$$
 
 For the first invariant to hold, the following should be true:
 
-$$x' \cdot a + y' \cdot b = a_1' = b_1$$
+$$
+x' \cdot a + y' \cdot b = a_1' = b_1
+$$
 
-$$x' \cdot a + y' \cdot b = x_1 \cdot a + y_1 \cdot b$$
+$$
+x' \cdot a + y' \cdot b = x_1 \cdot a + y_1 \cdot b
+$$
 
 Similarly for the second invariant, the following should hold:
 
-$$x_1' \cdot a + y_1' \cdot b = a_1 - q \cdot b_1$$
+$$
+x_1' \cdot a + y_1' \cdot b = a_1 - q \cdot b_1
+$$
 
-$$x_1' \cdot a + y_1' \cdot b = (x - q \cdot x_1) \cdot a + (y - q \cdot y_1) \cdot b$$
+$$
+x_1' \cdot a + y_1' \cdot b = (x - q \cdot x_1) \cdot a + (y - q \cdot y_1) \cdot b
+$$
 
 By comparing the coefficients of $a$ and $b$, the update equations for each variable can be derived, ensuring that the invariants are maintained throughout the algorithm.
 

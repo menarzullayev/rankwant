@@ -26,7 +26,9 @@ Bu teoremaning isboti ancha murakkab va bu yerda keltirilmaydi; isbotning umumiy
 
 Kirchhoffning matritsaviy daraxt teoremasi va elektr zanjirlari uchun Kirchhoff qonunlari o‘zaro chiroyli tarzda bog‘langan. Om qonuni va Kirchhoffning birinchi qonuni yordamida zanjirning $i$ va $j$ nuqtalari orasidagi $R_{ij}$ qarshilik quyidagiga tengligini ko‘rsatish mumkin:
 
-$$R_{ij} = \frac{ \left| L^{(i,j)} \right| }{ | L^j | }.$$
+$$
+R_{ij} = \frac{ \left| L^{(i,j)} \right| }{ | L^j | }.
+$$
 
 Bu yerda $L$ matritsa teskari qarshiliklar $A$ matritsasidan ($A_{i,j}$ — $i$ va $j$ nuqtalar orasidagi o‘tkazgich qarshiligining teskarisi) Kirchhoffning matritsaviy daraxt teoremasida tavsiflangan usul orqali hosil qilinadi.
 

@@ -8,14 +8,18 @@ We say that a certain bit is **set**, if it is one, and **cleared** if it is zer
 
 The binary number $(a_k a_{k-1} \dots a_1 a_0)_2$ represents the number:
 
-$$(a_k a_{k-1} \dots a_1 a_0)_2 = a_k \cdot 2^k + a_{k-1} \cdot 2^{k-1} + \dots + a_1 \cdot 2^1 + a_0 \cdot 2^0.$$
+$$
+(a_k a_{k-1} \dots a_1 a_0)_2 = a_k \cdot 2^k + a_{k-1} \cdot 2^{k-1} + \dots + a_1 \cdot 2^1 + a_0 \cdot 2^0.
+$$
 
 For instance the binary number $1101_2$ represents the number $13$:
 
-$$\begin{align}
+$$
+\begin{align}
 1101_2 &= 1 \cdot 2^3 + 1 \cdot 2^2 + 0 \cdot 2^1 + 1 \cdot 2^0 \\
        &= 1\cdot 8 + 1 \cdot 4 + 0 \cdot 2 + 1 \cdot 1 = 13
-\end{align}$$
+\end{align}
+$$
 
 Computers represent integers as binary numbers.
 Positive integers (both signed and unsigned) are just represented with their binary digits, and negative signed numbers (which can be positive and negative) are usually represented with the [Two's complement](https://en.wikipedia.org/wiki/Two%27s_complement).

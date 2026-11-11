@@ -6,11 +6,15 @@ Knuth–Yao tezlashtirishi deb ham ataladigan Knuth optimallashtirishi oraliqlar
 
 Tezlashtirish quyidagi ko‘rinishdagi o‘tishlarga qo‘llanadi:
 
-$$dp(i, j) = \min_{i \leq k < j} [ dp(i, k) + dp(k+1, j) + C(i, j) ].$$
+$$
+dp(i, j) = \min_{i \leq k < j} [ dp(i, k) + dp(k+1, j) + C(i, j) ].
+$$
 
 [Divide and Conquer DP](/algorithms/dynamic-programming/divide-and-conquer-dp) dagidek, o‘tish ifodasini minimum qiladigan $k$ larning eng katta qiymatini $opt(i, j)$ deb belgilaymiz. Maqolaning davomida $opt$ «optimal bo‘linish nuqtasi» deb ataladi. Optimallashtirish uchun quyidagi tengsizlik bajarilishi kerak:
 
-$$opt(i, j-1) \leq opt(i, j) \leq opt(i+1, j).$$
+$$
+opt(i, j-1) \leq opt(i, j) \leq opt(i+1, j).
+$$
 
 $C$ xarajat funksiyasi barcha $a \leq b \leq c \leq d$ uchun quyidagi shartlarni qanoatlantirsa, bu tengsizlik rost ekanini ko‘rsatish mumkin:
 
@@ -113,13 +117,13 @@ bo‘lishini ko‘rsatish kifoya.
 >
 >      $$
 >         dp(a, b) \leq dp_{z}(a, b) = dp(a, z) + dp(z+1, b) + C(a, b).
->         $$
+>      $$
 >
 >      Shuning uchun
 >
 >      $$
 >         dp(a, b) + dp(b, d) \leq dp(a, z) + dp(z+1, b) + dp(b, d) + C(a, b)
->         $$
+>      $$
 >
 >      Induksiya faraziga ko‘ra, $dp(z+1,b)+dp(b,d)\leq dp(z+1,d)$. Bundan tashqari, shart bo‘yicha $C(a,b)\leq C(a,d)$. Bu ikki faktni yuqoridagi tengsizlik bilan birlashtirsak, kerakli natijani olamiz.
 >
@@ -133,13 +137,13 @@ bo‘lishini ko‘rsatish kifoya.
 >
 >      $$
 >         dp(a, c) + dp(b, d) \leq dp_{z}(a, c) + dp_{y}(b, d)
->         $$
+>      $$
 >
 >      bu yerda
 >
 >      $$
 >         dp_{z}(a, c) + dp_{y}(b, d) = C(a, c) + C(b, d) + dp(a, z) + dp(z+1, c) + dp(b, y) + dp(y+1, d).
->         $$
+>      $$
 >
 >      $C$ uchun QI va $z+1\leq y+1\leq c\leq d$ indekslarida DP holati uchun induksiya farazidan kelib chiqadigan QIni qo‘llasak, kerakli natija hosil bo‘ladi.
 >
@@ -159,21 +163,25 @@ $q=opt(i,j-1)$ deb olamiz. Ta’rifga ko‘ra, $dp_p(i,j-1)\geq dp_q(i,j-1)$. Sh
 
 Endi $p+1 \leq q+1 \leq j-1 \leq j$ indekslari uchun QIni qo‘llasak, quyidagini olamiz:
 
-$$\begin{align}
+$$
+\begin{align}
 &dp(p+1, j-1) + dp(q+1, j) ≤ dp(q+1, j-1) + dp(p+1, j) \\
 \implies& (dp(i, p) + dp(p+1, j-1) + C(i, j-1)) + (dp(i, q) + dp(q+1, j) + C(i, j)) \\  
 \leq& (dp(i, q) + dp(q+1, j-1) + C(i, j-1)) + (dp(i, p) + dp(p+1, j) + C(i, j)) \\  
 \implies& dp_{p}(i, j-1) + dp_{q}(i, j) ≤ dp_{p}(i, j) + dp_{q}(i, j-1) \\
 \implies& dp_{p}(i, j-1) - dp_{q}(i, j-1) ≤ dp_{p}(i, j) - dp_{q}(i, j) \\
-\end{align}$$
+\end{align}
+$$
 
 Nihoyat,
 
-$$\begin{align}
+$$
+\begin{align}
 &dp_{p}(i, j-1) \geq dp_{q}(i, j-1) \\
 &\implies 0 \leq dp_{p}(i, j-1) - dp_{q}(i, j-1) \leq dp_{p}(i, j) - dp_{q}(i, j) \\
 &\implies dp_{p}(i, j) \geq dp_{q}(i, j)
-\end{align}$$  
+\end{align}
+$$
 
 Shu bilan tengsizlikning birinchi qismi, ya’ni $opt(i,j-1)\leq opt(i,j)$ isbotlandi. Ikkinchi qism — $opt(i,j)\leq opt(i+1,j)$ — xuddi shu g‘oya yordamida, $dp(i,p)+dp(i+1,q)≤dp(i+1,p)+dp(i,q)$ tengsizligidan boshlanib isbotlanadi.
 

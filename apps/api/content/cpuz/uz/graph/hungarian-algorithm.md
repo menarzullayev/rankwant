@@ -29,12 +29,16 @@ Shuningdek, $A$ matritsadagi barcha sonlar **manfiy emas** deb faraz qilamiz (ag
 
 Quyidagi shartni qanoatlantiradigan ixtiyoriy ikkita $u[1\ldots n]$ va $v[1\ldots n]$ sonlar massivini **potensial** deb ataymiz:
 
-$$u[i]+v[j]\leq A[i][j],\quad i=1\dots n,\ j=1\dots n$$
+$$
+u[i]+v[j]\leq A[i][j],\quad i=1\dots n,\ j=1\dots n
+$$
 
 (Ko‘rib turganingizdek, $u[i]$ matritsaning $i$-satriga, $v[j]$ esa $j$-ustuniga mos keladi.)
 Potensial elementlari yig‘indisini uning **$f$ qiymati** deb ataymiz:
 
-$$f=\sum_{i=1}^{n} u[i] + \sum_{j=1}^{n} v[j].$$
+$$
+f=\sum_{i=1}^{n} u[i] + \sum_{j=1}^{n} v[j].
+$$
 
 Bir tomondan, izlanayotgan $sol$ yechim narxi istalgan potensial qiymatidan **kichik emas**ligini ko‘rish oson.
 
@@ -65,7 +69,9 @@ Kuhn algoritmining oxirgi qidiruvi davomida chap qismda tashrif buyurilgan tugun
 
 $\Delta$ qiymatini hisoblaymiz:
 
-$$\Delta = \min_{i\in Z_1,\ j\notin Z_2} A[i][j]-u[i]-v[j].$$
+$$
+\Delta = \min_{i\in Z_1,\ j\notin Z_2} A[i][j]-u[i]-v[j].
+$$
 
 >
 > **Lemma.** $\Delta>0$.

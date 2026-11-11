@@ -12,11 +12,15 @@ In this section we present several facts about planar graphs without proof. Read
 ### Euler's theorem {#eulers-theorem}
 Euler's theorem states that any correct embedding of a connected planar graph with $n$ vertices, $m$ edges and $f$ faces satisfies:
 
-$$n - m + f = 2$$
+$$
+n - m + f = 2
+$$
 
 And more generally, every planar graph with $k$ connected components satisfies:
 
-$$n - m + f = 1 + k$$
+$$
+n - m + f = 1 + k
+$$
 
 ### Number of edges of a planar graph. {#number-of-edges-of-a-planar-graph}
 If $n \ge 3$ then the maximum number of edges of a planar graph with $n$ vertices is $3n - 6$. This number is achieved by any connected planar graph where each face is bounded by a triangle. In terms of complexity this fact means that $m = O(n)$ for any planar graph.

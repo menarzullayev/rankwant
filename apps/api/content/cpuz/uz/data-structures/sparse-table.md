@@ -81,7 +81,9 @@ Masalan, $[1, 6]$ oralig‘ini $[1, 4]$ va $[3, 6]$ oraliqlariga ajratamiz. $[1,
 
 Demak, $[L, R]$ oralig‘i minimumini quyidagicha hisoblash mumkin:
 
-$$\min(\text{st}[i][L], \text{st}[i][R - 2^i + 1]) \quad \text{ where } i = \log_2(R - L + 1)$$
+$$
+\min(\text{st}[i][L], \text{st}[i][R - 2^i + 1]) \quad \text{ where } i = \log_2(R - L + 1)
+$$
 
 Buning uchun $\log_2(R-L+1)$ qiymatini tez hisoblay olishimiz kerak. Barcha logarifmlarni oldindan hisoblash mumkin:
 

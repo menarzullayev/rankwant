@@ -5,7 +5,9 @@
 $a$ butun sonining [modul bo‘yicha multiplikativ teskari elementi](http://en.wikipedia.org/wiki/Modular_multiplicative_inverse) — $a\cdot x$ ko‘paytma biror $m$ modul bo‘yicha $1$ ga taqqoslanadigan $x$ butun sonidir.
 Formal yozuvda shunday $x$ butun sonni topmoqchimizki,
 
-$$a \cdot x \equiv 1 \mod m.$$
+$$
+a \cdot x \equiv 1 \mod m.
+$$
 
 $x$ ni shunchaki $a^{-1}$ bilan ham belgilaymiz.
 Modul bo‘yicha teskari element har doim mavjud bo‘lavermasligini ta’kidlash kerak. Masalan, $m=4$, $a=2$ bo‘lsin.
@@ -17,14 +19,18 @@ Ushbu maqolada teskari element mavjud bo‘lgan holatda uni topishning ikki usul
 
 Quyidagi tenglamani ko‘rib chiqamiz ($x$ va $y$ noma’lum):
 
-$$a \cdot x + m \cdot y = 1$$
+$$
+a \cdot x + m \cdot y = 1
+$$
 
 Bu ikki o‘zgaruvchili [chiziqli Diofant tenglamasi](/algorithms/algebra/linear-diophantine-equation).
 Havola qilingan maqolada ko‘rsatilganidek, $\gcd(a,m)=1$ bo‘lganda tenglama yechimga ega va uni [kengaytirilgan Evklid algoritmi](/algorithms/algebra/extended-euclid-algorithm) yordamida topish mumkin.
 $\gcd(a,m)=1$ modul teskari element mavjudligining ayni sharti ekaniga e’tibor bering.
 Endi tenglamaning ikkala tomonini $m$ modul bo‘yicha olsak, $m\cdot y$ hadi yo‘qoladi va tenglama quyidagi ko‘rinishga keladi:
 
-$$a \cdot x \equiv 1 \mod m$$
+$$
+a \cdot x \equiv 1 \mod m
+$$
 
 Demak, $a$ ning modul teskari elementi $x$ dir.
 
@@ -49,14 +55,18 @@ Kengaytirilgan Evklid algoritmi qaytargan `x` manfiy bo‘lishi mumkin, shuning 
 
 Modul teskari elementni topishning yana bir usuli Eyler teoremasidan foydalanadi. Bu teorema $a$ va $m$ o‘zaro tub bo‘lganda quyidagi taqqoslama bajarilishini aytadi:
 
-$$a^{\phi (m)} \equiv 1 \mod m$$
+$$
+a^{\phi (m)} \equiv 1 \mod m
+$$
 
 $\phi$ — [Eylerning phi-funksiyasi](/algorithms/algebra/phi-function).
 Yana bir bor, $a$ va $m$ ning o‘zaro tub bo‘lishi modul teskari element mavjudligi uchun ham ayni shart ekaniga e’tibor bering.
 
 Agar $m$ tub son bo‘lsa, bu [Fermatning kichik teoremasi](http://en.wikipedia.org/wiki/Fermat's_little_theorem)ga soddalashadi:
 
-$$a^{m - 1} \equiv 1 \mod m$$
+$$
+a^{m - 1} \equiv 1 \mod m
+$$
 
 Yuqoridagi tenglamalarning ikkala tomonini $a^{-1}$ ga ko‘paytirsak:
 
@@ -70,7 +80,9 @@ Bu usul oldingi paragrafdagi usuldan tushunish osonroq bo‘lsa-da, $m$ tub bo�
 
 $m>a$ bo‘lgan tub modul berilgan bo‘lsin (yoki bir qadamda modul olib $a$ ni kichraytirishimiz mumkin). [Evklid bo‘linishi](https://en.wikipedia.org/wiki/Euclidean_division)ga ko‘ra:
 
-$$m = k \cdot a + r$$
+$$
+m = k \cdot a + r
+$$
 
 bu yerda $k=\left\lfloor\frac{m}{a}\right\rfloor$ va $r=m\bmod a$. U holda:
 

@@ -2,11 +2,15 @@
 
 Fibonacci ketma-ketligi quyidagicha aniqlanadi:
 
-$$F_0 = 0, F_1 = 1, F_n = F_{n-1} + F_{n-2}$$
+$$
+F_0 = 0, F_1 = 1, F_n = F_{n-1} + F_{n-2}
+$$
 
 Ketma-ketlikning dastlabki elementlari ([OEIS A000045](http://oeis.org/A000045)) quyidagilar:
 
-$$0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...$$
+$$
+0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...
+$$
 
 ## Xossalari {#properties}
 
@@ -14,17 +18,23 @@ Fibonacci sonlari ko‘plab qiziqarli xossalarga ega. Ulardan ba’zilari:
 
 * Kassini ayniyati:
 
-$$F_{n-1} F_{n+1} - F_n^2 = (-1)^n$$
+$$
+F_{n-1} F_{n+1} - F_n^2 = (-1)^n
+$$
 
 > Buni induksiya yordamida isbotlash mumkin. Knuthning bir satrlik isboti quyida keltirilgan $2\times 2$ matritsaviy ko‘rinishning determinantini olishdan kelib chiqadi.
 
 * “Qo‘shish” qoidasi:
 
-$$F_{n+k} = F_k F_{n+1} + F_{k-1} F_n$$
+$$
+F_{n+k} = F_k F_{n+1} + F_{k-1} F_n
+$$
 
 * Oldingi ayniyatni $k = n$ holiga qo‘llasak, quyidagini olamiz:
 
-$$F_{2n} = F_n (F_{n+1} + F_{n-1})$$
+$$
+F_{2n} = F_n (F_{n+1} + F_{n-1})
+$$
 
 * Bundan induksiya yordamida istalgan musbat butun $k$ uchun $F_{nk}$ soni $F_n$ ga karrali ekanini isbotlash mumkin.
 
@@ -32,7 +42,9 @@ $$F_{2n} = F_n (F_{n+1} + F_{n-1})$$
 
 * EKUB ayniyati:
 
-$$GCD(F_m, F_n) = F_{GCD(m, n)}$$
+$$
+GCD(F_m, F_n) = F_{GCD(m, n)}
+$$
 
 * Fibonacci sonlari Evklid algoritmi uchun mumkin bo‘lgan eng yomon kirishlardir ([Evklid algoritmi](/algorithms/algebra/euclid-algorithm) maqolasidagi Lamé teoremasiga qarang).
 
@@ -40,7 +52,9 @@ $$GCD(F_m, F_n) = F_{GCD(m, n)}$$
 
 Ketma-ketlikdan musbat butun sonlarni ikkilik kod so‘zlari bilan kodlash uchun foydalanish mumkin. Zeckendorf teoremasiga ko‘ra, istalgan natural $n$ soni Fibonacci sonlari yig‘indisi ko‘rinishida yagona tarzda ifodalanadi:
 
-$$N = F_{k_1} + F_{k_2} + \ldots + F_{k_r}$$
+$$
+N = F_{k_1} + F_{k_2} + \ldots + F_{k_r}
+$$
 
 bunda $k_1 \ge k_2 + 2,\ k_2 \ge k_3 + 2,\  \ldots,\  k_r \ge 2$ (ya’ni ifodada ketma-ket keladigan ikkita Fibonacci sonidan foydalanib bo‘lmaydi).
 Bundan istalgan son Fibonacci kodlashida yagona tarzda kodlanishi kelib chiqadi.
@@ -48,14 +62,16 @@ Bu ifodani $d_0 d_1 d_2 \dots d_s 1$ ikkilik kodi bilan tasvirlash mumkin; bunda
 Kod so‘zining tugaganini ko‘rsatish uchun uning oxiriga $1$ qo‘shiladi.
 E’tibor bering, ketma-ket keluvchi ikkita 1-bit faqat shu joyda uchraydi.
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 1 &=& 1 &=& F_2 &=& (11)_F \\
 2 &=& 2 &=& F_3 &=& (011)_F \\
 6 &=& 5 + 1 &=& F_5 + F_2 &=& (10011)_F \\
 8 &=& 8 &=& F_6 &=& (000011)_F \\
 9 &=& 8 + 1 &=& F_6 + F_2 &=& (100011)_F \\
 19 &=& 13 + 5 + 1 &=& F_7 + F_5 + F_2 &=& (1001011)_F
-\end{aligned}$$
+\end{aligned}
+$$
 
 $n$ butun sonini oddiy ochko‘z algoritm yordamida kodlash mumkin:
 
@@ -74,12 +90,16 @@ Kod so‘zini dekodlash uchun avval oxirgi $1$ ni olib tashlang. So‘ng, agar $
 
 “Binet formulasi” deb ataladigan formula mavjud, garchi u Binetdan avval Moivrga ham ma’lum bo‘lgan bo‘lsa-da:
 
-$$F_n = \frac{\left(\frac{1 + \sqrt{5}}{2}\right)^n - \left(\frac{1 - \sqrt{5}}{2}\right)^n}{\sqrt{5}}$$
+$$
+F_n = \frac{\left(\frac{1 + \sqrt{5}}{2}\right)^n - \left(\frac{1 - \sqrt{5}}{2}\right)^n}{\sqrt{5}}
+$$
 
 Bu formulani induksiya yordamida oson isbotlash mumkin, biroq uni hosil qiluvchi funksiyalar tushunchasi yordamida yoki funksional tenglamani yechish orqali ham keltirib chiqarish mumkin.
 Ikkinchi hadning moduli doimo $1$ dan kichik va juda tez (eksponensial ravishda) kamayishini darhol payqash mumkin. Demak, birinchi hadning o‘zi $F_n$ ga “deyarli” teng. Buni qat’iy ravishda quyidagicha yozish mumkin:
 
-$$F_n = \left[\frac{\left(\frac{1 + \sqrt{5}}{2}\right)^n}{\sqrt{5}}\right]$$
+$$
+F_n = \left[\frac{\left(\frac{1 + \sqrt{5}}{2}\right)^n}{\sqrt{5}}\right]
+$$
 
 bu yerda kvadrat qavslar eng yaqin butun songa yaxlitlashni bildiradi.
 Kasr sonlar bilan ishlaganda bu ikki formula juda yuqori aniqlikni talab qilgani sababli, amaliy hisoblashlarda ularning foydasi kam.
@@ -228,10 +248,12 @@ $$
 
 quyidagi soddaroq tenglamalarni olish mumkin:
 
-$$ \begin{align}
+$$
+ \begin{align}
 F_{2k+1} &= F_{k+1}^2 + F_{k}^2 \\
 F_{2k} &= F_k(F_{k+1}+F_{k-1}) = F_k (2F_{k+1} - F_{k})\\
-\end{align}.$$
+\end{align}.
+$$
 
 Demak, yuqoridagi ikki tenglamadan foydalanib, Fibonacci sonlarini quyidagi kod yordamida oson hisoblash mumkin:
 
@@ -258,7 +280,9 @@ Fibonacci ketma-ketligini $p$ modul bo‘yicha qaraylik. Ketma-ketlik davriy eka
 
 Buni ziddiyat yordamida isbotlaymiz. $p$ modul bo‘yicha olingan Fibonacci sonlarining dastlabki $p^2 + 1$ ta juftligini qaraylik:
 
-$$(F_0,\ F_1),\ (F_1,\ F_2),\ \ldots,\ (F_{p^2},\ F_{p^2 + 1})$$
+$$
+(F_0,\ F_1),\ (F_1,\ F_2),\ \ldots,\ (F_{p^2},\ F_{p^2 + 1})
+$$
 
 $p$ modul bo‘yicha faqat $p$ xil qoldiq va ko‘pi bilan $p^2$ xil qoldiqlar juftligi bo‘lishi mumkin, shuning uchun ular orasida kamida ikkita bir xil juftlik mavjud. Bu ketma-ketlik davriy ekanini isbotlash uchun yetarli, chunki har bir Fibonacci soni faqat o‘zidan oldingi ikkita son orqali aniqlanadi. Demak, agar ketma-ket ikki sondan iborat ikkita juftlik takrorlansa, bu juftliklardan keyingi sonlar ham aynan bir xil tarzda takrorlanadi.
 

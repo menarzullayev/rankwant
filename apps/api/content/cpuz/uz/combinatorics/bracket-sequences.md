@@ -41,11 +41,15 @@ Joriy belgi ochuvchi qavs bo‘lsa, uni stekka qo‘shamiz. Yopuvchi qavs bo‘l
 
 Faqat bitta turdagi qavsdan foydalanilganda muvozanatlangan qavslar ketma-ketliklari sonini [Catalan sonlari](/algorithms/combinatorics/catalan-numbers) yordamida hisoblash mumkin. Uzunligi $2n$ bo‘lgan, ya’ni $n$ juft qavsli muvozanatlangan ketma-ketliklar soni:
 
-$$\frac{1}{n+1} \binom{2n}{n}$$
+$$
+\frac{1}{n+1} \binom{2n}{n}
+$$
 
 Agar $k$ turdagi qavsga ruxsat berilsa, har bir juft boshqa juftlardan mustaqil ravishda $k$ turdan istalganiga tegishli bo‘lishi mumkin. Shuning uchun muvozanatlangan qavslar ketma-ketliklari soni:
 
-$$\frac{1}{n+1} \binom{2n}{n} k^n$$
+$$
+\frac{1}{n+1} \binom{2n}{n} k^n
+$$
 
 ### Dinamik dasturlash {#dynamic-programming}
 
@@ -55,7 +59,9 @@ $d[n]$ — $n$ juft qavsli to‘g‘ri qavslar ketma-ketliklari soni bo‘lsin. 
 
 $d[n]$ ni hisoblash uchun birinchi qavs juftining ichida $i$ juftli nechta muvozanatlangan ketma-ketlik va bu juftdan keyin $n-1-i$ juftli nechta muvozanatlangan ketma-ketlik borligini ko‘rib chiqamiz. Natijada:
 
-$$d[n] = \sum_{i=0}^{n-1} d[i] \cdot d[n-1-i]$$
+$$
+d[n] = \sum_{i=0}^{n-1} d[i] \cdot d[n-1-i]
+$$
 
 Bu rekurrent munosabatning boshlang‘ich qiymati $d[0]=1$.
 
@@ -120,7 +126,9 @@ $i=0$ boshlang‘ich qiymatida javob ravshan: $d[0][0]=1$, $j>0$ uchun esa $d[0]
 
 Endi $i>0$ bo‘lsin va ketma-ketlikning oxirgi belgisini ko‘rib chiqaylik. Oxirgi belgi ochuvchi qavs `(` bo‘lgan bo‘lsa, oldingi holat $(i-1,j-1)$ edi. U yopuvchi qavs `)` bo‘lgan bo‘lsa, oldingi holat $(i-1,j+1)$ edi. Shunday qilib, quyidagi rekurrent formulani olamiz:
 
-$$d[i][j] = d[i-1][j-1] + d[i-1][j+1]$$
+$$
+d[i][j] = d[i-1][j-1] + d[i-1][j+1]
+$$
 
 Manfiy $j$ uchun $d[i][j]=0$ ekani ravshan. Demak, bu massivni $O(n^2)$ vaqtda hisoblash mumkin.
 
@@ -134,7 +142,9 @@ Endi $k$ ta turli qavs turi mavjud bo‘lsin.
 
 Joriy $s[i]$ belgiga qaraganimizda, $\text{depth}$ ni yangilashdan oldin joriy belgidan kichik bo‘lgan barcha qavs turlarini ko‘rib chiqamiz. Har bir shunday qavsni joriy o‘ringa qo‘yib ko‘ramiz; yangi balans $\text{ndepth}=\text{depth}\pm1$ bo‘ladi. So‘ng uzunligi $2n-i-1$, balansi $\text{ndepth}$ bo‘lgan davomlar sonini javobga qo‘shamiz:
 
-$$d[2n - i - 1][\text{ndepth}] \cdot k^{\frac{2n - i - 1 - ndepth}{2}}$$
+$$
+d[2n - i - 1][\text{ndepth}] \cdot k^{\frac{2n - i - 1 - ndepth}{2}}
+$$
 
 Bu formula quyidagicha keltirib chiqariladi. Avval bir nechta qavs turi borligini “unutib”, faqat $d[2n-i-1][\text{ndepth}]$ javobini olamiz. Endi $k$ turdagi qavsga ruxsat berilsa javob qanday o‘zgarishini ko‘ramiz.
 

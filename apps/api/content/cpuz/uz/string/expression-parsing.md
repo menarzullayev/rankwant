@@ -10,11 +10,15 @@ Bu yerda muhokama qilinadigan algoritm ifodani bevosita yoki bilvosita **teskari
 Teskari polyak yozuvi — matematik ifodalarni operatorlari operandlardan keyin joylashadigan shaklda yozish usuli.
 Masalan, quyidagi ifoda
 
-$$a + b * c * d + (e - f) * (g * h + i)$$
+$$
+a + b * c * d + (e - f) * (g * h + i)
+$$
 
 teskari polyak yozuvida quyidagicha yoziladi:
 
-$$a b c * d * + e f - g h * i + * +$$
+$$
+a b c * d * + e f - g h * i + * +
+$$
 
 Teskari polyak yozuvi avstraliyalik faylasuf va kompyuter fanlari mutaxassisi Charles Hamblin tomonidan 1950-yillarning o‘rtalarida, polyak matematigi Jan Łukasiewicz 1920-yilda taklif qilgan polyak yozuvi asosida ishlab chiqilgan.
 

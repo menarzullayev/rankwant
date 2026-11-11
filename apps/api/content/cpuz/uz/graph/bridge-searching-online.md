@@ -42,7 +42,9 @@ Endi kerak bo‘ladigan amallarni ketma-ket ko‘rib chiqamiz.
 
   Endi standart usulni qo‘llaymiz: kamroq tugunga ega daraxtni qayta ildizlaymiz. Eng yomon holat taxminan teng hajmli ikki daraxt birlashtirilganda yuz berishi intuitiv ravishda ravshan, ammo natijada ikki baravar katta daraxt hosil bo‘ladi va shu holat ko‘p marta takrorlana olmaydi. Umumiy xarajat quyidagi rekurrent formula bilan yoziladi:
 
-  $$T(n)=\max_{k=1\ldots n-1}\left\{T(k)+T(n-k)+O(\min(k,n-k))\right\}.$$
+  $$
+  T(n)=\max_{k=1\ldots n-1}\left\{T(k)+T(n-k)+O(\min(k,n-k))\right\}.
+  $$
 
   Bu yerda $T(n)$ — daraxtlarni qayta ildizlash va birlashtirish orqali $n$ tugunli daraxt hosil qilish uchun zarur amallar soni. $n$ o‘lchamli daraxt $k$ va $n-k$ o‘lchamli ikki kichik daraxtni birlashtirishdan hosil bo‘ladi. Ushbu rekurrentlikning yechimi $T(n)=O(n\log n)$. Demak har safar kichikroq daraxtni qayta ildizlasak, barcha qayta ildizlash amallariga sarflangan umumiy vaqt $O(n\log n)$ bo‘ladi. Har bir bog‘langan komponent hajmini saqlash kerak, buni DSU oson qo‘llab-quvvatlaydi.
 

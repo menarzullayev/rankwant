@@ -63,13 +63,17 @@ Joriy, navbatdagi Z-funksiya qiymati hisoblanadigan indeks $i$ bo‘lsa, ikki ho
 
     Shunga o‘xshash holatga **misol**:
 
-    $$ s = "aaaabaa" $$
+    $$
+    s = "aaaabaa"
+    $$
 
     Oxirgi pozitsiyaga ($i = 6$) kelganimizda, joriy mos kesma $[5,7)$ bo‘ladi. $6$ pozitsiya $6-5=1$ pozitsiyaga mos keladi, u yerda $z[1]=3$. Ravshanki, $z[6]$ ni $3$ bilan initsializatsiya qilib bo‘lmaydi — bu butunlay noto‘g‘ri. Uni ko‘pi bilan $1$ bilan initsializatsiya qilish mumkin, chunki $[l,r)$ kesmaning $r$ chegarasidan chiqarmaydigan eng katta qiymat shu.
 
     Demak, $z[i]$ uchun xavfsiz **boshlang‘ich taxmin**:
 
-    $$ z_0[i] = \min(r - i,\; z[i-l]) $$
+    $$
+    z_0[i] = \min(r - i,\; z[i-l])
+    $$
 
     $z[i]$ ga $z_0[i]$ berilgach, uni **sodda algoritm** yordamida oshirishga harakat qilamiz, chunki $r$ chegaradan keyin moslik davom etadimi-yo‘qmi oldindan bilmaymiz.
 

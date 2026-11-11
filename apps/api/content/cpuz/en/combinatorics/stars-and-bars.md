@@ -7,7 +7,9 @@ It occurs whenever you want to count the number of ways to group identical objec
 
 The number of ways to put $n$ identical objects into $k$ labeled boxes is
 
-$$\binom{n + k - 1}{n}.$$
+$$
+\binom{n + k - 1}{n}.
+$$
 
 The proof involves turning the objects into stars and separating the boxes using bars (therefore the name).
 E.g. we can represent with $\bigstar | \bigstar \bigstar |~| \bigstar \bigstar$ the following situation:
@@ -24,7 +26,9 @@ This problem is a direct application of the theorem.
 
 You want to count the number of solution of the equation 
 
-$$x_1 + x_2 + \dots + x_k = n$$
+$$
+x_1 + x_2 + \dots + x_k = n
+$$
 
 with $x_i \ge 0$.
 
@@ -38,7 +42,9 @@ Therefore the solution is $\binom{n + k - 1}{n}$.
 
 A second theorem provides a nice interpretation for positive integers. Consider solutions to 
 
-$$x_1 + x_2 + \dots + x_k = n$$
+$$
+x_1 + x_2 + \dots + x_k = n
+$$
 
 with $x_i \ge 1$.
 
@@ -50,15 +56,21 @@ There are $n-1$ gaps between stars to place $k-1$ bars, so the solution is $\bin
 This can easily be extended to integer sums with different lower bounds.
 I.e. we want to count the number of solutions for  the equation
 
-$$x_1 + x_2 + \dots + x_k = n$$
+$$
+x_1 + x_2 + \dots + x_k = n
+$$
 
 with $x_i \ge a_i$.
 
 After substituting $x_i' := x_i - a_i$ we receive the modified equation
 
-$$(x_1' + a_i) + (x_2' + a_i) + \dots + (x_k' + a_k) = n$$
+$$
+(x_1' + a_i) + (x_2' + a_i) + \dots + (x_k' + a_k) = n
+$$
 
-$$\Leftrightarrow ~ ~ x_1' + x_2' + \dots + x_k' = n - a_1 - a_2 - \dots - a_k$$
+$$
+\Leftrightarrow ~ ~ x_1' + x_2' + \dots + x_k' = n - a_1 - a_2 - \dots - a_k
+$$
 
 with $x_i' \ge 0$.
 So we have reduced the problem to the simpler case with $x_i' \ge 0$ and again can apply the stars and bars theorem.

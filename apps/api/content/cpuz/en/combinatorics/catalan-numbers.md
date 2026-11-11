@@ -28,9 +28,13 @@ There are two formulas for the Catalan numbers: **Recursive and Analytical**. Si
 
 ### Recursive formula {#recursive-formula}
  
-$$C_0 = C_1 = 1$$
+$$
+C_0 = C_1 = 1
+$$
 
-$$C_n = \sum_{k = 0}^{n-1} C_k C_{n-1-k} , {n} \geq 2$$
+$$
+C_n = \sum_{k = 0}^{n-1} C_k C_{n-1-k} , {n} \geq 2
+$$
 
 The recurrence formula can be easily deduced from the problem of the correct bracket sequence.
 
@@ -62,7 +66,9 @@ void init() {
 
 ### Analytical formula {#analytical-formula}
 
-$$C_n = \frac{1}{n + 1} {\binom{2n}{n}}$$
+$$
+C_n = \frac{1}{n + 1} {\binom{2n}{n}}
+$$
 
 (here $\binom{n}{k}$ denotes the usual binomial coefficient, i.e. number of ways to select $k$ objects from set of $n$ objects).
 
@@ -72,7 +78,9 @@ Now we count the number of monotonic paths which cross the main diagonal. Consid
 
 The number of monotonic paths in the lattice $(n - 1) \times (n + 1)$ are $\binom{2n}{n-1}$ . Let us call such paths as "bad" paths. As a result, to obtain the number of monotonic paths which do not cross the main diagonal, we subtract the above "bad" paths, obtaining the formula:
 
-$$C_n = \binom{2n}{n} - \binom{2n}{n-1} = \frac{1}{n + 1} \binom{2n}{n} , {n} \geq 0$$
+$$
+C_n = \binom{2n}{n} - \binom{2n}{n-1} = \frac{1}{n + 1} \binom{2n}{n} , {n} \geq 0
+$$
 
 ## Reference {#reference}
 

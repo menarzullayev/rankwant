@@ -66,10 +66,12 @@ $$
 
 the new expressions become
 
-$$\begin{align}
+$$
+\begin{align}
     b(a+c) - a(b+d) &= 1 \\
     c(b+d) - d(a+c) &= 1
-\end{align}$$
+\end{align}
+$$
 
 which, using that $bc-ad=1$, can be easily shown to be true.
 

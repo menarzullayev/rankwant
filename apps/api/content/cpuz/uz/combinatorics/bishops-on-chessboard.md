@@ -8,13 +8,15 @@ Bu masalani dinamik dasturlash yordamida yechish mumkin.
 
 Shaxmat taxtasining diagonallarini quyidagicha raqamlaymiz: qora diagonallarga toq indekslar, oq diagonallarga juft indekslar beriladi; har bir rang ichida diagonallar ulardagi kataklar soni kamaymaydigan tartibda raqamlanadi. Quyida $5\times5$ taxta uchun misol keltirilgan:
 
-$$\begin{matrix}
+$$
+\begin{matrix}
 \bf{1} & 2 & \bf{5} & 6 & \bf{9} \\
 2 & \bf{5} & 6 & \bf{9} & 8 \\
 \bf{5} & 6 & \bf{9} & 8 & \bf{7} \\
 6 & \bf{9} & 8 & \bf{7} & 4 \\
 \bf{9} & 8 & \bf{7} & 4 & \bf{3} \\
-\end{matrix}$$
+\end{matrix}
+$$
 
 `D[i][j]` — indeksi `i` dan katta bo‘lmagan va `i`-diagonal bilan bir xil rangdagi diagonallarga `j` ta filni joylashtirish usullari soni bo‘lsin.
 

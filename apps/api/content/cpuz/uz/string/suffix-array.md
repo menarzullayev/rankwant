@@ -8,23 +8,27 @@ Suffikslar massivi berilgan satrning barcha suffikslari saralangandan keyin ular
 
 Misol sifatida $s=abaab$ satrini ko‘raylik. Uning barcha suffikslari quyidagicha:
 
-$$\begin{array}{ll}
+$$
+\begin{array}{ll}
 0. & abaab \\
 1. & baab \\
 2. & aab \\
 3. & ab \\
 4. & b
-\end{array}$$
+\end{array}
+$$
 
 Bu satrlarni saralaganimizdan so‘ng:
 
-$$\begin{array}{ll}
+$$
+\begin{array}{ll}
 2. & aab \\
 3. & ab \\
 0. & abaab \\
 4. & b \\
 1. & baab
-\end{array}$$
+\end{array}
+$$
 
 Demak, $s$ uchun suffikslar massivi $(2,~3,~0,~4,~1)$ bo‘ladi.
 
@@ -38,15 +42,17 @@ Bu eng sodda usuldir. Barcha suffikslarni hosil qilamiz, ularning dastlabki inde
 
 ### $O(n\log n)$ usul {#on-log-n-approach}
 
-Qat’iy aytganda, quyidagi algoritm suffikslarni emas, satrning siklik siljishlarini saralaydi. Biroq undan suffikslarni saralash algoritmini juda oson olish mumkin: satr oxiriga undagi barcha belgilardan kichik bo‘lgan ixtiyoriy belgi qo‘shish kifoya. Odatda \$ belgisi ishlatiladi. Shunda saralangan siklik siljishlar tartibi saralangan suffikslar tartibiga teng bo‘ladi. Buni $dabbb$ satri misolida ko‘rish mumkin:
+Qat’iy aytganda, quyidagi algoritm suffikslarni emas, satrning siklik siljishlarini saralaydi. Biroq undan suffikslarni saralash algoritmini juda oson olish mumkin: satr oxiriga undagi barcha belgilardan kichik bo‘lgan ixtiyoriy belgi qo‘shish kifoya. Odatda \text{\textdollar} belgisi ishlatiladi. Shunda saralangan siklik siljishlar tartibi saralangan suffikslar tartibiga teng bo‘ladi. Buni $dabbb$ satri misolida ko‘rish mumkin:
 
-$$\begin{array}{lll}
-1. & abbb\$d & abbb \\
-4. & b\$dabb & b \\
-3. & bb\$dab & bb \\
-2. & bbb\$da & bbb \\
-0. & dabbb\$ & dabbb
-\end{array}$$
+$$
+\begin{array}{lll}
+1. & abbb\text{\textdollar}d & abbb \\
+4. & b\text{\textdollar}dabb & b \\
+3. & bb\text{\textdollar}dab & bb \\
+2. & bbb\text{\textdollar}da & bbb \\
+0. & dabbb\text{\textdollar} & dabbb
+\end{array}
+$$
 
 Siklik siljishlarni saralayotganimiz sababli siklik ostsatrlarni ko‘ramiz. Hatto $i>j$ bo‘lganda ham $s[i\dots j]$ yozuvini ishlatamiz; bu holda aslida $s[i\dots n-1]+s[0\dots j]$ satri nazarda tutiladi. Bundan tashqari, barcha indekslar $|s|$ moduli bo‘yicha olinadi; yozuvni soddalashtirish uchun modul amali ko‘pincha ko‘rsatilmaydi.
 
@@ -58,11 +64,13 @@ $c[i]$ sonlari tartib haqidagi ma’lumotni ham saqlaydigan qilib beriladi: bir 
 
 Misol sifatida $s=aaba$ satrini ko‘raylik. Har bir iteratsiyadagi siklik ostsatrlar hamda ularga mos $p[]$ va $c[]$ massivlari:
 
-$$\begin{array}{cccc}
+$$
+\begin{array}{cccc}
 0: & (a,~ a,~ b,~ a) & p = (0,~ 1,~ 3,~ 2) & c = (0,~ 0,~ 1,~ 0)\\
 1: & (aa,~ ab,~ ba,~ aa) & p = (0,~ 3,~ 1,~ 2) & c = (0,~ 1,~ 2,~ 0)\\
 2: & (aaba,~ abaa,~ baaa,~ aaab) & p = (3,~ 0,~ 1,~ 2) & c = (1,~ 2,~ 3,~ 0)\\
-\end{array}$$
+\end{array}
+$$
 
 $p[]$ qiymatlari yagona bo‘lmasligi mumkin. Masalan, $0$-iteratsiyada $p=(3,~1,~0,~2)$ yoki $p=(3,~0,~1,~2)$ ham bo‘lishi mumkin. Bu variantlarning barchasi ostsatrlarni saralangan tartibga keltiradi va shuning uchun to‘g‘ri. Biroq $c[]$ massivi qat’iy aniqlangan va unda noaniqlik bo‘lmaydi.
 
@@ -100,7 +108,8 @@ Endi iteratsiya qadamini ko‘ramiz. $k-1$-qadam bajarilgan va shu qadam uchun $
 Uzunligi $2^k$ bo‘lgan siklik ostsatr uzunligi $2^{k-1}$ bo‘lgan ikkita ostsatrdan tashkil topadi. Oldingi bosqichdagi $c[]$ ekvivalentlik sinflari yordamida bunday qismlarni $O(1)$ da taqqoslash mumkin. Demak, $i$ va $j$ pozitsiyalardan boshlanuvchi uzunligi $2^k$ bo‘lgan ostsatrlarni taqqoslash uchun zarur barcha ma’lumot mos ravishda
 $(c[i],~c[i+2^{k-1}])$ va $(c[j],~c[j+2^{k-1}])$ juftliklarida saqlanadi.
 
-$$\dots
+$$
+\dots
 \overbrace{
 \underbrace{s_i \dots s_{i+2^{k-1}-1}}_{\text{uzunlik} = 2^{k-1},~ \text{sinf} = c[i]}
 \quad
@@ -161,7 +170,7 @@ Algoritm $O(n\log n)$ vaqt va $O(n)$ xotira talab qiladi. Soddalik uchun alifbo 
 
 Agar satr faqat ma’lum belgilar to‘plamidan, masalan, kichik lotin harflaridan iboratligi ma’lum bo‘lsa, implementatsiyani optimallashtirish mumkin. Biroq yutuq odatda kichik bo‘ladi, chunki alifbo o‘lchami faqat birinchi iteratsiyada ahamiyatli. Keyingi iteratsiyalar ekvivalentlik sinflari soniga bog‘liq; hatto boshlang‘ich alifbo atigi ikkita belgidan iborat bo‘lsa ham, sinflar soni tezda $O(n)$ ga yetishi mumkin.
 
-Bu algoritm faqat siklik siljishlarni saralashini ham unutmang. Bo‘lim boshida aytilganidek, satrdagi barcha belgilardan kichik belgi qo‘shib, hosil bo‘lgan satrning siklik siljishlarini saralash orqali suffikslarning saralangan tartibini olamiz. Masalan, $s + \$$ ning siklik siljishlarini saralaymiz. Bu, shubhasiz, $s$ ning suffikslar massivini beradi, ammo uning boshiga $|s|$ qo‘shilgan bo‘ladi.
+Bu algoritm faqat siklik siljishlarni saralashini ham unutmang. Bo‘lim boshida aytilganidek, satrdagi barcha belgilardan kichik belgi qo‘shib, hosil bo‘lgan satrning siklik siljishlarini saralash orqali suffikslarning saralangan tartibini olamiz. Masalan, $s + \text{\textdollar}$ ning siklik siljishlarini saralaymiz. Bu, shubhasiz, $s$ ning suffikslar massivini beradi, ammo uning boshiga $|s|$ qo‘shilgan bo‘ladi.
 
 ```cpp
 vector<int> suffix_array_construction(string s) {
@@ -194,17 +203,21 @@ Uzunligi ikkilik daraja bo‘lgan ikkita ostsatrni $O(1)$ da taqqoslash uchun ul
 
 Boshlanish indekslari $i$ va $j$, uzunligi $l$ bo‘lgan ikkita ostsatrni taqqoslaylik. $2^k\le l$ bo‘ladigan eng katta $k$ ni topamiz. Ikki ostsatrni taqqoslashni uzunligi $2^k$ bo‘lgan ikkita ustma-ust tushuvchi blok juftligini taqqoslashga almashtirish mumkin: avval $i$ va $j$ dan boshlanuvchi bloklar, ular teng bo‘lsa, $i+l-1$ va $j+l-1$ pozitsiyalarda tugaydigan bloklar solishtiriladi.
 
-$$\dots
+$$
+\dots
 \overbrace{\underbrace{s_i \dots s_{i+l-2^k} \dots s_{i+2^k-1}}_{2^k} \dots s_{i+l-1}}^{\text{birinchi}}
 \dots
 \overbrace{\underbrace{s_j \dots s_{j+l-2^k} \dots s_{j+2^k-1}}_{2^k} \dots s_{j+l-1}}^{\text{ikkinchi}}
-\dots$$
+\dots
+$$
 
-$$\dots
+$$
+\dots
 \overbrace{s_i \dots \underbrace{s_{i+l-2^k} \dots s_{i+2^k-1} \dots s_{i+l-1}}_{2^k}}^{\text{birinchi}}
 \dots
 \overbrace{s_j \dots \underbrace{s_{j+l-2^k} \dots s_{j+2^k-1} \dots s_{j+l-1}}_{2^k}}^{\text{ikkinchi}}
-\dots$$
+\dots
+$$
 
 Taqqoslash implementatsiyasi quyidagicha. Funksiyaga oldindan hisoblangan $k$ beriladi. $k=\lfloor\log l\rfloor$ orqali topilishi mumkin, lekin barcha $l$ lar uchun logarifmlarni oldindan hisoblash samaraliroq. Masalan, o‘xshash g‘oyadan foydalanadigan va barcha $\log$ qiymatlarini hisoblaydigan [Sparse Table](/algorithms/data-structures/sparse-table) maqolasiga qarang.
 
@@ -297,8 +310,10 @@ $p[0]$, keyin $p[1]$ va hokazo pozitsiyalardan boshlanuvchi qaysi prefikslar yan
 
 Suffikslar saralanganligi sababli joriy $p[i]$ suffiksi uning $p[i-1]$ suffiksi bilan umumiy bo‘lgan prefikslaridan tashqari barcha prefikslari orqali yangi ostsatr beradi. Ya’ni dastlabki $\text{lcp}[i-1]$ ta prefiks yangi emas. Joriy suffiks uzunligi $n-p[i]$ bo‘lgani uchun $p[i]$ da $n-p[i]-\text{lcp}[i-1]$ ta yangi ostsatr boshlanadi. Barcha suffikslar bo‘yicha yig‘ib:
 
-$$\sum_{i=0}^{n-1}(n-p[i])-\sum_{i=0}^{n-2}\text{lcp}[i]
-=\frac{n^2+n}{2}-\sum_{i=0}^{n-2}\text{lcp}[i]$$
+$$
+\sum_{i=0}^{n-1}(n-p[i])-\sum_{i=0}^{n-2}\text{lcp}[i]
+=\frac{n^2+n}{2}-\sum_{i=0}^{n-2}\text{lcp}[i]
+$$
 
 natijani olamiz.
 

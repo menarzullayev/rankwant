@@ -30,11 +30,13 @@ Shu bilan birga, bu to‘plamni ekvivalentlik sinflariga ajratamiz.
 
 Masalan, $n=3$ bo‘lsin va daraxt $1$-ildiz hamda uning $2$ va $3$ farzandlaridan iborat bo‘lsin. Quyidagi $f_1$ va $f_2$ funksiyalar ekvivalent deb qaraladi:
 
-$$\begin{array}{ll}
+$$
+\begin{array}{ll}
 f_1(1)=0 & f_2(1)=0\\
 f_1(2)=1 & f_2(2)=0\\
 f_1(3)=0 & f_2(3)=1
-\end{array}$$
+\end{array}
+$$
 
 ### Invariant permutatsiyalar {#invariant-permutations}
 
@@ -44,7 +46,9 @@ Intuitiv jihatdan bu tushunarli: $1$-tugunning $2$ va $3$ farzandlarini o‘rin 
 
 Formal ravishda bu shunday **invariant permutatsiya** $\pi$ mavjudligini anglatadiki, u obyektning o‘zini o‘zgartirmaydi, faqat uning tasvirini o‘zgartiradi va:
 
-$$f_2\pi\equiv f_1$$
+$$
+f_2\pi\equiv f_1
+$$
 
 bo‘ladi.
 
@@ -74,7 +78,9 @@ $\pi$ permutatsiyaning **qo‘zg‘almas nuqtalari sonini** $I(\pi)$ bilan belgi
 
 Ekvivalentlik sinflari soni $G$ guruhidagi barcha permutatsiyalarning qo‘zg‘almas nuqtalari sonlari yig‘indisini guruh o‘lchamiga bo‘lishga teng:
 
-$$|\text{Classes}|=\frac1{|G|}\sum_{\pi\in G}I(\pi)$$
+$$
+|\text{Classes}|=\frac1{|G|}\sum_{\pi\in G}I(\pi)
+$$
 
 Burnside lemmasining o‘zi amaliyotda har doim ham juda qulay emas, chunki $I(\pi)$ qiymatini tez topish yo‘li darhol ko‘rinmasligi mumkin. Shunga qaramay, u ekvivalentlik sinflarini hisoblash g‘oyasining matematik mohiyatini eng ravshan ko‘rsatadi.
 
@@ -86,13 +92,17 @@ Quyidagi isbot ma’lum isbotlarning eng soddalaridan biri bo‘lib, guruhlar na
 
 Quyidagini isbotlashimiz kerak:
 
-$$|\text{Classes}|\cdot|G|=\sum_{\pi\in G}I(\pi)$$
+$$
+|\text{Classes}|\cdot|G|=\sum_{\pi\in G}I(\pi)
+$$
 
 O‘ng tomondagi qiymat $f\pi\equiv f$ shartini qanoatlantiradigan “invariant juftliklar” $(f,\pi)$ sonidan boshqa narsa emas.
 
 Yig‘ish tartibini almashtirish mumkinligi ravshan. Yig‘indini barcha $f$ elementlar bo‘yicha olib, har biri uchun $J(f)$ — $f$ qo‘zg‘almas nuqta bo‘ladigan permutatsiyalar sonini — qo‘shamiz:
 
-$$|\text{Classes}|\cdot|G|=\sum_fJ(f)$$
+$$
+|\text{Classes}|\cdot|G|=\sum_fJ(f)
+$$
 
 Bu formulani isbotlash uchun ustunlari barcha $f_i$ funksiyalar, satrlari esa barcha $\pi_j$ permutatsiyalar bilan belgilangan jadval tuzamiz. Har bir katakka $f_i\pi_j$ qiymatini yozamiz.
 
@@ -114,7 +124,9 @@ Endi ixtiyoriy $f$ elementni mahkamlaymiz. Bir tomondan, u o‘z ustunida ta’r
 
 Har bir ekvivalentlik sinfidan ixtiyoriy bittadan ustun tanlab, ulardagi elementlar sonini qo‘shsak, bir tomondan $|\text{Classes}|\cdot|G|$ ni olamiz, chunki ustunlar sonini satrlar soniga ko‘paytiryapmiz. Ikkinchi tomondan, oldingi mulohazalarga ko‘ra barcha $f$ lar uchun $J(f)$ qiymatlari yig‘indisini olamiz:
 
-$$|\text{Classes}|\cdot|G|=\sum_fJ(f)$$
+$$
+|\text{Classes}|\cdot|G|=\sum_fJ(f)
+$$
 
 Bu talab qilingan tenglikdir.
 
@@ -128,7 +140,9 @@ Bu yerda Pólya sanash teoremasining amaliyotda juda foydali bo‘lgan faqat max
 
 $C(\pi)$ bilan $\pi$ permutatsiyadagi sikllar sonini belgilaymiz. U holda quyidagi formula — **Pólya sanash teoremasining maxsus holati** — o‘rinli:
 
-$$|\text{Classes}|=\frac1{|G|}\sum_{\pi\in G}k^{C(\pi)}$$
+$$
+|\text{Classes}|=\frac1{|G|}\sum_{\pi\in G}k^{C(\pi)}
+$$
 
 Bu yerda $k$ — tasvirning har bir elementi qabul qilishi mumkin bo‘lgan qiymatlar soni. Ikkilik daraxtni bo‘yash misolida $k=2$.
 
@@ -142,7 +156,9 @@ $\pi$ qo‘llanganda $f$ ning elementlari permutatsiya sikllari bo‘ylab ko‘c
 
 Shuning uchun $\pi$ ning har bir sikli uchun $k$ ta mumkin qiymatdan bittasini tanlashimiz mumkin. Natijada qo‘zg‘almas nuqtalar soni:
 
-$$I(\pi)=k^{C(\pi)}$$
+$$
+I(\pi)=k^{C(\pi)}
+$$
 
 ## Qo‘llanish: marjonlarni bo‘yash {#application-coloring-necklaces}
 
@@ -152,13 +168,15 @@ $n$ ta donadan iborat, har bir donasi $k$ rangdan biriga bo‘yalishi mumkin bo�
 
 Bu masalada invariant permutatsiyalar guruhini darhol topish mumkin:
 
-$$\begin{align}
+$$
+\begin{align}
 \pi_0&=1\ 2\ 3\ \dots\ n\\
 \pi_1&=2\ 3\ \dots\ n\ 1\\
 \pi_2&=3\ \dots\ n\ 1\ 2\\
 &\dots\\
 \pi_{n-1}&=n\ 1\ 2\ 3\dots
-\end{align}$$
+\end{align}
+$$
 
 $C(\pi_i)$ ni hisoblash uchun aniq formula topamiz.
 
@@ -168,7 +186,9 @@ Demak, barcha sikllarning uzunligi bir xil, ya’ni $\frac{\text{lcm}(i, n)}{i} 
 
 Bu qiymatlarni Pólya sanash teoremasiga qo‘ysak, masala javobini olamiz:
 
-$$\frac1n\sum_{i=1}^n k^{\gcd(i,n)}$$
+$$
+\frac1n\sum_{i=1}^n k^{\gcd(i,n)}
+$$
 
 Formulani shu ko‘rinishda qoldirish yoki yanada soddalashtirish mumkin.
 
@@ -176,7 +196,9 @@ Yig‘indini $n$ ning barcha bo‘luvchilari bo‘yicha yuradigan qilib o‘zgar
 
 Shuning uchun har bir $d ~|~ n$ bo‘luvchining $k^{\gcd(d,n)}=k^d$ hadi yig‘indida bir necha marta uchraydi. Javobni quyidagicha yozish mumkin:
 
-$$\frac1n\sum_{d ~|~ n}C_dk^d,$$
+$$
+\frac1n\sum_{d ~|~ n}C_dk^d,
+$$
 
 bu yerda $C_d$ — $\gcd(i,n)=d$ bo‘lgan $i$ sonlar miqdori.
 
@@ -184,7 +206,9 @@ Bu qiymat uchun aniq ifoda topamiz. Har qanday shunday $i$ son $i=dj$, $\gcd(j, 
 
 [Eulerning phi funksiyasi](/algorithms/algebra/phi-function) $C_d=\phi(n/d)$ natijani beradi. Shunday qilib, javob:
 
-$$\frac1n\sum_{d ~|~ n}\phi\left(\frac nd\right)k^d$$
+$$
+\frac1n\sum_{d ~|~ n}\phi\left(\frac nd\right)k^d
+$$
 
 ## Qo‘llanish: torusni bo‘yash {#application-coloring-a-torus}
 

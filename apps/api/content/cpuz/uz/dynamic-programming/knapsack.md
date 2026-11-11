@@ -29,11 +29,15 @@ Dastlabki $i-1$ ta buyumga tegishli barcha holatlar hisoblangan deb faraz qilayl
 
 Bundan DP o‘tish formulasini hosil qilamiz:
 
-$$f_{i, j} = \max(f_{i-1, j}, f_{i-1, j-w_i} + v_i)$$
+$$
+f_{i, j} = \max(f_{i-1, j}, f_{i-1, j-w_i} + v_i)
+$$
 
 Bundan tashqari, $f_{i}$ faqat $f_{i-1}$ ga bog‘liq bo‘lgani uchun birinchi o‘lchamni olib tashlashimiz mumkin. Natijada quyidagi o‘tish qoidasini olamiz:
 
-$$f_j \gets \max(f_j, f_{j-w_i}+v_i)$$
+$$
+f_j \gets \max(f_j, f_{j-w_i}+v_i)
+$$
 
 Bu qoida $j$ ning **kamayib boruvchi** tartibida bajarilishi kerak. Shunda $f_{j-w_i}$ yashirin ravishda $f_{i,j-w_i}$ ga emas, aynan $f_{i-1,j-w_i}$ ga mos keladi.
 
@@ -65,17 +69,23 @@ Sodda yondashuvda dastlabki $i$ ta buyum uchun har bir buyum necha marta olinish
 
 Bu quyidagi o‘tish formulasini beradi:
 
-$$f_{i, j} = \max\limits_{k=0}^{\infty}(f_{i-1, j-k\cdot w_i} + k\cdot v_i)$$
+$$
+f_{i, j} = \max\limits_{k=0}^{\infty}(f_{i-1, j-k\cdot w_i} + k\cdot v_i)
+$$
 
 Ayni paytda uni quyidagi “yassi” formulaga soddalashtirish mumkin:
 
-$$f_{i, j} = \max(f_{i-1, j},f_{i, j-w_i} + v_i)$$
+$$
+f_{i, j} = \max(f_{i-1, j},f_{i, j-w_i} + v_i)
+$$
 
 Buning sababi shundaki, $f_{i, j-w_i}$ qiymati allaqachon $f_{i, j-2\cdot w_i}$ va undan oldingi holatlar orqali yangilangan bo‘ladi.
 
 0-1 ryukzakdagi kabi, xotira murakkabligini optimallashtirish uchun birinchi o‘lchamni olib tashlash mumkin. Natijada 0-1 ryukzakdagi bilan bir xil o‘tish qoidasini olamiz:
 
-$$f_j \gets \max(f_j, f_{j-w_i}+v_i)$$
+$$
+f_j \gets \max(f_j, f_{j-w_i}+v_i)
+$$
 
 ### Implementatsiya {#implementation}
 
@@ -99,7 +109,9 @@ Cheklangan sonli ryukzak ham 0-1 ryukzakning bir variantidir. Asosiy farq shunda
 
 Juda sodda g‘oya: “har bir buyumni $k_i$ marta tanlash” — “bir xil buyumning $k_i$ ta nusxasini bittadan tanlash” bilan teng. Shunday qilib masalani 0-1 ryukzak modeliga aylantirish mumkin. Uning o‘tish funksiyasi:
 
-$$f_{i, j} = \max_{k=0}^{k_i}(f_{i-1,j-k\cdot w_i} + k\cdot v_i)$$
+$$
+f_{i, j} = \max_{k=0}^{k_i}(f_{i-1,j-k\cdot w_i} + k\cdot v_i)
+$$
 
 Bu jarayonning vaqt murakkabligi $O(W\sum\limits_{i=1}^{n}k_i)$.
 
@@ -141,11 +153,15 @@ Bu optimallashtirishda ryukzak masalasini [maksimum navbat](https://cp-algorithm
 
 Tavsifni qulaylashtirish uchun $g_{x, y} = f_{i, x \cdot w_i + y} ,\space g'_{x, y} = f_{i-1, x \cdot w_i + y}$ deb belgilaymiz. Shunda o‘tish qoidasini quyidagicha yozish mumkin:
 
-$$g_{x, y} = \max_{k=0}^{k_i}(g'_{x-k, y} + v_i \cdot k)$$
+$$
+g_{x, y} = \max_{k=0}^{k_i}(g'_{x-k, y} + v_i \cdot k)
+$$
 
 Endi $G_{x, y} = g'_{x, y} - v_i \cdot x$ deb olamiz. O‘tish qoidasining yangi ko‘rinishi:
 
-$$g_{x, y} \gets \max_{k=0}^{k_i}(G_{x-k, y}) + v_i \cdot x$$
+$$
+g_{x, y} \gets \max_{k=0}^{k_i}(G_{x-k, y}) + v_i \cdot x
+$$
 
 Bu klassik monoton navbat optimallashtirishi ko‘rinishiga keladi. $G_{x, y}$ ni $O(1)$ vaqtda hisoblash mumkin, shuning uchun qat’iy belgilangan $y$ uchun $g_{x, y}$ qiymatlarini $O(\lfloor \frac{W}{w_i} \rfloor)$ vaqtda topamiz.
 

@@ -39,7 +39,9 @@ Buni isbotlaymiz.
 
 Isbot uchun $G(N)$ ketma-ketlikni ($N$-Gray kodini ifodalovchi ketma-ketlikni) quyidagicha olish mumkinligini eslaymiz:
 
-$$G(N) = 0G(N-1) \cup 1G(N-1)^\text{R}$$
+$$
+G(N) = 0G(N-1) \cup 1G(N-1)^\text{R}
+$$
 
 Ya’ni $N-1$ uchun Gray kodlari ketma-ketligini olib, har bir hadning boshiga `0` qo‘yamiz. So‘ng $N-1$ uchun Gray kodlari ketma-ketligini teskari tartibda olib, har bir niqobning boshiga `1` qo‘yamiz va bu ikki ketma-ketlikni birlashtiramiz.
 
@@ -84,7 +86,9 @@ Faqat yaroqli kombinatsiyalarni quradigan va shu sababli $O\left(N \cdot \binom{
 
 Amalga oshirish quyidagi formuladan kelib chiqadi:
 
-$$G(N, K) = 0G(N-1, K) \cup 1G(N-1, K-1)^\text{R}$$
+$$
+G(N, K) = 0G(N-1, K) \cup 1G(N-1, K-1)^\text{R}
+$$
 
 Bu formula Gray kodini aniqlovchi umumiy tenglamani o‘zgartirish orqali olinadi va mos elementlardan qism ketma-ketlikni tanlash orqali ishlaydi.
 
