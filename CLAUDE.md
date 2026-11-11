@@ -259,6 +259,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-11](docs/decisions/2026-11-11-next-directions.md) · Abramyan hammasi tuzalguncha kutadi, e'lonsiz; keyingi tartib: o'qituvchi vositalari → jamoa funksiyalari → cp.uz importi → AI agent (prototiplar bilan) · `abramyan_publishes_only_verified`
 - [2026-11-11](docs/decisions/2026-11-11-teacher-tools-details.md) · O'qituvchi vositalari batafsil: eski sinflar darhol, 3×40 / 50×50, murabbiy ≤3 alohida ruxsat bilan, test turlari, Qvant'siz, generator stdin, kvota hammasini sanaydi (1–4-bosqich kodda) · `classroom_joins_and_quotas`
 - [2026-11-11](docs/decisions/2026-11-11-community-details.md) · Jamoa batafsil: muhokama daraxt, kod yechmaganga spoyler, karma abadiy ovozlardan, blog hammaga, ± hammaga, avto-yashirish, «Bloglar» 22-band, javob/@/kuzatilgan xabarlari · `discussion_is_open_but_guarded`
+- [2026-11-11](docs/decisions/2026-11-11-cpuz-import.md) · cp.uz importi: avtomatik + agent ko'rigi, hammasi birga, uch qatlamli mashq, inglizcha asl, kategoriya/daraja, qayta import, lug'at + tooltip, `/algorithms/<kategoriya>/<slug>`, olimpiada cp.uz kabi (ADR-0062) · `hali kod yo'q`
 
 ## Tekshiruvlar
 
