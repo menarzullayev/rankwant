@@ -4067,6 +4067,23 @@ def versioning_points_are_wired() -> str | None:
     return None
 
 
+def abramyan_publishes_only_verified() -> str | None:
+    """2026-11-11: Abramyan - norasmiy qoralama, nashr faqat tekshiruvdan keyin (ADR-0060 § 2.6).
+
+    Egasi qarori: 1 100 masala namuna yechimi haqiqiy judge'da AC, bo'sh
+    yuborish esa AC emas bo'lgandagina, hammasi birga chiqadi. Import
+    masalani rasmiy qilib yozsa, u raqam va reyting olib qo'yardi.
+    """
+    command = read("apps/api/problems/management/commands/publish_abramyan.py")
+    if "        bad = unverified(problems)" + "\n        if bad:" + "\n" not in command:
+        return "publish_abramyan.py: tekshiruvdan o'tmagan masala ham nashr qilinadi"
+    if '                "is_official": False,' not in read(
+        "apps/api/problems/management/commands/import_abramyan.py"
+    ):
+        return "import_abramyan.py: Abramyan masalasi rasmiy bo'lib yoziladi - raqam va reyting oladi"
+    return None
+
+
 def study_plans_have_sections() -> str | None:
     """2026-11-11: o'quv rejasi Traektoriyada - bo'limlar, tarjima, sahifa (ADR-0060 § 2.4).
 
@@ -5359,6 +5376,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("xotira chegarasi dastur ushlagan xotira", memory_limit_is_what_the_program_holds),
     ("norasmiy masalalar hisobdan tashqari", unofficial_problems_stay_out_of_counts),
     ("o'quv rejasi bo'limlari bilan", study_plans_have_sections),
+    ("Abramyan faqat tekshiruvdan keyin nashr", abramyan_publishes_only_verified),
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
