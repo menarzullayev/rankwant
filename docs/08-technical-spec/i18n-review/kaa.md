@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2983 strings.**
+**2990 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -184,6 +184,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.leaderboard` | Reyting | Reyting |  |
 | `nav.ratingInfo` | Reyting qanday hisoblanadi | Reyting qalay esaplanadı |  |
 | `problems.title` | Masalalar arxivi | Máseleler arxivi |  |
+| `problems.tier.hint` | Reyting, Qvant va yechilganlar soniga kirmaydi; seriya va faollik xaritasiga kiradi | Reyting, Qvant hám sheshilgenler sanına kirmeydi; seriya hám belsendilik kartasına kiredi |  |
+| `problems.tier.unofficial` | Norasmiy masalalar | Rásmiy emes máseleler |  |
+| `problems.tier.official` | Rasmiy arxiv | Rásmiy arxiv |  |
+| `problems.tier.label` | Arxiv bo'limi | Arxiv bólimi |  |
 | `problems.difficulty` | Qiyinlik | Qıyınlıq |  |
 | `problems.solved` | Yechilgan | Sheshilgen |  |
 | `problems.likes` | Yoqdi | Unadı |  |
@@ -1708,6 +1712,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.duration.secondsPerQuestion` | Savol uchun soniya | Sorawǵa sekund |  |
 | `admin.label.duration.readMin` | O'qish (daqiqa) | Oqıw (minut) |  |
 | `admin.label.flag.public` | Ommaviy | Ommavıy |  |
+| `admin.label.flag.official` | Rasmiy arxivda | Rásmiy arxivte |  |
 | `admin.label.flag.rated` | Reytingli | Reytinglik |  |
 | `admin.label.flag.virtual` | Virtual | Virtual |  |
 | `admin.label.flag.mirror` | Ko'zgu (asl musobaqa slug'i) | Ayna (asıl jarıs slug) |  |
@@ -1851,6 +1856,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.editorialPrice` | Yechmaganlar uchun. 0 — hammaga bepul | Sheshpegenler ushın. 0 — hámmege tegin |  |
 | `admin.help.interactorOnlyInteractive` | Faqat Interactive uchun. Bo'sh = yo'q | Tek Interactive ushın. Bos = joq |  |
 | `admin.help.checkerRequired` | Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi | «Arnawlı» hám «Skoring» ushın. Bos bolsa, hár jiberiw IE boladı |  |
+| `admin.help.officialArchive` | Belgilanmasa: raqam berilmaydi, reyting va Qvant'ga kirmaydi, arxivning standart ro'yxatida ko'rinmaydi | Belgilenbese: nomer berilmeydi, reyting hám Qvant'qa kirmeydi, arxivtiń standart dizimin de kórinbeydi |  |
 | `admin.help.realToleranceOnlyReal` | Faqat «Haqiqiy son» checkerida: \|javob − hakam\| ≤ ε · max(1, \|hakam\|). Standart 1e-6 | Tek «Haqıyqıy san» checkerinde: \|juwap − hakim\| ≤ ε · max(1, \|hakim\|). Standart 1e-6 |  |
 | `admin.help.testlibInvocation` | testlib chaqiruvi: checker <input> <output> <answer> | testlib shaqırıwı: checker <input> <output> <answer> |  |
 | `admin.help.parentEmptyRoot` | Bo'sh = ildiz | Bos = tamır |  |
@@ -1944,6 +1950,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.review` | Ko'rik | Tekseriw |  |
 | `studio.tab.translations` | Tarjimalar | Awdarmalar |  |
 | `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Bul másele ele {locale} tilinde joq — {shown} tilinde kórsetilmekte. |  |
+| `problem.unofficial` | Norasmiy | Rásmiy emes |  |
 | `problem.realToleranceHint` | Sonlar {eps} aniqlik bilan solishtiriladi: 2.0 va 2 bir xil javob | Sanlar {eps} anıqlıq penen salıstırıladı: 2.0 hám 2 birdey juwap |  |
 | `problem.realTolerance` | Aniqlik {eps} | Anıqlıq {eps} |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Máseleniń teksti basqa tillerde. Awdarılmaǵan maydan oqıwshıǵa túp nusqadan kórsetiledi. |  |

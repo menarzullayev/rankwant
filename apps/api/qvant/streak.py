@@ -15,8 +15,12 @@ from qvant import quests
 
 
 @transaction.atomic
-def touch(user: User, when: date | None = None) -> tuple[int, list[str]]:
+def touch(user: User, when: date | None = None, *, reward: bool = True) -> tuple[int, list[str]]:
     """Foydalanuvchi faol bo'ldi (AC oldi). Qaytaradi: (streak, berilgan questlar).
+
+    `reward=False` — an unofficial problem's solve (ADR-0060 § 2.3): the day
+    counts, its milestone pays nothing. A rewarded solve later the same day
+    still collects the milestone: awards are keyed, so asking twice is safe.
 
     Qoidalar:
       * bir kunda bir necha AC — streak bir marta oshadi
@@ -28,7 +32,10 @@ def touch(user: User, when: date | None = None) -> tuple[int, list[str]]:
 
     last = user.last_active_date
     if last == today:
-        return user.streak_count, []  # bugun allaqachon hisoblangan
+        # Bugun allaqachon hisoblangan. The day may have been counted by an
+        # unofficial solve that paid nothing; this one collects the milestone.
+        granted = quests.on_streak_reached(user, user.streak_count) if reward else []
+        return user.streak_count, granted
 
     if last is None:
         user.streak_count = 1
@@ -54,7 +61,7 @@ def touch(user: User, when: date | None = None) -> tuple[int, list[str]]:
         update_fields=["streak_count", "streak_max", "last_active_date", "streak_freeze_until"]
     )
 
-    granted = quests.on_streak_reached(user, user.streak_count)
+    granted = quests.on_streak_reached(user, user.streak_count) if reward else []
     return user.streak_count, granted
 
 

@@ -61,7 +61,7 @@ def marathon_problems(user: User, when: date | None = None) -> list[Problem]:
     # Audit Q-05: only problems judged on hidden tests — the marathon pays
     # Qvant, and a samples-only problem accepts a printed sample.
     ids = list(
-        Problem.objects.filter(is_public=True)
+        Problem.objects.filter(is_public=True, is_official=True)
         .filter(hidden_tests_exist())
         .exclude(pk__in=already)
         .order_by("pk")

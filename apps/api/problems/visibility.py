@@ -31,6 +31,18 @@ from django.utils import timezone
 
 from problems.models import Problem
 
+#: `?tier=` of the archive list (ADR-0060 § 2.3).
+TIERS = ("official", "unofficial", "all")
+
+
+def tier_q(tier: str | None) -> Q:
+    """The archive tier a list asks for; anything unknown is the official one."""
+    if tier == "unofficial":
+        return Q(is_official=False)
+    if tier == "all":
+        return Q()
+    return Q(is_official=True)
+
 
 def _held_and_started(now: datetime) -> QuerySet[Problem]:
     return Problem.objects.filter(

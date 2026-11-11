@@ -65,6 +65,16 @@ export function ProblemDescription({
           <h1 className="text-title-sm font-bold rw-strong">
             {inReaderAlphabet(problem.title, problem.locale)}
           </h1>
+          {!problem.is_official && (
+            // ADR-0060 § 2.3: it has no number, and the solver should know
+            // what its solve counts for.
+            <span
+              className="rw-radius-full border rw-line px-2.5 py-1 text-theme-xs font-semibold rw-dim"
+              title={t(locale, "problems.tier.hint")}
+            >
+              {t(locale, "problem.unofficial")}
+            </span>
+          )}
           <span className="grow" />
           <span className="rw-radius-full rw-warn-soft px-2.5 py-1 text-theme-xs font-semibold rw-warn-ink tabular-nums">
             {problem.time_limit_ms} ms · {Math.round(problem.memory_limit_kb / 1024)}{" "}

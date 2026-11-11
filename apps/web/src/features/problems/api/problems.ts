@@ -13,6 +13,8 @@ import type { UserTitle } from "@/lib/identity";
 export type Problem = {
   /** Ommaviy raqam — `#0431`. Qoralamada `null`. */
   code: number | null;
+  /** ADR-0060 § 2.3: outside the official archive — no number, no rating. */
+  is_official: boolean;
   is_solved: boolean;
   is_favourite: boolean;
   rating: { average: number | null; count: number };

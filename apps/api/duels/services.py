@@ -71,6 +71,7 @@ def pick_problems(duel: Duel) -> list[Problem]:
         pool = list(
             Problem.objects.filter(
                 is_public=True,
+                is_official=True,
                 difficulty__gte=duel.difficulty - window,
                 difficulty__lte=duel.difficulty + window,
             )

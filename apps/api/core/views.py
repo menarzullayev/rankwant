@@ -242,14 +242,15 @@ class PlatformStatsView(APIView):
         if stats is None:
             stats = {
                 "users": User.objects.filter(is_active=True).count(),
-                "problems": Problem.objects.filter(is_public=True).count(),
+                # The official archive (ADR-0060 § 2.3).
+                "problems": Problem.objects.filter(is_public=True, is_official=True).count(),
                 "contests": Contest.objects.filter(is_public=True).count(),
                 "attempts": Attempt.objects.count(),
                 # Arxivdagi til filtri faqat bir nechta til bo'lganda
                 # ko'rsatiladi — bitta variantli tanlov shovqin.
                 "statement_locales": sorted(
                     set(
-                        Problem.objects.filter(is_public=True).values_list(
+                        Problem.objects.filter(is_public=True, is_official=True).values_list(
                             "statement_locale", flat=True
                         )
                     )

@@ -13,7 +13,7 @@ def published_since(since: datetime) -> int:
     # that went public does. A problem made public without a revision (an
     # import) is therefore never "new" - it is left out rather than guessed.
     return (
-        Problem.objects.filter(is_public=True)
+        Problem.objects.filter(is_public=True, is_official=True)
         .annotate(first_published=Min("revisions__published_at"))
         .filter(first_published__gt=since)
         .count()

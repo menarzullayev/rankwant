@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2983 strings.**
+**2990 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -184,6 +184,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.leaderboard` | Reyting | Рейтинг |  |
 | `nav.ratingInfo` | Reyting qanday hisoblanadi | Рейтинг чӣ гуна ҳисоб мешавад |  |
 | `problems.title` | Masalalar arxivi | Бойгонии масъалаҳо |  |
+| `problems.tier.hint` | Reyting, Qvant va yechilganlar soniga kirmaydi; seriya va faollik xaritasiga kiradi | Ба рейтинг, Qvant ва шумораи ҳалшудаҳо дохил намешавад; ба силсила ва харитаи фаъолият дохил мешавад |  |
+| `problems.tier.unofficial` | Norasmiy masalalar | Масъалаҳои ғайрирасмӣ |  |
+| `problems.tier.official` | Rasmiy arxiv | Бойгонии расмӣ |  |
+| `problems.tier.label` | Arxiv bo'limi | Қисми бойгонӣ |  |
 | `problems.difficulty` | Qiyinlik | Мураккабӣ |  |
 | `problems.solved` | Yechilgan | Ҳалшуда |  |
 | `problems.likes` | Yoqdi | Маъқул |  |
@@ -1708,6 +1712,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.duration.secondsPerQuestion` | Savol uchun soniya | Сония барои савол |  |
 | `admin.label.duration.readMin` | O'qish (daqiqa) | Хондан (дақиқа) |  |
 | `admin.label.flag.public` | Ommaviy | Оммавӣ |  |
+| `admin.label.flag.official` | Rasmiy arxivda | Дар бойгонии расмӣ |  |
 | `admin.label.flag.rated` | Reytingli | Рейтингӣ |  |
 | `admin.label.flag.virtual` | Virtual | Виртуалӣ |  |
 | `admin.label.flag.mirror` | Ko'zgu (asl musobaqa slug'i) | Оина (slug-и мусобиқаи аслӣ) |  |
@@ -1851,6 +1856,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.editorialPrice` | Yechmaganlar uchun. 0 — hammaga bepul | Барои ҳал накардаҳо. 0 — барои ҳама ройгон |  |
 | `admin.help.interactorOnlyInteractive` | Faqat Interactive uchun. Bo'sh = yo'q | Танҳо барои Interactive. Холӣ = нест |  |
 | `admin.help.checkerRequired` | Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi | Барои «Махсус» ва «Скоринг». Холӣ бошад, ҳар супориш IE мегирад |  |
+| `admin.help.officialArchive` | Belgilanmasa: raqam berilmaydi, reyting va Qvant'ga kirmaydi, arxivning standart ro'yxatida ko'rinmaydi | Агар қайд нашавад: рақам дода намешавад, ба рейтинг ва Qvant дохил намешавад, дар рӯйхати пешфарзи бойгонӣ намоён нест |  |
 | `admin.help.realToleranceOnlyReal` | Faqat «Haqiqiy son» checkerida: \|javob − hakam\| ≤ ε · max(1, \|hakam\|). Standart 1e-6 | Танҳо барои санҷиши «Адади ҳақиқӣ»: \|ҷавоб − ҳакам\| ≤ ε · max(1, \|ҳакам\|). Пешфарз 1e-6 |  |
 | `admin.help.testlibInvocation` | testlib chaqiruvi: checker <input> <output> <answer> | Даъвати testlib: checker <input> <output> <answer> |  |
 | `admin.help.parentEmptyRoot` | Bo'sh = ildiz | Холӣ = реша |  |
@@ -1944,6 +1950,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `studio.tab.review` | Ko'rik | Тафтиш |  |
 | `studio.tab.translations` | Tarjimalar | Тарҷумаҳо |  |
 | `problem.notTranslated` | Bu masala hali {locale} tilida yo'q — {shown} tilida ko'rsatilmoqda. | Ин масъала ҳоло бо забони {locale} нест — бо забони {shown} нишон дода мешавад. |  |
+| `problem.unofficial` | Norasmiy | Ғайрирасмӣ |  |
 | `problem.realToleranceHint` | Sonlar {eps} aniqlik bilan solishtiriladi: 2.0 va 2 bir xil javob | Ададҳо бо дақиқии {eps} муқоиса мешаванд: 2.0 ва 2 як ҷавобанд |  |
 | `problem.realTolerance` | Aniqlik {eps} | Дақиқӣ {eps} |  |
 | `translation.intro` | Masala matni boshqa tillarda. Tarjima qilinmagan maydon o'quvchiga asl matndan ko'rsatiladi. | Матни масъала бо забонҳои дигар. Майдони тарҷуманашуда ба хонанда аз матни аслӣ нишон дода мешавад. |  |

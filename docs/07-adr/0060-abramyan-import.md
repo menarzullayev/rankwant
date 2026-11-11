@@ -79,6 +79,16 @@ Platforma bu paketni bugun to'g'ri qabul qila olmaydi (kod va jonli baza o'lchan
 - Arxivning standart ro'yxatida norasmiy masalalar ko'rinmaydi, ular filtr bilan ochiladi.
 - Sayt qidiruvi ularni topadi: sarlavhada kitob kodi bor.
 - Judge yaratgan ochiq masalalar ham shu darajada bo'ladi ([kontent qarori](../decisions/2026-11-11-content-and-archive.md) ⑤).
+- **Amalga oshirishda aniqlangan chegaralar (2026-11-11):**
+  - Seriya hisoblanadi, lekin norasmiy yechim bosqich mukofotini (7/30/365 kunlik Qvant)
+    **to'lamaydi** (`streak.touch(reward=False)`). O'sha kuni keyinroq kelgan rasmiy yechim
+    mukofotni oladi: mukofotlar kalit bilan yoziladi, qayta so'rash xavfsiz.
+  - Activity reytingining «faol kun» qismi norasmiy urinishlarni sanamaydi. Uning seriya
+    qismi esa seriyaning o'zi, ya'ni norasmiy kunlar u orqali bilvosita kiradi.
+  - Kunlik kvestlar, marafon, yutuqlar, duel to'plami, tavsiyalar, «o'xshash masalalar»,
+    mavzu sonlari va arxiv progressi faqat rasmiy masalalarni sanaydi.
+  - Sitemap norasmiy sahifalarni ham oladi: ular ochiq sahifalar (`?tier=all`).
+  - Arxiv ro'yxati `?tier=official` (standart), `unofficial` yoki `all` bo'ladi.
 
 ### 2.4 O'quv rejasi — `Roadmap` kengayadi
 

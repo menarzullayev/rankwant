@@ -81,6 +81,21 @@ type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+/** One tier of the archive (ADR-0060 § 2.3). */
+function TierLink({ href, active, children }: { href: string; active: boolean; children: string }) {
+  return (
+    <Link
+      href={href as Route}
+      aria-current={active ? "page" : undefined}
+      className={`inline-flex min-h-11 items-center rounded-full border px-4 text-theme-sm rw-focus-ring ${
+        active ? "rw-accent-soft rw-accent-ink border-[var(--rw-accent)]" : "rw-line rw-dim rw-hover-bg"
+      }`}
+    >
+      {children}
+    </Link>
+  );
+}
+
 export default async function ProblemsPage({ searchParams }: Props) {
   const locale = await getLocale();
   const raw = await searchParams;
@@ -94,6 +109,9 @@ export default async function ProblemsPage({ searchParams }: Props) {
   // Sessiya bilan — `is_solved` foydalanuvchiga xos, `get()` esa
   // cookie uzatmaydi va hamma uchun `false` qaytarardi.
   const page = Math.max(1, Number(raw.page) || 1);
+  // ADR-0060 § 2.3: the archive is the official tier; the unofficial one
+  // (the Abramyan book, Judge-made problems) is a tab of its own.
+  const unofficial = raw.tier === "unofficial";
   const pageSize = PAGE_SIZES.includes(
     Number(raw.page_size) as (typeof PAGE_SIZES)[number],
   )
@@ -205,6 +223,16 @@ export default async function ProblemsPage({ searchParams }: Props) {
           </nav>
         )}
       </div>
+
+      <nav aria-label={t(locale, "problems.tier.label")} className="flex flex-wrap items-center gap-2">
+        <TierLink href="/problems" active={!unofficial}>
+          {t(locale, "problems.tier.official")}
+        </TierLink>
+        <TierLink href="/problems?tier=unofficial" active={unofficial}>
+          {t(locale, "problems.tier.unofficial")}
+        </TierLink>
+        {unofficial && <p className="text-theme-xs rw-faint">{t(locale, "problems.tier.hint")}</p>}
+      </nav>
 
       <ProblemFilters
         signedIn={me !== null}

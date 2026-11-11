@@ -119,7 +119,8 @@ export const api = {
   // yozuvni beradi. Soatiga bir marta chaqiriladi (app/sitemap.ts).
   problemSlugs: (page: number) =>
     get<Paginated<{ slug: string }>>(
-      `/problems/?page=${page}&page_size=100`,
+      // Both tiers: an unofficial problem is a public page (ADR-0060 § 2.3).
+      `/problems/?page=${page}&page_size=100&tier=all`,
       3600,
     ),
   contestSlugs: (page: number) =>

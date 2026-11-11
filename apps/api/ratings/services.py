@@ -78,7 +78,8 @@ def recalc_skills(
     on the profile but adds nothing to Skills.
     """
     difficulties = list(
-        UserSolvedProblem.objects.filter(user=user)
+        # Unofficial problems (ADR-0060 § 2.3) are outside every rating.
+        UserSolvedProblem.objects.filter(user=user, problem__is_official=True)
         .filter(hidden_tests_exist("problem_id"))
         .values_list("problem__difficulty", flat=True)
     )
@@ -152,15 +153,28 @@ def on_attempt_judged(attempt: Attempt) -> None:
     type(attempt.problem).objects.filter(pk=attempt.problem_id).update(
         solved_count=F("solved_count") + 1
     )
-    # Public problems only, the same rule as the profile's solved figures:
-    # a hidden contest problem must not show up in a public count.
-    if attempt.problem.is_public:
+    # Official public problems only, the same rule as the profile's solved
+    # figures: a hidden contest problem and an unofficial one (ADR-0060)
+    # must not show up in a public count.
+    if attempt.problem.is_counted:
         User.objects.filter(pk=attempt.user_id).update(solved_count=F("solved_count") + 1)
-    recalc_skills(attempt.user, ref_id=attempt.problem.slug)
+    if attempt.problem.is_official:
+        recalc_skills(attempt.user, ref_id=attempt.problem.slug)
 
     # Audit Q-05: a samples-only problem pays no Qvant — no streak, daily
     # quest or marathon credit — since printing the sample solves it.
     if not has_hidden_tests(attempt.problem_id):
+        return
+
+    if not attempt.problem.is_official:
+        # ADR-0060 § 2.3: the solve keeps the streak (the heatmap reads the
+        # solve row above) and pays nothing — no quest, marathon or award.
+        try:
+            from qvant.services import on_unofficial_accepted
+
+            on_unofficial_accepted(attempt.user)
+        except Exception:
+            log.exception("seriya yozilmadi: attempt %s", attempt.pk)
         return
 
     # Phase 1 — Qvant va Activity. Qvant hodisasi Skills dan KEYIN:
@@ -228,7 +242,7 @@ def on_accept_revoked(attempt: Attempt) -> None:
         solved_count=Greatest(F("solved_count") - 1, Value(0))
     )
     # Same floor as above: the counter may already be behind the rows.
-    if attempt.problem.is_public:
+    if attempt.problem.is_counted:
         User.objects.filter(pk=attempt.user_id).update(
             solved_count=Greatest(F("solved_count") - 1, Value(0))
         )
@@ -252,17 +266,18 @@ def on_accept_revoked(attempt: Attempt) -> None:
         log.exception("yutuq qaytarilmadi: attempt %s", attempt.pk)
 
 
-def on_problem_visibility_changed(problem_id: int, is_public: bool) -> None:
-    """Move every solver of the problem by one when it is published or hidden.
+def on_problem_visibility_changed(problem_id: int, counted: bool) -> None:
+    """Move every solver of the problem by one when it enters or leaves the count.
 
-    `User.solved_count` counts public problems only (ADR-0024). A queryset
-    `update(is_public=...)` bypasses this; `recount_user_stats` repairs that.
+    `User.solved_count` counts official public problems only (ADR-0024,
+    ADR-0060): publishing, hiding, promoting and demoting all land here. A
+    queryset `update(...)` bypasses this; `recount_user_stats` repairs that.
     """
     from django.db.models import F, Value
     from django.db.models.functions import Greatest
 
     solvers = User.objects.filter(solved__problem_id=problem_id)
-    if is_public:
+    if counted:
         solvers.update(solved_count=F("solved_count") + 1)
     else:
         solvers.update(solved_count=Greatest(F("solved_count") - 1, Value(0)))

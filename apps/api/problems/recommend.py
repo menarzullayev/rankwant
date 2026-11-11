@@ -48,6 +48,7 @@ def recommend(user: User, limit: int = 10) -> QuerySet[Problem]:
     return (
         Problem.objects.filter(
             is_public=True,
+            is_official=True,
             difficulty__gte=max(DIFFICULTY_MIN, target - WINDOW),
             difficulty__lte=min(DIFFICULTY_MAX, target + WINDOW),
         )

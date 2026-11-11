@@ -4067,6 +4067,33 @@ def versioning_points_are_wired() -> str | None:
     return None
 
 
+def unofficial_problems_stay_out_of_counts() -> str | None:
+    """2026-11-11: norasmiy masalalar - raqamsiz, reyting va Qvant'siz (ADR-0060 § 2.3).
+
+    Egasi qarori: norasmiy masala yechilsa «yechildi» belgisi, o'quv rejasi,
+    seriya va faollik xaritasi hisoblanadi; reyting, Qvant va umumiy
+    yechilganlar soni - yo'q. 1 100 ta boshlang'ich masala bu shartlarsiz
+    Skills'ni, kvestlarni va arxiv statistikasini jim suyultirardi.
+    """
+    if "            if not self.is_public or not self.is_official or self.code:\n" not in read(
+        "apps/api/problems/models.py"
+    ):
+        return "problems/models.py: norasmiy masala ommaviy raqam oladi"
+    ratings = read("apps/api/ratings/services.py")
+    if "UserSolvedProblem.objects.filter(user=user, problem__is_official=True)" not in ratings:
+        return "ratings/services.py: norasmiy yechim Skills'ga kiradi"
+    if "    if attempt.problem.is_counted:\n" not in ratings or "on_unofficial_accepted(attempt.user)" not in ratings:
+        return "ratings/services.py: norasmiy yechim yechilganlar soni yoki Qvant yo'lidan o'tadi"
+    qvant = read("apps/api/qvant/services.py")
+    if "    current, _ = streak.touch(user, reward=False)\n" not in qvant:
+        return "qvant/services.py: norasmiy yechim seriya bosqichi uchun Qvant to'laydi"
+    if "created_at__date=day, problem__is_official=True" not in qvant:
+        return "qvant/services.py: norasmiy yechim kunlik kvestga kiradi"
+    if 'visibility.tier_q(self.request.query_params.get("tier"))' not in read("apps/api/problems/views.py"):
+        return "problems/views.py: arxivning standart ro'yxati norasmiy masalalarni ham ko'rsatadi"
+    return None
+
+
 def memory_limit_is_what_the_program_holds() -> str | None:
     """2026-11-11: MLE - faqat kernel o'ldirganda; til ustamasi chegaraga qo'shiladi (ADR-0060).
 
@@ -4230,7 +4257,12 @@ def contest_problems_stay_out_of_the_archive() -> str | None:
     if "contest_entries__contest__is_public=True" not in visibility:
         return "qoralama musobaqa ham masalani ochadi"
     views = read("apps/api/problems/views.py")
-    if 'Q(is_public=True) if self.action == "list" else visibility.openable_q(user=viewer)' not in views:
+    # The list is `is_public` (ADR-0060 adds the tier on top of it); only
+    # the place that opens ONE problem uses the wider "may be opened" scope.
+    if (
+        '            scope = Q(is_public=True) & visibility.tier_q(' not in views
+        or "            scope = visibility.openable_q(user=viewer)" not in views
+    ):
         return "arxiv ro'yxati musobaqa masalasini ham beradi (yoki masala sahifasi uni ochmaydi)"
     submit = read("apps/api/judging/serializers.py")
     if "This problem belongs to a contest" not in submit:
@@ -5304,6 +5336,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("funksiya masalasi hakam dasturi bilan yuriladi", function_problems_are_composed),
     ("haqiqiy son judge ichida solishtiriladi", real_numbers_compared_in_the_judge),
     ("xotira chegarasi dastur ushlagan xotira", memory_limit_is_what_the_program_holds),
+    ("norasmiy masalalar hisobdan tashqari", unofficial_problems_stay_out_of_counts),
     ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
