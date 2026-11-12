@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jamoa: muhokama, blog, karma</title>
+<style>
+  :root {
+    --ground: #ede4ff; --surface: #fbf7ff; --surface-2: #f2ebff; --divider: #8874a5;
+    --text: #4a2d75; --text-2: #5d3d89; --muted: #624f82; --faint: #6f5897;
+    --accent: #7c3aed; --accent-ink: #7936ea; --accent-soft: #ede4ff; --hover: #f2ebff;
+    --good: #1f8a5b; --good-soft: #d9f7ea; --bad: #b42343; --bad-soft: #fde4ea; --warn: #8a5a00; --warn-soft: #fff0cc;
+    --code: #241a3a; --code-ink: #efe8ff;
+  }
+  :root.dark {
+    --ground: #130d21; --surface: #1e1632; --surface-2: #281d42; --divider: #9580bf;
+    --text: #efe8ff; --text-2: #dccff7; --muted: #bcaede; --faint: #ab9bd0;
+    --accent-ink: #c9afff; --accent-soft: #2c2147; --hover: #281d42;
+    --good: #5fd6a4; --good-soft: #12382b; --bad: #ff8fa6; --bad-soft: #3a1622; --warn: #ffcf66; --warn-soft: #3a2c0a;
+    --code: #0e0a18;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--text); font: 14px/20px system-ui, "Segoe UI", sans-serif; }
+  header.bar { position: sticky; top: 0; z-index: 5; background: var(--surface); padding: 10px 16px;
+    border-bottom: 1px solid color-mix(in srgb, var(--divider) 35%, transparent);
+    display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  header.bar h1 { font-size: 16px; margin: 0 8px 0 0; }
+  .ctl { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+  .seg { display: inline-flex; border-radius: 10px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--divider) 45%, transparent); }
+  .seg button { font: inherit; font-size: 13px; color: var(--text-2); background: transparent; border: 0; padding: 6px 10px; cursor: pointer; min-height: 36px; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 16px; display: grid; gap: 20px; }
+  section.panel { background: var(--surface); border-radius: 12px; padding: 16px 18px;
+    box-shadow: 0 6px 18px rgba(80, 40, 160, .10); }
+  .panel > h2 { font-size: 15px; margin: 0 0 2px; }
+  .panel > .why { color: var(--muted); font-size: 12px; margin: 0 0 14px; max-width: 900px; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid color-mix(in srgb, var(--divider) 30%, transparent); margin-bottom: 14px; flex-wrap: wrap; }
+  .tabs span { padding: 8px 12px; color: var(--muted); border-bottom: 2px solid transparent; }
+  .tabs span.on { color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .tabs .n { font-size: 11px; background: var(--surface-2); border-radius: 999px; padding: 0 6px; margin-left: 4px; }
+
+  .composer { border: 1px solid color-mix(in srgb, var(--divider) 40%, transparent); border-radius: 10px; padding: 10px; margin-bottom: 14px; background: var(--surface-2); }
+  .composer textarea { width: 100%; min-height: 60px; resize: vertical; border: 0; background: transparent; color: var(--text); font: inherit; }
+  .composer .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--faint); font-size: 12px; }
+  .btn { font: inherit; border: 0; border-radius: 8px; padding: 0 14px; min-height: 36px; cursor: pointer; background: var(--accent); color: #fff; font-weight: 600; }
+  .btn.ghost { background: transparent; color: var(--accent-ink); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+
+  .c { display: grid; grid-template-columns: 36px 1fr; gap: 10px; padding: 10px 0; }
+  .c + .c { border-top: 1px solid color-mix(in srgb, var(--divider) 20%, transparent); }
+  .av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; color: #fff; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 12px; color: var(--faint); }
+  .meta b { font-size: 13px; }
+  .r-blue { color: #1f6bd6; } .r-cyan { color: #0f8a8a; } .r-green { color: #2a8a3a; } .r-orange { color: #c46a00; } .r-red { color: #c4243a; }
+  :root.dark .r-blue { color: #7fb0ff; } :root.dark .r-cyan { color: #5fd6d6; } :root.dark .r-green { color: #7fd68a; } :root.dark .r-orange { color: #ffb35c; } :root.dark .r-red { color: #ff8fa6; }
+  .tag { font-size: 11px; padding: 0 6px; border-radius: 6px; background: var(--good-soft); color: var(--good); font-weight: 600; }
+  .tag.author { background: var(--accent-soft); color: var(--accent-ink); }
+  .tag.ok { background: var(--good-soft); color: var(--good); }
+  .body { margin: 4px 0 6px; color: var(--text-2); }
+  .acts { display: flex; gap: 2px; align-items: center; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .acts button { font: inherit; font-size: 12px; background: transparent; border: 0; color: var(--muted); cursor: pointer; min-height: 32px; padding: 0 8px; border-radius: 6px; }
+  .acts button:hover { background: var(--hover); }
+  .score { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 28px; text-align: center; }
+  .score.pos { color: var(--good); } .score.neg { color: var(--bad); }
+  .replies { margin-left: 46px; border-left: 2px solid color-mix(in srgb, var(--divider) 25%, transparent); padding-left: 12px; }
+  .replies .replies { margin-left: 30px; }
+
+  pre { background: var(--code); color: var(--code-ink); border-radius: 8px; padding: 10px 12px; margin: 6px 0; font-size: 12px; overflow-x: auto; }
+  details.spoil { border: 1px dashed color-mix(in srgb, var(--warn) 60%, transparent); background: var(--warn-soft); border-radius: 8px; padding: 6px 10px; margin: 6px 0; }
+  details.spoil summary { cursor: pointer; color: var(--warn); font-weight: 600; font-size: 12px; min-height: 28px; display: flex; align-items: center; }
+  .locked { display: flex; gap: 8px; align-items: center; background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 8px 10px; font-size: 12px; margin: 6px 0; }
+  .note { font-size: 12px; color: var(--muted); background: var(--surface-2); border-radius: 8px; padding: 8px 10px; margin-bottom: 12px; }
+  .note b { color: var(--text); }
+
+  .qa-q { border: 1px solid color-mix(in srgb, var(--divider) 30%, transparent); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+  .qa-q h3 { margin: 0 0 4px; font-size: 14px; }
+  .accepted { border-left: 3px solid var(--good); padding-left: 10px; margin-top: 8px; }
+
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+  .post { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 12px 0; }
+  .post + .post { border-top: 1px solid color-mix(in srgb, var(--divider) 20%, transparent); }
+  .vote { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .vote button { width: 36px; height: 30px; border: 0; background: transparent; color: var(--muted); border-radius: 6px; cursor: pointer; font-size: 14px; }
+  .vote button:hover { background: var(--hover); }
+  .post h3 { margin: 0 0 2px; font-size: 15px; }
+  .post p { margin: 4px 0; color: var(--text-2); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .chip { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--text-2); }
+  aside .box { border: 1px solid color-mix(in srgb, var(--divider) 30%, transparent); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+  aside h4 { margin: 0 0 8px; font-size: 13px; }
+  aside ol { margin: 0; padding-left: 18px; color: var(--text-2); }
+  aside li { margin: 3px 0; }
+  .karma-big { font-size: 28px; font-weight: 800; color: var(--accent-ink); line-height: 32px; }
+  .bar { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; display: flex; margin: 8px 0 4px; }
+  .bar i { display: block; height: 100%; }
+  .legend { display: grid; gap: 2px; font-size: 12px; color: var(--muted); }
+  .legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; background: var(--c); }
+  .gate { display: grid; gap: 6px; font-size: 13px; }
+  .gate .ok { color: var(--good); } .gate .no { color: var(--bad); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1>Jamoa — prototip</h1>
+  <span class="ctl">Muhokama
+    <span class="seg" data-key="thread">
+      <button aria-pressed="true" data-v="a">A · javob 1 daraja</button><button aria-pressed="false" data-v="b">B · daraxt (CF)</button><button aria-pressed="false" data-v="c">C · savol-javob</button>
+    </span></span>
+  <span class="ctl">Kod
+    <span class="seg" data-key="code">
+      <button aria-pressed="true" data-v="a">A · yechganga ochiq</button><button aria-pressed="false" data-v="b">B · «Yechimlar» tabi</button><button aria-pressed="false" data-v="c">C · erkin</button>
+    </span></span>
+  <span class="ctl">Karma
+    <span class="seg" data-key="karma">
+      <button aria-pressed="true" data-v="a">A · ovoz, 180 kun</button><button aria-pressed="false" data-v="b">B · ovoz, abadiy</button><button aria-pressed="false" data-v="c">C · ovoz + faollik</button>
+    </span></span>
+  <span class="ctl">Blog
+    <span class="seg" data-key="who">
+      <button aria-pressed="true" data-v="a">A · tasdiq + 10 masala</button><button aria-pressed="false" data-v="b">B · hamma</button><button aria-pressed="false" data-v="c">C · karma ≥ 20</button>
+    </span></span>
+  <span class="ctl"><span class="seg"><button aria-pressed="false" id="dark">Qorong'i</button></span></span>
+</header>
+
+<main>
+  <!-- 1. Problem discussion ------------------------------------------------>
+  <section class="panel">
+    <h2>1. Masala sahifasi — «Muhokama» tabi</h2>
+    <p class="why">Qaror bor (2026-11-11): muhokama bo'ladi, faol musobaqa masalasida yopiq. Savol — <b>shakli</b> va <b>kod</b> qanday ko'rsatiladi. Rasmda masala #1519, joriy foydalanuvchi uni <b id="solvedLbl">yechmagan</b>
+      (<button class="btn ghost" id="toggleSolved" style="min-height:28px;padding:0 8px;font-size:12px">yechgan deb ko'rsat</button>).</p>
+    <div class="tabs"><span>Shart</span><span>Urinishlar</span><span>Statistika</span><span id="solTab" hidden>Yechimlar<span class="n">14</span></span><span class="on">Muhokama<span class="n">23</span></span><span>Tahlil</span></div>
+
+    <div class="note" id="contestLock"><b>Faol musobaqa paytida:</b> tab ko'rinadi, lekin «Musobaqa tugaguncha muhokama yopiq» — yozish ham, o'qish ham yo'q (masala hali arxivda emas, ADR-0055).</div>
+
+    <div class="composer">
+      <textarea aria-label="Izoh yozish" placeholder="Savol yoki fikr… Markdown, $formula$ va ```kod``` ishlaydi"></textarea>
+      <div class="row"><span id="composerHint">10–2000 belgi · kod bloki yechmaganlarga yashiriladi</span><button class="btn">Yuborish</button></div>
+    </div>
+
+    <!-- A / B: comments -->
+    <div id="threadAB">
+      <div class="c">
+        <div class="av" style="background:#1f6bd6">AN</div>
+        <div>
+          <div class="meta"><b class="r-blue">ali_n</b><span>2 soat oldin</span></div>
+          <p class="body">3-testda WA olyapman. n = 1 bo'lganda javob 0 bo'lishi kerakmi yoki 1?</p>
+          <div class="acts"><button aria-label="Ovoz berish: foydali">▲</button><span class="score pos">+7</span><button aria-label="Ovoz berish: foydasiz">▼</button><button>Javob berish</button><button>Shikoyat</button></div>
+          <div class="replies">
+            <div class="c">
+              <div class="av" style="background:#c4243a">NR</div>
+              <div>
+                <div class="meta"><b class="r-red">nodira_r</b><span class="tag ok">✓ yechgan</span><span>1 soat oldin</span></div>
+                <p class="body">Shartda «kamida bitta element» deyilgan — n = 1 da yagona element o'zi javob. Mana mening yechimim:</p>
+                <div class="codeWrap"></div>
+                <div class="acts"><button aria-label="Ovoz berish: foydali">▲</button><span class="score pos">+12</span><button aria-label="Ovoz berish: foydasiz">▼</button><button>Javob berish</button></div>
+                <div class="replies deep" hidden>
+                  <div class="c">
+                    <div class="av" style="background:#2a8a3a">JS</div>
+                    <div>
+                      <div class="meta"><b class="r-green">jasur07</b><span>40 daqiqa oldin</span></div>
+                      <p class="body">Rahmat! Faqat <code>long long</code> kerak ekan.</p>
+                      <div class="acts"><button aria-label="Ovoz berish: foydali">▲</button><span class="score pos">+2</span><button aria-label="Ovoz berish: foydasiz">▼</button><button>Javob berish</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="c flatReply">
+              <div class="av" style="background:#2a8a3a">JS</div>
+              <div>
+                <div class="meta"><b class="r-green">jasur07</b><span>40 daqiqa oldin</span></div>
+                <p class="body"><span style="color:var(--accent-ink)">@nodira_r</span> rahmat! Faqat <code>long long</code> kerak ekan.</p>
+                <div class="acts"><button aria-label="Ovoz berish: foydali">▲</button><span class="score pos">+2</span><button aria-label="Ovoz berish: foydasiz">▼</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="c">
+        <div class="av" style="background:#c46a00">KM</div>
+        <div>
+          <div class="meta"><b class="r-orange">kamola_m</b><span class="tag author">muallif</span><span>kecha</span></div>
+          <p class="body">Testlar yangilandi: chegaraviy holat (n = 2·10⁵, hammasi bir xil) qo'shildi.</p>
+          <div class="acts"><button aria-label="Ovoz berish: foydali">▲</button><span class="score pos">+21</span><button aria-label="Ovoz berish: foydasiz">▼</button><button>Javob berish</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C: Q&A -->
+    <div id="threadC" hidden>
+      <div class="qa-q">
+        <div class="meta"><b class="r-blue">ali_n</b><span>2 soat oldin</span><span class="tag ok">javob topildi</span></div>
+        <h3>n = 1 bo'lganda javob nima?</h3>
+        <p class="body">3-testda WA olyapman. n = 1 bo'lganda javob 0 bo'lishi kerakmi yoki 1?</p>
+        <div class="accepted">
+          <div class="meta"><b class="r-red">nodira_r</b><span class="tag ok">✓ qabul qilingan javob</span><span class="score pos">+12</span></div>
+          <p class="body">Shartda «kamida bitta element» deyilgan — n = 1 da yagona element o'zi javob.</p>
+          <div class="codeWrap"></div>
+        </div>
+        <div class="acts" style="margin-top:6px"><button>Yana 2 ta javob</button><button>Javob yozish</button></div>
+      </div>
+      <div class="qa-q">
+        <div class="meta"><b class="r-green">jasur07</b><span>kecha</span><span class="tag" style="background:var(--surface-2);color:var(--muted)">javobsiz</span></div>
+        <h3>Vaqt chegarasi Python uchun yetarlimi?</h3>
+        <div class="acts"><button>Javob yozish</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Blogs + karma ----------------------------------------------------->
+  <section class="panel">
+    <h2>2. Foydalanuvchi bloglari va karma</h2>
+    <p class="why">Qaror bor: bloglar va karma <b>hozir</b>, Robocontest'dagi kabi. Savol — <b>kim yozadi</b> va <b>karma qanday sanaladi</b>. Codeforces'da o'lchandi: +425 ovozli post muallifining hissasi bugun <b>0</b> — u yerda karma eskiradi.</p>
+    <div class="grid2">
+      <div>
+        <div class="tabs"><span class="on">Yangi</span><span>Mashhur (7 kun)</span><span>Kuzatayotganlarim</span><span>Teglar</span></div>
+        <div class="post">
+          <div class="vote"><button aria-label="Ovoz: yoqdi">▲</button><span class="score pos">+48</span><button aria-label="Ovoz: yoqmadi">▼</button></div>
+          <div>
+            <div class="meta"><b class="r-red">nodira_r</b><span>3 kun oldin</span><span>· 6 daqiqa o'qish</span><span>· 312 ko'rish</span></div>
+            <h3>Segment daraxti: lazy propagation'ni 20 qatorda yozish</h3>
+            <p>Ko'p masalada bitta shablon yetadi. Push va pull'ni ajratsangiz…</p>
+            <div class="chips"><span class="chip">#segment-tree</span><span class="chip">#shablon</span><span class="chip">💬 14</span></div>
+          </div>
+        </div>
+        <div class="post">
+          <div class="vote"><button aria-label="Ovoz: yoqdi">▲</button><span class="score pos">+19</span><button aria-label="Ovoz: yoqmadi">▼</button></div>
+          <div>
+            <div class="meta"><b class="r-blue">ali_n</b><span>kecha</span><span>· 3 daqiqa o'qish</span></div>
+            <h3>Respublika olimpiadasiga 3 oyda qanday tayyorlandim</h3>
+            <p>Har kuni 2 ta masala, haftasiga bitta virtual musobaqa…</p>
+            <div class="chips"><span class="chip">#olimpiada</span><span class="chip">#tajriba</span><span class="chip">💬 6</span></div>
+          </div>
+        </div>
+        <div class="post">
+          <div class="vote"><button aria-label="Ovoz: yoqdi">▲</button><span class="score neg">−3</span><button aria-label="Ovoz: yoqmadi">▼</button></div>
+          <div>
+            <div class="meta"><b class="r-green">yangi_user</b><span>2 soat oldin</span></div>
+            <h3>Kim #1519 ning yechimini tashlab bera oladi?</h3>
+            <p style="color:var(--faint)">Karma salbiy postlar «Mashhur» ga chiqmaydi; −10 dan pastda yig'iladi.</p>
+          </div>
+        </div>
+      </div>
+      <aside>
+        <div class="box">
+          <h4>Karma — nodira_r</h4>
+          <div class="karma-big" id="karmaNum">+86</div>
+          <div class="bar" id="karmaBar"></div>
+          <div class="legend" id="karmaLegend"></div>
+          <p style="font-size:12px;color:var(--muted);margin:8px 0 0" id="karmaRule"></p>
+        </div>
+        <div class="box">
+          <h4>Blog yozish huquqi — siz</h4>
+          <div class="gate" id="gate"></div>
+        </div>
+        <div class="box">
+          <h4>Faol mualliflar (30 kun)</h4>
+          <ol><li><b class="r-red">nodira_r</b> · +86</li><li><b class="r-orange">kamola_m</b> · +54</li><li><b class="r-blue">ali_n</b> · +31</li></ol>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 3. Moderation ------------------------------------------------------->
+  <section class="panel">
+    <h2>3. Moderatsiya (hamma variantda bir xil — taklif)</h2>
+    <p class="why">Mavjud naqsh: yo'l xaritasi izohlari — <b>keyin moderatsiya</b> (darhol ko'rinadi, jamoa yashiradi), masala shikoyatlari — alohida navbat. Taklif: shu ikkisini birlashtirish.</p>
+    <div class="legend" style="font-size:13px;gap:6px">
+      <div>• Izoh va post darhol chiqadi; 3 ta turli foydalanuvchi shikoyat qilsa — avtomatik yashiriladi va xodim navbatiga tushadi.</div>
+      <div>• Yangi hisob: kuniga 5 izoh, 1 post; havola (URL) faqat email tasdiqlangandan keyin.</div>
+      <div>• O'chirish = yashirish (qator qoladi, «izoh o'chirildi» ko'rinadi) — muhokama zanjiri uzilmaydi.</div>
+      <div>• Javob va @eslatma — mavjud bildirishnomalar orqali (yangi kod, 10 tilda).</div>
+    </div>
+  </section>
+</main>
+
+<script>
+  const state = { thread: "a", code: "a", karma: "a", who: "a", solved: false };
+  const CODE = '<pre>int main() {\n  long long n; cin >> n;\n  ...\n}</pre>';
+  function codeBlock() {
+    if (state.code === "b") return '<div class="locked">🔒 Kod izohda ko\'rsatilmaydi — u «Yechimlar» tabida, masalani yechgandan keyin.</div>';
+    if (state.code === "c" || state.solved) return CODE;
+    return '<details class="spoil"><summary>Yechim kodi — masalani yechgandan keyin ochiladi</summary><p style="margin:4px 0;font-size:12px;color:var(--muted)">Siz bu masalani hali yechmagansiz.</p></details>';
+  }
+  function render() {
+    document.querySelectorAll(".codeWrap").forEach((el) => (el.innerHTML = codeBlock()));
+    document.getElementById("threadAB").hidden = state.thread === "c";
+    document.getElementById("threadC").hidden = state.thread !== "c";
+    document.querySelectorAll(".deep").forEach((el) => (el.hidden = state.thread !== "b"));
+    document.querySelectorAll(".flatReply").forEach((el) => (el.hidden = state.thread === "b"));
+    document.getElementById("solTab").hidden = state.code !== "b";
+    document.getElementById("composerHint").textContent = {
+      a: "10–2000 belgi · kod bloki yechmaganlarga yashiriladi",
+      b: "10–2000 belgi · kod bloki taqiqlangan — yechimni «Yechimlar» tabiga qo'ying",
+      c: "10–2000 belgi · kod erkin",
+    }[state.code];
+    document.getElementById("solvedLbl").textContent = state.solved ? "yechgan" : "yechmagan";
+    document.getElementById("toggleSolved").textContent = state.solved ? "yechmagan deb ko'rsat" : "yechgan deb ko'rsat";
+
+    const k = {
+      a: { n: "+86", parts: [["#7c3aed", 70, "Post ovozlari (oxirgi 180 kun)"], ["#1f8a5b", 30, "Izoh ovozlari (oxirgi 180 kun)"]],
+           rule: "Har ovoz ±1, oxirgi 180 kundagi ovozlar sanaladi. Eski post sekin «so'nadi» — Codeforces kabi. Karma reytingga ta'sir qilmaydi." },
+      b: { n: "+212", parts: [["#7c3aed", 72, "Post ovozlari (hammasi)"], ["#1f8a5b", 28, "Izoh ovozlari (hammasi)"]],
+           rule: "Har ovoz ±1, abadiy. Eski mualliflar doim yuqorida qoladi; yangi kishi ularga yetolmaydi." },
+      c: { n: "+143", parts: [["#7c3aed", 40, "Post ovozlari"], ["#1f8a5b", 20, "Izoh ovozlari"], ["#c46a00", 25, "Qabul qilingan javoblar"], ["#1f6bd6", 15, "Masala shikoyatlari tasdiqlangan"]],
+           rule: "Ovozlar + foydali ish (qabul qilingan javob +5, tasdiqlangan shikoyat +3). Hisob murakkabroq, o'yin qilish yo'llari ko'proq." },
+    }[state.karma];
+    document.getElementById("karmaNum").textContent = k.n;
+    document.getElementById("karmaBar").innerHTML = k.parts.map(([c, w]) => `<i style="width:${w}%;background:${c}"></i>`).join("");
+    document.getElementById("karmaLegend").innerHTML = k.parts.map(([c, w, l]) => `<span style="--c:${c}">${l} · ${w}%</span>`).join("");
+    document.getElementById("karmaRule").textContent = k.rule;
+
+    document.getElementById("gate").innerHTML = {
+      a: '<span class="ok">✓ Email tasdiqlangan</span><span class="no">✗ 10 ta masala yechilgan (sizda 6)</span><span style="color:var(--muted);font-size:12px">Spamga to\'siq: hisob ochib darhol reklama yozib bo\'lmaydi.</span>',
+      b: '<span class="ok">✓ Hisob bor</span><span style="color:var(--muted);font-size:12px">Hamma yozadi; spamni faqat shikoyat va kunlik chegara to\'xtatadi.</span>',
+      c: '<span class="no">✗ Karma ≥ 20 (sizda 4)</span><span style="color:var(--muted);font-size:12px">Avval izohlarda foydali bo\'lish kerak — lekin karma faqat postdan kelsa, yangi muallif hech qachon boshlay olmaydi.</span>',
+    }[state.who];
+  }
+  document.querySelectorAll(".seg[data-key]").forEach((seg) => {
+    seg.addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      state[seg.dataset.key] = b.dataset.v; render();
+    });
+  });
+  document.getElementById("toggleSolved").addEventListener("click", () => { state.solved = !state.solved; render(); });
+  document.getElementById("dark").addEventListener("click", (e) => {
+    const on = document.documentElement.classList.toggle("dark"); e.target.setAttribute("aria-pressed", String(on));
+  });
+  render();
+</script>
+</body>
+</html>
