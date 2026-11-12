@@ -6,6 +6,7 @@
  */
 
 export { ProblemStatementCard } from "./components/ProblemStatementCard";
+export { SpeechPlayer } from "./components/SpeechPlayer";
 
 
 export { VerdictPresentationLayer } from "./components/VerdictPresentationLayer";

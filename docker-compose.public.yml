@@ -194,6 +194,15 @@ services:
       <<: *env-guard
       DJANGO_DEBUG: "0"
 
+  # Statements read aloud (ADR-0064): started with `--profile tts` once the
+  # host voice service runs; `TTS_URL` in the env file turns the player on.
+  tts-worker:
+    <<: *restart
+    logging: *default-logging
+    environment:
+      <<: *env-guard
+      DJANGO_DEBUG: "0"
+
   # SSE — ADR-0029. Port faqat localhost: tashqariga Cloudflare Tunnel
   # chiqaradi va u `/api/v1/events/*` ni shu xizmatga yo'naltiradi.
   # ⚠️ Tunnel qatori HOST darajasida (`/etc/cloudflared/config.yml`) —

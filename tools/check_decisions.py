@@ -3477,6 +3477,16 @@ def voice_text_is_spoken_and_guarded() -> str | None:
         return "problems/speech.py: o'qilmagan belgi ovozga yetadi"
     if "def speak_math(" not in speech or "darajasigacha" not in read("apps/api/tests/test_speech.py"):
         return "problems/speech.py: formula so'zga aylantirilmaydi"
+    # Phase 2: the host voice service, the queue and the voice in the name.
+    server = read("services/tts/server.py")
+    if 'ThreadingHTTPServer(("127.0.0.1", PORT), Handler)' not in server:
+        return "services/tts/server.py: ovoz servisi loopback'dan boshqa manzilda tinglaydi"
+    if 'MODEL_NAME = f"navoiy-{EMOTION}-{VOICE}"' not in server:
+        return "services/tts/server.py: model nomida ovoz yo'q — boshqa ovoz eski fayllarni oladi"
+    if "if model and model != settings.TTS_MODEL:" not in read("apps/api/problems/tasks.py"):
+        return "problems/tasks.py: boshqa ovozdagi audio shu nom ostida saqlanadi"
+    if '"problems.synthesize_speech": {"queue": "tts"},' not in read("apps/api/config/settings.py"):
+        return "config/settings.py: ovoz bo'laklari `tts` navbatidan boshqa joyda yasaladi"
     return None
 
 

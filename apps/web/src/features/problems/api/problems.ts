@@ -121,6 +121,9 @@ export type ProblemDetail = Problem & {
   statement_locale: string;
   /** The author's language first, then every translation. */
   locales: string[];
+  /** The statement can be read aloud (ADR-0064): the voice is on and there is an
+   *  Uzbek text. Optional: a cached older payload has no such field. */
+  voice?: boolean;
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: string;

@@ -52,11 +52,29 @@ matters more than which voice reads them.
    (RTF 0.84 keeps ahead of playback); the file is kept under `cache_key(model, text)`, so an edited
    statement or another model gets a new file and nothing stale is served.
 
+6. **Phase 2 — built 2026-11-12.** The voice clones the **FLEURS** recording (CC-BY 4.0; the owner's
+   choice of 2026-11-12, «keyinchalik vaziyatga qaraymiz»), credited under the player. The model name
+   carries the voice (`navoiy-xotirjam-fleurs`), so another voice gets new files.
+   - **The service runs on the host**, not in a compose service as first planned: `services/tts/server.py`
+     with the Navoiy venv the voice was measured in, bound to 127.0.0.1 and reached by `tts-worker` as
+     `host.docker.internal`. A CUDA image with the CosyVoice stack would add several GB to Docker's disk.
+   - **Pieces.** `speech.segments()` splits the spoken text into pieces of 120 characters, then growing
+     by 15 % up to 400; a short first piece is what the first listener waits for (~8 s), and each next
+     piece is made while the one before plays. Each piece is its own file, `speech/<cache_key>.mp3` in
+     object storage, served by `/api/v1/speech/<key>.mp3` for a year (`immutable`, at the edge too).
+   - `POST /problems/<slug>/speech/generate/` queues the missing pieces on the `tts` queue (one GPU, one
+     at a time), each once (a 10-minute claim), throttled per client (`THROTTLE_SPEECH`, 30/hour).
+   - **MP3**, not Ogg/Opus: older Safari does not play Ogg.
+   - Measured in the browser: the first sound 8.4 s after «Tinglash» cold, 0.2 s once made; gaps between
+     pieces 1.1 s (the one cold transition), then 0.1 s and 0 s. The first try packed the title alone
+     (18 characters) before a 384-character piece — about 20 s of silence; fixed by filling the first
+     piece and growing gently.
+
 ## 3. Consequences
 
-- Phase 1 (this change): the spoken text and its endpoint. Phase 2: the speech service (a GPU compose
-  service), streaming, the cache in object storage, and the player on the problem page.
-- **Open for phase 2:** which voice Navoiy clones. The benchmark used a FLEURS recording (CC-BY 4.0) and
-  the owner's own recording; the choice is the owner's.
+- Phase 1: the spoken text and its endpoint. Phase 2 (§ 2.6): the host service, the pieces, the cache
+  in object storage and the player.
+- The voice is off until the host service runs and `TTS_URL` is set (`services/tts/README.md`); the
+  page then shows «Tinglash» on problems with an Uzbek text.
 - The GPU is on the production host. Generation competes with nothing there today (judging runs on CPU);
   a busy GPU answers «try later» instead of queueing without bound.

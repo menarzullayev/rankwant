@@ -162,3 +162,13 @@ class SearchRateThrottle(
             # The cache is down: reading goes on (see `CacheOutageTolerant`).
             log.warning("throttle keshi yiqildi: %s %s", request.method, request.path)
             return True
+
+
+class SpeechRateThrottle(SearchRateThrottle):
+    """Asking for a statement read aloud (ADR-0064 § 5): its own budget.
+
+    Each statement is made once for everyone, so a listener needs few
+    requests; the limit keeps one client from filling the GPU's queue.
+    """
+
+    scope = "speech"

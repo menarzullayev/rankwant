@@ -340,6 +340,9 @@ REST_FRAMEWORK = {
         # The site search: one request per pause in typing. A fast typist
         # makes a few per second for a moment; a script makes them all day.
         "search": os.environ.get("THROTTLE_SEARCH", "90/min"),
+        # Asking for a statement read aloud (ADR-0064 § 5): each statement is made
+        # once for everyone, so one client needs few; the GPU is one card.
+        "speech": os.environ.get("THROTTLE_SPEECH", "30/hour"),
         "login_ip": os.environ.get("THROTTLE_LOGIN_IP", "20/hour"),
         "login_account": os.environ.get("THROTTLE_LOGIN_ACCOUNT", "10/hour"),
         # Taxallus bandligini tekshirish yozayotganda chaqiriladi, ya'ni
@@ -460,6 +463,8 @@ CELERY_TASK_ROUTES = {
     # AI tutor replies (ADR-0065): only `ai-worker` consumes this queue and
     # only it holds the subscription token.
     "tutor.answer": {"queue": "ai"},
+    # Statements read aloud (ADR-0064): one GPU, one piece at a time, `tts-worker`.
+    "problems.synthesize_speech": {"queue": "tts"},
 }
 
 # AI tutor (ADR-0065). `AI_PROVIDER` empty = the tutor is off and the API
@@ -668,4 +673,9 @@ LOGGING = {
 
 # Statements read aloud (ADR-0064): the model's name is part of every audio file's cache key, so
 # another model never serves the old one's recordings.
-TTS_MODEL = env("TTS_MODEL", "navoiy-xotirjam")
+# The voice's name is part of every audio key: another voice gets new files.
+# «fleurs» — the owner's choice of 2026-11-12 (the FLEURS recording, CC-BY 4.0).
+TTS_MODEL = env("TTS_MODEL", "navoiy-xotirjam-fleurs")
+# The host voice service (`services/tts/server.py`); empty = no audio, the
+# page offers no player. Containers reach it as `host.docker.internal`.
+TTS_URL = env("TTS_URL", "")

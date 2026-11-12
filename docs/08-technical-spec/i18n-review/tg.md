@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3541 strings.**
+**3550 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -3560,5 +3560,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.tutor.limitHint` | 0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi. | 0 — маҳдудият гузошта нашудааст. Дар 80 % огоҳӣ пайдо мешавад. |  |
 | `admin.tutor.reports` | Shikoyat qilingan javoblar | Ҷавобҳои шикоятшуда |  |
 | `admin.tutor.exchange` | Savol va javob | Савол ва ҷавоб |  |
+| `problem.listen` | Tinglash | Гӯш кардан |  |
+| `problem.listenPause` | Pauza | Таваққуф |  |
+| `problem.listenResume` | Davom ettirish | Идома додан |  |
+| `problem.listenStop` | To'xtatish | Қатъ кардан |  |
+| `problem.listenPreparing` | Ovoz tayyorlanmoqda… | Овоз омода мешавад… |  |
+| `problem.listenOff` | Ovoz hozircha ishlamayapti. | Овоз ҳоло кор намекунад. |  |
+| `problem.listenBusy` | Ovoz navbati band — birozdan keyin urinib ko'ring. | Навбати овоз банд аст — каме баъдтар кӯшиш кунед. |  |
+| `problem.listenProgress` | {n} / {total} bo'lak | {n} / {total} қисм |  |
+| `problem.listenCredit` | Ovoz: Navoiy (Lison) · ovoz namunasi: FLEURS (CC BY 4.0) | Овоз: Navoiy (Lison) · намунаи овоз: FLEURS (CC BY 4.0) |  |
 | `notif.msg.tutor_budget.title` | AI ustoz byudjeti: {percent} % | Буҷаи устоди AI: {percent} % |  |
 | `notif.msg.tutor_budget.body` | {month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz. | Дар {month} {percent} %-и маҳдудияти {limit} $ истифода шуд. Админ → Устоди AI. |  |

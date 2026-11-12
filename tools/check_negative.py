@@ -5623,6 +5623,26 @@ def neg_decisions_tutor_staff_delete_reports() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_voice_service_listens_widely() -> tuple[bool, str]:
+    """The voice service would listen on every address, not only loopback."""
+    return _decision_broken(
+        "services/tts/server.py",
+        'ThreadingHTTPServer(("127.0.0.1", PORT), Handler)',
+        'ThreadingHTTPServer(("0.0.0.0", PORT), Handler)',
+        "loopback'dan boshqa manzilda",
+    )
+
+
+def neg_decisions_voice_keeps_another_voice() -> tuple[bool, str]:
+    """Audio from another voice would be filed under this voice's name."""
+    return _decision_broken(
+        "apps/api/problems/tasks.py",
+        "if model and model != settings.TTS_MODEL:",
+        "if False:",
+        "boshqa ovozdagi audio",
+    )
+
+
 def neg_decisions_tutor_api_key_reaches_the_api() -> tuple[bool, str]:
     """The Claude API key would be handed to the API service as well."""
     return _decision_broken(
@@ -9629,6 +9649,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "services/tts/server.py",
+    "apps/api/problems/tasks.py",
     "apps/api/tutor/views.py",
     "apps/api/ai/providers/claude_cli.py",
     "apps/api/ai/gateway.py",
@@ -14111,6 +14133,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ovoz kaliti modelsiz bo'lsa tutilsin", neg_decisions_voice_key_ignores_model),
             ("buzuq formula shartni yiqitsa tutilsin", neg_decisions_voice_formula_fails_statement),
             ("ovozga belgi yetsa tutilsin", neg_decisions_voice_reads_symbols),
+            ("ovoz servisi keng tinglasa tutilsin", neg_decisions_voice_service_listens_widely),
+            ("boshqa ovoz saqlansa tutilsin", neg_decisions_voice_keeps_another_voice),
             ("AI CLI asbob olsa tutilsin", neg_decisions_tutor_cli_gets_tools),
             ("AI CLI muhitni olsa tutilsin", neg_decisions_tutor_cli_gets_the_environment),
             ("AI javobida yechim qolsa tutilsin", neg_decisions_tutor_keeps_solution_code),
