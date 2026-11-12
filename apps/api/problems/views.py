@@ -245,11 +245,15 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         contest problem before the start, ADR-0055) has no text here either. The voice reads
         Uzbek only; a problem without an Uzbek text answers 404.
         """
+        return Response(ProblemSpeechSerializer(self._speech_payload(self._speech_parts())).data)
+
+    def _speech_parts(self) -> SpeechParts:
+        """The Uzbek text both voice endpoints read, through the detail's own lookup."""
         problem = self.get_object()
         parts = speech.uzbek_parts(problem)
         if parts is None:
             raise Http404
-        return Response(ProblemSpeechSerializer(self._speech_payload(parts)).data)
+        return parts
 
     @staticmethod
     def _speech_payload(parts: SpeechParts) -> dict[str, Any]:
@@ -301,10 +305,7 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         statement is made once for everyone; the listener re-reads `speech/`
         and plays each piece as it becomes ready.
         """
-        problem = self.get_object()
-        parts = speech.uzbek_parts(problem)
-        if parts is None:
-            raise Http404
+        parts = self._speech_parts()
         if not speech_audio.enabled():
             body = {
                 "error": {"code": "voice_unavailable", "message": "The voice is off", "details": {}}
