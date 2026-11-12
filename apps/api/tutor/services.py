@@ -134,6 +134,8 @@ def ask(
             kind=kind,
             reply_to=asked,
             hint_level=asked.hint_level,
+            # «Nega xato?» on the attempt page finds its reply by the attempt.
+            attempt=attempt,
             locale=locale,
             status=Message.Status.PENDING,
         )

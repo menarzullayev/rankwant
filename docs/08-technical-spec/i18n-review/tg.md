@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3481 strings.**
+**3512 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -3502,3 +3502,34 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.billing_provider_unavailable` | Bu to'lov usuli hozir mavjud emas. | Ин усули пардохт ҳоло дастрас нест. |  |
 | `error.billing_not_on_sale` | Bu tarif yoki davr hozir sotilmaydi. | Ин тариф ё давра ҳоло фурӯхта намешавад. |  |
 | `error.billing_already_owned` | Bu kurs allaqachon sizniki. | Ин курс аллакай аз они шумост. |  |
+| `tutor.title` | AI ustoz | Устоди AI |  |
+| `tutor.close` | Yopish | Пӯшидан |  |
+| `tutor.usage` | bugun {used} / {limit} | имрӯз {used} / {limit} |  |
+| `tutor.usageUnlimited` | bugun {used} | имрӯз {used} |  |
+| `tutor.explain` | Shartni tushuntir | Шартро шарҳ деҳ |  |
+| `tutor.explainQuestion` | Shartni sodda tilda tushuntirib ber: nima berilgan va nima so'ralyapti? | Шартро бо забони содда шарҳ деҳ: чӣ дода шудааст ва чӣ пурсида мешавад? |  |
+| `tutor.checkCode` | Kodimni tekshir | Коди маро тафтиш кун |  |
+| `tutor.checkCodeQuestion` | Kodimda xato bormi? Qayerini tekshirishim kerak? | Дар коди ман хато ҳаст? Чиро бояд тафтиш кунам? |  |
+| `tutor.noCode` | Muharrir bo'sh — avval kod yozing. | Муҳаррир холӣ аст — аввал код нависед. |  |
+| `tutor.ladder` | Maslahat zinapoyasi | Зинаи маслиҳатҳо |  |
+| `tutor.step1` | Yo'nalish | Самт |  |
+| `tutor.step2` | G'oya | Ғоя |  |
+| `tutor.step3` | Reja | Нақша |  |
+| `tutor.stepGiven` | ochilgan | кушода |  |
+| `tutor.askPlaceholder` | Savolingizni yozing… | Саволи худро нависед… |  |
+| `tutor.send` | Yuborish | Фиристодан |  |
+| `tutor.thinking` | Javob yozilmoqda… | Ҷавоб навишта мешавад… |  |
+| `tutor.codeRemoved` | Tayyor kod olib tashlandi — AI ustoz yechim bermaydi. | Коди тайёр хориҷ карда шуд — устоди AI ҳал намедиҳад. |  |
+| `tutor.fail.busy` | AI ustoz hozir band. Birozdan keyin urinib ko'ring. | Устоди AI ҳоло банд аст. Каме баъдтар бори дигар кӯшиш кунед. |  |
+| `tutor.fail.unavailable` | AI ustoz hozircha ishlamayapti. | Устоди AI ҳоло кор намекунад. |  |
+| `tutor.fail.timeout` | Javob kelmadi. Qayta urinib ko'ring. | Ҷавоб наомад. Бори дигар кӯшиш кунед. |  |
+| `tutor.fail.other` | Nimadir xato ketdi. Qayta urinib ko'ring. | Чизе хато рафт. Бори дигар кӯшиш кунед. |  |
+| `tutor.contest` | Musobaqa masalasida AI ustoz o'chiq. Musobaqa yakunlangach ochiladi. | Дар масъалаи мусобиқа устоди AI хомӯш аст. Пас аз анҷоми мусобиқа кушода мешавад. |  |
+| `tutor.limit` | Bugungi {limit} ta so'rov ishlatildi. Ertaga 00:00 da yangilanadi. | {limit} дархости имрӯза истифода шуд. Фардо соати 00:00 нав мешавад. |  |
+| `tutor.empty` | Shart, maslahat yoki kodingiz haqida so'rang. AI ustoz tayyor yechim bermaydi — yo'l ko'rsatadi. | Дар бораи шарт, маслиҳат ё коди худ пурсед. Устоди AI ҳалли тайёр намедиҳад — роҳ нишон медиҳад. |  |
+| `tutor.delete` | Suhbatni o'chirish | Нест кардани сӯҳбат |  |
+| `tutor.retention` | Suhbat 90 kun saqlanadi. | Сӯҳбат 90 рӯз нигоҳ дошта мешавад. |  |
+| `tutor.you` | Sizning savolingiz | Саволи шумо |  |
+| `tutor.whyWrong` | Nega xato? | Чаро хато? |  |
+| `tutor.whyWrongTitle` | AI ustoz izohi | Шарҳи устоди AI |  |
+| `tutor.whyWrongHint` | AI ustoz kodingiz va verdiktni ko'rib, ehtimoliy sababni aytadi. Yashirin testlarni u ham ko'rmaydi. | Устоди AI коди шумо ва ҳукмро дида, сабаби эҳтимолиро мегӯяд. Тестҳои пинҳонро ӯ ҳам намебинад. |  |

@@ -354,6 +354,8 @@ def test_why_wrong_reads_the_attempt(
     assert _ask(user, problem.slug, kind="why_wrong", attempt=wa.pk).status_code == 202
     model, _, text = ai_on.calls[-1]
     assert model == "heavy"
+    reply = Message.objects.get(role=Message.Role.TUTOR, kind="why_wrong")
+    assert reply.attempt_id == wa.pk
     assert "WA on test 4" in text
     assert "int main(){int s;}" in text
 
