@@ -3507,6 +3507,11 @@ def voice_text_is_spoken_and_guarded() -> str | None:
         return "services/tts/supervisor.py: kuzatuvchi to'xtasa ovoz 8 GB bilan yetim qoladi"
     if '"%~dp0supervisor.py"' not in read("services/tts/run.cmd"):
         return "services/tts/run.cmd: ovoz kuzatuvchisiz, doim yuklangan holda ishga tushadi"
+    # The worker must outwait a cold load, or the first piece after idling is never made.
+    load = re.search(r'TTS_LOAD_TIMEOUT_S", "(\d+)"', supervisor)
+    wait = re.search(r"^SYNTHESIS_TIMEOUT_S = (\d+)$", read("apps/api/problems/tasks.py"), re.M)
+    if not load or not wait or int(wait.group(1)) < int(load.group(1)) + 30:
+        return "problems/tasks.py: worker ovoz yuklanishini kutmay voz kechadi (SYNTHESIS_TIMEOUT_S)"
     return None
 
 
