@@ -5703,6 +5703,16 @@ def neg_decisions_voice_started_always_loaded() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_voice_worker_gives_up_early() -> tuple[bool, str]:
+    """The worker would stop waiting while the supervisor is still loading the voice."""
+    return _decision_broken(
+        "apps/api/problems/tasks.py",
+        "SYNTHESIS_TIMEOUT_S = 210",
+        "SYNTHESIS_TIMEOUT_S = 120",
+        "kutmay voz kechadi",
+    )
+
+
 def neg_decisions_voice_worker_never_recreated() -> tuple[bool, str]:
     """A deploy would find the running voice worker but leave it on the old code."""
     return _decision_broken(
@@ -14214,6 +14224,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ovoz xotira tugaganda bo'shatilmasa tutilsin", neg_decisions_voice_keeps_memory_under_pressure),
             ("ovoz kuzatuvchidan keyin qolsa tutilsin", neg_decisions_voice_outlives_supervisor),
             ("ovoz doim yuklangan ishga tushsa tutilsin", neg_decisions_voice_started_always_loaded),
+            ("worker ovoz yuklanishini kutmasa tutilsin", neg_decisions_voice_worker_gives_up_early),
             ("AI CLI asbob olsa tutilsin", neg_decisions_tutor_cli_gets_tools),
             ("AI CLI muhitni olsa tutilsin", neg_decisions_tutor_cli_gets_the_environment),
             ("AI javobida yechim qolsa tutilsin", neg_decisions_tutor_keeps_solution_code),

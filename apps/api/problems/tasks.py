@@ -14,8 +14,12 @@ from problems import speech_audio
 
 log = logging.getLogger(__name__)
 
-#: One piece is at most `speech.SEGMENT_CHARS` characters: measured ~10 s on the GPU.
-SYNTHESIS_TIMEOUT_S = 120
+#: One piece is at most `speech.SEGMENT_CHARS` characters: measured ~10 s on the GPU. The
+#: first piece after an idle spell also waits for the host supervisor to load the voice
+#: (`services/tts/supervisor.py`, up to its `TTS_LOAD_TIMEOUT_S` = 150 s): measured 73 s in
+#: production on 2026-11-12, so the first piece took 82 s against the old 120 s limit. A
+#: worker that gave up first would leave the piece unmade for the claim's 10 minutes.
+SYNTHESIS_TIMEOUT_S = 210
 
 
 @shared_task(name="problems.synthesize_speech")
