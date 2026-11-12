@@ -369,6 +369,8 @@ SPECTACULAR_SETTINGS = {
         "TutorKindEnum": "tutor.models.Message.Kind",
         "TutorRoleEnum": "tutor.models.Message.Role",
         "TutorStatusEnum": "tutor.models.Message.Status",
+        "TutorReportReasonEnum": "tutor.models.Report.Reason",
+        "TutorReportStatusEnum": "tutor.models.Report.Status",
         # `kind` — to'rtta modelda uchraydi. Nom barqaror bo'lmasa
         # drf-spectacular xesh qo'shib (`Kind598Enum`), generatsiya qilingan
         # TS tipi har safar o'zgarib ketardi.

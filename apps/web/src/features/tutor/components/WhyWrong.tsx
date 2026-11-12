@@ -21,7 +21,7 @@ export const EXPLAINABLE = new Set([
  *  instead of asking (and counting) twice. */
 export function WhyWrong({ slug, attempt }: { slug: string; attempt: number }) {
   const locale = useLocale();
-  const { conversation, problem, sending, pending, ask } = useTutor(
+  const { conversation, problem, sending, pending, ask, reload } = useTutor(
     slug,
     true,
     locale,
@@ -78,7 +78,11 @@ export function WhyWrong({ slug, attempt }: { slug: string; attempt: number }) {
             {t(locale, "tutor.thinking")}
           </p>
         ) : reply ? (
-          <TutorReply message={reply} />
+          <TutorReply
+            message={reply}
+            slug={slug}
+            onReported={() => void reload()}
+          />
         ) : (
           <p className="text-theme-sm rw-dim">
             {t(locale, "tutor.whyWrongHint")}

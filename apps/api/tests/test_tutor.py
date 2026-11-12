@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import subprocess
 from datetime import timedelta
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -19,7 +20,7 @@ from contests.models import Contest, ContestProblem
 from judging.models import Attempt
 from realtime.bus import user_channel
 from tutor import limits, tasks
-from tutor.models import Conversation, Message
+from tutor.models import Conversation, Message, Report
 
 CONFIG = Config(provider="fake", light_model="light", heavy_model="heavy")
 AB = AIProblem("A+B", "a va b ni qo'shing")
@@ -157,6 +158,7 @@ class FakeModel:
         self.error: AIError | None = None
         self.events: list[tuple[str, str, dict[str, Any]]] = []
         self.during: Any = None
+        self.cost = 0.001
 
     def __call__(self, model: str, system: str, text: str, config: Config) -> tuple[str, Usage]:
         self.calls.append((model, system, text))
@@ -164,7 +166,9 @@ class FakeModel:
             self.during()
         if self.error is not None:
             raise self.error
-        return self.answer, Usage(input_tokens=10, output_tokens=20, cost_usd=0.001, latency_ms=5)
+        return self.answer, Usage(
+            input_tokens=10, output_tokens=20, cost_usd=self.cost, latency_ms=5
+        )
 
 
 @pytest.fixture
@@ -433,3 +437,124 @@ def test_student_deletes_and_old_ones_go(ai_on: FakeModel, user: Any, problem: A
 
 def test_reply_routes_to_the_ai_queue(settings: Any) -> None:
     assert settings.CELERY_TASK_ROUTES["tutor.answer"] == {"queue": "ai"}
+
+
+# ── reports and budget (part 3) ────────────────────────────────────────
+
+
+def _staff(user: Any) -> APIClient:
+    from django.contrib.auth.models import Group
+
+    from core.permissions import STAFF_GROUP_OPS
+
+    user.is_staff = True
+    user.save(update_fields=["is_staff"])
+    user.groups.add(Group.objects.get_or_create(name=STAFF_GROUP_OPS)[0])
+    c = APIClient()
+    c.force_login(user)
+    return c
+
+
+@pytest.mark.django_db(transaction=True)
+def test_report_copies_the_texts_and_outlives_deletion(
+    ai_on: FakeModel, user: Any, other_user: Any, problem: Any
+) -> None:
+    _ask(user, problem.slug, question="Nega bunday?")
+    reply = Message.objects.get(role=Message.Role.TUTOR)
+    url = URL.format(problem.slug) + "reports/"
+    theirs = _client(other_user).post(url, {"message": reply.pk, "reason": "wrong"}, format="json")
+    assert theirs.status_code == 404
+    r = _client(user).post(
+        url, {"message": reply.pk, "reason": "solution", "note": "kod berdi"}, format="json"
+    )
+    assert r.status_code == 201
+    again = _client(user).post(url, {"message": reply.pk, "reason": "wrong"}, format="json")
+    assert again.status_code == 409
+    assert _client(user).get(URL.format(problem.slug)).data["messages"][1]["reported"] is True
+    assert _client(user).get(url).status_code == 405  # GET belongs to the conversation, not here
+
+    assert _client(user).delete(URL.format(problem.slug)).status_code == 204
+    report = Report.objects.get()
+    assert (report.question_text, report.reply_text, report.reason) == (
+        "Nega bunday?",
+        ai_on.answer,
+        "solution",
+    )
+    assert report.reply is None
+
+
+@pytest.mark.django_db(transaction=True)
+def test_staff_see_reports_and_close_them(
+    ai_on: FakeModel, user: Any, other_user: Any, problem: Any
+) -> None:
+    _ask(user, problem.slug)
+    reply = Message.objects.get(role=Message.Role.TUTOR)
+    _client(user).post(
+        URL.format(problem.slug) + "reports/",
+        {"message": reply.pk, "reason": "wrong"},
+        format="json",
+    )
+    assert _client(user).get("/api/v1/staff/tutor-reports/").status_code in (401, 403)
+    staff = _staff(other_user)
+    rows = staff.get("/api/v1/staff/tutor-reports/").data["results"]
+    assert [(r["problem"], r["username"], r["status"]) for r in rows] == [
+        (problem.slug, user.username, "open")
+    ]
+    pk = rows[0]["id"]
+    done = staff.patch(
+        f"/api/v1/staff/tutor-reports/{pk}/",
+        {"status": "accepted", "reply_text": "x"},
+        format="json",
+    )
+    assert done.status_code == 200
+    report = Report.objects.get()
+    assert report.status == "accepted" and report.resolved_at is not None
+    assert report.reply_text == ai_on.answer  # the copied text cannot be edited
+    assert staff.delete(f"/api/v1/staff/tutor-reports/{pk}/").status_code == 405
+
+
+@pytest.mark.django_db(transaction=True)
+def test_budget_counts_spend_that_outlives_deletion(
+    ai_on: FakeModel, user: Any, other_user: Any, problem: Any, caplog: pytest.LogCaptureFixture
+) -> None:
+    for _ in range(3):
+        _ask(user, problem.slug)
+    _client(user).delete(URL.format(problem.slug))
+    staff = _staff(other_user)
+    data = staff.get("/api/v1/staff/tutor/budget/").data
+    assert data["replies"] == 3
+    assert Decimal(data["spent_usd"]) == Decimal("0.003")
+    assert data["percent"] is None and data["warning"] is False
+    assert [m["model"] for m in data["by_model"]] == ["light"]
+    # Two decimals: a limit is set in cents.
+    bad = staff.patch("/api/v1/staff/tutor/budget/", {"limit_usd": "0.0035"}, format="json")
+    assert bad.status_code == 400
+    data = staff.patch("/api/v1/staff/tutor/budget/", {"limit_usd": "0.01"}, format="json").data
+    assert data["percent"] == pytest.approx(30.0)
+    assert data["warning"] is False
+    ai_on.cost = 0.0025
+    with caplog.at_level("WARNING", logger="tutor.budget"):
+        _ask(user, problem.slug)
+        _ask(user, problem.slug)  # 0.003 + 0.005 = 80 % of 0.01
+    data = staff.get("/api/v1/staff/tutor/budget/").data
+    assert data["percent"] == pytest.approx(80.0)
+    assert data["warning"] is True and data["over"] is False
+    assert sum("budget at 80%" in r.getMessage() for r in caplog.records) == 1
+    assert _client(user).get("/api/v1/staff/tutor/budget/").status_code in (401, 403)
+
+
+@pytest.mark.django_db(transaction=True)
+def test_handled_reports_go_after_90_days_open_ones_stay(
+    ai_on: FakeModel, user: Any, problem: Any
+) -> None:
+    _ask(user, problem.slug)
+    _ask(user, problem.slug)
+    first, second = Message.objects.filter(role=Message.Role.TUTOR).order_by("pk")
+    url = URL.format(problem.slug) + "reports/"
+    _client(user).post(url, {"message": first.pk, "reason": "wrong"}, format="json")
+    _client(user).post(url, {"message": second.pk, "reason": "other"}, format="json")
+    old = timezone.now() - timedelta(days=91)
+    Report.objects.filter(reply=first).update(status="accepted", resolved_at=old)
+    Report.objects.filter(reply=second).update(created_at=old)
+    tasks.purge_old()
+    assert list(Report.objects.values_list("reason", flat=True)) == ["other"]

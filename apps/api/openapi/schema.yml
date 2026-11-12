@@ -6648,6 +6648,41 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/problems/{slug}/tutor/reports/:
+    post:
+      operationId: problems_tutor_reports_create
+      description: The student flags one of their own tutor replies (decision ⑦).
+      summary: AI ustoz javobiga shikoyat
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TutorReportCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TutorReportCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TutorReportCreate'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          description: No response body
+        '404':
+          description: reply_not_found
+        '409':
+          description: already_reported
   /api/v1/problems/{slug}/vote/:
     post:
       operationId: problems_vote_create
@@ -14254,6 +14289,159 @@ paths:
             application/json:
               schema:
                 type: object
+          description: ''
+  /api/v1/staff/tutor-reports/:
+    get:
+      operationId: staff_tutor_reports_list
+      description: |-
+        Reported tutor replies — the only conversations staff see (decision ⑦).
+
+        Open ones first. Only the status changes; the copied texts are the
+        student's report and stay as they were.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffTutorReportList'
+          description: ''
+  /api/v1/staff/tutor-reports/{id}/:
+    get:
+      operationId: staff_tutor_reports_retrieve
+      description: |-
+        Reported tutor replies — the only conversations staff see (decision ⑦).
+
+        Open ones first. Only the status changes; the copied texts are the
+        student's report and stay as they were.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this report.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTutorReport'
+          description: ''
+    patch:
+      operationId: staff_tutor_reports_partial_update
+      description: |-
+        Reported tutor replies — the only conversations staff see (decision ⑦).
+
+        Open ones first. Only the status changes; the copied texts are the
+        student's report and stay as they were.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this report.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTutorReport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTutorReport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTutorReport'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTutorReport'
+          description: ''
+  /api/v1/staff/tutor/budget/:
+    get:
+      operationId: staff_tutor_budget_retrieve
+      description: This month's spend against the limit staff set (decision ⑧).
+      summary: AI ustoz oylik byudjeti
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorBudget'
+          description: ''
+    patch:
+      operationId: staff_tutor_budget_partial_update
+      description: This month's spend against the limit staff set (decision ⑧).
+      summary: AI ustoz oylik chegarasi
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTutorBudget'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTutorBudget'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTutorBudget'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorBudget'
           description: ''
   /api/v1/staff/updates/:
     get:
@@ -23445,6 +23633,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffTournament'
+    PaginatedStaffTutorReportList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffTutorReport'
     PaginatedStaffUserList:
       type: object
       required:
@@ -24852,7 +25063,7 @@ components:
           type: string
           readOnly: true
         status:
-          $ref: '#/components/schemas/StaffProblemReportStatusEnum'
+          $ref: '#/components/schemas/TutorReportStatusEnum'
         created_at:
           type: string
           format: date-time
@@ -25442,6 +25653,45 @@ components:
         stage_count:
           type: integer
           readOnly: true
+    PatchedStaffTutorReport:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/TutorReportReasonEnum'
+          readOnly: true
+        note:
+          type: string
+          readOnly: true
+        question_text:
+          type: string
+          readOnly: true
+        reply_text:
+          type: string
+          readOnly: true
+        model:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/TutorReportStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
     PatchedStaffUser:
       type: object
       description: |-
@@ -25683,6 +25933,40 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StudioLesson'
+          readOnly: true
+    PatchedTutorBudget:
+      type: object
+      properties:
+        month:
+          type: string
+          readOnly: true
+        spent_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,6})?$
+          readOnly: true
+        replies:
+          type: integer
+          readOnly: true
+        limit_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        percent:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+        warning:
+          type: boolean
+          readOnly: true
+        over:
+          type: boolean
+          readOnly: true
+        by_model:
+          type: array
+          items:
+            $ref: '#/components/schemas/TutorModelSpend'
           readOnly: true
     PaymentProviderEnum:
       enum:
@@ -28931,7 +29215,7 @@ components:
           type: string
           readOnly: true
         status:
-          $ref: '#/components/schemas/StaffProblemReportStatusEnum'
+          $ref: '#/components/schemas/TutorReportStatusEnum'
         created_at:
           type: string
           format: date-time
@@ -28943,16 +29227,6 @@ components:
       - problem
       - reason
       - username
-    StaffProblemReportStatusEnum:
-      enum:
-      - open
-      - accepted
-      - rejected
-      type: string
-      description: |-
-        * `open` - Ochiq
-        * `accepted` - Qabul qilindi
-        * `rejected` - Rad etildi
     StaffQuest:
       type: object
       properties:
@@ -29791,6 +30065,56 @@ components:
       - stage_count
       - start_at
       - title
+    StaffTutorReport:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/TutorReportReasonEnum'
+          readOnly: true
+        note:
+          type: string
+          readOnly: true
+        question_text:
+          type: string
+          readOnly: true
+        reply_text:
+          type: string
+          readOnly: true
+        model:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/TutorReportStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - id
+      - model
+      - note
+      - problem
+      - question_text
+      - reason
+      - reply_text
+      - resolved_at
+      - username
     StaffUser:
       type: object
       description: |-
@@ -31284,6 +31608,49 @@ components:
           maxLength: 64
       required:
       - kind
+    TutorBudget:
+      type: object
+      properties:
+        month:
+          type: string
+          readOnly: true
+        spent_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,6})?$
+          readOnly: true
+        replies:
+          type: integer
+          readOnly: true
+        limit_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        percent:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+        warning:
+          type: boolean
+          readOnly: true
+        over:
+          type: boolean
+          readOnly: true
+        by_model:
+          type: array
+          items:
+            $ref: '#/components/schemas/TutorModelSpend'
+          readOnly: true
+      required:
+      - by_model
+      - limit_usd
+      - month
+      - over
+      - percent
+      - replies
+      - spent_usd
+      - warning
     TutorConversation:
       type: object
       properties:
@@ -31366,6 +31733,9 @@ components:
           format: date-time
           readOnly: true
           nullable: true
+        reported:
+          type: boolean
+          readOnly: true
       required:
       - answered_at
       - attempt
@@ -31377,9 +31747,61 @@ components:
       - hint_level
       - id
       - kind
+      - reported
       - role
       - status
       - text
+    TutorModelSpend:
+      type: object
+      properties:
+        model:
+          type: string
+        replies:
+          type: integer
+        spent_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,6})?$
+      required:
+      - model
+      - replies
+      - spent_usd
+    TutorReportCreate:
+      type: object
+      properties:
+        message:
+          type: integer
+          minimum: 1
+        reason:
+          $ref: '#/components/schemas/TutorReportReasonEnum'
+        note:
+          type: string
+          maxLength: 500
+      required:
+      - message
+      - reason
+    TutorReportReasonEnum:
+      enum:
+      - wrong
+      - solution
+      - harmful
+      - other
+      type: string
+      description: |-
+        * `wrong` - Noto'g'ri
+        * `solution` - Yechim berdi
+        * `harmful` - Zararli
+        * `other` - Boshqa
+    TutorReportStatusEnum:
+      enum:
+      - open
+      - accepted
+      - rejected
+      type: string
+      description: |-
+        * `open` - Ochiq
+        * `accepted` - Qabul qilindi
+        * `rejected` - Rad etildi
     TutorRoleEnum:
       enum:
       - student

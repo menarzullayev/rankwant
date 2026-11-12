@@ -5,6 +5,7 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { t, type Locale, type MessageKey } from "@/i18n/messages";
 
 import type { TutorMessage } from "../api";
+import { ReportReply } from "./ReportReply";
 
 /** Where the server's guard cut a code block (ADR-0065 § 2.4). */
 const REMOVED = "[[code-removed]]";
@@ -24,7 +25,16 @@ export function failureText(locale: Locale, code: string): string {
 }
 
 /** One tutor reply: pending, failed, or the answer as Markdown. */
-export function TutorReply({ message }: { message: TutorMessage }) {
+export function TutorReply({
+  message,
+  slug,
+  onReported,
+}: {
+  message: TutorMessage;
+  /** With both, a finished reply gets «Shikoyat» (decision ⑦). */
+  slug?: string;
+  onReported?: () => void;
+}) {
   const locale = useLocale();
   if (message.status === "pending") {
     return (
@@ -49,6 +59,9 @@ export function TutorReply({ message }: { message: TutorMessage }) {
   return (
     <div className="text-theme-sm rw-dim-2">
       <Markdown lang={locale}>{text}</Markdown>
+      {slug && onReported && (
+        <ReportReply slug={slug} message={message} onDone={onReported} />
+      )}
     </div>
   );
 }

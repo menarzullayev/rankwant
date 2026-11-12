@@ -20,8 +20,8 @@ from django.utils import timezone
 from ai import gateway
 from ai.types import AIError, Config
 from realtime.bus import publish, user_channel
-from tutor import context, gate, limits, services
-from tutor.models import Conversation, DailyUse, Message
+from tutor import budget, context, gate, limits, services
+from tutor.models import Conversation, DailyUse, Message, Report
 
 log = logging.getLogger(__name__)
 
@@ -99,6 +99,7 @@ def answer(message_id: int) -> None:
         if not stored:
             # `expire_pending` gave up on it first; the student already saw a failure.
             return
+        budget.record(result.model, Decimal(str(round(usage.cost_usd, 6))))
         conversation = Conversation.objects.select_for_update().get(pk=reply.conversation_id)
         if reply.kind == Message.Kind.HINT and reply.hint_level:
             conversation.hint_level = max(conversation.hint_level, reply.hint_level)
@@ -125,4 +126,6 @@ def purge_old() -> int:
     cutoff = timezone.now() - RETENTION
     deleted, _ = Conversation.objects.filter(updated_at__lt=cutoff).delete()
     DailyUse.objects.filter(day__lt=limits.local_day(cutoff)).delete()
+    # A handled report goes 90 days after it was handled; an open one stays.
+    Report.objects.exclude(status=Report.Status.OPEN).filter(resolved_at__lt=cutoff).delete()
     return deleted

@@ -36,5 +36,8 @@ export const ADMIN_SECTIONS = [
   // Email kvota: «bugun qancha xat yuborish mumkin» — analitika yonida,
   // chunki ikkalasi ham jamlanma ko'rsatkich (CRUD emas).
   { href: "/admin/email-quota", labelKey: "admin.section.emailQuota" },
+  // AI tutor (ADR-0065): budget and reported replies — beside the email quota,
+  // another running cost.
+  { href: "/admin/tutor", labelKey: "admin.section.tutor" },
   { href: "/admin/kit", labelKey: "admin.section.kit" },
 ] as const;

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3512 strings.**
+**3539 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -3533,3 +3533,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `tutor.whyWrong` | Nega xato? | Nege qáte? |  |
 | `tutor.whyWrongTitle` | AI ustoz izohi | AI ustaz túsindirmesi |  |
 | `tutor.whyWrongHint` | AI ustoz kodingiz va verdiktni ko'rib, ehtimoliy sababni aytadi. Yashirin testlarni u ham ko'rmaydi. | AI ustaz kodıńız hám verdiktti kórip, itimal sebebin aytadı. Jasırın testlerdi ol da kórmeydi. |  |
+| `tutor.reportButton` | Shikoyat qilish | Shaǵım etiw |  |
+| `tutor.report.why` | Nima noto'g'ri? | Ne qáte? |  |
+| `tutor.report.wrong` | Javob noto'g'ri | Juwap qáte |  |
+| `tutor.report.solution` | Tayyor yechim berdi | Tayar sheshim berdi |  |
+| `tutor.report.harmful` | Zararli yoki odobsiz | Zıyanlı yamasa ádepsiz |  |
+| `tutor.report.other` | Boshqa | Basqa |  |
+| `tutor.report.note` | Izoh (ixtiyoriy) | Túsinik (májbúriy emes) |  |
+| `tutor.report.privacy` | Xodim faqat shu savol va javobni ko'radi. | Xızmetker tek usı soraw hám juwaptı kóredi. |  |
+| `tutor.report.cancel` | Bekor qilish | Biykarlaw |  |
+| `tutor.report.send` | Yuborish | Jiberiw |  |
+| `tutor.report.sent` | Shikoyat yuborildi — rahmat. | Shaǵım jiberildi — raxmet. |  |
+| `admin.section.tutor` | AI ustoz | AI ustaz |  |
+| `admin.tutor.budget` | Oylik byudjet | Aylıq byudjet |  |
+| `admin.tutor.month` | Oy | Ay |  |
+| `admin.tutor.spent` | Sarf (API narxida) | Qárejet (API bahasında) |  |
+| `admin.tutor.replies` | Javoblar | Juwaplar |  |
+| `admin.tutor.share` | Chegaradan ulushi | Sheginen úlesi |  |
+| `admin.tutor.over` | Oylik chegaradan oshdi. | Aylıq shekten asıp ketti. |  |
+| `admin.tutor.warning` | Oylik chegaraning 80 % dan ko'pi ishlatildi. | Aylıq sheginiń 80 % tan kóbi paydalanıldı. |  |
+| `admin.tutor.apiPrice` | Hozir hamma javob claude -p (obuna) orqali ketadi: bu raqam — API narxidagi o'lchov, hisob emas. | Házir barlıq juwap claude -p (jazılıw) arqalı ketedi: bul san — API bahasındaǵı ólshem, esap emes. |  |
+| `admin.tutor.modelLine` | {replies} ta javob · {spent} | {replies} juwap · {spent} |  |
+| `admin.tutor.limit` | Oylik chegara, $ | Aylıq shek, $ |  |
+| `admin.tutor.save` | Saqlash | Saqlaw |  |
+| `admin.tutor.saved` | Saqlandi | Saqlandı |  |
+| `admin.tutor.limitHint` | 0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi. | 0 — shek qoyılmaǵan. 80 % ta eskertiw shıǵadı. |  |
+| `admin.tutor.reports` | Shikoyat qilingan javoblar | Shaǵım etilgen juwaplar |  |
+| `admin.tutor.exchange` | Savol va javob | Soraw hám juwap |  |

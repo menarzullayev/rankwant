@@ -78,11 +78,8 @@ export function TutorPanel({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false);
   const [question, setQuestion] = useState("");
   const [local, setLocal] = useState<TutorFailure | null>(null);
-  const { conversation, problem, sending, pending, ask, clear } = useTutor(
-    slug,
-    open,
-    locale,
-  );
+  const { conversation, problem, sending, pending, ask, clear, reload } =
+    useTutor(slug, open, locale);
   const titleId = useId();
   const inputId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -283,7 +280,11 @@ export function TutorPanel({ slug }: { slug: string }) {
                     <span className="sr-only">
                       {t(locale, "tutor.title")}:{" "}
                     </span>
-                    <TutorReply message={message} />
+                    <TutorReply
+                      message={message}
+                      slug={slug}
+                      onReported={() => void reload()}
+                    />
                   </li>
                 ),
               )}

@@ -3435,6 +3435,13 @@ def ai_tutor_answers_without_solutions() -> str | None:
         return "tutor/tasks.py: suhbat 90 kundan boshqa muddat saqlanadi"
     if '"tutor.answer": {"queue": "ai"},' not in read("apps/api/config/settings.py"):
         return "config/settings.py: javob `ai` navbatidan boshqa joyda yoziladi"
+    if "budget.record(result.model," not in tasks:
+        return "tutor/tasks.py: javob narxi oylik byudjetga yozilmaydi"
+    views = read("apps/api/tutor/views.py")
+    if 'http_method_names = ["get", "patch", "head", "options"]' not in views:
+        return "tutor/views.py: xodim shikoyatni o'chira yoki yarata oladi"
+    if "reply_text=reply.text," not in read("apps/api/tutor/services.py"):
+        return "tutor/services.py: shikoyat javob matnini saqlamaydi"
     compose = read("docker-compose.yml")
     token = compose.count("CLAUDE_CODE_OAUTH_TOKEN: ")
     start = compose.find("\n  ai-worker:\n")

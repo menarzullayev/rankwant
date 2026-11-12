@@ -22,3 +22,11 @@ export const askTutor = (slug: string, body: TutorAsk, lang: string) =>
 
 export const deleteTutorConversation = (slug: string) =>
   deleteJson<void>(path(slug));
+
+export type TutorReportReason = components["schemas"]["TutorReportReasonEnum"];
+
+/** Flag one of the student's own replies; staff see only flagged ones (decision ⑦). */
+export const reportTutorReply = (
+  slug: string,
+  body: { message: number; reason: TutorReportReason; note?: string },
+) => postJson<void>(`${path(slug)}reports/`, body);

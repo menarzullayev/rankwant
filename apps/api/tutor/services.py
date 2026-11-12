@@ -19,7 +19,7 @@ from django.utils import timezone
 
 from judging.verdicts import Verdict
 from tutor import gate, limits
-from tutor.models import Conversation, Message
+from tutor.models import Conversation, Message, Report
 
 MAX_QUESTION = 1_500
 MAX_CODE = 20_000
@@ -152,3 +152,38 @@ def expired_before() -> datetime:
     """A reply still pending after this moment will not come: the worker is
     down or the call hung past its own timeout."""
     return timezone.now() - timedelta(seconds=settings.AI_TIMEOUT_S + 120)
+
+
+def report(user: Any, problem: Any, *, message_id: int, reason: str, note: str = "") -> Report:
+    """Flag one of the student's own tutor replies (decision ⑦)."""
+    reply = (
+        Message.objects.select_related("reply_to")
+        .filter(
+            pk=message_id,
+            role=Message.Role.TUTOR,
+            status=Message.Status.DONE,
+            conversation__user=user,
+            conversation__problem=problem,
+        )
+        .first()
+    )
+    if reply is None:
+        raise TutorError("reply_not_found", "Reply not found", 404)
+    if Report.objects.filter(reply=reply).exists():
+        raise TutorError("already_reported", "This reply is already reported", 409)
+    asked = reply.reply_to
+    question = ""
+    if asked is not None:
+        question = (
+            asked.text or f"({asked.kind}{f' {asked.hint_level}' if asked.hint_level else ''})"
+        )
+    return Report.objects.create(
+        reply=reply,
+        user=user,
+        problem=problem,
+        reason=reason,
+        note=note.strip()[:500],
+        question_text=question,
+        reply_text=reply.text,
+        model=reply.model,
+    )
