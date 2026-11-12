@@ -2681,6 +2681,7 @@ export const uz = {
   "form.file.empty": "Fayl tanlanmagan",
   "form.cal.prev": "Oldingi oy",
   "form.cal.next": "Keyingi oy",
+  "form.cal.weekdays": "Dush,Sesh,Chor,Pay,Jum,Shan,Yak",
   "admin.text.correct": "To'g'ri",
   "admin.text.sampleTest": "Namuna test (shartda ko'rsatiladi)",
   "customizer.iconPack": "Ikonka to'plami",

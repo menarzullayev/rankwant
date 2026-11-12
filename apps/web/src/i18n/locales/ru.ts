@@ -2630,6 +2630,7 @@ export const ru: Record<MessageKey, string> = {
   "form.file.empty": "Файл не выбран",
   "form.cal.prev": "Предыдущий месяц",
   "form.cal.next": "Следующий месяц",
+  "form.cal.weekdays": "пн,вт,ср,чт,пт,сб,вс",
   "admin.text.correct": "Верно",
   "admin.text.sampleTest": "Пример теста (показан в условии)",
   "customizer.iconPack": "Набор иконок",

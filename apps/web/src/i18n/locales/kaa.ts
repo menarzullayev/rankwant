@@ -2630,6 +2630,7 @@ export const kaa: Record<MessageKey, string> = {
   "form.file.empty": "Hújjet saylanbaǵan",
   "form.cal.prev": "Aldıńǵı ay",
   "form.cal.next": "Keyingi ay",
+  "form.cal.weekdays": "Dú,Si,Sá,Pi,Ju,Sh,Ek",
   "admin.text.correct": "Durıs",
   "admin.text.sampleTest": "Úlgi test (shárttiń ishinde kórsetiledi)",
   "customizer.iconPack": "Ikonka toplamı",

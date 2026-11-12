@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3550 strings.**
+**3551 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2568,6 +2568,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `form.file.empty` | Fayl tanlanmagan | Файл тандалган эмес |  |
 | `form.cal.prev` | Oldingi oy | Мурунку ай |  |
 | `form.cal.next` | Keyingi oy | Кийинки ай |  |
+| `form.cal.weekdays` | Dush,Sesh,Chor,Pay,Jum,Shan,Yak | дүй.,шейш.,шарш.,бейш.,жума,ишм.,жек. |  |
 | `admin.text.correct` | To'g'ri | Туура |  |
 | `admin.text.sampleTest` | Namuna test (shartda ko'rsatiladi) | Үлгү тест (шартта көрсөтүлөт) |  |
 | `customizer.iconPack` | Ikonka to'plami | Иконка топтому |  |

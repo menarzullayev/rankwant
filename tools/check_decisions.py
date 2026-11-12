@@ -3792,6 +3792,57 @@ def client_dates_are_numeric() -> str | None:
     return None
 
 
+#: Client components that still format a date through `Intl` — a ratchet,
+#: the set only shrinks. Each is a hydration risk once it is rendered on the
+#: server in `uz` (Node has the date data, Chrome does not). FormDate left
+#: this set on 2026-11-10.
+INTL_DATE_CLIENTS = frozenset(
+    {
+        "apps/web/src/components/admin/DuelsAdmin.tsx",
+        "apps/web/src/components/admin/PostsAdmin.tsx",
+        "apps/web/src/components/admin/RoadmapCommentsAdmin.tsx",
+        "apps/web/src/components/admin/TournamentsAdmin.tsx",
+        "apps/web/src/features/account/components/CareerSection.tsx",
+    }
+)
+
+INTL_DATE_CALL = re.compile(
+    r"Intl\.DateTimeFormat\(|\.toLocale(?:Date|Time)String\(|new Date\([^)]*\)\.toLocaleString\("
+)
+
+
+def form_date_skips_intl() -> str | None:
+    """2026-11-10: FormDate kalendari `Intl` siz yozadi; ro'yxat faqat qisqaradi.
+
+    O'lchandi: `/settings/malumotlar?tab=malumot` da gidratsiya xatosi —
+    server (Node ICU) oy yorlig'ini «noyabr, 2026», Chrome «2026 M11» deb
+    chizardi. Oy — `11.2026`, kun — `10.11.2026`, hafta kunlari lug'atdan
+    (`form.cal.weekdays`), bugungi kun sayt zonasida, «Jadval» varianti
+    gidratsiyadan keyin o'qiladi.
+    """
+    found: set[str] = set()
+    for path in sorted((ROOT / "apps/web/src").rglob("*.tsx")):
+        text = path.read_text(encoding="utf-8")
+        if '"use client"' in text and INTL_DATE_CALL.search(text):
+            found.add(path.relative_to(ROOT).as_posix())
+    new = sorted(found - INTL_DATE_CLIENTS)
+    if new:
+        return f"{new[0]}: klient komponent sanani Intl bilan yozadi — server va brauzer ICU'si har xil chizadi (gidratsiya xatosi)"
+    gone = sorted(INTL_DATE_CLIENTS - found)
+    if gone:
+        return f"check_decisions.py: {gone[0]} endi Intl ishlatmaydi — INTL_DATE_CLIENTS dan olib tashlang (ro'yxat faqat qisqaradi)"
+    kit = read("apps/web/src/components/form/FormKit.tsx")
+    if "  const monthLabel = formatMonth(cursor.y, cursor.m);\n" not in kit:
+        return "FormKit.tsx: kalendar oy yorlig'i raqamli `formatMonth` dan emas"
+    if 'return t(locale, "form.cal.weekdays").split(",");' not in kit:
+        return "FormKit.tsx: hafta kunlari lug'atdan olinmaydi"
+    if "return parseIso(isoDay(new Date()))" not in kit:
+        return "FormKit.tsx: bugungi kun sayt zonasida emas — UTC server va brauzer boshqa oyni ochadi"
+    if '    () => DEFAULT_FORM_VARIANT === "jadval",\n' not in kit:
+        return "FormKit.tsx: «Jadval» varianti serverda bilinmaydi — gidratsiya standart variant bilan o'tishi kerak"
+    return None
+
+
 def graphite_palette_is_flagged() -> str | None:
     """2026-11-10 (HITL, audit Q-13): `newPalette` — clay qorong'isi uchun «Grafit».
 
@@ -5953,6 +6004,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("deploy standart sir bilan to'xtaydi", deploy_refuses_default_secrets),
     ("klient komponent sanani raqam bilan yozadi", client_dates_are_numeric),
+    ("FormDate kalendari Intl siz yozadi", form_date_skips_intl),
     ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),

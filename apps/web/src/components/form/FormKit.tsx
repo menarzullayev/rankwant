@@ -5,13 +5,16 @@ import {
   useId,
   useRef,
   useState,
+  useSyncExternalStore,
   type InputHTMLAttributes,
   type ReactNode,
 } from "react";
 
+import { isoDay } from "@rankwant/shared/format";
+
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
-import { currentFormVariant } from "@/lib/theme/form";
+import { t, type Locale } from "@/i18n/messages";
+import { currentFormVariant, DEFAULT_FORM_VARIANT } from "@/lib/theme/form";
 import type { CheckShape } from "@/lib/theme/kit";
 import { FM_BOX, FM_CTL, FM_INP, FM_LAB, FM_RADIO } from "./chrome";
 
@@ -192,9 +195,12 @@ function parseIso(iso: string): { y: number; m: number; d: number } | null {
   return { y, m, d };
 }
 
+/** Today in the site zone. The machine's own day is not safe here: the web
+ *  server runs in UTC and the browser in the viewer's zone, so for five
+ *  hours around midnight on a month's last day they opened different
+ *  months and the grid hydrated differently. */
 function todayParts(): { y: number; m: number; d: number } {
-  const now = new Date();
-  return { y: now.getFullYear(), m: now.getMonth(), d: now.getDate() };
+  return parseIso(isoDay(new Date())) ?? { y: 1970, m: 0, d: 1 };
 }
 
 function clampDay(iso: string, min?: string, max?: string): boolean {
@@ -203,29 +209,43 @@ function clampDay(iso: string, min?: string, max?: string): boolean {
   return true;
 }
 
-function intlLocale(locale: string): string {
-  return locale === "kaa" ? "uz" : locale;
+// The calendar writes no text through `Intl`. FormDate is a client component
+// that the server renders too, and Node has date data for `uz` while Chrome
+// does not: the server wrote «noyabr, 2026» and «Dush», the browser redrew
+// «2026 M11» and «Mon» — a hydration error on /settings in the site's
+// default language (measured 2026-11-10). Digits read the same in every
+// language, and weekday names come from the dictionary, which is the same
+// file on both sides.
+
+/** Monday-first short weekday names. */
+function weekdays(locale: Locale): string[] {
+  return t(locale, "form.cal.weekdays").split(",");
 }
 
-function weekdays(locale: string): string[] {
-  const fmt = new Intl.DateTimeFormat(intlLocale(locale), { weekday: "short" });
-  const monday = new Date(Date.UTC(2023, 0, 2));
-  return Array.from({ length: 7 }, (_, i) => {
-    const day = new Date(monday);
-    day.setUTCDate(monday.getUTCDate() + i);
-    return fmt.format(day);
-  });
+/** The calendar's month: `11.2026`. */
+function formatMonth(y: number, m: number): string {
+  return `${String(m + 1).padStart(2, "0")}.${y}`;
 }
 
-function formatDay(iso: string, locale: string, tabular: boolean): string {
+/** The chosen day: `10.11.2026`, or the ISO form in the «Jadval» variant. */
+function formatDay(iso: string, tabular: boolean): string {
   if (tabular) return iso;
   const parts = parseIso(iso);
   if (!parts) return iso;
-  return new Intl.DateTimeFormat(intlLocale(locale), {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(parts.y, parts.m, parts.d));
+  return `${String(parts.d).padStart(2, "0")}.${formatMonth(parts.y, parts.m)}`;
+}
+
+/** The form variant lives on `<html data-form>`, which an inline script sets
+ *  before hydration; the server cannot see it. Reading it as an external
+ *  store lets hydration use the default and then switch, instead of
+ *  rendering a different day format than the server did. */
+function watchFormVariant(onChange: () => void): () => void {
+  const watcher = new MutationObserver(onChange);
+  watcher.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-form"],
+  });
+  return () => watcher.disconnect();
 }
 
 export function FormDate({
@@ -260,7 +280,11 @@ export function FormDate({
   const seed = parseIso(iso) ?? todayParts();
   const [cursor, setCursor] = useState({ y: seed.y, m: seed.m });
   const wrap = useRef<HTMLDivElement>(null);
-  const tabular = currentFormVariant() === "jadval";
+  const tabular = useSyncExternalStore(
+    watchFormVariant,
+    () => currentFormVariant() === "jadval",
+    () => DEFAULT_FORM_VARIANT === "jadval",
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -274,10 +298,7 @@ export function FormDate({
   }, [open]);
   const days = daysInMonth(cursor.y, cursor.m);
   const lead = mondayOffset(cursor.y, cursor.m);
-  const monthLabel = new Intl.DateTimeFormat(intlLocale(locale), {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(cursor.y, cursor.m, 1));
+  const monthLabel = formatMonth(cursor.y, cursor.m);
 
   function choose(day: number) {
     const next = toIso(cursor.y, cursor.m, day);
@@ -324,7 +345,7 @@ export function FormDate({
           aria-haspopup="dialog"
           onClick={toggle}
         >
-          {iso ? formatDay(iso, locale, tabular) : t(locale, "form.sample.date")}
+          {iso ? formatDay(iso, tabular) : t(locale, "form.sample.date")}
         </button>
         <div className="rw-fm-cal" role="dialog" aria-label={label}>
           <div className="rw-fm-cal-bar">
