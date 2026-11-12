@@ -3631,4 +3631,6 @@ export const tr: Record<MessageKey, string> = {
   "problem.listenBusy": "Ses kuyruğu dolu — biraz sonra tekrar deneyin.",
   "problem.listenProgress": "{n} / {total} bölüm",
   "problem.listenCredit": "Ses: Navoiy (Lison) · ses örneği: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "AI öğretmen bütçesi: %{percent}",
+  "notif.msg.tutor_budget.body": "{month} ayında {limit} $ sınırın %{percent}'i kullanıldı. Yönetim → AI öğretmen.",
 };

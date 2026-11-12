@@ -3628,4 +3628,6 @@ export const zh: Record<MessageKey, string> = {
   "problem.listenBusy": "语音队列繁忙——请稍后再试。",
   "problem.listenProgress": "第 {n} / {total} 段",
   "problem.listenCredit": "语音：Navoiy (Lison) · 声音样本：FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "AI 导师预算：{percent}%",
+  "notif.msg.tutor_budget.body": "{month} 已使用 {limit} 美元限额的 {percent}%。管理 → AI 导师。",
 };

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3548 strings.**
+**3550 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -3569,3 +3569,5 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.listenBusy` | Ovoz navbati band — birozdan keyin urinib ko'ring. | Үн кезеги бош эмес — бир аздан кийин кайра аракет кылыңыз. |  |
 | `problem.listenProgress` | {n} / {total} bo'lak | {n} / {total} бөлүк |  |
 | `problem.listenCredit` | Ovoz: Navoiy (Lison) · ovoz namunasi: FLEURS (CC BY 4.0) | Үн: Navoiy (Lison) · үн үлгүсү: FLEURS (CC BY 4.0) |  |
+| `notif.msg.tutor_budget.title` | AI ustoz byudjeti: {percent} % | AI устат бюджети: {percent} % |  |
+| `notif.msg.tutor_budget.body` | {month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz. | {month} айында {limit} $ лимиттин {percent} %-ы колдонулду. Админ → AI устат. |  |

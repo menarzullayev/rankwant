@@ -79,7 +79,7 @@ class Answer:
 class Config:
     """How to reach a model. Read from settings by the caller."""
 
-    provider: str  # "" (off) | "claude-cli"
+    provider: str  # "" (off) | "claude-cli" | "anthropic"
     light_model: str
     heavy_model: str
     timeout_s: int = 120
@@ -87,6 +87,8 @@ class Config:
     #: `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token`; empty = the
     #: CLI's own login (a developer machine).
     oauth_token: str = ""
+    #: `ANTHROPIC_API_KEY` for the `anthropic` provider; empty = no API.
+    api_key: str = ""
 
 
 class AIError(RuntimeError):

@@ -3632,4 +3632,6 @@ export const tg: Record<MessageKey, string> = {
   "problem.listenBusy": "Навбати овоз банд аст — каме баъдтар кӯшиш кунед.",
   "problem.listenProgress": "{n} / {total} қисм",
   "problem.listenCredit": "Овоз: Navoiy (Lison) · намунаи овоз: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "Буҷаи устоди AI: {percent} %",
+  "notif.msg.tutor_budget.body": "Дар {month} {percent} %-и маҳдудияти {limit} $ истифода шуд. Админ → Устоди AI.",
 };

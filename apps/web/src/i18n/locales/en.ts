@@ -3631,4 +3631,6 @@ export const en: Record<MessageKey, string> = {
   "problem.listenBusy": "The voice queue is busy — try again a little later.",
   "problem.listenProgress": "{n} of {total}",
   "problem.listenCredit": "Voice: Navoiy (Lison) · voice sample: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "AI tutor budget: {percent} %",
+  "notif.msg.tutor_budget.body": "{percent} % of the {limit} $ limit is used in {month}. Admin → AI tutor.",
 };

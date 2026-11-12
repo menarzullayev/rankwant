@@ -3682,6 +3682,8 @@ export const uz = {
   "problem.listenBusy": "Ovoz navbati band — birozdan keyin urinib ko'ring.",
   "problem.listenProgress": "{n} / {total} bo'lak",
   "problem.listenCredit": "Ovoz: Navoiy (Lison) · ovoz namunasi: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "AI ustoz byudjeti: {percent} %",
+  "notif.msg.tutor_budget.body": "{month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz.",
 } as const;
 
 export type MessageKey = keyof typeof uz;

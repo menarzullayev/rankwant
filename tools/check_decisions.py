@@ -3448,6 +3448,11 @@ def ai_tutor_answers_without_solutions() -> str | None:
     end = compose.find("\n  # ", start + 1)
     if token != 1 or start < 0 or "CLAUDE_CODE_OAUTH_TOKEN: " not in compose[start:end]:
         return "docker-compose.yml: obuna tokeni `ai-worker` dan boshqa servisga ham beriladi"
+    key = compose.count("ANTHROPIC_API_KEY: ")
+    if key != 1 or "ANTHROPIC_API_KEY: " not in compose[start:end]:
+        return "docker-compose.yml: API kaliti `ai-worker` dan boshqa servisga ham beriladi"
+    if "if k in _KEEP}" not in cli or "ANTHROPIC_API_KEY" in cli.split("_KEEP = (", 1)[1].split(")", 1)[0]:
+        return "ai/providers/claude_cli.py: API kaliti `claude -p` jarayoniga o'tadi"
     return None
 
 

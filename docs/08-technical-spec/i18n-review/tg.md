@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3548 strings.**
+**3550 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -3569,3 +3569,5 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.listenBusy` | Ovoz navbati band — birozdan keyin urinib ko'ring. | Навбати овоз банд аст — каме баъдтар кӯшиш кунед. |  |
 | `problem.listenProgress` | {n} / {total} bo'lak | {n} / {total} қисм |  |
 | `problem.listenCredit` | Ovoz: Navoiy (Lison) · ovoz namunasi: FLEURS (CC BY 4.0) | Овоз: Navoiy (Lison) · намунаи овоз: FLEURS (CC BY 4.0) |  |
+| `notif.msg.tutor_budget.title` | AI ustoz byudjeti: {percent} % | Буҷаи устоди AI: {percent} % |  |
+| `notif.msg.tutor_budget.body` | {month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz. | Дар {month} {percent} %-и маҳдудияти {limit} $ истифода шуд. Админ → Устоди AI. |  |

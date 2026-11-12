@@ -3631,4 +3631,6 @@ export const ru: Record<MessageKey, string> = {
   "problem.listenBusy": "Очередь озвучки занята — попробуйте чуть позже.",
   "problem.listenProgress": "{n} из {total}",
   "problem.listenCredit": "Голос: Navoiy (Lison) · образец голоса: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "Бюджет AI-наставника: {percent} %",
+  "notif.msg.tutor_budget.body": "В {month} использовано {percent} % лимита {limit} $. Админка → AI-наставник.",
 };

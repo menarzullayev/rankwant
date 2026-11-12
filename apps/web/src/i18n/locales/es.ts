@@ -3631,4 +3631,6 @@ export const es: Record<MessageKey, string> = {
   "problem.listenBusy": "La cola de voz está ocupada: inténtalo un poco más tarde.",
   "problem.listenProgress": "{n} de {total}",
   "problem.listenCredit": "Voz: Navoiy (Lison) · muestra de voz: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "Presupuesto del tutor IA: {percent} %",
+  "notif.msg.tutor_budget.body": "En {month} se usó el {percent} % del límite de {limit} $. Admin → Tutor IA.",
 };

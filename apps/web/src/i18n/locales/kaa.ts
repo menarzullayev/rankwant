@@ -3631,4 +3631,6 @@ export const kaa: Record<MessageKey, string> = {
   "problem.listenBusy": "Dawıs gezegi bánt — azdan keyin urınıp kóriń.",
   "problem.listenProgress": "{n} / {total} bólek",
   "problem.listenCredit": "Dawıs: Navoiy (Lison) · dawıs úlgisi: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "AI ustaz byudjeti: {percent} %",
+  "notif.msg.tutor_budget.body": "{month} ayında {limit} $ shekten {percent} % paydalanıldı. Admin → AI ustaz.",
 };

@@ -3632,4 +3632,6 @@ export const kk: Record<MessageKey, string> = {
   "problem.listenBusy": "Дауыс кезегі бос емес — сәлден кейін қайталаңыз.",
   "problem.listenProgress": "{n} / {total} бөлік",
   "problem.listenCredit": "Дауыс: Navoiy (Lison) · дауыс үлгісі: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "AI ұстаз бюджеті: {percent} %",
+  "notif.msg.tutor_budget.body": "{month} айында {limit} $ лимиттің {percent} %-ы пайдаланылды. Әкімші → AI ұстаз.",
 };

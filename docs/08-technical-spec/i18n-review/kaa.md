@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3548 strings.**
+**3550 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -3569,3 +3569,5 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.listenBusy` | Ovoz navbati band — birozdan keyin urinib ko'ring. | Dawıs gezegi bánt — azdan keyin urınıp kóriń. |  |
 | `problem.listenProgress` | {n} / {total} bo'lak | {n} / {total} bólek |  |
 | `problem.listenCredit` | Ovoz: Navoiy (Lison) · ovoz namunasi: FLEURS (CC BY 4.0) | Dawıs: Navoiy (Lison) · dawıs úlgisi: FLEURS (CC BY 4.0) |  |
+| `notif.msg.tutor_budget.title` | AI ustoz byudjeti: {percent} % | AI ustaz byudjeti: {percent} % |  |
+| `notif.msg.tutor_budget.body` | {month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz. | {month} ayında {limit} $ shekten {percent} % paydalanıldı. Admin → AI ustaz. |  |

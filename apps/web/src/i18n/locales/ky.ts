@@ -3631,4 +3631,6 @@ export const ky: Record<MessageKey, string> = {
   "problem.listenBusy": "Үн кезеги бош эмес — бир аздан кийин кайра аракет кылыңыз.",
   "problem.listenProgress": "{n} / {total} бөлүк",
   "problem.listenCredit": "Үн: Navoiy (Lison) · үн үлгүсү: FLEURS (CC BY 4.0)",
+  "notif.msg.tutor_budget.title": "AI устат бюджети: {percent} %",
+  "notif.msg.tutor_budget.body": "{month} айында {limit} $ лимиттин {percent} %-ы колдонулду. Админ → AI устат.",
 };
