@@ -354,6 +354,8 @@ def test_why_wrong_reads_the_attempt(
     assert _ask(user, problem.slug, kind="why_wrong", attempt=wa.pk).status_code == 202
     model, _, text = ai_on.calls[-1]
     assert model == "heavy"
+    reply = Message.objects.get(role=Message.Role.TUTOR, kind="why_wrong")
+    assert reply.attempt_id == wa.pk
     assert "WA on test 4" in text
     assert "int main(){int s;}" in text
 
@@ -407,6 +409,15 @@ def test_late_reply_does_not_overwrite_an_expired_one(
     assert (reply.status, reply.error, reply.text) == (Message.Status.FAILED, "timeout", "")
     assert Conversation.objects.get().hint_level == 0
     assert [e[2]["status"] for e in ai_on.events] == []
+
+
+@pytest.mark.django_db(transaction=True)
+def test_deleting_does_not_give_the_day_back(ai_on: FakeModel, user: Any, problem: Any) -> None:
+    for _ in range(5):
+        assert _ask(user, problem.slug).status_code == 202
+    assert _client(user).delete(URL.format(problem.slug)).status_code == 204
+    assert limits.used_today(user) == 5
+    assert _ask(user, problem.slug).status_code == 429
 
 
 @pytest.mark.django_db(transaction=True)

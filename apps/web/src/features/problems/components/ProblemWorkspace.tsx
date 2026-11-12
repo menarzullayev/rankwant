@@ -105,6 +105,7 @@ export function ProblemWorkspace({
   statement,
   editor,
   gate,
+  tutor,
 }: {
   statement: React.ReactNode;
   editor: React.ReactNode;
@@ -113,6 +114,9 @@ export function ProblemWorkspace({
    *  no "open the editor" button — the card sits beside the statement
    *  on a wide screen and under it on a narrow one. */
   gate?: React.ReactNode;
+  /** The AI tutor's launcher and panel (ADR-0065) — inside the solve
+   *  provider, beside the editor; `null` for a guest or a held problem. */
+  tutor?: React.ReactNode;
 }) {
   const locale = useLocale();
   const wide = useSyncExternalStore(subscribeWide, readWide, () => false);
@@ -243,6 +247,7 @@ export function ProblemWorkspace({
             </>
           )}
         </div>
+        {tutor}
         </ProblemWorkspaceProvider>
       </ProblemSolveProvider>
     );
@@ -327,6 +332,7 @@ export function ProblemWorkspace({
           </button>
         </>
       )}
+      {tutor}
     </ProblemWorkspaceProvider>
     </ProblemSolveProvider>
   );

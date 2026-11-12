@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3481 strings.**
+**3512 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -3502,3 +3502,34 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.billing_provider_unavailable` | Bu to'lov usuli hozir mavjud emas. | Бул төлөм ыкмасы азыр жеткиликсиз. |  |
 | `error.billing_not_on_sale` | Bu tarif yoki davr hozir sotilmaydi. | Бул тариф же мезгил азыр сатылбайт. |  |
 | `error.billing_already_owned` | Bu kurs allaqachon sizniki. | Бул курс сизде бар. |  |
+| `tutor.title` | AI ustoz | AI устат |  |
+| `tutor.close` | Yopish | Жабуу |  |
+| `tutor.usage` | bugun {used} / {limit} | бүгүн {used} / {limit} |  |
+| `tutor.usageUnlimited` | bugun {used} | бүгүн {used} |  |
+| `tutor.explain` | Shartni tushuntir | Шартты түшүндүр |  |
+| `tutor.explainQuestion` | Shartni sodda tilda tushuntirib ber: nima berilgan va nima so'ralyapti? | Шартты жөнөкөй тил менен түшүндүр: эмне берилген жана эмне суралып жатат? |  |
+| `tutor.checkCode` | Kodimni tekshir | Кодумду текшер |  |
+| `tutor.checkCodeQuestion` | Kodimda xato bormi? Qayerini tekshirishim kerak? | Кодумда ката барбы? Эмнени текшеришим керек? |  |
+| `tutor.noCode` | Muharrir bo'sh — avval kod yozing. | Редактор бош — адегенде код жазыңыз. |  |
+| `tutor.ladder` | Maslahat zinapoyasi | Кеңеш тепкичи |  |
+| `tutor.step1` | Yo'nalish | Багыт |  |
+| `tutor.step2` | G'oya | Идея |  |
+| `tutor.step3` | Reja | План |  |
+| `tutor.stepGiven` | ochilgan | ачылган |  |
+| `tutor.askPlaceholder` | Savolingizni yozing… | Сурооңузду жазыңыз… |  |
+| `tutor.send` | Yuborish | Жөнөтүү |  |
+| `tutor.thinking` | Javob yozilmoqda… | Жооп жазылууда… |  |
+| `tutor.codeRemoved` | Tayyor kod olib tashlandi — AI ustoz yechim bermaydi. | Даяр код алынып салынды — AI устат чечим бербейт. |  |
+| `tutor.fail.busy` | AI ustoz hozir band. Birozdan keyin urinib ko'ring. | AI устат азыр бош эмес. Бир аздан кийин кайра аракет кылыңыз. |  |
+| `tutor.fail.unavailable` | AI ustoz hozircha ishlamayapti. | AI устат азырынча иштебейт. |  |
+| `tutor.fail.timeout` | Javob kelmadi. Qayta urinib ko'ring. | Жооп келген жок. Кайра аракет кылыңыз. |  |
+| `tutor.fail.other` | Nimadir xato ketdi. Qayta urinib ko'ring. | Бир нерсе туура эмес болду. Кайра аракет кылыңыз. |  |
+| `tutor.contest` | Musobaqa masalasida AI ustoz o'chiq. Musobaqa yakunlangach ochiladi. | Мелдеш маселесинде AI устат өчүк. Мелдеш жыйынтыкталгандан кийин ачылат. |  |
+| `tutor.limit` | Bugungi {limit} ta so'rov ishlatildi. Ertaga 00:00 da yangilanadi. | Бүгүнкү {limit} суроо колдонулду. Эртең саат 00:00дө жаңыланат. |  |
+| `tutor.empty` | Shart, maslahat yoki kodingiz haqida so'rang. AI ustoz tayyor yechim bermaydi — yo'l ko'rsatadi. | Шарт, кеңеш же кодуңуз жөнүндө сураңыз. AI устат даяр чечим бербейт — жол көрсөтөт. |  |
+| `tutor.delete` | Suhbatni o'chirish | Маекти өчүрүү |  |
+| `tutor.retention` | Suhbat 90 kun saqlanadi. | Маек 90 күн сакталат. |  |
+| `tutor.you` | Sizning savolingiz | Сиздин сурооңуз |  |
+| `tutor.whyWrong` | Nega xato? | Эмне үчүн ката? |  |
+| `tutor.whyWrongTitle` | AI ustoz izohi | AI устаттын түшүндүрмөсү |  |
+| `tutor.whyWrongHint` | AI ustoz kodingiz va verdiktni ko'rib, ehtimoliy sababni aytadi. Yashirin testlarni u ham ko'rmaydi. | AI устат кодуңузду жана вердиктти карап, ыктымал себебин айтат. Жашыруун тесттерди ал да көрбөйт. |  |

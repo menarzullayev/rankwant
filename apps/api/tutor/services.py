@@ -115,6 +115,7 @@ def ask(
                 "tutor_limit", "Today's AI tutor requests are used up", 429,
                 {"limit": limit, "used": used, "resets_at": limits.resets_at().isoformat()},
             )  # fmt: skip
+        limits.take(user)
         asked = Message.objects.create(
             conversation=conversation,
             user=user,
@@ -134,6 +135,8 @@ def ask(
             kind=kind,
             reply_to=asked,
             hint_level=asked.hint_level,
+            # «Nega xato?» on the attempt page finds its reply by the attempt.
+            attempt=attempt,
             locale=locale,
             status=Message.Status.PENDING,
         )

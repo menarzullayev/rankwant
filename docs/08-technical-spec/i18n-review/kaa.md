@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3481 strings.**
+**3512 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -3502,3 +3502,34 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.billing_provider_unavailable` | Bu to'lov usuli hozir mavjud emas. | Bul tólem usılı házir qoljetimsiz. |  |
 | `error.billing_not_on_sale` | Bu tarif yoki davr hozir sotilmaydi. | Bul tarif yamasa dáwir házir satılmaydı. |  |
 | `error.billing_already_owned` | Bu kurs allaqachon sizniki. | Bul kurs sizde bar. |  |
+| `tutor.title` | AI ustoz | AI ustaz |  |
+| `tutor.close` | Yopish | Jabıw |  |
+| `tutor.usage` | bugun {used} / {limit} | búgin {used} / {limit} |  |
+| `tutor.usageUnlimited` | bugun {used} | búgin {used} |  |
+| `tutor.explain` | Shartni tushuntir | Shártti túsindir |  |
+| `tutor.explainQuestion` | Shartni sodda tilda tushuntirib ber: nima berilgan va nima so'ralyapti? | Shártti ápiwayı tilde túsindirip ber: ne berilgen hám ne soralıp atır? |  |
+| `tutor.checkCode` | Kodimni tekshir | Kodımdı tekser |  |
+| `tutor.checkCodeQuestion` | Kodimda xato bormi? Qayerini tekshirishim kerak? | Kodımda qáte barma? Qay jerin tekseriwim kerek? |  |
+| `tutor.noCode` | Muharrir bo'sh — avval kod yozing. | Redaktor bos — aldın kod jazıń. |  |
+| `tutor.ladder` | Maslahat zinapoyasi | Másláhát basqıshları |  |
+| `tutor.step1` | Yo'nalish | Baǵdar |  |
+| `tutor.step2` | G'oya | Ideya |  |
+| `tutor.step3` | Reja | Reje |  |
+| `tutor.stepGiven` | ochilgan | ashılǵan |  |
+| `tutor.askPlaceholder` | Savolingizni yozing… | Sorawıńızdı jazıń… |  |
+| `tutor.send` | Yuborish | Jiberiw |  |
+| `tutor.thinking` | Javob yozilmoqda… | Juwap jazılıp atır… |  |
+| `tutor.codeRemoved` | Tayyor kod olib tashlandi — AI ustoz yechim bermaydi. | Tayar kod alıp taslandı — AI ustaz sheshim bermeydi. |  |
+| `tutor.fail.busy` | AI ustoz hozir band. Birozdan keyin urinib ko'ring. | AI ustaz házir bánt. Azdan keyin urınıp kóriń. |  |
+| `tutor.fail.unavailable` | AI ustoz hozircha ishlamayapti. | AI ustaz házirshe islemeydi. |  |
+| `tutor.fail.timeout` | Javob kelmadi. Qayta urinib ko'ring. | Juwap kelmedi. Qayta urınıp kóriń. |  |
+| `tutor.fail.other` | Nimadir xato ketdi. Qayta urinib ko'ring. | Bir nárse qáte ketti. Qayta urınıp kóriń. |  |
+| `tutor.contest` | Musobaqa masalasida AI ustoz o'chiq. Musobaqa yakunlangach ochiladi. | Jarıs máselesinde AI ustaz óshirilgen. Jarıs juwmaqlanǵannan keyin ashıladı. |  |
+| `tutor.limit` | Bugungi {limit} ta so'rov ishlatildi. Ertaga 00:00 da yangilanadi. | Búgingi {limit} soraw paydalanıldı. Erteń 00:00 de jańalanadı. |  |
+| `tutor.empty` | Shart, maslahat yoki kodingiz haqida so'rang. AI ustoz tayyor yechim bermaydi — yo'l ko'rsatadi. | Shárt, másláhát yamasa kodıńız haqqında sorań. AI ustaz tayar sheshim bermeydi — jol kórsetedi. |  |
+| `tutor.delete` | Suhbatni o'chirish | Sáwbetti óshiriw |  |
+| `tutor.retention` | Suhbat 90 kun saqlanadi. | Sáwbet 90 kún saqlanadı. |  |
+| `tutor.you` | Sizning savolingiz | Siziń sorawıńız |  |
+| `tutor.whyWrong` | Nega xato? | Nege qáte? |  |
+| `tutor.whyWrongTitle` | AI ustoz izohi | AI ustaz túsindirmesi |  |
+| `tutor.whyWrongHint` | AI ustoz kodingiz va verdiktni ko'rib, ehtimoliy sababni aytadi. Yashirin testlarni u ham ko'rmaydi. | AI ustaz kodıńız hám verdiktti kórip, itimal sebebin aytadı. Jasırın testlerdi ol da kórmeydi. |  |

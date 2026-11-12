@@ -22,6 +22,7 @@ import { Loading } from "@/components/ui/Loading";
 import { Status } from "@/components/ui/Status";
 import { Verdict } from "@/components/ui/Verdict";
 import { defaultLanguage, editorLanguage, starterSource } from "@/lib/editor-language";
+import { registerEditorCode, type EditorCode } from "@/lib/editor-bridge";
 import { isPendingVerdict } from "@/lib/theme/verdict";
 import { pack, readString } from "@/lib/versioned-storage";
 import {
@@ -510,6 +511,17 @@ export function SubmitPanel({
   useEffect(() => {
     solve?.setAttempt(attempt);
   }, [attempt, solve]);
+
+  // The AI tutor's «Kodimni tekshir» reads the code through this bridge
+  // (features may not import each other).
+  const editorCode = useRef<EditorCode>({ source: "", language: "" });
+  useEffect(() => {
+    editorCode.current = {
+      source,
+      language: picked ? `${picked.name} ${picked.version}` : language,
+    };
+  }, [source, picked, language]);
+  useEffect(() => registerEditorCode(() => editorCode.current), []);
 
   useEffect(() => {
     solve?.setSubmitBusy(busy);

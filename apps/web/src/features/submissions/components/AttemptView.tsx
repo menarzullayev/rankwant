@@ -16,6 +16,7 @@ import { Loading } from "@/components/ui/Loading";
 import { Verdict } from "@/components/ui/Verdict";
 import { useSession } from "@/context/SessionContext";
 import { HackPanel } from "@/features/hackathons";
+import { EXPLAINABLE, WhyWrong } from "@/features/tutor";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import type { AttemptDetail } from "@/lib/api";
@@ -185,6 +186,11 @@ export function AttemptView({ id }: { id: number }) {
           </ol>
         )}
       </Card>
+
+      {/* «Nega xato?» (ADR-0065): the student's own attempt only. */}
+      {mine && judged && EXPLAINABLE.has(data.verdict) && (
+        <WhyWrong slug={data.problem} attempt={id} />
+      )}
 
       {/* A guest is never sent the source (the API leaves it out); the
           card says how to see it instead of an empty box. */}

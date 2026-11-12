@@ -69,7 +69,9 @@ in nine had a garbled Uzbek word — Haiku's Uzbek is good, not perfect.
    the token exists; the API answers 503 `ai_unavailable` while `AI_PROVIDER` is empty.
 8. **Allowance.** Replies a day (Asia/Tashkent): Free 5, Plus 100, Pro 250, Judge 500 (decision ③); an
    expired plan counts as free; staff have none. A failed reply is not counted. 429 `tutor_limit` carries
-   the limit and the reset time.
+   the limit and the reset time. The count is a per-day counter (`DailyUse`), not a count of messages:
+   deleting a conversation must not hand the day back (measured in the browser on 2026-11-12: it did,
+   while the count was taken from the messages).
 9. **Hint ladder.** Three steps — a direction, the idea, a plan — opened one at a time (400 `hint_step`
    when one is skipped). The light model answers hints and questions; a question with code attached and
    «Nega xato?» go to the heavy model. «Nega xato?» takes only the student's own attempt with a verdict
@@ -89,5 +91,10 @@ in nine had a garbled Uzbek word — Haiku's Uzbek is good, not perfect.
   tutor code it is rebuilt by hand. Folding profile services into the deploy is a separate change.
 - One subscription serves everyone: two replies at a time, and the 5-hour window shows as `busy`. The
   API key and the budget fall-over of decision ⑨ remove that limit when there is a key.
-- Next changes under this ADR: the panel, the ladder and «Nega xato?» on the web; reports and the staff
-  view; the monthly budget page with the 80 % warning.
+- The web (part 2): a launcher on the problem page opens the panel — «Shartni tushuntir», «Kodimni
+  tekshir» (the editor's code through `lib/editor-bridge`, as features may not import each other), the
+  three-step ladder and a free question; on a narrow screen it covers the page. «Nega xato?» sits under
+  the student's own attempt and shows a given explanation again instead of asking twice. The page sends
+  its language (`?lang=`): without it the API answered in the browser's `Accept-Language` (measured: an
+  English reply on an Uzbek page). A pending reply is re-read every 1.5 s.
+- Next changes under this ADR: reports and the staff view; the monthly budget page with the 80 % warning.

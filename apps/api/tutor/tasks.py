@@ -20,8 +20,8 @@ from django.utils import timezone
 from ai import gateway
 from ai.types import AIError, Config
 from realtime.bus import publish, user_channel
-from tutor import context, gate, services
-from tutor.models import Conversation, Message
+from tutor import context, gate, limits, services
+from tutor.models import Conversation, DailyUse, Message
 
 log = logging.getLogger(__name__)
 
@@ -51,6 +51,7 @@ def _fail(message: Message, code: str) -> None:
         status=Message.Status.FAILED, error=code[:32], answered_at=timezone.now()
     )
     if done:
+        limits.give_back(message.user_id, message.created_at)
         message.status = Message.Status.FAILED
         _announce(message)
 
@@ -121,5 +122,7 @@ def expire_pending() -> int:
 
 @shared_task(name="tutor.purge_old")
 def purge_old() -> int:
-    deleted, _ = Conversation.objects.filter(updated_at__lt=timezone.now() - RETENTION).delete()
+    cutoff = timezone.now() - RETENTION
+    deleted, _ = Conversation.objects.filter(updated_at__lt=cutoff).delete()
+    DailyUse.objects.filter(day__lt=limits.local_day(cutoff)).delete()
     return deleted
