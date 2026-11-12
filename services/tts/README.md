@@ -52,6 +52,15 @@ the wrong name.
    the host's free commit from 10.9 to 1.4 GB, and stopping it gave back 8.6 GB (measured 2026-11-12). The
    production stack shares that commit, so the voice stays off until the host has room for it.
 
+   Where it goes (measured step by step, 2026-11-12): importing torch 1.15 GB (its CUDA DLLs), the CUDA
+   context 0.3, CosyVoice's imports 0.9, building the models on the CPU before they move to the GPU +3.5,
+   the two ONNX sessions (the speech tokenizer runs on the CPU: this onnxruntime has no CUDA provider) ~1.
+   After the move only 0.04 GB of CPU tensors are alive; the rest is memory torch's allocator (mimalloc)
+   keeps committed, and the GPU memory itself (2.6 GB), which Windows counts as commit under WDDM.
+   `MIMALLOC_PURGE_DECOMMITS=1 MIMALLOC_PURGE_DELAY=0` takes the loaded server from 8.9 to 6.7 GB, but the
+   first piece brings it back to 8.1 GB in both cases — so allocator settings do not change what it
+   needs: about 8 GB while it runs.
+
 2. The env file (`.env.public` in the main checkout): `TTS_URL=http://host.docker.internal:8370`.
 3. `docker compose -p rankwant --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml --profile tts up -d --build api tts-worker`
 
