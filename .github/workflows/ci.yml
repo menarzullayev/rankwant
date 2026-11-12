@@ -288,7 +288,7 @@ jobs:
           --health-timeout 5s --health-retries 5
         ports: ['5432']
       redis:
-        image: redis:7
+        image: redis:8
         options: >-
           --health-cmd "redis-cli ping" --health-interval 10s
           --health-timeout 5s --health-retries 5
@@ -364,7 +364,7 @@ jobs:
         id: setup-node
         if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
         with:
-          node-version: '22'
+          node-version: '26'
           cache: npm
           # RW-ARCH-013: the repo is an npm workspace, so the single
           # authoritative lockfile sits at the root and npm hoists the dev
