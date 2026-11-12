@@ -3487,6 +3487,13 @@ def voice_text_is_spoken_and_guarded() -> str | None:
         return "problems/tasks.py: boshqa ovozdagi audio shu nom ostida saqlanadi"
     if '"problems.synthesize_speech": {"queue": "tts"},' not in read("apps/api/config/settings.py"):
         return "config/settings.py: ovoz bo'laklari `tts` navbatidan boshqa joyda yasaladi"
+    # Turning it on (2026-11-12): `tts-worker` is outside the deploy's SERVICES and builds its own
+    # image, so a deploy must rebuild a running one or it stays on the old code.
+    deploy = read("tools/deploy.sh")
+    if "PROFILE_WORKERS=(ai-worker tts-worker video-worker)" not in deploy:
+        return "tools/deploy.sh: ishlab turgan profil worker'i deploy ro'yxatidan tushib qolgan"
+    if '"${PROFILE_COMPOSE[@]}" up -d --no-deps "${RUNNING_PROFILE[@]}"' not in deploy:
+        return "tools/deploy.sh: ishlab turgan profil worker'lari deploy'da qayta ko'tarilmaydi"
     return None
 
 

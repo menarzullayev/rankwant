@@ -26,6 +26,8 @@ tools/*.mjs   text eol=lf
 
 # Go sources are formatted by gofmt, which requires LF.
 *.go          text eol=lf
+# cmd.exe misreads LF-only batch files near its 512-byte read boundary.
+*.cmd         text eol=crlf
 
 # Binary — never touch.
 *.png  binary

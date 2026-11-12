@@ -5643,6 +5643,26 @@ def neg_decisions_voice_keeps_another_voice() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_voice_worker_left_out_of_deploy() -> tuple[bool, str]:
+    """A deploy would no longer look for a running voice worker."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        "PROFILE_WORKERS=(ai-worker tts-worker video-worker)",
+        "PROFILE_WORKERS=(ai-worker video-worker)",
+        "deploy ro'yxatidan tushib qolgan",
+    )
+
+
+def neg_decisions_voice_worker_never_recreated() -> tuple[bool, str]:
+    """A deploy would find the running voice worker but leave it on the old code."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        '"${PROFILE_COMPOSE[@]}" up -d --no-deps "${RUNNING_PROFILE[@]}"',
+        ': "${RUNNING_PROFILE[@]}"',
+        "qayta ko'tarilmaydi",
+    )
+
+
 def neg_decisions_tutor_api_key_reaches_the_api() -> tuple[bool, str]:
     """The Claude API key would be handed to the API service as well."""
     return _decision_broken(
@@ -14135,6 +14155,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ovozga belgi yetsa tutilsin", neg_decisions_voice_reads_symbols),
             ("ovoz servisi keng tinglasa tutilsin", neg_decisions_voice_service_listens_widely),
             ("boshqa ovoz saqlansa tutilsin", neg_decisions_voice_keeps_another_voice),
+            ("ovoz worker'i deploy ro'yxatidan tushsa tutilsin", neg_decisions_voice_worker_left_out_of_deploy),
+            ("ovoz worker'i deploy'da ko'tarilmasa tutilsin", neg_decisions_voice_worker_never_recreated),
             ("AI CLI asbob olsa tutilsin", neg_decisions_tutor_cli_gets_tools),
             ("AI CLI muhitni olsa tutilsin", neg_decisions_tutor_cli_gets_the_environment),
             ("AI javobida yechim qolsa tutilsin", neg_decisions_tutor_keeps_solution_code),

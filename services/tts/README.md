@@ -11,29 +11,43 @@ CosyVoice stack would add several GB to Docker's disk (`docker_data.vhdx`, 2026-
 
 ## Run
 
+`run.cmd` sets the paths (the Navoiy venv, the FLEURS reference voice — CC-BY 4.0) and starts the server;
+its output goes to `.handoff/voice.log` in the main checkout, kept to one 5 MB generation:
+
 ```powershell
-$env:NAVOIY_ROOT = "D:\Linux\Web_Projects\video-lab\tts\navoiy"
-$env:TTS_REFERENCE_WAV = "D:\Linux\Web_Projects\video-lab\tts\benchmark\refs\common.wav"  # FLEURS, CC-BY 4.0
-& "D:\Linux\Web_Projects\video-lab\tts\navoiy\.venv\Scripts\python.exe" services\tts\server.py
+services\tts\run.cmd
 ```
 
 `GET http://127.0.0.1:8370/health` → `{"model": "navoiy-xotirjam-fleurs", "ready": true}` after the model
-loads (~30 s). The model name carries the voice (`TTS_VOICE`, default `fleurs`); it must equal the API's
-`TTS_MODEL`, or the worker refuses the audio (`model_mismatch`) instead of filing it under the wrong name.
+loads (39 s, measured 2026-11-12). The model name carries the voice (`TTS_VOICE`, default `fleurs`); it must
+equal the API's `TTS_MODEL`, or the worker refuses the audio (`model_mismatch`) instead of filing it under
+the wrong name.
 
 ## Turn the voice on
 
-1. Keep the server running (a logon task, like the other host tasks):
+1. Keep the server running — a logon task, like the other host tasks. It runs `run.cmd` from the **deploy
+   worktree**, which auto-deploy keeps on `origin/main`; the main checkout may stand on any branch:
 
    ```powershell
-   $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument '-NoProfile -WindowStyle Hidden -Command "$env:NAVOIY_ROOT=''D:\Linux\Web_Projects\video-lab\tts\navoiy''; $env:TTS_REFERENCE_WAV=''D:\Linux\Web_Projects\video-lab\tts\benchmark\refs\common.wav''; & ''D:\Linux\Web_Projects\video-lab\tts\navoiy\.venv\Scripts\python.exe'' ''D:\Linux\Web_Projects\rankwant\services\tts\server.py''"'
+   $action = New-ScheduledTaskAction -Execute "C:\WINDOWS\System32\conhost.exe" -Argument '--headless cmd.exe /c "D:\Windows\project\wt\deploy\services\tts\run.cmd"'
    Register-ScheduledTask -TaskName "RankWant Voice" -Action $action -Trigger (New-ScheduledTaskTrigger -AtLogOn) -Settings (New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -ExecutionTimeLimit 0)
+   Start-ScheduledTask -TaskName "RankWant Voice"
    ```
 
-2. `.env.public`: `TTS_URL=http://host.docker.internal:8370`.
+   The server reads `server.py` once at start: a deploy that changes it takes effect at the next logon, or
+   after `Stop-ScheduledTask` / `Start-ScheduledTask`.
+
+2. The env file (`.env.public` in the main checkout): `TTS_URL=http://host.docker.internal:8370`.
 3. `docker compose -p rankwant --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml --profile tts up -d --build api tts-worker`
 
 With `TTS_URL` empty the problem page shows no player (`voice: false` on the problem).
+
+`tools/deploy.sh` rebuilds and recreates a **running** `tts-worker` (and `ai-worker`, `video-worker`) with
+every API change. They are not in its `SERVICES`, because each runs only once its feature is turned on, and
+each builds its own image — without that step a deploy would leave them on the old code.
+
+To turn the voice off: empty `TTS_URL`, `up -d api`, `docker compose … stop tts-worker`, and
+`Disable-ScheduledTask -TaskName "RankWant Voice"`. Made pieces stay in S3 under `speech/`.
 
 ## Measured (2026-11-12, local, the FLEURS voice)
 
