@@ -81,6 +81,7 @@ export function TutorPanel({ slug }: { slug: string }) {
   const { conversation, problem, sending, pending, ask, clear } = useTutor(
     slug,
     open,
+    locale,
   );
   const titleId = useId();
   const inputId = useId();
@@ -138,7 +139,7 @@ export function TutorPanel({ slug }: { slug: string }) {
         aria-expanded={open}
         aria-controls={titleId}
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-36 right-4 z-30 inline-flex min-h-11 items-center gap-2 rw-radius-full border rw-line rw-panel-bg px-4 py-2.5 text-theme-sm font-semibold rw-strong shadow-lg rw-focus-ring xl:bottom-6 xl:right-6"
+        className="fixed bottom-36 right-4 z-30 inline-flex min-h-11 items-center gap-2 rw-radius-full border rw-line rw-surface px-4 py-2.5 text-theme-sm font-semibold rw-strong shadow-lg rw-focus-ring xl:bottom-6 xl:right-6"
       >
         {t(locale, "tutor.title")}
       </button>
@@ -150,7 +151,7 @@ export function TutorPanel({ slug }: { slug: string }) {
           aria-modal="false"
           aria-labelledby={titleId}
           tabIndex={-1}
-          className="fixed inset-x-0 bottom-0 top-[var(--rw-header-h)] z-40 flex flex-col border-l rw-divider rw-panel-bg shadow-[0_0_32px_rgba(0,0,0,.14)] outline-none sm:left-auto sm:w-[26rem]"
+          className="fixed inset-x-0 bottom-0 top-[var(--rw-header-h)] z-40 flex flex-col border-l rw-divider rw-surface shadow-[0_0_32px_rgba(0,0,0,.14)] outline-none sm:left-auto sm:w-[26rem]"
         >
           <div className="flex items-center justify-between gap-3 border-b rw-divider px-4 py-3">
             <div className="min-w-0">
@@ -244,6 +245,15 @@ export function TutorPanel({ slug }: { slug: string }) {
                 })}
               </ol>
             </section>
+
+            {sending && (
+              <p
+                role="status"
+                className="text-theme-sm rw-dim motion-safe:animate-pulse"
+              >
+                {t(locale, "tutor.thinking")}
+              </p>
+            )}
 
             {blocked && (
               <p

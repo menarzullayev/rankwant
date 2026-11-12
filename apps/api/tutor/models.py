@@ -96,3 +96,25 @@ class Message(CreatedModel):
 
     def __str__(self) -> str:
         return f"{self.role}:{self.kind}:{self.pk}"
+
+
+class DailyUse(models.Model):
+    """Replies a student got on one day (decision ③).
+
+    A counter of its own, not a count of messages: the student may delete a
+    conversation (decision ⑦), and deleting must not hand the day's
+    allowance back (measured 2026-11-12: it did, while the count was taken
+    from the messages). Holds no content — only a number per day.
+    """
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    day = models.DateField()
+    count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "day"], name="tutor_one_use_per_day")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user_id}@{self.day}: {self.count}"

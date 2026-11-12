@@ -412,6 +412,15 @@ def test_late_reply_does_not_overwrite_an_expired_one(
 
 
 @pytest.mark.django_db(transaction=True)
+def test_deleting_does_not_give_the_day_back(ai_on: FakeModel, user: Any, problem: Any) -> None:
+    for _ in range(5):
+        assert _ask(user, problem.slug).status_code == 202
+    assert _client(user).delete(URL.format(problem.slug)).status_code == 204
+    assert limits.used_today(user) == 5
+    assert _ask(user, problem.slug).status_code == 429
+
+
+@pytest.mark.django_db(transaction=True)
 def test_student_deletes_and_old_ones_go(ai_on: FakeModel, user: Any, problem: Any) -> None:
     _ask(user, problem.slug)
     assert _client(user).delete(URL.format(problem.slug)).status_code == 204

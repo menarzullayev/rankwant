@@ -21,7 +21,11 @@ export const EXPLAINABLE = new Set([
  *  instead of asking (and counting) twice. */
 export function WhyWrong({ slug, attempt }: { slug: string; attempt: number }) {
   const locale = useLocale();
-  const { conversation, problem, sending, pending, ask } = useTutor(slug, true);
+  const { conversation, problem, sending, pending, ask } = useTutor(
+    slug,
+    true,
+    locale,
+  );
 
   const reply = conversation?.messages
     .filter(
@@ -66,7 +70,14 @@ export function WhyWrong({ slug, attempt }: { slug: string; attempt: number }) {
         )}
       </div>
       <div className="mt-3 space-y-2">
-        {reply ? (
+        {sending ? (
+          <p
+            role="status"
+            className="text-theme-sm rw-dim motion-safe:animate-pulse"
+          >
+            {t(locale, "tutor.thinking")}
+          </p>
+        ) : reply ? (
           <TutorReply message={reply} />
         ) : (
           <p className="text-theme-sm rw-dim">

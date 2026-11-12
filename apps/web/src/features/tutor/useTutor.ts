@@ -27,7 +27,7 @@ function failure(caught: unknown): TutorFailure {
 
 /** The student's conversation with the tutor on one problem. Loaded when
  *  `active` turns on; re-read while a reply is pending. */
-export function useTutor(slug: string, active: boolean) {
+export function useTutor(slug: string, active: boolean, lang: string) {
   const [conversation, setConversation] = useState<TutorConversation | null>(
     null,
   );
@@ -80,7 +80,7 @@ export function useTutor(slug: string, active: boolean) {
       setSending(true);
       setProblem(null);
       try {
-        setConversation(await askTutor(slug, body));
+        setConversation(await askTutor(slug, body, lang));
         return true;
       } catch (caught) {
         setProblem(failure(caught));
@@ -89,7 +89,7 @@ export function useTutor(slug: string, active: boolean) {
         setSending(false);
       }
     },
-    [slug],
+    [slug, lang],
   );
 
   const clear = useCallback(async () => {

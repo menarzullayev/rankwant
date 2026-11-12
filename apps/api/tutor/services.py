@@ -115,6 +115,7 @@ def ask(
                 "tutor_limit", "Today's AI tutor requests are used up", 429,
                 {"limit": limit, "used": used, "resets_at": limits.resets_at().isoformat()},
             )  # fmt: skip
+        limits.take(user)
         asked = Message.objects.create(
             conversation=conversation,
             user=user,
