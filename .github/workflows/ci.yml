@@ -331,7 +331,13 @@ jobs:
     # both the npm and the Next build cache. Measured on Dependabot #474:
     # `npm ci` 52 s, `next build` 57 s, and the negative tests were cut at
     # 39 s by the 3-minute cap — every npm bump was cancelled, never judged.
-    timeout-minutes: 6
+    # 10, not 6 (2026-11-12): on `main` the negative tests run in full. Green
+    # `main` runs took 5 m 12 s and 5 m 21 s (the negatives 3 m 00–3 m 06), and
+    # 4 of the last 20 were cut at 6 m in that step — each one a `cancelled`
+    # CI that keeps the deploy gate closed (05a13ab: negatives still running
+    # at 3 m 57 s when the cap hit). Pull requests run a narrow set and stay
+    # near 2–3 minutes.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - name: Scaffolded?
