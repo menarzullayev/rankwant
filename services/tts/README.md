@@ -48,6 +48,10 @@ the wrong name.
    the Application event log. Check `Get-CimInstance Win32_OperatingSystem` → `FreeVirtualMemory` before
    starting it; the same morning, with memory free, it was ready in 39 s.
 
+   Running, it holds **8.3 GB of commit** (3.1 GB working set) and 2.5 GB of GPU memory: starting it took
+   the host's free commit from 10.9 to 1.4 GB, and stopping it gave back 8.6 GB (measured 2026-11-12). The
+   production stack shares that commit, so the voice stays off until the host has room for it.
+
 2. The env file (`.env.public` in the main checkout): `TTS_URL=http://host.docker.internal:8370`.
 3. `docker compose -p rankwant --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml --profile tts up -d --build api tts-worker`
 
