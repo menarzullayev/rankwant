@@ -558,6 +558,31 @@ else
   "${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || die "up yiqildi"
   ok "ko'tarildi"
 fi
+# Profile workers run the API code but are not in SERVICES: each one runs only
+# after the owner turns its feature on (`--profile ai|tts|video`). Each builds
+# its own image, so rebuilding `worker` leaves them on the old code — the
+# stale-worker failure above, unseen because `check_deploy.sh` does not look at
+# them (2026-11-12, found while turning the voice on). A RUNNING one is rebuilt
+# from the same cache as `worker` and recreated; a stopped one stays stopped.
+PROFILE_WORKERS=(ai-worker tts-worker video-worker)
+RUNNING_PROFILE=()
+for s in "${PROFILE_WORKERS[@]}"; do
+  if [ -n "$(docker ps -q --filter "label=com.docker.compose.project=$PROJECT" \
+      --filter "label=com.docker.compose.service=$s")" ]; then
+    RUNNING_PROFILE+=("$s")
+  fi
+done
+if [ "${#RUNNING_PROFILE[@]}" -gt 0 ]; then
+  step "6b/8 Profil worker'lari (${RUNNING_PROFILE[*]})"
+  PROFILE_COMPOSE=("${COMPOSE[@]}" --profile ai --profile tts --profile video)
+  if printf '%s\n' "${BUILD_SERVICES[@]}" | grep -qxE 'api|worker'; then
+    "${PROFILE_COMPOSE[@]}" build "${BUILD_OPTS[@]}" "${RUNNING_PROFILE[@]}" \
+      || die "profil worker'lari qurilmadi"
+  fi
+  "${PROFILE_COMPOSE[@]}" up -d --no-deps "${RUNNING_PROFILE[@]}" \
+    || die "profil worker'lari ko'tarilmadi"
+  ok "profil worker'lari worker bilan bir xil kodda"
+fi
 time_finish up
 
 # ── 8. Tasdiq: konteyner HAQIQATAN yangi kodda ───────────────────────
