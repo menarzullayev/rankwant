@@ -17,9 +17,11 @@ Why the boundary exists: the AI layer is meant to be extractable later
 impossible. The static gate forbids that today, while the package is
 still empty, so the first line of AI code already obeys the contract.
 
-Scope note: the AI Gateway *runtime* (LLM client, providers, prompts,
-endpoints — items 0033-0035) is **Phase 3** and is intentionally absent
-here. Phase 0 ships only this skeleton and its gate.
+Runtime (ADR-0065): ``gateway.ask(request, config)`` chooses the model,
+builds the prompt (``prompts``), calls a provider (``providers``; today
+``claude -p``) and filters the answer (``guard``). The conversation rows,
+limits and endpoints live in the ``tutor`` Django app, which hands this
+package plain dataclasses (``types``).
 """
 
 from __future__ import annotations

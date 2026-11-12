@@ -30,4 +30,5 @@ urlpatterns = [
     path("", include("hackathons.urls")),
     path("", include("profiles.urls")),
     path("", include("team.urls")),
+    path("", include("tutor.urls")),
 ]

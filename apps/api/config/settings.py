@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     "team",
     "courses",
     "billing",
+    "tutor",
 ]
 
 MIDDLEWARE = [
@@ -365,6 +366,9 @@ SPECTACULAR_SETTINGS = {
         "ExternalProfileKindEnum": "profiles.models.ExternalProfile.Kind",
         "TeamRoleEnum": "profiles.models.TeamMember.Role",
         "QuestionKindEnum": "quizzes.models.Question.Kind",
+        "TutorKindEnum": "tutor.models.Message.Kind",
+        "TutorRoleEnum": "tutor.models.Message.Role",
+        "TutorStatusEnum": "tutor.models.Message.Status",
         # `kind` — to'rtta modelda uchraydi. Nom barqaror bo'lmasa
         # drf-spectacular xesh qo'shib (`Kind598Enum`), generatsiya qilingan
         # TS tipi har safar o'zgarib ketardi.
@@ -449,7 +453,22 @@ CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_TASK_ALWAYS_EAGER = env_bool("CELERY_EAGER", False)
 # Course video encoding takes minutes; it has its own queue and worker
 # (`video-worker`) so judge results never wait behind it (ADR-0056 § 3.5).
-CELERY_TASK_ROUTES = {"courses.encode_video": {"queue": "video"}}
+CELERY_TASK_ROUTES = {
+    "courses.encode_video": {"queue": "video"},
+    # AI tutor replies (ADR-0065): only `ai-worker` consumes this queue and
+    # only it holds the subscription token.
+    "tutor.answer": {"queue": "ai"},
+}
+
+# AI tutor (ADR-0065). `AI_PROVIDER` empty = the tutor is off and the API
+# answers 503; `claude-cli` = `claude -p` on the owner's subscription
+# (decision ⑨). The token is set only in the `ai-worker` service.
+AI_PROVIDER = env("AI_PROVIDER", "")
+AI_MODEL_LIGHT = env("AI_MODEL_LIGHT", "claude-haiku-5-5")
+AI_MODEL_HEAVY = env("AI_MODEL_HEAVY", "claude-sonnet-5-5")
+AI_TIMEOUT_S = int(env("AI_TIMEOUT_S", "120"))
+AI_CLI_PATH = env("AI_CLI_PATH", "")
+CLAUDE_CODE_OAUTH_TOKEN = env("CLAUDE_CODE_OAUTH_TOKEN", "")
 
 # Davriy tasklar. Judge natijalari tez-tez o'qiladi, chunki foydalanuvchi
 # verdictni kutib turadi (NFR: p50 < 5s) — navbat bo'sh bo'lsa BRPOP
@@ -542,6 +561,10 @@ TELEGRAM_CLIENT_ID = env("TELEGRAM_CLIENT_ID")
 TELEGRAM_CLIENT_SECRET = env("TELEGRAM_CLIENT_SECRET")
 
 CELERY_BEAT_SCHEDULE = {
+    # AI tutor (ADR-0065): a reply the worker never wrote stops blocking the
+    # conversation, and conversations older than 90 days go (decision ⑦).
+    "tutor-expire-pending": {"task": "tutor.expire_pending", "schedule": 60.0},
+    "tutor-purge-old": {"task": "tutor.purge_old", "schedule": 86400.0},
     "drain-judge-results": {
         "task": "judging.drain_results",
         # Progress oqimi judge tezligiga yaqin bo'lishi uchun tez-tez bo'shatiladi.

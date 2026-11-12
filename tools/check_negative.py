@@ -5533,6 +5533,76 @@ def neg_decisions_hidden_original_named() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_tutor_cli_gets_tools() -> tuple[bool, str]:
+    """`claude -p` would run with its tools."""
+    return _decision_broken(
+        "apps/api/ai/providers/claude_cli.py",
+        '"--tools", "", "--strict-mcp-config"',
+        '"--strict-mcp-config"',
+        "asboblar yoki sozlamalar bilan yuradi",
+    )
+
+
+def neg_decisions_tutor_cli_gets_the_environment() -> tuple[bool, str]:
+    """The CLI process would see the database URL and an API key."""
+    return _decision_broken(
+        "apps/api/ai/providers/claude_cli.py",
+        "if k in _KEEP}",
+        "}",
+        "worker muhiti to'liq o'tadi",
+    )
+
+
+def neg_decisions_tutor_keeps_solution_code() -> tuple[bool, str]:
+    """A solution the model wrote would reach the student."""
+    return _decision_broken(
+        "apps/api/ai/gateway.py",
+        "text, removed = guard.strip_solution_code(text)",
+        "removed = 0",
+        "yechim kodi kesilmaydi",
+    )
+
+
+def neg_decisions_tutor_reads_the_editorial() -> tuple[bool, str]:
+    """The editorial would be sent to the model."""
+    return _decision_broken(
+        "apps/api/tutor/context.py",
+        '"output_format", "note")',
+        '"output_format", "note", "editorial")',
+        "tahlil (editorial) modelga yuboriladi",
+    )
+
+
+def neg_decisions_tutor_limit_changed() -> tuple[bool, str]:
+    """The free plan would get more than the owner's five."""
+    return _decision_broken(
+        "apps/api/tutor/limits.py",
+        'DAILY = {"free": 5,',
+        'DAILY = {"free": 50,',
+        "5/100/250/500 emas",
+    )
+
+
+def neg_decisions_tutor_open_in_contest() -> tuple[bool, str]:
+    """A question on a contest problem would be accepted."""
+    return _decision_broken(
+        "apps/api/tutor/services.py",
+        "if gate.closed_reason(problem) is not None:",
+        "if False:",
+        "musobaqa masalasida so'rov qabul qilinadi",
+    )
+
+
+def neg_decisions_tutor_token_reaches_the_api() -> tuple[bool, str]:
+    """The subscription token would be handed to the API service as well."""
+    return _decision_broken(
+        "docker-compose.yml",
+        "      AI_PROVIDER: ${AI_PROVIDER:-}\n",
+        "      AI_PROVIDER: ${AI_PROVIDER:-}\n      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}\n",
+        "boshqa servisga ham beriladi",
+    )
+
+
 def neg_decisions_voice_skips_visibility() -> tuple[bool, str]:
     """The speech text would be read past the contest gate."""
     return _decision_broken(
@@ -5979,8 +6049,8 @@ def neg_decisions_video_on_judge_queue() -> tuple[bool, str]:
     """Video encoding runs on the default queue, behind judge results."""
     return _decision_broken(
         "apps/api/config/settings.py",
-        'CELERY_TASK_ROUTES = {"courses.encode_video": {"queue": "video"}}',
-        "CELERY_TASK_ROUTES = {}",
+        '"courses.encode_video": {"queue": "video"},',
+        "",
         "judge navbatida",
     )
 
@@ -9529,6 +9599,12 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/ai/providers/claude_cli.py",
+    "apps/api/ai/gateway.py",
+    "apps/api/tutor/context.py",
+    "apps/api/tutor/limits.py",
+    "apps/api/tutor/services.py",
+    "apps/api/tutor/tasks.py",
     "apps/api/problems/speech.py",
     "apps/api/tests/test_speech.py",
     "apps/api/contests/staff_serializers.py",
@@ -14004,6 +14080,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ovoz kaliti modelsiz bo'lsa tutilsin", neg_decisions_voice_key_ignores_model),
             ("buzuq formula shartni yiqitsa tutilsin", neg_decisions_voice_formula_fails_statement),
             ("ovozga belgi yetsa tutilsin", neg_decisions_voice_reads_symbols),
+            ("AI CLI asbob olsa tutilsin", neg_decisions_tutor_cli_gets_tools),
+            ("AI CLI muhitni olsa tutilsin", neg_decisions_tutor_cli_gets_the_environment),
+            ("AI javobida yechim qolsa tutilsin", neg_decisions_tutor_keeps_solution_code),
+            ("AI tahlilni o'qisa tutilsin", neg_decisions_tutor_reads_the_editorial),
+            ("AI limiti o'zgarsa tutilsin", neg_decisions_tutor_limit_changed),
+            ("AI musobaqada ochilsa tutilsin", neg_decisions_tutor_open_in_contest),
+            ("AI tokeni API'ga tushsa tutilsin", neg_decisions_tutor_token_reaches_the_api),
             ("yashirin joylashuv hududda ko'rinsa tutilsin", neg_decisions_region_shows_hidden_location),
             ("yashirin joylashuv sanalsa tutilsin", neg_decisions_region_counts_hidden_location),
             ("noma'lum hudud qabul qilinsa tutilsin", neg_decisions_region_unknown_accepted),
