@@ -3494,6 +3494,19 @@ def voice_text_is_spoken_and_guarded() -> str | None:
         return "tools/deploy.sh: ishlab turgan profil worker'i deploy ro'yxatidan tushib qolgan"
     if '"${PROFILE_COMPOSE[@]}" up -d --no-deps "${RUNNING_PROFILE[@]}"' not in deploy:
         return "tools/deploy.sh: ishlab turgan profil worker'lari deploy'da qayta ko'tarilmaydi"
+    # The voice holds ~8 GB of commit on the host the site shares (measured 2026-11-12): it is
+    # loaded only while used, and gives way when the host runs short — the site does not.
+    supervisor = read("services/tts/supervisor.py")
+    if 'ThreadingHTTPServer(("127.0.0.1", PORT), Handler)' not in supervisor:
+        return "services/tts/supervisor.py: ovoz kuzatuvchisi loopback'dan boshqa manzilda tinglaydi"
+    if "if free is not None and free < START_FREE_GB:" not in supervisor:
+        return "services/tts/supervisor.py: ovoz host'da bo'sh commit yetmasa ham yuklanadi"
+    if "if free is not None and free < RELEASE_FREE_GB:" not in supervisor:
+        return "services/tts/supervisor.py: commit tugayotganda ovoz bo'shatilmaydi"
+    if "die_with_us(self.process)" not in supervisor:
+        return "services/tts/supervisor.py: kuzatuvchi to'xtasa ovoz 8 GB bilan yetim qoladi"
+    if '"%~dp0supervisor.py"' not in read("services/tts/run.cmd"):
+        return "services/tts/run.cmd: ovoz kuzatuvchisiz, doim yuklangan holda ishga tushadi"
     return None
 
 

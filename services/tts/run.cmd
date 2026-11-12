@@ -7,4 +7,5 @@ if not defined TTS_REFERENCE_WAV set "TTS_REFERENCE_WAV=D:\Linux\Web_Projects\vi
 if not defined TTS_LOG set "TTS_LOG=D:\Linux\Web_Projects\rankwant\.handoff\voice.log"
 rem One request is one log line; keep a single 5 MB generation.
 for %%F in ("%TTS_LOG%") do if %%~zF GTR 5242880 move /y "%TTS_LOG%" "%TTS_LOG%.1" >nul
-"%NAVOIY_ROOT%\.venv\Scripts\python.exe" -u "%~dp0server.py" >> "%TTS_LOG%" 2>&1
+rem supervisor.py listens on 8370 and loads server.py only while the voice is used.
+"%NAVOIY_ROOT%\.venv\Scripts\python.exe" -u "%~dp0supervisor.py" >> "%TTS_LOG%" 2>&1

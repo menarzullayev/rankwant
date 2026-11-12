@@ -5653,6 +5653,56 @@ def neg_decisions_voice_worker_left_out_of_deploy() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_voice_supervisor_listens_widely() -> tuple[bool, str]:
+    """The voice supervisor would listen on every address, not only loopback."""
+    return _decision_broken(
+        "services/tts/supervisor.py",
+        'ThreadingHTTPServer(("127.0.0.1", PORT), Handler)',
+        'ThreadingHTTPServer(("0.0.0.0", PORT), Handler)',
+        "kuzatuvchisi loopback'dan boshqa",
+    )
+
+
+def neg_decisions_voice_loads_without_room() -> tuple[bool, str]:
+    """The voice would load even when the host has no commit to spare."""
+    return _decision_broken(
+        "services/tts/supervisor.py",
+        "if free is not None and free < START_FREE_GB:",
+        "if False:",
+        "bo'sh commit yetmasa ham yuklanadi",
+    )
+
+
+def neg_decisions_voice_keeps_memory_under_pressure() -> tuple[bool, str]:
+    """A loaded voice would hold its 8 GB while the host runs out of commit."""
+    return _decision_broken(
+        "services/tts/supervisor.py",
+        "if free is not None and free < RELEASE_FREE_GB:",
+        "if False:",
+        "ovoz bo'shatilmaydi",
+    )
+
+
+def neg_decisions_voice_outlives_supervisor() -> tuple[bool, str]:
+    """The voice would keep running, with its 8 GB, after the supervisor stopped."""
+    return _decision_broken(
+        "services/tts/supervisor.py",
+        "die_with_us(self.process)",
+        "pass",
+        "yetim qoladi",
+    )
+
+
+def neg_decisions_voice_started_always_loaded() -> tuple[bool, str]:
+    """The host task would start the voice itself, loaded all the time."""
+    return _decision_broken(
+        "services/tts/run.cmd",
+        '"%~dp0supervisor.py"',
+        '"%~dp0server.py"',
+        "doim yuklangan holda",
+    )
+
+
 def neg_decisions_voice_worker_never_recreated() -> tuple[bool, str]:
     """A deploy would find the running voice worker but leave it on the old code."""
     return _decision_broken(
@@ -9670,6 +9720,8 @@ _TRIAL_WORKFLOW = (
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
     "services/tts/server.py",
+    "services/tts/supervisor.py",
+    "services/tts/run.cmd",
     "apps/api/problems/tasks.py",
     "apps/api/tutor/views.py",
     "apps/api/ai/providers/claude_cli.py",
@@ -14157,6 +14209,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("boshqa ovoz saqlansa tutilsin", neg_decisions_voice_keeps_another_voice),
             ("ovoz worker'i deploy ro'yxatidan tushsa tutilsin", neg_decisions_voice_worker_left_out_of_deploy),
             ("ovoz worker'i deploy'da ko'tarilmasa tutilsin", neg_decisions_voice_worker_never_recreated),
+            ("ovoz kuzatuvchisi keng tinglasa tutilsin", neg_decisions_voice_supervisor_listens_widely),
+            ("ovoz joy yo'qda yuklansa tutilsin", neg_decisions_voice_loads_without_room),
+            ("ovoz xotira tugaganda bo'shatilmasa tutilsin", neg_decisions_voice_keeps_memory_under_pressure),
+            ("ovoz kuzatuvchidan keyin qolsa tutilsin", neg_decisions_voice_outlives_supervisor),
+            ("ovoz doim yuklangan ishga tushsa tutilsin", neg_decisions_voice_started_always_loaded),
             ("AI CLI asbob olsa tutilsin", neg_decisions_tutor_cli_gets_tools),
             ("AI CLI muhitni olsa tutilsin", neg_decisions_tutor_cli_gets_the_environment),
             ("AI javobida yechim qolsa tutilsin", neg_decisions_tutor_keeps_solution_code),
