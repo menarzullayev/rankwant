@@ -2,26 +2,43 @@
 
 `server.py` runs **on the host**, with the Navoiy venv (`video-lab/tts/navoiy/.venv`: Python 3.10,
 torch 2.3.1+cu121, the RTX 2080 Ti). It loads CosyVoice2-0.5B and the Navoiy checkpoint once and answers
-`POST /synthesize {"text": ...}` with MP3 (48 kbit/s, mono). It binds **127.0.0.1:8370** only; the
-`tts-worker` container reaches it as `host.docker.internal:8370` (Docker Desktop forwards that to the
-host's loopback — measured 2026-11-12), the network does not.
+`POST /synthesize {"text": ...}` with MP3 (48 kbit/s, mono).
+
+`supervisor.py` is what listens on **127.0.0.1:8370**: it starts `server.py` (on 127.0.0.1:8371) at the
+first request, forwards to it, and stops it after `TTS_IDLE_MINUTES` (10) without requests — the server
+holds about 8 GB of commit while it runs (§ Memory), on the host the production stack shares. Both bind
+loopback only; the `tts-worker` container reaches the supervisor as `host.docker.internal:8370` (Docker
+Desktop forwards that to the host's loopback — measured 2026-11-12), the network does not.
 
 Why not a container: that venv is the one the voice was measured in (RTF 0.84), and a CUDA image with the
 CosyVoice stack would add several GB to Docker's disk (`docker_data.vhdx`, 2026-11-11 disk rule).
 
 ## Run
 
-`run.cmd` sets the paths (the Navoiy venv, the FLEURS reference voice — CC-BY 4.0) and starts the server;
-its output goes to `.handoff/voice.log` in the main checkout, kept to one 5 MB generation:
+`run.cmd` sets the paths (the Navoiy venv, the FLEURS reference voice — CC-BY 4.0) and starts the
+supervisor; its output and the server's go to `.handoff/voice.log` in the main checkout, kept to one 5 MB
+generation:
 
 ```powershell
 services\tts\run.cmd
 ```
 
-`GET http://127.0.0.1:8370/health` → `{"model": "navoiy-xotirjam-fleurs", "ready": true}` after the model
-loads (39 s, measured 2026-11-12). The model name carries the voice (`TTS_VOICE`, default `fleurs`); it must
-equal the API's `TTS_MODEL`, or the worker refuses the audio (`model_mismatch`) instead of filing it under
-the wrong name.
+`GET http://127.0.0.1:8370/health` → `{"model": "navoiy-xotirjam-fleurs", "ready": true, "loaded": false,
+"free_commit_gb": 12.9}` at once; `loaded` says whether the server is up. The model name carries the voice
+(`TTS_VOICE`, default `fleurs`); it must equal the API's `TTS_MODEL`, or the worker refuses the audio
+(`model_mismatch`) instead of filing it under the wrong name.
+
+Measured end to end (2026-11-12, the real voice): the first piece after an idle spell took 27.8 s (the load
+and the synthesis) — inside the worker's 120 s; the next one 2.8 s; after the idle time the server was gone
+and the host's free commit was back from 5.1 to 13.2 GB.
+
+The supervisor guards the host, not just the voice:
+
+- It does not start the server with less than `TTS_START_FREE_GB` (11) of commit free; the request gets
+  `503 {"error": "low_memory"}`, the piece is not made, and the player says it is busy.
+- It stops a running server when free commit falls under `TTS_RELEASE_FREE_GB` (1.5).
+- The server is in a Windows job object that closes with the supervisor: stopping the task (or killing
+  the supervisor) cannot leave 8 GB behind.
 
 ## Turn the voice on
 
@@ -39,8 +56,8 @@ the wrong name.
    (`Register-ScheduledTask : Access is denied`, measured 2026-11-12); the other host tasks are registered
    the same way.
 
-   The server reads `server.py` once at start: a deploy that changes it takes effect at the next logon, or
-   after `Stop-ScheduledTask` / `Start-ScheduledTask`.
+   The supervisor reads `supervisor.py` once, at logon; a changed `server.py` takes effect at its next
+   start — after an idle spell — and a changed supervisor after `Stop-ScheduledTask` / `Start-ScheduledTask`.
 
    **Memory.** Loading the model needs free commit (RAM + page file) on the host. On 2026-11-12, with
    1.4 GB of RAM and 0.6 GB of commit free (49 `claude` and 118 `node` processes, 29 GB between them), the
@@ -50,7 +67,8 @@ the wrong name.
 
    Running, it holds **8.3 GB of commit** (3.1 GB working set) and 2.5 GB of GPU memory: starting it took
    the host's free commit from 10.9 to 1.4 GB, and stopping it gave back 8.6 GB (measured 2026-11-12). The
-   production stack shares that commit, so the voice stays off until the host has room for it.
+   production stack shares that commit, which is why the server runs only while the voice is used, under
+   the supervisor's two limits above.
 
    Where it goes (measured step by step, 2026-11-12): importing torch 1.15 GB (its CUDA DLLs), the CUDA
    context 0.3, CosyVoice's imports 0.9, building the models on the CPU before they move to the GPU +3.5,
