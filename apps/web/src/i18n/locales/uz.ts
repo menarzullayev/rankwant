@@ -3673,6 +3673,15 @@ export const uz = {
   "admin.tutor.limitHint": "0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi.",
   "admin.tutor.reports": "Shikoyat qilingan javoblar",
   "admin.tutor.exchange": "Savol va javob",
+  "problem.listen": "Tinglash",
+  "problem.listenPause": "Pauza",
+  "problem.listenResume": "Davom ettirish",
+  "problem.listenStop": "To'xtatish",
+  "problem.listenPreparing": "Ovoz tayyorlanmoqda…",
+  "problem.listenOff": "Ovoz hozircha ishlamayapti.",
+  "problem.listenBusy": "Ovoz navbati band — birozdan keyin urinib ko'ring.",
+  "problem.listenProgress": "{n} / {total} bo'lak",
+  "problem.listenCredit": "Ovoz: Navoiy (Lison) · ovoz namunasi: FLEURS (CC BY 4.0)",
 } as const;
 
 export type MessageKey = keyof typeof uz;

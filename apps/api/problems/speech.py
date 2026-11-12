@@ -458,3 +458,62 @@ def uzbek_parts(problem: Any) -> Parts | None:
         "input_format": row.input_format or "",
         "output_format": row.output_format or "",
     }
+
+
+#: The longest piece the voice reads in one go. A statement is read piece by
+#: piece: the first listener hears the first piece while the rest are made,
+#: and an edited sentence remakes only its own piece (ADR-0064 § 5).
+SEGMENT_CHARS = 400
+#: The first piece is short (~8 s on the GPU): it is what the first listener waits for, and
+#: each next one may be a little longer (`SEGMENT_GROWTH`). Measured
+#: 2026-11-12: 301 characters took 17.1 s for 20.5 s of audio (RTF 0.84).
+#: Made one after another, piece k+1 is ready before piece k ends as long as
+#: it is at most ~1.19× the audio already played — growing by 15 % keeps it
+#: inside that; the first try packed a title alone (18 characters) before a
+#: 384-character piece and left the listener ~20 s of silence.
+FIRST_SEGMENT_CHARS = 120
+SEGMENT_GROWTH = 1.15
+
+_SENTENCE_END = re.compile(r"(?<=[.!?…])\s+")
+
+
+def _cap(index: int, first: int, limit: int) -> int:
+    # The second piece is as short as the first: it is made while the first
+    # plays, with the request and the upload on top (measured: growing it
+    # already left a 1.1 s gap). Growth starts from the third.
+    return min(limit, int(first * SEGMENT_GROWTH ** max(0, index - 1)))
+
+
+def segments(text: str, limit: int = SEGMENT_CHARS, first: int = FIRST_SEGMENT_CHARS) -> list[str]:
+    """Split the spoken text into pieces that grow from `first` to `limit` characters.
+
+    Sentences are kept whole where they fit. A piece is closed at a sentence
+    end once it is at least 60 % full; a sentence that does not fit an
+    emptier piece is cut at its last comma or space so the piece fills up —
+    no piece is left tiny before a long one.
+    """
+    pieces: list[str] = []
+    current = ""
+    queue = [part for part in _SENTENCE_END.split(text.strip()) if part]
+    while queue:
+        sentence = queue.pop(0)
+        cap = _cap(len(pieces), first, limit)
+        room = cap - (len(current) + 1 if current else 0)
+        if len(sentence) <= room:
+            current = f"{current} {sentence}".strip()
+            continue
+        if current and (len(current) >= cap * 0.6 or room < 20):
+            pieces.append(current)
+            current = ""
+            queue.insert(0, sentence)
+            continue
+        cut = max(sentence.rfind(", ", 0, room), sentence.rfind(" ", 0, room))
+        cut = cut if cut > room // 2 else room
+        head, rest = sentence[: cut + 1].strip(), sentence[cut + 1 :].strip()
+        pieces.append(f"{current} {head}".strip())
+        current = ""
+        if rest:
+            queue.insert(0, rest)
+    if current:
+        pieces.append(current)
+    return pieces

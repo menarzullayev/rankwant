@@ -213,6 +213,8 @@ services:
       # ADR-0065: empty = the AI tutor answers 503; `claude-cli` turns it on
       # (the replies themselves are written by `ai-worker`).
       AI_PROVIDER: ${AI_PROVIDER:-}
+      # ADR-0064: the host voice service; empty = no player.
+      TTS_URL: ${TTS_URL:-}
     ports: ['8000:8000']
     depends_on:
       postgres: { condition: service_healthy }
@@ -315,6 +317,28 @@ services:
       # `:-`, not `:?` — compose interpolates every service, profile or not,
       # and a required token would stop every deploy until the owner sets it.
       CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+    depends_on:
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+
+  # Statements read aloud (ADR-0064 § 5): sends one piece at a time to the
+  # voice service on the host GPU (`services/tts/server.py`, reached as
+  # `host.docker.internal`) and keeps the audio in object storage. Behind
+  # the `tts` profile until that service runs on the host.
+  tts-worker:
+    logging: *default-logging
+    profiles: ['tts']
+    build: *api-build
+    command: ['celery', '-A', 'config', 'worker', '-Q', 'tts', '--concurrency', '1', '-l', 'info']
+    environment:
+      DATABASE_URL: postgres://rankwant:${POSTGRES_PASSWORD:-dev}@postgres:5432/rankwant
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-not-for-production}
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: rankwant
+      S3_KEY: rankwant
+      S3_SECRET: ${MINIO_ROOT_PASSWORD:-devdevdev}
+      TTS_URL: ${TTS_URL:-http://host.docker.internal:8370}
     depends_on:
       redis: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }

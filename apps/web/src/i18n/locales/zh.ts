@@ -3619,4 +3619,13 @@ export const zh: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 表示未设限额。达到 80% 时显示提醒。",
   "admin.tutor.reports": "被举报的回答",
   "admin.tutor.exchange": "问题与回答",
+  "problem.listen": "收听",
+  "problem.listenPause": "暂停",
+  "problem.listenResume": "继续",
+  "problem.listenStop": "停止",
+  "problem.listenPreparing": "正在准备语音…",
+  "problem.listenOff": "语音暂不可用。",
+  "problem.listenBusy": "语音队列繁忙——请稍后再试。",
+  "problem.listenProgress": "第 {n} / {total} 段",
+  "problem.listenCredit": "语音：Navoiy (Lison) · 声音样本：FLEURS (CC BY 4.0)",
 };

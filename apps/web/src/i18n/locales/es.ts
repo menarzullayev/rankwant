@@ -3622,4 +3622,13 @@ export const es: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0: sin límite. Al 80 % aparece un aviso.",
   "admin.tutor.reports": "Respuestas reportadas",
   "admin.tutor.exchange": "Pregunta y respuesta",
+  "problem.listen": "Escuchar",
+  "problem.listenPause": "Pausa",
+  "problem.listenResume": "Continuar",
+  "problem.listenStop": "Detener",
+  "problem.listenPreparing": "Preparando la voz…",
+  "problem.listenOff": "La voz aún no está disponible.",
+  "problem.listenBusy": "La cola de voz está ocupada: inténtalo un poco más tarde.",
+  "problem.listenProgress": "{n} de {total}",
+  "problem.listenCredit": "Voz: Navoiy (Lison) · muestra de voz: FLEURS (CC BY 4.0)",
 };

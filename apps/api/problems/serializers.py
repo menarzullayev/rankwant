@@ -259,6 +259,9 @@ class ProblemDetailSerializer(ProblemListSerializer):
     #: The language the text is shown in, and every language it exists in
     #: (ADR-0058): the author's first.
     locales = serializers.SerializerMethodField()
+    #: The statement can be read aloud (ADR-0064): the voice service is on and
+    #: the problem has an Uzbek text. The page shows «Tinglash» only then.
+    voice = serializers.SerializerMethodField()
     samples = serializers.SerializerMethodField()
     answer_tests = serializers.SerializerMethodField()
 
@@ -476,6 +479,11 @@ class ProblemDetailSerializer(ProblemListSerializer):
     def get_locales(self, problem: Problem) -> list[str]:
         return translations.available(problem)
 
+    def get_voice(self, problem: Problem) -> bool:
+        from problems import speech_audio
+
+        return speech_audio.enabled() and "uz" in translations.available(problem)
+
     def get_editorial_state(self, problem: Problem) -> dict[str, Any]:
         return {
             "available": bool(problem.editorial) and problem.is_public,
@@ -506,6 +514,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "statement_locale",
             "locale",
             "locales",
+            "voice",
             "time_limit_ms",
             "memory_limit_kb",
             "checker_type",
@@ -578,6 +587,16 @@ class MineProblemSerializer(serializers.ModelSerializer[Problem]):
         return self._count(problem, False)
 
 
+class SpeechPieceSerializer(serializers.Serializer[Any]):
+    """One piece of the statement read aloud (ADR-0064 § 5)."""
+
+    key = serializers.CharField()
+    chars = serializers.IntegerField()
+    #: The audio exists; `url` serves it.
+    ready = serializers.BooleanField()
+    url = serializers.CharField(allow_null=True)
+
+
 class ProblemSpeechSerializer(serializers.Serializer[Any]):
     """The statement as the voice reads it (ADR-0064)."""
 
@@ -586,3 +605,6 @@ class ProblemSpeechSerializer(serializers.Serializer[Any]):
     key = serializers.CharField()
     model = serializers.CharField()
     chars = serializers.IntegerField()
+    #: The voice service is on; without it the page offers no player.
+    available = serializers.BooleanField()
+    pieces = SpeechPieceSerializer(many=True)

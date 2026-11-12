@@ -47,3 +47,24 @@ def media(request: HttpRequest, path: str) -> HttpResponse:
     if not inline:
         response["Content-Disposition"] = "attachment"
     return response
+
+
+@require_safe
+@cache_control(public=True, max_age=CACHE_SECONDS, immutable=True)
+def speech_piece(request: HttpRequest, name: str) -> HttpResponse:
+    """One audio piece of a statement read aloud (ADR-0064 § 5).
+
+    The name is the piece's content key (`speech.cache_key`): the same name
+    never gives other audio, so it is cached for a year, at the edge too.
+    """
+    from core.middleware import EDGE_CACHE_FLAG
+    from problems import speech_audio
+
+    key = name.removesuffix(speech_audio.EXT)
+    data = speech_audio.get(key) if name.endswith(speech_audio.EXT) else None
+    if data is None:
+        raise Http404
+    response = HttpResponse(data, content_type=speech_audio.CONTENT_TYPE)
+    response["X-Content-Type-Options"] = "nosniff"
+    setattr(response, EDGE_CACHE_FLAG, True)
+    return response

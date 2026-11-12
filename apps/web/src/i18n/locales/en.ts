@@ -3622,4 +3622,13 @@ export const en: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — no limit set. A warning shows at 80 %.",
   "admin.tutor.reports": "Reported replies",
   "admin.tutor.exchange": "Question and answer",
+  "problem.listen": "Listen",
+  "problem.listenPause": "Pause",
+  "problem.listenResume": "Resume",
+  "problem.listenStop": "Stop",
+  "problem.listenPreparing": "Preparing the voice…",
+  "problem.listenOff": "The voice is not available yet.",
+  "problem.listenBusy": "The voice queue is busy — try again a little later.",
+  "problem.listenProgress": "{n} of {total}",
+  "problem.listenCredit": "Voice: Navoiy (Lison) · voice sample: FLEURS (CC BY 4.0)",
 };

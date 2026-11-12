@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3539 strings.**
+**3548 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -3560,3 +3560,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.tutor.limitHint` | 0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi. | 0 — shek qoyılmaǵan. 80 % ta eskertiw shıǵadı. |  |
 | `admin.tutor.reports` | Shikoyat qilingan javoblar | Shaǵım etilgen juwaplar |  |
 | `admin.tutor.exchange` | Savol va javob | Soraw hám juwap |  |
+| `problem.listen` | Tinglash | Tıńlaw |  |
+| `problem.listenPause` | Pauza | Pauza qılıw |  |
+| `problem.listenResume` | Davom ettirish | Dawam ettiriw |  |
+| `problem.listenStop` | To'xtatish | Toqtatıw |  |
+| `problem.listenPreparing` | Ovoz tayyorlanmoqda… | Dawıs tayarlanıp atır… |  |
+| `problem.listenOff` | Ovoz hozircha ishlamayapti. | Dawıs házirshe islemeydi. |  |
+| `problem.listenBusy` | Ovoz navbati band — birozdan keyin urinib ko'ring. | Dawıs gezegi bánt — azdan keyin urınıp kóriń. |  |
+| `problem.listenProgress` | {n} / {total} bo'lak | {n} / {total} bólek |  |
+| `problem.listenCredit` | Ovoz: Navoiy (Lison) · ovoz namunasi: FLEURS (CC BY 4.0) | Dawıs: Navoiy (Lison) · dawıs úlgisi: FLEURS (CC BY 4.0) |  |

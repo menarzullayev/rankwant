@@ -3623,4 +3623,13 @@ export const tg: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — маҳдудият гузошта нашудааст. Дар 80 % огоҳӣ пайдо мешавад.",
   "admin.tutor.reports": "Ҷавобҳои шикоятшуда",
   "admin.tutor.exchange": "Савол ва ҷавоб",
+  "problem.listen": "Гӯш кардан",
+  "problem.listenPause": "Таваққуф",
+  "problem.listenResume": "Идома додан",
+  "problem.listenStop": "Қатъ кардан",
+  "problem.listenPreparing": "Овоз омода мешавад…",
+  "problem.listenOff": "Овоз ҳоло кор намекунад.",
+  "problem.listenBusy": "Навбати овоз банд аст — каме баъдтар кӯшиш кунед.",
+  "problem.listenProgress": "{n} / {total} қисм",
+  "problem.listenCredit": "Овоз: Navoiy (Lison) · намунаи овоз: FLEURS (CC BY 4.0)",
 };

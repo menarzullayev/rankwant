@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3539 strings.**
+**3548 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -3560,3 +3560,12 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.tutor.limitHint` | 0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi. | 0 — лимит коюлган эмес. 80 %-да эскертүү чыгат. |  |
 | `admin.tutor.reports` | Shikoyat qilingan javoblar | Даттанылган жооптор |  |
 | `admin.tutor.exchange` | Savol va javob | Суроо жана жооп |  |
+| `problem.listen` | Tinglash | Угуу |  |
+| `problem.listenPause` | Pauza | Тыным |  |
+| `problem.listenResume` | Davom ettirish | Улантуу |  |
+| `problem.listenStop` | To'xtatish | Токтотуу |  |
+| `problem.listenPreparing` | Ovoz tayyorlanmoqda… | Үн даярдалууда… |  |
+| `problem.listenOff` | Ovoz hozircha ishlamayapti. | Үн азырынча иштебейт. |  |
+| `problem.listenBusy` | Ovoz navbati band — birozdan keyin urinib ko'ring. | Үн кезеги бош эмес — бир аздан кийин кайра аракет кылыңыз. |  |
+| `problem.listenProgress` | {n} / {total} bo'lak | {n} / {total} бөлүк |  |
+| `problem.listenCredit` | Ovoz: Navoiy (Lison) · ovoz namunasi: FLEURS (CC BY 4.0) | Үн: Navoiy (Lison) · үн үлгүсү: FLEURS (CC BY 4.0) |  |

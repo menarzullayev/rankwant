@@ -3622,4 +3622,13 @@ export const ky: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — лимит коюлган эмес. 80 %-да эскертүү чыгат.",
   "admin.tutor.reports": "Даттанылган жооптор",
   "admin.tutor.exchange": "Суроо жана жооп",
+  "problem.listen": "Угуу",
+  "problem.listenPause": "Тыным",
+  "problem.listenResume": "Улантуу",
+  "problem.listenStop": "Токтотуу",
+  "problem.listenPreparing": "Үн даярдалууда…",
+  "problem.listenOff": "Үн азырынча иштебейт.",
+  "problem.listenBusy": "Үн кезеги бош эмес — бир аздан кийин кайра аракет кылыңыз.",
+  "problem.listenProgress": "{n} / {total} бөлүк",
+  "problem.listenCredit": "Үн: Navoiy (Lison) · үн үлгүсү: FLEURS (CC BY 4.0)",
 };

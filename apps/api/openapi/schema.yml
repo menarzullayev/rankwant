@@ -6525,6 +6525,39 @@ paths:
           description: ''
         '404':
           description: No Uzbek text
+  /api/v1/problems/{slug}/speech/generate/:
+    post:
+      operationId: problems_speech_generate_create
+      description: |-
+        Queue the missing audio pieces, first piece first (ADR-0064 § 5: on demand).
+
+        A piece already made or already asked for is not queued again, so a
+        statement is made once for everyone; the listener re-reads `speech/`
+        and plays each piece as it becomes ready.
+      summary: Shartni ovozga aylantirishni so'rash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemSpeech'
+          description: ''
+        '404':
+          description: No Uzbek text
+        '503':
+          description: voice_unavailable
   /api/v1/problems/{slug}/stats/:
     get:
       operationId: problems_stats_retrieve
@@ -26434,6 +26467,9 @@ components:
           items:
             type: string
           readOnly: true
+        voice:
+          type: boolean
+          readOnly: true
         time_limit_ms:
           type: integer
           maximum: 9223372036854775807
@@ -26505,6 +26541,7 @@ components:
       - success_rate
       - title
       - topics
+      - voice
       - votes
     ProblemLanguage:
       type: object
@@ -26711,10 +26748,18 @@ components:
           type: string
         chars:
           type: integer
+        available:
+          type: boolean
+        pieces:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpeechPiece'
       required:
+      - available
       - chars
       - key
       - model
+      - pieces
       - text
     ProblemTranslation:
       type: object
@@ -28219,6 +28264,24 @@ components:
       - languages
       - slug
       - title
+    SpeechPiece:
+      type: object
+      description: One piece of the statement read aloud (ADR-0064 § 5).
+      properties:
+        key:
+          type: string
+        chars:
+          type: integer
+        ready:
+          type: boolean
+        url:
+          type: string
+          nullable: true
+      required:
+      - chars
+      - key
+      - ready
+      - url
     StaffArena:
       type: object
       properties:

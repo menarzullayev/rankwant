@@ -23,8 +23,9 @@ from core.cache import cache_get, cache_set, edge_cacheable
 from core.models import User
 from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
+from core.throttling import SpeechRateThrottle
 from judging.verdicts import Verdict
-from problems import speech, testsets, translations, visibility
+from problems import speech, speech_audio, testsets, translations, visibility
 from problems.filters import ProblemFilter
 from problems.models import (
     DIFFICULTY_LEVELS,
@@ -49,6 +50,8 @@ from problems.serializers import (
     TopicSerializer,
     VoteSerializer,
 )
+from problems.speech import Parts as SpeechParts
+from problems.tasks import synthesize_speech
 from qvant import ledger
 from qvant.models import QvantTransaction
 
@@ -246,15 +249,72 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         parts = speech.uzbek_parts(problem)
         if parts is None:
             raise Http404
+        return Response(ProblemSpeechSerializer(self._speech_payload(parts)).data)
+
+    @staticmethod
+    def _speech_payload(parts: SpeechParts) -> dict[str, Any]:
         text = speech.spoken(parts)
         model = settings.TTS_MODEL
-        payload = {
+        available = speech_audio.enabled()
+        pieces = []
+        for piece in speech.segments(text):
+            key = speech.cache_key(model, piece)
+            ready = available and speech_audio.exists(key)
+            pieces.append(
+                {
+                    "key": key,
+                    "chars": len(piece),
+                    "ready": ready,
+                    "url": f"/api/v1/speech/{key}{speech_audio.EXT}" if ready else None,
+                    "text": piece,
+                }
+            )
+        return {
             "text": text,
             "key": speech.cache_key(model, text),
             "model": model,
             "chars": len(text),
+            "available": available,
+            "pieces": pieces,
         }
-        return Response(ProblemSpeechSerializer(payload).data)
+
+    @extend_schema(
+        summary="Shartni ovozga aylantirishni so'rash",
+        request=None,
+        responses={
+            202: ProblemSpeechSerializer,
+            404: OpenApiResponse(description="No Uzbek text"),
+            503: OpenApiResponse(description="voice_unavailable"),
+        },
+    )
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path="speech/generate",
+        permission_classes=[AllowAny],
+        throttle_classes=[SpeechRateThrottle],
+    )
+    def speech_generate(self, request: Request, slug: str | None = None) -> Response:
+        """Queue the missing audio pieces, first piece first (ADR-0064 § 5: on demand).
+
+        A piece already made or already asked for is not queued again, so a
+        statement is made once for everyone; the listener re-reads `speech/`
+        and plays each piece as it becomes ready.
+        """
+        problem = self.get_object()
+        parts = speech.uzbek_parts(problem)
+        if parts is None:
+            raise Http404
+        if not speech_audio.enabled():
+            body = {
+                "error": {"code": "voice_unavailable", "message": "The voice is off", "details": {}}
+            }
+            return Response(body, status=503)
+        payload = self._speech_payload(parts)
+        for piece in payload["pieces"]:
+            if not piece["ready"] and speech_audio.claim(piece["key"]):
+                synthesize_speech.delay(piece["key"], piece["text"])
+        return Response(ProblemSpeechSerializer(payload).data, status=202)
 
     @extend_schema(request=None, responses={200: {"type": "object"}})
     @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])

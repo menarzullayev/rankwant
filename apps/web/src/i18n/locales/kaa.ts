@@ -3622,4 +3622,13 @@ export const kaa: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — shek qoyılmaǵan. 80 % ta eskertiw shıǵadı.",
   "admin.tutor.reports": "Shaǵım etilgen juwaplar",
   "admin.tutor.exchange": "Soraw hám juwap",
+  "problem.listen": "Tıńlaw",
+  "problem.listenPause": "Pauza qılıw",
+  "problem.listenResume": "Dawam ettiriw",
+  "problem.listenStop": "Toqtatıw",
+  "problem.listenPreparing": "Dawıs tayarlanıp atır…",
+  "problem.listenOff": "Dawıs házirshe islemeydi.",
+  "problem.listenBusy": "Dawıs gezegi bánt — azdan keyin urınıp kóriń.",
+  "problem.listenProgress": "{n} / {total} bólek",
+  "problem.listenCredit": "Dawıs: Navoiy (Lison) · dawıs úlgisi: FLEURS (CC BY 4.0)",
 };

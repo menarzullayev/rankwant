@@ -3693,6 +3693,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/problems/{slug}/speech/generate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Shartni ovozga aylantirishni so'rash
+         * @description Queue the missing audio pieces, first piece first (ADR-0064 § 5: on demand).
+         *
+         *     A piece already made or already asked for is not queued again, so a
+         *     statement is made once for everyone; the listener re-reads `speech/`
+         *     and plays each piece as it becomes ready.
+         */
+        post: operations["problems_speech_generate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/problems/{slug}/stats/": {
         parameters: {
             query?: never;
@@ -12275,6 +12299,7 @@ export interface components {
             readonly editorial: string;
             statement_locale?: string;
             readonly locales: string[];
+            readonly voice: boolean;
             /** Format: int64 */
             time_limit_ms?: number;
             /** Format: int64 */
@@ -12388,6 +12413,8 @@ export interface components {
             key: string;
             model: string;
             chars: number;
+            available: boolean;
+            pieces: components["schemas"]["SpeechPiece"][];
         };
         /** @description One other language of a problem's text (ADR-0058); the locale is in the URL. */
         ProblemTranslation: {
@@ -13006,6 +13033,13 @@ export interface components {
             readonly best_time_ms: number | null;
             readonly best_memory_kb: number | null;
             readonly languages: string[];
+        };
+        /** @description One piece of the statement read aloud (ADR-0064 § 5). */
+        SpeechPiece: {
+            key: string;
+            chars: number;
+            ready: boolean;
+            url: string | null;
         };
         StaffArena: {
             slug: string;
@@ -19813,6 +19847,41 @@ export interface operations {
             };
             /** @description No Uzbek text */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    problems_speech_generate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemSpeech"];
+                };
+            };
+            /** @description No Uzbek text */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description voice_unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

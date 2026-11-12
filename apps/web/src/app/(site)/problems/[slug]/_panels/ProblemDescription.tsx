@@ -8,6 +8,7 @@ import {
   ProblemMetaAccordion,
   ProblemSolveTimer,
   ProblemStatementCard,
+  SpeechPlayer,
   ReportProblem,
   SampleTests,
   StatementTextSizeControls,
@@ -176,6 +177,8 @@ export function ProblemDescription({
 
       <Card>
         <ProblemStatementCard>
+          {/* The voice reads Uzbek (ADR-0064): only where the page shows it. */}
+          {problem.locale === "uz" && problem.voice && <SpeechPlayer slug={slug} />}
           <div id="problem-statement" className="space-y-5">
             {problem.image && (
               /* eslint-disable-next-line @next/next/no-img-element --

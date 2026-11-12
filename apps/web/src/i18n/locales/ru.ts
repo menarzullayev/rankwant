@@ -3622,4 +3622,13 @@ export const ru: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — лимит не задан. При 80 % появится предупреждение.",
   "admin.tutor.reports": "Ответы с жалобами",
   "admin.tutor.exchange": "Вопрос и ответ",
+  "problem.listen": "Слушать",
+  "problem.listenPause": "Пауза",
+  "problem.listenResume": "Продолжить",
+  "problem.listenStop": "Остановить",
+  "problem.listenPreparing": "Озвучка готовится…",
+  "problem.listenOff": "Озвучка пока не работает.",
+  "problem.listenBusy": "Очередь озвучки занята — попробуйте чуть позже.",
+  "problem.listenProgress": "{n} из {total}",
+  "problem.listenCredit": "Голос: Navoiy (Lison) · образец голоса: FLEURS (CC BY 4.0)",
 };

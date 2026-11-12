@@ -31,5 +31,6 @@ urlpatterns = [
         name="problem-stats",
     ),
     path("media/<path:path>", media_views.media, name="media"),
+    path("speech/<str:name>", media_views.speech_piece, name="speech-piece"),
     path("", include(router.urls)),
 ]

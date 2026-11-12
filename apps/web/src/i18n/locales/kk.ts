@@ -3623,4 +3623,13 @@ export const kk: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — лимит қойылмаған. 80 %-да ескерту шығады.",
   "admin.tutor.reports": "Шағым жасалған жауаптар",
   "admin.tutor.exchange": "Сұрақ пен жауап",
+  "problem.listen": "Тыңдау",
+  "problem.listenPause": "Кідірту",
+  "problem.listenResume": "Жалғастыру",
+  "problem.listenStop": "Тоқтату",
+  "problem.listenPreparing": "Дауыс дайындалуда…",
+  "problem.listenOff": "Дауыс әзірге жұмыс істемейді.",
+  "problem.listenBusy": "Дауыс кезегі бос емес — сәлден кейін қайталаңыз.",
+  "problem.listenProgress": "{n} / {total} бөлік",
+  "problem.listenCredit": "Дауыс: Navoiy (Lison) · дауыс үлгісі: FLEURS (CC BY 4.0)",
 };
