@@ -185,6 +185,15 @@ services:
       <<: [*env-guard, *email]
       DJANGO_DEBUG: "0"
 
+  # AI tutor (ADR-0065): started only with `--profile ai`, after the owner
+  # puts `CLAUDE_CODE_OAUTH_TOKEN` and `AI_PROVIDER=claude-cli` in the env file.
+  ai-worker:
+    <<: *restart
+    logging: *default-logging
+    environment:
+      <<: *env-guard
+      DJANGO_DEBUG: "0"
+
   # SSE — ADR-0029. Port faqat localhost: tashqariga Cloudflare Tunnel
   # chiqaradi va u `/api/v1/events/*` ni shu xizmatga yo'naltiradi.
   # ⚠️ Tunnel qatori HOST darajasida (`/etc/cloudflared/config.yml`) —

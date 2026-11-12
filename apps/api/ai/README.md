@@ -49,5 +49,7 @@ tekshiruv" emasligi isbotlanadi.
 bor: judge hosti bazaga ulanishni bilmaydi. Bu modul shu qoidani Python
 tomonida takrorlaydi.
 
-**STATUS:** AI Gateway skeleti (D6 · WP5) — tayyor. Chegara statik va
-runtime tomondan majburlanadi; runtime Phase 3 da qo'shiladi.
+**STATUS:** runtime (ADR-0065, 2026-11-12) — `gateway.ask()`, `claude -p`
+provayderi, prompt va javob filtri (`guard`). Suhbat qatorlari, limit va
+endpoint'lar `apps/api/tutor/` da; bu paket DB'ni hamon bilmaydi va chegara
+darvozasi o'zgarmadi.

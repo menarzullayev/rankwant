@@ -3404,6 +3404,46 @@ def contest_partners_official_and_mirrors() -> str | None:
     return None
 
 
+def ai_tutor_answers_without_solutions() -> str | None:
+    """2026-11-11 / 2026-11-12 (HITL; `docs/decisions/2026-11-12-ai-tutor-details.md`, ADR-0065).
+
+    AI ustoz yechim bermaydi: `claude -p` asbobsiz, MCP'siz, sozlamalarsiz yuradi va jarayonga
+    baza manzili ham, API kaliti ham o'tmaydi; har javobdagi uzun kod bloki kesiladi; tahlil
+    (editorial) modelga bormaydi. Yakunlanmagan musobaqa masalasida o'chiq (so'rovda ham, javob
+    yozilayotganda ham). Limit 5/100/250/500, suhbat 90 kun. Javob faqat `ai` navbatida va token
+    faqat `ai-worker` da.
+    """
+    cli = read("apps/api/ai/providers/claude_cli.py")
+    if '"--tools", "", "--strict-mcp-config"' not in cli or '"--setting-sources", ""' not in cli:
+        return "ai/providers/claude_cli.py: `claude -p` asboblar yoki sozlamalar bilan yuradi"
+    if "if k in _KEEP}" not in cli or "ANTHROPIC_API_KEY" in cli.split("_KEEP = (", 1)[1].split(")", 1)[0]:
+        return "ai/providers/claude_cli.py: CLI jarayoniga worker muhiti to'liq o'tadi"
+    if "text, removed = guard.strip_solution_code(text)" not in read("apps/api/ai/gateway.py"):
+        return "ai/gateway.py: javobdagi yechim kodi kesilmaydi"
+    if '"editorial"' in read("apps/api/tutor/context.py"):
+        return "tutor/context.py: tahlil (editorial) modelga yuboriladi"
+    if 'DAILY = {"free": 5, "plus": 100, "pro": 250, "judge": 500}' not in read(
+        "apps/api/tutor/limits.py"
+    ):
+        return "tutor/limits.py: kunlik limit qarordagi 5/100/250/500 emas"
+    if "if gate.closed_reason(problem) is not None:" not in read("apps/api/tutor/services.py"):
+        return "tutor/services.py: musobaqa masalasida so'rov qabul qilinadi"
+    tasks = read("apps/api/tutor/tasks.py")
+    if "reason = gate.closed_reason(reply.conversation.problem)" not in tasks:
+        return "tutor/tasks.py: musobaqa boshlangan bo'lsa ham javob yoziladi"
+    if "RETENTION = timedelta(days=90)" not in tasks:
+        return "tutor/tasks.py: suhbat 90 kundan boshqa muddat saqlanadi"
+    if '"tutor.answer": {"queue": "ai"},' not in read("apps/api/config/settings.py"):
+        return "config/settings.py: javob `ai` navbatidan boshqa joyda yoziladi"
+    compose = read("docker-compose.yml")
+    token = compose.count("CLAUDE_CODE_OAUTH_TOKEN: ")
+    start = compose.find("\n  ai-worker:\n")
+    end = compose.find("\n  # ", start + 1)
+    if token != 1 or start < 0 or "CLAUDE_CODE_OAUTH_TOKEN: " not in compose[start:end]:
+        return "docker-compose.yml: obuna tokeni `ai-worker` dan boshqa servisga ham beriladi"
+    return None
+
+
 def voice_text_is_spoken_and_guarded() -> str | None:
     """2026-11-12 (HITL; `docs/decisions/2026-11-12-voice-statements.md`, ADR-0064).
 
@@ -3557,7 +3597,7 @@ def course_video_is_encrypted_and_own() -> str | None:
         return "courses/videos.py: dars boshqa kursning videosini o'ynata oladi"
     # 5c: kodlash judge natijalarini kutdirmasin — alohida navbat va servis.
     settings_py = read("apps/api/config/settings.py")
-    if 'CELERY_TASK_ROUTES = {"courses.encode_video": {"queue": "video"}}' not in settings_py:
+    if '"courses.encode_video": {"queue": "video"},' not in settings_py:
         return "config/settings.py: video kodlash judge navbatida yuradi"
     compose = read("docker-compose.yml")
     if "  video-worker:\n" not in compose or "'-Q', 'video', '--concurrency', '1'" not in compose:
@@ -5907,6 +5947,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("algoritm sahifasi manbani ko'rsatadi", algorithm_pages_carry_the_attribution),
     ("olimpiada arxivi shaxsiy ma'lumotni repoga olmaydi", olympiad_archive_keeps_personal_data_out),
     ("shart ovozda: formula so'zda, ko'rinish bir xil", voice_text_is_spoken_and_guarded),
+    ("AI ustoz yechim bermaydi, musobaqada o'chiq", ai_tutor_answers_without_solutions),
     ("musobaqa jadvali hudud bo'yicha, shartlar chop etiladi", contest_standings_by_region_and_print),
     ("hamkor, rasmiy saralash va ko'zgu musobaqa", contest_partners_official_and_mirrors),
     ("to'lov: kalit va imzo, summa, qaytarishda bekor, kursni Pro/Judge ochadi", billing_is_checked_and_reversible),

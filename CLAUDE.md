@@ -246,7 +246,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-10](docs/decisions/2026-11-10-revive-failed-containers.md) · Docker ko'tara olmagan konteynerni watcher ko'taradi (qo'lda to'xtatilgani emas); Docker o'chiqda deploy to'sig'i yo'q · `failed_containers_are_revived`
 - [2026-11-10](docs/decisions/2026-11-10-rail-shell.md) · `newNav`: kompyuterda rail + guruh paneli, telefonda drawer, standart o'chiq · `rail_shell_is_flagged`
 - [2026-11-10](docs/decisions/2026-11-10-public-env-reaches-build.md) · Web o'qiydigan har `NEXT_PUBLIC_*` build'ga uzatiladi; bo'sh `SITE_URL` = API origin'i · `flags_reach_the_web_build`
-- [2026-11-11](docs/decisions/2026-11-11-ai-tutor.md) · AI ustoz: maslahat, yechim yo'q; 5/100/250/500; musobaqada o'chiq; adapter (API + `claude -p` zaxira), 90 kun, byudjet · `hali kod yo'q`
+- [2026-11-11](docs/decisions/2026-11-11-ai-tutor.md) · AI ustoz: maslahat, yechim yo'q; 5/100/250/500; musobaqada o'chiq; adapter (API + `claude -p` zaxira), 90 kun, byudjet · `ai_tutor_answers_without_solutions`
 - [2026-11-11](docs/decisions/2026-11-11-plan-contents.md) · Judge: mualliflik kvotasi, yopiq va GYM musobaqa; Plus: tahlillar tekin, yechim kodlari, profil nishoni · `hali kod yo'q`
 - [2026-11-11](docs/decisions/2026-11-11-teacher-tools.md) · Sinfga tasdiq bilan kirish, murabbiy, savollar banki va sinfga test, serverdagi test generatori (to'rt bosqich kodda) · `test_generator_is_bounded`
 - [2026-11-11](docs/decisions/2026-11-11-content-and-archive.md) · Traektoriya o'quv rejasi, olimpiada arxivi, cp.uz CC BY-SA, Abramyan (ruxsat bor), norasmiy masalalar reytingsiz · `study_plans_have_sections`
@@ -261,6 +261,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-11](docs/decisions/2026-11-11-community-details.md) · Jamoa batafsil: muhokama daraxt, kod yechmaganga spoyler, karma abadiy ovozlardan, blog hammaga, ± hammaga, avto-yashirish, «Bloglar» 22-band, javob/@/kuzatilgan xabarlari · `discussion_is_open_but_guarded`
 - [2026-11-11](docs/decisions/2026-11-11-cpuz-import.md) · cp.uz importi: avtomatik + agent ko'rigi, hammasi birga, uch qatlamli mashq, inglizcha asl, kategoriya/daraja, qayta import, lug'at + tooltip, `/algorithms/<kategoriya>/<slug>`, olimpiada cp.uz kabi (ADR-0062) · `cpuz_library_is_pinned_and_checked`
 - [2026-11-12](docs/decisions/2026-11-12-voice-statements.md) · Shartni ovozda o'qish: formula so'zga aylantiriladi, ovoz Navoiy (o'z GPU'mizda), faqat so'ralganda yaratilib saqlanadi · `voice_text_is_spoken_and_guarded`
+- [2026-11-12](docs/decisions/2026-11-12-ai-tutor-details.md) · AI ustoz: yon panel + 3 pog'onali maslahat, «Nega xato?», Haiku hammaga va Sonnet og'irga, hozircha faqat `claude -p` (`ai-worker`) · `ai_tutor_answers_without_solutions`
 
 ## Tekshiruvlar
 

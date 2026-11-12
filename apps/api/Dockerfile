@@ -65,6 +65,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 CMD ["celery", "-A", "config", "worker", "-Q", "video", "--concurrency", "1", "-l", "info"]
 
+# AI tutor (ADR-0065 § 2.6): only the `ai-worker` service builds this stage
+# (`target: ai`). The npm package installs one native `claude` binary, so Node
+# is needed to fetch it and not to run it: the binary alone is copied over
+# (measured: 1.0 GB instead of 1.9 GB with Node and npm in the image). The
+# version is pinned — an update changes how `claude -p` behaves.
+FROM node:22-bookworm-slim AS claude-cli
+RUN npm install -g @anthropic-ai/claude-code@2.1.318     && cp "$(npm root -g)/@anthropic-ai/claude-code/bin/claude.exe" /claude
+
+FROM base AS ai
+COPY --from=claude-cli /claude /usr/local/bin/claude
+ENV DISABLE_AUTOUPDATER=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+CMD ["celery", "-A", "config", "worker", "-Q", "ai", "--concurrency", "2", "-l", "info"]
+
 # The default target stays the plain API image: a stage that changes
 # nothing, last in the file.
 FROM base AS app

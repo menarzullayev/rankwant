@@ -3720,6 +3720,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/problems/{slug}/tutor/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * AI ustoz suhbati
+         * @description The student's tutor conversation on one problem (ADR-0065).
+         *
+         *     The problem is looked up like its detail page (`visibility.openable`),
+         *     so a problem the student may not open has no conversation either.
+         */
+        get: operations["problems_tutor_retrieve"];
+        put?: never;
+        /**
+         * AI ustozdan so'rash
+         * @description The student's tutor conversation on one problem (ADR-0065).
+         *
+         *     The problem is looked up like its detail page (`visibility.openable`),
+         *     so a problem the student may not open has no conversation either.
+         */
+        post: operations["problems_tutor_create"];
+        /**
+         * Suhbatni o'chirish
+         * @description The student's tutor conversation on one problem (ADR-0065).
+         *
+         *     The problem is looked up like its detail page (`visibility.openable`),
+         *     so a problem the student may not open has no conversation either.
+         */
+        delete: operations["problems_tutor_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/problems/{slug}/vote/": {
         parameters: {
             query?: never;
@@ -14092,6 +14129,64 @@ export interface components {
          * @enum {string}
          */
         TransactionReasonEnum: "quest" | "streak" | "contest" | "purchase" | "refund" | "admin" | "quiz" | "arena" | "duel" | "achievement" | "hack" | "course";
+        TutorAsk: {
+            kind: components["schemas"]["TutorKindEnum"];
+            question?: string;
+            hint_level?: number;
+            attempt?: number;
+            code?: string;
+            code_language?: string;
+        };
+        TutorConversation: {
+            available: boolean;
+            reason: string | null;
+            hint_level: number;
+            usage: components["schemas"]["TutorUsage"];
+            messages: components["schemas"]["TutorMessage"][];
+        };
+        /**
+         * @description * `ask` - Savol
+         *     * `hint` - Maslahat
+         *     * `why_wrong` - Nega xato?
+         * @enum {string}
+         */
+        TutorKindEnum: "ask" | "hint" | "why_wrong";
+        TutorMessage: {
+            readonly id: number;
+            readonly role: components["schemas"]["TutorRoleEnum"];
+            readonly kind: components["schemas"]["TutorKindEnum"];
+            readonly text: string;
+            readonly hint_level: number | null;
+            readonly attempt: number | null;
+            readonly code: string;
+            readonly code_language: string;
+            readonly status: components["schemas"]["TutorStatusEnum"];
+            readonly error: string;
+            readonly code_removed: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly answered_at: string | null;
+        };
+        /**
+         * @description * `student` - Student
+         *     * `tutor` - Tutor
+         * @enum {string}
+         */
+        TutorRoleEnum: "student" | "tutor";
+        /**
+         * @description * `pending` - Kutilmoqda
+         *     * `done` - Tayyor
+         *     * `failed` - Xato
+         * @enum {string}
+         */
+        TutorStatusEnum: "pending" | "done" | "failed";
+        TutorUsage: {
+            used: number;
+            limit: number | null;
+            /** Format: date-time */
+            resets_at: string;
+        };
         /**
          * @description * `daily` - Kunlik
          *     * `weekly` - Haftalik
@@ -19553,6 +19648,102 @@ export interface operations {
         responses: {
             /** @description Masala statistikasi */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    problems_tutor_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TutorConversation"];
+                };
+            };
+        };
+    };
+    problems_tutor_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TutorAsk"];
+                "application/x-www-form-urlencoded": components["schemas"]["TutorAsk"];
+                "multipart/form-data": components["schemas"]["TutorAsk"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TutorConversation"];
+                };
+            };
+            /** @description ai_off_in_contest */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description tutor_busy */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description tutor_limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description ai_unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    problems_tutor_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };

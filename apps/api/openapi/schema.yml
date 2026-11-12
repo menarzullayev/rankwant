@@ -6553,6 +6553,101 @@ paths:
       responses:
         '200':
           description: Masala statistikasi
+  /api/v1/problems/{slug}/tutor/:
+    get:
+      operationId: problems_tutor_retrieve
+      description: |-
+        The student's tutor conversation on one problem (ADR-0065).
+
+        The problem is looked up like its detail page (`visibility.openable`),
+        so a problem the student may not open has no conversation either.
+      summary: AI ustoz suhbati
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorConversation'
+          description: ''
+    post:
+      operationId: problems_tutor_create
+      description: |-
+        The student's tutor conversation on one problem (ADR-0065).
+
+        The problem is looked up like its detail page (`visibility.openable`),
+        so a problem the student may not open has no conversation either.
+      summary: AI ustozdan so'rash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TutorAsk'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TutorAsk'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TutorAsk'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorConversation'
+          description: ''
+        '403':
+          description: ai_off_in_contest
+        '409':
+          description: tutor_busy
+        '429':
+          description: tutor_limit
+        '503':
+          description: ai_unavailable
+    delete:
+      operationId: problems_tutor_destroy
+      description: |-
+        The student's tutor conversation on one problem (ADR-0065).
+
+        The problem is looked up like its detail page (`visibility.openable`),
+        so a problem the student may not open has no conversation either.
+      summary: Suhbatni o'chirish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/problems/{slug}/vote/:
     post:
       operationId: problems_vote_create
@@ -31166,6 +31261,158 @@ components:
         * `achievement` - Yutuq
         * `hack` - Hack
         * `course` - Kurs
+    TutorAsk:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/TutorKindEnum'
+        question:
+          type: string
+          maxLength: 1500
+        hint_level:
+          type: integer
+          maximum: 3
+          minimum: 1
+        attempt:
+          type: integer
+          minimum: 1
+        code:
+          type: string
+          maxLength: 20000
+        code_language:
+          type: string
+          maxLength: 64
+      required:
+      - kind
+    TutorConversation:
+      type: object
+      properties:
+        available:
+          type: boolean
+        reason:
+          type: string
+          nullable: true
+        hint_level:
+          type: integer
+        usage:
+          $ref: '#/components/schemas/TutorUsage'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/TutorMessage'
+      required:
+      - available
+      - hint_level
+      - messages
+      - reason
+      - usage
+    TutorKindEnum:
+      enum:
+      - ask
+      - hint
+      - why_wrong
+      type: string
+      description: |-
+        * `ask` - Savol
+        * `hint` - Maslahat
+        * `why_wrong` - Nega xato?
+    TutorMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/TutorRoleEnum'
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/TutorKindEnum'
+          readOnly: true
+        text:
+          type: string
+          readOnly: true
+        hint_level:
+          type: integer
+          readOnly: true
+          nullable: true
+        attempt:
+          type: integer
+          readOnly: true
+          nullable: true
+        code:
+          type: string
+          readOnly: true
+        code_language:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/TutorStatusEnum'
+          readOnly: true
+        error:
+          type: string
+          readOnly: true
+        code_removed:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        answered_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - answered_at
+      - attempt
+      - code
+      - code_language
+      - code_removed
+      - created_at
+      - error
+      - hint_level
+      - id
+      - kind
+      - role
+      - status
+      - text
+    TutorRoleEnum:
+      enum:
+      - student
+      - tutor
+      type: string
+      description: |-
+        * `student` - Student
+        * `tutor` - Tutor
+    TutorStatusEnum:
+      enum:
+      - pending
+      - done
+      - failed
+      type: string
+      description: |-
+        * `pending` - Kutilmoqda
+        * `done` - Tayyor
+        * `failed` - Xato
+    TutorUsage:
+      type: object
+      properties:
+        used:
+          type: integer
+        limit:
+          type: integer
+          nullable: true
+        resets_at:
+          type: string
+          format: date-time
+      required:
+      - limit
+      - resets_at
+      - used
     TypeEnum:
       enum:
       - daily
