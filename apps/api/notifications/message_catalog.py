@@ -138,6 +138,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{days}-day streak!",
             "body": "Qvant was added for the streak milestone.",
         },
+        "tutor_budget": {
+            "title": "AI tutor budget: {percent} %",
+            "body": "{percent} % of the {limit} $ limit is used in {month}. Admin → AI tutor.",
+        },
     },
     "es": {
         "blog_entry": {
@@ -269,6 +273,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "streak": {
             "title": "¡Racha de {days} días!",
             "body": "Se añadió Qvant por el logro de racha.",
+        },
+        "tutor_budget": {
+            "title": "Presupuesto del tutor IA: {percent} %",
+            "body": "En {month} se usó el {percent} % del límite de {limit} $. Admin → Tutor IA.",
         },
     },
     "kaa": {
@@ -402,6 +410,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{days} kúnlik streak!",
             "body": "Streak jetiskenligi ushın Qvant qosıldı.",
         },
+        "tutor_budget": {
+            "title": "AI ustaz byudjeti: {percent} %",
+            "body": "{month} ayında {limit} $ shekten {percent} % paydalanıldı. Admin → AI ustaz.",
+        },
     },
     "kk": {
         "blog_entry": {
@@ -533,6 +545,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "streak": {
             "title": "{days} күндік серия!",
             "body": "Серия жетістігі үшін Qvant қосылды.",
+        },
+        "tutor_budget": {
+            "title": "AI ұстаз бюджеті: {percent} %",
+            "body": "{month} айында {limit} $ лимиттің {percent} %-ы пайдаланылды. Әкімші → AI ұстаз.",
         },
     },
     "ky": {
@@ -666,6 +682,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{days} күндүк серия!",
             "body": "Серия жетишкендиги үчүн Qvant кошулду.",
         },
+        "tutor_budget": {
+            "title": "AI устат бюджети: {percent} %",
+            "body": "{month} айында {limit} $ лимиттин {percent} %-ы колдонулду. Админ → AI устат.",
+        },
     },
     "ru": {
         "blog_entry": {
@@ -797,6 +817,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "streak": {
             "title": "Серия {days} дней!",
             "body": "За достижение серии начислен Qvant.",
+        },
+        "tutor_budget": {
+            "title": "Бюджет AI-наставника: {percent} %",
+            "body": "В {month} использовано {percent} % лимита {limit} $. Админка → AI-наставник.",
         },
     },
     "tg": {
@@ -930,6 +954,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Силсилаи {days}-рӯза!",
             "body": "Барои дастоварди силсила Qvant илова шуд.",
         },
+        "tutor_budget": {
+            "title": "Буҷаи устоди AI: {percent} %",
+            "body": "Дар {month} {percent} %-и маҳдудияти {limit} $ истифода шуд. Админ → Устоди AI.",
+        },
     },
     "tr": {
         "blog_entry": {
@@ -1061,6 +1089,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "streak": {
             "title": "{days} günlük seri!",
             "body": "Seri başarısı için Qvant eklendi.",
+        },
+        "tutor_budget": {
+            "title": "AI öğretmen bütçesi: %{percent}",
+            "body": "{month} ayında {limit} $ sınırın %{percent}'i kullanıldı. Yönetim → AI öğretmen.",
         },
     },
     "uz": {
@@ -1194,6 +1226,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "{days} kunlik streak!",
             "body": "Streak yutug'i uchun Qvant qo'shildi.",
         },
+        "tutor_budget": {
+            "title": "AI ustoz byudjeti: {percent} %",
+            "body": "{month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz.",
+        },
     },
     "zh": {
         "blog_entry": {
@@ -1325,6 +1361,10 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "streak": {
             "title": "连续 {days} 天!",
             "body": "已为连续打卡成就发放 Qvant。",
+        },
+        "tutor_budget": {
+            "title": "AI 导师预算：{percent}%",
+            "body": "{month} 已使用 {limit} 美元限额的 {percent}%。管理 → AI 导师。",
         },
     },
 }

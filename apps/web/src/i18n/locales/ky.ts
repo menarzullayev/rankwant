@@ -3622,4 +3622,6 @@ export const ky: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — лимит коюлган эмес. 80 %-да эскертүү чыгат.",
   "admin.tutor.reports": "Даттанылган жооптор",
   "admin.tutor.exchange": "Суроо жана жооп",
+  "notif.msg.tutor_budget.title": "AI устат бюджети: {percent} %",
+  "notif.msg.tutor_budget.body": "{month} айында {limit} $ лимиттин {percent} %-ы колдонулду. Админ → AI устат.",
 };

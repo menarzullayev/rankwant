@@ -3622,4 +3622,6 @@ export const es: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0: sin límite. Al 80 % aparece un aviso.",
   "admin.tutor.reports": "Respuestas reportadas",
   "admin.tutor.exchange": "Pregunta y respuesta",
+  "notif.msg.tutor_budget.title": "Presupuesto del tutor IA: {percent} %",
+  "notif.msg.tutor_budget.body": "En {month} se usó el {percent} % del límite de {limit} $. Admin → Tutor IA.",
 };

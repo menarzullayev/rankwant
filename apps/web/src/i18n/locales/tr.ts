@@ -3622,4 +3622,6 @@ export const tr: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — sınır yok. %80'de uyarı çıkar.",
   "admin.tutor.reports": "Şikâyet edilen yanıtlar",
   "admin.tutor.exchange": "Soru ve yanıt",
+  "notif.msg.tutor_budget.title": "AI öğretmen bütçesi: %{percent}",
+  "notif.msg.tutor_budget.body": "{month} ayında {limit} $ sınırın %{percent}'i kullanıldı. Yönetim → AI öğretmen.",
 };

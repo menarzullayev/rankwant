@@ -147,6 +147,8 @@ class Budget(UpdatedModel):
 
     #: In US dollars at API prices; 0 — not set.
     month_limit_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    #: The last warning sent: "YYYY-MM:80" or "YYYY-MM:100" — each level goes once a month.
+    alerted = models.CharField(max_length=12, blank=True)
 
     def __str__(self) -> str:
         return f"{self.month_limit_usd} USD / month"

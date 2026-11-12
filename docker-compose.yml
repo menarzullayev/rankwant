@@ -315,6 +315,10 @@ services:
       # `:-`, not `:?` — compose interpolates every service, profile or not,
       # and a required token would stop every deploy until the owner sets it.
       CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+      # Decision ⑤: the Claude API, used while it has a key and budget;
+      # otherwise replies fall back to `claude -p` (decision ⑨).
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AI_FALLBACK_PROVIDER: ${AI_FALLBACK_PROVIDER:-claude-cli}
     depends_on:
       redis: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }

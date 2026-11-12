@@ -558,3 +558,146 @@ def test_handled_reports_go_after_90_days_open_ones_stay(
     Report.objects.filter(reply=second).update(created_at=old)
     tasks.purge_old()
     assert list(Report.objects.values_list("reason", flat=True)) == ["other"]
+
+
+# ── the Claude API provider and the budget notice (part 4) ─────────────
+
+
+class _FakeMessages:
+    def __init__(self, response: Any) -> None:
+        self.response = response
+        self.calls: list[dict[str, Any]] = []
+
+    def create(self, **kw: Any) -> Any:
+        self.calls.append(kw)
+        return self.response
+
+
+def _api_response(text: str = "Javob", stop: str = "end_turn") -> Any:
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        content=[
+            SimpleNamespace(type="thinking", thinking=""),
+            SimpleNamespace(type="text", text=text),
+        ],
+        usage=SimpleNamespace(
+            input_tokens=1000,
+            output_tokens=500,
+            cache_read_input_tokens=0,
+            cache_creation_input_tokens=0,
+        ),
+        stop_reason=stop,
+    )
+
+
+def _fake_sdk(monkeypatch: pytest.MonkeyPatch, response: Any) -> _FakeMessages:
+    import anthropic
+
+    messages = _FakeMessages(response)
+
+    class Client:
+        def __init__(self, **kw: Any) -> None:
+            self.kw = kw
+            self.messages = messages
+
+    monkeypatch.setattr(anthropic, "Anthropic", Client)
+    return messages
+
+
+def test_api_answer_cost_and_text_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    from ai.providers import anthropic_api
+
+    messages = _fake_sdk(monkeypatch, _api_response(" Maslahat "))
+    text, usage = anthropic_api.complete(
+        "claude-haiku-5-5", "sys", "msg", Config("anthropic", "l", "h", api_key="k")
+    )
+    assert text == "Maslahat"
+    # 1000 × $0.10 + 500 × $0.50 per million tokens
+    assert usage.cost_usd == pytest.approx(0.00035)
+    call = messages.calls[0]
+    assert call["system"] == "sys" and call["messages"] == [{"role": "user", "content": "msg"}]
+    assert "tools" not in call
+
+
+def test_api_refusal_and_missing_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    from ai.providers import anthropic_api
+
+    _fake_sdk(monkeypatch, _api_response("", stop="refusal"))
+    with pytest.raises(AIError) as exc:
+        anthropic_api.complete(
+            "claude-haiku-5-5", "s", "t", Config("anthropic", "l", "h", api_key="k")
+        )
+    assert exc.value.code == "refused"
+    with pytest.raises(AIError) as exc:
+        anthropic_api.complete("claude-haiku-5-5", "s", "t", Config("anthropic", "l", "h"))
+    assert exc.value.code == "unavailable"
+
+
+def test_api_errors_map_to_student_codes() -> None:
+    import anthropic
+
+    from ai.providers import anthropic_api
+
+    def bare(cls: type[Exception]) -> Exception:
+        # The SDK's errors need an HTTP response to construct; the mapping
+        # only looks at the class.
+        return Exception.__new__(cls)
+
+    assert anthropic_api.failure_code(bare(anthropic.RateLimitError)) == "busy"
+    assert anthropic_api.failure_code(bare(anthropic.APITimeoutError)) == "timeout"
+    assert anthropic_api.failure_code(bare(anthropic.AuthenticationError)) == "unavailable"
+    assert anthropic_api.failure_code(bare(anthropic.BadRequestError)) == "failed"
+
+
+def test_cli_never_gets_the_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-secret")
+    env = claude_cli.environment(Config("claude-cli", "l", "h", api_key="sk-ant-secret"))
+    assert "sk-ant-secret" not in env.values()
+
+
+@pytest.mark.django_db
+def test_api_falls_back_without_a_key_or_budget(settings: Any) -> None:
+    from decimal import Decimal as D
+
+    from tutor import budget
+    from tutor.models import Spend
+
+    settings.AI_PROVIDER = "anthropic"
+    settings.AI_FALLBACK_PROVIDER = "claude-cli"
+    settings.ANTHROPIC_API_KEY = ""
+    assert tasks.provider() == "claude-cli"  # no key → claude -p (decision ⑨)
+    settings.ANTHROPIC_API_KEY = "k"
+    assert tasks.provider() == "anthropic"
+    budget.set_limit(D("1.00"))
+    Spend.objects.create(
+        day=limits.local_day(), model="claude-haiku-5-5", replies=1, cost_usd=D("1.00")
+    )
+    assert tasks.provider() == "claude-cli"  # the month is spent → claude -p
+    settings.AI_FALLBACK_PROVIDER = ""
+    assert tasks.provider() == ""  # no fallback → the tutor stops
+    assert tasks.config().api_key == "k"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_budget_notice_goes_to_ops_once_per_level(
+    ai_on: FakeModel, user: Any, other_user: Any, problem: Any
+) -> None:
+    from notifications.models import Notification
+    from tutor import budget
+
+    _staff(other_user)
+    budget.set_limit(Decimal("0.01"))
+    ai_on.cost = 0.0085
+    _ask(user, problem.slug)  # 85 % → the 80 % notice
+    ai_on.cost = 0.0001
+    _ask(user, problem.slug)  # 86 % → nothing new
+    ai_on.cost = 0.002
+    _ask(user, problem.slug)  # 106 % → the 100 % notice
+    notices = Notification.objects.filter(code="tutor_budget").order_by("pk")
+    assert [(n.user_id, n.params["percent"]) for n in notices] == [
+        (other_user.pk, 80),
+        (other_user.pk, 100),
+    ]
+    assert notices[0].ref_type == "tutor_budget"
+    assert not Notification.objects.filter(user=user, code="tutor_budget").exists()

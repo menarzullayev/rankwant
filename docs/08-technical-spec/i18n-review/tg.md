@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3539 strings.**
+**3541 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -3560,3 +3560,5 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.tutor.limitHint` | 0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi. | 0 — маҳдудият гузошта нашудааст. Дар 80 % огоҳӣ пайдо мешавад. |  |
 | `admin.tutor.reports` | Shikoyat qilingan javoblar | Ҷавобҳои шикоятшуда |  |
 | `admin.tutor.exchange` | Savol va javob | Савол ва ҷавоб |  |
+| `notif.msg.tutor_budget.title` | AI ustoz byudjeti: {percent} % | Буҷаи устоди AI: {percent} % |  |
+| `notif.msg.tutor_budget.body` | {month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz. | Дар {month} {percent} %-и маҳдудияти {limit} $ истифода шуд. Админ → Устоди AI. |  |

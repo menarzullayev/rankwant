@@ -162,6 +162,9 @@ export function notificationHref(row: Notification): string | null {
       return "/qvant";
     case "mail_quota":
       return "/admin/email-quota";
+    case "tutor_budget":
+      // Staff-ops: the AI tutor's monthly budget crossed 80 % or 100 % (ADR-0065).
+      return "/admin/tutor";
     case "problem_review":
       // Staff-ops: the review queue, where the author's draft waits.
       return "/admin/problems?review=1";

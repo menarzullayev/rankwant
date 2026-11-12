@@ -5623,6 +5623,16 @@ def neg_decisions_tutor_staff_delete_reports() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_tutor_api_key_reaches_the_api() -> tuple[bool, str]:
+    """The Claude API key would be handed to the API service as well."""
+    return _decision_broken(
+        "docker-compose.yml",
+        "      AI_PROVIDER: ${AI_PROVIDER:-}\n",
+        "      AI_PROVIDER: ${AI_PROVIDER:-}\n      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}\n",
+        "API kaliti `ai-worker` dan boshqa",
+    )
+
+
 def neg_decisions_voice_skips_visibility() -> tuple[bool, str]:
     """The speech text would be read past the contest gate."""
     return _decision_broken(
@@ -14110,6 +14120,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("AI tokeni API'ga tushsa tutilsin", neg_decisions_tutor_token_reaches_the_api),
             ("AI sarfi byudjetga tushmasa tutilsin", neg_decisions_tutor_spend_not_recorded),
             ("xodim shikoyatni o'chira olsa tutilsin", neg_decisions_tutor_staff_delete_reports),
+            ("API kaliti API servisiga tushsa tutilsin", neg_decisions_tutor_api_key_reaches_the_api),
             ("yashirin joylashuv hududda ko'rinsa tutilsin", neg_decisions_region_shows_hidden_location),
             ("yashirin joylashuv sanalsa tutilsin", neg_decisions_region_counts_hidden_location),
             ("noma'lum hudud qabul qilinsa tutilsin", neg_decisions_region_unknown_accepted),

@@ -44,8 +44,13 @@ in nine had a garbled Uzbek word — Haiku's Uzbek is good, not perfect.
    against a schema. Text a student writes can change the words of an answer but cannot make the model
    act — it has nothing to act with. The process gets a minimal environment: no database URL, no Django
    secret, and no `ANTHROPIC_API_KEY` (with one the CLI would bill the API). A full window answers `busy`;
-   no login answers `unavailable` (measured in the `ai` image without a token). The Claude API adapter is
-   added when there is a key.
+   no login answers `unavailable` (measured in the `ai` image without a token).
+   `ai/providers/anthropic_api.py` is the Claude API through the official SDK (`anthropic` 2.8.0): plain
+   text, no tools, the same prompt and guard, cost from the published prices (Haiku 5.5 $0.10 / $0.50,
+   Sonnet 5.5 $2 / $10 per million tokens). It answers only with `AI_PROVIDER=anthropic` and an
+   `ANTHROPIC_API_KEY` (set only for `ai-worker`); without the key, or once the month's spend reaches
+   the limit, replies go to `AI_FALLBACK_PROVIDER` — `claude-cli` (decision ⑨) — and with no fallback
+   the tutor stops. The CLI process never receives the API key.
 3. **Prompt.** The system prompt states the rules (no solution, at most three quoted lines of the student's
    own code, nothing about hidden tests, the reader's language, brief); everything the student wrote is
    wrapped in tags and called data. The statement goes in the student's language when translated
@@ -88,9 +93,9 @@ in nine had a garbled Uzbek word — Haiku's Uzbek is good, not perfect.
 11. **Budget** (decision ⑧). Each reply's API-equivalent cost goes into a per-day, per-model counter
     (`tutor.Spend`) that a deleted conversation does not erase. `/admin/tutor` shows the month's spend,
     replies, share of the limit staff set (`tutor.Budget`, in cents; 0 = none), per-model lines, and a
-    warning at 80 % and over 100 %; crossing 80 % also logs a warning once. With `claude -p` as the only
-    provider the number is a measure, not a bill; the fall-over of decision ⑨ applies once an API
-    provider exists.
+    warning at 80 % and over 100 %. Crossing 80 % and 100 % also sends staff-ops a system notice
+    (`tutor_budget`, once per level per month, linked to `/admin/tutor`). With `claude -p` as the only
+    provider the number is a measure, not a bill.
 
 ## 3. Consequences
 
@@ -106,5 +111,6 @@ in nine had a garbled Uzbek word — Haiku's Uzbek is good, not perfect.
   the student's own attempt and shows a given explanation again instead of asking twice. The page sends
   its language (`?lang=`): without it the API answered in the browser's `Accept-Language` (measured: an
   English reply on an Uzbek page). A pending reply is re-read every 1.5 s.
-- Part 3 (reports, the staff view, the budget page) completes decisions ⑦ and ⑧. Not built: a push
-  notification at 80 % (the admin page and the log carry the warning), and the API adapter.
+- Part 3 (reports, the staff view, the budget page) completes decisions ⑦ and ⑧; part 4 adds the
+  budget notice and the Claude API adapter with its fall-over (⑤, ⑨). OpenAI and other providers of
+  decision ⑤ are not built: a provider is one `complete()` function in `ai/providers/`.

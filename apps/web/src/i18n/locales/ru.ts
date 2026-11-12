@@ -3622,4 +3622,6 @@ export const ru: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — лимит не задан. При 80 % появится предупреждение.",
   "admin.tutor.reports": "Ответы с жалобами",
   "admin.tutor.exchange": "Вопрос и ответ",
+  "notif.msg.tutor_budget.title": "Бюджет AI-наставника: {percent} %",
+  "notif.msg.tutor_budget.body": "В {month} использовано {percent} % лимита {limit} $. Админка → AI-наставник.",
 };

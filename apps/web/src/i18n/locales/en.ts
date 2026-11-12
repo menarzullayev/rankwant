@@ -3622,4 +3622,6 @@ export const en: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — no limit set. A warning shows at 80 %.",
   "admin.tutor.reports": "Reported replies",
   "admin.tutor.exchange": "Question and answer",
+  "notif.msg.tutor_budget.title": "AI tutor budget: {percent} %",
+  "notif.msg.tutor_budget.body": "{percent} % of the {limit} $ limit is used in {month}. Admin → AI tutor.",
 };
