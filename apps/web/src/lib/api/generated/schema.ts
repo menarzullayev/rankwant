@@ -3757,6 +3757,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/problems/{slug}/tutor/reports/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * AI ustoz javobiga shikoyat
+         * @description The student flags one of their own tutor replies (decision ⑦).
+         */
+        post: operations["problems_tutor_reports_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/problems/{slug}/vote/": {
         parameters: {
             query?: never;
@@ -6664,6 +6684,80 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/tutor-reports/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Reported tutor replies — the only conversations staff see (decision ⑦).
+         *
+         *     Open ones first. Only the status changes; the copied texts are the
+         *     student's report and stay as they were.
+         */
+        get: operations["staff_tutor_reports_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/tutor-reports/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Reported tutor replies — the only conversations staff see (decision ⑦).
+         *
+         *     Open ones first. Only the status changes; the copied texts are the
+         *     student's report and stay as they were.
+         */
+        get: operations["staff_tutor_reports_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * @description Reported tutor replies — the only conversations staff see (decision ⑦).
+         *
+         *     Open ones first. Only the status changes; the copied texts are the
+         *     student's report and stay as they were.
+         */
+        patch: operations["staff_tutor_reports_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/staff/tutor/budget/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * AI ustoz oylik byudjeti
+         * @description This month's spend against the limit staff set (decision ⑧).
+         */
+        get: operations["staff_tutor_budget_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * AI ustoz oylik chegarasi
+         * @description This month's spend against the limit staff set (decision ⑧).
+         */
+        patch: operations["staff_tutor_budget_partial_update"];
         trace?: never;
     };
     "/api/v1/staff/updates/": {
@@ -10906,6 +11000,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["StaffTournament"][];
         };
+        PaginatedStaffTutorReportList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffTutorReport"][];
+        };
         PaginatedStaffUserList: {
             /** @example 123 */
             count: number;
@@ -11577,7 +11686,7 @@ export interface components {
             readonly username?: string;
             readonly reason?: components["schemas"]["ProblemReportReasonEnum"];
             readonly comment?: string;
-            status?: components["schemas"]["StaffProblemReportStatusEnum"];
+            status?: components["schemas"]["TutorReportStatusEnum"];
             /** Format: date-time */
             readonly created_at?: string;
         };
@@ -11818,6 +11927,21 @@ export interface components {
             stages?: components["schemas"]["StaffStage"][];
             readonly stage_count?: number;
         };
+        PatchedStaffTutorReport: {
+            readonly id?: number;
+            readonly problem?: string;
+            readonly username?: string;
+            readonly reason?: components["schemas"]["TutorReportReasonEnum"];
+            readonly note?: string;
+            readonly question_text?: string;
+            readonly reply_text?: string;
+            readonly model?: string;
+            status?: components["schemas"]["TutorReportStatusEnum"];
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly resolved_at?: string | null;
+        };
         /**
          * @description Admin ko'rinishi. Tahrirlanadigan: display_name, bio, is_active, is_staff.
          *
@@ -11933,6 +12057,19 @@ export interface components {
             order?: number;
             readonly texts?: components["schemas"]["SectionText"][];
             readonly lessons?: components["schemas"]["StudioLesson"][];
+        };
+        PatchedTutorBudget: {
+            readonly month?: string;
+            /** Format: decimal */
+            readonly spent_usd?: string;
+            readonly replies?: number;
+            /** Format: decimal */
+            limit_usd?: string;
+            /** Format: double */
+            readonly percent?: number | null;
+            readonly warning?: boolean;
+            readonly over?: boolean;
+            readonly by_model?: components["schemas"]["TutorModelSpend"][];
         };
         /**
          * @description * `click` - Click
@@ -13240,17 +13377,10 @@ export interface components {
             readonly username: string;
             readonly reason: components["schemas"]["ProblemReportReasonEnum"];
             readonly comment: string;
-            status?: components["schemas"]["StaffProblemReportStatusEnum"];
+            status?: components["schemas"]["TutorReportStatusEnum"];
             /** Format: date-time */
             readonly created_at: string;
         };
-        /**
-         * @description * `open` - Ochiq
-         *     * `accepted` - Qabul qilindi
-         *     * `rejected` - Rad etildi
-         * @enum {string}
-         */
-        StaffProblemReportStatusEnum: "open" | "accepted" | "rejected";
         StaffQuest: {
             readonly id: number;
             code: string;
@@ -13553,6 +13683,21 @@ export interface components {
             readonly created_at: string;
             stages?: components["schemas"]["StaffStage"][];
             readonly stage_count: number;
+        };
+        StaffTutorReport: {
+            readonly id: number;
+            readonly problem: string;
+            readonly username: string;
+            readonly reason: components["schemas"]["TutorReportReasonEnum"];
+            readonly note: string;
+            readonly question_text: string;
+            readonly reply_text: string;
+            readonly model: string;
+            status?: components["schemas"]["TutorReportStatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly resolved_at: string | null;
         };
         /**
          * @description Admin ko'rinishi. Tahrirlanadigan: display_name, bio, is_active, is_staff.
@@ -14137,6 +14282,19 @@ export interface components {
             code?: string;
             code_language?: string;
         };
+        TutorBudget: {
+            readonly month: string;
+            /** Format: decimal */
+            readonly spent_usd: string;
+            readonly replies: number;
+            /** Format: decimal */
+            limit_usd: string;
+            /** Format: double */
+            readonly percent: number | null;
+            readonly warning: boolean;
+            readonly over: boolean;
+            readonly by_model: components["schemas"]["TutorModelSpend"][];
+        };
         TutorConversation: {
             available: boolean;
             reason: string | null;
@@ -14167,7 +14325,34 @@ export interface components {
             readonly created_at: string;
             /** Format: date-time */
             readonly answered_at: string | null;
+            readonly reported: boolean;
         };
+        TutorModelSpend: {
+            model: string;
+            replies: number;
+            /** Format: decimal */
+            spent_usd: string;
+        };
+        TutorReportCreate: {
+            message: number;
+            reason: components["schemas"]["TutorReportReasonEnum"];
+            note?: string;
+        };
+        /**
+         * @description * `wrong` - Noto'g'ri
+         *     * `solution` - Yechim berdi
+         *     * `harmful` - Zararli
+         *     * `other` - Boshqa
+         * @enum {string}
+         */
+        TutorReportReasonEnum: "wrong" | "solution" | "harmful" | "other";
+        /**
+         * @description * `open` - Ochiq
+         *     * `accepted` - Qabul qilindi
+         *     * `rejected` - Rad etildi
+         * @enum {string}
+         */
+        TutorReportStatusEnum: "open" | "accepted" | "rejected";
         /**
          * @description * `student` - Student
          *     * `tutor` - Tutor
@@ -19744,6 +19929,46 @@ export interface operations {
         responses: {
             /** @description No response body */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    problems_tutor_reports_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TutorReportCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["TutorReportCreate"];
+                "multipart/form-data": components["schemas"]["TutorReportCreate"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description reply_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description already_reported */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26029,6 +26254,128 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    staff_tutor_reports_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffTutorReportList"];
+                };
+            };
+        };
+    };
+    staff_tutor_reports_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this report. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTutorReport"];
+                };
+            };
+        };
+    };
+    staff_tutor_reports_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this report. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStaffTutorReport"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStaffTutorReport"];
+                "multipart/form-data": components["schemas"]["PatchedStaffTutorReport"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTutorReport"];
+                };
+            };
+        };
+    };
+    staff_tutor_budget_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TutorBudget"];
+                };
+            };
+        };
+    };
+    staff_tutor_budget_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedTutorBudget"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedTutorBudget"];
+                "multipart/form-data": components["schemas"]["PatchedTutorBudget"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TutorBudget"];
                 };
             };
         };

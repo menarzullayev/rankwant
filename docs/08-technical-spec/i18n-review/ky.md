@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3512 strings.**
+**3539 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -3533,3 +3533,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `tutor.whyWrong` | Nega xato? | Эмне үчүн ката? |  |
 | `tutor.whyWrongTitle` | AI ustoz izohi | AI устаттын түшүндүрмөсү |  |
 | `tutor.whyWrongHint` | AI ustoz kodingiz va verdiktni ko'rib, ehtimoliy sababni aytadi. Yashirin testlarni u ham ko'rmaydi. | AI устат кодуңузду жана вердиктти карап, ыктымал себебин айтат. Жашыруун тесттерди ал да көрбөйт. |  |
+| `tutor.reportButton` | Shikoyat qilish | Даттануу |  |
+| `tutor.report.why` | Nima noto'g'ri? | Эмнеси туура эмес? |  |
+| `tutor.report.wrong` | Javob noto'g'ri | Жооп туура эмес |  |
+| `tutor.report.solution` | Tayyor yechim berdi | Даяр чечим берди |  |
+| `tutor.report.harmful` | Zararli yoki odobsiz | Зыяндуу же одоно |  |
+| `tutor.report.other` | Boshqa | Башка |  |
+| `tutor.report.note` | Izoh (ixtiyoriy) | Эскертүү (милдеттүү эмес) |  |
+| `tutor.report.privacy` | Xodim faqat shu savol va javobni ko'radi. | Кызматкер ушул суроо менен жоопту гана көрөт. |  |
+| `tutor.report.cancel` | Bekor qilish | Жокко чыгаруу |  |
+| `tutor.report.send` | Yuborish | Жөнөтүү |  |
+| `tutor.report.sent` | Shikoyat yuborildi — rahmat. | Даттануу жөнөтүлдү — рахмат. |  |
+| `admin.section.tutor` | AI ustoz | AI устат |  |
+| `admin.tutor.budget` | Oylik byudjet | Айлык бюджет |  |
+| `admin.tutor.month` | Oy | Ай |  |
+| `admin.tutor.spent` | Sarf (API narxida) | Чыгым (API баасы менен) |  |
+| `admin.tutor.replies` | Javoblar | Жооптор |  |
+| `admin.tutor.share` | Chegaradan ulushi | Лимиттен үлүшү |  |
+| `admin.tutor.over` | Oylik chegaradan oshdi. | Айлык лимиттен ашып кетти. |  |
+| `admin.tutor.warning` | Oylik chegaraning 80 % dan ko'pi ishlatildi. | Айлык лимиттин 80 %-дан ашыгы колдонулду. |  |
+| `admin.tutor.apiPrice` | Hozir hamma javob claude -p (obuna) orqali ketadi: bu raqam — API narxidagi o'lchov, hisob emas. | Азыр бардык жооп claude -p (жазылуу) аркылуу өтөт: бул сан — API баасындагы өлчөм, эсеп эмес. |  |
+| `admin.tutor.modelLine` | {replies} ta javob · {spent} | {replies} жооп · {spent} |  |
+| `admin.tutor.limit` | Oylik chegara, $ | Айлык лимит, $ |  |
+| `admin.tutor.save` | Saqlash | Сактоо |  |
+| `admin.tutor.saved` | Saqlandi | Сакталды |  |
+| `admin.tutor.limitHint` | 0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi. | 0 — лимит коюлган эмес. 80 %-да эскертүү чыгат. |  |
+| `admin.tutor.reports` | Shikoyat qilingan javoblar | Даттанылган жооптор |  |
+| `admin.tutor.exchange` | Savol va javob | Суроо жана жооп |  |

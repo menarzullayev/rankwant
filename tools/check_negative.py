@@ -5603,6 +5603,26 @@ def neg_decisions_tutor_token_reaches_the_api() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_tutor_spend_not_recorded() -> tuple[bool, str]:
+    """A reply's cost would never reach the monthly budget."""
+    return _decision_broken(
+        "apps/api/tutor/tasks.py",
+        "budget.record(result.model,",
+        "(result.model,",
+        "oylik byudjetga yozilmaydi",
+    )
+
+
+def neg_decisions_tutor_staff_delete_reports() -> tuple[bool, str]:
+    """Staff could delete a student's report."""
+    return _decision_broken(
+        "apps/api/tutor/views.py",
+        'http_method_names = ["get", "patch", "head", "options"]',
+        'http_method_names = ["get", "patch", "delete", "head", "options"]',
+        "o'chira yoki yarata oladi",
+    )
+
+
 def neg_decisions_voice_skips_visibility() -> tuple[bool, str]:
     """The speech text would be read past the contest gate."""
     return _decision_broken(
@@ -9599,6 +9619,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/tutor/views.py",
     "apps/api/ai/providers/claude_cli.py",
     "apps/api/ai/gateway.py",
     "apps/api/tutor/context.py",
@@ -14087,6 +14108,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("AI limiti o'zgarsa tutilsin", neg_decisions_tutor_limit_changed),
             ("AI musobaqada ochilsa tutilsin", neg_decisions_tutor_open_in_contest),
             ("AI tokeni API'ga tushsa tutilsin", neg_decisions_tutor_token_reaches_the_api),
+            ("AI sarfi byudjetga tushmasa tutilsin", neg_decisions_tutor_spend_not_recorded),
+            ("xodim shikoyatni o'chira olsa tutilsin", neg_decisions_tutor_staff_delete_reports),
             ("yashirin joylashuv hududda ko'rinsa tutilsin", neg_decisions_region_shows_hidden_location),
             ("yashirin joylashuv sanalsa tutilsin", neg_decisions_region_counts_hidden_location),
             ("noma'lum hudud qabul qilinsa tutilsin", neg_decisions_region_unknown_accepted),

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3512 strings.**
+**3539 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -3533,3 +3533,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `tutor.whyWrong` | Nega xato? | Чаро хато? |  |
 | `tutor.whyWrongTitle` | AI ustoz izohi | Шарҳи устоди AI |  |
 | `tutor.whyWrongHint` | AI ustoz kodingiz va verdiktni ko'rib, ehtimoliy sababni aytadi. Yashirin testlarni u ham ko'rmaydi. | Устоди AI коди шумо ва ҳукмро дида, сабаби эҳтимолиро мегӯяд. Тестҳои пинҳонро ӯ ҳам намебинад. |  |
+| `tutor.reportButton` | Shikoyat qilish | Шикоят кардан |  |
+| `tutor.report.why` | Nima noto'g'ri? | Чӣ нодуруст аст? |  |
+| `tutor.report.wrong` | Javob noto'g'ri | Ҷавоб нодуруст аст |  |
+| `tutor.report.solution` | Tayyor yechim berdi | Ҳалли тайёр дод |  |
+| `tutor.report.harmful` | Zararli yoki odobsiz | Зарарнок ё дағал |  |
+| `tutor.report.other` | Boshqa | Дигар |  |
+| `tutor.report.note` | Izoh (ixtiyoriy) | Шарҳ (ихтиёрӣ) |  |
+| `tutor.report.privacy` | Xodim faqat shu savol va javobni ko'radi. | Корманд танҳо ҳамин савол ва ҷавобро мебинад. |  |
+| `tutor.report.cancel` | Bekor qilish | Бекор кардан |  |
+| `tutor.report.send` | Yuborish | Фиристодан |  |
+| `tutor.report.sent` | Shikoyat yuborildi — rahmat. | Шикоят фиристода шуд — ташаккур. |  |
+| `admin.section.tutor` | AI ustoz | Устоди AI |  |
+| `admin.tutor.budget` | Oylik byudjet | Буҷаи моҳона |  |
+| `admin.tutor.month` | Oy | Моҳ |  |
+| `admin.tutor.spent` | Sarf (API narxida) | Хароҷот (бо нархи API) |  |
+| `admin.tutor.replies` | Javoblar | Ҷавобҳо |  |
+| `admin.tutor.share` | Chegaradan ulushi | Ҳисса аз маҳдудият |  |
+| `admin.tutor.over` | Oylik chegaradan oshdi. | Маҳдудияти моҳона гузашт. |  |
+| `admin.tutor.warning` | Oylik chegaraning 80 % dan ko'pi ishlatildi. | Зиёда аз 80 %-и маҳдудияти моҳона истифода шуд. |  |
+| `admin.tutor.apiPrice` | Hozir hamma javob claude -p (obuna) orqali ketadi: bu raqam — API narxidagi o'lchov, hisob emas. | Ҳоло ҳамаи ҷавобҳо тавассути claude -p (обуна) мераванд: ин рақам — андоза бо нархи API, на ҳисоб. |  |
+| `admin.tutor.modelLine` | {replies} ta javob · {spent} | {replies} ҷавоб · {spent} |  |
+| `admin.tutor.limit` | Oylik chegara, $ | Маҳдудияти моҳона, $ |  |
+| `admin.tutor.save` | Saqlash | Нигоҳ доштан |  |
+| `admin.tutor.saved` | Saqlandi | Нигоҳ дошта шуд |  |
+| `admin.tutor.limitHint` | 0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi. | 0 — маҳдудият гузошта нашудааст. Дар 80 % огоҳӣ пайдо мешавад. |  |
+| `admin.tutor.reports` | Shikoyat qilingan javoblar | Ҷавобҳои шикоятшуда |  |
+| `admin.tutor.exchange` | Savol va javob | Савол ва ҷавоб |  |

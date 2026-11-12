@@ -79,9 +79,18 @@ in nine had a garbled Uzbek word — Haiku's Uzbek is good, not perfect.
    output — never a hidden test.
 10. **History.** One conversation per student and problem; the last six turns go to the model. The
     student deletes it (`DELETE`); `tutor.purge_old` removes a conversation 90 days after its last
-    message. The app is not in the Django admin: staff will see a conversation only when it is reported.
-11. **Usage is recorded** per reply (tokens, the API-equivalent cost, latency, model) for the monthly
-    budget page (decision ⑧).
+    message. The app is not in the Django admin: staff see a conversation only when it is reported.
+    «Shikoyat» under a reply (wrong, a ready solution, harmful, other) copies the question and the reply
+    into `tutor.Report` — the student may still delete the conversation, and by reporting shows those
+    two texts to staff. Staff (`staff-ops`) list reports at `/admin/tutor` and change only their status;
+    they cannot create or delete one. A handled report goes 90 days after it was handled; an open one
+    stays.
+11. **Budget** (decision ⑧). Each reply's API-equivalent cost goes into a per-day, per-model counter
+    (`tutor.Spend`) that a deleted conversation does not erase. `/admin/tutor` shows the month's spend,
+    replies, share of the limit staff set (`tutor.Budget`, in cents; 0 = none), per-model lines, and a
+    warning at 80 % and over 100 %; crossing 80 % also logs a warning once. With `claude -p` as the only
+    provider the number is a measure, not a bill; the fall-over of decision ⑨ applies once an API
+    provider exists.
 
 ## 3. Consequences
 
@@ -97,4 +106,5 @@ in nine had a garbled Uzbek word — Haiku's Uzbek is good, not perfect.
   the student's own attempt and shows a given explanation again instead of asking twice. The page sends
   its language (`?lang=`): without it the API answered in the browser's `Accept-Language` (measured: an
   English reply on an Uzbek page). A pending reply is re-read every 1.5 s.
-- Next changes under this ADR: reports and the staff view; the monthly budget page with the 80 % warning.
+- Part 3 (reports, the staff view, the budget page) completes decisions ⑦ and ⑧. Not built: a push
+  notification at 80 % (the admin page and the log carry the warning), and the API adapter.

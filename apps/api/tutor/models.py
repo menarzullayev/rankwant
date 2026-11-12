@@ -14,7 +14,7 @@ from typing import ClassVar
 from django.conf import settings
 from django.db import models
 
-from core.bases import CreatedModel, TimeStampedModel
+from core.bases import CreatedModel, TimeStampedModel, UpdatedModel
 
 
 class Conversation(TimeStampedModel):
@@ -118,3 +118,83 @@ class DailyUse(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id}@{self.day}: {self.count}"
+
+
+class Spend(models.Model):
+    """What the tutor cost on one day, per model (decision ⑧).
+
+    Summed per month for the budget page. Kept apart from the messages for
+    the same reason as `DailyUse`: a student deleting a conversation must not
+    erase what it cost. Holds no content.
+    """
+
+    day = models.DateField()
+    model = models.CharField(max_length=64)
+    replies = models.PositiveIntegerField(default=0)
+    cost_usd = models.DecimalField(max_digits=12, decimal_places=6, default=0)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["day", "model"], name="tutor_one_spend_per_day_model")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.day} {self.model}: {self.cost_usd}"
+
+
+class Budget(UpdatedModel):
+    """The monthly limit staff set on the admin page (decision ⑧). One row."""
+
+    #: In US dollars at API prices; 0 — not set.
+    month_limit_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def __str__(self) -> str:
+        return f"{self.month_limit_usd} USD / month"
+
+
+class Report(CreatedModel):
+    """A student flags a tutor reply; staff see only these (decision ⑦).
+
+    The question and the reply are copied in when the report is made: the
+    student may still delete the conversation, and the report must keep what
+    it is about. By reporting, the student shows these two texts to staff.
+    """
+
+    class Reason(models.TextChoices):
+        WRONG = "wrong", "Noto'g'ri"
+        SOLUTION = "solution", "Yechim berdi"
+        HARMFUL = "harmful", "Zararli"
+        OTHER = "other", "Boshqa"
+
+    class Status(models.TextChoices):
+        OPEN = "open", "Ochiq"
+        ACCEPTED = "accepted", "Qabul qilindi"
+        REJECTED = "rejected", "Rad etildi"
+
+    reply = models.ForeignKey(
+        Message, on_delete=models.SET_NULL, null=True, blank=True, related_name="reports"
+    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    problem = models.ForeignKey("problems.Problem", on_delete=models.CASCADE, related_name="+")
+    reason = models.CharField(max_length=10, choices=Reason.choices)
+    note = models.CharField(max_length=500, blank=True)
+    question_text = models.TextField(blank=True)
+    reply_text = models.TextField()
+    model = models.CharField(max_length=64, blank=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(
+                fields=["reply"],
+                condition=models.Q(reply__isnull=False),
+                name="tutor_one_report_per_reply",
+            )
+        ]
+        indexes: ClassVar = [
+            models.Index(fields=["status", "created_at"], name="tutor_report_queue")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.reason}:{self.pk}"
