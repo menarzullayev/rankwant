@@ -464,13 +464,18 @@ CELERY_TASK_ROUTES = {
 
 # AI tutor (ADR-0065). `AI_PROVIDER` empty = the tutor is off and the API
 # answers 503; `claude-cli` = `claude -p` on the owner's subscription
-# (decision ⑨). The token is set only in the `ai-worker` service.
+# (decision ⑨); `anthropic` = the Claude API. Secrets only in `ai-worker`.
 AI_PROVIDER = env("AI_PROVIDER", "")
 AI_MODEL_LIGHT = env("AI_MODEL_LIGHT", "claude-haiku-5-5")
 AI_MODEL_HEAVY = env("AI_MODEL_HEAVY", "claude-sonnet-5-5")
 AI_TIMEOUT_S = int(env("AI_TIMEOUT_S", "120"))
 AI_CLI_PATH = env("AI_CLI_PATH", "")
 CLAUDE_CODE_OAUTH_TOKEN = env("CLAUDE_CODE_OAUTH_TOKEN", "")
+# `anthropic` provider (decision ⑤): the Claude API key, set only for
+# `ai-worker`. Without it, or once the month's budget is spent, replies go to
+# `AI_FALLBACK_PROVIDER` (decision ⑨: `claude-cli`; empty = stop).
+ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", "")
+AI_FALLBACK_PROVIDER = env("AI_FALLBACK_PROVIDER", "claude-cli")
 
 # Davriy tasklar. Judge natijalari tez-tez o'qiladi, chunki foydalanuvchi
 # verdictni kutib turadi (NFR: p50 < 5s) — navbat bo'sh bo'lsa BRPOP

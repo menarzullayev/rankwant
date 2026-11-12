@@ -3673,6 +3673,8 @@ export const uz = {
   "admin.tutor.limitHint": "0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi.",
   "admin.tutor.reports": "Shikoyat qilingan javoblar",
   "admin.tutor.exchange": "Savol va javob",
+  "notif.msg.tutor_budget.title": "AI ustoz byudjeti: {percent} %",
+  "notif.msg.tutor_budget.body": "{month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz.",
 } as const;
 
 export type MessageKey = keyof typeof uz;

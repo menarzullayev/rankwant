@@ -102,6 +102,8 @@ export const MESSAGE_CODES: Record<string, { body: boolean }> = {
   classroom_join_rejected: { body: true },
   // Coach and student (ADR-0061, part 4).
   coach_requested: { body: true },
+  // Staff-ops: the AI tutor's monthly budget crossed 80 % or 100 % (ADR-0065).
+  tutor_budget: { body: true },
   coach_accepted: { body: true },
   coach_declined: { body: true },
   coach_recommended: { body: true },
@@ -162,6 +164,9 @@ export function notificationHref(row: Notification): string | null {
       return "/qvant";
     case "mail_quota":
       return "/admin/email-quota";
+    case "tutor_budget":
+      // Staff-ops: the AI tutor's monthly budget crossed 80 % or 100 % (ADR-0065).
+      return "/admin/tutor";
     case "problem_review":
       // Staff-ops: the review queue, where the author's draft waits.
       return "/admin/problems?review=1";

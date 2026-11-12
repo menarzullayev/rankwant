@@ -3623,4 +3623,6 @@ export const tg: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — маҳдудият гузошта нашудааст. Дар 80 % огоҳӣ пайдо мешавад.",
   "admin.tutor.reports": "Ҷавобҳои шикоятшуда",
   "admin.tutor.exchange": "Савол ва ҷавоб",
+  "notif.msg.tutor_budget.title": "Буҷаи устоди AI: {percent} %",
+  "notif.msg.tutor_budget.body": "Дар {month} {percent} %-и маҳдудияти {limit} $ истифода шуд. Админ → Устоди AI.",
 };

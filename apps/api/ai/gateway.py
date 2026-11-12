@@ -8,10 +8,10 @@ touches the database, so it can move into a service of its own later (D6).
 from __future__ import annotations
 
 from ai import guard, prompts
-from ai.providers import claude_cli
+from ai.providers import anthropic_api, claude_cli
 from ai.types import HINT_LEVELS, KINDS, AIError, Answer, Config, TutorRequest
 
-PROVIDERS = {claude_cli.NAME: claude_cli.complete}
+PROVIDERS = {claude_cli.NAME: claude_cli.complete, anthropic_api.NAME: anthropic_api.complete}
 
 
 def model_for(request: TutorRequest, config: Config) -> str:

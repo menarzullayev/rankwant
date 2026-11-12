@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3539 strings.**
+**3541 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -3560,3 +3560,5 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.tutor.limitHint` | 0 — chegara qo'yilmagan. 80 % da ogohlantirish chiqadi. | 0 — лимит коюлган эмес. 80 %-да эскертүү чыгат. |  |
 | `admin.tutor.reports` | Shikoyat qilingan javoblar | Даттанылган жооптор |  |
 | `admin.tutor.exchange` | Savol va javob | Суроо жана жооп |  |
+| `notif.msg.tutor_budget.title` | AI ustoz byudjeti: {percent} % | AI устат бюджети: {percent} % |  |
+| `notif.msg.tutor_budget.body` | {month} oyida {limit} $ chegaradan {percent} % ishlatildi. Admin → AI ustoz. | {month} айында {limit} $ лимиттин {percent} %-ы колдонулду. Админ → AI устат. |  |

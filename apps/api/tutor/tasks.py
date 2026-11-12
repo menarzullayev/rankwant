@@ -18,6 +18,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from ai import gateway
+from ai.providers import anthropic_api
 from ai.types import AIError, Config
 from realtime.bus import publish, user_channel
 from tutor import budget, context, gate, limits, services
@@ -29,14 +30,28 @@ log = logging.getLogger(__name__)
 RETENTION = timedelta(days=90)
 
 
+def provider() -> str:
+    """The provider for the next reply (decisions ⑤ and ⑨).
+
+    The Claude API answers while it has a key and the month's budget is not
+    spent; otherwise the reply goes to the fallback — `claude -p` — and when
+    there is none, the tutor stops (the reply fails and is not counted).
+    """
+    chosen = settings.AI_PROVIDER
+    if chosen == anthropic_api.NAME and (not settings.ANTHROPIC_API_KEY or budget.over_limit()):
+        return settings.AI_FALLBACK_PROVIDER
+    return chosen
+
+
 def config() -> Config:
     return Config(
-        provider=settings.AI_PROVIDER,
+        provider=provider(),
         light_model=settings.AI_MODEL_LIGHT,
         heavy_model=settings.AI_MODEL_HEAVY,
         timeout_s=settings.AI_TIMEOUT_S,
         cli_path=settings.AI_CLI_PATH,
         oauth_token=settings.CLAUDE_CODE_OAUTH_TOKEN,
+        api_key=settings.ANTHROPIC_API_KEY,
     )
 
 

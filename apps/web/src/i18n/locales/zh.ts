@@ -3619,4 +3619,6 @@ export const zh: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 表示未设限额。达到 80% 时显示提醒。",
   "admin.tutor.reports": "被举报的回答",
   "admin.tutor.exchange": "问题与回答",
+  "notif.msg.tutor_budget.title": "AI 导师预算：{percent}%",
+  "notif.msg.tutor_budget.body": "{month} 已使用 {limit} 美元限额的 {percent}%。管理 → AI 导师。",
 };

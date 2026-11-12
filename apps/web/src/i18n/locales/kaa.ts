@@ -3622,4 +3622,6 @@ export const kaa: Record<MessageKey, string> = {
   "admin.tutor.limitHint": "0 — shek qoyılmaǵan. 80 % ta eskertiw shıǵadı.",
   "admin.tutor.reports": "Shaǵım etilgen juwaplar",
   "admin.tutor.exchange": "Soraw hám juwap",
+  "notif.msg.tutor_budget.title": "AI ustaz byudjeti: {percent} %",
+  "notif.msg.tutor_budget.body": "{month} ayında {limit} $ shekten {percent} % paydalanıldı. Admin → AI ustaz.",
 };

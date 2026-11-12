@@ -133,5 +133,10 @@
   ],
   "streak": [
     "days"
+  ],
+  "tutor_budget": [
+    "limit",
+    "month",
+    "percent"
   ]
 }

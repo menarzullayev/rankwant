@@ -724,6 +724,9 @@ node/web	zod	4.6.7	runtime	MIT
 node/web	zod-validation-error	4.0.2	dev	MIT
 node/web	zwitch	2.0.4	runtime	MIT
 python/api	amqp	5.3.1	runtime	BSD
+python/api	annotated-types	0.8.0	runtime	MIT
+python/api	anthropic	2.8.0	runtime	Apache-2.0
+python/api	anyio	4.16.0	runtime	MIT
 python/api	asgiref	3.12.1	runtime	BSD-3-Clause
 python/api	attrs	26.1.0	runtime	MIT
 python/api	billiard	4.2.4	runtime	BSD
@@ -739,21 +742,29 @@ python/api	django	5.2.18	runtime	BSD-3-Clause
 python/api	django-cors-headers	4.9.0	runtime	MIT
 python/api	django-filter	26.2	runtime	BSD License
 python/api	djangorestframework	3.18.3	runtime	BSD-3-Clause
+python/api	docstring-parser	0.18.0	runtime	MIT
 python/api	drf-spectacular	0.30.0	runtime	BSD-3-Clause
 python/api	fonttools	4.65.0	runtime	MIT
 python/api	fpdf2	2.8.9	runtime	LGPL-3.0-only
 python/api	gunicorn	26.2.0	runtime	MIT
 python/api	h11	0.16.0	runtime	MIT
+python/api	httpcore2	2.16.0	runtime	BSD-3-Clause
+python/api	httpx2	2.16.0	runtime	BSD-3-Clause
+python/api	idna	3.20	runtime	BSD-3-Clause
 python/api	inflection	0.5.1	runtime	MIT
+python/api	jiter	0.19.0	runtime	MIT
 python/api	jmespath	1.1.0	runtime	MIT
 python/api	jsonschema	4.26.0	runtime	MIT
 python/api	jsonschema-specifications	2025.9.1	runtime	MIT
 python/api	kombu	5.6.2	runtime	BSD-3-Clause
+python/api	opentelemetry-api	1.45.2	runtime	Apache-2.0
 python/api	packaging	26.3	runtime	Apache-2.0 OR BSD-2-Clause
 python/api	pillow	13.0.0	runtime	MIT-CMU
 python/api	prompt-toolkit	3.0.53	runtime	BSD License
 python/api	psycopg	3.3.6	runtime	LGPL-3.0-only
 python/api	psycopg-binary	3.3.6	runtime	LGPL-3.0-only
+python/api	pydantic	2.14.3	runtime	MIT
+python/api	pydantic-core	2.50.4	runtime	MIT
 python/api	python-dateutil	2.9.0.post0	runtime	Dual License
 python/api	pyyaml	6.0.3	runtime	MIT
 python/api	redis	8.1.0	runtime	MIT
@@ -762,8 +773,11 @@ python/api	rpds-py	2026.6.3	runtime	MIT
 python/api	s3transfer	0.19.2	runtime	Apache License 2.0
 python/api	segno	1.6.6	runtime	BSD License
 python/api	six	1.17.0	runtime	MIT
+python/api	sniffio	1.3.1	runtime	MIT OR Apache-2.0
 python/api	sqlparse	0.6.0	runtime	BSD License
+python/api	truststore	0.10.5	runtime	MIT
 python/api	typing-extensions	4.16.0	runtime	PSF-2.0
+python/api	typing-inspection	0.4.5	runtime	MIT
 python/api	tzdata	2026.3	runtime	Apache-2.0
 python/api	tzlocal	5.4.4	runtime	MIT
 python/api	uritemplate	4.2.0	runtime	BSD 3-Clause OR Apache-2.0
@@ -773,6 +787,9 @@ python/api	vine	5.1.0	runtime	BSD
 python/api	wcwidth	0.8.3	runtime	MIT
 python/api	whitenoise	6.12.0	runtime	MIT
 python/api-dev	amqp	5.3.1	dev	BSD
+python/api-dev	annotated-types	0.8.0	dev	MIT
+python/api-dev	anthropic	2.8.0	dev	Apache-2.0
+python/api-dev	anyio	4.16.0	dev	MIT
 python/api-dev	asgiref	3.12.1	dev	BSD-3-Clause
 python/api-dev	ast-serialize	0.13.1	dev	MIT
 python/api-dev	attrs	26.1.0	dev	MIT
@@ -798,6 +815,7 @@ python/api-dev	django-stubs	6.1.2	dev	MIT
 python/api-dev	django-stubs-ext	6.1.1	dev	MIT
 python/api-dev	djangorestframework	3.18.3	dev	BSD-3-Clause
 python/api-dev	djangorestframework-stubs	3.18.1	dev	MIT
+python/api-dev	docstring-parser	0.18.0	dev	MIT
 python/api-dev	drf-spectacular	0.30.0	dev	BSD-3-Clause
 python/api-dev	execnet	2.1.2	dev	MIT
 python/api-dev	factory-boy	3.3.3	dev	MIT
@@ -807,10 +825,13 @@ python/api-dev	fonttools	4.65.0	dev	MIT
 python/api-dev	fpdf2	2.8.9	dev	LGPL-3.0-only
 python/api-dev	gunicorn	26.2.0	dev	MIT
 python/api-dev	h11	0.16.0	dev	MIT
+python/api-dev	httpcore2	2.16.0	dev	BSD-3-Clause
+python/api-dev	httpx2	2.16.0	dev	BSD-3-Clause
 python/api-dev	hypothesis	6.170.15	dev	MPL-2.0
 python/api-dev	idna	3.19	dev	BSD-3-Clause
 python/api-dev	inflection	0.5.1	dev	MIT
 python/api-dev	iniconfig	2.3.0	dev	MIT
+python/api-dev	jiter	0.19.0	dev	MIT
 python/api-dev	jmespath	1.1.0	dev	MIT
 python/api-dev	jsonschema	4.26.0	dev	MIT
 python/api-dev	jsonschema-specifications	2025.9.1	dev	MIT
@@ -822,6 +843,7 @@ python/api-dev	mdurl	0.1.2	dev	MIT License
 python/api-dev	msgpack	1.2.2	dev	Apache-2.0
 python/api-dev	mypy	2.4.1	dev	MIT
 python/api-dev	mypy-extensions	1.1.0	dev	MIT
+python/api-dev	opentelemetry-api	1.45.2	dev	Apache-2.0
 python/api-dev	packageurl-python	0.17.6	dev	MIT
 python/api-dev	packaging	26.3	dev	Apache-2.0 OR BSD-2-Clause
 python/api-dev	pathspec	1.1.1	dev	Mozilla Public License 2.0 (MPL 2.0)
@@ -836,6 +858,8 @@ python/api-dev	prompt-toolkit	3.0.53	dev	BSD License
 python/api-dev	psycopg	3.3.6	dev	LGPL-3.0-only
 python/api-dev	psycopg-binary	3.3.6	dev	LGPL-3.0-only
 python/api-dev	py-serializable	2.1.0	dev	Apache-2.0
+python/api-dev	pydantic	2.14.3	dev	MIT
+python/api-dev	pydantic-core	2.50.4	dev	MIT
 python/api-dev	pygments	2.21.0	dev	BSD-2-Clause
 python/api-dev	pyparsing	3.3.2	dev	MIT
 python/api-dev	pytest	9.1.1	dev	MIT
@@ -853,12 +877,15 @@ python/api-dev	ruff	0.17.4	dev	MIT
 python/api-dev	s3transfer	0.19.2	dev	Apache License 2.0
 python/api-dev	segno	1.6.6	dev	BSD License
 python/api-dev	six	1.17.0	dev	MIT
+python/api-dev	sniffio	1.3.1	dev	MIT OR Apache-2.0
 python/api-dev	sortedcontainers	2.4.0	dev	Apache 2.0
 python/api-dev	sqlparse	0.6.0	dev	BSD License
 python/api-dev	tomli	2.4.1	dev	MIT
 python/api-dev	tomli-w	1.2.0	dev	MIT License
+python/api-dev	truststore	0.10.5	dev	MIT
 python/api-dev	types-pyyaml	6.0.12.20260906	dev	Apache-2.0
 python/api-dev	typing-extensions	4.16.0	dev	PSF-2.0
+python/api-dev	typing-inspection	0.4.5	dev	MIT
 python/api-dev	tzdata	2026.4	dev	Apache-2.0
 python/api-dev	tzlocal	5.4.4	dev	MIT
 python/api-dev	uritemplate	4.2.0	dev	BSD 3-Clause OR Apache-2.0
