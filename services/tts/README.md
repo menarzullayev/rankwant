@@ -30,12 +30,23 @@ the wrong name.
 
    ```powershell
    $action = New-ScheduledTaskAction -Execute "C:\WINDOWS\System32\conhost.exe" -Argument '--headless cmd.exe /c "D:\Windows\project\wt\deploy\services\tts\run.cmd"'
-   Register-ScheduledTask -TaskName "RankWant Voice" -Action $action -Trigger (New-ScheduledTaskTrigger -AtLogOn) -Settings (New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -ExecutionTimeLimit 0)
+   $user = "$env:USERDOMAIN\$env:USERNAME"
+   Register-ScheduledTask -TaskName "RankWant Voice" -Action $action -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $user) -User $user -Settings (New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -ExecutionTimeLimit 0)
    Start-ScheduledTask -TaskName "RankWant Voice"
    ```
 
+   The trigger names the user: a logon trigger without one is for every user and needs an administrator
+   (`Register-ScheduledTask : Access is denied`, measured 2026-11-12); the other host tasks are registered
+   the same way.
+
    The server reads `server.py` once at start: a deploy that changes it takes effect at the next logon, or
    after `Stop-ScheduledTask` / `Start-ScheduledTask`.
+
+   **Memory.** Loading the model needs free commit (RAM + page file) on the host. On 2026-11-12, with
+   1.4 GB of RAM and 0.6 GB of commit free (49 `claude` and 118 `node` processes, 29 GB between them), the
+   server died while loading, with no traceback: `python.exe` faulted in `c10.dll` (torch), `0xc0000005`, in
+   the Application event log. Check `Get-CimInstance Win32_OperatingSystem` → `FreeVirtualMemory` before
+   starting it; the same morning, with memory free, it was ready in 39 s.
 
 2. The env file (`.env.public` in the main checkout): `TTS_URL=http://host.docker.internal:8370`.
 3. `docker compose -p rankwant --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml --profile tts up -d --build api tts-worker`
