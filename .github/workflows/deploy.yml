@@ -320,7 +320,7 @@ jobs:
         # Endi `exec` orqali, compose tarmog'i ichidan: TCP ham, DNS ham
         # ishlaydi, portni host'ga chiqarish shart emas. `api` imijida
         # `curl`/`wget` yo'q (o'lchandi) — shuning uchun Python
-        # (`urllib`) ishlatiladi: `python:3.12-slim` da doim bor.
+        # (`urllib`) ishlatiladi: `python:3.14-slim` da doim bor.
         #
         # `Host` sarlavhasi SHART: Django `ALLOWED_HOSTS` bo'yicha
         # filtrlaydi, aks holda 400 qaytadi. `localhost` ro'yxatda bor.

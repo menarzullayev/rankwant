@@ -7,25 +7,30 @@
 # ya'ni hamma bir xil versiyani oladi. Yangilash:
 #   uv pip compile requirements.txt -o requirements.lock
 #   uv pip compile requirements-dev.txt -o requirements-dev.lock
-Django>=5.2.18,<6.0
+Django>=5.2.19,<6.0
 djangorestframework>=3.18.3
 drf-spectacular>=0.30.0
 django-filter>=26.2
-psycopg[binary]>=3.3.6
-redis>=5.2
-celery>=5.6.3
+psycopg[binary]>=3.3.9
+redis>=8.1.0
+celery>=5.7.0
 django-cors-headers>=4.9.0
-gunicorn>=26.2.0
+gunicorn>=27.0.1
 # ASGI serveri — FAQAT `realtime` xizmati uchun (ADR-0029 §5). `api`
 # gunicorn/WSGI bo'lib qoladi: uni ASGI ga ko'chirish butun runtime'ni
 # almashtirardi va nosozlik izolyatsiyasini yo'qotardi.
 uvicorn>=0.54.0
 whitenoise>=6.12.0
-boto3>=1.43.126
+boto3>=1.44.2
 # Sertifikat PDF va QR (ADR-0019). Production image faqat shu fayldan
 # (lock orqali) o'rnatiladi — dev'da qolib ketgan paket deployda yiqiladi.
-fpdf2>=2.8.9
+fpdf2>=2.9.0
 segno>=1.6.6
 # AI tutor's API provider (ADR-0065, decision ⑤): the official SDK. Used only
 # by `ai-worker`, and only when `ANTHROPIC_API_KEY` is set.
 anthropic>=2.8.0
+# Time-zone database for `zoneinfo` (TIME_ZONE = Asia/Tashkent). kombu 5.6
+# pulled it in transitively; kombu 5.7 no longer does, and Django declares it
+# for Windows only. Listed explicitly so the zone data never depends on what
+# the base image or the developer's OS ships.
+tzdata>=2026.6
