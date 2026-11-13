@@ -41,8 +41,6 @@ click-plugins==1.1.1.2
     # via celery
 click-repl==0.3.0
     # via celery
-defusedxml==0.7.1
-    # via fpdf2
 django==5.2.18
     # via
     #   -r requirements.txt
@@ -64,7 +62,7 @@ drf-spectacular==0.30.0
     # via -r requirements.txt
 fonttools==4.65.0
     # via fpdf2
-fpdf2==2.8.9
+fpdf2==2.9.0
     # via -r requirements.txt
 gunicorn==26.2.0
     # via -r requirements.txt

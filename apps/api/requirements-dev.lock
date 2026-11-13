@@ -56,9 +56,7 @@ coverage==7.16.1
 cyclonedx-python-lib==11.12.0
     # via pip-audit
 defusedxml==0.7.1
-    # via
-    #   fpdf2
-    #   py-serializable
+    # via py-serializable
 django==5.2.18
     # via
     #   -r requirements.txt
@@ -98,7 +96,7 @@ filelock==3.32.6
     # via cachecontrol
 fonttools==4.65.0
     # via fpdf2
-fpdf2==2.8.9
+fpdf2==2.9.0
     # via -r requirements.txt
 gunicorn==26.2.0
     # via -r requirements.txt

@@ -187,7 +187,7 @@ node/web	@types/json5	0.0.29	dev	MIT
 node/web	@types/katex	0.16.8	runtime	MIT
 node/web	@types/mdast	4.0.4	runtime	MIT
 node/web	@types/ms	2.1.0	runtime	MIT
-node/web	@types/node	22.20.5	dev	MIT
+node/web	@types/node	26.6.6	dev	MIT
 node/web	@types/react	19.3.0	runtime	MIT
 node/web	@types/react-dom	19.3.0	dev	MIT
 node/web	@types/trusted-types	2.0.7	runtime	MIT
@@ -689,7 +689,7 @@ node/web	typescript	6.0.2	dev	Apache-2.0
 node/web	typescript	5.9.3	dev	Apache-2.0
 node/web	typescript-eslint	8.72.1	dev	MIT
 node/web	unbox-primitive	1.1.0	dev	MIT
-node/web	undici-types	6.21.0	dev	MIT
+node/web	undici-types	8.9.0	dev	MIT
 node/web	unified	11.0.5	runtime	MIT
 node/web	unist-util-find-after	5.0.0	runtime	MIT
 node/web	unist-util-is	6.0.1	runtime	MIT
@@ -737,7 +737,6 @@ python/api	click	8.5.0	runtime	BSD-3-Clause
 python/api	click-didyoumean	0.3.1	runtime	MIT
 python/api	click-plugins	1.1.1.2	runtime	New BSD
 python/api	click-repl	0.3.0	runtime	MIT
-python/api	defusedxml	0.7.1	runtime	PSFL
 python/api	django	5.2.18	runtime	BSD-3-Clause
 python/api	django-cors-headers	4.9.0	runtime	MIT
 python/api	django-filter	26.2	runtime	BSD License
@@ -745,7 +744,7 @@ python/api	djangorestframework	3.18.3	runtime	BSD-3-Clause
 python/api	docstring-parser	0.18.0	runtime	MIT
 python/api	drf-spectacular	0.30.0	runtime	BSD-3-Clause
 python/api	fonttools	4.65.0	runtime	MIT
-python/api	fpdf2	2.8.9	runtime	LGPL-3.0-only
+python/api	fpdf2	2.9.0	runtime	LGPL-3.0-only
 python/api	gunicorn	26.2.0	runtime	MIT
 python/api	h11	0.16.0	runtime	MIT
 python/api	httpcore2	2.16.0	runtime	BSD-3-Clause
@@ -822,7 +821,7 @@ python/api-dev	factory-boy	3.3.3	dev	MIT
 python/api-dev	faker	40.38.0	dev	MIT License
 python/api-dev	filelock	3.32.6	dev	MIT
 python/api-dev	fonttools	4.65.0	dev	MIT
-python/api-dev	fpdf2	2.8.9	dev	LGPL-3.0-only
+python/api-dev	fpdf2	2.9.0	dev	LGPL-3.0-only
 python/api-dev	gunicorn	26.2.0	dev	MIT
 python/api-dev	h11	0.16.0	dev	MIT
 python/api-dev	httpcore2	2.16.0	dev	BSD-3-Clause
@@ -895,7 +894,7 @@ python/api-dev	vine	5.1.0	dev	BSD
 python/api-dev	wcwidth	0.8.3	dev	MIT
 python/api-dev	whitenoise	6.12.0	dev	MIT
 python/judge-py	ast-serialize	0.11.0	runtime	MIT
-python/judge-py	colorama	0.4.6	runtime	BSD License
+python/judge-py	colorama	0.4.6	runtime	UNKNOWN
 python/judge-py	iniconfig	2.3.0	runtime	MIT
 python/judge-py	librt	0.15.0	runtime	MIT
 python/judge-py	mypy	2.3.1	runtime	MIT
