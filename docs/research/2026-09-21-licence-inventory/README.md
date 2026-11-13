@@ -51,30 +51,21 @@ python tools/licence_inventory.py --check    # drift only, offline, CI-safe
 
 | Ecosystem | Packages | runtime | dev | classified | needs review | UNKNOWN |
 |---|---|---|---|---|---|---|
-| `go/judge-go` | 21 | 21 | 0 | 17 | 0 | 4 |
+| `go/judge-go` | 21 | 21 | 0 | 21 | 0 | 0 |
 | `node/e2e` | 3 | 0 | 3 | 3 | 0 | 0 |
 | `node/web` | 700 | 221 | 479 | 694 | 2 | 4 |
 | `python/api` | 63 | 63 | 0 | 62 | 1 | 0 |
 | `python/api-dev` | 108 | 0 | 108 | 107 | 1 | 0 |
-| `python/judge-py` | 14 | 14 | 0 | 14 | 0 | 0 |
-| **total** | **909** | | | **897** | **4** | **8** |
+| `python/judge-py` | 14 | 14 | 0 | 13 | 0 | 1 |
+| **total** | **909** | | | **900** | **4** | **5** |
 
-Copyleft: **0 strong**, **38 weak**. Needs a human eye: **4**. UNKNOWN: **8**.
+Copyleft: **0 strong**, **38 weak**. Needs a human eye: **4**. UNKNOWN: **5**.
 
 ## 4. Licences that could not be determined
 
 These are **not** clean — they are unknown. A lawyer reviewing this
 document must treat them as open, and the cheapest way to close them is
 listed under each group.
-
-**`go/judge-go` — 4 package(s)**
-
-| Package | Version | Scope | Licence |
-|---|---|---|---|
-| `github.com/minio/minio-go/v7` | v7.4.1 | direct | **UNKNOWN** |
-| `golang.org/x/crypto` | v0.57.0 | indirect | **UNKNOWN** |
-| `golang.org/x/net` | v0.60.0 | indirect | **UNKNOWN** |
-| `golang.org/x/text` | v0.42.0 | indirect | **UNKNOWN** |
 
 **`node/web` — 4 package(s)**
 
@@ -84,6 +75,12 @@ listed under each group.
 | `apps/web` | 0.1.0 | runtime | **UNKNOWN** |
 | `packages/shared` | 0.1.0 | runtime | **UNKNOWN** |
 | `rankwant-web` | ? | runtime | **UNKNOWN** |
+
+**`python/judge-py` — 1 package(s)**
+
+| Package | Version | Scope | Licence |
+|---|---|---|---|
+| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
 
 Closing them:
 
@@ -181,14 +178,14 @@ they are what the image is built from, and the lawyer decides.
 |---|---|
 | `apps/api/Dockerfile` | `python:3.12-slim` |
 | `apps/api/Dockerfile` | `base` |
-| `apps/api/Dockerfile` | `node:22-bookworm-slim` |
+| `apps/api/Dockerfile` | `node:26-bookworm-slim` |
 | `apps/api/Dockerfile` | `base` |
 | `apps/api/Dockerfile` | `base` |
-| `apps/web/Dockerfile` | `node:22-slim` |
-| `apps/web/Dockerfile` | `node:22-slim` |
-| `apps/web/Dockerfile` | `node:22-slim` |
+| `apps/web/Dockerfile` | `node:26-slim` |
+| `apps/web/Dockerfile` | `node:26-slim` |
+| `apps/web/Dockerfile` | `node:26-slim` |
 | `services/judge-go/Dockerfile` | `debian:trixie` |
-| `services/judge-go/Dockerfile` | `golang:1.26-bookworm` |
+| `services/judge-go/Dockerfile` | `golang:1.27-bookworm` |
 | `services/judge-go/Dockerfile` | `debian:trixie-slim` |
 | `services/judge-go/Dockerfile` | `debian:trixie-slim` |
 | `services/judge-go/Dockerfile` | `scratch` |
@@ -211,26 +208,26 @@ new dependency cannot make this document quietly false.
 | Package | Version | Scope | Licence |
 |---|---|---|---|
 | `github.com/cespare/xxhash/v2` | v2.3.0 | indirect | MIT |
-| `github.com/dustin/go-humanize` | v1.0.1 | indirect | MIT |
+| `github.com/dustin/go-humanize` | v1.1.0 | indirect | MIT |
 | `github.com/google/uuid` | v1.6.0 | indirect | BSD-3-Clause |
-| `github.com/klauspost/compress` | v1.19.2 | indirect | Apache-2.0 |
-| `github.com/klauspost/cpuid/v2` | v2.4.0 | indirect | MIT |
+| `github.com/klauspost/compress` | v1.20.4 | indirect | Apache-2.0 |
+| `github.com/klauspost/cpuid/v2` | v2.4.2 | indirect | MIT |
 | `github.com/klauspost/crc32` | v1.3.0 | indirect | BSD-3-Clause |
 | `github.com/minio/crc64nvme` | v1.1.1 | indirect | Apache-2.0 |
 | `github.com/minio/md5-simd` | v1.1.2 | indirect | Apache-2.0 |
-| `github.com/minio/minio-go/v7` | v7.4.1 | direct | **UNKNOWN** |
-| `github.com/philhofer/fwd` | v1.2.0 | indirect | MIT |
+| `github.com/minio/minio-go/v7` | v7.4.1 | direct | Apache-2.0 |
+| `github.com/philhofer/fwd` | v1.2.1 | indirect | MIT |
 | `github.com/redis/go-redis/v9` | v9.23.0 | direct | BSD-2-Clause |
 | `github.com/rs/xid` | v1.6.0 | indirect | MIT |
-| `github.com/tinylib/msgp` | v1.6.4 | indirect | MIT |
+| `github.com/tinylib/msgp` | v1.6.5 | indirect | MIT |
 | `github.com/zeebo/xxh3` | v1.1.0 | indirect | BSD-2-Clause |
 | `go.uber.org/atomic` | v1.12.0 | indirect | MIT |
-| `go.yaml.in/yaml/v3` | v3.0.5 | indirect | Apache-2.0 |
-| `golang.org/x/crypto` | v0.57.0 | indirect | **UNKNOWN** |
-| `golang.org/x/net` | v0.60.0 | indirect | **UNKNOWN** |
-| `golang.org/x/sys` | v0.48.0 | indirect | BSD-3-Clause |
-| `golang.org/x/text` | v0.42.0 | indirect | **UNKNOWN** |
-| `gopkg.in/ini.v1` | v1.67.3 | indirect | Apache-2.0 |
+| `go.yaml.in/yaml/v3` | v3.0.6 | indirect | Apache-2.0 |
+| `golang.org/x/crypto` | v0.59.0 | indirect | BSD-3-Clause |
+| `golang.org/x/net` | v0.62.0 | indirect | BSD-3-Clause |
+| `golang.org/x/sys` | v0.50.0 | indirect | BSD-3-Clause |
+| `golang.org/x/text` | v0.44.0 | indirect | BSD-3-Clause |
+| `gopkg.in/ini.v1` | v1.68.0 | indirect | Apache-2.0 |
 
 ### `node/e2e` — 3
 
@@ -408,7 +405,7 @@ new dependency cannot make this document quietly false.
 | `@types/katex` | 0.16.8 | runtime | MIT |
 | `@types/mdast` | 4.0.4 | runtime | MIT |
 | `@types/ms` | 2.1.0 | runtime | MIT |
-| `@types/node` | 22.20.5 | dev | MIT |
+| `@types/node` | 26.6.6 | dev | MIT |
 | `@types/react` | 19.3.0 | runtime | MIT |
 | `@types/react-dom` | 19.3.0 | dev | MIT |
 | `@types/trusted-types` | 2.0.7 | runtime | MIT |
@@ -910,7 +907,7 @@ new dependency cannot make this document quietly false.
 | `typescript` | 5.9.3 | dev | Apache-2.0 |
 | `typescript-eslint` | 8.72.1 | dev | MIT |
 | `unbox-primitive` | 1.1.0 | dev | MIT |
-| `undici-types` | 6.21.0 | dev | MIT |
+| `undici-types` | 8.9.0 | dev | MIT |
 | `unified` | 11.0.5 | runtime | MIT |
 | `unist-util-find-after` | 5.0.0 | runtime | MIT |
 | `unist-util-is` | 6.0.1 | runtime | MIT |
@@ -1130,17 +1127,17 @@ new dependency cannot make this document quietly false.
 
 | Package | Version | Scope | Licence |
 |---|---|---|---|
-| `ast-serialize` | 0.11.0 | runtime | MIT |
-| `colorama` | 0.4.6 | runtime | BSD License |
-| `iniconfig` | 2.3.0 | runtime | MIT |
-| `librt` | 0.15.0 | runtime | MIT |
-| `mypy` | 2.3.1 | runtime | MIT |
-| `mypy-extensions` | 1.1.0 | runtime | MIT |
+| `ast-serialize` | 0.13.1 | runtime | MIT |
+| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
+| `iniconfig` | 2.3.1 | runtime | MIT |
+| `librt` | 0.16.0 | runtime | MIT |
+| `mypy` | 2.4.1 | runtime | MIT |
+| `mypy-extensions` | 1.2.0 | runtime | MIT |
 | `packaging` | 26.3 | runtime | Apache-2.0 OR BSD-2-Clause |
 | `pathspec` | 1.1.1 | runtime | Mozilla Public License 2.0 (MPL 2.0) |
-| `pluggy` | 1.6.0 | runtime | MIT |
+| `pluggy` | 1.7.0 | runtime | MIT |
 | `pygments` | 2.21.0 | runtime | BSD-2-Clause |
-| `pytest` | 9.1.1 | runtime | MIT |
+| `pytest` | 9.2.0 | runtime | MIT |
 | `redis` | 8.1.0 | runtime | MIT |
-| `ruff` | 0.16.6 | runtime | MIT |
+| `ruff` | 0.17.5 | runtime | MIT |
 | `typing-extensions` | 4.16.0 | runtime | PSF-2.0 |
