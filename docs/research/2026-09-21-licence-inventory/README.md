@@ -56,10 +56,10 @@ python tools/licence_inventory.py --check    # drift only, offline, CI-safe
 | `node/web` | 700 | 221 | 479 | 694 | 2 | 4 |
 | `python/api` | 63 | 63 | 0 | 62 | 1 | 0 |
 | `python/api-dev` | 108 | 0 | 108 | 107 | 1 | 0 |
-| `python/judge-py` | 14 | 14 | 0 | 14 | 0 | 0 |
-| **total** | **909** | | | **897** | **4** | **8** |
+| `python/judge-py` | 14 | 14 | 0 | 13 | 0 | 1 |
+| **total** | **909** | | | **896** | **4** | **9** |
 
-Copyleft: **0 strong**, **38 weak**. Needs a human eye: **4**. UNKNOWN: **8**.
+Copyleft: **0 strong**, **38 weak**. Needs a human eye: **4**. UNKNOWN: **9**.
 
 ## 4. Licences that could not be determined
 
@@ -84,6 +84,12 @@ listed under each group.
 | `apps/web` | 0.1.0 | runtime | **UNKNOWN** |
 | `packages/shared` | 0.1.0 | runtime | **UNKNOWN** |
 | `rankwant-web` | ? | runtime | **UNKNOWN** |
+
+**`python/judge-py` — 1 package(s)**
+
+| Package | Version | Scope | Licence |
+|---|---|---|---|
+| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
 
 Closing them:
 
@@ -181,12 +187,12 @@ they are what the image is built from, and the lawyer decides.
 |---|---|
 | `apps/api/Dockerfile` | `python:3.12-slim` |
 | `apps/api/Dockerfile` | `base` |
-| `apps/api/Dockerfile` | `node:22-bookworm-slim` |
+| `apps/api/Dockerfile` | `node:26-bookworm-slim` |
 | `apps/api/Dockerfile` | `base` |
 | `apps/api/Dockerfile` | `base` |
-| `apps/web/Dockerfile` | `node:22-slim` |
-| `apps/web/Dockerfile` | `node:22-slim` |
-| `apps/web/Dockerfile` | `node:22-slim` |
+| `apps/web/Dockerfile` | `node:26-slim` |
+| `apps/web/Dockerfile` | `node:26-slim` |
+| `apps/web/Dockerfile` | `node:26-slim` |
 | `services/judge-go/Dockerfile` | `debian:trixie` |
 | `services/judge-go/Dockerfile` | `golang:1.26-bookworm` |
 | `services/judge-go/Dockerfile` | `debian:trixie-slim` |
@@ -408,7 +414,7 @@ new dependency cannot make this document quietly false.
 | `@types/katex` | 0.16.8 | runtime | MIT |
 | `@types/mdast` | 4.0.4 | runtime | MIT |
 | `@types/ms` | 2.1.0 | runtime | MIT |
-| `@types/node` | 22.20.5 | dev | MIT |
+| `@types/node` | 26.6.6 | dev | MIT |
 | `@types/react` | 19.3.0 | runtime | MIT |
 | `@types/react-dom` | 19.3.0 | dev | MIT |
 | `@types/trusted-types` | 2.0.7 | runtime | MIT |
@@ -910,7 +916,7 @@ new dependency cannot make this document quietly false.
 | `typescript` | 5.9.3 | dev | Apache-2.0 |
 | `typescript-eslint` | 8.72.1 | dev | MIT |
 | `unbox-primitive` | 1.1.0 | dev | MIT |
-| `undici-types` | 6.21.0 | dev | MIT |
+| `undici-types` | 8.9.0 | dev | MIT |
 | `unified` | 11.0.5 | runtime | MIT |
 | `unist-util-find-after` | 5.0.0 | runtime | MIT |
 | `unist-util-is` | 6.0.1 | runtime | MIT |
@@ -964,7 +970,7 @@ new dependency cannot make this document quietly false.
 | `click-plugins` | 1.1.1.2 | runtime | New BSD |
 | `click-repl` | 0.3.0 | runtime | MIT |
 | `defusedxml` | 0.7.1 | runtime | PSFL |
-| `django` | 5.2.18 | runtime | BSD-3-Clause |
+| `django` | 5.2.19 | runtime | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | runtime | MIT |
 | `django-filter` | 26.2 | runtime | BSD License |
 | `djangorestframework` | 3.18.3 | runtime | BSD-3-Clause |
@@ -1039,7 +1045,7 @@ new dependency cannot make this document quietly false.
 | `coverage` | 7.16.1 | dev | Apache-2.0 |
 | `cyclonedx-python-lib` | 11.12.0 | dev | Apache-2.0 |
 | `defusedxml` | 0.7.1 | dev | PSFL |
-| `django` | 5.2.18 | dev | BSD-3-Clause |
+| `django` | 5.2.19 | dev | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | dev | MIT |
 | `django-filter` | 26.2 | dev | BSD License |
 | `django-stubs` | 6.1.2 | dev | MIT |
@@ -1131,7 +1137,7 @@ new dependency cannot make this document quietly false.
 | Package | Version | Scope | Licence |
 |---|---|---|---|
 | `ast-serialize` | 0.11.0 | runtime | MIT |
-| `colorama` | 0.4.6 | runtime | BSD License |
+| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
 | `iniconfig` | 2.3.0 | runtime | MIT |
 | `librt` | 0.15.0 | runtime | MIT |
 | `mypy` | 2.3.1 | runtime | MIT |

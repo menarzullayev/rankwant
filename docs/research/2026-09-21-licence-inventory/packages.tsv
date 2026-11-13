@@ -187,7 +187,7 @@ node/web	@types/json5	0.0.29	dev	MIT
 node/web	@types/katex	0.16.8	runtime	MIT
 node/web	@types/mdast	4.0.4	runtime	MIT
 node/web	@types/ms	2.1.0	runtime	MIT
-node/web	@types/node	22.20.5	dev	MIT
+node/web	@types/node	26.6.6	dev	MIT
 node/web	@types/react	19.3.0	runtime	MIT
 node/web	@types/react-dom	19.3.0	dev	MIT
 node/web	@types/trusted-types	2.0.7	runtime	MIT
@@ -689,7 +689,7 @@ node/web	typescript	6.0.2	dev	Apache-2.0
 node/web	typescript	5.9.3	dev	Apache-2.0
 node/web	typescript-eslint	8.72.1	dev	MIT
 node/web	unbox-primitive	1.1.0	dev	MIT
-node/web	undici-types	6.21.0	dev	MIT
+node/web	undici-types	8.9.0	dev	MIT
 node/web	unified	11.0.5	runtime	MIT
 node/web	unist-util-find-after	5.0.0	runtime	MIT
 node/web	unist-util-is	6.0.1	runtime	MIT
@@ -738,7 +738,7 @@ python/api	click-didyoumean	0.3.1	runtime	MIT
 python/api	click-plugins	1.1.1.2	runtime	New BSD
 python/api	click-repl	0.3.0	runtime	MIT
 python/api	defusedxml	0.7.1	runtime	PSFL
-python/api	django	5.2.18	runtime	BSD-3-Clause
+python/api	django	5.2.19	runtime	BSD-3-Clause
 python/api	django-cors-headers	4.9.0	runtime	MIT
 python/api	django-filter	26.2	runtime	BSD License
 python/api	djangorestframework	3.18.3	runtime	BSD-3-Clause
@@ -808,7 +808,7 @@ python/api-dev	click-repl	0.3.0	dev	MIT
 python/api-dev	coverage	7.16.1	dev	Apache-2.0
 python/api-dev	cyclonedx-python-lib	11.12.0	dev	Apache-2.0
 python/api-dev	defusedxml	0.7.1	dev	PSFL
-python/api-dev	django	5.2.18	dev	BSD-3-Clause
+python/api-dev	django	5.2.19	dev	BSD-3-Clause
 python/api-dev	django-cors-headers	4.9.0	dev	MIT
 python/api-dev	django-filter	26.2	dev	BSD License
 python/api-dev	django-stubs	6.1.2	dev	MIT
@@ -895,7 +895,7 @@ python/api-dev	vine	5.1.0	dev	BSD
 python/api-dev	wcwidth	0.8.3	dev	MIT
 python/api-dev	whitenoise	6.12.0	dev	MIT
 python/judge-py	ast-serialize	0.11.0	runtime	MIT
-python/judge-py	colorama	0.4.6	runtime	BSD License
+python/judge-py	colorama	0.4.6	runtime	UNKNOWN
 python/judge-py	iniconfig	2.3.0	runtime	MIT
 python/judge-py	librt	0.15.0	runtime	MIT
 python/judge-py	mypy	2.3.1	runtime	MIT
