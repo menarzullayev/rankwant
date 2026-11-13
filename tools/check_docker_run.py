@@ -359,10 +359,19 @@ def scan_text(text: str, path: str) -> list[str]:
 
 def tracked_files(root: Path) -> list[str]:
     git = shutil.which("git") or "git"
-    res = subprocess.run(  # noqa: S603 - fixed argument list, no shell
-        [git, "-C", str(root), "ls-files", "-z"], capture_output=True, check=True
-    )
-    files = [f for f in res.stdout.decode("utf-8", "replace").split("\0") if f]
+    try:
+        res = subprocess.run(  # noqa: S603 - fixed argument list, no shell
+            [git, "-C", str(root), "ls-files", "-z"], capture_output=True, check=True
+        )
+        files = [f for f in res.stdout.decode("utf-8", "replace").split("\0") if f]
+    except (subprocess.CalledProcessError, OSError):
+        # No git metadata: the negative suite runs every checker in a `git archive`
+        # copy of the tree, which has no `.git`. Walk the files instead of failing.
+        files = [
+            p.relative_to(root).as_posix()
+            for p in root.rglob("*")
+            if p.is_file() and ".git" not in p.relative_to(root).parts
+        ]
     return [
         f
         for f in files

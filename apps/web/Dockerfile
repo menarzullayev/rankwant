@@ -186,17 +186,22 @@ ENV NODE_ENV=production
 # daraxti yolg'iz o'zi yetmaydi: `npx next start` uni topa olmaydi.
 # Ikkalasi ham kerak (deps bosqichidagi izohga qarang). Both come from
 # `deps`, which changes only with `package-lock.json`.
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
-COPY --from=build /app/apps/web/package.json ./apps/web/
+#
+# Never root at run time (Docker Scout: "runs as the root user"): the base image's
+# own `node` user (uid 1000). `--chown` on each COPY gives the user its files with no
+# extra layer; the one `chown` below is of three empty-ish directories (not recursive)
+# so that `next start` can create `.next/cache` (image optimizer) beside what it reads.
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+COPY --from=deps --chown=node:node /app/apps/web/node_modules ./apps/web/node_modules
+COPY --from=build --chown=node:node /app/apps/web/package.json ./apps/web/
 # `next.config.ts` runtime'da qayta o'qiladi (`next start` uni yuklaydi).
-COPY --from=build /app/apps/web/next.config.ts ./apps/web/
+COPY --from=build --chown=node:node /app/apps/web/next.config.ts ./apps/web/
 # `public/` — favicon, logotip, xat sarlavhasidagi rasm. Next uni build
 # ichiga QO'SHMAYDI, runtime da o'qiydi: usiz `/favicon.ico` va
 # `/brand/*` 404 beradi. O'lchandi — xatdagi logotip aynan shu sababli
 # siniq kelgan.
-COPY --from=build /app/apps/web/public ./apps/web/public
-COPY --from=build /app/apps/web/.next ./apps/web/.next
+COPY --from=build --chown=node:node /app/apps/web/public ./apps/web/public
+COPY --from=build --chown=node:node /app/apps/web/.next ./apps/web/.next
 # Build qaysi manbadan chiqqanini belgilaydi. `.git` build kontekstiga
 # kirmaydi (.dockerignore), shuning uchun commit tashqaridan beriladi.
 # Nega kerak: `tools/check_deploy.sh` ishlab turgan konteyner manbadan
@@ -212,5 +217,7 @@ ENV GIT_SHA=$GIT_SHA
 LABEL org.rankwant.git-sha=$GIT_SHA
 LABEL org.rankwant.built-at=$BUILT_AT
 WORKDIR /app/apps/web
+RUN chown node:node /app /app/apps /app/apps/web
+USER node
 EXPOSE 3000
 CMD ["npx", "next", "start"]

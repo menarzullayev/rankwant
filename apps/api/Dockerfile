@@ -7,6 +7,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq5 \
     && rm -rf /var/lib/apt/lists/*
 
+# Never root at run time (Docker Scout: "runs as the root user"). uid 10001, the
+# same number the hiso_box and cpstands images use. It owns /app, so `collectstatic`
+# below and the `celerybeat-schedule` file that `celery beat` keeps in its working
+# directory both work; nothing else is written at run time (PYTHONDONTWRITEBYTECODE).
+RUN useradd --system --uid 10001 --create-home --home-dir /home/app --shell /usr/sbin/nologin app \
+    && chown app:app /app
+
 COPY requirements.lock ./
 # --mount=type=cache: pip paketlari host'da /root/.cache/pip da saqlanadi.
 # requirements.lock o'zgarganda ham faqat YANGI paketlar yuklanadi,
@@ -24,7 +31,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Uni alohida qatlam qilib `COPY config/ ./config/` bilan oldinga
 # chiqarish ham mumkin edi, lekin `core/` va boshqa ilovalarga ham
 # bog'liq — qo'shimcha mo'rtlikka arzimaydi.
-COPY . .
+COPY --chown=app:app . .
 
 # Build tamg'asi — "image eskimi?" savoliga javob beradigan yagona ishonchli
 # belgi. `tools/check_deploy.sh` aynan shu label'ni o'qiydi.
@@ -49,6 +56,7 @@ LABEL org.rankwant.built-at=$BUILT_AT
 # signs nothing, so a build-only value is enough — and without it the
 # `|| true` below would swallow the failure and ship an image with no
 # static files.
+USER app
 RUN DJANGO_SECRET_KEY=build-only-not-a-secret python manage.py collectstatic --noinput || true
 
 # DIQQAT: bu konteynerda foydalanuvchi kodi ISHLAMAYDI.
@@ -61,8 +69,10 @@ CMD gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers ${GUNICORN_WO
 # Course video encoding (ADR-0056 § 3.5): only the `video-worker` service
 # builds this stage (`target: video`). ffmpeg is not in the API image.
 FROM base AS video
+USER root
 RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
     && rm -rf /var/lib/apt/lists/*
+USER app
 CMD ["celery", "-A", "config", "worker", "-Q", "video", "--concurrency", "1", "-l", "info"]
 
 # AI tutor (ADR-0065 § 2.6): only the `ai-worker` service builds this stage
