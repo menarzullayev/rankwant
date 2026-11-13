@@ -641,6 +641,13 @@ jobs:
         run: python3 tools/check_notification_codes.py
       - name: .env.example completeness (variables read by code and compose)
         run: python3 tools/check_env_example.py
+      # `docker run` without --rm (stateful image) or `docker rm` without -v leaves an anonymous
+      # volume that nothing owns. The self-test proves each rule can fail (CONTRIBUTING: a new
+      # check needs a negative test).
+      - name: Docker volume leaks (docker run without --rm, docker rm without -v)
+        run: |
+          python3 tools/check_docker_run.py --selftest
+          python3 tools/check_docker_run.py
 
   # ONE check the `main` ruleset requires for every gate (2026-11-10, audit
   # Q-09). Before, the ruleset required only `Path filter` and `Docs and
