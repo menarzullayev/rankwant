@@ -187,7 +187,7 @@ node/web	@types/json5	0.0.29	dev	MIT
 node/web	@types/katex	0.16.8	runtime	MIT
 node/web	@types/mdast	4.0.4	runtime	MIT
 node/web	@types/ms	2.1.0	runtime	MIT
-node/web	@types/node	22.20.5	dev	MIT
+node/web	@types/node	26.6.6	dev	MIT
 node/web	@types/react	19.3.0	runtime	MIT
 node/web	@types/react-dom	19.3.0	dev	MIT
 node/web	@types/trusted-types	2.0.7	runtime	MIT
@@ -689,7 +689,7 @@ node/web	typescript	6.0.2	dev	Apache-2.0
 node/web	typescript	5.9.3	dev	Apache-2.0
 node/web	typescript-eslint	8.72.1	dev	MIT
 node/web	unbox-primitive	1.1.0	dev	MIT
-node/web	undici-types	6.21.0	dev	MIT
+node/web	undici-types	8.9.0	dev	MIT
 node/web	unified	11.0.5	runtime	MIT
 node/web	unist-util-find-after	5.0.0	runtime	MIT
 node/web	unist-util-is	6.0.1	runtime	MIT
@@ -723,20 +723,20 @@ node/web	yocto-queue	0.1.0	dev	MIT
 node/web	zod	4.6.7	runtime	MIT
 node/web	zod-validation-error	4.0.2	dev	MIT
 node/web	zwitch	2.0.4	runtime	MIT
-python/api	amqp	5.3.1	runtime	BSD
+python/api	amqp	5.4.2	runtime	BSD
 python/api	annotated-types	0.8.0	runtime	MIT
 python/api	anthropic	2.8.0	runtime	Apache-2.0
 python/api	anyio	4.16.0	runtime	MIT
 python/api	asgiref	3.12.1	runtime	BSD-3-Clause
 python/api	attrs	26.1.0	runtime	MIT
-python/api	billiard	4.2.4	runtime	BSD
+python/api	billiard	4.3.2	runtime	BSD
 python/api	boto3	1.43.127	runtime	Apache-2.0
 python/api	botocore	1.43.127	runtime	Apache-2.0
-python/api	celery	5.6.3	runtime	BSD-3-Clause
+python/api	celery	5.7.0	runtime	BSD-3-Clause
 python/api	click	8.5.0	runtime	BSD-3-Clause
 python/api	click-didyoumean	0.3.1	runtime	MIT
 python/api	click-plugins	1.1.1.2	runtime	New BSD
-python/api	click-repl	0.3.0	runtime	MIT
+python/api	click-repl	0.4.1	runtime	MIT
 python/api	defusedxml	0.7.1	runtime	PSFL
 python/api	django	5.2.18	runtime	BSD-3-Clause
 python/api	django-cors-headers	4.9.0	runtime	MIT
@@ -756,9 +756,8 @@ python/api	jiter	0.19.0	runtime	MIT
 python/api	jmespath	1.1.0	runtime	MIT
 python/api	jsonschema	4.26.0	runtime	MIT
 python/api	jsonschema-specifications	2025.9.1	runtime	MIT
-python/api	kombu	5.6.2	runtime	BSD-3-Clause
+python/api	kombu	5.7.0	runtime	BSD-3-Clause
 python/api	opentelemetry-api	1.45.2	runtime	Apache-2.0
-python/api	packaging	26.3	runtime	Apache-2.0 OR BSD-2-Clause
 python/api	pillow	13.0.0	runtime	MIT-CMU
 python/api	prompt-toolkit	3.0.53	runtime	BSD License
 python/api	psycopg	3.3.6	runtime	LGPL-3.0-only
@@ -778,7 +777,6 @@ python/api	sqlparse	0.6.0	runtime	BSD License
 python/api	truststore	0.10.5	runtime	MIT
 python/api	typing-extensions	4.16.0	runtime	PSF-2.0
 python/api	typing-inspection	0.4.5	runtime	MIT
-python/api	tzdata	2026.3	runtime	Apache-2.0
 python/api	tzlocal	5.4.4	runtime	MIT
 python/api	uritemplate	4.2.0	runtime	BSD 3-Clause OR Apache-2.0
 python/api	urllib3	2.8.0	runtime	MIT
@@ -786,25 +784,25 @@ python/api	uvicorn	0.54.0	runtime	BSD-3-Clause
 python/api	vine	5.1.0	runtime	BSD
 python/api	wcwidth	0.8.3	runtime	MIT
 python/api	whitenoise	6.12.0	runtime	MIT
-python/api-dev	amqp	5.3.1	dev	BSD
+python/api-dev	amqp	5.4.2	dev	BSD
 python/api-dev	annotated-types	0.8.0	dev	MIT
 python/api-dev	anthropic	2.8.0	dev	Apache-2.0
 python/api-dev	anyio	4.16.0	dev	MIT
 python/api-dev	asgiref	3.12.1	dev	BSD-3-Clause
 python/api-dev	ast-serialize	0.13.1	dev	MIT
 python/api-dev	attrs	26.1.0	dev	MIT
-python/api-dev	billiard	4.2.4	dev	BSD
+python/api-dev	billiard	4.3.2	dev	BSD
 python/api-dev	boolean-py	5.0	dev	BSD-2-Clause
 python/api-dev	boto3	1.43.127	dev	Apache-2.0
 python/api-dev	botocore	1.43.127	dev	Apache-2.0
 python/api-dev	cachecontrol	0.14.4	dev	Apache-2.0
-python/api-dev	celery	5.6.3	dev	BSD-3-Clause
+python/api-dev	celery	5.7.0	dev	BSD-3-Clause
 python/api-dev	certifi	2026.7.22	dev	MPL-2.0
 python/api-dev	charset-normalizer	3.5.1	dev	MIT
 python/api-dev	click	8.5.0	dev	BSD-3-Clause
 python/api-dev	click-didyoumean	0.3.1	dev	MIT
 python/api-dev	click-plugins	1.1.1.2	dev	New BSD
-python/api-dev	click-repl	0.3.0	dev	MIT
+python/api-dev	click-repl	0.4.1	dev	MIT
 python/api-dev	coverage	7.16.1	dev	Apache-2.0
 python/api-dev	cyclonedx-python-lib	11.12.0	dev	Apache-2.0
 python/api-dev	defusedxml	0.7.1	dev	PSFL
@@ -835,7 +833,7 @@ python/api-dev	jiter	0.19.0	dev	MIT
 python/api-dev	jmespath	1.1.0	dev	MIT
 python/api-dev	jsonschema	4.26.0	dev	MIT
 python/api-dev	jsonschema-specifications	2025.9.1	dev	MIT
-python/api-dev	kombu	5.6.2	dev	BSD-3-Clause
+python/api-dev	kombu	5.7.0	dev	BSD-3-Clause
 python/api-dev	librt	0.16.0	dev	MIT
 python/api-dev	license-expression	30.4.4	dev	Apache-2.0
 python/api-dev	markdown-it-py	4.2.0	dev	MIT License
@@ -886,7 +884,6 @@ python/api-dev	truststore	0.10.5	dev	MIT
 python/api-dev	types-pyyaml	6.0.12.20260906	dev	Apache-2.0
 python/api-dev	typing-extensions	4.16.0	dev	PSF-2.0
 python/api-dev	typing-inspection	0.4.5	dev	MIT
-python/api-dev	tzdata	2026.4	dev	Apache-2.0
 python/api-dev	tzlocal	5.4.4	dev	MIT
 python/api-dev	uritemplate	4.2.0	dev	BSD 3-Clause OR Apache-2.0
 python/api-dev	urllib3	2.8.0	dev	MIT
@@ -895,7 +892,7 @@ python/api-dev	vine	5.1.0	dev	BSD
 python/api-dev	wcwidth	0.8.3	dev	MIT
 python/api-dev	whitenoise	6.12.0	dev	MIT
 python/judge-py	ast-serialize	0.11.0	runtime	MIT
-python/judge-py	colorama	0.4.6	runtime	BSD License
+python/judge-py	colorama	0.4.6	runtime	UNKNOWN
 python/judge-py	iniconfig	2.3.0	runtime	MIT
 python/judge-py	librt	0.15.0	runtime	MIT
 python/judge-py	mypy	2.3.1	runtime	MIT
