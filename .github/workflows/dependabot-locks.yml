@@ -122,8 +122,8 @@ jobs:
         working-directory: apps/api
         run: |
           set -euo pipefail
-          uv pip compile requirements.txt -o requirements.lock --python-version 3.12 --quiet
-          uv pip compile requirements-dev.txt -o requirements-dev.lock --python-version 3.12 --quiet
+          uv pip compile requirements.txt -o requirements.lock --python-version 3.14 --quiet
+          uv pip compile requirements-dev.txt -o requirements-dev.lock --python-version 3.14 --quiet
       # A bump can pull in a package the inventory has never seen, and
       # `licence_inventory.py --check` then fails CI on the pull request.
       # The inventory reads Python licences from installed metadata, so the
@@ -137,7 +137,7 @@ jobs:
       - name: Regenerate the licence inventory
         run: |
           set -euo pipefail
-          uv venv .licence-venv --python 3.12 --quiet
+          uv venv .licence-venv --python 3.14 --quiet
           uv pip install -r apps/api/requirements-dev.lock --python .licence-venv --quiet
           python3 tools/licence_inventory.py --venv .licence-venv
       - name: Did anything change?
