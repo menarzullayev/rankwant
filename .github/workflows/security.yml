@@ -88,7 +88,7 @@ jobs:
             # out (400 "Invalid package tree") and is retiring it
             # (410). npm 11 talks to /advisories/bulk only, so the
             # high+ gate keeps working without rewriting the lockfile.
-            npx --yes npm@11 audit --audit-level=high
+            npx --yes npm@12 audit --audit-level=high
           fi
 
       - name: Judge sandbox — escape tests
