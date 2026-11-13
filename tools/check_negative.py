@@ -11921,11 +11921,20 @@ def neg_web_dockerfile_stable_layers_first() -> tuple[bool, str]:
     """`.next` and the commit labels change every deploy: they go last."""
     src = (ROOT / "apps/web/Dockerfile").read_text(encoding="utf-8")
     final = src.rsplit("\nFROM ", 1)[-1]
+
+    def where(pattern: str) -> int:
+        # `COPY` may carry flags between the command and its source (`--chown=node:node`
+        # since the image stopped running as root); the order of the lines is what matters.
+        found = re.search(pattern, final)
+        if found is None:
+            raise ValueError(f"pattern not found: {pattern}")
+        return found.start()
+
     try:
-        nm = final.index("COPY --from=deps /app/node_modules ./node_modules")
-        nm_web = final.index("COPY --from=deps /app/apps/web/node_modules")
-        nxt = final.index("COPY --from=build /app/apps/web/.next")
-        sha = final.index("ARG GIT_SHA")
+        nm = where(r"COPY --from=deps(?: --\S+)* /app/node_modules \./node_modules")
+        nm_web = where(r"COPY --from=deps(?: --\S+)* /app/apps/web/node_modules")
+        nxt = where(r"COPY --from=build(?: --\S+)* /app/apps/web/\.next")
+        sha = where(r"ARG GIT_SHA")
     except ValueError as exc:
         return False, f"apps/web/Dockerfile final bosqich: qator yo'q ({exc})"
     if not nm < nxt or not nm_web < nxt:
@@ -11933,7 +11942,7 @@ def neg_web_dockerfile_stable_layers_first() -> tuple[bool, str]:
     if not nxt < sha:
         return False, "apps/web/Dockerfile: GIT_SHA COPY lardan oldin"
     build = src.split("AS build", 1)[-1].split("\nFROM ", 1)[0]
-    if "COPY --from=deps /app/node_modules" in build:
+    if re.search(r"COPY --from=deps(?: --\S+)* /app/node_modules", build):
         return False, "apps/web/Dockerfile build: node_modules nusxalanadi (bind mount emas)"
     return True, "apps/web/Dockerfile: barqaror qatlamlar oldin"
 
