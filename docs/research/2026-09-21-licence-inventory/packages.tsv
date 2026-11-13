@@ -759,6 +759,7 @@ python/api	jsonschema	4.26.0	runtime	MIT
 python/api	jsonschema-specifications	2025.9.1	runtime	MIT
 python/api	kombu	5.7.0	runtime	BSD-3-Clause
 python/api	opentelemetry-api	1.45.2	runtime	Apache-2.0
+python/api	packaging	26.3	runtime	Apache-2.0 OR BSD-2-Clause
 python/api	pillow	13.0.0	runtime	MIT-CMU
 python/api	prompt-toolkit	3.0.53	runtime	BSD License
 python/api	psycopg	3.3.9	runtime	LGPL-3.0-only
