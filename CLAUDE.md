@@ -263,6 +263,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-11](docs/decisions/2026-11-11-cpuz-import.md) · cp.uz importi: avtomatik + agent ko'rigi, hammasi birga, uch qatlamli mashq, inglizcha asl, kategoriya/daraja, qayta import, lug'at + tooltip, `/algorithms/<kategoriya>/<slug>`, olimpiada cp.uz kabi (ADR-0062) · `cpuz_library_is_pinned_and_checked`
 - [2026-11-12](docs/decisions/2026-11-12-voice-statements.md) · Shartni ovozda o'qish: formula so'zga aylantiriladi, ovoz Navoiy (o'z GPU'mizda, host servisi), hozircha FLEURS namunasi, faqat so'ralganda bo'laklab yaratilib saqlanadi · `voice_text_is_spoken_and_guarded`
 - [2026-11-12](docs/decisions/2026-11-12-ai-tutor-details.md) · AI ustoz: yon panel + 3 pog'onali maslahat, «Nega xato?», Haiku hammaga va Sonnet og'irga, hozircha faqat `claude -p` (`ai-worker`) · `ai_tutor_answers_without_solutions`
+- [2026-11-13](docs/decisions/2026-11-13-go-127.md) · Judge toolchain: Go 1.27, modullar yangilandi, judge-py Redis 8 mijozi; judge-py obrazi bookworm da qoladi (trixie da JDK 17 yo'q) · `services/judge-go/go.mod`
 
 ## Tekshiruvlar
 
