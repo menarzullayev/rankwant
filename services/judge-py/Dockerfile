@@ -44,7 +44,7 @@ RUN useradd -r -u 61000 -s /usr/sbin/nologin isolate \
     && mkdir -p /var/local/lib/isolate
 
 WORKDIR /app
-RUN pip install --no-cache-dir --break-system-packages "redis>=5.0"
+RUN pip install --no-cache-dir --break-system-packages "redis>=8.1.0"
 COPY *.py ./
 
 ENV REDIS_URL=redis://redis:6379/0

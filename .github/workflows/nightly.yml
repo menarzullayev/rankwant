@@ -655,9 +655,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      # Node 22's bundled npm falls back to the retired quick-audit endpoint
+      # Older bundled npm versions fall back to the retired quick-audit endpoint
       # (400 "Invalid package tree", then 410); npm 11 uses /advisories/bulk.
-      NPM: npm@11.21.1
+      NPM: npm@12.2.2
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

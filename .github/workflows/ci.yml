@@ -570,7 +570,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version: '1.26'
+          go-version: '1.27'
       # No "not scaffolded yet" guards (2026-11-10, audit L-04): both judges
       # exist, and a guard that exits 0 on a missing file would turn a
       # deleted or renamed module into a green job.
