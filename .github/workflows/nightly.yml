@@ -512,7 +512,7 @@ jobs:
       # a service. These checks read repository FILES, not a running stack.
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: PyYAML for the compose check
         run: pip install pyyaml
       - name: Static suite — judge host, IDOR, PAT hash, rate limits
@@ -606,7 +606,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: pip-audit
         run: pip install pip-audit==2.10.1
       # `--no-deps --disable-pip`: the locks are fully pinned, so nothing is
@@ -891,7 +891,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
           cache: pip
           cache-dependency-path: apps/api/requirements-dev.lock
       - run: pip install -r requirements-dev.lock
@@ -928,7 +928,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: The same coverage the shards measured with
         run: pip install "$(grep -i '^coverage==' requirements-dev.lock)"
         working-directory: apps/api

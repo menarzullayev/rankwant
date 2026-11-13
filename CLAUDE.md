@@ -265,6 +265,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-12](docs/decisions/2026-11-12-ai-tutor-details.md) · AI ustoz: yon panel + 3 pog'onali maslahat, «Nega xato?», Haiku hammaga va Sonnet og'irga, hozircha faqat `claude -p` (`ai-worker`) · `ai_tutor_answers_without_solutions`
 - [2026-11-13](docs/decisions/2026-11-13-node-26-lts.md) · Runtime Node 22 → 26 LTS, `@types/node` 26 (2026-09-20 ni almashtiradi); Redis 8 · `types_node_tracks_runtime`
 - [2026-11-13](docs/decisions/2026-11-13-go-127.md) · Judge toolchain: Go 1.27, modullar yangilandi, judge-py Redis 8 mijozi; judge-py obrazi bookworm da qoladi (trixie da JDK 17 yo'q) · `services/judge-go/go.mod`
+- [2026-11-13](docs/decisions/2026-11-13-python-314.md) · API runtime Python 3.12 → 3.14; lock'lar 3.14 uchun; ruff target py312 qoladi · `dependabot_locks_are_recompiled`
 
 ## Tekshiruvlar
 

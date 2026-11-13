@@ -88,7 +88,7 @@ class StaffUserSerializer(serializers.ModelSerializer[User]):
             for field in ("is_active", "is_staff"):
                 if field in attrs and attrs[field] != getattr(instance, field):
                     raise serializers.ValidationError(
-                        {field: "You cannot change this field on your own account"}
+                        {str(field): "You cannot change this field on your own account"}
                     )
 
         if not actor.is_superuser:

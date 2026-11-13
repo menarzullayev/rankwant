@@ -53,8 +53,8 @@ python tools/licence_inventory.py --check    # drift only, offline, CI-safe
 |---|---|---|---|---|---|---|
 | `go/judge-go` | 21 | 21 | 0 | 21 | 0 | 0 |
 | `node/e2e` | 3 | 0 | 3 | 3 | 0 | 0 |
-| `node/web` | 700 | 221 | 479 | 694 | 2 | 4 |
-| `python/api` | 63 | 63 | 0 | 62 | 1 | 0 |
+| `node/web` | 702 | 222 | 480 | 696 | 2 | 4 |
+| `python/api` | 61 | 61 | 0 | 60 | 1 | 0 |
 | `python/api-dev` | 108 | 0 | 108 | 107 | 1 | 0 |
 | `python/judge-py` | 14 | 14 | 0 | 13 | 0 | 1 |
 | **total** | **909** | | | **900** | **4** | **5** |
@@ -157,15 +157,15 @@ attach obligations to distribution. Strong copyleft first.
 | `lightningcss-linux-x64-musl` | 1.33.0 | dev | MPL-2.0 |
 | `lightningcss-win32-arm64-msvc` | 1.33.0 | dev | MPL-2.0 |
 | `lightningcss-win32-x64-msvc` | 1.33.0 | dev | MPL-2.0 |
-| `fpdf2` | 2.8.9 | runtime | LGPL-3.0-only |
-| `psycopg` | 3.3.6 | runtime | LGPL-3.0-only |
-| `psycopg-binary` | 3.3.6 | runtime | LGPL-3.0-only |
-| `certifi` | 2026.7.22 | dev | MPL-2.0 |
-| `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
+| `fpdf2` | 2.9.0 | runtime | LGPL-3.0-only |
+| `psycopg` | 3.3.9 | runtime | LGPL-3.0-only |
+| `psycopg-binary` | 3.3.9 | runtime | LGPL-3.0-only |
+| `certifi` | 2026.10.23 | dev | MPL-2.0 |
+| `fpdf2` | 2.9.0 | dev | LGPL-3.0-only |
 | `hypothesis` | 6.170.15 | dev | MPL-2.0 |
 | `pathspec` | 1.1.1 | dev | Mozilla Public License 2.0 (MPL 2.0) |
-| `psycopg` | 3.3.6 | dev | LGPL-3.0-only |
-| `psycopg-binary` | 3.3.6 | dev | LGPL-3.0-only |
+| `psycopg` | 3.3.9 | dev | LGPL-3.0-only |
+| `psycopg-binary` | 3.3.9 | dev | LGPL-3.0-only |
 | `pathspec` | 1.1.1 | runtime | Mozilla Public License 2.0 (MPL 2.0) |
 
 ## 7. Base images
@@ -176,7 +176,7 @@ they are what the image is built from, and the lawyer decides.
 
 | Dockerfile | Image |
 |---|---|
-| `apps/api/Dockerfile` | `python:3.12-slim` |
+| `apps/api/Dockerfile` | `python:3.14-slim` |
 | `apps/api/Dockerfile` | `base` |
 | `apps/api/Dockerfile` | `node:26-bookworm-slim` |
 | `apps/api/Dockerfile` | `base` |
@@ -237,7 +237,7 @@ new dependency cannot make this document quietly false.
 | `playwright` | 1.63.0 | dev | Apache-2.0 |
 | `playwright-core` | 1.63.0 | dev | Apache-2.0 |
 
-### `node/web` — 700
+### `node/web` — 702
 
 | Package | Version | Scope | Licence |
 |---|---|---|---|
@@ -323,6 +323,7 @@ new dependency cannot make this document quietly false.
 | `@internationalized/date` | 3.12.4 | runtime | Apache-2.0 |
 | `@internationalized/number` | 3.6.8 | runtime | Apache-2.0 |
 | `@internationalized/string` | 3.2.10 | runtime | Apache-2.0 |
+| `@isaacs/nonrecursive-glob-match` | 1.1.0 | dev | BlueOak-1.0.0 |
 | `@jridgewell/gen-mapping` | 0.3.13 | dev | MIT |
 | `@jridgewell/remapping` | 2.3.5 | dev | MIT |
 | `@jridgewell/resolve-uri` | 3.1.2 | dev | MIT |
@@ -334,16 +335,17 @@ new dependency cannot make this document quietly false.
 | `@monaco-editor/react` | 4.7.0 | runtime | MIT |
 | `@napi-rs/wasm-runtime` | 1.2.4 | dev | MIT |
 | `@napi-rs/wasm-runtime` | 1.2.2 | dev | MIT |
-| `@next/env` | 16.4.5 | runtime | MIT |
-| `@next/eslint-plugin-next` | 16.4.5 | dev | MIT |
-| `@next/swc-darwin-arm64` | 16.4.5 | runtime | MIT |
-| `@next/swc-darwin-x64` | 16.4.5 | runtime | MIT |
-| `@next/swc-linux-arm64-gnu` | 16.4.5 | runtime | MIT |
-| `@next/swc-linux-arm64-musl` | 16.4.5 | runtime | MIT |
+| `@next/env` | 16.4.6 | runtime | MIT |
+| `@next/eslint-plugin-next` | 16.4.6 | dev | MIT |
+| `@next/swc-darwin-arm64` | 16.4.6 | runtime | MIT |
+| `@next/swc-darwin-x64` | 16.4.6 | runtime | MIT |
+| `@next/swc-linux-arm64-gnu` | 16.4.6 | runtime | MIT |
+| `@next/swc-linux-arm64-musl` | 16.4.6 | runtime | MIT |
 | `@next/swc-linux-x64-gnu` | 16.4.5 | runtime | MIT |
-| `@next/swc-linux-x64-musl` | 16.4.5 | runtime | MIT |
-| `@next/swc-win32-arm64-msvc` | 16.4.5 | runtime | MIT |
-| `@next/swc-win32-x64-msvc` | 16.4.5 | runtime | MIT |
+| `@next/swc-linux-x64-gnu` | 16.4.6 | runtime | MIT |
+| `@next/swc-linux-x64-musl` | 16.4.6 | runtime | MIT |
+| `@next/swc-win32-arm64-msvc` | 16.4.6 | runtime | MIT |
+| `@next/swc-win32-x64-msvc` | 16.4.6 | runtime | MIT |
 | `@nodelib/fs.scandir` | 2.1.5 | dev | MIT |
 | `@nodelib/fs.stat` | 2.0.5 | dev | MIT |
 | `@nodelib/fs.walk` | 1.2.8 | dev | MIT |
@@ -411,16 +413,16 @@ new dependency cannot make this document quietly false.
 | `@types/trusted-types` | 2.0.7 | runtime | MIT |
 | `@types/unist` | 3.0.3 | runtime | MIT |
 | `@types/unist` | 2.0.11 | runtime | MIT |
-| `@typescript-eslint/eslint-plugin` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/parser` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/project-service` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/scope-manager` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/tsconfig-utils` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/type-utils` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/types` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/typescript-estree` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/utils` | 8.72.1 | dev | MIT |
-| `@typescript-eslint/visitor-keys` | 8.72.1 | dev | MIT |
+| `@typescript-eslint/eslint-plugin` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/parser` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/project-service` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/scope-manager` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/tsconfig-utils` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/type-utils` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/types` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/typescript-estree` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/utils` | 8.72.2 | dev | MIT |
+| `@typescript-eslint/visitor-keys` | 8.72.2 | dev | MIT |
 | `@typescript/native` | 7.0.2 | dev | Apache-2.0 |
 | `@typescript/old` | 6.0.3 | dev | Apache-2.0 |
 | `@typescript/typescript-darwin-arm64` | 7.0.2 | runtime | Apache-2.0 |
@@ -560,7 +562,7 @@ new dependency cannot make this document quietly false.
 | `escape-string-regexp` | 4.0.0 | dev | MIT |
 | `eslint` | 10.14.0 | dev | MIT |
 | `eslint` | 9.39.5 | dev | MIT |
-| `eslint-config-next` | 16.4.5 | dev | MIT |
+| `eslint-config-next` | 16.4.6 | dev | MIT |
 | `eslint-import-resolver-node` | 0.3.10 | dev | MIT |
 | `eslint-import-resolver-typescript` | 3.10.1 | dev | ISC |
 | `eslint-module-utils` | 2.14.0 | dev | MIT |
@@ -637,7 +639,7 @@ new dependency cannot make this document quietly false.
 | `hastscript` | 9.0.1 | runtime | MIT |
 | `hermes-estree` | 0.25.1 | dev | MIT |
 | `hermes-parser` | 0.25.1 | dev | MIT |
-| `hls.js` | 1.7.3 | runtime | Apache-2.0 |
+| `hls.js` | 1.7.4 | runtime | Apache-2.0 |
 | `hookified` | 1.15.1 | dev | MIT |
 | `hookified` | 2.2.0 | dev | MIT |
 | `html-url-attributes` | 3.0.1 | runtime | MIT |
@@ -776,14 +778,14 @@ new dependency cannot make this document quietly false.
 | `minimatch` | 3.1.5 | dev | ISC |
 | `minimatch` | 3.1.5 | dev | ISC |
 | `minimatch` | 3.1.5 | dev | ISC |
-| `minimatch` | 10.2.6 | dev | ISC |
+| `minimatch` | 11.0.8 | dev | ISC |
 | `minimist` | 1.2.8 | dev | MIT |
 | `monaco-editor` | 0.57.0 | runtime | MIT |
 | `ms` | 2.1.3 | runtime | MIT |
 | `nanoid` | 3.3.20 | runtime | MIT |
 | `napi-postinstall` | 0.3.4 | dev | MIT |
 | `natural-compare` | 1.4.0 | dev | MIT |
-| `next` | 16.4.5 | runtime | MIT |
+| `next` | 16.4.6 | runtime | MIT |
 | `node-exports-info` | 1.6.2 | dev | MIT |
 | `node-releases` | 2.0.57 | dev | MIT |
 | `object-assign` | 4.1.1 | dev | MIT |
@@ -862,7 +864,7 @@ new dependency cannot make this document quietly false.
 | `side-channel-list` | 1.0.1 | dev | MIT |
 | `side-channel-map` | 1.0.1 | dev | MIT |
 | `side-channel-weakmap` | 1.0.2 | dev | MIT |
-| `simple-icons` | 16.36.0 | runtime | CC0-1.0 |
+| `simple-icons` | 16.37.0 | runtime | CC0-1.0 |
 | `source-map-js` | 1.2.2 | runtime | BSD-3-Clause |
 | `space-separated-tokens` | 2.0.2 | runtime | MIT |
 | `stable-hash` | 0.0.5 | dev | MIT |
@@ -905,7 +907,7 @@ new dependency cannot make this document quietly false.
 | `typed-array-length` | 1.0.8 | dev | MIT |
 | `typescript` | 6.0.2 | dev | Apache-2.0 |
 | `typescript` | 5.9.3 | dev | Apache-2.0 |
-| `typescript-eslint` | 8.72.1 | dev | MIT |
+| `typescript-eslint` | 8.72.2 | dev | MIT |
 | `unbox-primitive` | 1.1.0 | dev | MIT |
 | `undici-types` | 8.9.0 | dev | MIT |
 | `unified` | 11.0.5 | runtime | MIT |
@@ -942,34 +944,33 @@ new dependency cannot make this document quietly false.
 | `zod-validation-error` | 4.0.2 | dev | MIT |
 | `zwitch` | 2.0.4 | runtime | MIT |
 
-### `python/api` — 63
+### `python/api` — 61
 
 | Package | Version | Scope | Licence |
 |---|---|---|---|
-| `amqp` | 5.3.1 | runtime | BSD |
+| `amqp` | 5.4.2 | runtime | BSD |
 | `annotated-types` | 0.8.0 | runtime | MIT |
 | `anthropic` | 2.8.0 | runtime | Apache-2.0 |
 | `anyio` | 4.16.0 | runtime | MIT |
-| `asgiref` | 3.12.1 | runtime | BSD-3-Clause |
+| `asgiref` | 3.13.0 | runtime | BSD-3-Clause |
 | `attrs` | 26.1.0 | runtime | MIT |
-| `billiard` | 4.2.4 | runtime | BSD |
-| `boto3` | 1.43.127 | runtime | Apache-2.0 |
-| `botocore` | 1.43.127 | runtime | Apache-2.0 |
-| `celery` | 5.6.3 | runtime | BSD-3-Clause |
-| `click` | 8.5.0 | runtime | BSD-3-Clause |
+| `billiard` | 4.3.2 | runtime | BSD |
+| `boto3` | 1.44.2 | runtime | Apache-2.0 |
+| `botocore` | 1.44.2 | runtime | Apache-2.0 |
+| `celery` | 5.7.0 | runtime | BSD-3-Clause |
+| `click` | 8.5.1 | runtime | BSD-3-Clause |
 | `click-didyoumean` | 0.3.1 | runtime | MIT |
 | `click-plugins` | 1.1.1.2 | runtime | New BSD |
-| `click-repl` | 0.3.0 | runtime | MIT |
-| `defusedxml` | 0.7.1 | runtime | PSFL |
-| `django` | 5.2.18 | runtime | BSD-3-Clause |
+| `click-repl` | 0.4.1 | runtime | MIT |
+| `django` | 5.2.19 | runtime | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | runtime | MIT |
 | `django-filter` | 26.2 | runtime | BSD License |
 | `djangorestframework` | 3.18.3 | runtime | BSD-3-Clause |
 | `docstring-parser` | 0.18.0 | runtime | MIT |
 | `drf-spectacular` | 0.30.0 | runtime | BSD-3-Clause |
-| `fonttools` | 4.65.0 | runtime | MIT |
-| `fpdf2` | 2.8.9 | runtime | LGPL-3.0-only |
-| `gunicorn` | 26.2.0 | runtime | MIT |
+| `fonttools` | 4.68.0 | runtime | MIT |
+| `fpdf2` | 2.9.0 | runtime | LGPL-3.0-only |
+| `gunicorn` | 27.0.1 | runtime | MIT |
 | `h11` | 0.16.0 | runtime | MIT |
 | `httpcore2` | 2.16.0 | runtime | BSD-3-Clause |
 | `httpx2` | 2.16.0 | runtime | BSD-3-Clause |
@@ -979,118 +980,117 @@ new dependency cannot make this document quietly false.
 | `jmespath` | 1.1.0 | runtime | MIT |
 | `jsonschema` | 4.26.0 | runtime | MIT |
 | `jsonschema-specifications` | 2025.9.1 | runtime | MIT |
-| `kombu` | 5.6.2 | runtime | BSD-3-Clause |
+| `kombu` | 5.7.0 | runtime | BSD-3-Clause |
 | `opentelemetry-api` | 1.45.2 | runtime | Apache-2.0 |
-| `packaging` | 26.3 | runtime | Apache-2.0 OR BSD-2-Clause |
 | `pillow` | 13.0.0 | runtime | MIT-CMU |
 | `prompt-toolkit` | 3.0.53 | runtime | BSD License |
-| `psycopg` | 3.3.6 | runtime | LGPL-3.0-only |
-| `psycopg-binary` | 3.3.6 | runtime | LGPL-3.0-only |
+| `psycopg` | 3.3.9 | runtime | LGPL-3.0-only |
+| `psycopg-binary` | 3.3.9 | runtime | LGPL-3.0-only |
 | `pydantic` | 2.14.3 | runtime | MIT |
 | `pydantic-core` | 2.50.4 | runtime | MIT |
 | `python-dateutil` | 2.9.0.post0 | runtime | Dual License |
 | `pyyaml` | 6.0.3 | runtime | MIT |
 | `redis` | 8.1.0 | runtime | MIT |
 | `referencing` | 0.37.0 | runtime | MIT |
-| `rpds-py` | 2026.6.3 | runtime | MIT |
-| `s3transfer` | 0.19.2 | runtime | Apache License 2.0 |
+| `rpds-py` | 2026.9.1 | runtime | MIT |
+| `s3transfer` | 0.19.3 | runtime | Apache License 2.0 |
 | `segno` | 1.6.6 | runtime | BSD License |
 | `six` | 1.17.0 | runtime | MIT |
 | `sniffio` | 1.3.1 | runtime | MIT OR Apache-2.0 |
-| `sqlparse` | 0.6.0 | runtime | BSD License |
+| `sqlparse` | 0.6.1 | runtime | BSD License |
 | `truststore` | 0.10.5 | runtime | MIT |
 | `typing-extensions` | 4.16.0 | runtime | PSF-2.0 |
 | `typing-inspection` | 0.4.5 | runtime | MIT |
-| `tzdata` | 2026.3 | runtime | Apache-2.0 |
-| `tzlocal` | 5.4.4 | runtime | MIT |
+| `tzdata` | 2026.6 | runtime | Apache-2.0 |
+| `tzlocal` | 5.4.5 | runtime | MIT |
 | `uritemplate` | 4.2.0 | runtime | BSD 3-Clause OR Apache-2.0 |
 | `urllib3` | 2.8.0 | runtime | MIT |
 | `uvicorn` | 0.54.0 | runtime | BSD-3-Clause |
 | `vine` | 5.1.0 | runtime | BSD |
-| `wcwidth` | 0.8.3 | runtime | MIT |
+| `wcwidth` | 0.9.4 | runtime | MIT License |
 | `whitenoise` | 6.12.0 | runtime | MIT |
 
 ### `python/api-dev` — 108
 
 | Package | Version | Scope | Licence |
 |---|---|---|---|
-| `amqp` | 5.3.1 | dev | BSD |
+| `amqp` | 5.4.2 | dev | BSD |
 | `annotated-types` | 0.8.0 | dev | MIT |
 | `anthropic` | 2.8.0 | dev | Apache-2.0 |
 | `anyio` | 4.16.0 | dev | MIT |
-| `asgiref` | 3.12.1 | dev | BSD-3-Clause |
+| `asgiref` | 3.13.0 | dev | BSD-3-Clause |
 | `ast-serialize` | 0.13.1 | dev | MIT |
 | `attrs` | 26.1.0 | dev | MIT |
-| `billiard` | 4.2.4 | dev | BSD |
+| `billiard` | 4.3.2 | dev | BSD |
 | `boolean-py` | 5.0 | dev | BSD-2-Clause |
-| `boto3` | 1.43.127 | dev | Apache-2.0 |
-| `botocore` | 1.43.127 | dev | Apache-2.0 |
+| `boto3` | 1.44.2 | dev | Apache-2.0 |
+| `botocore` | 1.44.2 | dev | Apache-2.0 |
 | `cachecontrol` | 0.14.4 | dev | Apache-2.0 |
-| `celery` | 5.6.3 | dev | BSD-3-Clause |
-| `certifi` | 2026.7.22 | dev | MPL-2.0 |
-| `charset-normalizer` | 3.5.1 | dev | MIT |
-| `click` | 8.5.0 | dev | BSD-3-Clause |
+| `celery` | 5.7.0 | dev | BSD-3-Clause |
+| `certifi` | 2026.10.23 | dev | MPL-2.0 |
+| `charset-normalizer` | 3.5.2 | dev | MIT |
+| `click` | 8.5.1 | dev | BSD-3-Clause |
 | `click-didyoumean` | 0.3.1 | dev | MIT |
 | `click-plugins` | 1.1.1.2 | dev | New BSD |
-| `click-repl` | 0.3.0 | dev | MIT |
-| `coverage` | 7.16.1 | dev | Apache-2.0 |
+| `click-repl` | 0.4.1 | dev | MIT |
+| `coverage` | 7.17.3 | dev | Apache-2.0 |
 | `cyclonedx-python-lib` | 11.12.0 | dev | Apache-2.0 |
 | `defusedxml` | 0.7.1 | dev | PSFL |
-| `django` | 5.2.18 | dev | BSD-3-Clause |
+| `django` | 5.2.19 | dev | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | dev | MIT |
 | `django-filter` | 26.2 | dev | BSD License |
 | `django-stubs` | 6.1.2 | dev | MIT |
-| `django-stubs-ext` | 6.1.1 | dev | MIT |
+| `django-stubs-ext` | 6.1.2 | dev | MIT |
 | `djangorestframework` | 3.18.3 | dev | BSD-3-Clause |
-| `djangorestframework-stubs` | 3.18.1 | dev | MIT |
+| `djangorestframework-stubs` | 3.18.2 | dev | MIT |
 | `docstring-parser` | 0.18.0 | dev | MIT |
 | `drf-spectacular` | 0.30.0 | dev | BSD-3-Clause |
 | `execnet` | 2.1.2 | dev | MIT |
 | `factory-boy` | 3.3.3 | dev | MIT |
-| `faker` | 40.38.0 | dev | MIT License |
-| `filelock` | 3.32.6 | dev | MIT |
-| `fonttools` | 4.65.0 | dev | MIT |
-| `fpdf2` | 2.8.9 | dev | LGPL-3.0-only |
-| `gunicorn` | 26.2.0 | dev | MIT |
+| `faker` | 40.54.0 | dev | MIT License |
+| `filelock` | 4.2.10 | dev | MIT |
+| `fonttools` | 4.68.0 | dev | MIT |
+| `fpdf2` | 2.9.0 | dev | LGPL-3.0-only |
+| `gunicorn` | 27.0.1 | dev | MIT |
 | `h11` | 0.16.0 | dev | MIT |
 | `httpcore2` | 2.16.0 | dev | BSD-3-Clause |
 | `httpx2` | 2.16.0 | dev | BSD-3-Clause |
 | `hypothesis` | 6.170.15 | dev | MPL-2.0 |
-| `idna` | 3.19 | dev | BSD-3-Clause |
+| `idna` | 3.20 | dev | BSD-3-Clause |
 | `inflection` | 0.5.1 | dev | MIT |
-| `iniconfig` | 2.3.0 | dev | MIT |
+| `iniconfig` | 2.3.1 | dev | MIT |
 | `jiter` | 0.19.0 | dev | MIT |
 | `jmespath` | 1.1.0 | dev | MIT |
 | `jsonschema` | 4.26.0 | dev | MIT |
 | `jsonschema-specifications` | 2025.9.1 | dev | MIT |
-| `kombu` | 5.6.2 | dev | BSD-3-Clause |
+| `kombu` | 5.7.0 | dev | BSD-3-Clause |
 | `librt` | 0.16.0 | dev | MIT |
 | `license-expression` | 30.4.4 | dev | Apache-2.0 |
-| `markdown-it-py` | 4.2.0 | dev | MIT License |
+| `markdown-it-py` | 4.3.0 | dev | MIT License |
 | `mdurl` | 0.1.2 | dev | MIT License |
-| `msgpack` | 1.2.2 | dev | Apache-2.0 |
+| `msgpack` | 1.2.4 | dev | Apache-2.0 |
 | `mypy` | 2.4.1 | dev | MIT |
-| `mypy-extensions` | 1.1.0 | dev | MIT |
+| `mypy-extensions` | 1.2.0 | dev | MIT |
 | `opentelemetry-api` | 1.45.2 | dev | Apache-2.0 |
 | `packageurl-python` | 0.17.6 | dev | MIT |
 | `packaging` | 26.3 | dev | Apache-2.0 OR BSD-2-Clause |
 | `pathspec` | 1.1.1 | dev | Mozilla Public License 2.0 (MPL 2.0) |
 | `pillow` | 13.0.0 | dev | MIT-CMU |
-| `pip` | 26.2.1 | dev | MIT |
+| `pip` | 26.3 | dev | MIT |
 | `pip-api` | 0.0.35 | dev | Apache License |
 | `pip-audit` | 2.10.1 | dev | Apache Software License |
 | `pip-requirements-parser` | 32.0.1 | dev | MIT |
-| `platformdirs` | 4.11.8 | dev | MIT |
-| `pluggy` | 1.6.0 | dev | MIT |
+| `platformdirs` | 4.14.5 | dev | MIT |
+| `pluggy` | 1.7.0 | dev | MIT |
 | `prompt-toolkit` | 3.0.53 | dev | BSD License |
-| `psycopg` | 3.3.6 | dev | LGPL-3.0-only |
-| `psycopg-binary` | 3.3.6 | dev | LGPL-3.0-only |
-| `py-serializable` | 2.1.0 | dev | Apache-2.0 |
+| `psycopg` | 3.3.9 | dev | LGPL-3.0-only |
+| `psycopg-binary` | 3.3.9 | dev | LGPL-3.0-only |
+| `py-serializable` | 2.2.0 | dev | Apache-2.0 |
 | `pydantic` | 2.14.3 | dev | MIT |
 | `pydantic-core` | 2.50.4 | dev | MIT |
 | `pygments` | 2.21.0 | dev | BSD-2-Clause |
-| `pyparsing` | 3.3.2 | dev | MIT |
-| `pytest` | 9.1.1 | dev | MIT |
+| `pyparsing` | 3.3.3 | dev | MIT |
+| `pytest` | 9.2.0 | dev | MIT |
 | `pytest-cov` | 7.1.0 | dev | MIT |
 | `pytest-django` | 4.14.0 | dev | pytest-django is released under the BSD (3-clause) license |
 | `pytest-xdist` | 3.8.0 | dev | MIT |
@@ -1100,27 +1100,27 @@ new dependency cannot make this document quietly false.
 | `referencing` | 0.37.0 | dev | MIT |
 | `requests` | 2.34.2 | dev | Apache-2.0 |
 | `rich` | 15.0.0 | dev | MIT |
-| `rpds-py` | 2026.6.3 | dev | MIT |
-| `ruff` | 0.17.4 | dev | MIT |
-| `s3transfer` | 0.19.2 | dev | Apache License 2.0 |
+| `rpds-py` | 2026.9.1 | dev | MIT |
+| `ruff` | 0.17.5 | dev | MIT |
+| `s3transfer` | 0.19.3 | dev | Apache License 2.0 |
 | `segno` | 1.6.6 | dev | BSD License |
 | `six` | 1.17.0 | dev | MIT |
 | `sniffio` | 1.3.1 | dev | MIT OR Apache-2.0 |
 | `sortedcontainers` | 2.4.0 | dev | Apache 2.0 |
-| `sqlparse` | 0.6.0 | dev | BSD License |
-| `tomli` | 2.4.1 | dev | MIT |
+| `sqlparse` | 0.6.1 | dev | BSD License |
+| `tomli` | 2.5.0 | dev | MIT |
 | `tomli-w` | 1.2.0 | dev | MIT License |
 | `truststore` | 0.10.5 | dev | MIT |
-| `types-pyyaml` | 6.0.12.20260906 | dev | Apache-2.0 |
+| `types-pyyaml` | 6.0.12.20261111 | dev | Apache-2.0 |
 | `typing-extensions` | 4.16.0 | dev | PSF-2.0 |
 | `typing-inspection` | 0.4.5 | dev | MIT |
-| `tzdata` | 2026.4 | dev | Apache-2.0 |
-| `tzlocal` | 5.4.4 | dev | MIT |
+| `tzdata` | 2026.6 | dev | Apache-2.0 |
+| `tzlocal` | 5.4.5 | dev | MIT |
 | `uritemplate` | 4.2.0 | dev | BSD 3-Clause OR Apache-2.0 |
 | `urllib3` | 2.8.0 | dev | MIT |
 | `uvicorn` | 0.54.0 | dev | BSD-3-Clause |
 | `vine` | 5.1.0 | dev | BSD |
-| `wcwidth` | 0.8.3 | dev | MIT |
+| `wcwidth` | 0.9.4 | dev | MIT License |
 | `whitenoise` | 6.12.0 | dev | MIT |
 
 ### `python/judge-py` — 14
