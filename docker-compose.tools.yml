@@ -31,13 +31,14 @@ x-logging: &default-logging
 services:
   adminer:
     # DIGEST bilan qadalgan, suzuvchi `adminer:4` tegi bilan EMAS.
+    # 2026-11-13: digest `adminer:6.3.0` (oldin 4.x) — `ADMINER_DEFAULT_SERVER` ishlashi o'lchandi.
     #
     # ⚠️ Konteyner 2026-09-20 17:07 dan 2026-09-21 gacha aynan `adminer:4`
     # bilan ishladi va uni hech narsa yangilamasdi: suzuvchi major teg hech
     # qachon o'z-o'zidan almashmaydi, ya'ni «qaysi kod ishlayapti» degan savol
     # javobsiz qoladi. Digest buni faktga aylantiradi. O'lchandi 2026-09-21:
     #   docker image inspect adminer:4 --format '{{json .RepoDigests}}'
-    image: adminer@sha256:c1c24d89d06fcb8fc0fb5a049240dc292ff4a121ae05d7e74d64b58c421d2921
+    image: adminer@sha256:3a07decd833c2375ea749aa8018250c1db4859a78bd55354f797bfb591733233
     logging: *default-logging
     # `profiles` — `up -d` uni O'ZI ko'tarmaydi; faqat `--profile tools`.
     profiles: ['tools']

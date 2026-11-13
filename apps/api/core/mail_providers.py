@@ -73,7 +73,9 @@ def _post(url: str, payload: dict[str, object], headers: dict[str, str]) -> str:
         },
     )
     try:
-        with open_with_retry(request, timeout=settings.EMAIL_TIMEOUT, label=url) as response:
+        with open_with_retry(
+            request, timeout=settings.MAIL_PROVIDER_TIMEOUT, label=url
+        ) as response:
             return str(response.read().decode("utf-8", "replace"))
     except urllib.error.HTTPError as exc:
         detail = exc.read()[:500].decode("utf-8", "replace")

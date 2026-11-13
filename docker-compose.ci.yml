@@ -91,7 +91,7 @@ services:
   # butun faylni skanerlaydi, izohdagi naqsh ham o'zgaruvchi bo'lib ko'rinadi.)
   smoke:
     logging: *default-logging
-    image: python:3.13-slim
+    image: python:3.14-slim
     profiles: ['smoke']
     volumes: ["${HOST_REPO_ROOT:-.}/tests/smoke:/smoke:ro"]
     command: ['python', '/smoke/check.py']
@@ -117,7 +117,7 @@ services:
   # boshqariladi — `tests/latency/check_judge_latency.py` docstring'iga qarang.
   latency:
     logging: *default-logging
-    image: python:3.13-slim
+    image: python:3.14-slim
     profiles: ['latency']
     volumes: ["${HOST_REPO_ROOT:-.}/tests/latency:/latency:ro"]
     command: ['python', '/latency/check_judge_latency.py']
@@ -133,7 +133,7 @@ services:
   # `-e BURST=…`.
   burst:
     logging: *default-logging
-    image: python:3.13-slim
+    image: python:3.14-slim
     profiles: ['burst']
     volumes: ["${HOST_REPO_ROOT:-.}/tests/burst:/burst:ro"]
     command: ['python', '/burst/check_judge_burst.py']
@@ -155,7 +155,7 @@ services:
   # the read-only harness directory would be created on the host as well.
   evaluation:
     logging: *default-logging
-    image: python:3.13-slim
+    image: python:3.14-slim
     profiles: ['evaluation']
     volumes:
       - "${HOST_REPO_ROOT:-.}/tests/evaluation:/evaluation:ro"

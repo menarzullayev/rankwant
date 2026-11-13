@@ -1,6 +1,7 @@
 """Django sozlamalari — RankWant API.
 
-Stack: ADR-0003 (Django 5.2 LTS + DRF) · Auth: ADR-0008 (session + PAT).
+Stack: ADR-0003 (Django + DRF; now 6.1, see docs/decisions/2026-11-13-django-6.md)
+Auth: ADR-0008 (session + PAT).
 """
 
 from __future__ import annotations
@@ -540,7 +541,9 @@ EMAIL_FROM_NAME = env("EMAIL_FROM_NAME", "RankWant")
 #: Bitta provayderga ajratilgan vaqt. Zanjir ketma-ket ishlaydi, ya'ni
 #: eng yomon holat = shu qiymat × sozlangan provayderlar soni. Shu sabab
 #: yuborish so'rov ichida emas, `core.tasks.send_email` da bajariladi.
-EMAIL_TIMEOUT = int(env("EMAIL_TIMEOUT", "10"))
+# The setting is not called `EMAIL_TIMEOUT`: Django 6.1 deprecates that name
+# (its own SMTP timeout). The environment variable keeps its name.
+MAIL_PROVIDER_TIMEOUT = int(env("EMAIL_TIMEOUT", "10"))
 
 # Har bir provayder O'Z subdomenidan yuboradi: SPF `include:` 10 ta DNS
 # lookup bilan cheklangan va to'rttasi bitta yozuvga sig'maydi.

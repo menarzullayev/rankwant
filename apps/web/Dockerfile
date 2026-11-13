@@ -22,7 +22,7 @@
 #
 # Shuning uchun quyidagi COPY yo'llari ildizga NISBATAN yozilgan.
 
-FROM node:22-slim AS deps
+FROM node:26-slim AS deps
 WORKDIR /app
 # Workspace ildizining manifesti va yagona lockfile. Ikkalasi birga kerak:
 # `npm ci` lockfile'ni ildizdan o'qiydi va workspace'larni undan topadi.
@@ -49,7 +49,7 @@ COPY apps/web/package.json ./apps/web/
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
 
-FROM node:22-slim AS build
+FROM node:26-slim AS build
 WORKDIR /app
 # ⚠️⚠️ TARTIB MUHIM: MANBA AVVAL, `node_modules` KEYIN.
 #
@@ -170,7 +170,7 @@ RUN --mount=type=cache,target=/app/apps/web/.next/cache \
     --mount=type=bind,from=deps,source=/app/apps/web/node_modules,target=/app/apps/web/node_modules,rw \
     npm run build
 
-FROM node:22-slim
+FROM node:26-slim
 WORKDIR /app
 ENV NODE_ENV=production
 # ⚠️ ORDER: what changes least goes first. Every layer after a changed one

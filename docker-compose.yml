@@ -50,7 +50,7 @@ services:
 
   redis:
     logging: *default-logging
-    image: redis:7
+    image: redis:8
     # Host portini almashtirish mumkin: REDIS_PORT=6380 docker compose up -d redis
     ports: ['${REDIS_PORT:-6379}:6379']
     healthcheck:
@@ -121,7 +121,7 @@ services:
   # tarmoqdan yozadi/o'qiydi.
   judge-queue:
     logging: *default-logging
-    image: redis:7
+    image: redis:8
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 10s

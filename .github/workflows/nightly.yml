@@ -173,7 +173,7 @@ jobs:
           CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '26'
           cache: npm
           cache-dependency-path: tests/e2e/package-lock.json
       - name: E2E deps
@@ -245,7 +245,7 @@ jobs:
           CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '26'
           cache: npm
           cache-dependency-path: tests/e2e/package-lock.json
       - name: E2E deps
@@ -512,7 +512,7 @@ jobs:
       # a service. These checks read repository FILES, not a running stack.
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: PyYAML for the compose check
         run: pip install pyyaml
       - name: Static suite — judge host, IDOR, PAT hash, rate limits
@@ -606,7 +606,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: pip-audit
         run: pip install pip-audit==2.10.1
       # `--no-deps --disable-pip`: the locks are fully pinned, so nothing is
@@ -662,7 +662,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '26'
       - name: The auditor sees a known advisory (canary)
         run: |
           set -euo pipefail
@@ -882,7 +882,7 @@ jobs:
           --health-timeout 5s --health-retries 5
         ports: ['5432']
       redis:
-        image: redis:7
+        image: redis:8
         options: >-
           --health-cmd "redis-cli ping" --health-interval 10s
           --health-timeout 5s --health-retries 5
@@ -891,7 +891,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
           cache: pip
           cache-dependency-path: apps/api/requirements-dev.lock
       - run: pip install -r requirements-dev.lock
@@ -928,7 +928,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: The same coverage the shards measured with
         run: pip install "$(grep -i '^coverage==' requirements-dev.lock)"
         working-directory: apps/api

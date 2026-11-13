@@ -2261,7 +2261,7 @@ def dependabot_locks_are_recompiled() -> str | None:
     Qo'riqlanadigan to'rt narsa:
     - yechish (resolve) bosqichi yozish huquqisiz: u manba paketni qurishi,
       ya'ni begona kodni bajarishi mumkin;
-    - lock'lar image bilan bir xil Python uchun (3.12) yasaladi — boshqa
+    - lock'lar image bilan bir xil Python uchun (3.14) yasaladi — boshqa
       versiyada shartli bog'liqliklar (`typing-extensions`) tushib qoladi;
     - push'dan keyin CI ochiq ishga tushiriladi: workflow tokeni bilan
       qilingan push CI'ni uyg'otmaydi va PR tekshiruvsiz qolardi.
@@ -2272,8 +2272,8 @@ def dependabot_locks_are_recompiled() -> str | None:
         return "dependabot-locks.yml: `compile` va `commit` job'lari topilmadi"
     if re.search(r"^\s+[a-z-]+: write\s*$", match.group(1), re.M):
         return "dependabot-locks.yml: `compile` job'ida yozish huquqi bor — begona kod token bilan ishlaydi"
-    if workflow.count("--python-version 3.12") < 2:
-        return "dependabot-locks.yml: lock'lar Python 3.12 uchun yasalmaydi"
+    if workflow.count("--python-version 3.14") < 2:
+        return "dependabot-locks.yml: lock'lar Python 3.14 uchun yasalmaydi"
     if read(".github/workflows/ci.yml").count("&& inputs.run_all)") < 6:
         return "ci.yml: `run_all` o'qilmaydi — qo'lda yurishda build o'tkazib yuboriladi"
     if '-m "[dependabot skip]"' not in workflow:
@@ -2283,8 +2283,8 @@ def dependabot_locks_are_recompiled() -> str | None:
     if "gh workflow run ci.yml" not in workflow:
         return "dependabot-locks.yml: push'dan keyin CI ishga tushirilmaydi — PR tekshiruvsiz qoladi"
     for name in ("requirements.lock", "requirements-dev.lock"):
-        if "--python-version 3.12" not in read("apps/api/" + name).split("\n", 2)[1]:
-            return f"apps/api/{name}: lock Python 3.12 uchun yasalmagan (sarlavhaga qarang)"
+        if "--python-version 3.14" not in read("apps/api/" + name).split("\n", 2)[1]:
+            return f"apps/api/{name}: lock Python 3.14 uchun yasalmagan (sarlavhaga qarang)"
     # 2026-11-10 (HITL, audit Q-08): npm and Go pull requests too. Dependabot
     # writes their lockfiles but not the licence inventory, so #474 sat
     # BLOCKED on `licence_inventory.py --check`.
@@ -5249,24 +5249,25 @@ def typescript_side_by_side() -> str | None:
 
 
 def types_node_tracks_runtime() -> str | None:
-    """2026-09-20: `@types/node` major = Node major (CI + image 22).
+    """2026-09-20: `@types/node` major = Node major (CI + image 26).
 
     Dependabot #143 `@types/node@26` ni Node 22 ustiga qo'ymoqchi edi.
+    2026-11-13: runtime Node 26 (LTS), qoida shunga ko'chdi.
     `skipLibCheck: true` shu yolg'on yashilni o'tkazib yuboradi.
     """
     pkg = read("apps/web/package.json")
-    if '"@types/node": "22.' not in pkg:
-        return "apps/web/package.json: `@types/node` Node 22 bilan mos emas"
+    if '"@types/node": "26.' not in pkg:
+        return "apps/web/package.json: `@types/node` Node 26 bilan mos emas"
     yml = read(".github/dependabot.yml")
     idx = yml.find('dependency-name: "@types/node"')
     if idx < 0:
         return ".github/dependabot.yml: `@types/node` ignore yo'q"
     if "version-update:semver-major" not in yml[idx : idx + 180]:
         return ".github/dependabot.yml: `@types/node` major ignore yo'q"
-    if "node-version: '22'" not in read(".github/workflows/ci.yml"):
-        return ".github/workflows/ci.yml: Node 22 emas"
-    if read("apps/web/Dockerfile").count("FROM node:22-slim") < 3:
-        return "apps/web/Dockerfile: image Node 22 emas (3 bosqich kerak)"
+    if "node-version: '26'" not in read(".github/workflows/ci.yml"):
+        return ".github/workflows/ci.yml: Node 26 emas"
+    if read("apps/web/Dockerfile").count("FROM node:26-slim") < 3:
+        return "apps/web/Dockerfile: image Node 26 emas (3 bosqich kerak)"
     return None
 
 
@@ -5341,15 +5342,15 @@ def eslint_ten_uses_ts_parser() -> str | None:
 
 
 def pytest_nine_and_django_plugin() -> str | None:
-    """2026-09-20 HITL: pytest ≥9.1.1 va pytest-django ≥4.14 birga.
+    """2026-09-20 HITL: pytest ≥9 va pytest-django ≥4.14 birga.
 
     Lock allaqachon 9.1.1 / 4.14.0 edi; floor `>=8` / `>=4.9` qolsa
     `uv pip compile` pytest 8 ga qaytishi mumkin. pytest-django 4.14
     pytest 9 uchun; 4.9 yetarli emas.
     """
     floors = read("apps/api/requirements-dev.txt")
-    if not re.search(r"(?m)^pytest>=9\.1\.1$", floors):
-        return "apps/api/requirements-dev.txt: pytest floor 9.1.1 emas"
+    if not re.search(r"(?m)^pytest>=9\.\d+\.\d+$", floors):
+        return "apps/api/requirements-dev.txt: pytest floor 9.x emas"
     if not re.search(r"(?m)^pytest-django>=4\.14\.0$", floors):
         return "apps/api/requirements-dev.txt: pytest-django floor 4.14.0 emas"
     lock = read("apps/api/requirements-dev.lock")

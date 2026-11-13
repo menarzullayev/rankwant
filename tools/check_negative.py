@@ -8271,9 +8271,9 @@ def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
         "apps/api/requirements.lock",
-        "#    uv pip compile requirements.txt -o requirements.lock --python-version 3.12",
+        "#    uv pip compile requirements.txt -o requirements.lock --python-version 3.14",
         "#    uv pip compile requirements.txt -o requirements.lock",
-        "lock Python 3.12 uchun yasalmagan",
+        "lock Python 3.14 uchun yasalmagan",
     )
 
 
@@ -8890,7 +8890,7 @@ def neg_decisions_typecheck_js_tsc() -> tuple[bool, str]:
 
 
 def neg_decisions_types_node_26() -> tuple[bool, str]:
-    """`@types/node` 26 ga chiqsa tutilsin — runtime hali 22.
+    """`@types/node` 22 ga qaytsa tutilsin — runtime Node 26.
 
     ⚠️ Langar `apps/web/package.json` dagi ANIQ versiya satri. Uni bump
     qilganda bu yer ham yangilanishi shart, aks holda test «langar
@@ -8898,8 +8898,8 @@ def neg_decisions_types_node_26() -> tuple[bool, str]:
     """
     return _decision_broken(
         "apps/web/package.json",
-        '"@types/node": "22.',
         '"@types/node": "26.',
+        '"@types/node": "22.',
         "@types/node runtime bilan",
     )
 
@@ -8945,7 +8945,7 @@ def neg_decisions_pytest_floor_eight() -> tuple[bool, str]:
     """pytest floor 8 ga qaytsa tutilsin."""
     return _decision_broken(
         "apps/api/requirements-dev.txt",
-        "pytest>=9.1.1",
+        "pytest>=9.2.0",
         "pytest>=8",
         "pytest 9 va pytest-django 4.14",
     )

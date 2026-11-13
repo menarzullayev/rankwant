@@ -56,7 +56,7 @@ Source of truth: the `**STATUS:**` line in each `docs/NN-*/README.md`.
 
 ```
 rankwant/
-├── apps/api/            Django 5.2 LTS + DRF  (Sprint 1)
+├── apps/api/            Django 6.1 + DRF  (Sprint 1)
 ├── apps/web/            Next.js + React 19    (Sprint 1)
 ├── services/judge-go/   bake-off A — Go + nsjail
 ├── services/judge-py/   bake-off B — Python + isolate
