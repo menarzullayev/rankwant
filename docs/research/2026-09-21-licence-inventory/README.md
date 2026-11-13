@@ -56,10 +56,10 @@ python tools/licence_inventory.py --check    # drift only, offline, CI-safe
 | `node/web` | 700 | 221 | 479 | 694 | 2 | 4 |
 | `python/api` | 61 | 61 | 0 | 60 | 1 | 0 |
 | `python/api-dev` | 108 | 0 | 108 | 107 | 1 | 0 |
-| `python/judge-py` | 14 | 14 | 0 | 13 | 0 | 1 |
-| **total** | **907** | | | **894** | **4** | **9** |
+| `python/judge-py` | 14 | 14 | 0 | 14 | 0 | 0 |
+| **total** | **907** | | | **895** | **4** | **8** |
 
-Copyleft: **0 strong**, **38 weak**. Needs a human eye: **4**. UNKNOWN: **9**.
+Copyleft: **0 strong**, **38 weak**. Needs a human eye: **4**. UNKNOWN: **8**.
 
 ## 4. Licences that could not be determined
 
@@ -84,12 +84,6 @@ listed under each group.
 | `apps/web` | 0.1.0 | runtime | **UNKNOWN** |
 | `packages/shared` | 0.1.0 | runtime | **UNKNOWN** |
 | `rankwant-web` | ? | runtime | **UNKNOWN** |
-
-**`python/judge-py` — 1 package(s)**
-
-| Package | Version | Scope | Licence |
-|---|---|---|---|
-| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
 
 Closing them:
 
@@ -969,7 +963,7 @@ new dependency cannot make this document quietly false.
 | `click-didyoumean` | 0.3.1 | runtime | MIT |
 | `click-plugins` | 1.1.1.2 | runtime | New BSD |
 | `click-repl` | 0.4.1 | runtime | MIT |
-| `django` | 5.2.19 | runtime | BSD-3-Clause |
+| `django` | 6.1.3 | runtime | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | runtime | MIT |
 | `django-filter` | 26.2 | runtime | BSD License |
 | `djangorestframework` | 3.18.3 | runtime | BSD-3-Clause |
@@ -1043,7 +1037,7 @@ new dependency cannot make this document quietly false.
 | `coverage` | 7.17.3 | dev | Apache-2.0 |
 | `cyclonedx-python-lib` | 11.12.0 | dev | Apache-2.0 |
 | `defusedxml` | 0.7.1 | dev | PSFL |
-| `django` | 5.2.19 | dev | BSD-3-Clause |
+| `django` | 6.1.3 | dev | BSD-3-Clause |
 | `django-cors-headers` | 4.9.0 | dev | MIT |
 | `django-filter` | 26.2 | dev | BSD License |
 | `django-stubs` | 6.1.2 | dev | MIT |
@@ -1135,7 +1129,7 @@ new dependency cannot make this document quietly false.
 | Package | Version | Scope | Licence |
 |---|---|---|---|
 | `ast-serialize` | 0.11.0 | runtime | MIT |
-| `colorama` | 0.4.6 | runtime | **UNKNOWN** |
+| `colorama` | 0.4.6 | runtime | BSD License |
 | `iniconfig` | 2.3.0 | runtime | MIT |
 | `librt` | 0.15.0 | runtime | MIT |
 | `mypy` | 2.3.1 | runtime | MIT |

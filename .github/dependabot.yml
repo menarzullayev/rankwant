@@ -18,12 +18,8 @@ updates:
     groups:
       pip-minor-patch:
         update-types: ["minor", "patch"]
-    ignore:
-      # Django 5.2 — LTS va ADR-0003 da ATAYLAB tanlangan (6.x rad
-      # etilgan: `requirements.txt` boshidagi izohga qarang). #282
-      # 6.1.1 taklif qilgan edi va yopildi.
-      - dependency-name: "django"
-        update-types: ["version-update:semver-major"]
+    # Django: 2026-11-13 qarori bilan major ignore olib tashlandi (6.1; keyingi
+    # major — 6.2 LTS, 2027-04 — oddiy PR sifatida keladi).
   - package-ecosystem: npm
     # ⚠️ `/` — WORKSPACE ILDIZI, `/apps/web` emas. 2026-09-24 da
     # `apps/web/package-lock.json` o'chirildi va root lockfile yagona

@@ -737,7 +737,7 @@ python/api	click	8.5.1	runtime	BSD-3-Clause
 python/api	click-didyoumean	0.3.1	runtime	MIT
 python/api	click-plugins	1.1.1.2	runtime	New BSD
 python/api	click-repl	0.4.1	runtime	MIT
-python/api	django	5.2.19	runtime	BSD-3-Clause
+python/api	django	6.1.3	runtime	BSD-3-Clause
 python/api	django-cors-headers	4.9.0	runtime	MIT
 python/api	django-filter	26.2	runtime	BSD License
 python/api	djangorestframework	3.18.3	runtime	BSD-3-Clause
@@ -806,7 +806,7 @@ python/api-dev	click-repl	0.4.1	dev	MIT
 python/api-dev	coverage	7.17.3	dev	Apache-2.0
 python/api-dev	cyclonedx-python-lib	11.12.0	dev	Apache-2.0
 python/api-dev	defusedxml	0.7.1	dev	PSFL
-python/api-dev	django	5.2.19	dev	BSD-3-Clause
+python/api-dev	django	6.1.3	dev	BSD-3-Clause
 python/api-dev	django-cors-headers	4.9.0	dev	MIT
 python/api-dev	django-filter	26.2	dev	BSD License
 python/api-dev	django-stubs	6.1.2	dev	MIT
@@ -893,7 +893,7 @@ python/api-dev	vine	5.1.0	dev	BSD
 python/api-dev	wcwidth	0.9.4	dev	MIT License
 python/api-dev	whitenoise	6.12.0	dev	MIT
 python/judge-py	ast-serialize	0.11.0	runtime	MIT
-python/judge-py	colorama	0.4.6	runtime	UNKNOWN
+python/judge-py	colorama	0.4.6	runtime	BSD License
 python/judge-py	iniconfig	2.3.0	runtime	MIT
 python/judge-py	librt	0.15.0	runtime	MIT
 python/judge-py	mypy	2.3.1	runtime	MIT

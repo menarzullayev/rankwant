@@ -32,7 +32,7 @@ hisoblang.
 - Problem discovery + **North Star** (haftalik faol yechuvchi) — `docs/02-problem-discovery/` 🔒 2026-09-06
 - Kontent: **o'z kontent**, cp.uz bog'liqlik emas — ADR [0005](docs/07-adr/0005-content-strategy-own-content.md) accepted
 - Reyting: **4 ta** (Skills/Activity/Contests/Challenges), fazali ochilish — ADR [0006](docs/07-adr/0006-rating-model.md) accepted
-- Stack: **Django 5.2 LTS + DRF** (backend) + **Next.js** (frontend) — ADR [0003](docs/07-adr/0003-stack-django-next.md) accepted
+- Stack: **Django 6.1 + DRF** (backend) + **Next.js** (frontend) — ADR [0003](docs/07-adr/0003-stack-django-next.md) accepted
 - Kod **yopiq/tijorat** → AGPL loyihalarni (DMOJ, Hydro) fork qilmaymiz
 - Judge: **o'z engine**, sandbox tayyor olinadi — ADR [0004](docs/07-adr/0004-judge-engine.md) bake-off (Go+nsjail vs Python+isolate)
 - Qvant: **yopiq loop**, faqat kosmetik sink — ADR [0002](docs/07-adr/0002-qvant-economy.md) accepted

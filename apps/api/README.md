@@ -1,4 +1,4 @@
-# apps/api — Django 5.2 LTS + DRF
+# apps/api — Django 6.1 + DRF
 
 Sprint 1 da to'ldiriladi ([09-development-plan](../../docs/09-development-plan/README.md)).
 
