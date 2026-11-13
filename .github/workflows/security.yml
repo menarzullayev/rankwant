@@ -73,7 +73,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '26'
           cache: npm
           # RW-ARCH-013: npm workspace — the root lockfile is the only one
           # npm ci/audit reads, and the per-app lockfile lingers as a stale

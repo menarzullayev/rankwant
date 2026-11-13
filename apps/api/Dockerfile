@@ -70,7 +70,7 @@ CMD ["celery", "-A", "config", "worker", "-Q", "video", "--concurrency", "1", "-
 # is needed to fetch it and not to run it: the binary alone is copied over
 # (measured: 1.0 GB instead of 1.9 GB with Node and npm in the image). The
 # version is pinned — an update changes how `claude -p` behaves.
-FROM node:22-bookworm-slim AS claude-cli
+FROM node:26-bookworm-slim AS claude-cli
 RUN npm install -g @anthropic-ai/claude-code@2.1.318     && cp "$(npm root -g)/@anthropic-ai/claude-code/bin/claude.exe" /claude
 
 FROM base AS ai
