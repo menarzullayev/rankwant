@@ -24,7 +24,7 @@ whitenoise>=6.12.0
 boto3>=1.43.126
 # Sertifikat PDF va QR (ADR-0019). Production image faqat shu fayldan
 # (lock orqali) o'rnatiladi — dev'da qolib ketgan paket deployda yiqiladi.
-fpdf2>=2.8.9
+fpdf2>=2.9.0
 segno>=1.6.6
 # AI tutor's API provider (ADR-0065, decision ⑤): the official SDK. Used only
 # by `ai-worker`, and only when `ANTHROPIC_API_KEY` is set.
