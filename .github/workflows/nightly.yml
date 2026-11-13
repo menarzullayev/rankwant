@@ -173,7 +173,7 @@ jobs:
           CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '26'
           cache: npm
           cache-dependency-path: tests/e2e/package-lock.json
       - name: E2E deps
@@ -245,7 +245,7 @@ jobs:
           CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '26'
           cache: npm
           cache-dependency-path: tests/e2e/package-lock.json
       - name: E2E deps
@@ -662,7 +662,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '26'
       - name: The auditor sees a known advisory (canary)
         run: |
           set -euo pipefail
@@ -882,7 +882,7 @@ jobs:
           --health-timeout 5s --health-retries 5
         ports: ['5432']
       redis:
-        image: redis:7
+        image: redis:8
         options: >-
           --health-cmd "redis-cli ping" --health-interval 10s
           --health-timeout 5s --health-retries 5

@@ -512,7 +512,7 @@ if [ "$SKIP_BAKE" -eq 1 ]; then
   ok "ko'tarildi"
 else
   # ── 6a/8 Infra: judge-queue + minio-init (ADR-0028) ────────────────
-  # Ular BUILD doirasiga kirmaydi (obraz qurilmaydi: redis:7 / minio),
+  # Ular BUILD doirasiga kirmaydi (obraz qurilmaydi: redis / minio),
   # lekin api (JUDGE_QUEUE_URL) va judge (REDIS_URL + read-only kalit)
   # ularga bog'liq. `up --no-deps` depends_on kutishini o'tkazib yuboradi
   # va BUILD_SERVICES ularni o'z ichiga olmaydi — shu sababli alohida

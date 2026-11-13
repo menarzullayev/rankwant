@@ -264,6 +264,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-12](docs/decisions/2026-11-12-voice-statements.md) · Shartni ovozda o'qish: formula so'zga aylantiriladi, ovoz Navoiy (o'z GPU'mizda, host servisi), hozircha FLEURS namunasi, faqat so'ralganda bo'laklab yaratilib saqlanadi · `voice_text_is_spoken_and_guarded`
 - [2026-11-12](docs/decisions/2026-11-12-ai-tutor-details.md) · AI ustoz: yon panel + 3 pog'onali maslahat, «Nega xato?», Haiku hammaga va Sonnet og'irga, hozircha faqat `claude -p` (`ai-worker`) · `ai_tutor_answers_without_solutions`
 - [2026-11-13](docs/decisions/2026-11-13-python-314.md) · API runtime Python 3.12 → 3.14; lock'lar 3.14 uchun; ruff target py312 qoladi · `dependabot_locks_are_recompiled`
+- [2026-11-13](docs/decisions/2026-11-13-node-26-lts.md) · Runtime Node 22 → 26 LTS, `@types/node` 26 (2026-09-20 ni almashtiradi); Redis 8 · `types_node_tracks_runtime`
 
 ## Tekshiruvlar
 
