@@ -34,3 +34,7 @@ anthropic>=2.8.0
 # for Windows only. Listed explicitly so the zone data never depends on what
 # the base image or the developer's OS ships.
 tzdata>=2026.6
+# kombu 5.7's Redis transport imports `packaging.version` but does not declare
+# it; without this line the production lock lacks it and worker/beat crash on
+# start (2026-11-13). The dev lock only had it through pytest.
+packaging>=26.3

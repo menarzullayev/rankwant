@@ -153,6 +153,7 @@ packageurl-python==0.17.6
     # via cyclonedx-python-lib
 packaging==26.3
     # via
+    #   -r requirements.txt
     #   pip-audit
     #   pip-requirements-parser
     #   pytest
