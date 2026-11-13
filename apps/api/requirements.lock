@@ -94,6 +94,8 @@ kombu==5.7.0
     # via celery
 opentelemetry-api==1.45.2
     # via anthropic
+packaging==26.3
+    # via -r requirements.txt
 pillow==13.0.0
     # via fpdf2
 prompt-toolkit==3.0.53
