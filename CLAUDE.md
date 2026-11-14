@@ -267,6 +267,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-13](docs/decisions/2026-11-13-go-127.md) · Judge toolchain: Go 1.27, modullar yangilandi, judge-py Redis 8 mijozi; judge-py obrazi bookworm da qoladi (trixie da JDK 17 yo'q) · `services/judge-go/go.mod`
 - [2026-11-13](docs/decisions/2026-11-13-python-314.md) · API runtime Python 3.12 → 3.14; lock'lar 3.14 uchun; ruff target py312 qoladi · `dependabot_locks_are_recompiled`
 - [2026-11-14](docs/decisions/2026-11-14-go-language-127.md) · Yuborishlar uchun Go 1.24 → 1.27 (`go124` → `go127`, qator joyida); xotira ustamasi 3 MB qoldi · `apps/api/problems/languages.py`
+- [2026-11-15](docs/decisions/2026-11-15-minio-image-chainguard.md) · MinIO obrazi Chainguard, digest bilan (2026-09-28 ning obraz qismini almashtiradi) · `docker-compose.yml`
 
 ## Tekshiruvlar
 
