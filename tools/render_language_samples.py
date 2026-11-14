@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
-"""Render `/about` language sample maps from A+B solution modules."""
+"""Render `/about` language sample maps from A+B solution modules.
+
+The samples are source code in thirty-five languages, written into TypeScript
+template literals. A template literal is not a raw string: `\\s` reads as `s`,
+`\\n` as a line break, `${...}` as an interpolation and a backtick ends it.
+Until 2026-11-14 the body was written as it was, so the page showed
+`split(/s+/)` for JavaScript and a broken string for PHP, Dart and Prolog —
+code that does not solve the problem it is shown for. `template_literal`
+escapes exactly those three things, and `tools/check_language_samples.py`
+holds the generated file to these sources.
+"""
 
 from __future__ import annotations
 
@@ -13,14 +23,27 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "apps/web/src/content/about/language-samples.ts"
 
 
-def main() -> None:
-    stdio_entries = ",\n".join(
-        f"  {json.dumps(code)}: `{body}`" for code, body in sorted(APLUS.items())
+def template_literal(text: str) -> str:
+    """`text` as the body of a template literal that evaluates back to `text`.
+
+    The backslash goes first: the other two replacements add backslashes of
+    their own, which must not be doubled.
+    """
+    return text.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${")
+
+
+def entries(samples: dict[str, str]) -> str:
+    return ",\n".join(
+        f"  {json.dumps(code)}: `{template_literal(body)}`"
+        for code, body in sorted(samples.items())
     )
-    file_entries = ",\n".join(
-        f"  {json.dumps(code)}: `{body}`" for code, body in sorted(APLUS_FILE.items())
-    )
-    content = f"""/** A+B namunalari — `/about` yo'riqnomasi.
+
+
+def render() -> str:
+    """The whole file, with `\\n` line ends whatever the platform."""
+    stdio_entries = entries(APLUS)
+    file_entries = entries(APLUS_FILE)
+    return f"""/** A+B namunalari — `/about` yo'riqnomasi.
  *
  * Manba: `tools/aplus_solutions.py`, `tools/aplus_file_solutions.py`.
  * Yangilash: `python tools/render_language_samples.py`
@@ -59,7 +82,12 @@ export function sampleFileForLanguage(code: string): string | null {{
   return LANGUAGE_FILE_SAMPLES[code] ?? null;
 }}
 """
-    OUT.write_text(content, encoding="utf-8")
+
+
+def main() -> None:
+    # `newline="\n"`: on Windows the default turns every line end into CRLF,
+    # and the file would differ from the committed one on every line.
+    OUT.write_text(render(), encoding="utf-8", newline="\n")
     print(f"wrote {OUT} ({len(APLUS)} stdio + {len(APLUS_FILE)} file)")
 
 

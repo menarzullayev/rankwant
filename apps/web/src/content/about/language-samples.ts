@@ -88,7 +88,7 @@ void main() {
   "dart313": `import 'dart:io';
 
 void main() {
-  final parts = stdin.readLineSync()!.split(RegExp(r'\s+'));
+  final parts = stdin.readLineSync()!.split(RegExp(r'\\s+'));
   stdout.write(int.parse(parts[0]) + int.parse(parts[1]));
 }
 `,
@@ -136,19 +136,13 @@ public class Main {
 }
 `,
   "js24": `const fs = require("fs");
-const input = fs.readFileSync(0, "utf8").trim().split(/\s+/);
+const input = fs.readFileSync(0, "utf8").trim().split(/\\s+/);
 if (input.length >= 2) {
   process.stdout.write(String(Number(input[0]) + Number(input[1])));
 }
 `,
-  "julia113": `function solve()
-    s = readline()
-    sp = findfirst(' ', s)
-    a = parse(Int64, s[1:sp - 1])
-    b = parse(Int64, s[sp + 1:end])
-    print(a + b)
-end
-solve()
+  "julia113": `a, b = parse.(Int64, split(readline()))
+print(a + b)
 `,
   "kotlin24": `fun main() {
     val (a, b) = readln().split(" ").map { it.toLong() }
@@ -299,7 +293,7 @@ print $a + $b;
   "php84": `<?php
 $in = trim(fgets(STDIN));
 if ($in === '') { exit(0); }
-$parts = preg_split('/\s+/', $in);
+$parts = preg_split('/\\s+/', $in);
 echo (int)$parts[0] + (int)$parts[1];
 `,
   "powershell76": `$line = [Console]::In.ReadLine()
@@ -310,7 +304,7 @@ $parts = $line.Split(' ', [StringSplitOptions]::RemoveEmptyEntries)
 
 main :-
     read_line_to_string(user_input, Line),
-    split_string(Line, " ", " \t", Parts),
+    split_string(Line, " ", " \\t", Parts),
     maplist(number_string, [A, B], Parts),
     Sum is A + B,
     format('~w', [Sum]).
@@ -358,7 +352,7 @@ let b = Int(parts[1])!
 print(a + b, terminator: "")
 `,
   "ts24": `const fs = require("fs");
-const input = fs.readFileSync(0, "utf8").trim().split(/\s+/);
+const input = fs.readFileSync(0, "utf8").trim().split(/\\s+/);
 if (input.length >= 2) {
   process.stdout.write(String(Number(input[0]) + Number(input[1])));
 }
@@ -498,7 +492,7 @@ void main() {
   "dart313": `import 'dart:io';
 
 void main() {
-  final parts = File('input.txt').readAsStringSync().trim().split(RegExp(r'\s+'));
+  final parts = File('input.txt').readAsStringSync().trim().split(RegExp(r'\\s+'));
   File('output.txt').writeAsStringSync('\${int.parse(parts[0]) + int.parse(parts[1])}');
 }
 `,
@@ -557,7 +551,7 @@ public class Main {
 }
 `,
   "js24": `const fs = require("fs");
-const input = fs.readFileSync("input.txt", "utf8").trim().split(/\s+/);
+const input = fs.readFileSync("input.txt", "utf8").trim().split(/\\s+/);
 if (input.length >= 2) {
   fs.writeFileSync("output.txt", String(Number(input[0]) + Number(input[1])));
 }
@@ -642,9 +636,6 @@ _start:
     mov rax, 3
     mov rdi, r8
     syscall
-    mov r8, 1
-    mov rax, r13
-    call print_int
     mov rax, 60
     xor rdi, rdi
     syscall
@@ -652,6 +643,8 @@ _start:
 skip_sep:
 .s:
     mov al, [rdi]
+    cmp al, '-'
+    je .ret
     cmp al, '0'
     jb .n
     cmp al, '9'
@@ -705,9 +698,11 @@ print_int:
     mov byte [outbuf], '-'
     mov rsi, outbuf
     mov rdx, 1
+    push rax
     mov rax, 1
     mov rdi, r8
     syscall
+    pop rax
     neg rax
 .pos:
     mov rbx, outbuf
@@ -781,7 +776,7 @@ close $out;
   "php84": `<?php
 $in = trim(file_get_contents("input.txt"));
 if ($in === '') { exit(0); }
-$parts = preg_split('/\s+/', $in);
+$parts = preg_split('/\\s+/', $in);
 file_put_contents("output.txt", (string)((int)$parts[0] + (int)$parts[1]));
 `,
   "powershell76": `$line = Get-Content -Path "input.txt" -TotalCount 1
@@ -794,7 +789,7 @@ main :-
     setup_call_cleanup(
         open('input.txt', read, In, []),
         ( read_line_to_string(In, Line),
-          split_string(Line, " ", " \t", Parts),
+          split_string(Line, " ", " \\t", Parts),
           maplist(number_string, [A, B], Parts),
           Sum is A + B,
           setup_call_cleanup(
@@ -816,8 +811,8 @@ data = Path("input.txt").read_text().split()
 if len(data) >= 2:
     Path("output.txt").write_text(str(int(data[0]) + int(data[1])))
 `,
-  "r45": `x <- read.table("input.txt", nrows = 1)
-cat(as.integer(x[1, 1] + x[1, 2]), file = "output.txt")
+  "r45": `p <- scan("input.txt", what = numeric(), n = 2, quiet = TRUE)
+cat(format(p[1] + p[2], scientific = FALSE, trim = TRUE), file = "output.txt")
 `,
   "ruby33": `line = File.read("input.txt")
 a, b = line.split.map(&:to_i)
@@ -843,17 +838,24 @@ fn main() {
 }
 `,
   "swift60": `import Glibc
-let inp = fopen("input.txt", "r")
-var a: Int64 = 0
-var b: Int64 = 0
-_ = fscanf(inp, "%lld %lld", &a, &b)
-fclose(inp)
-let out = fopen("output.txt", "w")
-fprintf(out, "%lld", a + b)
-fclose(out)
+
+var inFd = open("input.txt", O_RDONLY)
+var buf = [UInt8](repeating: 0, count: 128)
+let n = read(inFd, &buf, buf.count)
+close(inFd)
+var s = String(decoding: buf.prefix(Int(n)), as: UTF8.self)
+while let last = s.last, last == "\\n" || last == " " || last == "\\t" {
+    s.removeLast()
+}
+let parts = s.split(separator: " ")
+let sum = Int64(parts[0])! + Int64(parts[1])!
+var outStr = String(sum)
+var outFd = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0o644)
+outStr.withUTF8 { _ = write(outFd, $0.baseAddress, $0.count) }
+close(outFd)
 `,
   "ts24": `const fs = require("fs");
-const input = fs.readFileSync("input.txt", "utf8").trim().split(/\s+/);
+const input = fs.readFileSync("input.txt", "utf8").trim().split(/\\s+/);
 if (input.length >= 2) {
   fs.writeFileSync("output.txt", String(Number(input[0]) + Number(input[1])));
 }
