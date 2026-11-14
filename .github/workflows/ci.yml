@@ -648,6 +648,14 @@ jobs:
         run: |
           python3 tools/check_docker_run.py --selftest
           python3 tools/check_docker_run.py
+      # The A+B samples on `/about` are generated from the sources the live judge was
+      # checked with. Found 2026-11-14: five samples had drifted from those sources, and
+      # every sample with a backslash was shown wrong (`/\s+/` as `/s+/`) because the
+      # generator did not escape template literals. The self-test proves both failures.
+      - name: Language samples (/about shows the judge-verified A+B sources)
+        run: |
+          python3 tools/check_language_samples.py --selftest
+          python3 tools/check_language_samples.py
 
   # ONE check the `main` ruleset requires for every gate (2026-11-10, audit
   # Q-09). Before, the ruleset required only `Path filter` and `Docs and
