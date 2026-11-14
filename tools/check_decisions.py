@@ -2300,6 +2300,14 @@ def dependabot_locks_are_recompiled() -> str | None:
         return "dependabot-locks.yml: litsenziya inventarini yasaydigan qadam yo'q"
     if re.search(r"^        if:", inventory.group(1), re.M):
         return "dependabot-locks.yml: inventar shartli yasaladi — npm PR'i yana BLOCKED qoladi"
+    # 2026-11-15: the judge-py lock is installed as well, markers ignored.
+    # Without it `colorama` (win32 only) had no metadata on the runner and
+    # every npm pull request rewrote its licence as UNKNOWN (#586).
+    step = inventory.group(1)
+    if "cd services/judge-py && uv export" not in step or "--no-deps -r" not in step:
+        return "dependabot-locks.yml: judge-py paketlari o'rnatilmaydi — litsenziyasi UNKNOWN bo'lib qoladi"
+    if "sed -E 's/[[:space:]]*;.*$//'" not in step:
+        return "dependabot-locks.yml: judge-py markerlari olib tashlanmaydi — win32 paketi UNKNOWN bo'lib qoladi"
     return None
 
 
