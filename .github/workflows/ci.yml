@@ -80,7 +80,14 @@ jobs:
             # `schema.ts` is generated from it. Without it an API-only PR
             # skipped this job, and #318 left `main` with stale types that
             # every later web PR then failed on (measured 2026-10-04).
-            web:   ['apps/web/**', 'packages/**', 'apps/api/openapi/schema.yml']
+            #
+            # The root `package.json` and `package-lock.json` are inputs too:
+            # the workspace installs from them, so a bump there changes what
+            # the web app is built with. A pull request that touched only
+            # those two skipped the build (#598, 2026-11-15); a Dependabot
+            # one never showed it, because its lock commit starts CI with
+            # `run_all`.
+            web:   ['apps/web/**', 'packages/**', 'apps/api/openapi/schema.yml', 'package.json', 'package-lock.json']
             judge: ['services/**']
             code:  ['apps/**', 'packages/**', 'services/**', 'tools/**', 'tests/**', 'docker-compose*.yml']
             # When the checks themselves change, the job that runs them

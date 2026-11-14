@@ -1910,6 +1910,26 @@ def schema_change_wakes_web_job() -> str | None:
     return None
 
 
+def root_lockfile_wakes_web_job() -> str | None:
+    """2026-11-15: a change to the root package files must run the web build.
+
+    The workspace installs from the root `package.json` and
+    `package-lock.json`. The path filter woke the web job for `apps/web/**`
+    and `packages/**` only, so #598 bumped the pinned SWC binary there and
+    was merged without the build ever running in its checks. Dependabot pull
+    requests hid the gap: their lock commit starts CI with `run_all`.
+    """
+    ci = read(".github/workflows/ci.yml")
+    line = next(
+        (ln for ln in ci.splitlines() if ln.strip().startswith("web:") and "'apps/web/**'" in ln),
+        "",
+    )
+    for name in ("package.json", "package-lock.json"):
+        if f"'{name}'" not in line:
+            return f"ci.yml: ildiz `{name}` o'zgarsa Web job'i uyg'onmaydi — build tekshirilmaydi"
+    return None
+
+
 def sign_in_page_is_self_contained() -> str | None:
     """2026-10-04: `/login` is a two-column page without the site chrome.
 
@@ -5952,6 +5972,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
     ("docs/tools obraz qurilmasin", deploy_skips_non_image_bake),
     ("sxema o'zgarsa web tiplari tekshiriladi", schema_change_wakes_web_job),
+    ("ildiz lockfile o'zgarsa web build yuradi", root_lockfile_wakes_web_job),
     ("docker disk chegaralangan", docker_disk_stays_bounded),
     ("TypeScript 7 yonma-yon", typescript_side_by_side),
     ("@types/node runtime bilan", types_node_tracks_runtime),
