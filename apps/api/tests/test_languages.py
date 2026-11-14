@@ -206,10 +206,19 @@ class TestGoMovesTo127:
 
     def test_an_existing_new_row_is_not_renamed_onto(self) -> None:
         # The catalog row is already there; a leftover `go124` must not collide with it.
-        Language.objects.create(code="go124", name="Go", version="1.24", run_cmd=["{bin}"])
+        catalog_row = Language.objects.get(code="go127")
+        leftover = Language.objects.create(
+            code="go124",
+            name="Go",
+            version="1.24",
+            compile_cmd=["/usr/lib/go-1.24/bin/go", "build", "{src}"],
+            run_cmd=["{bin}"],
+        )
         GO_127.forwards(apps, None)
-        assert Language.objects.filter(code="go124").count() == 1
-        assert Language.objects.filter(code="go127").count() == 1
+        leftover.refresh_from_db()
+        assert (leftover.code, leftover.version) == ("go124", "1.24")
+        assert leftover.compile_cmd == ["/usr/lib/go-1.24/bin/go", "build", "{src}"]
+        assert Language.objects.get(code="go127").pk == catalog_row.pk
 
 
 class TestSourceFileValidation:

@@ -173,3 +173,21 @@ export function defaultLanguage(languages: { code: string }[]): string {
   );
   return preferred ?? languages[0]?.code ?? "";
 }
+
+/** Language codes that changed, old → new. A code carries its version
+ *  (`go124`), so a toolchain upgrade renames it (Go 1.24 → 1.27, 2026-11-14),
+ *  while a browser still holds the old one: the remembered language and the
+ *  unsent drafts are keyed by it. Without this a Go user would find C++
+ *  selected and the starter code in place of what they had typed. */
+export const RENAMED_LANGUAGES: Record<string, string> = { go124: "go127" };
+
+/** The code a remembered one stands for today. */
+export function currentLanguage(code: string): string {
+  return RENAMED_LANGUAGES[code] ?? code;
+}
+
+/** The code this language had before, if it was renamed. */
+export function earlierLanguage(code: string): string | null {
+  const earlier = Object.keys(RENAMED_LANGUAGES).find((old) => RENAMED_LANGUAGES[old] === code);
+  return earlier ?? null;
+}
