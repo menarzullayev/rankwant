@@ -56,7 +56,7 @@ LANGUAGES = {
     "c": "c17",
     "cs": "csharp14",
     "rs": "rust185",
-    "go": "go124",
+    "go": "go127",
     "kt": "kotlin24",
     "js": "js24",
     "php": "php84",

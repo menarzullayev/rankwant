@@ -128,20 +128,20 @@ LANGUAGES: list[dict[str, Any]] = [
         "memory_overhead_kb": 2048,
     },
     {
-        "code": "go124",
+        "code": "go127",
         "name": "Go",
-        "version": "1.24",
+        "version": "1.27",
         "source_file": "main.go",
         # Compile and link against the standard library built into the image:
         # `go build` needs a writable cache and spends ~5.6 s filling it.
         "compile": [
             "/bin/sh",
             "-c",
-            "GOROOT=/usr/lib/go-1.24"
-            " /usr/lib/go-1.24/pkg/tool/linux_amd64/compile -p main -complete"
+            "GOROOT=/usr/lib/go-1.27"
+            " /usr/lib/go-1.27/pkg/tool/linux_amd64/compile -p main -complete"
             " -importcfg /opt/go-std/importcfg -o /box/main.a {src}"
-            " && GOROOT=/usr/lib/go-1.24"
-            " /usr/lib/go-1.24/pkg/tool/linux_amd64/link"
+            " && GOROOT=/usr/lib/go-1.27"
+            " /usr/lib/go-1.27/pkg/tool/linux_amd64/link"
             " -importcfg /opt/go-std/importcfg -o {bin} /box/main.a",
         ],
         "run": ["{bin}"],

@@ -21,7 +21,13 @@ import { Dropdown } from "@/components/ui/Dropdown";
 import { Loading } from "@/components/ui/Loading";
 import { Status } from "@/components/ui/Status";
 import { Verdict } from "@/components/ui/Verdict";
-import { defaultLanguage, editorLanguage, starterSource } from "@/lib/editor-language";
+import {
+  currentLanguage,
+  defaultLanguage,
+  earlierLanguage,
+  editorLanguage,
+  starterSource,
+} from "@/lib/editor-language";
 import { registerEditorCode, type EditorCode } from "@/lib/editor-bridge";
 import { isPendingVerdict } from "@/lib/theme/verdict";
 import { pack, readString } from "@/lib/versioned-storage";
@@ -287,7 +293,8 @@ export function SubmitPanel({
   // Tanlangan til qurilmada eslab qolinadi — har masalada qayta
   // tanlash asosiy oqimdagi eng ko'p takrorlanadigan ortiqcha qadam.
   const [pickedLanguage, setPickedLanguage] = useState<string | null>(null);
-  const storedLanguage = useStored("rw:language");
+  // A remembered code may be one that has since been renamed (`go124`).
+  const storedLanguage = useStored("rw:language", (raw) => (raw ? currentLanguage(raw) : raw));
   const language =
     pickedLanguage ??
     (storedLanguage && languages.some((l) => l.code === storedLanguage)
@@ -304,12 +311,18 @@ export function SubmitPanel({
   const key = draftKey(problem, language);
   const [edits, setEdits] = useState<Record<string, string>>({});
   const storedDraft = useStored(key, decodeDraft);
+  // A draft typed before the language's code changed is still under the
+  // old code; it is read, never written back. With no earlier code the
+  // hook reads `key` again — hooks cannot be conditional.
+  const earlier = earlierLanguage(language);
+  const earlierDraft = useStored(earlier ? draftKey(problem, earlier) : key, decodeDraft);
   const picked = languages.find((l) => l.code === language);
   // Masala shabloni umumiy zagotovkadan ustun: Django/SQL masalasida
   // yechim aynan berilgan funksiya imzosini to'ldirishdan iborat.
   const source =
     edits[key] ??
     storedDraft ??
+    earlierDraft ??
     picked?.code_template ??
     starterSource(language);
 

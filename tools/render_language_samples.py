@@ -41,7 +41,7 @@ export function sampleEditorLanguage(code: string): string {{
     return "java";
   if (code === "js24" || code === "ts24") return "javascript";
   if (code === "csharp14" || code === "fsharp10" || code === "vbnet17") return "csharp";
-  if (code === "go124") return "go";
+  if (code === "go127") return "go";
   if (code.startsWith("rust")) return "rust";
   if (code === "php84") return "php";
   if (code === "ruby33") return "ruby";

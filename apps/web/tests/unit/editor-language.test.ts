@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   LANGUAGE_FAMILIES,
+  RENAMED_LANGUAGES,
+  currentLanguage,
   defaultLanguage,
+  earlierLanguage,
   editorLanguage,
   languageFamily,
   starterSource,
@@ -17,7 +20,7 @@ describe("editorLanguage", () => {
   });
 
   it("gives each judge language its Monaco grammar", () => {
-    const codes = ["c17", "cpp23", "csharp14", "go124", "java21"];
+    const codes = ["c17", "cpp23", "csharp14", "go127", "java21"];
     expect(codes.map(editorLanguage)).toEqual(["c", "cpp", "csharp", "go", "java"]);
     const more = ["js24", "kotlin24", "php84", "py313", "rust185"];
     expect(more.map(editorLanguage)).toEqual([
@@ -95,7 +98,7 @@ describe("starterSource", () => {
   });
 
   it("imports nothing in Go, where an unused import does not compile", () => {
-    expect(starterSource("go124")).not.toContain("import");
+    expect(starterSource("go127")).not.toContain("import");
   });
 
   it("leaves scripts and unknown languages empty", () => {
@@ -120,5 +123,26 @@ describe("defaultLanguage", () => {
   it("keeps the list's own first language when none of the preferred is allowed", () => {
     expect(defaultLanguage(codes("julia113", "rust"))).toBe("julia113");
     expect(defaultLanguage([])).toBe("");
+  });
+});
+
+describe("renamed languages", () => {
+  it("reads a remembered code as the one it became", () => {
+    expect(currentLanguage("go124")).toBe("go127");
+    expect(currentLanguage("cpp23")).toBe("cpp23");
+    expect(currentLanguage("zz1")).toBe("zz1");
+  });
+
+  it("finds the code a language had before, for a draft typed under it", () => {
+    expect(earlierLanguage("go127")).toBe("go124");
+    expect(earlierLanguage("cpp23")).toBeNull();
+  });
+
+  it("renames only to a code the catalog has, and never from one it still has", () => {
+    const catalog = readFileSync(CATALOG, "utf8");
+    for (const [old, now] of Object.entries(RENAMED_LANGUAGES)) {
+      expect(catalog).toContain(`"code": "${now}"`);
+      expect(catalog).not.toContain(`"code": "${old}"`);
+    }
   });
 });

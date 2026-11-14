@@ -30,6 +30,7 @@ GROUPS = [
     importlib.import_module("problems.migrations.0020_judge_languages_group3"),
 ]
 KOTLIN_COLOURS = importlib.import_module("problems.migrations.0019_kotlin_colors_off")
+GO_127 = importlib.import_module("problems.migrations.0043_go_127")
 
 
 class TestCatalog:
@@ -158,6 +159,66 @@ class TestKotlinColoursOff:
         KOTLIN_COLOURS.forwards(apps, None)
         row.refresh_from_db()
         assert row.compile_cmd == ["/opt/kotlinc/bin/kotlinc", "-Werror", "{src}"]
+
+
+@pytest.mark.django_db
+class TestGoMovesTo127:
+    """0043 renames a live row: its key, and an admin's own command, must survive it."""
+
+    def test_row_is_renamed_in_place_and_restored(self) -> None:
+        row = Language.objects.get(code="go127")
+        GO_127.backwards(apps, None)
+        old = Language.objects.get(pk=row.pk)
+        assert (old.code, old.version) == ("go124", "1.24")
+        assert not any("/usr/lib/go-1.27" in part for part in old.compile_cmd)
+        assert any("/usr/lib/go-1.24" in part for part in old.compile_cmd)
+        GO_127.forwards(apps, None)
+        new = Language.objects.get(pk=row.pk)
+        assert (new.code, new.version) == ("go127", "1.27")
+        assert new.compile_cmd == row.compile_cmd
+        assert new.run_cmd == row.run_cmd
+
+    def test_what_points_at_go_still_does(self) -> None:
+        row = Language.objects.get(code="go127")
+        problem = Problem.objects.create(slug="go-only", title="go", statement="…", difficulty=800)
+        ProblemLanguage.objects.create(problem=problem, language=row)
+        GO_127.backwards(apps, None)
+        GO_127.forwards(apps, None)
+        assert list(problem.languages.values_list("language__code", flat=True)) == ["go127"]
+
+    def test_edited_command_keeps_its_edit_and_finds_the_new_toolchain(self) -> None:
+        GO_127.backwards(apps, None)
+        row = Language.objects.get(code="go124")
+        row.compile_cmd = [
+            "/bin/sh",
+            "-c",
+            "GOROOT=/usr/lib/go-1.24 /usr/lib/go-1.24/bin/go vet {src}",
+        ]
+        row.save(update_fields=["compile_cmd"])
+        GO_127.forwards(apps, None)
+        row.refresh_from_db()
+        assert row.code == "go127"
+        assert row.compile_cmd == [
+            "/bin/sh",
+            "-c",
+            "GOROOT=/usr/lib/go-1.27 /usr/lib/go-1.27/bin/go vet {src}",
+        ]
+
+    def test_an_existing_new_row_is_not_renamed_onto(self) -> None:
+        # The catalog row is already there; a leftover `go124` must not collide with it.
+        catalog_row = Language.objects.get(code="go127")
+        leftover = Language.objects.create(
+            code="go124",
+            name="Go",
+            version="1.24",
+            compile_cmd=["/usr/lib/go-1.24/bin/go", "build", "{src}"],
+            run_cmd=["{bin}"],
+        )
+        GO_127.forwards(apps, None)
+        leftover.refresh_from_db()
+        assert (leftover.code, leftover.version) == ("go124", "1.24")
+        assert leftover.compile_cmd == ["/usr/lib/go-1.24/bin/go", "build", "{src}"]
+        assert Language.objects.get(code="go127").pk == catalog_row.pk
 
 
 class TestSourceFileValidation:

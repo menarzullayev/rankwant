@@ -74,7 +74,7 @@ class Program {
     }
 }
 """,
-    "go124": """package main
+    "go127": """package main
 
 import "fmt"
 

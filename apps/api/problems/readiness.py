@@ -241,7 +241,7 @@ ECHO_TEMPLATES: dict[str, str] = {
     "py313": 'print({payload}, end="")\n',
     "java21": "public class Main {{ public static void main(String[] a) {{"
     " System.out.print({payload}); }} }}\n",
-    "go124": 'package main\n\nimport "fmt"\n\nfunc main() {{ fmt.Print({payload}) }}\n',
+    "go127": 'package main\n\nimport "fmt"\n\nfunc main() {{ fmt.Print({payload}) }}\n',
     "php84": "<?php echo {payload};\n",
     "php": "<?php echo {payload};\n",
 }
