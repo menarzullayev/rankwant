@@ -63,7 +63,7 @@ export function sampleEditorLanguage(code: string): string {{
   if (code.startsWith("java") || code.startsWith("kotlin") || code.startsWith("scala"))
     return "java";
   if (code === "js24" || code === "ts24") return "javascript";
-  if (code === "csharp14" || code === "fsharp10" || code === "vbnet17") return "csharp";
+  if (code.startsWith("csharp") || code === "fsharp10" || code === "vbnet17") return "csharp";
   if (code === "go127") return "go";
   if (code.startsWith("rust")) return "rust";
   if (code === "php84") return "php";

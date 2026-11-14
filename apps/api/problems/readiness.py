@@ -238,8 +238,12 @@ def evaluate_readiness(
 #: `sample_echo_source`) instead of silently judging nothing.
 ECHO_TEMPLATES: dict[str, str] = {
     "cpp23": "#include <bits/stdc++.h>\nint main() {{ std::cout << {payload}; }}\n",
+    "cpp17": "#include <bits/stdc++.h>\nint main() {{ std::cout << {payload}; }}\n",
+    "cpp20": "#include <bits/stdc++.h>\nint main() {{ std::cout << {payload}; }}\n",
     "py313": 'print({payload}, end="")\n',
     "java21": "public class Main {{ public static void main(String[] a) {{"
+    " System.out.print({payload}); }} }}\n",
+    "java8": "public class Main {{ public static void main(String[] a) {{"
     " System.out.print({payload}); }} }}\n",
     "go127": 'package main\n\nimport "fmt"\n\nfunc main() {{ fmt.Print({payload}) }}\n',
     "php84": "<?php echo {payload};\n",

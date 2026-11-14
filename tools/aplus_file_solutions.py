@@ -23,6 +23,30 @@ int main() {
     return 0;
 }
 """,
+    "cpp17": """#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ifstream in("input.txt");
+    ofstream out("output.txt");
+    long long a, b;
+    if (!(in >> a >> b)) return 0;
+    out << a + b;
+    return 0;
+}
+""",
+    "cpp20": """#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ifstream in("input.txt");
+    ofstream out("output.txt");
+    long long a, b;
+    if (!(in >> a >> b)) return 0;
+    out << a + b;
+    return 0;
+}
+""",
     "c17": """#include <stdio.h>
 
 int main(void) {
@@ -62,6 +86,19 @@ public class Main {
     }
 }
 """,
+    "java8": """import java.io.*;
+import java.nio.file.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String line = new String(Files.readAllBytes(Paths.get("input.txt"))).trim();
+        java.util.StringTokenizer st = new java.util.StringTokenizer(line);
+        long a = Long.parseLong(st.nextToken());
+        long b = Long.parseLong(st.nextToken());
+        Files.write(Paths.get("output.txt"), Long.toString(a + b).getBytes());
+    }
+}
+""",
     "js24": """const fs = require("fs");
 const input = fs.readFileSync("input.txt", "utf8").trim().split(/\\s+/);
 if (input.length >= 2) {
@@ -75,6 +112,30 @@ if (input.length >= 2) {
 }
 """,
     "csharp14": """using System.IO;
+
+class Program {
+    static void Main() {
+        var line = File.ReadAllText("input.txt").Trim();
+        var sp = line.IndexOf(' ');
+        var a = long.Parse(line.Substring(0, sp));
+        var b = long.Parse(line.Substring(sp + 1).Trim());
+        File.WriteAllText("output.txt", (a + b).ToString());
+    }
+}
+""",
+    "csharp8": """using System.IO;
+
+class Program {
+    static void Main() {
+        var line = File.ReadAllText("input.txt").Trim();
+        var sp = line.IndexOf(' ');
+        var a = long.Parse(line.Substring(0, sp));
+        var b = long.Parse(line.Substring(sp + 1).Trim());
+        File.WriteAllText("output.txt", (a + b).ToString());
+    }
+}
+""",
+    "csharp10": """using System.IO;
 
 class Program {
     static void Main() {
@@ -106,6 +167,16 @@ func main() {
 }
 """,
     "rust185": """use std::fs;
+
+fn main() {
+    let s = fs::read_to_string("input.txt").unwrap();
+    let mut it = s.split_whitespace();
+    let a: i64 = it.next().unwrap().parse().unwrap();
+    let b: i64 = it.next().unwrap().parse().unwrap();
+    fs::write("output.txt", format!("{}", a + b)).unwrap();
+}
+""",
+    "rust2024": """use std::fs;
 
 fn main() {
     let s = fs::read_to_string("input.txt").unwrap();

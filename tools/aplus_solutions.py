@@ -19,6 +19,30 @@ int main() {
     return 0;
 }
 """,
+    "cpp17": """#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    long long a, b;
+    if (!(cin >> a >> b)) return 0;
+    cout << a + b;
+    return 0;
+}
+""",
+    "cpp20": """#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    long long a, b;
+    if (!(cin >> a >> b)) return 0;
+    cout << a + b;
+    return 0;
+}
+""",
     "c17": """#include <stdio.h>
 
 int main(void) {
@@ -53,6 +77,19 @@ public class Main {
     }
 }
 """,
+    "java8": """import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        long a = Long.parseLong(st.nextToken());
+        long b = Long.parseLong(st.nextToken());
+        System.out.print(a + b);
+    }
+}
+""",
     "js24": """const fs = require("fs");
 const input = fs.readFileSync(0, "utf8").trim().split(/\\s+/);
 if (input.length >= 2) {
@@ -74,6 +111,24 @@ class Program {
     }
 }
 """,
+    "csharp8": """using System;
+
+class Program {
+    static void Main() {
+        var parts = Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        Console.Write(long.Parse(parts[0]) + long.Parse(parts[1]));
+    }
+}
+""",
+    "csharp10": """using System;
+
+class Program {
+    static void Main() {
+        var parts = Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        Console.Write(long.Parse(parts[0]) + long.Parse(parts[1]));
+    }
+}
+""",
     "go127": """package main
 
 import "fmt"
@@ -87,6 +142,17 @@ func main() {
 }
 """,
     "rust185": """use std::io::{self, Read};
+
+fn main() {
+    let mut s = String::new();
+    io::stdin().read_to_string(&mut s).unwrap();
+    let mut it = s.split_whitespace();
+    let a: i64 = it.next().unwrap().parse().unwrap();
+    let b: i64 = it.next().unwrap().parse().unwrap();
+    print!("{}", a + b);
+}
+""",
+    "rust2024": """use std::io::{self, Read};
 
 fn main() {
     let mut s = String::new();

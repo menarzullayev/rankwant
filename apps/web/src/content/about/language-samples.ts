@@ -56,6 +56,30 @@ int main(void) {
            DISPLAY WS-DIS(1:WS-LEN) WITH NO ADVANCING
            STOP RUN.
 `,
+  "cpp17": `#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    long long a, b;
+    if (!(cin >> a >> b)) return 0;
+    cout << a + b;
+    return 0;
+}
+`,
+  "cpp20": `#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    long long a, b;
+    if (!(cin >> a >> b)) return 0;
+    cout << a + b;
+    return 0;
+}
+`,
   "cpp23": `#include <bits/stdc++.h>
 using namespace std;
 
@@ -68,7 +92,25 @@ int main() {
     return 0;
 }
 `,
+  "csharp10": `using System;
+
+class Program {
+    static void Main() {
+        var parts = Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        Console.Write(long.Parse(parts[0]) + long.Parse(parts[1]));
+    }
+}
+`,
   "csharp14": `using System;
+
+class Program {
+    static void Main() {
+        var parts = Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        Console.Write(long.Parse(parts[0]) + long.Parse(parts[1]));
+    }
+}
+`,
+  "csharp8": `using System;
 
 class Program {
     static void Main() {
@@ -129,6 +171,19 @@ public class Main {
     public static void main(String[] args) throws Exception {
         var br = new BufferedReader(new InputStreamReader(System.in));
         var st = new StringTokenizer(br.readLine());
+        long a = Long.parseLong(st.nextToken());
+        long b = Long.parseLong(st.nextToken());
+        System.out.print(a + b);
+    }
+}
+`,
+  "java8": `import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
         long a = Long.parseLong(st.nextToken());
         long b = Long.parseLong(st.nextToken());
         System.out.print(a + b);
@@ -338,6 +393,17 @@ fn main() {
     print!("{}", a + b);
 }
 `,
+  "rust2024": `use std::io::{self, Read};
+
+fn main() {
+    let mut s = String::new();
+    io::stdin().read_to_string(&mut s).unwrap();
+    let mut it = s.split_whitespace();
+    let a: i64 = it.next().unwrap().parse().unwrap();
+    let b: i64 = it.next().unwrap().parse().unwrap();
+    print!("{}", a + b);
+}
+`,
   "scala39": `object Main {
   def main(args: Array[String]): Unit = {
     val p = scala.io.StdIn.readLine().split(" ")
@@ -453,6 +519,30 @@ int main(void) {
            CLOSE OUT-FILE
            STOP RUN.
 `,
+  "cpp17": `#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ifstream in("input.txt");
+    ofstream out("output.txt");
+    long long a, b;
+    if (!(in >> a >> b)) return 0;
+    out << a + b;
+    return 0;
+}
+`,
+  "cpp20": `#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ifstream in("input.txt");
+    ofstream out("output.txt");
+    long long a, b;
+    if (!(in >> a >> b)) return 0;
+    out << a + b;
+    return 0;
+}
+`,
   "cpp23": `#include <bits/stdc++.h>
 using namespace std;
 
@@ -465,7 +555,31 @@ int main() {
     return 0;
 }
 `,
+  "csharp10": `using System.IO;
+
+class Program {
+    static void Main() {
+        var line = File.ReadAllText("input.txt").Trim();
+        var sp = line.IndexOf(' ');
+        var a = long.Parse(line.Substring(0, sp));
+        var b = long.Parse(line.Substring(sp + 1).Trim());
+        File.WriteAllText("output.txt", (a + b).ToString());
+    }
+}
+`,
   "csharp14": `using System.IO;
+
+class Program {
+    static void Main() {
+        var line = File.ReadAllText("input.txt").Trim();
+        var sp = line.IndexOf(' ');
+        var a = long.Parse(line.Substring(0, sp));
+        var b = long.Parse(line.Substring(sp + 1).Trim());
+        File.WriteAllText("output.txt", (a + b).ToString());
+    }
+}
+`,
+  "csharp8": `using System.IO;
 
 class Program {
     static void Main() {
@@ -547,6 +661,19 @@ public class Main {
         long a = Long.parseLong(st.nextToken());
         long b = Long.parseLong(st.nextToken());
         Files.writeString(Path.of("output.txt"), Long.toString(a + b));
+    }
+}
+`,
+  "java8": `import java.io.*;
+import java.nio.file.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String line = new String(Files.readAllBytes(Paths.get("input.txt"))).trim();
+        java.util.StringTokenizer st = new java.util.StringTokenizer(line);
+        long a = Long.parseLong(st.nextToken());
+        long b = Long.parseLong(st.nextToken());
+        Files.write(Paths.get("output.txt"), Long.toString(a + b).getBytes());
     }
 }
 `,
@@ -828,6 +955,16 @@ fn main() {
     fs::write("output.txt", format!("{}", a + b)).unwrap();
 }
 `,
+  "rust2024": `use std::fs;
+
+fn main() {
+    let s = fs::read_to_string("input.txt").unwrap();
+    let mut it = s.split_whitespace();
+    let a: i64 = it.next().unwrap().parse().unwrap();
+    let b: i64 = it.next().unwrap().parse().unwrap();
+    fs::write("output.txt", format!("{}", a + b)).unwrap();
+}
+`,
   "scala39": `object Main {
   def main(args: Array[String]): Unit = {
     val p = scala.io.Source.fromFile("input.txt").getLines().next().split(" ")
@@ -881,7 +1018,7 @@ export function sampleEditorLanguage(code: string): string {
   if (code.startsWith("java") || code.startsWith("kotlin") || code.startsWith("scala"))
     return "java";
   if (code === "js24" || code === "ts24") return "javascript";
-  if (code === "csharp14" || code === "fsharp10" || code === "vbnet17") return "csharp";
+  if (code.startsWith("csharp") || code === "fsharp10" || code === "vbnet17") return "csharp";
   if (code === "go127") return "go";
   if (code.startsWith("rust")) return "rust";
   if (code === "php84") return "php";
