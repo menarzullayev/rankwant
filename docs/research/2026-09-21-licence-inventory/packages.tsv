@@ -123,7 +123,6 @@ node/web	@next/swc-darwin-arm64	16.4.6	runtime	MIT
 node/web	@next/swc-darwin-x64	16.4.6	runtime	MIT
 node/web	@next/swc-linux-arm64-gnu	16.4.6	runtime	MIT
 node/web	@next/swc-linux-arm64-musl	16.4.6	runtime	MIT
-node/web	@next/swc-linux-x64-gnu	16.4.5	runtime	MIT
 node/web	@next/swc-linux-x64-gnu	16.4.6	runtime	MIT
 node/web	@next/swc-linux-x64-musl	16.4.6	runtime	MIT
 node/web	@next/swc-win32-arm64-msvc	16.4.6	runtime	MIT
