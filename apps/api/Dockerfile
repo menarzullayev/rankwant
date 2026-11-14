@@ -3,8 +3,15 @@ FROM python:3.14-slim AS base
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libpq5 \
+# `apt-get upgrade`: the base image is rebuilt on Python's schedule, not Debian's,
+# so a fix can sit in trixie-security for weeks before it reaches the tag (measured
+# 2026-11-14: zlib1g was one revision behind, two high advisories in Docker Scout).
+#
+# No `libpq5`: `psycopg[binary]` loads the libpq inside its own wheel
+# (`psycopg.pq.__impl__ == "binary"`, libpq 18), so Debian's libpq 17 was never
+# opened — and with its Kerberos and LDAP dependencies it was 44 of the image's
+# 52 high advisories (postgresql-17 38, krb5 6; Docker Scout, 2026-11-14).
+RUN apt-get update && apt-get upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Never root at run time (Docker Scout: "runs as the root user"). uid 10001, the
@@ -18,8 +25,14 @@ COPY requirements.lock ./
 # --mount=type=cache: pip paketlari host'da /root/.cache/pip da saqlanadi.
 # requirements.lock o'zgarganda ham faqat YANGI paketlar yuklanadi,
 # avval yuklanganlar keshdan olinadi (~10x tezroq).
+#
+# pip itself is upgraded in place first: the base image's pip 26.2.2 vendors
+# msgpack 1.1.2 and urllib3 2.7.0 (five high advisories in Docker Scout,
+# 2026-11-14); 26.3 vendors the fixed releases. In place, not removed: a scanner
+# reads every layer, so a deleted pip would still be counted in the base layer.
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.lock
+    pip install --upgrade pip==26.3 \
+    && pip install -r requirements.lock
 
 # Butun kod ENG OXIRIDA: bu qatlam har commit'da o'zgaradi, ya'ni
 # undan keyin og'ir qatlam turmasligi kerak.

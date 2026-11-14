@@ -49,6 +49,26 @@ COPY apps/web/package.json ./apps/web/
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
 
+# The trees the running image carries: the same install without devDependencies.
+# Until 2026-11-14 the image took both trees from `deps`, so production shipped
+# ESLint, the TypeScript 7 native compiler and every other build tool: 3 critical
+# and 17 high advisories in Docker Scout were that compiler's Go standard library
+# alone. `next build` still runs on the full tree above; `next start` needs only this.
+FROM node:26-slim AS prod-deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/web/package.json ./apps/web/
+#
+# `@typescript/typescript-<platform>` goes by name: `apps/web/package.json` lists
+# the compiler's platform binaries under `optionalDependencies` (TypeScript 7 side
+# by side, decision 2026-09-20), so `--omit=dev` keeps them. `--omit=optional`
+# is not the answer — Next's own SWC and sharp binaries are optional packages too,
+# and `next start` loads both.
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev \
+    && rm -rf node_modules/@typescript apps/web/node_modules/@typescript
+
 FROM node:26-slim AS build
 WORKDIR /app
 # ⚠️⚠️ TARTIB MUHIM: MANBA AVVAL, `node_modules` KEYIN.
@@ -173,6 +193,14 @@ RUN --mount=type=cache,target=/app/apps/web/.next/cache \
 FROM node:26-slim
 WORKDIR /app
 ENV NODE_ENV=production
+# The base image, patched in place — first, because it changes least. Node's
+# release ships npm 11.20.0 with undici 6.28.0 and brace-expansion 5.0.9, and the
+# tag trails trixie-security (zlib1g): eight high advisories in Docker Scout on
+# 2026-11-14, none after this line (measured on `node:26-slim` alone). In place,
+# not removed: `npx next start` below runs through npm, and a scanner reads every
+# layer, so a deleted npm would still be counted in the base layer.
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* \
+    && npm install -g npm@12.2.2 && npm cache clean --force
 # ⚠️ ORDER: what changes least goes first. Every layer after a changed one
 # is a new layer, written to disk again. Until 2026-11-11 `.next` (new on
 # every commit) came first and the commit labels sat above everything, so
@@ -185,14 +213,14 @@ ENV NODE_ENV=production
 # `next` hoist QILINMAGAN — u `apps/web/node_modules` da qoladi. Ildiz
 # daraxti yolg'iz o'zi yetmaydi: `npx next start` uni topa olmaydi.
 # Ikkalasi ham kerak (deps bosqichidagi izohga qarang). Both come from
-# `deps`, which changes only with `package-lock.json`.
+# `prod-deps`, which changes only with `package-lock.json`.
 #
 # Never root at run time (Docker Scout: "runs as the root user"): the base image's
 # own `node` user (uid 1000). `--chown` on each COPY gives the user its files with no
 # extra layer; the one `chown` below is of three empty-ish directories (not recursive)
 # so that `next start` can create `.next/cache` (image optimizer) beside what it reads.
-COPY --from=deps --chown=node:node /app/node_modules ./node_modules
-COPY --from=deps --chown=node:node /app/apps/web/node_modules ./apps/web/node_modules
+COPY --from=prod-deps --chown=node:node /app/node_modules ./node_modules
+COPY --from=prod-deps --chown=node:node /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=build --chown=node:node /app/apps/web/package.json ./apps/web/
 # `next.config.ts` runtime'da qayta o'qiladi (`next start` uni yuklaydi).
 COPY --from=build --chown=node:node /app/apps/web/next.config.ts ./apps/web/

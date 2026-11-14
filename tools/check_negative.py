@@ -11930,9 +11930,14 @@ def neg_web_dockerfile_stable_layers_first() -> tuple[bool, str]:
             raise ValueError(f"pattern not found: {pattern}")
         return found.start()
 
+    # The running image takes its trees from `prod-deps` (`npm ci --omit=dev`), never from
+    # `deps`: the full tree carries the build tools, the TypeScript 7 native compiler among
+    # them, whose Go standard library was three critical advisories in production (2026-11-14).
+    if re.search(r"COPY --from=deps\b", final):
+        return False, "apps/web/Dockerfile final bosqich: node_modules `deps` dan (devDependencies bilan)"
     try:
-        nm = where(r"COPY --from=deps(?: --\S+)* /app/node_modules \./node_modules")
-        nm_web = where(r"COPY --from=deps(?: --\S+)* /app/apps/web/node_modules")
+        nm = where(r"COPY --from=prod-deps(?: --\S+)* /app/node_modules \./node_modules")
+        nm_web = where(r"COPY --from=prod-deps(?: --\S+)* /app/apps/web/node_modules")
         nxt = where(r"COPY --from=build(?: --\S+)* /app/apps/web/\.next")
         sha = where(r"ARG GIT_SHA")
     except ValueError as exc:
