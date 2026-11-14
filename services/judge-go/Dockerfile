@@ -96,15 +96,17 @@ RUN curl -fsSL --retry 3 -o node.txz https://nodejs.org/dist/v24.22.3/node-v24.2
     && rm -rf /opt/node/share/doc /opt/node/share/man \
         /opt/node/lib/node_modules /opt/node/bin/npm /opt/node/bin/npx /opt/node/bin/corepack
 
-# Go 1.24.13 — the last 1.24 patch release, from go.dev instead of Debian's
-# golang-go (1.24.4: 4 critical and 30 high standard-library advisories, Docker
-# Scout, 2026-11-14). The language stays "Go 1.24" (ADR-0022) and the tree keeps
-# Debian's path, /usr/lib/go-1.24, which the compile commands of the language
-# rows name. Checksum: go.dev/dl/?mode=json.
-RUN curl -fsSL --retry 3 -o go.tgz https://go.dev/dl/go1.24.13.linux-amd64.tar.gz \
-    && echo "1fc94b57134d51669c72173ad5d49fd62afb0f1db9bf3f798fd98ee423f8d730  go.tgz" | sha256sum -c - \
-    && mkdir -p /opt/go-1.24 && tar -xzf go.tgz -C /opt/go-1.24 --strip-components=1 && rm go.tgz \
-    && rm -rf /opt/go-1.24/test /opt/go-1.24/api /opt/go-1.24/doc
+# Go 1.27.4 from go.dev. Debian trixie has 1.24, which left its support window in
+# February 2026: its last patch release still carried 3 critical and 24 high
+# standard-library advisories (Docker Scout, 2026-11-14), so the language moved to
+# the current release (decision 2026-11-14). The path names the minor version on
+# purpose: the compile commands of the language row name it too, so an image and a
+# database that disagree fail a Go compile at once instead of mixing toolchains.
+# Checksum: go.dev/dl/?mode=json.
+RUN curl -fsSL --retry 3 -o go.tgz https://go.dev/dl/go1.27.4.linux-amd64.tar.gz \
+    && echo "7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840  go.tgz" | sha256sum -c - \
+    && mkdir -p /opt/go-1.27 && tar -xzf go.tgz -C /opt/go-1.27 --strip-components=1 && rm go.tgz \
+    && rm -rf /opt/go-1.27/test /opt/go-1.27/api /opt/go-1.27/doc
 
 # Kotlin 2.4.20 — Debian has 1.3.31 (2019).
 RUN curl -fsSL --retry 3 -o kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.4.20/kotlin-compiler-2.4.20.zip \
@@ -178,7 +180,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # kutubxonasi nomini to'smaydi.
 RUN echo /usr/lib/jvm/java-21-openjdk-amd64/lib > /etc/ld.so.conf.d/jdk.conf && ldconfig
 
-# Group 1 (ADR-0022): Rust 1.85, Go 1.24, PHP 8.4. C uses the GCC 14 above.
+# Group 1 (ADR-0022): Rust 1.85, PHP 8.4; Go comes from the archive stage. C uses
+# the GCC 14 above.
 # libicu76 is for .NET: without ICU the runtime aborts before Main runs.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         rustc php-cli libicu76 \
@@ -187,16 +190,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=toolchains /opt/dotnet /opt/dotnet
 COPY --from=toolchains /opt/node /opt/node
 COPY --from=toolchains /opt/kotlinc /opt/kotlinc
-# Go sits where Debian's golang-go put it: the language rows compile with
-# /usr/lib/go-1.24/pkg/tool/linux_amd64/compile (apps/api/problems/languages.py).
-COPY --from=toolchains /opt/go-1.24 /usr/lib/go-1.24
+# The language row compiles with /usr/lib/go-1.27/pkg/tool/linux_amd64/compile
+# (apps/api/problems/languages.py).
+COPY --from=toolchains /opt/go-1.27 /usr/lib/go-1.27
 
 # Go: export data for the whole standard library. A submission compiles with
 # `go tool compile` and `go tool link` against it, so nothing in the sandbox
 # needs a writable build cache — and it costs ~90 ms of CPU instead of ~5.6 s
 # for `go build` on an empty cache (measured).
-RUN export GOROOT=/usr/lib/go-1.24 GOTELEMETRY=off CGO_ENABLED=0 GOCACHE=/opt/go-std/cache \
-        GOTOOLCHAIN=local PATH="/usr/lib/go-1.24/bin:$PATH" \
+RUN export GOROOT=/usr/lib/go-1.27 GOTELEMETRY=off CGO_ENABLED=0 GOCACHE=/opt/go-std/cache \
+        GOTOOLCHAIN=local PATH="/usr/lib/go-1.27/bin:$PATH" \
     && go build std \
     && go list -export -f '{{if .Export}}packagefile {{.ImportPath}}={{.Export}}{{end}}' std > /opt/go-std/importcfg \
     && chmod -R a+rX /opt/go-std

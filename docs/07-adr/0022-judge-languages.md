@@ -71,10 +71,12 @@ writes it, data migrations add rows to deployed databases, and
 `tests/compatibility/check_languages.py` runs each entry inside the judge image.
 
 **Toolchains.** Debian trixie packages where the version is current (GCC 14 family,
-Rust 1.85, Go 1.24, PHP 8.4, GHC 9.6, R 4.5, Swift 6.0, LDC 1.40, OCaml 5.3, SWI-Prolog 9.2,
+Rust 1.85, PHP 8.4, GHC 9.6, R 4.5, Swift 6.0, LDC 1.40, OCaml 5.3, SWI-Prolog 9.2,
 SBCL 2.5, PyPy 7.3, GnuCOBOL 3.2, …). Official archives, pinned by their published
 checksums, where Debian has nothing or something too old: .NET SDK 10, Node.js 24 LTS,
-PowerShell 7.6, Kotlin 2.4, Scala 3.9, Dart 3.13, Julia 1.13. Build-time assets replace
+PowerShell 7.6, Kotlin 2.4, Scala 3.9, Dart 3.13, Julia 1.13, Go 1.27 (Debian's Go 1.24
+until 2026-11-14; it had left its support window, see
+`docs/decisions/2026-11-14-go-language-127.md`). Build-time assets replace
 per-submission work: Go standard-library export data (`go tool compile/link`, 89 ms
 instead of 5.6 s CPU), .NET reference lists.
 

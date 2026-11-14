@@ -17,7 +17,7 @@ describe("editorLanguage", () => {
   });
 
   it("gives each judge language its Monaco grammar", () => {
-    const codes = ["c17", "cpp23", "csharp14", "go124", "java21"];
+    const codes = ["c17", "cpp23", "csharp14", "go127", "java21"];
     expect(codes.map(editorLanguage)).toEqual(["c", "cpp", "csharp", "go", "java"]);
     const more = ["js24", "kotlin24", "php84", "py313", "rust185"];
     expect(more.map(editorLanguage)).toEqual([
@@ -95,7 +95,7 @@ describe("starterSource", () => {
   });
 
   it("imports nothing in Go, where an unused import does not compile", () => {
-    expect(starterSource("go124")).not.toContain("import");
+    expect(starterSource("go127")).not.toContain("import");
   });
 
   it("leaves scripts and unknown languages empty", () => {

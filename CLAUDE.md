@@ -266,6 +266,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-13](docs/decisions/2026-11-13-node-26-lts.md) · Runtime Node 22 → 26 LTS, `@types/node` 26 (2026-09-20 ni almashtiradi); Redis 8 · `types_node_tracks_runtime`
 - [2026-11-13](docs/decisions/2026-11-13-go-127.md) · Judge toolchain: Go 1.27, modullar yangilandi, judge-py Redis 8 mijozi; judge-py obrazi bookworm da qoladi (trixie da JDK 17 yo'q) · `services/judge-go/go.mod`
 - [2026-11-13](docs/decisions/2026-11-13-python-314.md) · API runtime Python 3.12 → 3.14; lock'lar 3.14 uchun; ruff target py312 qoladi · `dependabot_locks_are_recompiled`
+- [2026-11-14](docs/decisions/2026-11-14-go-language-127.md) · Yuborishlar uchun Go 1.24 → 1.27 (`go124` → `go127`, qator joyida); xotira ustamasi 3 MB qoldi · `apps/api/problems/languages.py`
 
 ## Tekshiruvlar
 

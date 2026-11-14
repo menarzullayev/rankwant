@@ -77,7 +77,7 @@ PROBES: dict[str, tuple[Any, ...]] = {
         lambda out: ".".join(out.strip().splitlines()[-1].split()[1].split(".")[:2]),
         "rustc --version",
     ),
-    "go124": (
+    "go127": (
         'package main\n\nimport (\n\t"fmt"\n\t"runtime"\n)\n\nfunc main() { fmt.Println(runtime.Version()) }\n',
         lambda out: ".".join(out.strip().removeprefix("go").split(".")[:2]),
     ),

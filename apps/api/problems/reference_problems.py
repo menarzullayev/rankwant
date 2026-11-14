@@ -552,7 +552,7 @@ console.log(String(maxPair(data.slice(1, 1 + data[0]))));
         "function maxPair(a: number[]): number {\n    const b = [...a].sort((x, y) => y - x);\n    return b[0] + b[1];\n}\n",
     ),
     FunctionLanguage(
-        "go124",
+        "go127",
         f"""package main
 
 import (

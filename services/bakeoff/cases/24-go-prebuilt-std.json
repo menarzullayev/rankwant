@@ -3,12 +3,12 @@
   "title": "Go — yozib bo'lmaydigan keshsiz kompilyatsiya",
   "measures": "Go image'dagi tayyor standart kutubxona bilan 3 s CPU ichida kompilyatsiya bo'ladimi",
   "language": {
-    "code": "go124",
+    "code": "go127",
     "source_file": "main.go",
     "compile": [
       "/bin/sh",
       "-c",
-      "GOROOT=/usr/lib/go-1.24 /usr/lib/go-1.24/pkg/tool/linux_amd64/compile -p main -complete -importcfg /opt/go-std/importcfg -o /box/main.a {src} && GOROOT=/usr/lib/go-1.24 /usr/lib/go-1.24/pkg/tool/linux_amd64/link -importcfg /opt/go-std/importcfg -o {bin} /box/main.a"
+      "GOROOT=/usr/lib/go-1.27 /usr/lib/go-1.27/pkg/tool/linux_amd64/compile -p main -complete -importcfg /opt/go-std/importcfg -o /box/main.a {src} && GOROOT=/usr/lib/go-1.27 /usr/lib/go-1.27/pkg/tool/linux_amd64/link -importcfg /opt/go-std/importcfg -o {bin} /box/main.a"
     ],
     "run": [
       "{bin}"
