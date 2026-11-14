@@ -269,6 +269,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-14](docs/decisions/2026-11-14-go-language-127.md) · Yuborishlar uchun Go 1.24 → 1.27 (`go124` → `go127`, qator joyida); xotira ustamasi 3 MB qoldi · `apps/api/problems/languages.py`
 - [2026-11-15](docs/decisions/2026-11-15-minio-image-chainguard.md) · MinIO obrazi Chainguard, digest bilan (2026-09-28 ning obraz qismini almashtiradi) · `docker-compose.yml`
 - [2026-11-15](docs/decisions/2026-11-15-postgres-image-without-gosu.md) · Ommaviy stack Postgres'i o'z obrazimizda: `gosu` siz, `postgres` foydalanuvchisida; CI va lokal rasmiy obrazda · `compose/postgres/Dockerfile`
+- [2026-11-15](docs/decisions/2026-11-15-inventory-installs-judge-py.md) · Dependabot PR'ida inventar judge-py paketlari bilan yasaladi, markerlarsiz (`colorama` UNKNOWN bo'lmaydi) · `dependabot_locks_are_recompiled`
 
 ## Tekshiruvlar
 

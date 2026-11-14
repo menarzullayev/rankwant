@@ -4262,6 +4262,26 @@ def neg_decisions_deplocks_inventory_gated_on_pip() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_deplocks_judge_py_not_installed() -> tuple[bool, str]:
+    """The inventory is regenerated without the judge-py packages (the #586 state)."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        '          uv pip install --no-deps -r "$RUNNER_TEMP/judge-py-packages.txt" --python .licence-venv --quiet\n',
+        "",
+        "judge-py paketlari o'rnatilmaydi",
+    )
+
+
+def neg_decisions_deplocks_judge_py_markers_kept() -> tuple[bool, str]:
+    """The judge-py list keeps its markers, so the win32-only package is skipped again."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        "            | sed -E 's/[[:space:]]*;.*$//' | grep",
+        "            | grep",
+        "judge-py markerlari olib tashlanmaydi",
+    )
+
+
 def neg_decisions_deploy_ignores_lock() -> tuple[bool, str]:
     """A merge that only changes installed packages is never deployed."""
     return _decision_broken(
@@ -14380,6 +14400,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("kutayotgan CI tasdiqlanmasa tutilsin", neg_decisions_deplocks_run_not_approved),
             ("npm PR'i kuzatilmasa tutilsin", neg_decisions_deplocks_npm_not_watched),
             ("inventar faqat pip uchun yasalsa tutilsin", neg_decisions_deplocks_inventory_gated_on_pip),
+            ("inventar judge-py paketlarisiz yasalsa tutilsin", neg_decisions_deplocks_judge_py_not_installed),
+            ("judge-py markerlari qolsa tutilsin", neg_decisions_deplocks_judge_py_markers_kept),
             ("CI run_all o'qilmasa tutilsin", neg_decisions_ci_run_all_ignored),
             ("lock commit'i rebase'ni to'ssa tutilsin", neg_decisions_deplocks_blocks_rebase),
             ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),

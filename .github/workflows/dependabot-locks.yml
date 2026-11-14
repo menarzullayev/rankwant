@@ -132,6 +132,14 @@ jobs:
       # Python row would be rewritten as UNKNOWN. Node and Go licences come
       # straight from the lockfiles, so nothing of theirs is installed.
       #
+      # The judge-py lock is installed too, every package of it, whatever
+      # its environment marker says. The inventory lists that lock by name,
+      # and a package this runner would skip had no metadata to read:
+      # `colorama` (`sys_platform == 'win32'`, a pytest dependency) was
+      # rewritten as UNKNOWN by every npm pull request (measured on #586,
+      # 2026-11-13). `--no-deps`: the lock already names everything, and the
+      # versions must not move the API packages installed just above.
+      #
       # ⚠️ No `if:` here, on purpose: this step is the whole point for an
       # npm or Go pull request (`tools/check_decisions.py` guards it).
       - name: Regenerate the licence inventory
@@ -139,6 +147,9 @@ jobs:
           set -euo pipefail
           uv venv .licence-venv --python 3.14 --quiet
           uv pip install -r apps/api/requirements-dev.lock --python .licence-venv --quiet
+          (cd services/judge-py && uv export --frozen --all-extras --no-emit-project --no-hashes --quiet) \
+            | sed -E 's/[[:space:]]*;.*$//' | grep -E '^[A-Za-z0-9]' > "$RUNNER_TEMP/judge-py-packages.txt"
+          uv pip install --no-deps -r "$RUNNER_TEMP/judge-py-packages.txt" --python .licence-venv --quiet
           python3 tools/licence_inventory.py --venv .licence-venv
       - name: Did anything change?
         id: diff
