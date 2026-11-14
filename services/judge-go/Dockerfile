@@ -75,18 +75,36 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /dl
 
-# .NET SDK 10.0.401 — C# 14. Checksum: release-metadata/10.0/releases.json (sha512).
-RUN curl -fsSL --retry 3 -o dotnet.tgz https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.401/dotnet-sdk-10.0.401-linux-x64.tar.gz \
-    && echo "51c8b999af9e8dd9998c9edc5944e19a90788862068acd38694e098889054ce8c23d4f0c5cccfa16bf187d044562359e5ee69a9f8ad0bbe913ba90311fbce25b  dotnet.tgz" | sha512sum -c - \
+# .NET SDK 10.0.404 (runtime 10.0.15) — C# 14. Checksum: release-metadata/10.0/releases.json (sha512).
+# The ASP.NET Core shared framework and its reference pack are dropped: csc, vbc,
+# fsc and every submission run on Microsoft.NETCore.App alone, and the web stack
+# carried most of this image's .NET advisories (Docker Scout, 2026-11-14).
+RUN curl -fsSL --retry 3 -o dotnet.tgz https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.404/dotnet-sdk-10.0.404-linux-x64.tar.gz \
+    && echo "577d0eb17fec33d029104c5c63a1ab0accc3e28776274abef2218dbac5af18d2109b5406d26b31d76f5c245215e3ba0926a94c20246c672c41847c9e1eb1dc50  dotnet.tgz" | sha512sum -c - \
     && mkdir -p /opt/dotnet && tar -xzf dotnet.tgz -C /opt/dotnet && rm dotnet.tgz \
     && find /opt/dotnet -name '*.pdb' -delete \
-    && rm -rf /opt/dotnet/packs/*/analytics /opt/dotnet/sdk/*/nuGetPackagesArchive
+    && rm -rf /opt/dotnet/packs/*/analytics /opt/dotnet/sdk/*/nuGetPackagesArchive \
+        /opt/dotnet/shared/Microsoft.AspNetCore.App /opt/dotnet/packs/Microsoft.AspNetCore.App.Ref
 
-# Node.js 24.21.0 LTS — JavaScript. Debian's Node 20 reached end of life in April 2026.
-RUN curl -fsSL --retry 3 -o node.txz https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz \
-    && echo "fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6  node.txz" | sha256sum -c - \
+# Node.js 24.22.3 LTS — JavaScript. Debian's Node 20 reached end of life in April 2026.
+# npm, npx and corepack are dropped: a submission runs `node <file>` and nothing
+# installs packages in a sandbox without a network. Their bundled dependencies
+# (tar, undici, brace-expansion, ip-address) were the npm advisories of this image.
+RUN curl -fsSL --retry 3 -o node.txz https://nodejs.org/dist/v24.22.3/node-v24.22.3-linux-x64.tar.xz \
+    && echo "4f2b175a6d53a5c617a80dba2676238a0688cef28c6da4eba35c7d844e66fcfb  node.txz" | sha256sum -c - \
     && mkdir -p /opt/node && tar -xJf node.txz -C /opt/node --strip-components=1 && rm node.txz \
-    && rm -rf /opt/node/share/doc /opt/node/share/man
+    && rm -rf /opt/node/share/doc /opt/node/share/man \
+        /opt/node/lib/node_modules /opt/node/bin/npm /opt/node/bin/npx /opt/node/bin/corepack
+
+# Go 1.24.13 — the last 1.24 patch release, from go.dev instead of Debian's
+# golang-go (1.24.4: 4 critical and 30 high standard-library advisories, Docker
+# Scout, 2026-11-14). The language stays "Go 1.24" (ADR-0022) and the tree keeps
+# Debian's path, /usr/lib/go-1.24, which the compile commands of the language
+# rows name. Checksum: go.dev/dl/?mode=json.
+RUN curl -fsSL --retry 3 -o go.tgz https://go.dev/dl/go1.24.13.linux-amd64.tar.gz \
+    && echo "1fc94b57134d51669c72173ad5d49fd62afb0f1db9bf3f798fd98ee423f8d730  go.tgz" | sha256sum -c - \
+    && mkdir -p /opt/go-1.24 && tar -xzf go.tgz -C /opt/go-1.24 --strip-components=1 && rm go.tgz \
+    && rm -rf /opt/go-1.24/test /opt/go-1.24/api /opt/go-1.24/doc
 
 # Kotlin 2.4.20 — Debian has 1.3.31 (2019).
 RUN curl -fsSL --retry 3 -o kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.4.20/kotlin-compiler-2.4.20.zip \
@@ -105,9 +123,27 @@ RUN curl -fsSL --retry 3 -o scala.tgz https://github.com/scala/scala3/releases/d
     && mkdir -p /opt/scala && tar -xzf scala.tgz -C /opt/scala --strip-components=1 && rm scala.tgz \
     && rm /opt/scala/libexec/scala-cli
 
-# PowerShell 7.6.6 — not in Debian. Checksum: the release notes.
-RUN curl -fsSL --retry 3 -o pwsh.tgz https://github.com/PowerShell/PowerShell/releases/download/v7.6.6/powershell-7.6.6-linux-x64.tar.gz \
-    && echo "ddbc4a2d113bbd46d283cfedcbcd117a70caefd7673f41f2b4e0000badf103bc  pwsh.tgz" | sha256sum -c - \
+# Scaladoc is dropped: nothing in the judge generates documentation, and the jars
+# only scaladoc loads (jackson, jsoup, flexmark, …) were every Maven advisory of
+# this image. Each `lib/*.jar` is a launcher whose manifest lists its class path;
+# a jar goes only if scaladoc.jar names it and neither scala.jar nor
+# with_compiler.jar does. The `test -s` lines stop the build if a manifest stops
+# parsing — an empty keep-list would otherwise delete the compiler's own jars.
+RUN cd /opt/scala/lib \
+    && class_path() { unzip -p "$1" META-INF/MANIFEST.MF | tr -d '\r' \
+        | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n //g' \
+        | sed -n 's/^Class-Path: //p' | tr ' ' '\n' | sed '/^$/d' | sort -u; } \
+    && class_path scaladoc.jar > /tmp/doc && test -s /tmp/doc \
+    && class_path scala.jar > /tmp/run && test -s /tmp/run \
+    && class_path with_compiler.jar > /tmp/compiler && test -s /tmp/compiler \
+    && sort -u /tmp/run /tmp/compiler > /tmp/keep \
+    && comm -23 /tmp/doc /tmp/keep > /tmp/drop && test -s /tmp/drop \
+    && while read -r jar; do rm -f "$jar"; done < /tmp/drop \
+    && rm -f scaladoc.jar ../bin/scaladoc ../bin/scaladoc.bat /tmp/doc /tmp/run /tmp/compiler /tmp/keep /tmp/drop
+
+# PowerShell 7.6.10 — not in Debian. Checksum: the release notes.
+RUN curl -fsSL --retry 3 -o pwsh.tgz https://github.com/PowerShell/PowerShell/releases/download/v7.6.10/powershell-7.6.10-linux-x64.tar.gz \
+    && echo "e261cabc91c78a9afe8d1e5f24731ab0d38204735ab2ec94b0af55102652e10d  pwsh.tgz" | sha256sum -c - \
     && mkdir -p /opt/powershell && tar -xzf pwsh.tgz -C /opt/powershell && chmod +x /opt/powershell/pwsh && rm pwsh.tgz
 
 # Julia 1.13.0 — not in Debian. Checksum: julialang-s3.julialang.org/bin/checksums.
@@ -145,18 +181,22 @@ RUN echo /usr/lib/jvm/java-21-openjdk-amd64/lib > /etc/ld.so.conf.d/jdk.conf && 
 # Group 1 (ADR-0022): Rust 1.85, Go 1.24, PHP 8.4. C uses the GCC 14 above.
 # libicu76 is for .NET: without ICU the runtime aborts before Main runs.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        rustc golang-go php-cli libicu76 \
+        rustc php-cli libicu76 \
     && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/info /usr/share/locale*
 
 COPY --from=toolchains /opt/dotnet /opt/dotnet
 COPY --from=toolchains /opt/node /opt/node
 COPY --from=toolchains /opt/kotlinc /opt/kotlinc
+# Go sits where Debian's golang-go put it: the language rows compile with
+# /usr/lib/go-1.24/pkg/tool/linux_amd64/compile (apps/api/problems/languages.py).
+COPY --from=toolchains /opt/go-1.24 /usr/lib/go-1.24
 
 # Go: export data for the whole standard library. A submission compiles with
 # `go tool compile` and `go tool link` against it, so nothing in the sandbox
 # needs a writable build cache — and it costs ~90 ms of CPU instead of ~5.6 s
 # for `go build` on an empty cache (measured).
 RUN export GOROOT=/usr/lib/go-1.24 GOTELEMETRY=off CGO_ENABLED=0 GOCACHE=/opt/go-std/cache \
+        GOTOOLCHAIN=local PATH="/usr/lib/go-1.24/bin:$PATH" \
     && go build std \
     && go list -export -f '{{if .Export}}packagefile {{.ImportPath}}={{.Export}}{{end}}' std > /opt/go-std/importcfg \
     && chmod -R a+rX /opt/go-std
