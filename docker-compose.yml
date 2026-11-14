@@ -80,22 +80,34 @@ services:
     # Lokal stack esa keshdagi obraz bilan ishlab turaveradi
     # (`a1ea29fa2835`) — nosozlik shuning uchun ko'rinmasdi.
     #
-    # Yechim: Bitnami'ning arxiv nashri — o'sha MinIO versiyasi
-    # (2025.4.22), ichida `minio`, `mc`, `bash`, `curl` bor (o'lchandi).
-    # ⚠️ `bitnamilegacy` — ARXIV: yangilanish kelmaydi. Bu ataylab:
-    # muqobil yo'q, `minio-init` esa `mc` va `bash` ga tayanadi.
-    # ⚠️ Obraz HAM `minio-init` da ishlatiladi — ikkalasi birga
-    # ko'chirilishi shart.
-    image: bitnamilegacy/minio:2025.4.22-debian-12-r0
-    # ⚠️ Bitnami obrazi boshqa entrypoint'ga ega
-    # (`/opt/bitnami/scripts/minio/entrypoint.sh`), ya'ni quyidagi
-    # `server /data ...` buyrug'i argument sifatida talqin qilinardi.
-    # `minio` ni entrypoint qilib beramiz — buyruq o'zgarmaydi.
+    # 2026-09-28 .. 2026-11-15 the answer was Bitnami's archived build
+    # (`bitnamilegacy/minio:2025.4.22-debian-12-r0`). An archive gets no
+    # updates: by 2026-11-15 Docker Scout counted 34 critical and 182 high
+    # vulnerabilities in it.
+    #
+    # Now: Chainguard's build of the same server (decision 2026-11-15).
+    # The `-dev` variant is the one that carries `minio`, `mc`, `bash` and
+    # `wget` together (measured); the plain variant has no shell, and both
+    # the healthcheck and `minio-init` need one. Measured 2026-11-15:
+    # 0 critical, 2 high.
+    # ⚠️ Chainguard publishes only the moving `latest` / `latest-dev` tags
+    # for free, so the pin is the digest. To update: pull `latest-dev`,
+    # start it on a COPY of `miniodata`, compare the object listing with
+    # the live one, then replace the digest here.
+    # ⚠️ MinIO upgrades the on-disk format forward only. Going back to the
+    # archived image means restoring `miniodata` from a backup taken
+    # before the switch, not just reverting this line.
+    # ⚠️ `minio-init` uses the SAME image — move both together.
+    image: cgr.dev/chainguard/minio:latest-dev@sha256:5735e8125c4af7dd310dc5780508bfb850f0b68783a1a56089b5c64316a8f603
+    # The image's own entrypoint is already `/usr/bin/minio`; it is spelled
+    # out so that `server /data ...` below keeps its meaning whichever
+    # image stands here.
     entrypoint: ['minio']
-    # ⚠️ `miniodata` volume ROOT egasida: eski obraz root bilan ishlagan
-    # (o'lchandi: `id` → uid=0, `/data` → root:root). Bitnami sukuti esa
-    # 1001 ⇒ mavjud volume'ga YOZOLMAYDI va stack ko'tarilmaydi. `0`
-    # amaldagi xatti-harakatni saqlaydi, ya'ni volume migratsiyasi kerak emas.
+    # ⚠️ The `miniodata` volume is owned by ROOT: the first image ran as
+    # root (measured: `id` → uid=0, `/data` → root:root). This image's
+    # default user is 65532, which cannot write to the existing volume, so
+    # the stack would not come up. `0` keeps the behaviour the data was
+    # written with — no volume migration needed.
     user: '0'
     command: server /data --console-address ":9001"
     environment:
@@ -105,8 +117,10 @@ services:
     # «container … has no healthcheck configured» deydi va stack ko'tarilmaydi
     # (izolyatsiya stack'ida o'lchandi 2026-09-24). Health endpoint auth
     # so'ramaydi.
+    # The image has `wget` (busybox), not `curl`; each half passes on its
+    # own (measured 2026-11-15).
     healthcheck:
-      test: ['CMD-SHELL', 'mc ready local || curl -fsS http://127.0.0.1:9000/minio/health/live']
+      test: ['CMD-SHELL', 'mc ready local || wget -q -O /dev/null http://127.0.0.1:9000/minio/health/live']
       interval: 5s
       timeout: 3s
       retries: 12
@@ -136,15 +150,16 @@ services:
   # `service_completed_successfully` bilan shu service'ga bog'lanadi.
   minio-init:
     logging: *default-logging
-    # ⚠️ `minio` bilan BIR XIL obraz — ikkalasi birga ko'chiriladi (yuqoriga
-    # qarang: rasmiy MinIO obrazi 2026-09 dan beri yuklanmaydi).
-    image: bitnamilegacy/minio:2025.4.22-debian-12-r0
+    # ⚠️ The SAME image as `minio` — the two move together (see above: the
+    # official MinIO image has not been pullable since 2026-09).
+    image: cgr.dev/chainguard/minio:latest-dev@sha256:5735e8125c4af7dd310dc5780508bfb850f0b68783a1a56089b5c64316a8f603
     restart: 'no'
-    # ⚠️ `bash` + `mc` kerak — Bitnami arxivida ikkisi ham bor (o'lchandi).
+    # ⚠️ Needs `bash` + `mc` — the `-dev` variant has both (measured).
     entrypoint: ['bash', '/init/minio-init.sh']
-    # ⚠️ Skript `/done/flag` ni yaratadi (healthcheck shuni kutadi) va
-    # `/tmp` ga policy faylini yozadi. Bitnami sukuti 1001 bo'lsa
-    # `mkdir -p /done` ildizda RUXSAT BERMAYDI ⇒ `user: '0'` shart.
+    # ⚠️ The script creates `/done/flag` (the healthcheck waits for it) and
+    # writes the policy file to `/tmp`. As the image's default user
+    # (65532) `mkdir -p /done` in the root directory is REFUSED, so
+    # `user: '0'` is required.
     user: '0'
     environment:
       # Xuddi shu qiymat judge env'ida — identitet ikki tomonda sinxron
