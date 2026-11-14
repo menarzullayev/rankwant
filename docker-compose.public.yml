@@ -113,6 +113,25 @@ services:
     <<: *restart
     logging: *default-logging
     ports: !reset []
+    # The public stack runs our own build of the official image: Debian
+    # updates applied, `gosu` removed, the server started as `postgres`
+    # (decision 2026-11-15; the reasons are in the Dockerfile). The local
+    # and CI stacks keep the official `postgres:16` from the base file, so
+    # nothing in the CI image pipeline changes.
+    # ⚠️ `image:` must be set here: with `build:` alone compose would tag
+    # the result with the base file's name and overwrite the local
+    # `postgres:16`.
+    # ⚠️ `tools/deploy.sh` neither builds nor recreates this service (it is
+    # not in its service list). After a change to the Dockerfile, or to
+    # pick up a new minor release, by hand, in the deploy checkout:
+    #   docker compose -p rankwant --env-file .env.public \
+    #     -f docker-compose.yml -f docker-compose.public.yml \
+    #     build --pull postgres
+    #   ... up -d --no-deps postgres
+    # The database is down for the seconds the container takes to restart.
+    build:
+      context: ./compose/postgres
+    image: rankwant-postgres
     environment:
       # ADR-0044: the public stack does not start on a secret it was not
       # given. The base file keeps the dev value for the local and CI

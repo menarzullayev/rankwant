@@ -145,9 +145,12 @@ import_export() {
   # bu tomonda qo'shimcha migratsiya bo'lsa undan qolgan jadvallar turib qolardi.
   "${compose[@]}" exec -T postgres psql -U rankwant -d postgres -q -v ON_ERROR_STOP=1 \
     -c 'DROP DATABASE IF EXISTS rankwant WITH (FORCE);' -c 'CREATE DATABASE rankwant OWNER rankwant;'
-  "${compose[@]}" cp "$dir/pg.sql.gz" postgres:/tmp/handoff-pg.sql.gz
+  # Its own name, not the one `out` writes: `cp` leaves the file owned by
+  # root, and the public stack's server runs as `postgres` (decision
+  # 2026-11-15), which could not overwrite it on the next `out`.
+  "${compose[@]}" cp "$dir/pg.sql.gz" postgres:/tmp/handoff-in.sql.gz
   "${compose[@]}" exec -T postgres sh -ec \
-    'gunzip -c /tmp/handoff-pg.sql.gz | psql -U rankwant -d rankwant -q -v ON_ERROR_STOP=1 >/dev/null'
+    'gunzip -c /tmp/handoff-in.sql.gz | psql -U rankwant -d rankwant -q -v ON_ERROR_STOP=1 >/dev/null'
 
   echo "MinIO tiklanmoqda"
   "${compose[@]}" stop minio

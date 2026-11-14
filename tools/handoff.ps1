@@ -169,8 +169,11 @@ function Import-Export([string]$id) {
   # Bo'sh bazaga tiklanadi: --clean faqat dumpdagi obyektlarni tashlaydi,
   # bu tomonda qo'shimcha migratsiya bo'lsa undan qolgan jadvallar turib qolardi.
   Compose exec -T postgres psql -U rankwant -d postgres -q -v ON_ERROR_STOP=1 -c 'DROP DATABASE IF EXISTS rankwant WITH (FORCE);' -c 'CREATE DATABASE rankwant OWNER rankwant;'
-  Compose cp (Join-Path $dir 'pg.sql.gz') postgres:/tmp/handoff-pg.sql.gz
-  Compose exec -T postgres sh -ec 'gunzip -c /tmp/handoff-pg.sql.gz | psql -U rankwant -d rankwant -q -v ON_ERROR_STOP=1 >/dev/null'
+  # Its own name, not the one `out` writes: `cp` leaves the file owned by
+  # root, and the public stack's server runs as `postgres` (decision
+  # 2026-11-15), which could not overwrite it on the next `out`.
+  Compose cp (Join-Path $dir 'pg.sql.gz') postgres:/tmp/handoff-in.sql.gz
+  Compose exec -T postgres sh -ec 'gunzip -c /tmp/handoff-in.sql.gz | psql -U rankwant -d rankwant -q -v ON_ERROR_STOP=1 >/dev/null'
 
   'MinIO tiklanmoqda'
   Compose stop minio
