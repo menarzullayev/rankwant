@@ -28,6 +28,7 @@ GROUPS = [
     importlib.import_module("problems.migrations.0017_judge_languages_group1"),
     importlib.import_module("problems.migrations.0018_judge_languages_group2"),
     importlib.import_module("problems.migrations.0020_judge_languages_group3"),
+    importlib.import_module("problems.migrations.0044_language_variants"),
 ]
 KOTLIN_COLOURS = importlib.import_module("problems.migrations.0019_kotlin_colors_off")
 GO_127 = importlib.import_module("problems.migrations.0043_go_127")

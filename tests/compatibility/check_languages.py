@@ -31,6 +31,27 @@ for _stream in (sys.stdout, sys.stderr):
 REPO = pathlib.Path(__file__).resolve().parents[2]
 CATALOG = REPO / "apps/api/problems/languages.py"
 
+def _must_refuse(source: str, filename: str, answer: str) -> Any:
+    """An extra step: the catalog's own compile command must REFUSE `source`.
+
+    A language variant (C# 8, Rust 2024, ...) runs on the toolchain of its newer sibling,
+    so a program cannot print which version it was compiled as. What tells them apart
+    is what the compiler rejects: this step compiles code the variant must not accept,
+    with the very command the catalog declares, and prints `answer` only if it fails.
+    """
+
+    def step(row: dict[str, Any]) -> str:
+        src = f"/box/{filename}"
+        rendered = [a.replace("{src}", src).replace("{bin}", "/box/refused") for a in row["compile"]]
+        return (
+            f"cat > {src} <<'EOF'\n{source}EOF\n"
+            f"if {shlex.join(rendered)} >/dev/null 2>&1; then echo accepted-too-new; "
+            f"else echo {answer}; fi"
+        )
+
+    return step
+
+
 #: Har til o'z runtime versiyasini chop etadi — e'londan mustaqil manba.
 #:
 #: Keyed by the exact language code: with dozens of languages a prefix match
@@ -43,7 +64,7 @@ CATALOG = REPO / "apps/api/problems/languages.py"
 PROBES: dict[str, tuple[Any, ...]] = {
     "cpp23": (
         '#include <cstdio>\nint main(){printf("%ld\\n", __cplusplus);return 0;}\n',
-        lambda out: {"202302": "23", "202100": "2b", "201703": "17", "201402": "14"}.get(
+        lambda out: {"202302": "23", "202100": "2b", "202002": "20", "201703": "17", "201402": "14"}.get(
             out.strip().rstrip("L")[:6], out.strip()
         ),
     ),
@@ -238,6 +259,50 @@ PROBES: dict[str, tuple[Any, ...]] = {
     ),
 }
 
+# Variants that share a toolchain with a newer sibling (decision 2026-11-15).
+PROBES["cpp17"] = PROBES["cpp20"] = PROBES["cpp23"]
+
+#: Compiled as a class file: major 52 is Java 8, 65 is Java 21. `--release 8` is what
+#: makes the difference, and the JDK 21 runtime reads the class file back without help.
+PROBES["java8"] = (
+    "public class Main{public static void main(String[] a)throws Exception{"
+    'java.io.InputStream s=Main.class.getResourceAsStream("Main.class");'
+    "byte[] h=new byte[8];s.read(h,0,8);"
+    "System.out.println(((h[6]&255)<<8)|(h[7]&255));}}\n",
+    lambda out: {"52": "8"}.get(out.strip(), out.strip()),
+)
+
+PROBES["csharp8"] = (
+    # A using declaration is C# 8 syntax.
+    'class P{static void Main(){using var r=new System.IO.StringReader("x");'
+    "System.Console.WriteLine(r.ReadToEnd());}}\n",
+    lambda out: {"8": "8 (.NET 10)"}.get(out.strip().splitlines()[-1], out.strip()),
+    # `record` is C# 9.
+    _must_refuse("record R(int A);\nclass P{static void Main(){}}\n", "refused.cs", "8"),
+)
+
+PROBES["csharp10"] = (
+    # A file-scoped namespace is C# 10 syntax: C# 8 and 9 refuse the probe outright.
+    'namespace N;\nclass P{static void Main(){System.Console.WriteLine("x");}}\n',
+    lambda out: {"10": "10 (.NET 10)"}.get(out.strip().splitlines()[-1], out.strip()),
+    # A raw string literal is C# 11.
+    _must_refuse(
+        'class P{static void Main(){System.Console.WriteLine("""x""");}}\n', "refused.cs", "10"
+    ),
+)
+
+#: `gen` is a reserved word in edition 2024 only: edition 2021 accepts it as a name.
+PROBES["rust2024"] = (
+    'fn main() { println!("ok"); }\n',
+    lambda out: (
+        ".".join(out.strip().splitlines()[-2].split()[1].split(".")[:2]) + " (edition 2024)"
+        if out.strip().splitlines()[-1] == "2024"
+        else out.strip().splitlines()[-1]
+    ),
+    "rustc --version",
+    _must_refuse("fn main() { let gen = 1; }\n", "refused.rs", "2024"),
+)
+
 #: Keys every catalog entry must have. A missing one would otherwise surface
 #: as a KeyError halfway through, after some languages were already reported.
 FIELDS = ("code", "name", "version", "source_file", "compile", "run", "processes")
@@ -296,7 +361,7 @@ def main() -> int:
                 # Compile output goes to stderr: ghc, fpc and dart report progress on
                 # stdout, and only the program's own output is parsed.
                 steps.append(shlex.join(rendered) + redirect)
-        steps.extend(extra)
+        steps.extend(e(row) if callable(e) else e for e in extra)
         proc = run_in_image(image, "\n".join(steps))
 
         if proc.returncode != 0:
