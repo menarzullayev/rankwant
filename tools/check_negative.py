@@ -3518,9 +3518,19 @@ def neg_decisions_schema_filter_dropped() -> tuple[bool, str]:
     """The web path filter forgets the schema again (the #318 failure)."""
     return _decision_broken(
         ".github/workflows/ci.yml",
+        "web:   ['apps/web/**', 'packages/**', 'apps/api/openapi/schema.yml', 'package.json', 'package-lock.json']",
+        "web:   ['apps/web/**', 'packages/**', 'package.json', 'package-lock.json']",
+        "schema.yml o'zgarsa Web job'i uyg'onmaydi",
+    )
+
+
+def neg_decisions_web_filter_forgets_root_lockfile() -> tuple[bool, str]:
+    """The web path filter forgets the root lockfile again (the #598 state)."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "web:   ['apps/web/**', 'packages/**', 'apps/api/openapi/schema.yml', 'package.json', 'package-lock.json']",
         "web:   ['apps/web/**', 'packages/**', 'apps/api/openapi/schema.yml']",
-        "web:   ['apps/web/**', 'packages/**']",
-        "Web job'i uyg'onmaydi",
+        "ildiz `package.json` o'zgarsa Web job'i uyg'onmaydi",
     )
 
 
@@ -14429,6 +14439,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("karusel slaydi API'ga bog'lansa tutilsin", neg_decisions_carousel_panel_calls_api),
             ("karusel slaydini yo'qotsa tutilsin", neg_decisions_carousel_loses_a_slide),
             ("web filtri sxemani unutsa tutilsin", neg_decisions_schema_filter_dropped),
+            ("web filtri ildiz lockfile'ni unutsa tutilsin", neg_decisions_web_filter_forgets_root_lockfile),
             ("openapi:check qadami olib tashlansa tutilsin", neg_decisions_openapi_check_step_dropped),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
             (

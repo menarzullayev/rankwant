@@ -270,6 +270,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-15](docs/decisions/2026-11-15-minio-image-chainguard.md) · MinIO obrazi Chainguard, digest bilan (2026-09-28 ning obraz qismini almashtiradi) · `docker-compose.yml`
 - [2026-11-15](docs/decisions/2026-11-15-postgres-image-without-gosu.md) · Ommaviy stack Postgres'i o'z obrazimizda: `gosu` siz, `postgres` foydalanuvchisida; CI va lokal rasmiy obrazda · `compose/postgres/Dockerfile`
 - [2026-11-15](docs/decisions/2026-11-15-inventory-installs-judge-py.md) · Dependabot PR'ida inventar judge-py paketlari bilan yasaladi, markerlarsiz (`colorama` UNKNOWN bo'lmaydi) · `dependabot_locks_are_recompiled`
+- [2026-11-15](docs/decisions/2026-11-15-root-lockfile-wakes-web.md) · Ildiz `package.json` / `package-lock.json` o'zgarsa Web job'i ham yuradi · `root_lockfile_wakes_web_job`
 
 ## Tekshiruvlar
 
