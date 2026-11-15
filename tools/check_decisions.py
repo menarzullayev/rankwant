@@ -3037,6 +3037,29 @@ def pr_runs_decision_cases_for_changed_files() -> str | None:
     return None
 
 
+def negatives_run_one_rule() -> str | None:
+    """2026-11-15 (HITL): qaror salbiy testi faqat o'z qoidasini yuritadi.
+
+    O'lchandi: 635 ta test har biri 177 qoidaning hammasini yuritardi (~1 s),
+    jami ~160 s. `tools/negative_rule_map.json` testni qoidaga bog'laydi,
+    `check_decisions.py --only` bitta qoidani yuritadi. Xarita eskirsa to'liq
+    yurish hukm chiqaradi (sekinroq, lekin hech qachon noto'g'ri emas);
+    qo'lda to'liq yurishda (`run_all`) `NEGATIVE_FULL_RULES=1`.
+    """
+    neg = read("tools/check_negative.py")
+    if 'code, out = run_check("decisions", "--only", label)' not in neg:
+        return "tools/check_negative.py: qaror testi bitta qoidani yuritmaydi (--only)"
+    if "if code != 1 or rule not in out:" not in neg:
+        return "tools/check_negative.py: tor yurish rad etilsa to'liq yurish hukm chiqarmaydi"
+    if "--only" not in read("tools/check_decisions.py"):
+        return "tools/check_decisions.py: `--only` yo'q — qaror testlari 177 qoidani yuritadi"
+    if len(read("tools/negative_rule_map.json")) < 10000:
+        return "tools/negative_rule_map.json: xarita bo'sh yoki qisqargan"
+    if "NEGATIVE_FULL_RULES" not in read(".github/workflows/ci.yml"):
+        return "ci.yml: qo'lda to'liq yurishda hamma qoida yuritilmaydi (NEGATIVE_FULL_RULES)"
+    return None
+
+
 def pr_ci_is_fast_and_static() -> str | None:
     """2026-11-15 (HITL): PR CI — lint, tiplar, unit va statik tekshiruvlar; og'ir qismi `main` da.
 
@@ -6175,6 +6198,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("PR CI tez: salbiy testlar va build faqat main'da, statik tekshiruv alohida", pr_ci_is_fast_and_static),
+    ("qaror salbiy testi faqat o'z qoidasini yuritadi", negatives_run_one_rule),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
     ("CI paketlarni tez o'rnatadi", ci_installs_are_fast),
     ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),
@@ -6201,10 +6225,20 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
 ]
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    args = sys.argv[1:] if argv is None else argv
+    # `--only LABEL` runs just the rule with that exact label. The negative
+    # suite breaks one file to prove ONE rule fires, so it asks for that rule
+    # alone instead of paying for all of them (owner decision 2026-11-15).
+    only = {args[i + 1] for i, a in enumerate(args[:-1]) if a == "--only"}
+    chosen = [(label, rule) for label, rule in RULES if not only or label in only]
+    if only and len(chosen) != len(only):
+        missing = sorted(only - {label for label, _ in chosen})
+        print(f"✗ --only: bunday qoida yo'q — {missing}")
+        return 2
     problems: list[str] = []
     try:
-        for label, rule in RULES:
+        for label, rule in chosen:
             problem = rule()
             if problem:
                 problems.append(f"{label}: {problem}")
@@ -6220,7 +6254,7 @@ def main() -> int:
             print(f"  - {problem}")
         print("  Qarorni o'zgartirish faqat Saidakbar akaning aniq tasdig'i bilan.")
         return 1
-    print(f"✓ {len(RULES)} ta qaror kodda amalda")
+    print(f"✓ {len(chosen)} ta qaror kodda amalda")
     return 0
 
 
