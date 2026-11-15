@@ -277,7 +277,7 @@ jobs:
           DJANGO_SECRET_KEY: ci-django-secret
         run: |
           mapfile -t files < <(python3 ../../tools/pytest_shard.py ${{ matrix.shard }} ${{ needs.filter.outputs.api_shard_count }})
-          pytest -n 4 "${files[@]}"
+          pytest -n 4 --durations=10 "${files[@]}"
         working-directory: apps/api
       # Applies ALL migrations to an empty Postgres (schema + data) and reads the
       # North Star query on it. It used to be the `api` job's own service

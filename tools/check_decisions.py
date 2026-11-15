@@ -3067,6 +3067,8 @@ def pr_ci_is_fast_and_static() -> str | None:
         return "ci.yml: Postgres'ga migratsiya va North Star so'rovi `api_tests` da (faqat main) yo'q"
     if "fromJSON(needs.filter.outputs.api_shards)" not in tests:
         return "ci.yml: API testlari PR'da keng shardlanmaydi (api_shards)"
+    if "def _fast_password_hasher():" not in read("apps/api/tests/conftest.py"):
+        return "apps/api/tests/conftest.py: testlar sekin PBKDF2 bilan parol xeshlaydi — har foydalanuvchi ~0.3 s"
     static = _workflow_job(ci, "web_static")
     if not static:
         return "ci.yml: `web_static` job'i yo'q — statik tekshiruvlar `web` orqasida navbat kutadi"
