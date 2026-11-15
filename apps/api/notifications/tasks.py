@@ -65,9 +65,30 @@ def send_telegram(user_id: int, text: str) -> str:
     return "sent"
 
 
+@shared_task(name="notifications.run_reminders")
+def run_reminders() -> dict[str, int]:
+    """Timed notifications (`notifications.reminders`); beat calls it every 5 minutes."""
+    from notifications import reminders
+
+    return reminders.run()
+
+
+@shared_task(name="notifications.prune_reminders")
+def prune_reminders() -> int:
+    from notifications import reminders
+
+    return reminders.prune()
+
+
 @shared_task(name="notifications.send_email")
 def send_notification_email(
-    *, user_id: int, kind: str, title: str, body: str, notification_id: int | None = None
+    *,
+    user_id: int,
+    kind: str,
+    title: str,
+    body: str,
+    notification_id: int | None = None,
+    code: str = "",
 ) -> str:
     """Email copy of a notification, five minutes after it (`notifications.email`).
 
@@ -78,5 +99,10 @@ def send_notification_email(
     from notifications.email import deliver
 
     return deliver(
-        user_id=user_id, kind=kind, title=title, body=body, notification_id=notification_id
+        user_id=user_id,
+        kind=kind,
+        title=title,
+        body=body,
+        notification_id=notification_id,
+        code=code,
     )

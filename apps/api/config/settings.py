@@ -577,6 +577,13 @@ CELERY_BEAT_SCHEDULE = {
     # conversation, and conversations older than 90 days go (decision ⑦).
     "tutor-expire-pending": {"task": "tutor.expire_pending", "schedule": 60.0},
     "tutor-purge-old": {"task": "tutor.purge_old", "schedule": 86400.0},
+    # Timed notifications (decision 2026-11-16): contest starts, streak warnings.
+    "notification-reminders": {"task": "notifications.run_reminders", "schedule": 300.0},
+    "contest-reminders": {"task": "contests.run_reminders", "schedule": 300.0},
+    "notification-reminders-prune": {
+        "task": "notifications.prune_reminders",
+        "schedule": 86400.0,
+    },
     "drain-judge-results": {
         "task": "judging.drain_results",
         # Progress oqimi judge tezligiga yaqin bo'lishi uchun tez-tez bo'shatiladi.

@@ -660,6 +660,28 @@ class UserSession(CreatedModel):
         return f"{self.user_id}:{self.session_key[:6]}"
 
 
+class KnownDevice(CreatedModel):
+    """A browser/OS pair this account has signed in from (`core.devices`).
+
+    `UserSession` rows die with their session, so they cannot tell a new device
+    from a returning one whose old session expired. This table keeps the
+    pairs; `created_at` is the first time one was seen. No IP, no raw agent
+    string: only the readable label ("Chrome · Windows") and its hash.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="known_devices")
+    key = models.CharField(max_length=40)
+    label = models.CharField(max_length=60)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "key"], name="uniq_known_device")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user_id}:{self.label}"
+
+
 class NavSeen(models.Model):
     """When a user last opened a side-menu section (`core.nav_badges`).
 

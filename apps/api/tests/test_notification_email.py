@@ -20,6 +20,7 @@ from core import mail_quota
 from core.mail_providers import Brevo, MailerSend, Message, SendError
 from core.models import EmailDelivery, User
 from notifications import email as email_channel
+from notifications.message_catalog import KIND_NAMES
 from notifications.models import Notification
 from notifications.services import channels, notify, notify_many
 
@@ -223,7 +224,8 @@ class TestDeliver:
         self._deliver(user)
         text = brevo.calls[0].text
         assert "Отключить письма этого типа" in text
-        assert "«Дуэли»" in text
+        # The footer names the settings GROUP the notice belongs to (2026-11-16).
+        assert f"«{KIND_NAMES['ru']['competition']}»" in text
 
 
 @pytest.mark.django_db

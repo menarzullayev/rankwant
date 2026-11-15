@@ -1,6 +1,17 @@
 {
+  "attempt_verdict_changed": [
+    "problem",
+    "verdict"
+  ],
   "blog_entry": [
     "title",
+    "user"
+  ],
+  "class_invite_cancelled": [
+    "classroom"
+  ],
+  "class_invited": [
+    "classroom",
     "user"
   ],
   "classroom_join_approved": [
@@ -46,9 +57,30 @@
     "contest",
     "reason"
   ],
+  "contest_invited": [
+    "contest",
+    "user"
+  ],
+  "contest_moderator_invited": [
+    "contest",
+    "user"
+  ],
+  "contest_moderator_removed": [
+    "contest"
+  ],
+  "contest_new": [
+    "contest"
+  ],
+  "contest_prize": [
+    "contest",
+    "prize"
+  ],
   "contest_question": [
     "contest",
     "text"
+  ],
+  "contest_rating_reverted": [
+    "contest"
   ],
   "contest_result": [
     "after",
@@ -56,6 +88,15 @@
     "contest",
     "delta",
     "rank"
+  ],
+  "contest_standing_changed": [
+    "contest"
+  ],
+  "contest_starts_in_day": [
+    "contest"
+  ],
+  "contest_starts_in_hour": [
+    "contest"
   ],
   "contest_tester": [
     "contest"
@@ -122,6 +163,49 @@
   "hackathon_scored": [
     "score"
   ],
+  "host_contest_ended": [
+    "contest"
+  ],
+  "host_contest_starts_in_hour": [
+    "contest"
+  ],
+  "host_moderator_answered": [
+    "contest",
+    "user"
+  ],
+  "host_plagiarism_found": [
+    "contest",
+    "count"
+  ],
+  "judge_access_ended": [],
+  "judge_access_ending": [
+    "days"
+  ],
+  "judge_limit_reached": [
+    "limit"
+  ],
+  "my_class_invite_accepted": [
+    "classroom",
+    "user"
+  ],
+  "my_class_invite_declined": [
+    "classroom",
+    "user"
+  ],
+  "my_class_student_left": [
+    "classroom",
+    "user"
+  ],
+  "plan_activated": [
+    "plan"
+  ],
+  "plan_ended": [],
+  "plan_ending": [
+    "days"
+  ],
+  "problem_archived": [
+    "problem"
+  ],
   "problem_rerated": [
     "after",
     "before",
@@ -131,8 +215,57 @@
     "problem",
     "user"
   ],
+  "quiz_invited": [
+    "quiz",
+    "user"
+  ],
+  "quiz_published": [
+    "quiz"
+  ],
+  "report_on_my_content": [
+    "object"
+  ],
+  "report_resolved": [
+    "object"
+  ],
+  "report_reviewed": [
+    "object"
+  ],
+  "security_deletion_cancelled": [],
+  "security_deletion_scheduled": [
+    "date"
+  ],
+  "security_email_changed": [
+    "email"
+  ],
+  "security_new_device": [
+    "device"
+  ],
+  "security_password_changed": [],
+  "security_password_reset": [],
+  "security_telegram_linked": [],
   "streak": [
     "days"
+  ],
+  "streak_at_risk": [
+    "days"
+  ],
+  "streak_broken": [
+    "days"
+  ],
+  "team_captain": [
+    "team"
+  ],
+  "team_invite_answered": [
+    "team",
+    "user"
+  ],
+  "team_invite_cancelled": [
+    "team"
+  ],
+  "team_invited": [
+    "team",
+    "user"
   ],
   "tutor_budget": [
     "limit",

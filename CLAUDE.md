@@ -284,7 +284,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-15](docs/decisions/2026-11-15-site-head-follows-language.md) · Sayt `<title>`, tavsif va JSON-LD mehmon tilida (manifest ataylab o'zbekcha) · `site_head_follows_the_language`
 - [2026-11-15](docs/decisions/2026-11-15-graphify-removed.md) · Graphify va uning GitHub boti to'liq olib tashlandi (MCP, dastur, graf fayllari, repo havolalari) · `.gitignore`
 - [2026-11-15](docs/decisions/2026-11-15-guest-hero.md) · Mehmon heroi: «Yeching. Musobaqalashing. Yuksaling.», haqiqiy masala kartasi (muharririsiz), to'rt imkoniyat raqami (foydalanuvchi soni yo'q), ko'rdi→bosdi→forma→ro'yxat voronkasi, 10 tilda · `guest_hero_is_honest_and_measured`
-- [2026-11-16](docs/decisions/2026-11-16-notifications-parity.md) · Bildirishnomalar Robocontest bilan tenglashtiriladi: 49 tur, ~14 guruh, uxlab yotgan turlar, xavfsizlikda majburiy sayt, vaqt xabarlari · `docs/research/2026-11-16-notifications-parity/README.md`
+- [2026-11-16](docs/decisions/2026-11-16-notifications-parity.md) · Bildirishnomalar Robocontest bilan tenglashtiriladi: 49 tur, ~14 guruh, uxlab yotgan turlar, xavfsizlikda majburiy sayt, vaqt xabarlari · `notifications_follow_the_groups_decision`
 
 ## Tekshiruvlar
 

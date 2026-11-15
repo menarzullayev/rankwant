@@ -510,12 +510,12 @@ class MeSerializer(serializers.ModelSerializer[User]):
             raise serializers.ValidationError(str(exc)) from exc
 
     def validate_notify_prefs(self, value: Any) -> dict[str, dict[str, bool]]:
-        from notifications.models import Notification
+        from notifications import groups
         from notifications.services import CHANNEL_NAMES
 
         if not isinstance(value, dict):
             raise serializers.ValidationError("An object was expected")
-        kinds = set(Notification.Kind.values)
+        kinds = groups.preference_keys()
         clean: dict[str, dict[str, bool]] = {}
         for kind, channels in value.items():
             if kind not in kinds or not isinstance(channels, dict):

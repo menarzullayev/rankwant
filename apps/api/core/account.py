@@ -155,7 +155,7 @@ def anonymize(user: User) -> None:
     ApiToken.objects.filter(user=user).delete()
 
     from core import avatars
-    from core.models import SocialAccount, UsernameHistory, UserSession
+    from core.models import KnownDevice, SocialAccount, UsernameHistory, UserSession
     from profiles import teams
     from profiles.models import (
         Education,
@@ -193,6 +193,7 @@ def anonymize(user: User) -> None:
     # lekin qator endi anonimlashtirilgan odamga ishora qilmaydi.
     UsernameHistory.objects.filter(user=user).update(user=None)
     UserSession.objects.filter(user=user).delete()
+    KnownDevice.objects.filter(user=user).delete()
     old_avatar = avatars.name_from_url(user.avatar_url)
 
     user.username = anonymous_name(user)
@@ -272,6 +273,9 @@ def schedule_deletion(user: User) -> datetime:
     if user.deletion_requested_at is None:
         user.deletion_requested_at = timezone.now()
         user.save(update_fields=["deletion_requested_at"])
+        from notifications import security
+
+        security.deletion_scheduled(user, user.deletion_requested_at + DELETION_GRACE)
     return user.deletion_requested_at + DELETION_GRACE
 
 
@@ -279,6 +283,9 @@ def cancel_deletion(user: User) -> None:
     if user.deletion_requested_at is not None:
         user.deletion_requested_at = None
         user.save(update_fields=["deletion_requested_at"])
+        from notifications import security
+
+        security.deletion_cancelled(user)
 
 
 def finalize_due_deletions() -> int:
@@ -479,7 +486,7 @@ def export(user: User) -> dict[str, Any]:
 
 def _profile_export(user: User) -> dict[str, Any]:
     """Profil bo'limlari — ko'nikma, karyera, obuna, jamoa, kirishlar."""
-    from core.models import SocialAccount, UsernameHistory, UserSession
+    from core.models import KnownDevice, SocialAccount, UsernameHistory, UserSession
     from profiles.models import (
         Education,
         ExternalProfile,
@@ -532,4 +539,5 @@ def _profile_export(user: User) -> dict[str, Any]:
                 "user_agent", "ip", "created_at", "last_seen"
             )
         ),
+        "known_devices": list(KnownDevice.objects.filter(user=user).values("label", "created_at")),
     }

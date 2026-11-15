@@ -13,22 +13,38 @@ import { patchJson, type NotifyPrefs } from "@/lib/api";
 import { useSaveSlot } from "./SaveBar";
 import { Hint, Status, useAction } from "./section-kit";
 
-/** `notifications.models.Notification.Kind` — musobaqa natijasi birinchi:
- *  eng ko'p kutiladigan xabar. */
-const KINDS = [
-  "contest_result",
-  "rating_changed",
-  "problem_rerated",
-  "duel",
-  // Hack natijasi IKKALA tomonga ham boradi (ADR-0020): hackerga
-  // natijasi, himoyachiga yechimi nega bekor qilingani. Backend uni
-  // allaqachon yuborardi, lekin bu ro'yxatda bo'lmagani uchun uni
-  // o'chirib qo'yishning iloji yo'q edi.
-  "hack",
-  "quest_awarded",
-  "streak_milestone",
-  "system",
+/** `notifications.groups.GROUPS` without the dormant ones (decision 2026-11-16):
+ *  a group appears only when something is sent in it — the page never promises
+ *  a feature that does not exist yet (`team_prizes`: teams, prizes). Security
+ *  comes first; the rest follow what people wait for most. */
+const GROUPS = [
+  "security",
+  "contest",
+  "new_contests",
+  "hosting",
+  "moderation",
+  "class",
+  "my_class",
+  "tests",
+  "streak",
+  "my_content",
+  "competition",
+  "community",
+  "plan_limits",
 ] as const;
+
+/** Where a group's switches read from when the person saved them before
+ *  groups existed (`notifications.services.channels`: group, then kind). */
+const LEGACY_KINDS: Record<string, readonly string[]> = {
+  contest: ["contest_result", "rating_changed"],
+  tests: ["problem_rerated"],
+  streak: ["streak_milestone", "quest_awarded"],
+  competition: ["duel", "hack"],
+  community: ["system"],
+};
+
+/** Channels a group never lets go off (`notifications.groups.MANDATORY`). */
+const MANDATORY: Record<string, readonly string[]> = { security: ["site"] };
 
 const CHANNELS = ["site", "telegram", "email"] as const;
 type Channel = (typeof CHANNELS)[number];
@@ -50,8 +66,13 @@ export function NotificationsSection() {
   const email = Boolean(user?.email && user.email_verified);
   // Standart: saytda — ha; Telegram va email — yo'q, foydalanuvchi o'zi
   // yoqadi (`notifications.services.DEFAULT_CHANNELS`, 2026-11-10).
-  const value = (kind: string, channel: Channel) =>
-    prefs[kind]?.[channel] ?? channel === "site";
+  const value = (kind: string, channel: Channel) => {
+    if (MANDATORY[kind]?.includes(channel)) return true;
+    const saved =
+      prefs[kind]?.[channel] ??
+      LEGACY_KINDS[kind]?.map((legacy) => prefs[legacy]?.[channel]).find((v) => v !== undefined);
+    return saved ?? channel === "site";
+  };
 
   function set(kind: string, channel: Channel, on: boolean) {
     setEdited({
@@ -106,17 +127,25 @@ export function NotificationsSection() {
             </tr>
           </thead>
           <tbody className="divide-y rw-divide">
-            {KINDS.map((kind) => (
+            {GROUPS.map((kind) => (
               <tr key={kind}>
                 <th scope="row" className="py-3 pr-4 text-left font-normal rw-strong">
                   {t(locale, `settings.kind.${kind}`)}
                 </th>
                 {CHANNELS.map((channel) => (
-                  <td key={channel} className="px-3 py-3 text-center">
+                  <td
+                    key={channel}
+                    className="px-3 py-3 text-center"
+                    title={
+                      MANDATORY[kind]?.includes(channel)
+                        ? t(locale, "settings.notifyAlwaysOn")
+                        : undefined
+                    }
+                  >
                     <FormBox
                       shape="switch"
                       checked={value(kind, channel)}
-                      disabled={!available(channel)}
+                      disabled={!available(channel) || Boolean(MANDATORY[kind]?.includes(channel))}
                       onChange={(event) => set(kind, channel, event.target.checked)}
                       aria-label={`${t(locale, `settings.kind.${kind}`)} — ${channelLabel(channel)}`}
                     />

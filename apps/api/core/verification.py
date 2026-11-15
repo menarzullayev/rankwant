@@ -138,4 +138,7 @@ def _apply_change(row: EmailVerifyToken) -> User | None:
         from core.tasks import queue, send_email_changed
 
         queue(send_email_changed, user.pk, old)
+        from notifications import security
+
+        security.email_changed(user, row.email)
     return user

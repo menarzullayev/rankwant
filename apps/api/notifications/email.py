@@ -27,7 +27,7 @@ Decisions (owner, 2026-11-10; CLAUDE.md row of that day):
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode, urlsplit
 
 from django.conf import settings
@@ -38,8 +38,12 @@ from django.template.loader import render_to_string
 from core import alphabet, email_text, mail_quota
 from core.mailer import is_placeholder, send_email
 from core.models import EmailDelivery, User
+from notifications import groups
 from notifications.message_catalog import KIND_NAMES
 from notifications.models import Notification
+
+if TYPE_CHECKING:
+    from notifications.services import Channels
 
 log = logging.getLogger(__name__)
 
@@ -92,9 +96,21 @@ def read_token(token: str) -> tuple[int, str] | None:
     user_id, kind = data.get("u"), data.get("k")
     if not isinstance(user_id, int) or not isinstance(kind, str):
         return None
-    if kind != ALL_KINDS and kind not in Notification.Kind.values:
+    if kind != ALL_KINDS and kind not in groups.preference_keys():
         return None
     return user_id, kind
+
+
+def _key_channels(user: User, key: str) -> Channels:
+    """Channels stored under a settings group, with the defaults behind it."""
+    from notifications import services
+    from notifications.services import CHANNEL_NAMES, DEFAULT_CHANNELS
+
+    prefs = (user.notify_prefs or {}).get(key) or {}
+    values = {name: bool(prefs.get(name, DEFAULT_CHANNELS[name])) for name in CHANNEL_NAMES}
+    for name in groups.MANDATORY.get(key, ()):
+        values[name] = True
+    return services.Channels(*(values[name] for name in CHANNEL_NAMES))
 
 
 def unsubscribe(user: User, kind: str) -> None:
@@ -105,12 +121,16 @@ def unsubscribe(user: User, kind: str) -> None:
     """
     from notifications.services import channels
 
-    kinds = list(Notification.Kind.values) if kind == ALL_KINDS else [kind]
+    kinds = sorted(groups.preference_keys()) if kind == ALL_KINDS else [kind]
     with transaction.atomic():
         locked = User.objects.select_for_update().get(pk=user.pk)
         prefs = dict(locked.notify_prefs or {})
         for each in kinds:
-            current = channels(locked, each)
+            current = (
+                channels(locked, each)
+                if each in Notification.Kind.values
+                else _key_channels(locked, each)
+            )
             prefs[each] = {"site": current.site, "telegram": current.telegram, "email": False}
         locked.notify_prefs = prefs
         locked.save(update_fields=["notify_prefs"])
@@ -200,14 +220,16 @@ SKIP_DETAIL = {
 }
 
 
-def deliver(*, user_id: int, kind: str, title: str, body: str, notification_id: int | None) -> str:
+def deliver(
+    *, user_id: int, kind: str, title: str, body: str, notification_id: int | None, code: str = ""
+) -> str:
     """Sends one notification email, or says why not. Never raises."""
     from notifications.services import channels
 
     user = User.objects.filter(pk=user_id).first()
     if user is None or not reachable(user):
         return "skipped:unreachable"
-    if not channels(user, kind).email:
+    if not channels(user, kind, code).email:
         return "skipped:off"
     if notification_id is not None:
         row = Notification.objects.filter(pk=notification_id, user=user).values("read_at").first()
@@ -228,7 +250,7 @@ def deliver(*, user_id: int, kind: str, title: str, body: str, notification_id: 
         log.info("bildirishnoma xati o'tkazib yuborildi (%s): %s", refusal, user.pk)
         return f"skipped:{refusal}"
 
-    mail = render(user, kind, title, body)
+    mail = render(user, groups.group_of(code, kind), title, body)
 
     delivery = send_email(
         to=user.email,
@@ -241,7 +263,14 @@ def deliver(*, user_id: int, kind: str, title: str, body: str, notification_id: 
     return str(delivery.status)
 
 
-def schedule(user: User, kind: str, title: str, body: str, notification_id: int | None) -> None:
+def schedule(
+    user: User,
+    kind: str,
+    title: str,
+    body: str,
+    notification_id: int | None,
+    code: str = "",
+) -> None:
     """Queues the mail after the surrounding transaction commits.
 
     Before the commit the row may still roll back (a duel that failed to
@@ -256,6 +285,7 @@ def schedule(user: User, kind: str, title: str, body: str, notification_id: int 
         "title": title,
         "body": body,
         "notification_id": notification_id,
+        "code": code,
     }
 
     def push() -> None:

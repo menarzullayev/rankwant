@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3568 strings.**
+**3671 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1057,6 +1057,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.kind.rating_changed` | Reyting o'zgarishi | Тағйири рейтинг |  |
 | `settings.kind.streak_milestone` | Streak yutug'i | Дастоварди streak |  |
 | `settings.kind.system` | Tizim xabarlari | Паёмҳои система |  |
+| `settings.kind.security` | Hisob xavfsizligi | Амнияти ҳисоб |  |
+| `settings.kind.contest` | Qatnashadigan musobaqalarim | Мусобиқаҳои иштирокам |  |
+| `settings.kind.new_contests` | Yangi musobaqalar | Мусобиқаҳои нав |  |
+| `settings.kind.hosting` | O'tkazayotgan musobaqalarim | Мусобиқаҳои ман мегузаронам |  |
+| `settings.kind.moderation` | Moderatorlik | Модератсия |  |
+| `settings.kind.class` | Sinflarim (o'quvchi sifatida) | Синфҳоям (ҳамчун хонанда) |  |
+| `settings.kind.my_class` | Mening sinflarim (o'qituvchi sifatida) | Синфҳое, ки ман дарс медиҳам |  |
+| `settings.kind.tests` | Testlar va urinishlar | Санҷишҳо ва кӯшишҳо |  |
+| `settings.kind.streak` | Seriya | Силсила |  |
+| `settings.kind.my_content` | Kontentim va shikoyatlar | Мундариҷа ва шикоятҳои ман |  |
+| `settings.kind.competition` | Duel, hack va hackathon | Дуэлҳо, ҳакҳо ва хакатонҳо |  |
+| `settings.kind.community` | Hamjamiyat, ustozlik va kurslar | Ҷамоат, мураббигӣ ва курсҳо |  |
+| `settings.kind.plan_limits` | Tarif va limitlar | Тариф ва лимитҳо |  |
+| `settings.kind.team_prizes` | Jamoa va sovrinlar | Дастаҳо ва ҷоизаҳо |  |
+| `settings.notifyAlwaysOn` | Doim yoqiq | Ҳамеша фаъол |  |
 | `settings.kindColumn` | Tur | Навъ |  |
 | `settings.language` | Til | Забон |  |
 | `settings.linkedinHint` | https://linkedin.com/in/… ko'rinishida | Дар шакли https://linkedin.com/in/… |  |
@@ -2841,6 +2856,94 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Рейтинги Contests: {before} → {after} |  |
 | `notif.msg.problem_review_requested.title` | Ko'rik so'raldi — {problem} | Дархости тафтиш — {problem} |  |
 | `notif.msg.problem_review_requested.body` | @{user} «{problem}» qoralamasini ko'rikka yubordi. | @{user} сиёҳнависи «{problem}»-ро ба тафтиш фиристод. |  |
+| `notif.msg.security_new_device.title` | Hisobingizga yangi qurilmadan kirildi | Ба ҳисоби шумо аз дастгоҳи нав ворид шуданд |  |
+| `notif.msg.security_new_device.body` | Yangi qurilmadan kirildi: {device}. Bu siz bo'lmasangiz, parolni o'zgartiring. | Аз дастгоҳи нав ворид шуданд: {device}. Агар шумо набудед, паролро иваз кунед. |  |
+| `notif.msg.security_password_changed.title` | Parolingiz o'zgartirildi | Пароли шумо иваз карда шуд |  |
+| `notif.msg.security_password_changed.body` | Bu siz bo'lmasangiz, parolni darhol tiklang. | Агар шумо набудед, паролро фавран барқарор кунед. |  |
+| `notif.msg.security_password_reset.title` | Parolingiz tiklandi | Пароли шумо барқарор карда шуд |  |
+| `notif.msg.security_password_reset.body` | Yangi parol tiklash havolasi orqali o'rnatildi. Bu siz bo'lmasangiz, biz bilan bog'laning. | Пароли нав тавассути истиноди барқарорсозӣ гузошта шуд. Агар шумо набудед, бо мо тамос гиред. |  |
+| `notif.msg.security_email_changed.title` | Hisob emaili o'zgartirildi | Почтаи электронии ҳисоб иваз карда шуд |  |
+| `notif.msg.security_email_changed.body` | Yangi manzil: {email}. | Суроғаи нав: {email}. |  |
+| `notif.msg.security_telegram_linked.title` | Telegram ulandi | Telegram пайваст карда шуд |  |
+| `notif.msg.security_telegram_linked.body` | Profilingizga Telegram hisobi ulandi. | Ба профили шумо ҳисоби Telegram пайваст карда шуд. |  |
+| `notif.msg.security_deletion_scheduled.title` | Hisobni o'chirish rejalashtirildi | Нест кардани ҳисоб ба нақша гирифта шуд |  |
+| `notif.msg.security_deletion_scheduled.body` | Hisobingiz {date} kuni o'chiriladi. Shu kungacha bekor qilishingiz mumkin. | Ҳисоби шумо дар санаи {date} нест карда мешавад. То он вақт онро бекор кардан мумкин аст. |  |
+| `notif.msg.security_deletion_cancelled.title` | Hisobni o'chirish bekor qilindi | Нест кардани ҳисоб бекор карда шуд |  |
+| `notif.msg.security_deletion_cancelled.body` | Hisobingiz o'z holicha qoladi. | Ҳисоби шумо ҳамон тавр боқӣ мемонад. |  |
+| `notif.msg.contest_starts_in_day.title` | «{contest}» ertaga boshlanadi | «{contest}» фардо оғоз мешавад |  |
+| `notif.msg.contest_starts_in_day.body` | Ro'yxatdan o'tgan musobaqangiz taxminan bir kundan keyin boshlanadi. | Мусобиқае, ки барои он сабти ном кардед, тақрибан баъд аз як рӯз оғоз мешавад. |  |
+| `notif.msg.contest_starts_in_hour.title` | «{contest}» bir soatdan keyin boshlanadi | «{contest}» баъд аз як соат оғоз мешавад |  |
+| `notif.msg.contest_starts_in_hour.body` | Tayyor bo'ling: ro'yxatdan o'tgan musobaqangiz taxminan bir soatdan keyin boshlanadi. | Омода бошед: мусобиқае, ки барои он сабти ном кардед, тақрибан баъд аз як соат оғоз мешавад. |  |
+| `notif.msg.contest_standing_changed.title` | «{contest}»: ishtirokingiz o'zgardi | «{contest}»: иштироки шумо тағйир ёфт |  |
+| `notif.msg.contest_standing_changed.body` | Hakamlar ishtirok holatingizni o'zgartirdi. Tafsilot musobaqa sahifasida. | Ҳакамон ҳолати иштироки шуморо тағйир доданд. Тафсилот дар саҳифаи мусобиқа аст. |  |
+| `notif.msg.contest_rating_reverted.title` | «{contest}»: reyting o'zgarishi bekor qilindi | «{contest}»: тағйири рейтинг бекор карда шуд |  |
+| `notif.msg.contest_rating_reverted.body` | Bu musobaqadagi reyting o'zgarishi qaytarib olindi. | Тағйири рейтинг аз ин мусобиқа бозпас гирифта шуд. |  |
+| `notif.msg.contest_invited.title` | «{contest}» musobaqasiga taklif | Даъват ба мусобиқаи «{contest}» |  |
+| `notif.msg.contest_invited.body` | @{user} sizni musobaqada qatnashishga taklif qildi. | @{user} шуморо ба иштирок дар мусобиқа даъват кард. |  |
+| `notif.msg.contest_new.title` | Yangi musobaqa: {contest} | Мусобиқаи нав: {contest} |  |
+| `notif.msg.contest_new.body` | Yangi musobaqa e'lon qilindi. Ro'yxatdan o'tish ochiq. | Мусобиқаи нав эълон шуд. Сабти ном кушода аст. |  |
+| `notif.msg.contest_prize.title` | «{contest}»: sizga sovrin | «{contest}»: ҷоиза барои шумо |  |
+| `notif.msg.contest_prize.body` | Siz sovrin oldingiz: {prize}. | Шумо ҷоиза гирифтед: {prize}. |  |
+| `notif.msg.contest_moderator_invited.title` | Moderatorlikka taklif — «{contest}» | Даъват ба модератор — «{contest}» |  |
+| `notif.msg.contest_moderator_invited.body` | @{user} sizni musobaqa moderatori bo'lishga taklif qildi. | @{user} шуморо ба модератори мусобиқа шудан даъват кард. |  |
+| `notif.msg.contest_moderator_removed.title` | «{contest}»: endi moderator emassiz | «{contest}»: шумо дигар модератор нестед |  |
+| `notif.msg.contest_moderator_removed.body` | Bu musobaqadagi moderatorlik rolingiz olib tashlandi. | Нақши модератории шумо дар ин мусобиқа бекор карда шуд. |  |
+| `notif.msg.host_contest_starts_in_hour.title` | Musobaqangiz «{contest}» bir soatdan keyin boshlanadi | Мусобиқаи шумо «{contest}» баъд аз як соат оғоз мешавад |  |
+| `notif.msg.host_contest_starts_in_hour.body` | Boshlanishdan oldin masalalar, hakamlar va e'lonlarni tekshiring. | Пеш аз оғоз масъалаҳо, ҳакамон ва эъломҳоро санҷед. |  |
+| `notif.msg.host_contest_ended.title` | Musobaqangiz «{contest}» tugadi | Мусобиқаи шумо «{contest}» ба анҷом расид |  |
+| `notif.msg.host_contest_ended.body` | Natijalar qo'llangach jadval yakuniy bo'ladi. | Пас аз татбиқи натиҷаҳо ҷадвал ниҳоӣ мешавад. |  |
+| `notif.msg.host_moderator_answered.title` | «{contest}»: @{user} taklifga javob berdi | «{contest}»: @{user} ба даъват ҷавоб дод |  |
+| `notif.msg.host_moderator_answered.body` | Moderator sizning taklifingizga javob berdi. | Модератор ба даъвати шумо ҷавоб дод. |  |
+| `notif.msg.host_plagiarism_found.title` | «{contest}»: {count} ta shubhali ishtirok | «{contest}»: {count} иштироки шубҳанок |  |
+| `notif.msg.host_plagiarism_found.body` | Antiplagiat tekshiruvi {count} ta ishtirokni ko'rib chiqish uchun belgiladi. | Санҷиши зиддиинтиҳол {count} иштирокро барои дида баромадан қайд кард. |  |
+| `notif.msg.class_invited.title` | «{classroom}» sinfiga taklif | Даъват ба синфи «{classroom}» |  |
+| `notif.msg.class_invited.body` | @{user} sizni sinfga qo'shilishga taklif qildi. | @{user} шуморо ба ҳамроҳ шудан ба синф даъват кард. |  |
+| `notif.msg.class_invite_cancelled.title` | Taklif bekor qilindi — «{classroom}» | Даъват бекор карда шуд — «{classroom}» |  |
+| `notif.msg.class_invite_cancelled.body` | Sinfga taklif bekor qilindi. | Даъват ба синф бекор карда шуд. |  |
+| `notif.msg.my_class_invite_accepted.title` | @{user} «{classroom}» sinfiga qo'shildi | @{user} ба синфи «{classroom}» ҳамроҳ шуд |  |
+| `notif.msg.my_class_invite_accepted.body` | O'quvchi sizning taklifingizni qabul qildi. | Хонанда даъвати шуморо қабул кард. |  |
+| `notif.msg.my_class_invite_declined.title` | @{user} «{classroom}» sinfiga qo'shilmadi | @{user} ба синфи «{classroom}» ҳамроҳ нашуд |  |
+| `notif.msg.my_class_invite_declined.body` | O'quvchi sizning taklifingizni rad etdi. | Хонанда даъвати шуморо рад кард. |  |
+| `notif.msg.my_class_student_left.title` | @{user} «{classroom}» sinfidan chiqdi | @{user} аз синфи «{classroom}» баромад |  |
+| `notif.msg.my_class_student_left.body` | O'quvchi sinfingizdan chiqib ketdi. | Хонанда аз синфи шумо баромад. |  |
+| `notif.msg.quiz_invited.title` | Testga taklif — {quiz} | Даъват ба тест — {quiz} |  |
+| `notif.msg.quiz_invited.body` | @{user} sizni testni topshirishga taklif qildi. | @{user} шуморо ба супоридани тест даъват кард. |  |
+| `notif.msg.attempt_verdict_changed.title` | Urinishingiz natijasi o'zgardi — {problem} | Натиҷаи кӯшиши шумо тағйир ёфт — {problem} |  |
+| `notif.msg.attempt_verdict_changed.body` | Yangi verdikt: {verdict}. | Вердикти нав: {verdict}. |  |
+| `notif.msg.streak_at_risk.title` | {days} kunlik seriyangiz uzilish arafasida | Силсилаи {days}-рӯзаи шумо наздик аст канда шавад |  |
+| `notif.msg.streak_at_risk.body` | Uni saqlab qolish uchun bugun bitta masala yeching. | Барои нигоҳ доштани он имрӯз як масъала ҳал кунед. |  |
+| `notif.msg.streak_broken.title` | {days} kunlik seriyangiz uzildi | Силсилаи {days}-рӯзаи шумо канда шуд |  |
+| `notif.msg.streak_broken.body` | Bugun masala yechib yangisini boshlang. | Имрӯз бо ҳалли масъала силсилаи наверо оғоз кунед. |  |
+| `notif.msg.report_on_my_content.title` | Kontentingizga shikoyat — {object} | Шикоят дар бораи мундариҷаи шумо — {object} |  |
+| `notif.msg.report_on_my_content.body` | Kimdir shikoyat qildi. Xodimlar ko'rib chiqadi. | Касе шикоят кард. Кормандон онро баррасӣ мекунанд. |  |
+| `notif.msg.report_reviewed.title` | Shikoyatingiz ko'rib chiqildi — {object} | Шикояти шумо баррасӣ шуд — {object} |  |
+| `notif.msg.report_reviewed.body` | Xodimlar shikoyatingizni ko'rib chiqdi. | Кормандон шикояти шуморо дида баромаданд. |  |
+| `notif.msg.report_resolved.title` | Kontentingiz haqidagi shikoyat hal etildi — {object} | Шикоят дар бораи мундариҷаи шумо ҳал шуд — {object} |  |
+| `notif.msg.report_resolved.body` | Xodimlar shikoyatni yopdi. | Кормандон шикоятро пӯшиданд. |  |
+| `notif.msg.problem_archived.title` | Masalangiz arxivga qo'yildi — {problem} | Масъалаи шумо ба бойгонӣ гузошта шуд — {problem} |  |
+| `notif.msg.problem_archived.body` | U endi ommaviy ro'yxatda ko'rinmaydi. | Он дигар дар рӯйхати оммавӣ намоён нест. |  |
+| `notif.msg.quiz_published.title` | Testingiz ommaviy qilindi — {quiz} | Тести шумо оммавӣ шуд — {quiz} |  |
+| `notif.msg.quiz_published.body` | Endi uni hamma ochishi mumkin. | Акнун онро ҳар кас кушода метавонад. |  |
+| `notif.msg.plan_ending.title` | Tarifingiz tugashiga {days} kun qoldi | То анҷоми тарифи шумо {days} рӯз монд |  |
+| `notif.msg.plan_ending.body` | Pullik imkoniyatlarni saqlash uchun uni yangilang. | Барои нигоҳ доштани имкониятҳои пулакӣ онро тамдид кунед. |  |
+| `notif.msg.plan_ended.title` | Tarifingiz tugadi | Тарифи шумо ба анҷом расид |  |
+| `notif.msg.plan_ended.body` | Pullik imkoniyatlar o'chirildi. | Имкониятҳои пулакӣ хомӯш карда шуданд. |  |
+| `notif.msg.plan_activated.title` | Tarif rasmiylashtirildi — {plan} | Тариф фаъол карда шуд — {plan} |  |
+| `notif.msg.plan_activated.body` | Rahmat. Tarif imkoniyatlari ochildi. | Ташаккур. Имкониятҳои тариф кушода шуданд. |  |
+| `notif.msg.judge_access_ending.title` | Hakam ruxsati tugashiga {days} kun qoldi | То анҷоми иҷозати ҳакам {days} рӯз монд |  |
+| `notif.msg.judge_access_ending.body` | Muallifligi va tashkilotchiligini saqlash uchun uzaytiring. | Барои нигоҳ доштани муаллифӣ ва ташкилотчигӣ онро тамдид кунед. |  |
+| `notif.msg.judge_access_ended.title` | Hakam ruxsati tugadi | Иҷозати ҳакам ба анҷом расид |  |
+| `notif.msg.judge_access_ended.body` | Mualliflik va tashkilotchilik vositalari yopildi. | Абзорҳои муаллифӣ ва ташкилотчигӣ баста шуданд. |  |
+| `notif.msg.judge_limit_reached.title` | Hakam limiti tugayapti — {limit} | Лимити ҳакам ба поён мерасад — {limit} |  |
+| `notif.msg.judge_limit_reached.body` | Joy bo'shating yoki tarifni oshiring. | Ҷой холӣ кунед ё тарифро боло баред. |  |
+| `notif.msg.team_invited.title` | «{team}» jamoasiga taklif | Даъват ба дастаи «{team}» |  |
+| `notif.msg.team_invited.body` | @{user} sizni jamoaga qo'shilishga taklif qildi. | @{user} шуморо ба ҳамроҳ шудан ба даста даъват кард. |  |
+| `notif.msg.team_invite_answered.title` | @{user} «{team}» taklifiga javob berdi | @{user} ба даъвати «{team}» ҷавоб дод |  |
+| `notif.msg.team_invite_answered.body` | Javobni ko'rish uchun jamoani oching. | Барои дидани ҷавоб дастаро кушоед. |  |
+| `notif.msg.team_captain.title` | Siz «{team}» jamoasi sardorisiz | Шумо сардори дастаи «{team}» шудед |  |
+| `notif.msg.team_captain.body` | Jamoa tarkibini boshqarishingiz mumkin. | Шумо метавонед таркиби дастаро идора кунед. |  |
+| `notif.msg.team_invite_cancelled.title` | Taklif bekor qilindi — «{team}» | Даъват бекор карда шуд — «{team}» |  |
+| `notif.msg.team_invite_cancelled.body` | Jamoaga taklif bekor qilindi. | Даъват ба даста бекор карда шуд. |  |
 | `search.type.shop` | Do'kon | Мағоза |  |
 | `search.top` | Eng mos natija | Мувофиқтарин натиҷа |  |
 | `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Дархостҳо аз ҳад зиёд. Пас аз лаҳзае боз кӯшиш кунед. |  |

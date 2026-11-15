@@ -9010,6 +9010,11 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/notifications/groups.py",
+    "apps/api/notifications/services.py",
+    "apps/api/config/settings.py",
+    "apps/api/core/sessions.py",
+    "apps/web/src/features/account/components/NotificationsSection.tsx",
     "tools/deploy_record.py",
     ".github/workflows/release-notes.yml",
     ".github/workflows/cache-cleanup.yml",
@@ -12913,6 +12918,46 @@ def neg_decisions_release_notes_never_scheduled() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_notify_mandatory_ignored() -> tuple[bool, str]:
+    """`channels()` stops applying the mandatory channel: a security notice can be muted."""
+    return _decision_broken(
+        "apps/api/notifications/services.py",
+        "groups.MANDATORY.get(group",
+        "groups.MANDATORY.get('x'",
+        "majburiy kanal `channels()` da qo'llanmaydi",
+    )
+
+
+def neg_decisions_notify_beat_dropped() -> tuple[bool, str]:
+    """The beat stops running the contest reminders."""
+    return _decision_broken(
+        "apps/api/config/settings.py",
+        '"task": "contests.run_reminders"',
+        '"task": "contests.run_nothing"',
+        "vaqt xabarlari ketmaydi",
+    )
+
+
+def neg_decisions_notify_new_device_unchecked() -> tuple[bool, str]:
+    """A sign-in no longer checks the device."""
+    return _decision_broken(
+        "apps/api/core/sessions.py",
+        "devices.note_sign_in",
+        "devices.skip_sign_in",
+        "yangi qurilma kirishda tekshirilmaydi",
+    )
+
+
+def neg_decisions_notify_dormant_group_listed() -> tuple[bool, str]:
+    """The settings page lists the dormant `team_prizes` group (a toggle for a feature that does not exist)."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/NotificationsSection.tsx",
+        '  "plan_limits",\n] as const;',
+        '  "plan_limits",\n  "team_prizes",\n] as const;',
+        "`team_prizes` guruhi sozlamada ko'rinadi",
+    )
+
+
 def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
     """`Required checks` stops reading `web_static`."""
     return _decision_broken(
@@ -14319,6 +14364,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("api job'i bazaga bog'lansa tutilsin", neg_decisions_ci_api_gets_a_database),
             ("web_static Node o'rnatsa tutilsin", neg_decisions_ci_static_job_needs_node),
             ("required web_static'ni o'qimasa tutilsin", neg_decisions_ci_required_ignores_static),
+            ("majburiy kanal qo'llanmasa tutilsin", neg_decisions_notify_mandatory_ignored),
+            ("beat musobaqa eslatmasini yuritmasa tutilsin", neg_decisions_notify_beat_dropped),
+            ("yangi qurilma tekshirilmasa tutilsin", neg_decisions_notify_new_device_unchecked),
+            ("uxlab yotgan guruh ko'rinsa tutilsin", neg_decisions_notify_dormant_group_listed),
             ("muvaffaqiyatli deploy yozilmasa tutilsin", neg_decisions_deploy_record_success_dropped),
             ("GitHub xatosi deploy'ni buzsa tutilsin", neg_decisions_deploy_record_can_fail_the_deploy),
             ("GitHub chaqiruvi cheklanmasa tutilsin", neg_decisions_deploy_record_unbounded),
