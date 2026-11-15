@@ -3102,6 +3102,38 @@ def repo_health_files_are_present() -> str | None:
     return None
 
 
+def deploys_leave_a_github_record() -> str | None:
+    """2026-11-15 (HITL): har deploy GitHub'da iz qoldiradi, haftalik release notes bor.
+
+    Watcher deploy tugagach `tools/deploy_record.py` ni chaqiradi: `production`
+    Deployment holati va `deploy-YYYYMMDD-HHMM-<sha7>` tag'i. Chaqiruv
+    cheklangan (`timeout`) va hech qachon deploy natijasini o'zgartirmaydi.
+    Haftalik `release-notes.yml` shu tag'ga PR sarlavhalaridan release yaratadi.
+    """
+    watcher = read("tools/auto_deploy.sh")
+    helper = re.search(r"github_record\(\) \{\n(.*?)\n\}\n", watcher, re.S)
+    if not helper:
+        return "tools/auto_deploy.sh: `github_record` yo'q — deploy GitHub'da iz qoldirmaydi"
+    body = helper.group(1)
+    if "timeout " not in body:
+        return "tools/auto_deploy.sh: `github_record` cheklanmagan — GitHub osilsa watcher osilib qoladi"
+    if not body.rstrip().endswith("return 0"):
+        return "tools/auto_deploy.sh: `github_record` `return 0` bilan tugamaydi — GitHub xatosi deploy natijasini buzadi"
+    if not re.search(r'deploy tugadi: [^\n]*\n\s+rm -f "\$STATE"\n\s+github_record success "\$TARGET"', watcher):
+        return "tools/auto_deploy.sh: muvaffaqiyatli deploy GitHub'ga yozilmaydi"
+    if 'github_record failure "$TARGET"' not in watcher:
+        return "tools/auto_deploy.sh: yiqilgan deploy GitHub'ga yozilmaydi"
+    record = read("tools/deploy_record.py")
+    if 'ENVIRONMENT = "production"' not in record or "refs/tags/" not in record:
+        return "tools/deploy_record.py: `production` Deployment yoki tag yozilmaydi"
+    release = read(".github/workflows/release-notes.yml")
+    if "cron:" not in release or "contents: write" not in release:
+        return "release-notes.yml: haftalik jadval yoki yozish huquqi yo'q"
+    if "deploy_record.py --selftest" not in read(".github/workflows/ci.yml"):
+        return "ci.yml: deploy_record va release_notes selftestlari yurmaydi"
+    return None
+
+
 def negatives_run_one_rule() -> str | None:
     """2026-11-15 (HITL): qaror salbiy testi faqat o'z qoidasini yuritadi.
 
@@ -6264,6 +6296,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("PR CI tez: salbiy testlar va build faqat main'da, statik tekshiruv alohida", pr_ci_is_fast_and_static),
     ("qaror salbiy testi faqat o'z qoidasini yuritadi", negatives_run_one_rule),
+    ("har deploy GitHub'da iz qoldiradi, haftalik release notes", deploys_leave_a_github_record),
     ("Actions keshini faqat main yozadi", actions_cache_is_written_by_main_only),
     ("Dependabot minor/patch guruhi o'zi merge bo'ladi", dependabot_minor_patch_automerges),
     ("repo xavfsizlik va xulq qoidalari bor", repo_health_files_are_present),

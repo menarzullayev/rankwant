@@ -1,0 +1,39 @@
+name: Release notes
+
+# A GitHub release once a week, from the pull requests merged since the last
+# one, grouped by Conventional Commit type (owner decision 2026-11-15). It
+# points at the newest `deploy-*` tag, which `tools/deploy_record.py` writes
+# after every successful deploy, so a release names a commit that went live.
+# Nothing is published when nothing was merged or no deploy tag exists.
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print the notes, create nothing"
+        type: boolean
+        default: true
+
+permissions: {}
+
+jobs:
+  release:
+    name: Weekly release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Selftest
+        run: python3 tools/release_notes.py --selftest
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '--dry-run' || '' }}
+        run: python3 tools/release_notes.py $DRY
