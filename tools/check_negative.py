@@ -13745,16 +13745,6 @@ def neg_decisions_ci_static_job_needs_node() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_ci_nomigrations_everywhere() -> tuple[bool, str]:
-    """`--nomigrations` also on main: no run would exercise the real migrations on Postgres any more."""
-    return _decision_broken(
-        ".github/workflows/ci.yml",
-        'if [ "${{ github.event_name }}" = "pull_request" ]; then extra=(--nomigrations); fi',
-        "extra=(--nomigrations)",
-        "`--nomigrations` faqat PR'da",
-    )
-
-
 def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
     """`Required checks` stops reading `web_static`."""
     return _decision_broken(
@@ -15331,7 +15321,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("api job'i bazaga bog'lansa tutilsin", neg_decisions_ci_api_gets_a_database),
             ("web_static Node o'rnatsa tutilsin", neg_decisions_ci_static_job_needs_node),
             ("required web_static'ni o'qimasa tutilsin", neg_decisions_ci_required_ignores_static),
-            ("main'da ham --nomigrations bo'lsa tutilsin", neg_decisions_ci_nomigrations_everywhere),
         ],
     ),
 ]

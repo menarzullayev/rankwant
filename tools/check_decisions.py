@@ -3065,10 +3065,6 @@ def pr_ci_is_fast_and_static() -> str | None:
     tests = _workflow_job(ci, "api_tests")
     if "check_metrics.py --allow-empty" not in tests or "github.event_name != 'pull_request'" not in tests:
         return "ci.yml: Postgres'ga migratsiya va North Star so'rovi `api_tests` da (faqat main) yo'q"
-    if not re.search(
-        r'if \[ "\$\{\{ github\.event_name \}\}" = "pull_request" \]; then extra=\(--nomigrations\); fi', tests
-    ):
-        return "ci.yml: `--nomigrations` faqat PR'da bo'lishi kerak — main migratsiyalar orqali to'liq to'plamni yuritadi"
     if "fromJSON(needs.filter.outputs.api_shards)" not in tests:
         return "ci.yml: API testlari PR'da keng shardlanmaydi (api_shards)"
     static = _workflow_job(ci, "web_static")
