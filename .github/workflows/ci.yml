@@ -66,6 +66,13 @@ jobs:
       code: ${{ steps.filter.outputs.code == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
       tools: ${{ steps.filter.outputs.tools == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
       tools_node: ${{ steps.filter.outputs.tools_node == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
+      # API pytest shards: a pull request fans out wide (8), `main`, Nightly
+      # and deploy use 3 (owner decision 2026-11-15). `--nomigrations` was
+      # tried and REJECTED: 24 tests read rows the data migrations seed
+      # (languages, billing plans, team page, classroom quotas) and the search
+      # test needs the `pg_trgm` extension a migration creates.
+      api_shards: ${{ github.event_name == 'pull_request' && '[1,2,3,4,5,6,7,8]' || '[1,2,3]' }}
+      api_shard_count: ${{ github.event_name == 'pull_request' && '8' || '3' }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -222,7 +229,7 @@ jobs:
   # Nightly API suite once stayed red for days with nothing stopping it.
   # Same three shards as Nightly `coverage`, without coverage (faster).
   api_tests:
-    name: API tests (${{ matrix.shard }}/3)
+    name: API tests (${{ matrix.shard }}/${{ needs.filter.outputs.api_shard_count }})
     needs: filter
     if: ${{ needs.filter.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
@@ -231,7 +238,7 @@ jobs:
       # One red shard must not hide what the other two would have said.
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: ${{ fromJSON(needs.filter.outputs.api_shards) }}
     services:
       postgres:
         image: postgres:16
@@ -260,7 +267,7 @@ jobs:
       - run: uv pip install --system -r requirements-dev.lock
         working-directory: apps/api
       - name: Every test file is in exactly one shard
-        run: python3 tools/pytest_shard.py --check 3
+        run: python3 tools/pytest_shard.py --check ${{ needs.filter.outputs.api_shard_count }}
       - name: pytest
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
@@ -269,7 +276,7 @@ jobs:
           # Settings fail fast without it (ADR-0044); a throwaway value.
           DJANGO_SECRET_KEY: ci-django-secret
         run: |
-          mapfile -t files < <(python3 ../../tools/pytest_shard.py ${{ matrix.shard }} 3)
+          mapfile -t files < <(python3 ../../tools/pytest_shard.py ${{ matrix.shard }} ${{ needs.filter.outputs.api_shard_count }})
           pytest -n 4 "${files[@]}"
         working-directory: apps/api
       # Applies ALL migrations to an empty Postgres (schema + data) and reads the
