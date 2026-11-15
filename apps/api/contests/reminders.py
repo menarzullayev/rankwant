@@ -37,7 +37,9 @@ def contest_starts(now: datetime | None = None) -> int:
                 "user"
             )
             for row in registrations.iterator():
-                sent += send_once(row.user, code, ref, "contest", contest.slug, contest=contest.title)
+                sent += send_once(
+                    row.user, code, ref, "contest", contest.slug, contest=contest.title
+                )
             if host_code:
                 for host in contest.organizers.all():
                     sent += send_once(
