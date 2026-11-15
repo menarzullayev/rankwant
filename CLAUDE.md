@@ -273,6 +273,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-15](docs/decisions/2026-11-15-root-lockfile-wakes-web.md) · Ildiz `package.json` / `package-lock.json` o'zgarsa Web job'i ham yuradi · `root_lockfile_wakes_web_job`
 - [2026-11-15](docs/decisions/2026-11-15-keep-all-judge-languages.md) · Judge tillari hech biri o'chirilmaydi (35 ta qoladi); joy Docker obrazlarini tozalash bilan topildi, VHDX siqish keyin · `services/judge-go/Dockerfile`
 - [2026-11-15](docs/decisions/2026-11-15-language-variants.md) · Til variantlari: C++17/20, Java 8, C# 8/10, Rust 2024 qo'shildi (35 → 41), obrazga 0 MB; matritsa variantni katalogning o'z buyrug'i bilan isbotlaydi · `apps/api/problems/languages.py`
+- [2026-11-15](docs/decisions/2026-11-15-guest-home-honest-and-public.md) · Mehmon bosh sahifasi: yorliqlar halol, test hisoblar yetakchilarda yo'q, bo'sh bloklar yig'iladi, ommaviy mazmun (mashhur masalalar, algoritmlar, so'nggi musobaqalar) · `guest_home_is_honest_and_public`
 
 ## Tekshiruvlar
 

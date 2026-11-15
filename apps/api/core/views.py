@@ -100,6 +100,11 @@ MAX_TOKEN_LIFETIME = timedelta(days=365)
 
 logger = logging.getLogger(__name__)
 
+#: Accounts the smoke (`tests/smoke/check.py`) and latency (`tests/latency/`) checks register:
+#: `smoke` or `latency` and a long hex or digit suffix. Imported handles such as `smoke11`
+#: are shorter and are real people, so the suffix must be at least eight characters.
+AUTOMATED_USERNAME = r"^(smoke|latency)[0-9a-f]{8,}$"
+
 log = logging.getLogger(__name__)
 
 #: `django_login()` `authenticate()` siz chaqirilganda backendni O'ZI
@@ -1002,6 +1007,11 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
 
     def get_queryset(self) -> QuerySet[User]:
         queryset = super().get_queryset()
+        if self.action == "list":
+            # The leaderboard is the public face of the platform; accounts the smoke and
+            # latency checks register must not take its first places. Profiles stay
+            # reachable by name (`retrieve` is not filtered) and nothing is deleted.
+            queryset = queryset.exclude(username__regex=AUTOMATED_USERNAME)
         # Maktab reytingi va sinfdoshlar — katalogdagi maktab bo'yicha.
         school = self.request.query_params.get("school", "")
         if school.isdigit():

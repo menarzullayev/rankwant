@@ -91,6 +91,13 @@ export const api = {
       0,
     ),
   problems: (query = "") => get<Paginated<Problem>>(`/problems/${query}`),
+  /** The guest home's "popular problems": the most opened ones, public content for
+   *  visitors who arrive from a search engine. Cached for five minutes. */
+  popularProblems: () =>
+    get<Paginated<Problem>>("/problems/?ordering=-view_count&page_size=12", 300),
+  /** Active members of the last 30 days; the home page draws the region map only when
+   *  there are some. */
+  regionActivity: () => get<{ days: number; total: number }>("/stats/regions/?days=30", 300),
   problem: (slug: string) => get<ProblemDetail>(`/problems/${slug}/`),
   contests: () => get<Paginated<Contest>>("/contests/"),
   contest: (slug: string) => get<ContestDetail>(`/contests/${slug}/`),

@@ -1930,6 +1930,32 @@ def root_lockfile_wakes_web_job() -> str | None:
     return None
 
 
+def guest_home_is_honest_and_public() -> str | None:
+    """2026-11-15: the guest home page tells the truth and carries public content.
+
+    Measured on the live page (2026-11-15): the user count was labelled «Reyting»,
+    three of the five leaders were `smoke…` accounts of the nightly smoke test, the
+    region map was fourteen zeros, the contest card said «empty» while three finished
+    contests existed, and two strings were written into the page in one alphabet while
+    the rest followed the reader's. The page also carried no public content for a visitor
+    from a search engine: no problems, no algorithms.
+    """
+    page = read("apps/web/src/app/(site)/page.tsx")
+    if 'label={t(locale, "home.users")}' not in page:
+        return "bosh sahifa: foydalanuvchilar soni «Reyting» deb yozilgan — home.users yorlig'i kerak"
+    if "Har bir reytingning formulasi" in page or "qadam</Badge>" in page:
+        return "bosh sahifa: matn sahifaga qattiq yozilgan — lug'atdan olinmasa alifbo aralashadi"
+    for block in ("PopularProblems", "AlgorithmLibrary", "RecentContests"):
+        if f"<{block} " not in page:
+            return f"bosh sahifa: {block} bloki yo'q — mehmonga ommaviy mazmun ko'rinmaydi"
+    if "{activeMembers > 0 && <RegionMap />}" not in page:
+        return "bosh sahifa: hududlar xaritasi hech kim faol bo'lmasa ham nollar bilan chiziladi"
+    views = read("apps/api/core/views.py")
+    if "queryset.exclude(username__regex=AUTOMATED_USERNAME)" not in views:
+        return "core/views.py: yetakchilar ro'yxati test hisoblarni yashirmaydi"
+    return None
+
+
 def sign_in_page_is_self_contained() -> str | None:
     """2026-10-04: `/login` is a two-column page without the site chrome.
 
@@ -3584,7 +3610,7 @@ def streak_page_and_region_map() -> str | None:
     mine = read("apps/api/community/mine.py") + read("apps/api/problems/reports.py")
     if '"reporter"' in mine or "row.reporter" in mine or "row.user" in mine:
         return "community/mine.py: «Mening kontentim» shikoyatchini oshkor qiladi"
-    if "      <RegionMap />" not in read("apps/web/src/app/(site)/page.tsx"):
+    if "<RegionMap />" not in read("apps/web/src/app/(site)/page.tsx"):
         return "app/(site)/page.tsx: bosh sahifada hududlar xaritasi yo'q"
     return None
 
@@ -5973,6 +5999,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("docs/tools obraz qurilmasin", deploy_skips_non_image_bake),
     ("sxema o'zgarsa web tiplari tekshiriladi", schema_change_wakes_web_job),
     ("ildiz lockfile o'zgarsa web build yuradi", root_lockfile_wakes_web_job),
+    ("mehmon bosh sahifasi halol va ommaviy mazmunli", guest_home_is_honest_and_public),
     ("docker disk chegaralangan", docker_disk_stays_bounded),
     ("TypeScript 7 yonma-yon", typescript_side_by_side),
     ("@types/node runtime bilan", types_node_tracks_runtime),

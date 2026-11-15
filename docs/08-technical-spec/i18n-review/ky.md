@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3551 strings.**
+**3555 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -405,6 +405,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.noAccount` | Hisobingiz yo'qmi? | Аккаунтуңуз жокпу? |  |
 | `auth.hasAccount` | Hisobingiz bormi? | Аккаунтуңуз барбы? |  |
 | `home.openRating` | Reyting yashirin emas | Рейтинг жашыруун эмес |  |
+| `home.users` | Foydalanuvchilar | Колдонуучулар |  |
+| `home.openRatingBody` | Har bir reytingning formulasi ochiq va har o'zgarishning sababi yozib boriladi. | Ар бир рейтингдин формуласы ачык, ар бир өзгөрүүнүн себеби жазылып турат. |  |
+| `home.popularProblems` | Mashhur masalalar | Популярдуу маселелер |  |
+| `home.recentContests` | So'nggi musobaqalar | Акыркы мелдештер |  |
 | `problems.name` | Masala | Маселе |  |
 | `home.attempts` | Urinishlar | Аракеттер |  |
 | `home.start` | Bepul boshlash | Акысыз баштоо |  |

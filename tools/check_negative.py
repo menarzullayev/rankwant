@@ -3534,6 +3534,46 @@ def neg_decisions_web_filter_forgets_root_lockfile() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_home_users_label_reverts() -> tuple[bool, str]:
+    """The user count goes back under the «Reyting» label (found on the live page)."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/page.tsx",
+        'label={t(locale, "home.users")}',
+        'label={t(locale, "nav.leaderboard")}',
+        "foydalanuvchilar soni",
+    )
+
+
+def neg_decisions_home_map_of_zeros() -> tuple[bool, str]:
+    """The region map is drawn again when nobody was active."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/page.tsx",
+        "{activeMembers > 0 && <RegionMap />}",
+        "<RegionMap />",
+        "nollar bilan",
+    )
+
+
+def neg_decisions_home_loses_public_content() -> tuple[bool, str]:
+    """The popular-problems block disappears from the guest page."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/page.tsx",
+        "<PopularProblems problems={popularList} locale={locale} />",
+        "{null}",
+        "PopularProblems bloki yo'q",
+    )
+
+
+def neg_decisions_leaderboard_lists_smoke_accounts() -> tuple[bool, str]:
+    """The leaderboard stops hiding the accounts the smoke checks register."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        "queryset = queryset.exclude(username__regex=AUTOMATED_USERNAME)",
+        "queryset = queryset",
+        "test hisoblarni yashirmaydi",
+    )
+
+
 def neg_decisions_openapi_check_step_dropped() -> tuple[bool, str]:
     """The job wakes up but no longer compares the generated types."""
     return _decision_broken(
@@ -5817,8 +5857,8 @@ def neg_decisions_home_without_map() -> tuple[bool, str]:
     """The home page would lose the region map."""
     return _decision_broken(
         "apps/web/src/app/(site)/page.tsx",
-        "      <RegionMap />",
-        "",
+        "{activeMembers > 0 && <RegionMap />}",
+        "{null}",
         "hududlar xaritasi yo'q",
     )
 
@@ -14441,6 +14481,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("web filtri sxemani unutsa tutilsin", neg_decisions_schema_filter_dropped),
             ("web filtri ildiz lockfile'ni unutsa tutilsin", neg_decisions_web_filter_forgets_root_lockfile),
             ("openapi:check qadami olib tashlansa tutilsin", neg_decisions_openapi_check_step_dropped),
+            ("bosh sahifada foydalanuvchilar «Reyting» deb yozilsa tutilsin", neg_decisions_home_users_label_reverts),
+            ("hududlar xaritasi nollar bilan chizilsa tutilsin", neg_decisions_home_map_of_zeros),
+            ("mehmon bosh sahifasi ommaviy mazmunni yo'qotsa tutilsin", neg_decisions_home_loses_public_content),
+            ("yetakchilar test hisoblarni ko'rsatsa tutilsin", neg_decisions_leaderboard_lists_smoke_accounts),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
             (
                 "runner compose'da rankwant label'i tushsa tutilsin",
