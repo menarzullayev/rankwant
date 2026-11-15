@@ -13752,7 +13752,7 @@ def neg_decisions_ci_fast_hasher_dropped() -> tuple[bool, str]:
         "apps/api/tests/conftest.py",
         "def _fast_password_hasher():",
         "def _tidied_away_hasher():",
-        "tez parol xeshlovchisi yo'q",
+        "sekin PBKDF2",
     )
 
 
