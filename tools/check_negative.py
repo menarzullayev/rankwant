@@ -4007,8 +4007,8 @@ def neg_decisions_required_ignores_api_tests() -> tuple[bool, str]:
     """The aggregator stops reading the API test matrix: red tests merge."""
     return _decision_broken(
         ".github/workflows/ci.yml",
-        "    needs: [filter, api, api_tests, web, judge, integrity]\n",
-        "    needs: [filter, api, web, judge, integrity]\n",
+        "    needs: [filter, api, api_tests, web, web_static, judge, integrity]\n",
+        "    needs: [filter, api, web, web_static, judge, integrity]\n",
         "`api_tests` natijasini o'qimaydi",
     )
 
@@ -4017,8 +4017,8 @@ def neg_decisions_required_skips_on_cancel() -> tuple[bool, str]:
     """`!cancelled()` instead of `always()`: a skipped required check is green."""
     return _decision_broken(
         ".github/workflows/ci.yml",
-        "    needs: [filter, api, api_tests, web, judge, integrity]\n    if: ${{ always() }}\n",
-        "    needs: [filter, api, api_tests, web, judge, integrity]\n    if: ${{ !cancelled() }}\n",
+        "    needs: [filter, api, api_tests, web, web_static, judge, integrity]\n    if: ${{ always() }}\n",
+        "    needs: [filter, api, api_tests, web, web_static, judge, integrity]\n    if: ${{ !cancelled() }}\n",
         "`always()` siz",
     )
 
