@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3551 strings.**
+**3555 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -405,6 +405,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.noAccount` | Hisobingiz yo'qmi? | Esabıńız joq pa? |  |
 | `auth.hasAccount` | Hisobingiz bormi? | Esabıńız bar ma? |  |
 | `home.openRating` | Reyting yashirin emas | Reyting jasırın emes |  |
+| `home.users` | Foydalanuvchilar | Paydalanıwshılar |  |
+| `home.openRatingBody` | Har bir reytingning formulasi ochiq va har o'zgarishning sababi yozib boriladi. | Hár bir reytingtiń formulası ashıq hám hár ózgeristiń sebebi jazıp barıladı. |  |
+| `home.popularProblems` | Mashhur masalalar | Tanımal máseleler |  |
+| `home.recentContests` | So'nggi musobaqalar | Sońǵı jarıslar |  |
 | `problems.name` | Masala | Mási |  |
 | `home.attempts` | Urinishlar | Urınıslar |  |
 | `home.start` | Bepul boshlash | Biypul baslaw |  |

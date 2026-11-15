@@ -8,7 +8,7 @@ import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { UpdateKindBadge } from "@/features/updates";
 import { getLocale } from "@/i18n/server";
-import { date, dateTime, t } from "@/i18n/messages";
+import { date, dateTime, fill, t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import {
   api,
@@ -17,12 +17,21 @@ import {
   type Contest,
   type Paginated,
   type Post,
+  type Problem,
   type ProblemDetail,
   type Recommendation,
   type SystemUpdate,
   type UserPublic,
 } from "@/lib/api";
 import { getSessionUser, getWithSession } from "@/lib/api.server";
+import {
+  AlgorithmLibrary,
+  PopularProblems,
+  RecentContests,
+  libraryArticles,
+  popularProblems,
+  recentContests,
+} from "./_home/GuestContent";
 import { RegionMap } from "./_home/RegionMap";
 import { SignedInHome, type ResumeTarget } from "./_home/SignedInHome";
 
@@ -106,7 +115,7 @@ export default async function Home() {
   // Blog va o'zgarishlar — ikkalasi ham YORDAMCHI bo'lim: biri bo'sh yoki
   // o'chirilgan bo'lsa bosh sahifa baribir ochilishi kerak. Lekin ularni
   // ketma-ket kutish ortiqcha — shuning uchun bitta `Promise.all` ichida.
-  const [posts, updates] = await Promise.all([
+  const [posts, updates, popular, activeMembers] = await Promise.all([
     api
       .posts()
       .then((page) => page.results.slice(0, 3))
@@ -115,6 +124,16 @@ export default async function Home() {
       .updates("?page_size=4")
       .then((page) => page.results)
       .catch(softFail<SystemUpdate>),
+    // Public content for visitors who arrive from a search engine (decision 2026-11-15).
+    api
+      .popularProblems()
+      .then((page) => page.results)
+      .catch(softFail<Problem>),
+    // The map is shown only when somebody was active: a tile map of zeros says nothing.
+    api
+      .regionActivity()
+      .then((activity) => activity.total)
+      .catch(() => 0),
   ]);
 
   const me = await getSessionUser<UserPublic>();
@@ -140,7 +159,10 @@ export default async function Home() {
   }
 
   const soon = upcoming(contests.results);
+  const last = recentContests(contests.results);
   const top = users.results.slice(0, 5);
+  const library = libraryArticles(articles.results);
+  const popularList = popularProblems(popular);
 
   return (
     <div className="space-y-6">
@@ -183,7 +205,7 @@ export default async function Home() {
           valueClassName="lg:text-2xl xl:text-title-sm"
         />
         <StatCard
-          label={t(locale, "nav.leaderboard")}
+          label={t(locale, "home.users")}
           value={stats.users}
           icon={<Icon name="nav.leaderboard" />}
           valueClassName="lg:text-2xl xl:text-title-sm"
@@ -197,6 +219,9 @@ export default async function Home() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
+        {soon.length === 0 && last.length > 0 ? (
+          <RecentContests contests={last} locale={locale} />
+        ) : (
         <Card
           title={t(locale, "home.upcoming")}
           action={
@@ -243,6 +268,7 @@ export default async function Home() {
             )}
           </ul>
         </Card>
+        )}
 
         <Card
           title={t(locale, "home.topUsers")}
@@ -298,12 +324,16 @@ export default async function Home() {
         <div className="grid gap-4 md:grid-cols-3">
           {roadmaps.slice(0, 2).map((r) => (
             <div key={r.slug} className="rw-radius border rw-line p-4">
-              <p className="font-medium rw-strong">{r.title}</p>
+              <p className="font-medium rw-strong">
+                {inReaderAlphabet(r.title, r.locale)}
+              </p>
               <p className="mt-1 line-clamp-2 text-theme-sm rw-dim">
-                {r.description}
+                {inReaderAlphabet(r.description, r.locale)}
               </p>
               <div className="mt-3">
-                <Badge color="brand">{r.step_count} qadam</Badge>
+                <Badge color="brand">
+                  {fill(t(locale, "learn.stepCount"), { count: r.step_count })}
+                </Badge>
               </div>
             </div>
           ))}
@@ -313,9 +343,11 @@ export default async function Home() {
               href={`/learn/${a.slug}`}
               className="rw-radius border rw-line p-4 transition rw-hover-line"
             >
-              <p className="font-medium rw-strong">{a.title}</p>
+              <p className="font-medium rw-strong">
+                {inReaderAlphabet(a.title, a.locale)}
+              </p>
               <p className="mt-1 line-clamp-2 text-theme-sm rw-dim">
-                {a.summary}
+                {inReaderAlphabet(a.summary, a.locale)}
               </p>
               <div className="mt-3">
                 <Badge>
@@ -327,15 +359,24 @@ export default async function Home() {
         </div>
       </Card>
 
-      {/* Active members by region (decision 2026-11-11 ④); loads in the
-          browser, so the cached guest page carries no extra request. */}
-      <RegionMap />
+      {/* Public content for visitors from a search engine (decision 2026-11-15):
+          plain server-rendered links, so the cached page carries them as HTML. */}
+      {(popularList.length > 0 || library.length > 0) && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <PopularProblems problems={popularList} locale={locale} />
+          <AlgorithmLibrary articles={library} locale={locale} />
+        </div>
+      )}
+
+      {/* Active members by region (decision 2026-11-11 ④); the numbers load in the
+          browser. The block is shown only when somebody was active in the last 30
+          days — the server asks once, cached — because a map of zeros says nothing. */}
+      {activeMembers > 0 && <RegionMap />}
 
       {/* Vision principle #2 — KEP dan asosiy farq, doim ko'rinib turadi. */}
       <Card title={t(locale, "home.openRating")}>
         <p className="text-theme-sm rw-dim">
-          Har bir reytingning formulasi ochiq va har o&apos;zgarishning sababi
-          yozib boriladi.{" "}
+          {t(locale, "home.openRatingBody")}{" "}
           <IntentLink
             href="/rating"
             className="font-medium rw-accent-ink hover:underline"
@@ -351,6 +392,7 @@ export default async function Home() {
         <div className="grid gap-6 lg:grid-cols-2">
           {updates.length > 0 && (
             <Card
+              className={posts.length === 0 ? "lg:col-span-2" : ""}
               title={t(locale, "update.home")}
               action={
                 <IntentLink
@@ -387,6 +429,7 @@ export default async function Home() {
 
           {posts.length > 0 && (
             <Card
+              className={updates.length === 0 ? "lg:col-span-2" : ""}
               title={t(locale, "home.announcements")}
               action={
                 <IntentLink
