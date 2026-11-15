@@ -23,7 +23,12 @@ def main(argv: list[str]) -> int:
     if len(argv) != 1:
         print(__doc__)
         return 2
-    mapping: dict[str, str] = {}
+    # Merge into the existing map, so a recording of one group adds its tests
+    # without dropping the rest.
+    try:
+        mapping: dict[str, str] = json.loads(OUT.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        mapping = {}
     for line in Path(argv[0]).read_text(encoding="utf-8").splitlines():
         test, _, label = line.partition("\t")
         if test and label:

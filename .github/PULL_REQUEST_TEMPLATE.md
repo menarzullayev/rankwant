@@ -4,21 +4,20 @@
 
 ## Bog'liq hujjat
 
-<!-- PRD ID (P0-3), ADR raqami yoki issue havolasi -->
+<!-- ADR raqami, `docs/decisions/` fayli yoki hujjat havolasi. Issue ishlatilmaydi. -->
 
-## Definition of Done
+## Tekshiruv
 
-[09-development-plan](../docs/09-development-plan/README.md) bo'yicha:
+CLAUDE.md § Ish uslubi bo'yicha:
 
-- [ ] `mypy` strict o'tadi, lint toza
-- [ ] Biznes logika **service layer'da**, view'da emas
-- [ ] Test qo'shildi — judge pipeline / reyting formulasi / Qvant ledger / auth uchun **majburiy**
-- [ ] OpenAPI schema diff ko'rib chiqilgan
-- [ ] Migration `--plan` bilan review qilingan
-- [ ] Arxitektura yoki mahsulot qarori bo'lsa — **ADR yozilgan**
-- [ ] Fazali ochilish hurmat qilingan (masalan Activity reyting Phase 1 gacha UI da yo'q)
+- [ ] Tegilgan qismning testi **mahalliy yashil** (CI nimani yurgizmasa, uni o'zim yurgizdim)
+- [ ] Murakkab o'zgarish (mantiq, xavfsizlik, migratsiya, judge) — merge'dan oldin diff'ni `/code-review` bilan ko'rib chiqdim
+- [ ] Endpoint yoki serializer o'zgargan bo'lsa — OpenAPI sxemasi yangilandi
+- [ ] Yangi muhit o'zgaruvchisi `.env.example` ga yozildi
+- [ ] Saidakbar aka qarorini o'zgartirgan bo'lsam — aniq tasdiq bor va `docs/decisions/` yangilandi
+- [ ] Merge'dan keyin deploy va jonli sahifa tekshiriladi (`deploy tugadi: <sha>`)
 
 ## Xavfsizlik
 
-- [ ] Foydalanuvchi kodi ishlaydigan yo'lga tegmadim, **yoki** tegdim va tests/security yangilandi
+- [ ] Foydalanuvchi kodi ishlaydigan yo'lga tegmadim, **yoki** tegdim va `tests/security` yangilandi
 - [ ] Secret, token yoki credential qo'shmadim

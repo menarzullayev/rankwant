@@ -273,6 +273,9 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-15](docs/decisions/2026-11-15-root-lockfile-wakes-web.md) · Ildiz `package.json` / `package-lock.json` o'zgarsa Web job'i ham yuradi · `root_lockfile_wakes_web_job`
 - [2026-11-15](docs/decisions/2026-11-15-pr-ci-fast.md) · PR CI ~1 daqiqa: salbiy testlar, build va bundle faqat main/Nightly'da; `api` konteynersiz; `web_static` alohida · `pr_ci_is_fast_and_static`
 - [2026-11-15](docs/decisions/2026-11-15-negatives-one-rule.md) · Qaror salbiy testi faqat o'z qoidasini yuritadi; 95 test olib tashlandi, qoidalar qoladi · `negatives_run_one_rule`
+- [2026-11-15](docs/decisions/2026-11-15-actions-cache-main-only.md) · Actions keshini faqat main yozadi; yopilgan PR keshi o'chadi · `actions_cache_is_written_by_main_only`
+- [2026-11-15](docs/decisions/2026-11-15-dependabot-minor-patch-automerge.md) · Guruhlangan minor/patch Dependabot PR'lari CI yashil bo'lsa o'zi merge bo'ladi · `dependabot_minor_patch_automerges`
+- [2026-11-15](docs/decisions/2026-11-15-repo-health-files.md) · SECURITY.md, CODE_OF_CONDUCT.md, qisqa CODEOWNERS, yangi PR shabloni · `repo_health_files_are_present`
 - [2026-11-15](docs/decisions/2026-11-15-keep-all-judge-languages.md) · Judge tillari hech biri o'chirilmaydi (35 ta qoladi); joy Docker obrazlarini tozalash bilan topildi, VHDX siqish keyin · `services/judge-go/Dockerfile`
 - [2026-11-15](docs/decisions/2026-11-15-language-variants.md) · Til variantlari: C++17/20, Java 8, C# 8/10, Rust 2024 qo'shildi (35 → 41), obrazga 0 MB; matritsa variantni katalogning o'z buyrug'i bilan isbotlaydi · `apps/api/problems/languages.py`
 - [2026-11-15](docs/decisions/2026-11-15-guest-home-honest-and-public.md) · Mehmon bosh sahifasi: yorliqlar halol, test hisoblar yetakchilarda yo'q, bo'sh bloklar yig'iladi, ommaviy mazmun (mashhur masalalar, algoritmlar, so'nggi musobaqalar) · `guest_home_is_honest_and_public`

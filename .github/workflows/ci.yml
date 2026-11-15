@@ -184,8 +184,18 @@ jobs:
         run: |
           git fetch --depth=1 origin "${{ github.base_ref }}"
           python3 tools/check_openapi_breaking.py --base FETCH_HEAD
+      # A pull request only READS this cache; `main` writes it (owner decision
+      # 2026-11-15). The key changes with every source file, so each PR used to
+      # store another copy and the repository sat above the 10 GB cache limit.
+      - uses: actions/cache/restore@v6
+        if: ${{ steps.check.outputs.ready == 'true' && github.event_name == 'pull_request' }}
+        with:
+          path: apps/api/.mypy_cache
+          key: mypy-${{ runner.os }}-py3.14-${{ hashFiles('apps/api/requirements-dev.lock') }}-${{ hashFiles('apps/api/**/*.py') }}
+          restore-keys: |
+            mypy-${{ runner.os }}-py3.14-${{ hashFiles('apps/api/requirements-dev.lock') }}-
       - uses: actions/cache@v6
-        if: steps.check.outputs.ready == 'true'
+        if: ${{ steps.check.outputs.ready == 'true' && github.event_name != 'pull_request' }}
         with:
           path: apps/api/.mypy_cache
           key: mypy-${{ runner.os }}-py3.14-${{ hashFiles('apps/api/requirements-dev.lock') }}-${{ hashFiles('apps/api/**/*.py') }}
@@ -377,8 +387,17 @@ jobs:
           key: node-modules-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
       - if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' && steps.node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
+      # Same rule as the mypy cache: only `main` saves. A pull request does not
+      # even run `next build`, so a saved copy (~300 MB) was pure waste.
+      - uses: actions/cache/restore@v6
+        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' && github.event_name == 'pull_request' }}
+        with:
+          path: apps/web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('apps/web/src/**/*.ts', 'apps/web/src/**/*.tsx') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
       - uses: actions/cache@v6
-        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
+        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' && github.event_name != 'pull_request' }}
         with:
           path: apps/web/.next/cache
           key: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('apps/web/src/**/*.ts', 'apps/web/src/**/*.tsx') }}
