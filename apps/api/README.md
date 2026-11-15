@@ -19,3 +19,4 @@ Spec: [08-technical-spec](../../docs/08-technical-spec/README.md) · Model: [05-
 ## CI shards
 
 A pull request runs the API tests in 8 shards, `main`, Nightly and deploy in 3 (see `docs/decisions/2026-11-15-pr-ci-fast.md`). `--nomigrations` does not work here: tests read rows the data migrations seed.
+The test Postgres runs without `fsync` (CI only), and the test session hashes passwords with MD5.
