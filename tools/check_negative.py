@@ -13756,6 +13756,16 @@ def neg_decisions_ci_fast_hasher_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_ci_postgres_waits_for_disk() -> tuple[bool, str]:
+    """The API test Postgres goes back to waiting for the disk on every commit."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        '-c "ALTER SYSTEM SET fsync = off"',
+        '-c "SELECT 1"',
+        "diskni kutadi",
+    )
+
+
 def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
     """`Required checks` stops reading `web_static`."""
     return _decision_broken(
@@ -15333,6 +15343,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("web_static Node o'rnatsa tutilsin", neg_decisions_ci_static_job_needs_node),
             ("required web_static'ni o'qimasa tutilsin", neg_decisions_ci_required_ignores_static),
             ("testlar sekin parol xeshiga qaytsa tutilsin", neg_decisions_ci_fast_hasher_dropped),
+            ("test Postgres'i diskni kutsa tutilsin", neg_decisions_ci_postgres_waits_for_disk),
         ],
     ),
 ]

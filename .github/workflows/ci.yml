@@ -266,6 +266,17 @@ jobs:
           cache-dependency-glob: apps/api/requirements-dev.lock
       - run: uv pip install --system -r requirements-dev.lock
         working-directory: apps/api
+      # The throwaway database does not need to survive a crash, so it does not
+      # wait for the disk (owner decision 2026-11-15). Measured on a shard: each
+      # xdist worker spent 44 s building its test database through the
+      # migrations before the first test, with four workers fighting for one
+      # Postgres and the same disk. These three settings are reloadable, so no
+      # restart or custom command is needed.
+      - name: Postgres without crash safety (test database only)
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h localhost -p ${{ job.services.postgres.ports['5432'] }} -U postgres             -c "ALTER SYSTEM SET fsync = off"             -c "ALTER SYSTEM SET synchronous_commit = off"             -c "ALTER SYSTEM SET full_page_writes = off"             -c "SELECT pg_reload_conf()"
       - name: Every test file is in exactly one shard
         run: python3 tools/pytest_shard.py --check ${{ needs.filter.outputs.api_shard_count }}
       - name: pytest
