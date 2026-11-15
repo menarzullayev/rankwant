@@ -3500,8 +3500,7 @@ def _record_rule_label(test: str, rule: str, out: str) -> None:
         found = [label for label in labels if line.startswith(f"  - {label}: ")]
         if found:
             with open(os.environ["NEGATIVE_RECORD"], "a", encoding="utf-8") as fh:
-                fh.write(f"{test}	{max(found, key=len)}
-")
+                fh.write(f"{test}\t{max(found, key=len)}\n")
             return
 
 
