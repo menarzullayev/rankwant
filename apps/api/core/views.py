@@ -1009,9 +1009,12 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
         queryset = super().get_queryset()
         if self.action == "list":
             # The leaderboard is the public face of the platform; accounts the smoke and
-            # latency checks register must not take its first places. Profiles stay
-            # reachable by name (`retrieve` is not filtered) and nothing is deleted.
-            queryset = queryset.exclude(username__regex=AUTOMATED_USERNAME)
+            # latency checks register, and accounts marked `origin = demo`, must not take
+            # its places. Profiles stay reachable by name (`retrieve` is not filtered) and
+            # nothing is deleted.
+            queryset = queryset.exclude(username__regex=AUTOMATED_USERNAME).exclude(
+                origin=User.Origin.DEMO
+            )
         # Maktab reytingi va sinfdoshlar — katalogdagi maktab bo'yicha.
         school = self.request.query_params.get("school", "")
         if school.isdigit():

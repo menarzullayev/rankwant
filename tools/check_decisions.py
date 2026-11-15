@@ -1953,6 +1953,8 @@ def guest_home_is_honest_and_public() -> str | None:
     views = read("apps/api/core/views.py")
     if "queryset.exclude(username__regex=AUTOMATED_USERNAME)" not in views:
         return "core/views.py: yetakchilar ro'yxati test hisoblarni yashirmaydi"
+    if "origin=User.Origin.DEMO" not in views:
+        return "core/views.py: yetakchilar ro'yxati origin=demo hisoblarni ko'rsatadi"
     return None
 
 

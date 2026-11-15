@@ -3564,6 +3564,16 @@ def neg_decisions_home_loses_public_content() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_leaderboard_lists_demo_origin() -> tuple[bool, str]:
+    """The leaderboard shows the accounts marked `origin = demo` again."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        "origin=User.Origin.DEMO",
+        "origin=User.Origin.REAL",
+        "origin=demo hisoblarni",
+    )
+
+
 def neg_decisions_leaderboard_lists_smoke_accounts() -> tuple[bool, str]:
     """The leaderboard stops hiding the accounts the smoke checks register."""
     return _decision_broken(
@@ -14485,6 +14495,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("hududlar xaritasi nollar bilan chizilsa tutilsin", neg_decisions_home_map_of_zeros),
             ("mehmon bosh sahifasi ommaviy mazmunni yo'qotsa tutilsin", neg_decisions_home_loses_public_content),
             ("yetakchilar test hisoblarni ko'rsatsa tutilsin", neg_decisions_leaderboard_lists_smoke_accounts),
+            ("yetakchilar origin=demo hisoblarni ko'rsatsa tutilsin", neg_decisions_leaderboard_lists_demo_origin),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
             (
                 "runner compose'da rankwant label'i tushsa tutilsin",
