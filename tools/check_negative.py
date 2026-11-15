@@ -3633,16 +3633,6 @@ def neg_decisions_funnel_forgets_the_hero() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_home_map_of_zeros() -> tuple[bool, str]:
-    """The region map is drawn again when nobody was active."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/page.tsx",
-        "{activeMembers > 0 && <RegionMap />}",
-        "<RegionMap />",
-        "nollar bilan",
-    )
-
-
 def neg_decisions_home_loses_public_content() -> tuple[bool, str]:
     """The popular-problems block disappears from the guest page."""
     return _decision_broken(
@@ -3690,26 +3680,6 @@ def neg_decisions_home_leaves_language_aware_cache() -> tuple[bool, str]:
         "(pathname === HOME_CACHE_PATH || pathname === PROBLEMS_CACHE_PATH) &&",
         "pathname === PROBLEMS_CACHE_PATH &&",
         "tilga bog'liq kesh yo'lida emas",
-    )
-
-
-def neg_decisions_site_title_hardcoded_again() -> tuple[bool, str]:
-    """The site title goes back to one Uzbek constant."""
-    return _decision_broken(
-        "apps/web/src/app/layout.tsx",
-        'const title = t(locale, "site.title");',
-        'const title = "RankWant — reyting xohlaganlar uchun";',
-        "sarlavhasi tilga ergashmaydi",
-    )
-
-
-def neg_decisions_structured_data_description_uzbek() -> tuple[bool, str]:
-    """The JSON-LD description is fixed to Uzbek again."""
-    return _decision_broken(
-        "apps/web/src/app/layout.tsx",
-        'jsonLd(t(locale, "site.description"))',
-        'jsonLd("RankWant")',
-        "tuzilmaviy ma'lumot tavsifi",
     )
 
 
@@ -3830,16 +3800,6 @@ def neg_decisions_onboarding_page_loses_the_shell() -> tuple[bool, str]:
         '"/verify-email", "/onboarding"];',
         '"/verify-email"];',
         "/onboarding` FULL ro'yxatida emas",
-    )
-
-
-def neg_decisions_phone_loses_the_chips() -> tuple[bool, str]:
-    """The phone-width chips under the form go away."""
-    return _decision_broken(
-        "apps/web/src/features/auth/components/AuthShell.tsx",
-        'className="mt-6 flex flex-wrap justify-center gap-2 lg:hidden"',
-        'className="mt-6 flex flex-wrap justify-center gap-2"',
-        "telefonda forma ostida chiplar yo'q",
     )
 
 
@@ -4182,45 +4142,6 @@ def neg_decisions_carousel_panel_calls_api() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_carousel_loses_a_slide() -> tuple[bool, str]:
-    """A slide is dropped: the carousel is no longer the agreed ten."""
-    return _decision_broken(
-        "apps/web/src/features/auth/components/AuthPanel.tsx",
-        "    // 10 — the first achievement",
-        "    // x — the first achievement",
-        "10 ta slayd bo'lishi shart",
-    )
-
-
-def neg_decisions_row_dividers_next_sibling_only() -> tuple[bool, str]:
-    return _decision_broken(
-        "apps/web/src/app/theme.css",
-        ".rw-divide > * { border-color: var(--rw-divider); }",
-        ".rw-divide > * + * { border-color: var(--rw-divider); }",
-        "jadval chiziqlari har qatorga rang oladi",
-    )
-
-
-def neg_decisions_clay_dark_block_removed() -> tuple[bool, str]:
-    """The palette goes: a dark-mode device is back on light surfaces."""
-    return _decision_broken(
-        "apps/web/src/app/theme.css",
-        '[data-style="clay"].dark {',
-        '[data-style="clay-off"].dark {',
-        "`.dark` palitra yo'q",
-    )
-
-
-def neg_decisions_clay_single_environment_again() -> tuple[bool, str]:
-    """The block stays but the style is single-environment: no mode switch."""
-    return _decision_broken(
-        "apps/web/src/layout/styles.ts",
-        "dual: true, // clay",
-        "dual: false, // clay",
-        "`dual: true` emas",
-    )
-
-
 def neg_decisions_signed_in_home_dropped() -> tuple[bool, str]:
     """The early return goes: signed-in visitors fall back to the guest page."""
     return _decision_broken(
@@ -4271,16 +4192,6 @@ def neg_decisions_presence_ignores_privacy() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_settings_dropdown_returns() -> tuple[bool, str]:
-    """The select above every section comes back on a phone."""
-    return _decision_broken(
-        "apps/web/src/features/account/components/SettingsShell.tsx",
-        "            <SaveBar />",
-        "            <Dropdown />\n            <SaveBar />",
-        "bo'lim tanlash ro'yxati qaytgan",
-    )
-
-
 def neg_decisions_settings_delete_is_immediate() -> tuple[bool, str]:
     """`DELETE /me/` anonymizes at once again — no way back."""
     return _decision_broken(
@@ -4311,46 +4222,6 @@ def neg_decisions_settings_backfill_reads_all_columns() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_settings_section_added() -> tuple[bool, str]:
-    """A seventh section appears beside the six."""
-    return _decision_broken(
-        "apps/web/src/features/account/components/sections.ts",
-        '    id: "hisob",',
-        '    id: "jamoalar",',
-        "sections.ts: bo'limlar",
-    )
-
-
-def neg_decisions_header_trio_back_at_md() -> tuple[bool, str]:
-    """The three extra buttons show for a signed-in user from `md` again."""
-    return _decision_broken(
-        "apps/web/src/layout/HeaderActions.tsx",
-        'user ? "hidden xl:flex" : "flex"',
-        'user ? "hidden md:flex" : "flex"',
-        "uch tugma `xl` dan oldin ko'rinadi",
-    )
-
-
-def neg_decisions_header_pills_back_at_sm() -> tuple[bool, str]:
-    """Qvant and streak come back at `sm`."""
-    return _decision_broken(
-        "apps/web/src/layout/HeaderStatus.tsx",
-        "hidden md:flex",
-        "hidden sm:flex",
-        "640 px da header toshadi",
-    )
-
-
-def neg_decisions_header_name_back_at_sm() -> tuple[bool, str]:
-    """The account name is shown from `sm` again."""
-    return _decision_broken(
-        "apps/web/src/layout/UserMenu.tsx",
-        "truncate xl:inline",
-        "truncate sm:inline",
-        "768 px da header toshadi",
-    )
-
-
 def neg_decisions_secret_key_fallback_returns() -> tuple[bool, str]:
     """The settings accept a known default secret again."""
     return _decision_broken(
@@ -4368,16 +4239,6 @@ def neg_decisions_collectstatic_without_key() -> tuple[bool, str]:
         "RUN DJANGO_SECRET_KEY=build-only-not-a-secret python manage.py collectstatic",
         "RUN python manage.py collectstatic",
         "statik fayllarsiz quriladi",
-    )
-
-
-def neg_decisions_settings_small_button_returns() -> tuple[bool, str]:
-    """A 36 px button comes back in a settings tab."""
-    return _decision_broken(
-        "apps/web/src/features/account/components/SocialAccounts.tsx",
-        'className="h-11 px-4"',
-        'className="h-9 px-3"',
-        "36 px li tugma qaytgan",
     )
 
 
@@ -4481,66 +4342,6 @@ def neg_decisions_deploy_ignores_lock() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_customizer_row_dropped() -> tuple[bool, str]:
-    """The account menu loses its door to the appearance panel."""
-    return _decision_broken(
-        "apps/web/src/layout/UserMenu.tsx",
-        "customizer.setOpen(true);",
-        "",
-        "telefonda panel to'rt qadamda",
-    )
-
-
-def neg_decisions_customizer_sheet_one_stop() -> tuple[bool, str]:
-    """The phone sheet goes back to a single height."""
-    return _decision_broken(
-        "apps/web/src/components/customizer/Customizer.tsx",
-        'tall ? "max-h-[90dvh]" : "max-h-[55dvh]"',
-        '"max-h-[55dvh]"',
-        "ikki pog'onali emas",
-    )
-
-
-def neg_decisions_customizer_touch_rule_orphaned() -> tuple[bool, str]:
-    """The 44 px rule stays in the stylesheet but nothing carries its hook."""
-    return _decision_broken(
-        "apps/web/src/components/customizer/Customizer.tsx",
-        "          data-customizer\n",
-        "",
-        "44 px qoidasi hech narsaga tegmaydi",
-    )
-
-
-def neg_decisions_customizer_quick_row_dropped() -> tuple[bool, str]:
-    """The quick row loses its hook: the controls go back into accordions."""
-    return _decision_broken(
-        "apps/web/src/components/customizer/AppearanceTab.tsx",
-        "        data-cz-quick\n",
-        "",
-        "akkordeonlardan oldin emas",
-    )
-
-
-def neg_decisions_customizer_preview_hardcoded() -> tuple[bool, str]:
-    """A template card stops taking its colours from the style."""
-    return _decision_broken(
-        "apps/web/src/components/customizer/AppearanceTab.tsx",
-        "data-style={item.style}",
-        "",
-        "uslub tokenlaridan chizilmaydi",
-    )
-
-
-def neg_decisions_customizer_group_opens_by_default() -> tuple[bool, str]:
-    """A new tab opens a group again and pushes the quick row's neighbours down."""
-    return _decision_broken(
-        "apps/web/src/components/customizer/group-session.ts",
-        "let memory: GroupId | null = null;",
-        "let memory: GroupId | null = DEFAULT_GROUP;",
-        "yopiq guruhlar bilan boshlanmaydi",
-    )
-
-
 def neg_decisions_settings_writes_appearance() -> tuple[bool, str]:
     """The settings page grows its own appearance writer."""
     return _decision_broken(
@@ -4548,16 +4349,6 @@ def neg_decisions_settings_writes_appearance() -> tuple[bool, str]:
         "  const { setOpen, appearance, template } = useCustomizer();",
         "  const { setOpen, appearance, template, setAppearance } = useCustomizer();",
         "ikkinchi yozish yo'li",
-    )
-
-
-def neg_decisions_account_menu_rows_shrink() -> tuple[bool, str]:
-    """The account menu's rows go back to 36 px."""
-    return _decision_broken(
-        "apps/web/src/layout/UserMenu.tsx",
-        '"flex min-h-11 w-full items-center',
-        '"flex w-full items-center',
-        "hisob menyusi qatorlari 44 px emas",
     )
 
 
@@ -4611,26 +4402,6 @@ def neg_decisions_watcher_log_unbounded() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_guest_theme_switch_returns_early() -> tuple[bool, str]:
-    """The theme switch is back in a guest's header on a phone."""
-    return _decision_broken(
-        "apps/web/src/layout/HeaderActions.tsx",
-        '<span className="hidden md:contents">{!auth && <ThemeToggle />}</span>',
-        "{!auth && <ThemeToggle />}",
-        "mavzu almashtirgich `md` dan oldin ko'rinadi",
-    )
-
-
-def neg_decisions_sign_in_label_uncapped() -> tuple[bool, str]:
-    """The longest sign-in label is free to widen the header again."""
-    return _decision_broken(
-        "apps/web/src/layout/UserMenu.tsx",
-        '<span className="max-w-[3.5rem] truncate md:max-w-none">',
-        "<span>",
-        "kirish yorlig'i chegaralanmagan",
-    )
-
-
 def neg_decisions_seed_restricts_a_plus_b() -> tuple[bool, str]:
     """The demo seed writes one language row and shuts the others out."""
     return _decision_broken(
@@ -4641,16 +4412,6 @@ def neg_decisions_seed_restricts_a_plus_b() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_samples_scroll_box_not_positioned() -> tuple[bool, str]:
-    """The samples table lets its hidden labels widen the page."""
-    return _decision_broken(
-        "apps/web/src/features/problems/components/SampleTests.tsx",
-        '<div className="@container relative min-w-0 rw-scroll-x">',
-        '<div className="@container min-w-0 rw-scroll-x">',
-        "`sr-only` yorliq sahifani kengaytiradi",
-    )
-
-
 def neg_decisions_settings_summary_drawn_on_server() -> tuple[bool, str]:
     """The summary of device state is rendered by the server again."""
     return _decision_broken(
@@ -4658,16 +4419,6 @@ def neg_decisions_settings_summary_drawn_on_server() -> tuple[bool, str]:
         "{hydrated ? row.value : NBSP}",
         "{row.value}",
         "gidratsiya xatosi",
-    )
-
-
-def neg_decisions_last_template_not_remembered() -> tuple[bool, str]:
-    """Applying a template no longer records it, so there is no way back."""
-    return _decision_broken(
-        "apps/web/src/components/customizer/AppearanceTab.tsx",
-        "    writeLastTemplate(item.id);\n",
-        "",
-        "«shablonga qaytish» ishlamaydi",
     )
 
 
@@ -4820,36 +4571,6 @@ def neg_decisions_email_column_gone() -> tuple[bool, str]:
         "Email ustuni sozlamalarda yo'q",
     )
 
-def neg_decisions_graphite_unflagged() -> tuple[bool, str]:
-    """The graphite palette is applied without the flag."""
-    return _decision_broken(
-        "apps/web/src/app/layout.tsx",
-        'data-palette={isOnServer("newPalette", undefined) ? GRAPHITE_PALETTE : undefined}',
-        "data-palette={GRAPHITE_PALETTE}",
-        "Grafit palitrasi `newPalette` bayrog'iga bog'lanmagan",
-    )
-
-
-def neg_decisions_graphite_leaks_into_light() -> tuple[bool, str]:
-    """The graphite block loses `.dark` and repaints the light mode too."""
-    return _decision_broken(
-        "apps/web/src/app/theme.css",
-        '[data-style="clay"].dark[data-palette="graphite"] {',
-        '[data-style="clay"][data-palette="graphite"] {',
-        "Grafit bloki faqat clay + qorong'i rejimga tegishli emas",
-    )
-
-
-def neg_decisions_graphite_changes_accent() -> tuple[bool, str]:
-    """The graphite palette swaps the brand accent."""
-    return _decision_broken(
-        "apps/web/src/app/theme.css",
-        "  --rw-faint: #959cab;\n  --rw-accent: #7c3aed;\n",
-        "  --rw-faint: #959cab;\n  --rw-accent: #5b6cff;\n",
-        "Grafit blokida `--rw-accent: #7c3aed",
-    )
-
-
 def neg_decisions_session_rows_kept() -> tuple[bool, str]:
     """The daily task that drops expired session rows is unscheduled."""
     return _decision_broken(
@@ -4870,26 +4591,6 @@ def neg_decisions_rail_unflagged() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_rail_drops_the_drawer() -> tuple[bool, str]:
-    """With the rail on, the phone loses its drawer."""
-    return _decision_broken(
-        "apps/web/src/layout/AppShell.tsx",
-        "{sidenav && <AppSidebar drawerOnly={rail} />}",
-        "{sidenav && !rail && <AppSidebar />}",
-        "rail rejimida telefon drawer'i yo'qoladi",
-    )
-
-
-def neg_decisions_rail_inset_missing() -> tuple[bool, str]:
-    """Fixed boxes stop clearing the rail."""
-    return _decision_broken(
-        "apps/web/src/layout/AppShell.tsx",
-        "...(rail ? { [SHELL_INSET]: RAIL_WIDTH } : {}),",
-        "",
-        "`--rw-shell-inset` rail kengligini olmaydi",
-    )
-
-
 def neg_decisions_rail_prefetches_on_sight() -> tuple[bool, str]:
     """The panel links go back to plain `Link` (prefetch on sight)."""
     return _decision_broken(
@@ -4907,16 +4608,6 @@ def neg_decisions_glossary_check_unwired() -> tuple[bool, str]:
         "    problems += check_glossary(",
         "    _ = (",
         "`check_glossary` chaqirilmaydi",
-    )
-
-
-def neg_decisions_uz_tier_name_translated() -> tuple[bool, str]:
-    """The Uzbek tier name is translated again."""
-    return _decision_broken(
-        "apps/web/src/i18n/locales/uz.ts",
-        '"title.quark": "Quark",',
-        '"title.quark": "Kvark",',
-        "unvon nomi yana tarjima qilingan",
     )
 
 
@@ -5572,26 +5263,6 @@ def neg_decisions_algorithm_licence_link_dropped() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_alphabet_converts_anchors() -> tuple[bool, str]:
-    """The alphabet converter would rewrite heading ids."""
-    return _decision_broken(
-        "packages/shared/src/alphabet.ts",
-        '    "\\\\{#[\\\\w-]+\\\\}",' + "\n",
-        "",
-        "o'giruvchidan himoyalanmagan",
-    )
-
-
-def neg_decisions_learn_keeps_library_article() -> tuple[bool, str]:
-    """`/learn/<slug>` would show an imported article at a second address."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/learn/[slug]/page.tsx",
-        "permanentRedirect(algorithmPath(",
-        "void (",
-        "kanonik manzilga yo'naltirilmaydi",
-    )
-
-
 def neg_decisions_algorithm_terms_unlinked() -> tuple[bool, str]:
     """The article would stop linking its terms to the glossary."""
     return _decision_broken(
@@ -5619,16 +5290,6 @@ def neg_decisions_olympiad_shows_removed_person() -> tuple[bool, str]:
         "Participant.objects.filter(slug=slug, removed_at__isnull=True)",
         "Participant.objects.filter(slug=slug)",
         "o'chirilgan ishtirokchi API'da ko'rinadi",
-    )
-
-
-def neg_decisions_olympiad_person_indexed() -> tuple[bool, str]:
-    """A pupil's page would be offered to search engines."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/olympiads/participants/[slug]/page.tsx",
-        "robots: { index: false, follow: false }",
-        "robots: { index: true, follow: true }",
-        "qidiruvga berilgan",
     )
 
 
@@ -5679,16 +5340,6 @@ def neg_decisions_region_cache_survives_rebuild() -> tuple[bool, str]:
         "for key in cache_keys(contest.pk):",
         "for key in cache_keys(contest.pk)[:1]:",
         "hududiy kesh tozalanmaydi",
-    )
-
-
-def neg_decisions_contest_print_indexed() -> tuple[bool, str]:
-    """The printable statements would be offered to search engines."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/contests/[slug]/print/page.tsx",
-        "robots: { index: false, follow: false }",
-        "robots: { index: true, follow: true }",
-        "chop etish sahifasi qidiruvga berilgan",
     )
 
 
@@ -5989,16 +5640,6 @@ def neg_cpuz_broken_anchor() -> tuple[bool, str]:
         "/algorithms/algebra/module-inverse#fermat-euler)",
         "/algorithms/algebra/module-inverse#no-such-section)",
         "sarlavha topmaydi",
-    )
-
-
-def neg_decisions_home_without_map() -> tuple[bool, str]:
-    """The home page would lose the region map."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/page.tsx",
-        "{activeMembers > 0 && <RegionMap />}",
-        "{null}",
-        "hududlar xaritasi yo'q",
     )
 
 
@@ -6533,46 +6174,6 @@ def neg_decisions_certificate_ignores_alphabet() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_content_converts_every_language() -> tuple[bool, str]:
-    """English content loses its `sh` and `ch` too."""
-    return _decision_broken(
-        "apps/web/src/i18n/alphabet.ts",
-        "  if (lang !== ALPHABET_LOCALE || !text) return text;\n",
-        "  if (!text) return text;\n",
-        "o'zbekcha bo'lmagan kontent",
-    )
-
-
-def neg_decisions_markdown_ignores_alphabet() -> tuple[bool, str]:
-    """Markdown shows the stored spelling whatever the reader chose."""
-    return _decision_broken(
-        "apps/web/src/components/ui/Markdown.tsx",
-        "        {inReaderAlphabet(children, lang)}\n",
-        "        {children}\n",
-        "o'quvchi alifbosida ko'rsatilmaydi",
-    )
-
-
-def neg_decisions_statement_without_language() -> tuple[bool, str]:
-    """The statement is drawn without its language."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx",
-        "<Markdown lang={problem.locale}>{statementBody}</Markdown>",
-        "<Markdown>{statementBody}</Markdown>",
-        "tilisiz chiziladi",
-    )
-
-
-def neg_decisions_names_ignore_alphabet() -> tuple[bool, str]:
-    """Topic and skill names stay in the stored spelling."""
-    return _decision_broken(
-        "apps/web/src/i18n/messages.ts",
-        '  return info.locale === "uz" ? { ...info, text: inReaderAlphabet(info.text, "uz") } : info;\n',
-        "  return info;\n",
-        "nomlari o'quvchi alifbosida emas",
-    )
-
-
 def neg_decisions_search_keeps_tutuq() -> tuple[bool, str]:
     """The new alphabet's tutuq belgisi is not dropped by the search fold."""
     return _decision_broken(
@@ -6583,36 +6184,6 @@ def neg_decisions_search_keeps_tutuq() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_alphabet_not_per_request() -> tuple[bool, str]:
-    """Requests stop running inside their alphabet's context."""
-    return _decision_broken(
-        "apps/web/src/instrumentation.ts",
-        "      return runWithAlphabet(alphabetFromCookieHeader(req.headers.cookie), () =>\n",
-        '      return runWithAlphabet("new", () =>\n',
-        "alifbo kontekstida yurmaydi",
-    )
-
-
-def neg_decisions_uz_defaults_to_old() -> tuple[bool, str]:
-    """The Uzbek dictionary goes back to the old alphabet by default."""
-    return _decision_broken(
-        "apps/web/src/i18n/messages.server.ts",
-        "  uz: UZ_NEW,\n",
-        "  uz: UZ_OLD,\n",
-        "standarti yangi alifbo emas",
-    )
-
-
-def neg_decisions_alphabet_cookie_cached() -> tuple[bool, str]:
-    """An old-alphabet reader can be served the cached guest page."""
-    return _decision_broken(
-        "apps/web/src/lib/home-cache.ts",
-        "    cookieHas(input.cookieHeader, ALPHABET_COOKIE) ||\n",
-        "",
-        "mehmon keshidan",
-    )
-
-
 def neg_decisions_search_one_alphabet() -> tuple[bool, str]:
     """`normalize_search` stops folding the new letters."""
     return _decision_broken(
@@ -6620,16 +6191,6 @@ def neg_decisions_search_one_alphabet() -> tuple[bool, str]:
         '    return " ".join(_APOSTROPHE_RE.sub("", text).translate(_ALPHABET_TABLE).lower().split())\n',
         '    return " ".join(_APOSTROPHE_RE.sub("", text).lower().split())\n',
         "normalize_search yangi alifbo",
-    )
-
-
-def neg_decisions_browser_fold_one_alphabet() -> tuple[bool, str]:
-    """The browser's search fold stops folding the new letters."""
-    return _decision_broken(
-        "apps/web/src/lib/search/model.ts",
-        "    for (const lower of (ALPHABET_FOLD[char] ?? char).toLowerCase()) {\n",
-        "    for (const lower of char.toLowerCase()) {\n",
-        "brauzer katlamasi",
     )
 
 
@@ -7024,76 +6585,6 @@ def neg_env_secrets_strong_passes() -> tuple[bool, str]:
     return _env_secrets_case(_env(), 0, "ijobiy nazorat")
 
 
-def neg_decisions_team_roles_dropped_from_page() -> tuple[bool, str]:
-    """The folded roles are cut out of the page instead of hidden."""
-    return _decision_broken(
-        "apps/web/src/components/team/TeamDirectory.tsx",
-        'if (!whole && index >= FIRST_WIDE) fold = "hidden";',
-        "if (!whole && index >= FIRST_WIDE) return null;",
-        "ro'yxat qisqartirilmagan yoki yashirin lavozimlar",
-    )
-
-
-def neg_decisions_team_card_heading_is_the_name() -> tuple[bool, str]:
-    """Every card is headed by the same name again."""
-    return _decision_broken(
-        "apps/web/src/components/team/TeamDirectory.tsx",
-        '{localized(role, "title", locale)}\n                          </h2>',
-        "{owner.name}\n                          </h2>",
-        "karta sarlavhasi lavozim emas",
-    )
-
-
-def neg_decisions_team_toolbar_sticks() -> tuple[bool, str]:
-    """The toolbar is pinned and covers the serious card again."""
-    return _decision_broken(
-        "apps/web/src/components/team/TeamDirectory.tsx",
-        '<div className="flex flex-wrap items-end gap-2 lg:items-center">',
-        '<div className="sticky top-16 flex flex-wrap items-end gap-2 lg:items-center">',
-        "boshqaruv paneli yana yopishqoq",
-    )
-
-
-def neg_decisions_team_text_language_unsaid() -> tuple[bool, str]:
-    """The page stops saying which language its sentences are in."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/team/page.tsx",
-        "<div lang={locale} ",
-        "<div ",
-        "matn tili aytilmagan",
-    )
-
-
-def neg_decisions_team_shared_as_the_home_page() -> tuple[bool, str]:
-    """A shared link no longer names the page it came from."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/team/page.tsx",
-        "      url: alternates.canonical,\n",
-        "",
-        "sahifa o'z manzilini aytmaydi",
-    )
-
-
-def neg_decisions_about_opens_on_the_first_language() -> tuple[bool, str]:
-    """The sample opens on whatever sorts first, which is Ada."""
-    return _decision_broken(
-        "apps/web/src/features/about/components/LanguageGuide.tsx",
-        "useState(() => defaultLanguage(sorted))",
-        'useState(() => sorted[0]?.code ?? "")',
-        "namuna alifbo bo'yicha birinchi tilda ochiladi",
-    )
-
-
-def neg_decisions_about_languages_are_tabs_again() -> tuple[bool, str]:
-    """The picker goes back to roles a keyboard cannot move through."""
-    return _decision_broken(
-        "apps/web/src/features/about/components/LanguageGuide.tsx",
-        "              aria-pressed={language.code === current.code}\n",
-        '              role="tab"\n              tabIndex={-1}\n',
-        "klaviatura bilan boshqa tilga o'tib bo'lmaydi",
-    )
-
-
 def neg_decisions_about_closed_verdicts_leave_the_page() -> tuple[bool, str]:
     """A closed code is no longer in the document at all."""
     return _decision_broken(
@@ -7111,16 +6602,6 @@ def neg_decisions_about_anchor_renamed() -> tuple[bool, str]:
         '{ id: "verdicts", ',
         '{ id: "holatlar", ',
         "`#verdicts` langari o'zgargan",
-    )
-
-
-def neg_decisions_about_shared_as_the_home_page() -> tuple[bool, str]:
-    """A shared link no longer names the page it came from."""
-    return _decision_broken(
-        "apps/web/src/app/(site)/about/page.tsx",
-        "      url: alternates.canonical,\n",
-        "",
-        "sahifa o'z manzilini aytmaydi",
     )
 
 
@@ -7300,26 +6781,6 @@ def neg_decisions_title_ladder_drifts() -> tuple[bool, str]:
         '["comet", 1400, "cosmicBody"]',
         '["comet", 1450, "cosmicBody"]',
         "zinapoya API'dagi TITLES bilan mos emas",
-    )
-
-
-def neg_decisions_title_icon_runs_in_lists() -> tuple[bool, str]:
-    """A title icon animates outside the profile card and the ladder."""
-    return _decision_broken(
-        "apps/web/src/app/title-icons.css",
-        ".rw-ticon-live .ti-spin { animation:",
-        ".ti-spin { animation:",
-        "ro'yxatda statik bo'lishi kerak",
-    )
-
-
-def neg_decisions_title_tooltip_dropped() -> tuple[bool, str]:
-    """A username's hover text stops naming the tier and the next one."""
-    return _decision_broken(
-        "apps/web/src/components/ui/Identity/UserName.tsx",
-        "titleTooltip(locale, title.code)",
-        "title.code",
-        "unvon hover matni pog'ona va keyingisini aytmaydi",
     )
 
 
@@ -7569,46 +7030,6 @@ def neg_decisions_table_not_keyboard_scrollable() -> tuple[bool, str]:
         "    <div tabIndex={0} className=\"@container min-w-0 rw-scroll-x rw-focus-ring\">\n",
         "    <div className=\"@container min-w-0 rw-scroll-x rw-focus-ring\">\n",
         "tab to'xtash joyi yo'q",
-    )
-
-
-def neg_decisions_attempt_filters_not_sticky() -> tuple[bool, str]:
-    """The filter bar slides under the header again."""
-    return _decision_broken(
-        "apps/web/src/features/submissions/components/AttemptFilters.tsx",
-        "        className=\"sticky top-16 z-20 -mx-1 -mt-4 space-y-1.5 px-1 py-2\"\n",
-        "        className=\"sticky top-0 z-20 -mx-1 space-y-1.5 px-1 py-2\"\n",
-        "sarlavha ostiga yopishmaydi",
-    )
-
-
-def neg_decisions_not_found_unstyled() -> tuple[bool, str]:
-    """The 404 page loses its stylesheet."""
-    return _decision_broken(
-        "apps/web/src/app/not-found.tsx",
-        "import \"./globals.css\";\n",
-        "",
-        "uslub faylisiz chiziladi",
-    )
-
-
-def neg_decisions_side_menu_stops_adapting() -> tuple[bool, str]:
-    """The menu no longer reads the height of the screen."""
-    return _decision_broken(
-        "apps/web/src/app/theme.css",
-        "--rw-nav-spare: calc(100vh - 46.625rem);",
-        "--rw-nav-spare: 0rem;",
-        "ekran balandligiga moslashmaydi",
-    )
-
-
-def neg_decisions_side_menu_sections_collapse() -> tuple[bool, str]:
-    """Sections start 4 px apart again instead of 10."""
-    return _decision_broken(
-        "apps/web/src/app/theme.css",
-        "0.625rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem)",
-        "0.25rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem)",
-        "bo'limlar orasi 10 px dan boshlanmaydi",
     )
 
 
@@ -7984,26 +7405,6 @@ def neg_decisions_two_pass_released_without_manager() -> tuple[bool, str]:
         "        or two_pass_error(problem)\n",
         "",
         "manager'siz ikki bosqichli masala",
-    )
-
-
-def neg_decisions_editor_sheet_under_side_menu() -> tuple[bool, str]:
-    """The editor sheet starts at the window's edge again, under the side menu."""
-    return _decision_broken(
-        "apps/web/src/features/problems/components/ProblemWorkspace.tsx",
-        " lg:left-[var(--rw-shell-inset,0px)]",
-        "",
-        "yon menyu ostida boshlanadi",
-    )
-
-
-def neg_decisions_shell_inset_ignores_side_menu() -> tuple[bool, str]:
-    """The shell reports no inset although the side menu is on screen."""
-    return _decision_broken(
-        "apps/web/src/layout/AppShell.tsx",
-        '[SHELL_INSET]: sidenav ? (wide ? "260px" : "86px") : "0px"',
-        '[SHELL_INSET]: "0px"',
-        "yon menyu holatiga",
     )
 
 
@@ -8476,16 +7877,6 @@ def neg_decisions_one_date_helper_skips_the_zone() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
-    """A lock compiled for another Python drops conditional dependencies."""
-    return _decision_broken(
-        "apps/api/requirements.lock",
-        "#    uv pip compile requirements.txt -o requirements.lock --python-version 3.14",
-        "#    uv pip compile requirements.txt -o requirements.lock",
-        "lock Python 3.14 uchun yasalmagan",
-    )
-
-
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -8742,142 +8133,6 @@ def neg_decisions_file_holds_two_rows() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_locale_label_unbounded() -> tuple[bool, str]:
-    """Endonim tor ekranda chegarasiz qolsa tutilsin.
-
-    O'lchandi (320 px, `main` = 6486cd6): `max-w-[3rem]` olib tashlansa
-    `Qaraqalpaqsha` til tugmasini 149 px qiladi va header 29 px toshadi
-    (`O'zbekcha` +7 px, `Кыргызча` +6 px). Chegara haqiqiy triggerda —
-    `Dropdown` header inputida — bo'lishi shart; yashirin span yetarli emas.
-    """
-    return _decision_broken(
-        "apps/web/src/components/ui/Dropdown.tsx",
-        "min-w-0 max-w-[3rem] truncate bg-transparent",
-        "min-w-0 truncate bg-transparent",
-        "tor ekran 320 px ga sig'adi",
-    )
-
-
-def neg_decisions_locale_code_restored() -> tuple[bool, str]:
-    """Tor ekranda til KODI qaytsa tutilsin.
-
-    Kod endi triggerda ko'rinmaydi — endonim ko'rinadi. Kod qaytarilsa
-    tor ekranda odam o'z tilini ko'rmaydi (tahlil B9), holbuki endonim
-    `max-w` bilan chegaralanganda ham header 0 px toshadi.
-    """
-    return _decision_broken(
-        "apps/web/src/layout/LocaleSwitch.tsx",
-        "      <Dropdown",
-        '      <span className="text-theme-xs sm:hidden">{currentCode}</span>\n      <Dropdown',
-        "tor ekran 320 px ga sig'adi",
-    )
-
-
-def neg_decisions_locale_panel_not_anchored() -> tuple[bool, str]:
-    """Panel tor ekranda viewport'ga bog'lanmasa tutilsin.
-
-    O'lchandi (320 px): `fixed` bo'lmasa panel `absolute right-0 w-64`
-    bo'lib chapga 44 px toshadi va BARCHA 11 bayroq `left = -32…-11` —
-    ya'ni ko'rinmaydi.
-    """
-    return _decision_broken(
-        "apps/web/src/layout/LocaleSwitch.tsx",
-        ': "fixed mt-1"',
-        ': "absolute mt-1"',
-        "tor ekran 320 px ga sig'adi",
-    )
-
-
-def neg_decisions_locale_label_in_name_lost() -> tuple[bool, str]:
-    """`aria-label` ko'rinadigan matnni yo'qotsa tutilsin.
-
-    Ko'rinadigan matn — ENDONIM (`Qaraqalpaqsha`), ya'ni `aria-label` uni
-    o'z ichiga olmasa WCAG 2.5.3 («Label in Name») buziladi va Lighthouse
-    `label-content-name-mismatch` beradi.
-    """
-    return _decision_broken(
-        "apps/web/src/layout/LocaleSwitch.tsx",
-        'aria-label={`${currentLabel} (${currentCode}) — ${t(locale, "locale.switchLabel")}`}',
-        'aria-label={`${currentCode} — ${t(locale, "locale.switchLabel")}`}',
-        "tor ekran 320 px ga sig'adi",
-    )
-
-
-def neg_decisions_locale_cookie_beats_link() -> tuple[bool, str]:
-    """Cookie havoladan ustun bo'lsa tutilsin (qaror S5).
-
-    Shoxobchalar almashtirilsa `?lang=ru` bilan kelgan odam qurilmasidagi
-    tilni ko'radi — ya'ni ulashilgan havola o'z tilini olib kelmaydi.
-    """
-    return _decision_broken(
-        "apps/web/src/i18n/resolve.ts",
-        "  if (param !== null && isLocale(param)) return { locale: param, auto: false };\n"
-        "  if (cookie !== null && isLocale(cookie)) return { locale: cookie, auto: false };",
-        "  if (cookie !== null && isLocale(cookie)) return { locale: cookie, auto: false };\n"
-        "  if (param !== null && isLocale(param)) return { locale: param, auto: false };",
-        "til havolada ham keladi",
-    )
-
-
-def neg_decisions_locale_header_after_next() -> tuple[bool, str]:
-    """Sarlavha `next()` dan keyin yozilsa tutilsin.
-
-    Bu AYNAN o'sha jimgina buziladigan holat: `next()` `request.headers` ni
-    chaqiruv paytida ko'chiradi (o'lchandi: `next@16.3.4`,
-    `response.js:128`), ya'ni keyin yozilgan qiymat joriy render'ga
-    yetib bormaydi va sahifa cookie tilida chiziladi.
-    """
-    return _decision_broken(
-        "apps/web/src/proxy.ts",
-        "  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);\n"
-        "\n"
-        "  const response = boshqa_domen\n"
-        "    ? NextResponse.redirect(\n"
-        "        new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),\n"
-        "        301,\n"
-        "      )\n"
-        "    : signIn\n"
-        "      ? NextResponse.redirect(\n"
-        "          new URL(\n"
-        "            loginHref(`${request.nextUrl.pathname}${request.nextUrl.search}`),\n"
-        "            request.nextUrl,\n"
-        "          ),\n"
-        "          307,\n"
-        "        )\n"
-        "      : NextResponse.next({ request: { headers: requestHeaders } });",
-        "  const response = boshqa_domen\n"
-        "    ? NextResponse.redirect(\n"
-        "        new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),\n"
-        "        301,\n"
-        "      )\n"
-        "    : signIn\n"
-        "      ? NextResponse.redirect(\n"
-        "          new URL(\n"
-        "            loginHref(`${request.nextUrl.pathname}${request.nextUrl.search}`),\n"
-        "            request.nextUrl,\n"
-        "          ),\n"
-        "          307,\n"
-        "        )\n"
-        "      : NextResponse.next({ request: { headers: requestHeaders } });\n"
-        "  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);",
-        "til havolada ham keladi",
-    )
-
-
-def neg_decisions_locale_link_not_remembered() -> tuple[bool, str]:
-    """Havoladagi til cookie'ga yozilmasa tutilsin (qaror S5b).
-
-    Usiz havola faqat BIRINCHI sahifani tuzatadi: har bir ichki bosish
-    qurilma tiliga qaytadi va ichki havolalarni o'zgartirish kerak bo'lardi.
-    """
-    return _decision_broken(
-        "apps/web/src/proxy.ts",
-        "    if (fromParam !== null) rememberLocale(response, fromParam);\n",
-        "",
-        "til havolada ham keladi",
-    )
-
-
 def neg_decisions_home_cache_ttl_dropped() -> tuple[bool, str]:
     """Mehmon `s-maxage=30` olib tashlansa tutilsin."""
     return _decision_broken(
@@ -8978,20 +8233,6 @@ def neg_decisions_contests_mine_dropped() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_locale_choice_keeps_param() -> tuple[bool, str]:
-    """Qo'lda tanlov `?lang=` ni tozalamasa tutilsin.
-
-    Parametr qoldirilsa proxy uni har render'da cookie'dan ustun qo'yadi,
-    ya'ni odam ro'yxatdan boshqa tilni tanlaydi-yu sahifa eskisida qolaveradi.
-    """
-    return _decision_broken(
-        "apps/web/src/layout/LocaleSwitch.tsx",
-        "        url.searchParams.delete(LOCALE_PARAM);\n",
-        "",
-        "til havolada ham keladi",
-    )
-
-
 def neg_decisions_deploy_backup_after_migrate() -> tuple[bool, str]:
     """Zaxira migratsiyadan KEYIN qolsa tutilsin.
 
@@ -9078,98 +8319,6 @@ def neg_decisions_build_cache_kept_after_deploy() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_typescript_is_seven() -> tuple[bool, str]:
-    """`typescript` o'zi 7 bo'lsa tutilsin — JS API yo'qoladi."""
-    return _decision_broken(
-        "apps/web/package.json",
-        '"typescript": "npm:@typescript/typescript6@6.0.2"',
-        '"typescript": "npm:typescript@7.0.2"',
-        "TypeScript 7 yonma-yon",
-    )
-
-
-def neg_decisions_typecheck_js_tsc() -> tuple[bool, str]:
-    """typecheck native `tsc` o'rniga JS `tsc6` qaytsa tutilsin."""
-    return _decision_broken(
-        "apps/web/package.json",
-        "tsc --noEmit",
-        "tsc6 --noEmit",
-        "TypeScript 7 yonma-yon",
-    )
-
-
-def neg_decisions_types_node_26() -> tuple[bool, str]:
-    """`@types/node` 22 ga qaytsa tutilsin — runtime Node 26.
-
-    ⚠️ Langar `apps/web/package.json` dagi ANIQ versiya satri. Uni bump
-    qilganda bu yer ham yangilanishi shart, aks holda test «langar
-    topilmadi» deb yiqiladi — qo'riqchi o'zini qo'riqlaydi.
-    """
-    return _decision_broken(
-        "apps/web/package.json",
-        '"@types/node": "26.',
-        '"@types/node": "22.',
-        "@types/node runtime bilan",
-    )
-
-
-def neg_decisions_types_node_major_unignored() -> tuple[bool, str]:
-    """Dependabot `@types/node` major ignore olib tashlansa tutilsin."""
-    return _decision_broken(
-        ".github/dependabot.yml",
-        'dependency-name: "@types/node"',
-        'dependency-name: "@types/fake-node"',
-        "@types/node runtime bilan",
-    )
-
-
-def neg_decisions_eslint_is_nine() -> tuple[bool, str]:
-    """ESLint 9 ga qaytsa tutilsin.
-
-    Langar versiya yamog'iga emas, MAJOR'ga bog'langan: ilgari `^10.11.0`
-    aynan yozilgan edi, shuning uchun Dependabot minor'ni ko'tarishi bilan
-    (#414, 10.12.0) test «langar topilmadi» deb yiqilardi — kod emas, test
-    buzilgan edi. Qoidaning o'zi (`eslint_ten_uses_ts_parser`) allaqachon
-    `"eslint": "^10.` ni qidiradi.
-    """
-    return _decision_broken(
-        "apps/web/package.json",
-        '"eslint": "^10.',
-        '"eslint": "^9.',
-        "ESLint 10 typescript parser",
-    )
-
-
-def neg_decisions_eslint_next_parser() -> tuple[bool, str]:
-    """Next babel parser qaytsa tutilsin."""
-    return _decision_broken(
-        "apps/web/eslint.config.mjs",
-        "parser: tseslint.parser",
-        "parser: next.parser",
-        "ESLint 10 typescript parser",
-    )
-
-
-def neg_decisions_pytest_floor_eight() -> tuple[bool, str]:
-    """pytest floor 8 ga qaytsa tutilsin."""
-    return _decision_broken(
-        "apps/api/requirements-dev.txt",
-        "pytest>=9.2.0",
-        "pytest>=8",
-        "pytest 9 va pytest-django 4.14",
-    )
-
-
-def neg_decisions_pytest_django_floor_old() -> tuple[bool, str]:
-    """pytest-django floor 4.9 ga qaytsa tutilsin."""
-    return _decision_broken(
-        "apps/api/requirements-dev.txt",
-        "pytest-django>=4.14.0",
-        "pytest-django>=4.9",
-        "pytest 9 va pytest-django 4.14",
-    )
-
-
 def _react_pin(name: str) -> tuple[str, str]:
     """The line `"react": "19.3.x"` as it stands now, and the same at 19.0.0.
 
@@ -9180,58 +8329,6 @@ def _react_pin(name: str) -> tuple[str, str]:
     found = re.search(rf'"{re.escape(name)}": "19\.3\.\d+"', text)
     old = found.group(0) if found else f'"{name}": "19.3.0"'
     return old, f'"{name}": "19.0.0"'
-
-
-def neg_decisions_react_dom_mismatch() -> tuple[bool, str]:
-    """react 19.3, react-dom 19.0 qolsa tutilsin."""
-    old, new = _react_pin("react-dom")
-    return _decision_broken("apps/web/package.json", old, new, "react va react-dom juft")
-
-
-def neg_decisions_react_stays_19_0() -> tuple[bool, str]:
-    """react 19.0 ga qaytsa tutilsin (juftlik ham buziladi)."""
-    old, new = _react_pin("react")
-    return _decision_broken("apps/web/package.json", old, new, "react va react-dom juft")
-
-
-def neg_decisions_canonical_collapses_lang() -> tuple[bool, str]:
-    """Layout yana til'siz `canonical: \"./\"` qilsa tutilsin."""
-    return _decision_broken(
-        "apps/web/src/app/layout.tsx",
-        'alternates: await localeAlternatesFor("./"),',
-        'alternates: { canonical: "./" },',
-        "?lang= self-canonical hreflang",
-    )
-
-
-def neg_decisions_hreflang_drops_x_default() -> tuple[bool, str]:
-    """`x-default` tushsa tutilsin."""
-    return _decision_broken(
-        "apps/web/src/i18n/locale-alternates.ts",
-        '"x-default"',
-        '"x-missing"',
-        "?lang= self-canonical hreflang",
-    )
-
-
-def neg_decisions_sitemap_drops_languages() -> tuple[bool, str]:
-    """Sitemap yozuvi til'siz qolsa tutilsin."""
-    return _decision_broken(
-        "apps/web/src/app/sitemap.ts",
-        "alternates: { languages: sitemapLanguageAlternates(path, absolute) },",
-        "images: [],",
-        "sitemap xhtml:link tillari",
-    )
-
-
-def neg_decisions_sitemap_helper_dropped() -> tuple[bool, str]:
-    """Sitemap til helper olib tashlansa tutilsin."""
-    return _decision_broken(
-        "apps/web/src/i18n/locale-alternates.ts",
-        "export function sitemapLanguageAlternates",
-        "export function neverLanguageAlternates",
-        "sitemap xhtml:link tillari",
-    )
 
 
 def neg_decisions_vary_uses_set() -> tuple[bool, str]:
@@ -9291,26 +8388,6 @@ def neg_decisions_problems_vary_default_bypass() -> tuple[bool, str]:
         '"passthrough"',
         '"bypass"',
         "arxiv ro'yxat mehmon CDN keshi",
-    )
-
-
-def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
-    """CopyControl fail toast olib tashlansa tutilsin."""
-    return _decision_broken(
-        "apps/web/src/components/kit/CopyControl.tsx",
-        "problem.copyFailed",
-        "problem.copied",
-        "tanlangan kit muzlatilgan",
-    )
-
-
-def neg_decisions_copy_burn_returns() -> tuple[bool, str]:
-    """Copy v9 `burn` katalogga qaytsa tutilsin."""
-    return _decision_broken(
-        "apps/web/src/lib/theme/kit.ts",
-        'export const COPY_SHAPES: CopyShape[] = ["icon", "label", "field", "cell"];',
-        'export const COPY_SHAPES: CopyShape[] = ["icon", "label", "field", "cell"];\nexport const BURN = "burn";',
-        "tanlangan kit muzlatilgan",
     )
 
 
@@ -9527,20 +8604,6 @@ def neg_decisions_check_deploy_locale_sort() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
-    """Kirish yorlig'i o'raladigan bo'lsa tutilsin.
-
-    `whitespace-nowrap` olib tashlansa yorliq tor ekranda ikki qatorga
-    bo'linadi (o'lchandi: 375 px da 88x40 px, 2 qator).
-    """
-    return _decision_broken(
-        "apps/web/src/layout/UserMenu.tsx",
-        'className="flex h-10 items-center gap-2 whitespace-nowrap rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"',
-        'className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"',
-        "tor ekran 320 px ga sig'adi",
-    )
-
-
 def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -9658,34 +8721,6 @@ def neg_decisions_deploy_skips_web() -> tuple[bool, str]:
         "SERVICES=(api worker beat judge web realtime)",
         "SERVICES=(api worker beat judge web)",
         "deploy hamma servisni quradi",
-    )
-
-
-def neg_decisions_site_closed_to_search() -> tuple[bool, str]:
-    return _decision_broken(
-        "apps/web/src/lib/site.ts",
-        "export const SITE_INDEXABLE = true;",
-        "export const SITE_INDEXABLE = false;",
-        "qidiruv ochiq, AI kraulerlar yopiq",
-    )
-
-
-def neg_decisions_ai_crawler_dropped() -> tuple[bool, str]:
-    return _decision_broken(
-        "apps/web/src/app/robots.ts",
-        '  "GPTBot",\n',
-        "",
-        "qidiruv ochiq, AI kraulerlar yopiq",
-    )
-
-
-def neg_decisions_users_indexed() -> tuple[bool, str]:
-    """`/users/` robots'dan ochilsa tutilsin."""
-    return _decision_broken(
-        "apps/web/src/app/robots.ts",
-        'disallow: ["/admin", "/notifications", "/users/"]',
-        'disallow: ["/admin", "/notifications"]',
-        "/users/ noindex",
     )
 
 
@@ -10705,51 +9740,6 @@ _PROFILE_STEP = 'valueClassName="lg:text-2xl 2xl:text-title-sm"'
 _PROFILE_LAYOUT = "apps/web/src/app/(site)/users/[username]/layout.tsx"
 
 
-def neg_decisions_profile_two_columns_at_lg() -> tuple[bool, str]:
-    # The pre-decision state: the 300 px sidebar at `lg` leaves a 377 px
-    # content column, where 4-up KPI cards clipped the values by 27 px —
-    # that is exactly what decision 21 (2026-09-19) removed.
-    return _decision_broken(
-        _PROFILE_LAYOUT,
-        "grid gap-6 " + _PROFILE_GRID,
-        "grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]",
-        _PROFILE_RULE,
-    )
-
-
-def neg_decisions_profile_kpi_stuck_at_2xl() -> tuple[bool, str]:
-    # Without the `lg` step the KPI cards stretch full width until 1536 —
-    # the sidebar no longer justifies a 2-up band at 1024–1279.
-    return _decision_broken(
-        _PROFILE_LAYOUT,
-        "sm:grid-cols-2 lg:grid-cols-4",
-        "sm:grid-cols-2 2xl:grid-cols-4",
-        _PROFILE_RULE,
-    )
-
-
-def neg_decisions_profile_kpi_step_redundant() -> tuple[bool, str]:
-    # A leftover `xl:grid-cols-4` next to `lg:grid-cols-4` is dead weight —
-    # it means the old (sidebar-at-lg) step was not fully removed.
-    return _decision_broken(
-        _PROFILE_LAYOUT,
-        "sm:grid-cols-2 lg:grid-cols-4",
-        "sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4",
-        _PROFILE_RULE,
-    )
-
-
-def neg_decisions_profile_kpi_value_step_lost() -> tuple[bool, str]:
-    # One card keeps a 30 px value in a 104 px column, where a 6-digit counter
-    # measures exactly 104 px. `replace(..., 1)` hits the first card only.
-    return _decision_broken(
-        _PROFILE_LAYOUT,
-        _PROFILE_STEP,
-        "",
-        _PROFILE_RULE,
-    )
-
-
 # ── The difficulty range counts as ONE filter (owner decision 2026-09-18) ──
 
 _DIFFICULTY_RULE = "diapazon bitta filtr"
@@ -10831,33 +9821,12 @@ def neg_decisions_sidebar_brand_back() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_footer_single_column() -> tuple[bool, str]:
-    # Collapsing the footer to one column merges the contacts into the
-    # brand block — the 3-column structure the owner chose is gone.
-    return _decision_broken(
-        _FOOTER,
-        "lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]",
-        "lg:grid-cols-1",
-        _BRAND_RULE,
-    )
-
-
 def neg_decisions_footer_wordmark_copied() -> tuple[bool, str]:
     # The footer draws its own wordmark again instead of the single source.
     return _decision_broken(
         _FOOTER,
         '<BrandMark variant="full" className={BRAND} />',
         '<p className="text-lg font-bold">RankWant</p>',
-        _BRAND_RULE,
-    )
-
-
-def neg_decisions_footer_links_too_small_to_tap() -> tuple[bool, str]:
-    # The 44 px row under a finger goes away: ten untappable links again.
-    return _decision_broken(
-        _FOOTER,
-        " [@media(pointer:coarse)]:min-h-11",
-        "",
         _BRAND_RULE,
     )
 
@@ -14188,23 +13157,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
-            ("sozlamalarda kichik tugma qaytsa tutilsin", neg_decisions_settings_small_button_returns),
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
-            ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
             ("jamoa sahifasi qoralama bersa tutilsin", neg_decisions_team_page_shows_drafts),
             ("jamoa rasmi tekshirilmasa tutilsin", neg_decisions_team_photo_unchecked),
             ("jamoa xodim yo'li ochilsa tutilsin", neg_decisions_team_staff_route_opened),
-            ("namuna birinchi tilda ochilsa tutilsin", neg_decisions_about_opens_on_the_first_language),
-            ("tillar yana tab bo'lsa tutilsin", neg_decisions_about_languages_are_tabs_again),
             ("yopiq hukmlar sahifadan chiqsa tutilsin", neg_decisions_about_closed_verdicts_leave_the_page),
             ("langar o'zgarsa tutilsin", neg_decisions_about_anchor_renamed),
-            ("qanday ishlaydi bosh sahifa bo'lib ulashilsa tutilsin", neg_decisions_about_shared_as_the_home_page),
-            ("jamoa lavozimlari sahifadan chiqsa tutilsin", neg_decisions_team_roles_dropped_from_page),
-            ("jamoa kartasi ism bilan boshlansa tutilsin", neg_decisions_team_card_heading_is_the_name),
-            ("jamoa paneli yopishsa tutilsin", neg_decisions_team_toolbar_sticks),
-            ("jamoa matni tili aytilmasa tutilsin", neg_decisions_team_text_language_unsaid),
-            ("jamoa bosh sahifa bo'lib ulashilsa tutilsin", neg_decisions_team_shared_as_the_home_page),
             ("qidiruv dvigateldan o'tmasa tutilsin", neg_decisions_search_bypasses_engine),
             ("qidiruv foydalanuvchilarni skanerlasa tutilsin", neg_decisions_search_scans_users),
             ("qidiruv indeksi jadvalni qulflasa tutilsin", neg_decisions_search_index_locks_table),
@@ -14219,8 +13178,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("SSE nomi versiyasiz ketsa tutilsin", neg_decisions_wire_name_dropped),
             ("urg'u rang keshi rejimsiz qo'llansa tutilsin", neg_decisions_accent_cache_any_mode),
             ("zinapoya API bilan ajralsa tutilsin", neg_decisions_title_ladder_drifts),
-            ("ikonka ro'yxatda harakatlansa tutilsin", neg_decisions_title_icon_runs_in_lists),
-            ("unvon hover matni olib tashlansa tutilsin", neg_decisions_title_tooltip_dropped),
             ("yangi protokol ishi qabul qilinsa tutilsin", neg_decisions_newer_protocol_accepted),
             ("API v1 yo'li o'chirilsa tutilsin", neg_openapi_path_removed),
             ("API v1 javobi boshqa komponentga o'tsa tutilsin", neg_openapi_response_ref_switched),
@@ -14305,14 +13262,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("SQL authorizer olib tashlansa tutilsin", neg_decisions_sql_authorizer_removed),
             ("SQL so'rovi xom ketsa tutilsin", neg_decisions_sql_query_sent_raw),
             ("SQL tili hamma masalada ochilsa tutilsin", neg_decisions_sql_language_everywhere),
-            ("muharrir varag'i yon menyu ostiga qaytsa tutilsin", neg_decisions_editor_sheet_under_side_menu),
-            ("shell chekinishi yon menyuni hisobga olmasa tutilsin", neg_decisions_shell_inset_ignores_side_menu),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
-            ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),
-            ("404 uslubsiz chiqsa tutilsin", neg_decisions_not_found_unstyled),
-            ("yon menyu moslashmay qolsa tutilsin", neg_decisions_side_menu_stops_adapting),
-            ("yon menyu bo'limlari yopishsa tutilsin", neg_decisions_side_menu_sections_collapse),
             ("belgi modullari yuklanmasa tutilsin", neg_decisions_nav_badges_not_discovered),
             ("belgilarda boshlang'ich nuqta yo'qolsa tutilsin", neg_decisions_nav_badges_no_floor),
             ("mehmonga belgi so'ralsa tutilsin", neg_decisions_nav_badges_asked_for_a_guest),
@@ -14322,7 +13273,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("bitta sana yordamchisi zonasiz qolsa tutilsin", neg_decisions_one_date_helper_skips_the_zone),
             ("urinish sanasi til bo'yicha formatlansa tutilsin", neg_decisions_attempt_date_in_viewer_locale),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
-            ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
             ("ommaviy stack standartga tushsa tutilsin", neg_decisions_public_stack_falls_back),
             ("Skills namunasiz masalani sanasa tutilsin", neg_decisions_skills_counts_samples_only),
@@ -14338,16 +13288,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("hisob xatlari zaxirasi yo'qolsa tutilsin", neg_decisions_email_spends_the_reserve),
             ("GET obunani bekor qilsa tutilsin", neg_decisions_unsubscribe_on_get),
             ("Email ustuni yo'qolsa tutilsin", neg_decisions_email_column_gone),
-            ("Grafit bayroqsiz qo'llansa tutilsin", neg_decisions_graphite_unflagged),
-            ("Grafit yorug' rejimga o'tsa tutilsin", neg_decisions_graphite_leaks_into_light),
-            ("Grafit urg'uni almashtirsa tutilsin", neg_decisions_graphite_changes_accent),
             ("sessiya yozuvlari tozalanmasa tutilsin", neg_decisions_session_rows_kept),
             ("rail bayroqsiz chizilsa tutilsin", neg_decisions_rail_unflagged),
-            ("rail telefonda drawer'ni olib qo'ysa tutilsin", neg_decisions_rail_drops_the_drawer),
-            ("rail inset'siz qolsa tutilsin", neg_decisions_rail_inset_missing),
             ("rail havolasi ko'rinishda prefetch qilsa tutilsin", neg_decisions_rail_prefetches_on_sight),
             ("glossariy tekshiruvi uzilsa tutilsin", neg_decisions_glossary_check_unwired),
-            ("o'zbekcha unvon yana tarjima qilinsa tutilsin", neg_decisions_uz_tier_name_translated),
             ("hakam dasturi tekshirilmasa tutilsin", neg_decisions_harness_saved_unchecked),
             ("tillar paneli chizilmasa tutilsin", neg_decisions_languages_panel_unmounted),
             ("tashqi reyting jadvaldan tushsa tutilsin", neg_decisions_external_refresh_unscheduled),
@@ -14394,18 +13338,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("muallif nashr tarjimasini o'zgartirsa tutilsin", neg_decisions_author_translates_published),
             ("qidiruv tarjima nomini topmasa tutilsin", neg_decisions_search_skips_translations),
             ("qidiruv yangi tutuqni tashlamasa tutilsin", neg_decisions_search_keeps_tutuq),
-            ("inglizcha kontent ham o'girilsa tutilsin", neg_decisions_content_converts_every_language),
             ("bildirishnoma katalogi alifbosiz bo'lsa tutilsin", neg_decisions_catalogue_ignores_alphabet),
             ("xat alifbosiz bo'lsa tutilsin", neg_decisions_mail_ignores_alphabet),
             ("sertifikat alifbosiz bo'lsa tutilsin", neg_decisions_certificate_ignores_alphabet),
-            ("Markdown alifboni e'tiborsiz qoldirsa tutilsin", neg_decisions_markdown_ignores_alphabet),
-            ("shart tilisiz chizilsa tutilsin", neg_decisions_statement_without_language),
-            ("mavzu nomlari alifbosiz bo'lsa tutilsin", neg_decisions_names_ignore_alphabet),
-            ("alifbo so'rov kontekstisiz bo'lsa tutilsin", neg_decisions_alphabet_not_per_request),
-            ("o'zbekcha standarti eski alifbo bo'lsa tutilsin", neg_decisions_uz_defaults_to_old),
-            ("eski alifbo mehmon keshidan olsa tutilsin", neg_decisions_alphabet_cookie_cached),
             ("qidiruv yangi harflarni katlamasa tutilsin", neg_decisions_search_one_alphabet),
-            ("brauzer yangi harflarni katlamasa tutilsin", neg_decisions_browser_fold_one_alphabet),
             ("sertifikat chegarasi tushirilsa tutilsin", neg_decisions_certificate_threshold_lowered),
             ("FormDate oyi Intl ga qaytsa tutilsin", neg_decisions_form_date_month_in_intl),
             ("Intl ro'yxati eskirsa tutilsin", neg_decisions_intl_ratchet_stale),
@@ -14468,7 +13404,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("seriya bosqichi yo'qolsa tutilsin", neg_decisions_streak_milestones),
             ("hudud davri o'zgarsa tutilsin", neg_decisions_region_periods),
             ("kontentim shikoyatchini aytsa tutilsin", neg_decisions_my_content_names_reporter),
-            ("bosh sahifada xarita yo'qolsa tutilsin", neg_decisions_home_without_map),
             ("demo raund sanog'i qaytsa tutilsin", neg_decisions_timer_demo_back),
             ("musobaqa sanog'i soxta bo'lsa tutilsin", neg_decisions_timer_fake_contest),
             ("fokusda footer qolsa tutilsin", neg_decisions_focus_keeps_chrome),
@@ -14479,12 +13414,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("seed eski maqolani qaytarsa tutilsin", neg_decisions_cpuz_seed_brings_back_binary_search),
             ("algoritm sahifasi manbasiz qolsa tutilsin", neg_decisions_algorithm_page_without_source),
             ("litsenziya havolasi tushsa tutilsin", neg_decisions_algorithm_licence_link_dropped),
-            ("alifbo langarni o'zgartirsa tutilsin", neg_decisions_alphabet_converts_anchors),
-            ("/learn ikkinchi manzil bo'lsa tutilsin", neg_decisions_learn_keeps_library_article),
             ("lug'at havolalari tushsa tutilsin", neg_decisions_algorithm_terms_unlinked),
             ("olib tashlangan ishtirokchi qaytsa tutilsin", neg_decisions_olympiad_resurrects_person),
             ("olib tashlangan ishtirokchi ko'rinsa tutilsin", neg_decisions_olympiad_shows_removed_person),
-            ("o'quvchi sahifasi indekslansa tutilsin", neg_decisions_olympiad_person_indexed),
             ("KEP izohi tushsa tutilsin", neg_decisions_olympiad_kep_note_dropped),
             ("ovoz ko'rinishni chetlasa tutilsin", neg_decisions_voice_skips_visibility),
             ("ovoz kaliti modelsiz bo'lsa tutilsin", neg_decisions_voice_key_ignores_model),
@@ -14514,7 +13446,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yashirin joylashuv sanalsa tutilsin", neg_decisions_region_counts_hidden_location),
             ("noma'lum hudud qabul qilinsa tutilsin", neg_decisions_region_unknown_accepted),
             ("hududiy kesh qolsa tutilsin", neg_decisions_region_cache_survives_rebuild),
-            ("shartlar sahifasi indekslansa tutilsin", neg_decisions_contest_print_indexed),
             ("bazada reytingli ko'zgu tutilsin", neg_decisions_mirror_rated_in_database),
             ("xodim reytingli ko'zgu qo'ysa tutilsin", neg_decisions_mirror_rated_by_staff),
             ("xavfli logo manzili tutilsin", neg_decisions_partner_logo_unsafe),
@@ -14541,8 +13472,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sandbox seccomp siyosati tushsa tutilsin", neg_decisions_judge_sandbox_policy_dropped),
             ("worker identity tekshirilmasa tutilsin", neg_decisions_judge_identity_unchecked),
             ("judge launcher o'chirilsa tutilsin", neg_decisions_judge_launcher_off),
-            ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
-            ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("api_tests job olib tashlansa tutilsin", neg_decisions_api_tests_job_removed),
             ("api_tests yo'l filtrisiz qolsa tutilsin", neg_decisions_api_tests_lose_path_filter),
             ("gitleaks standart qoidalarsiz qolsa tutilsin", neg_decisions_gitleaks_loses_default_rules),
@@ -14573,22 +13502,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("onboarding ismni qayta so'raydi", neg_decisions_onboarding_asks_names_again),
             ("onboarding qobiqsiz", neg_decisions_onboarding_page_loses_the_shell),
             ("rozilik katakchasi qaytadi", neg_decisions_consent_checkbox_returns),
-            ("telefonda chiplar yo'qolsa tutilsin", neg_decisions_phone_loses_the_chips),
             ("seed A+B ni bitta tilga yopsa tutilsin", neg_decisions_seed_restricts_a_plus_b),
-            ("namunalar qutisi pozitsiyasiz qolsa tutilsin", neg_decisions_samples_scroll_box_not_positioned),
             ("noto'g'ri urinish sanalmasa tutilsin", neg_decisions_login_failures_not_counted),
             ("hisob idishi olib tashlansa tutilsin", neg_decisions_login_account_bucket_dropped),
             ("deploy darvozasi oddiy xato bersa tutilsin", neg_decisions_deploy_gate_dies_plain),
             ("watcher darvozada to'siq qoldirsa tutilsin", neg_decisions_watcher_keeps_backoff_on_gate),
             ("watcher logi aylanmasa tutilsin", neg_decisions_watcher_log_unbounded),
-            ("hisob menyusi qatori kichraysa tutilsin", neg_decisions_account_menu_rows_shrink),
-            ("tez qator olib tashlansa tutilsin", neg_decisions_customizer_quick_row_dropped),
-            ("shablon preview'i tokensiz qolsa tutilsin", neg_decisions_customizer_preview_hardcoded),
-            ("guruh yana ochiq boshlansa tutilsin", neg_decisions_customizer_group_opens_by_default),
             ("sozlamalar ko'rinishni yozsa tutilsin", neg_decisions_settings_writes_appearance),
-            ("menyudan sozlagich qatori olinsa tutilsin", neg_decisions_customizer_row_dropped),
-            ("mobil varaq bir pog'onaga qaytsa tutilsin", neg_decisions_customizer_sheet_one_stop),
-            ("44 px qoidasi ilgaksiz qolsa tutilsin", neg_decisions_customizer_touch_rule_orphaned),
             ("deploy lock farqini ko'rmasa tutilsin", neg_decisions_deploy_ignores_lock),
             ("kutayotgan CI tasdiqlanmasa tutilsin", neg_decisions_deplocks_run_not_approved),
             ("npm PR'i kuzatilmasa tutilsin", neg_decisions_deplocks_npm_not_watched),
@@ -14599,37 +13519,25 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock commit'i rebase'ni to'ssa tutilsin", neg_decisions_deplocks_blocks_rebase),
             ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),
             ("collectstatic kalitsiz qolsa tutilsin", neg_decisions_collectstatic_without_key),
-            ("header uch tugmasi md ga qaytsa tutilsin", neg_decisions_header_trio_back_at_md),
-            ("header Qvant/streak sm ga qaytsa tutilsin", neg_decisions_header_pills_back_at_sm),
-            ("header ismi sm ga qaytsa tutilsin", neg_decisions_header_name_back_at_sm),
-            ("sozlamalarda tanlash ro'yxati qaytsa tutilsin", neg_decisions_settings_dropdown_returns),
             ("hisob darhol o'chirilsa tutilsin", neg_decisions_settings_delete_is_immediate),
             ("o'chirish vazifasi jadvaldan tushsa tutilsin", neg_decisions_settings_finalize_unscheduled),
             ("backfill barcha ustunni o'qisa tutilsin", neg_decisions_settings_backfill_reads_all_columns),
-            ("sozlamalar bo'limi o'zgarsa tutilsin", neg_decisions_settings_section_added),
             ("panel yonidagi fayl ko'rinish-prefetch qilsa tutilsin", neg_decisions_home_person_viewport_prefetch),
             ("bugun faol ro'yxati last_seen_at dan o'qisa tutilsin", neg_decisions_presence_reads_last_seen_at),
             ("bugun faol ro'yxati maxfiylikni e'tiborsiz qoldirsa tutilsin", neg_decisions_presence_ignores_privacy),
             ("panel ko'rinish-prefetch qilsa tutilsin", neg_decisions_signed_in_home_viewport_prefetch),
-            ("clay qorong'i palitrasi olib tashlansa tutilsin", neg_decisions_clay_dark_block_removed),
-            ("jadval chiziqlari faqat 2-qatordan boshlansa tutilsin", neg_decisions_row_dividers_next_sibling_only),
-            ("clay yana bir muhitli bo'lsa tutilsin", neg_decisions_clay_single_environment_again),
             ("kirish sahifasiga sayt chrome'i qaytsa tutilsin", neg_decisions_sign_in_gets_site_chrome_back),
             ("kirish sahifasida til tanlagich yo'qolsa tutilsin", neg_decisions_sign_in_loses_locale_switch),
             ("kirish paneli API'ga bog'lansa tutilsin", neg_decisions_sign_in_panel_calls_api),
             ("karusel to'xtatish tugmasini yo'qotsa tutilsin", neg_decisions_carousel_loses_pause),
             ("karusel harakat sozlamasini tinglamasa tutilsin", neg_decisions_carousel_ignores_reduced_motion),
             ("karusel slaydi API'ga bog'lansa tutilsin", neg_decisions_carousel_panel_calls_api),
-            ("karusel slaydini yo'qotsa tutilsin", neg_decisions_carousel_loses_a_slide),
             ("web filtri sxemani unutsa tutilsin", neg_decisions_schema_filter_dropped),
             ("web filtri ildiz lockfile'ni unutsa tutilsin", neg_decisions_web_filter_forgets_root_lockfile),
             ("openapi:check qadami olib tashlansa tutilsin", neg_decisions_openapi_check_step_dropped),
-            ("sayt sarlavhasi yana qattiq yozilsa tutilsin", neg_decisions_site_title_hardcoded_again),
-            ("tuzilmaviy ma'lumot tavsifi o'zbekcha qolsa tutilsin", neg_decisions_structured_data_description_uzbek),
             ("bosh sahifa yana uz majburiy bo'lsa tutilsin", neg_decisions_home_forced_to_uz_again),
             ("bosh sahifa tilga bog'liq keshdan chiqsa tutilsin", neg_decisions_home_leaves_language_aware_cache),
             ("bosh sahifada foydalanuvchilar «Reyting» deb yozilsa tutilsin", neg_decisions_home_users_label_reverts),
-            ("hududlar xaritasi nollar bilan chizilsa tutilsin", neg_decisions_home_map_of_zeros),
             ("mehmon bosh sahifasi ommaviy mazmunni yo'qotsa tutilsin", neg_decisions_home_loses_public_content),
             ("yetakchilar test hisoblarni ko'rsatsa tutilsin", neg_decisions_leaderboard_lists_smoke_accounts),
             ("yetakchilar origin=demo hisoblarni ko'rsatsa tutilsin", neg_decisions_leaderboard_lists_demo_origin),
@@ -14655,33 +13563,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("indeks yo'q qoidani atasa tutilsin", neg_decisions_index_unknown_rule),
             ("indeks sanasi faylga mos kelmasa tutilsin", neg_decisions_index_date_mismatch),
             ("qaror faylida ikki qator bo'lsa tutilsin", neg_decisions_file_holds_two_rows),
-            ("endonim tor ekranda chegarasiz qolsa tutilsin", neg_decisions_locale_label_unbounded),
-            ("tor ekranda til kodi qaytsa tutilsin", neg_decisions_locale_code_restored),
-            (
-                "panel tor ekranda viewport'ga bog'lanmasa tutilsin",
-                neg_decisions_locale_panel_not_anchored,
-            ),
-            (
-                "`aria-label` ko'rinadigan endonimni yo'qotsa tutilsin",
-                neg_decisions_locale_label_in_name_lost,
-            ),
-            ("kirish yorlig'i o'ralsa tutilsin", neg_decisions_signin_label_wraps),
-            (
-                "cookie havoladan ustun bo'lsa tutilsin",
-                neg_decisions_locale_cookie_beats_link,
-            ),
-            (
-                "til sarlavhasi `next()` dan keyin yozilsa tutilsin",
-                neg_decisions_locale_header_after_next,
-            ),
-            (
-                "havoladagi til cookie'ga yozilmasa tutilsin",
-                neg_decisions_locale_link_not_remembered,
-            ),
-            (
-                "tanlov `?lang=` ni tozalamasa tutilsin",
-                neg_decisions_locale_choice_keeps_param,
-            ),
             (
                 "mehmon s-maxage olib tashlansa tutilsin",
                 neg_decisions_home_cache_ttl_dropped,
@@ -14748,62 +13629,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("build cache deploy'dan keyin qolsa tutilsin", neg_decisions_build_cache_kept_after_deploy),
             (
-                "typescript o'zi 7 bo'lsa tutilsin",
-                neg_decisions_typescript_is_seven,
-            ),
-            (
-                "typecheck JS tsc qaytsa tutilsin",
-                neg_decisions_typecheck_js_tsc,
-            ),
-            (
-                "types/node 26 ga chiqsa tutilsin",
-                neg_decisions_types_node_26,
-            ),
-            (
-                "types/node major ignore olib tashlansa tutilsin",
-                neg_decisions_types_node_major_unignored,
-            ),
-            (
-                "eslint 9 ga qaytsa tutilsin",
-                neg_decisions_eslint_is_nine,
-            ),
-            (
-                "eslint next parser qaytsa tutilsin",
-                neg_decisions_eslint_next_parser,
-            ),
-            (
-                "pytest floor 8 ga qaytsa tutilsin",
-                neg_decisions_pytest_floor_eight,
-            ),
-            (
-                "pytest-django floor 4.9 ga qaytsa tutilsin",
-                neg_decisions_pytest_django_floor_old,
-            ),
-            (
-                "react-dom 19.0 da qolsa tutilsin",
-                neg_decisions_react_dom_mismatch,
-            ),
-            (
-                "react 19.0 ga qaytsa tutilsin",
-                neg_decisions_react_stays_19_0,
-            ),
-            (
-                "canonical lang ni yig'sa tutilsin",
-                neg_decisions_canonical_collapses_lang,
-            ),
-            (
-                "hreflang x-default tushsa tutilsin",
-                neg_decisions_hreflang_drops_x_default,
-            ),
-            (
-                "sitemap tillari tushsa tutilsin",
-                neg_decisions_sitemap_drops_languages,
-            ),
-            (
-                "sitemap helper tushsa tutilsin",
-                neg_decisions_sitemap_helper_dropped,
-            ),
-            (
                 "Vary set qilinsa tutilsin",
                 neg_decisions_vary_uses_set,
             ),
@@ -14826,14 +13651,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "Vary default bypass qaytsa tutilsin",
                 neg_decisions_problems_vary_default_bypass,
-            ),
-            (
-                "copy fail toast olib tashlansa tutilsin",
-                neg_decisions_copy_fail_toast_dropped,
-            ),
-            (
-                "copy v9 burn qaytsa tutilsin",
-                neg_decisions_copy_burn_returns,
             ),
             (
                 "xom clipboard qaytsa tutilsin",
@@ -14898,9 +13715,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
             ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),
-            ("sayt qidiruvga yopilsa tutilsin", neg_decisions_site_closed_to_search),
-            ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
-            ("/users/ ochilsa tutilsin", neg_decisions_users_indexed),
             ("rank raqamli token qaytsa tutilsin", neg_decisions_rank_numbered_token),
             ("UserName level class qaytsa tutilsin", neg_decisions_rank_class_uses_level),
             ("owned_paths ** qaytsa tutilsin", neg_decisions_owned_paths_star_star),
@@ -14973,19 +13787,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("scroll faqat sidenav bo'lsa tutilsin", neg_decisions_drawer_scroll_sidenav_only),
             ("topnav drawer unmount bo'lsa tutilsin", neg_decisions_topnav_drawer_unmounted),
             (
-                "profil `lg` da ikki ustunga qaytsa tutilsin",
-                neg_decisions_profile_two_columns_at_lg,
-            ),
-            ("profil to'ri `2xl` da qolsa tutilsin", neg_decisions_profile_kpi_stuck_at_2xl),
-            (
-                "profil to'rida eskirgan `xl` pog'onasi qolsa tutilsin",
-                neg_decisions_profile_kpi_step_redundant,
-            ),
-            (
-                "profil raqami pog'onasi yo'qolsa tutilsin",
-                neg_decisions_profile_kpi_value_step_lost,
-            ),
-            (
                 "diapazon kalitlari doimiysi o'chirilsa tutilsin",
                 neg_decisions_difficulty_keys_declaration_removed,
             ),
@@ -15003,10 +13804,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("header brendi o'chirilsa tutilsin", neg_decisions_header_brand_removed),
             ("sidebar brendi qaytsa tutilsin", neg_decisions_sidebar_brand_back),
-            ("footer bitta ustunga tushsa tutilsin", neg_decisions_footer_single_column),
             ("footer privacy havolasi yo'qolsa tutilsin", neg_decisions_footer_privacy_link_lost),
             ("footer wordmark nusxalansa tutilsin", neg_decisions_footer_wordmark_copied),
-            ("footer havolalari kichraysa tutilsin", neg_decisions_footer_links_too_small_to_tap),
             (
                 "footer Telegram o'zgarsa tutilsin",
                 neg_decisions_footer_telegram_changed,

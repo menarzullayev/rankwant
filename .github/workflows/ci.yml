@@ -445,6 +445,9 @@ jobs:
           # Four isolated git-archive copies. One tree cannot mutate in
           # parallel; 176 cases on one process were 42–48 s of the web job.
           NEGATIVE_JOBS: '4'
+          # A decision test runs only the rule it exercises (`tools/negative_rule_map.json`).
+          # A manual full run (`run_all`) runs every rule for every test, which proves the map.
+          NEGATIVE_FULL_RULES: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
           NEGATIVE_SKIP_NODE: ${{ steps.node.outputs.need == 'true' && '0' || '1' }}
         run: python3 tools/check_negative.py
       # Sxemadan generatsiya qilingan TS tiplar eskirgan bo'lsa — qizil.

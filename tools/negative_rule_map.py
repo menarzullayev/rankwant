@@ -28,7 +28,8 @@ def main(argv: list[str]) -> int:
         test, _, label = line.partition("\t")
         if test and label:
             mapping[test] = label
-    OUT.write_text(json.dumps(dict(sorted(mapping.items())), ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    text = json.dumps(dict(sorted(mapping.items())), ensure_ascii=False, indent=0) + "\n"
+    OUT.write_bytes(text.encode("utf-8"))  # bytes: LF on Windows too
     print(f"{len(mapping)} tests mapped -> {OUT.name}")
     return 0
 
