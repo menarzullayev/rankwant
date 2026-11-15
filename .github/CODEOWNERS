@@ -1,17 +1,18 @@
-# Standart
-*                       @menarzullayev
+# Only the paths whose change needs the owner's eyes. The ruleset does not
+# require a code-owner review (2026-11-15: review stays optional), so this file
+# routes review requests and documents what matters; it does not block a merge.
 
-# Judge — sandbox xavfsizligi; o'zgarish alohida ko'rib chiqiladi
+# Judge — sandbox safety
 /services/              @menarzullayev
 /tests/security/        @menarzullayev
 
-# Qulflangan hujjatlar — o'zgarish ADR talab qiladi
+# Locked documents — a change needs an ADR
 /docs/01-vision/        @menarzullayev
 /docs/02-problem-discovery/ @menarzullayev
 /docs/03-market-research/   @menarzullayev
 /docs/04-prd/           @menarzullayev
 /docs/05-domain-model/  @menarzullayev
 /docs/06-architecture/  @menarzullayev
+/docs/07-adr/           @menarzullayev
 /docs/08-technical-spec/    @menarzullayev
 /docs/09-development-plan/  @menarzullayev
-/docs/07-adr/           @menarzullayev

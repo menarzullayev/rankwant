@@ -9010,6 +9010,11 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    ".github/workflows/cache-cleanup.yml",
+    ".github/workflows/dependabot-automerge.yml",
+    ".github/CODEOWNERS",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md",
     "tools/negative_rule_map.json",
     "apps/api/tests/conftest.py",
     "apps/web/src/app/(site)/_home/GuestHero.tsx",
@@ -12796,6 +12801,76 @@ def neg_decisions_negatives_run_every_rule() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_cache_pr_saves_mypy() -> tuple[bool, str]:
+    """A pull request saves the mypy cache again (a new copy per commit)."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "      - uses: actions/cache/restore@v6\n        if: ${{ steps.check.outputs.ready == 'true' && github.event_name == 'pull_request' }}\n        with:\n          path: apps/api/.mypy_cache",
+        "      - uses: actions/cache@v6\n        if: ${{ steps.check.outputs.ready == 'true' && github.event_name == 'pull_request' }}\n        with:\n          path: apps/api/.mypy_cache",
+        "PR `apps/api/.mypy_cache` keshini yozadi",
+    )
+
+
+def neg_decisions_cache_main_stops_saving_next() -> tuple[bool, str]:
+    """`main` stops saving the Next cache: nothing warm is left for the next build."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "needs.filter.outputs.web == 'true' && github.event_name != 'pull_request' }}\n        with:\n          path: apps/web/.next/cache",
+        "needs.filter.outputs.web == 'true' && github.event_name == 'x' }}\n        with:\n          path: apps/web/.next/cache",
+        "`main` `apps/web/.next/cache` keshini yozmaydi",
+    )
+
+
+def neg_decisions_cache_cleanup_never_fires() -> tuple[bool, str]:
+    """The cleanup workflow no longer runs when a pull request closes."""
+    return _decision_broken(
+        ".github/workflows/cache-cleanup.yml",
+        "types: [closed]",
+        "types: [opened]",
+        "yopilgan PR keshlari o'chirilmaydi",
+    )
+
+
+def neg_decisions_dependabot_merges_majors() -> tuple[bool, str]:
+    """The auto-merge condition loses the minor/patch group filter."""
+    return _decision_broken(
+        ".github/workflows/dependabot-automerge.yml",
+        "'-minor-patch group'",
+        "'bump'",
+        "major ham o'zi merge bo'ladi",
+    )
+
+
+def neg_decisions_dependabot_merges_anyones_pr() -> tuple[bool, str]:
+    """Anyone's pull request with the right title would enable auto-merge."""
+    return _decision_broken(
+        ".github/workflows/dependabot-automerge.yml",
+        "github.event.pull_request.user.login == 'dependabot[bot]'",
+        "github.event.pull_request.user.login != ''",
+        "istalgan PR o'zi merge bo'ladi",
+    )
+
+
+def neg_decisions_codeowners_star_returns() -> tuple[bool, str]:
+    """The catch-all `*` line comes back into CODEOWNERS."""
+    return _decision_broken(
+        ".github/CODEOWNERS",
+        "# Judge — sandbox safety\n",
+        "*                       @menarzullayev\n# Judge — sandbox safety\n",
+        "`*` qatori qaytdi",
+    )
+
+
+def neg_decisions_security_policy_public_issue() -> tuple[bool, str]:
+    """SECURITY.md sends reporters to a public issue."""
+    return _decision_broken(
+        "SECURITY.md",
+        "security/advisories/new",
+        "issues/new",
+        "yopiq kanal orqali xabar qilinishi aytilmagan",
+    )
+
+
 def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
     """`Required checks` stops reading `web_static`."""
     return _decision_broken(
@@ -14202,6 +14277,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("api job'i bazaga bog'lansa tutilsin", neg_decisions_ci_api_gets_a_database),
             ("web_static Node o'rnatsa tutilsin", neg_decisions_ci_static_job_needs_node),
             ("required web_static'ni o'qimasa tutilsin", neg_decisions_ci_required_ignores_static),
+            ("PR mypy keshini yozsa tutilsin", neg_decisions_cache_pr_saves_mypy),
+            ("main Next keshini yozmasa tutilsin", neg_decisions_cache_main_stops_saving_next),
+            ("kesh tozalash ishga tushmasa tutilsin", neg_decisions_cache_cleanup_never_fires),
+            ("Dependabot major'ni ham merge qilsa tutilsin", neg_decisions_dependabot_merges_majors),
+            ("istalgan PR avto-merge bo'lsa tutilsin", neg_decisions_dependabot_merges_anyones_pr),
+            ("CODEOWNERS `*` qaytsa tutilsin", neg_decisions_codeowners_star_returns),
+            ("SECURITY.md ommaviy issue'ga yo'naltirsa tutilsin", neg_decisions_security_policy_public_issue),
             ("testlar sekin parol xeshiga qaytsa tutilsin", neg_decisions_ci_fast_hasher_dropped),
             ("test Postgres'i diskni kutsa tutilsin", neg_decisions_ci_postgres_waits_for_disk),
             ("qaror testlari hamma qoidani yuritsa tutilsin", neg_decisions_negatives_run_every_rule),

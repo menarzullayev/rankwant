@@ -3037,6 +3037,71 @@ def pr_runs_decision_cases_for_changed_files() -> str | None:
     return None
 
 
+def actions_cache_is_written_by_main_only() -> str | None:
+    """2026-11-15 (HITL): Actions keshini faqat `main` yozadi, yopilgan PR keshi o'chadi.
+
+    O'lchandi: 10.6 GB / 10 GB limit, 73 kesh, 46 tasi PR'larniki; Next keshi
+    ~300 MB va kaliti manba hash'iga bog'liq — har web commit yangi nusxa
+    yozardi. Limitdan oshganda GitHub `main` keshlarini ham o'chiradi.
+    """
+    ci = read(".github/workflows/ci.yml")
+    for path in ("apps/api/.mypy_cache", "apps/web/.next/cache"):
+        if not re.search(
+            rf"uses: actions/cache/restore@v6\n\s+if: [^\n]*github\.event_name == 'pull_request'[^\n]*\n\s+with:\n\s+path: {re.escape(path)}",
+            ci,
+        ):
+            return f"ci.yml: PR `{path}` keshini yozadi — faqat o'qishi kerak"
+        if not re.search(
+            rf"uses: actions/cache@v6\n\s+if: [^\n]*github\.event_name != 'pull_request'[^\n]*\n\s+with:\n\s+path: {re.escape(path)}",
+            ci,
+        ):
+            return f"ci.yml: `main` `{path}` keshini yozmaydi"
+    cleanup = read(".github/workflows/cache-cleanup.yml")
+    if "types: [closed]" not in cleanup or "gh cache delete" not in cleanup:
+        return "cache-cleanup.yml: yopilgan PR keshlari o'chirilmaydi"
+    if "actions: write" not in cleanup:
+        return "cache-cleanup.yml: `actions: write` huquqi yo'q — kesh o'chmaydi"
+    return None
+
+
+def dependabot_minor_patch_automerges() -> str | None:
+    """2026-11-15 (HITL): guruhlangan minor/patch bump'lar CI yashil bo'lsa o'zi merge bo'ladi.
+
+    Faqat `*-minor-patch group` PR'lari: guruh ichida boshqa tur yo'q.
+    Major, Actions, Go, Docker — qo'lda. `main` ruleset'i baribir kutadi.
+    """
+    wf = read(".github/workflows/dependabot-automerge.yml")
+    if "github.event.pull_request.user.login == 'dependabot[bot]'" not in wf:
+        return "dependabot-automerge.yml: muallif Dependabot ekanini tekshirmaydi — istalgan PR o'zi merge bo'ladi"
+    if "'-minor-patch group'" not in wf:
+        return "dependabot-automerge.yml: faqat minor/patch guruhi bilan cheklanmagan — major ham o'zi merge bo'ladi"
+    if "gh pr merge --auto" not in wf:
+        return "dependabot-automerge.yml: --auto yo'q — kutmasdan darhol merge qiladi"
+    config = read(".github/dependabot.yml")
+    if config.count('update-types: ["minor", "patch"]') < 2:
+        return "dependabot.yml: pip va npm minor/patch guruhi yo'q — avto-merge qiladigan narsa qolmaydi"
+    return None
+
+
+def repo_health_files_are_present() -> str | None:
+    """2026-11-15 (HITL): ommaviy repoda xavfsizlik va xulq qoidalari bor, CODEOWNERS haqiqatni aytadi.
+
+    Community health 71% edi (CODE_OF_CONDUCT yo'q, SECURITY yo'q). CODEOWNERS'dagi
+    `*` qatori ma'nosiz edi: ruleset code-owner review talab qilmaydi.
+    """
+    security = read("SECURITY.md")
+    if "security/advisories/new" not in security:
+        return "SECURITY.md: zaiflik yopiq kanal orqali xabar qilinishi aytilmagan"
+    if not read("CODE_OF_CONDUCT.md").strip():
+        return "CODE_OF_CONDUCT.md: bo'sh"
+    owners = [line for line in read(".github/CODEOWNERS").splitlines() if line.strip() and not line.startswith("#")]
+    if any(line.startswith("*") for line in owners):
+        return ".github/CODEOWNERS: `*` qatori qaytdi — review talab qilinmasa u hech narsani aytmaydi"
+    if "/services/" not in "".join(owners):
+        return ".github/CODEOWNERS: judge (`/services/`) yo'qolgan"
+    return None
+
+
 def negatives_run_one_rule() -> str | None:
     """2026-11-15 (HITL): qaror salbiy testi faqat o'z qoidasini yuritadi.
 
@@ -6199,6 +6264,9 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("PR CI tez: salbiy testlar va build faqat main'da, statik tekshiruv alohida", pr_ci_is_fast_and_static),
     ("qaror salbiy testi faqat o'z qoidasini yuritadi", negatives_run_one_rule),
+    ("Actions keshini faqat main yozadi", actions_cache_is_written_by_main_only),
+    ("Dependabot minor/patch guruhi o'zi merge bo'ladi", dependabot_minor_patch_automerges),
+    ("repo xavfsizlik va xulq qoidalari bor", repo_health_files_are_present),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
     ("CI paketlarni tez o'rnatadi", ci_installs_are_fast),
     ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),

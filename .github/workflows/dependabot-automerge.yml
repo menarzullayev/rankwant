@@ -1,0 +1,34 @@
+name: Dependabot auto-merge
+
+# Minor and patch bumps merge on their own once every required check is green
+# (owner decision 2026-11-15). Only the GROUPED pull requests qualify: the
+# groups in `.github/dependabot.yml` (`npm-minor-patch`, `pip-minor-patch`)
+# contain minor and patch updates and nothing else, so the group name in the
+# title is the update type. Majors, GitHub Actions, Go and Docker bumps stay
+# manual, and so do the version-pin refusals recorded in `dependabot.yml`.
+#
+# This only ENABLES auto-merge; the `main` ruleset still waits for `Required
+# checks`, and `dependabot-locks.yml` still recompiles the locks first.
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions: {}
+
+jobs:
+  enable:
+    name: Enable auto-merge for a minor/patch group
+    if: >-
+      ${{ github.event.pull_request.user.login == 'dependabot[bot]'
+          && contains(github.event.pull_request.title, '-minor-patch group') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Auto-merge (squash) when checks pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --squash "$PR_URL"
