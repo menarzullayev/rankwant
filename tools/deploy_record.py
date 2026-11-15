@@ -43,6 +43,7 @@ def gh(*args: str, payload: dict | None = None) -> tuple[int, str]:
         input=json.dumps(payload) if payload is not None else None,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         timeout=40,
     )
     return proc.returncode, (proc.stdout or "") + (proc.stderr or "")

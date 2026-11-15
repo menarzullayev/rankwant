@@ -59,7 +59,7 @@ def group(prs: list[dict]) -> str:
 
 
 def gh(*args: str) -> str:
-    proc = subprocess.run(["gh", *args], capture_output=True, text=True, timeout=60, check=False)
+    proc = subprocess.run(["gh", *args], capture_output=True, text=True, encoding="utf-8", timeout=60, check=False)
     if proc.returncode != 0:
         raise RuntimeError(f"gh {' '.join(args[:2])}: {proc.stderr.strip()[-200:]}")
     return proc.stdout
@@ -84,6 +84,8 @@ def since() -> str:
 
 
 def main(argv: list[str]) -> int:
+    # The notes carry non-ASCII (headings, a warning sign); a Windows console is cp1252.
+    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
     if argv == ["--selftest"]:
         return selftest()
     dry = "--dry-run" in argv
