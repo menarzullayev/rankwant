@@ -99,7 +99,7 @@ move of the repository breaks it.
 
 | Path | What |
 | --- | --- |
-| `C:\Users\nsn\.mcp-registry\` | MCP servers for every agent; `graphify` points at `graphify-out/graph.json` in the checkout |
+| `C:\Users\nsn\.mcp-registry\` | MCP servers for every agent |
 | `C:\Users\nsn\.claude\projects\`, `.cursor\projects\`, `.workbuddy-ai\projects\` | per-agent session history keyed by checkout path |
 | `C:\Users\nsn\.claude\skills\rankwant-incident-triage\` | incident skill |
 

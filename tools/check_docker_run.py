@@ -134,7 +134,7 @@ IGNORE = re.compile(r"docker-run-guard:\s*ignore")
 NOT_A_COMMAND = re.compile(r"^\s*(#|(-\s+)?name:)")
 SCAN_SUFFIXES = {".sh", ".bash", ".ps1", ".psm1", ".yml", ".yaml", ".mk", ".md"}
 SCAN_NAMES = {"Makefile", "makefile", "package.json", "Justfile"}
-SKIP_PARTS = ("node_modules/", "/vendor/", "/.git/", "graphify-out/")
+SKIP_PARTS = ("node_modules/", "/vendor/", "/.git/")
 
 
 def cut_at_operator(text: str) -> str:
