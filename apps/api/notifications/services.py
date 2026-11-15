@@ -41,8 +41,14 @@ def channels(user: User, kind: str, code: str = "") -> Channels:
     """
     group = groups.group_of(code, kind)
     stored = user.notify_prefs or {}
-    prefs = stored.get(group) or stored.get(kind) or {}
-    values = {name: bool(prefs.get(name, DEFAULT_CHANNELS[name])) for name in CHANNEL_NAMES}
+    # Per channel: the group's own value, else what was saved under the kind
+    # (or under a pre-group kind of this group), else the default.
+    sources = [stored.get(group) or {}, stored.get(kind) or {}]
+    sources += [stored.get(legacy) or {} for legacy in groups.legacy_kinds(group)]
+    values = {
+        name: bool(next((s[name] for s in sources if name in s), DEFAULT_CHANNELS[name]))
+        for name in CHANNEL_NAMES
+    }
     for name in groups.MANDATORY.get(group, ()):
         values[name] = True
     return Channels(*(values[name] for name in CHANNEL_NAMES))

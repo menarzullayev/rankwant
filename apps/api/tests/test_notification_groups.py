@@ -39,7 +39,7 @@ class TestGroups:
 
     def test_a_group_with_only_dormant_codes_is_hidden(self) -> None:
         visible = groups.visible_groups()
-        assert "team_prizes" not in visible
+        assert "team_prizes" not in visible and "new_contests" not in visible
         assert "security" in visible and "plan_limits" in visible
 
     def test_unlisted_code_falls_back_to_its_kind(self) -> None:
@@ -233,6 +233,40 @@ class TestReminders:
         )
         ReminderSent.objects.create(user=person, code="x", ref="2")
         assert reminders.prune() == 1
+
+
+class TestUnsubscribeByGroup:
+    def test_a_group_link_switches_that_groups_email_off(self, person: User) -> None:
+        from notifications import email as email_channel
+
+        person.notify_prefs = {"contest": {"email": True, "site": True}}
+        person.save()
+        email_channel.unsubscribe(person, "contest")
+        assert channels(person, "system", "contest_announcement").email is False
+        assert email_channel.read_token(email_channel.make_token(person.pk, "contest")) == (
+            person.pk,
+            "contest",
+        )
+
+    def test_unsubscribe_all_keeps_the_security_site_notice(self, person: User) -> None:
+        from notifications import email as email_channel
+
+        email_channel.unsubscribe(person, email_channel.ALL_KINDS)
+        got = channels(person, "system", "security_password_changed")
+        assert got.site is True and got.email is False
+
+    def test_an_old_kind_link_beats_a_group_saved_later(self, person: User) -> None:
+        from notifications import email as email_channel
+
+        person.notify_prefs = {"competition": {"email": True}}
+        person.save()
+        email_channel.unsubscribe(person, "duel")
+        assert channels(person, "duel", "duel_won").email is False
+
+    def test_channels_merge_per_channel_across_group_and_kind(self, person: User) -> None:
+        person.notify_prefs = {"duel": {"site": False}, "competition": {"email": True}}
+        got = channels(person, "duel", "duel_won")
+        assert got.site is False and got.email is True
 
 
 class TestSchedulingGuards:

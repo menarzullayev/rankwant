@@ -132,6 +132,13 @@ def unsubscribe(user: User, kind: str) -> None:
                 else _key_channels(locked, each)
             )
             prefs[each] = {"site": current.site, "telegram": current.telegram, "email": False}
+            owner = groups.KIND_GROUP.get(each)
+            if owner is not None and each in Notification.Kind.values:
+                # A link issued before groups existed names a kind. A group saved
+                # since then would shadow it, so the kind's group loses its email too.
+                locked.notify_prefs = prefs
+                now = _key_channels(locked, owner)
+                prefs[owner] = {"site": now.site, "telegram": now.telegram, "email": False}
         locked.notify_prefs = prefs
         locked.save(update_fields=["notify_prefs"])
     user.notify_prefs = prefs

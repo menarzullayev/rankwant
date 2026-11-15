@@ -154,6 +154,9 @@ CODE_GROUP: dict[str, str] = {
 DORMANT: frozenset[str] = frozenset(
     {
         "contest_prize",
+        # Sent in part 2 of the parity work; until then nothing emits it, so its
+        # group stays off the settings page.
+        "contest_new",
         "plan_ending",
         "plan_ended",
         "plan_activated",
@@ -171,6 +174,11 @@ DORMANT: frozenset[str] = frozenset(
 def group_of(code: str, kind: str) -> str:
     """The settings group of a notification: by its code, else by its kind."""
     return CODE_GROUP.get(code) or KIND_GROUP.get(kind, "community")
+
+
+def legacy_kinds(group: str) -> tuple[str, ...]:
+    """The pre-group kinds whose saved preferences a group inherits."""
+    return tuple(kind for kind, owner in KIND_GROUP.items() if owner == group)
 
 
 def visible_groups() -> tuple[str, ...]:
