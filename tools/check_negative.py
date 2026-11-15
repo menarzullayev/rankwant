@@ -13739,8 +13739,8 @@ def neg_decisions_ci_static_job_needs_node() -> tuple[bool, str]:
     """The static-check job installs Node (it would wait for `npm ci` again)."""
     return _decision_broken(
         ".github/workflows/ci.yml",
-        "      - uses: actions/setup-python@v7\n        with:\n          python-version: '3.14'\n      - name: i18n completeness",
-        "      - uses: actions/setup-node@v7\n      - uses: actions/setup-python@v7\n        with:\n          python-version: '3.14'\n      - name: i18n completeness",
+        "      - uses: actions/setup-python@v7\n        with:\n          python-version: '3.14'\n      # Types catch a missing key",
+        "      - uses: actions/setup-node@v7\n      - uses: actions/setup-python@v7\n        with:\n          python-version: '3.14'\n      # Types catch a missing key",
         "`web_static` Node o'rnatadi",
     )
 
