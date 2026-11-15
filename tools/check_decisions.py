@@ -3030,11 +3030,49 @@ def pr_runs_decision_cases_for_changed_files() -> str | None:
     ):
         if needle not in neg:
             return f"tools/check_negative.py: {why}"
+    # 2026-11-15: the PR job that fed this list is gone (negative tests left
+    # PR CI, see `pr_ci_is_fast_and_static`); the scoping code stays for a
+    # local run with `NEGATIVE_CHANGED_FILES`.
+    return None
+
+
+def pr_ci_is_fast_and_static() -> str | None:
+    """2026-11-15 (HITL): PR CI — lint, tiplar, unit va statik tekshiruvlar; og'ir qismi `main` da.
+
+    Maqsad — PR CI 1 daqiqa atrofida. O'lchandi (135 ta run): PR mediani
+    3.6 daqiqa, eng ko'pi 8.9; Web job'idagi salbiy testlar o'zi 161-274 s.
+    Salbiy testlar, `next build` va bundle byudjeti endi faqat `main`, Nightly
+    va qo'lda yurishda; `api` job'i konteynersiz (SQLite), Postgres'ga
+    migratsiya va North Star so'rovi `api_tests` 1-shard'ida, faqat `main` da;
+    Python-only statik tekshiruvlar `npm ci` siz alohida `web_static`
+    job'ida, `web` bilan yonma-yon.
+    """
     ci = read(".github/workflows/ci.yml")
-    if "github.event_name == 'pull_request' }}\n        env:\n          GH_TOKEN" not in ci:
-        return "ci.yml: o'zgargan fayllar ro'yxati faqat PR'da emas"
-    if '.filename == "tools/check_negative.py") and .deletions == 0 | not)' not in ci:
-        return "ci.yml: faqat qo'shilgan qoida/test ham to'liq yurishga olib keladi (add-only filtri yo'q)"
+    if "Changed files (PR only)" in ci or "NEGATIVE_CHANGED_FILES" in ci:
+        return "ci.yml: PR'da o'zgargan fayllar ro'yxati qaytdi — salbiy testlar PR'da yurmasligi kerak"
+    web = _workflow_job(ci, "web")
+    heavy = (
+        (r"- name: Negative tests\n\s+if: [^\n]*github\.event_name != 'pull_request'", "salbiy testlar"),
+        (r"if: [^\n]*github\.event_name != 'pull_request'[^\n]*\n\s+run: npm run build", "`next build`"),
+        (r"- name: Bundle budget\n\s+if: [^\n]*github\.event_name != 'pull_request'", "bundle byudjeti"),
+    )
+    for pattern, what in heavy:
+        if not re.search(pattern, web):
+            return f"ci.yml: {what} PR'da yuradi — qaror: faqat main, Nightly va qo'lda"
+    api = _workflow_job(ci, "api")
+    if re.search(r"^    services:", api, re.M) or "DATABASE_URL:" in api:
+        return "ci.yml: `api` job'i yana ma'lumotlar bazasi konteyneriga bog'langan — lint SQLite bilan yuradi"
+    tests = _workflow_job(ci, "api_tests")
+    if "check_metrics.py --allow-empty" not in tests or "github.event_name != 'pull_request'" not in tests:
+        return "ci.yml: Postgres'ga migratsiya va North Star so'rovi `api_tests` da (faqat main) yo'q"
+    static = _workflow_job(ci, "web_static")
+    if not static:
+        return "ci.yml: `web_static` job'i yo'q — statik tekshiruvlar `web` orqasida navbat kutadi"
+    if "setup-node" in static or "npm ci" in static:
+        return "ci.yml: `web_static` Node o'rnatadi — u faqat Python tekshiruvlari uchun"
+    required = _workflow_job(ci, "required")
+    if "web_static" not in required:
+        return "ci.yml: `required` `web_static` natijasini o'qimaydi — statik tekshiruv qizil bo'lsa ham merge bo'ladi"
     return None
 
 
@@ -6129,6 +6167,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("xat, Telegram, sertifikat hisob alifbosida", outbound_text_follows_the_account),
     ("monitor disk va commit'ni kuzatadi", monitor_watches_disk_and_commit),
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
+    ("PR CI tez: salbiy testlar va build faqat main'da, statik tekshiruv alohida", pr_ci_is_fast_and_static),
     ("orqada qolgan PR'lar navbat bilan yangilanadi", behind_prs_update_one_at_a_time),
     ("CI paketlarni tez o'rnatadi", ci_installs_are_fast),
     ("build kesh byudjetda saqlanadi", build_cache_kept_within_budget),

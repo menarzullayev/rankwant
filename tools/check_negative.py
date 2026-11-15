@@ -13705,23 +13705,53 @@ def neg_decisions_scope_skips_everything() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_scope_without_add_only() -> tuple[bool, str]:
-    """The add-only filter is dropped: 28 of the last 30 PRs would run everything again."""
+def neg_decisions_ci_negatives_back_on_pr() -> tuple[bool, str]:
+    """The negative tests lose their PR guard (every PR waits for the full suite again)."""
     return _decision_broken(
         ".github/workflows/ci.yml",
-        ' and .deletions == 0 | not)',
-        ' | not)',
-        "add-only filtri yo'q",
+        "      - name: Negative tests\n        if: ${{ steps.check.outputs.ready == 'true' && github.event_name != 'pull_request' }}\n",
+        "      - name: Negative tests\n        if: ${{ steps.check.outputs.ready == 'true' }}\n",
+        "salbiy testlar PR'da yuradi",
     )
 
 
-def neg_decisions_scope_on_main_too() -> tuple[bool, str]:
-    """The changed-files list is also produced on main (main would stop running the full suite)."""
+def neg_decisions_ci_build_back_on_pr() -> tuple[bool, str]:
+    """`next build` loses its PR guard."""
     return _decision_broken(
         ".github/workflows/ci.yml",
-        " && github.event_name == 'pull_request' }}\n        env:\n          GH_TOKEN",
-        " }}\n        env:\n          GH_TOKEN",
-        "faqat PR'da emas",
+        "needs.filter.outputs.web == 'true' && github.event_name != 'pull_request' }}\n        run: npm run build",
+        "needs.filter.outputs.web == 'true' }}\n        run: npm run build",
+        "`next build` PR'da yuradi",
+    )
+
+
+def neg_decisions_ci_api_gets_a_database() -> tuple[bool, str]:
+    """The lint job grows a database container again."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "    timeout-minutes: 3\n    env:\n      # settings fail-fast (D5)",
+        "    timeout-minutes: 3\n    services:\n      postgres:\n        image: postgres:16\n    env:\n      # settings fail-fast (D5)",
+        "ma'lumotlar bazasi konteyneriga bog'langan",
+    )
+
+
+def neg_decisions_ci_static_job_needs_node() -> tuple[bool, str]:
+    """The static-check job installs Node (it would wait for `npm ci` again)."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "      - uses: actions/setup-python@v7\n        with:\n          python-version: '3.14'\n      - name: i18n completeness",
+        "      - uses: actions/setup-node@v7\n      - uses: actions/setup-python@v7\n        with:\n          python-version: '3.14'\n      - name: i18n completeness",
+        "`web_static` Node o'rnatadi",
+    )
+
+
+def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
+    """`Required checks` stops reading `web_static`."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "needs: [filter, api, api_tests, web, web_static, judge, integrity]",
+        "needs: [filter, api, api_tests, web, judge, integrity]",
+        "`required` `web_static` natijasini o'qimaydi",
     )
 
 
@@ -15281,8 +15311,16 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qoida kodi o'zgarsa hammasi yuradi", neg_scope_rule_code_runs_all),
             ("bo'sh ro'yxat — to'liq yurish", neg_scope_empty_list_runs_all),
             ("skip fayl tekshiruvini yo'qotsa tutilsin", neg_decisions_scope_skips_everything),
-            ("ro'yxat main'da ham berilsa tutilsin", neg_decisions_scope_on_main_too),
-            ("add-only filtri olinsa tutilsin", neg_decisions_scope_without_add_only),
+        ],
+    ),
+    (
+        "ci_fast",
+        [
+            ("salbiy testlar PR'ga qaytsa tutilsin", neg_decisions_ci_negatives_back_on_pr),
+            ("build PR'ga qaytsa tutilsin", neg_decisions_ci_build_back_on_pr),
+            ("api job'i bazaga bog'lansa tutilsin", neg_decisions_ci_api_gets_a_database),
+            ("web_static Node o'rnatsa tutilsin", neg_decisions_ci_static_job_needs_node),
+            ("required web_static'ni o'qimasa tutilsin", neg_decisions_ci_required_ignores_static),
         ],
     ),
 ]

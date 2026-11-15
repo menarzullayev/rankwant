@@ -125,18 +125,6 @@ jobs:
       # `makemigrations --check` import settings, so DJANGO_SECRET_KEY must
       # be present. Throwaway value — this job serves no traffic.
       DJANGO_SECRET_KEY: ci-django-secret
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: rankwant_test
-        options: >-
-          --health-cmd pg_isready --health-interval 10s
-          --health-timeout 5s --health-retries 5
-        # GitHub picks the host port: on the self-hosted runner 5432 is
-        # already taken by the live preview stack.
-        ports: ['5432']
     steps:
       - uses: actions/checkout@v7
       - name: Scaffolded?
@@ -207,55 +195,15 @@ jobs:
         # the cause is known.
         run: mypy --show-traceback .
         working-directory: apps/api
-      - name: Detect service host
-        id: svc
-        # Service-container ports are published on the Docker HOST, not
-        # where the runner process lives. If the runner is inside a
-        # container, its `localhost` is itself and the connection FAILS.
-        #
-        # Measured (2026-09-17, one-off test containers):
-        #   sibling container → localhost:<port>              -> FAIL
-        #   sibling container → host.docker.internal:<port>   -> OK
-        #   default gateway 172.17.0.1                        -> FAIL
-        #
-        # On a WSL runner (not a container) `localhost` is correct, so
-        # this step is backward-compatible: the value does not change
-        # if the environment does not.
-        run: |
-          if [ -f /.dockerenv ]; then
-            echo "host=host.docker.internal" >> "$GITHUB_OUTPUT"
-          else
-            echo "host=localhost" >> "$GITHUB_OUTPUT"
-          fi
-
+      # No database container (owner decision 2026-11-15): the settings fall
+      # back to SQLite without `DATABASE_URL`, and `makemigrations --check`
+      # only compares models with migration files — it never runs SQL.
+      # Applying the migrations to Postgres and the North Star query are in
+      # `api_tests` shard 1, on `main` only.
       - name: Migrations fully written
         if: steps.check.outputs.ready == 'true'
-        env:
-          DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
         run: python manage.py makemigrations --check --dry-run
         working-directory: apps/api
-
-      # Applies ALL migrations to `rankwant_test` (schema + data), so the
-      # metrics gate below sees a real `core_user` table. M10 (`verdict
-      # relabel`) is a no-op here (0 RE rows), M3 backfill runs on 0 users
-      # — both print their audit line and exit 0.
-      - name: Migrate the test database
-        if: steps.check.outputs.ready == 'true'
-        env:
-          DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
-          DJANGO_SECRET_KEY: ci-django-secret
-        run: python manage.py migrate --noinput
-        working-directory: apps/api
-
-      # North Star SQL over a migrated (but unseeded) test DB: the table
-      # exists, zero users is the expected state there — hence
-      # `--allow-empty`. A real environment with zero users still fails
-      # the gate (the flag exists only for this CI database).
-      - name: North Star metrics (User.origin)
-        if: steps.check.outputs.ready == 'true'
-        env:
-          DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
-        run: python3 tools/check_metrics.py --allow-empty
 
   # ⚠️ Besides building web, this job also runs the CHECK SUITE
   # (`check_i18n`, `check_i18n_runtime`, `check_negative`, `check_contrast`).
@@ -323,6 +271,20 @@ jobs:
         run: |
           mapfile -t files < <(python3 ../../tools/pytest_shard.py ${{ matrix.shard }} 3)
           pytest -n 4 "${files[@]}"
+        working-directory: apps/api
+      # Applies ALL migrations to an empty Postgres (schema + data) and reads the
+      # North Star query on it. It used to be the `api` job's own service
+      # container; on a pull request SQLite is enough (owner decision
+      # 2026-11-15), `main` still proves the Postgres path. `--allow-empty`:
+      # zero users is the expected state in this throwaway database.
+      - name: Migrate a fresh Postgres and read the North Star metrics (main only)
+        if: ${{ matrix.shard == 1 && github.event_name != 'pull_request' }}
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
+          DJANGO_SECRET_KEY: ci-django-secret
+        run: |
+          python manage.py migrate --noinput
+          python3 ../../tools/check_metrics.py --allow-empty
         working-directory: apps/api
 
   web:
@@ -423,30 +385,6 @@ jobs:
         if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         run: npm run test
         working-directory: apps/web
-      # Types catch a missing key, but not an empty string or a copy
-      # left untranslated.
-      - name: i18n completeness
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_i18n.py
-      - name: Email locales (all 10)
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_email_locales.py
-      - name: API messages English
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_api_english.py
-      # Shriftlar repodan beriladi, Google'dan emas. `next/font/google`
-      # har build'da jonli so'rov qilardi va Google javobi ~1/60 holatda
-      # o'qib bo'lmaydigan shaklda qaytardi — CI tasodifiy yiqilardi
-      # (vercel/next.js#99114). Ikki qo'riqchi:
-      #   `check_no_google_fonts.py` — import qaytib kelmasin;
-      #   `check_fonts.py` — `fonts.ts` literal ro'yxati manifest bilan
-      #   mos bo'lsin (yo'l, weight, style, fayl diskda bormi).
-      - name: No Google Fonts import
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_no_google_fonts.py
-      - name: Font definitions match the vendored files
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_fonts.py
       # Fallback path of `t()`: throws in dev, logs once in prod.
       # `check_i18n.py` cannot see that — it only reads the strings —
       # so the module is run in Node (this step has `actions/setup-node`).
@@ -475,32 +413,15 @@ jobs:
       # Playwright CLI (`tests/e2e/node_modules`) and a live web stack,
       # neither of which this job provisions. It is exercised by
       # `tools/ci_visual_gate.sh` in the Nightly `e2e` job, against its stack.
-      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
+      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' && github.event_name != 'pull_request' }}
         run: npm run build
         working-directory: apps/web
-      # On a pull request the decisions cases run only for the files the PR
-      # changed (owner decision 2026-11-10); `main` and Nightly run them all.
-      # The list comes from the API, so the shallow checkout is enough. If it
-      # cannot be read the file stays empty, and empty means a full run.
-      # A PR that only ADDS lines to check_decisions.py / check_negative.py
-      # (a new rule and its tests — 16 of the last 30 PRs) leaves the existing
-      # rules as they were, so those two are left out of the list; any line
-      # removed or changed there keeps them in, and they force a full run.
-      # Measured on the last 30 PRs: 26 of 396 cases skipped on average
-      # without this, 231 with it.
-      - name: Changed files (PR only)
-        if: ${{ steps.check.outputs.ready == 'true' && github.event_name == 'pull_request' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
-            --jq '.[] | select((.filename == "tools/check_decisions.py" or .filename == "tools/check_negative.py") and .deletions == 0 | not) | .filename, (.previous_filename // empty)' \
-            > "$RUNNER_TEMP/changed-files.txt" \
-            || : > "$RUNNER_TEMP/changed-files.txt"
-          echo "NEGATIVE_CHANGED_FILES=$RUNNER_TEMP/changed-files.txt" >> "$GITHUB_ENV"
-          wc -l < "$RUNNER_TEMP/changed-files.txt"
+      # The negative suite and the build run on `main` and Nightly, not on a
+      # pull request (owner decision 2026-11-15, CI under one minute). A pull
+      # request is judged by lint, types, unit tests and the static checks;
+      # the same commit is then built and mutated on `main` before it deploys.
       - name: Negative tests
-        if: steps.check.outputs.ready == 'true'
+        if: ${{ steps.check.outputs.ready == 'true' && github.event_name != 'pull_request' }}
         env:
           NODE: node
           # Four isolated git-archive copies. One tree cannot mutate in
@@ -508,34 +429,6 @@ jobs:
           NEGATIVE_JOBS: '4'
           NEGATIVE_SKIP_NODE: ${{ steps.node.outputs.need == 'true' && '0' || '1' }}
         run: python3 tools/check_negative.py
-      - name: Text contrast (WCAG AA)
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_contrast.py
-      - name: Design tokens (no raw colour / px font)
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_design_tokens.py
-      - name: CSS scan sources (every @source path resolves)
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_css_sources.py
-      - name: Feature boundaries (layer rule)
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_features.py
-      - name: Import integrity (@/ paths resolve)
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_imports.py
-      - name: Accessibility (static rules)
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_a11y.py
-      # Scroll boxes are written one way (2026-10-06): the shared
-      # utilities and `lib/scroll.ts`, never raw `overflow-*-auto`.
-      - name: Scroll vocabulary
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_scroll.py
-      # Every page has an access level and the protected ones are behind a
-      # server guard (2026-10-08, ADR-0054).
-      - name: Access levels
-        if: steps.check.outputs.ready == 'true'
-        run: python3 tools/check_access.py
       # Sxemadan generatsiya qilingan TS tiplar eskirgan bo'lsa — qizil.
       # `openapi/schema.yml` o'zgargan-u `schema.ts` yangilanmagan bo'lsa,
       # mijoz tiplari jimgina noto'g'ri bo'lib qolardi.
@@ -559,8 +452,65 @@ jobs:
       # the budget is enforced. Reads `apps/web/.next/static` — must come
       # AFTER the build above. RW-ARCH-016.
       - name: Bundle budget
-        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
+        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' && github.event_name != 'pull_request' }}
         run: python3 tools/check_bundle_budget.py
+
+  # The Python-only static checks, split out of `web` (owner decision
+  # 2026-11-15): they read source files only, so they need neither `npm ci`
+  # nor Node and can run beside the lint/type/unit job instead of behind it.
+  web_static:
+    name: Web — static checks
+    needs: filter
+    if: >-
+      ${{ needs.filter.outputs.web == 'true'
+          || needs.filter.outputs.tools == 'true'
+          || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      # Types catch a missing key, but not an empty string or a copy
+      # left untranslated.
+      - name: i18n completeness
+        run: python3 tools/check_i18n.py
+      - name: Email locales (all 10)
+        run: python3 tools/check_email_locales.py
+      - name: API messages English
+        run: python3 tools/check_api_english.py
+      # Shriftlar repodan beriladi, Google'dan emas. `next/font/google`
+      # har build'da jonli so'rov qilardi va Google javobi ~1/60 holatda
+      # o'qib bo'lmaydigan shaklda qaytardi — CI tasodifiy yiqilardi
+      # (vercel/next.js#99114). Ikki qo'riqchi:
+      #   `check_no_google_fonts.py` — import qaytib kelmasin;
+      #   `check_fonts.py` — `fonts.ts` literal ro'yxati manifest bilan
+      #   mos bo'lsin (yo'l, weight, style, fayl diskda bormi).
+      - name: No Google Fonts import
+        run: python3 tools/check_no_google_fonts.py
+      - name: Font definitions match the vendored files
+        run: python3 tools/check_fonts.py
+      - name: Text contrast (WCAG AA)
+        run: python3 tools/check_contrast.py
+      - name: Design tokens (no raw colour / px font)
+        run: python3 tools/check_design_tokens.py
+      - name: CSS scan sources (every @source path resolves)
+        run: python3 tools/check_css_sources.py
+      - name: Feature boundaries (layer rule)
+        run: python3 tools/check_features.py
+      - name: Import integrity (@/ paths resolve)
+        run: python3 tools/check_imports.py
+      - name: Accessibility (static rules)
+        run: python3 tools/check_a11y.py
+      # Scroll boxes are written one way (2026-10-06): the shared
+      # utilities and `lib/scroll.ts`, never raw `overflow-*-auto`.
+      - name: Scroll vocabulary
+        run: python3 tools/check_scroll.py
+      # Every page has an access level and the protected ones are behind a
+      # server guard (2026-10-08, ADR-0054).
+      - name: Access levels
+        run: python3 tools/check_access.py
 
   judge:
     name: Judge — bake-off candidates
@@ -678,7 +628,7 @@ jobs:
   # gate below it is skipped, and "all skipped" would otherwise read green.
   required:
     name: Required checks
-    needs: [filter, api, api_tests, web, judge, integrity]
+    needs: [filter, api, api_tests, web, web_static, judge, integrity]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -700,6 +650,6 @@ jobs:
             fi
           done < results.tsv
           # An empty table would pass the loop: `needs` was not read.
-          [ "$(wc -l < results.tsv)" -eq 6 ] || { echo "::error::expected 6 gates, read $(wc -l < results.tsv)"; exit 1; }
+          [ "$(wc -l < results.tsv)" -eq 7 ] || { echo "::error::expected 7 gates, read $(wc -l < results.tsv)"; exit 1; }
           exit "$bad"
 
