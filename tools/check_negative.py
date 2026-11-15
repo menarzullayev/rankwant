@@ -12789,8 +12789,9 @@ def neg_decisions_negatives_run_every_rule() -> tuple[bool, str]:
     """The decision tests go back to running all 177 rules each."""
     return _decision_broken(
         "tools/check_negative.py",
-        'run_check("decisions", "--only", label)',
-        'run_check("decisions")',
+        # Built in two pieces: written whole, this very line would satisfy the rule.
+        'code, out = run_check("decisions", ' + '"--only", label)',
+        'code, out = run_check("decisions")',
         "bitta qoidani yuritmaydi",
     )
 

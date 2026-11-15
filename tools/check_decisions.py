@@ -3047,7 +3047,7 @@ def negatives_run_one_rule() -> str | None:
     qo'lda to'liq yurishda (`run_all`) `NEGATIVE_FULL_RULES=1`.
     """
     neg = read("tools/check_negative.py")
-    if 'run_check("decisions", "--only", label)' not in neg:
+    if 'code, out = run_check("decisions", "--only", label)' not in neg:
         return "tools/check_negative.py: qaror testi bitta qoidani yuritmaydi (--only)"
     if "if code != 1 or rule not in out:" not in neg:
         return "tools/check_negative.py: tor yurish rad etilsa to'liq yurish hukm chiqarmaydi"
