@@ -95,6 +95,11 @@ export const api = {
    *  visitors who arrive from a search engine. Cached for five minutes. */
   popularProblems: () =>
     get<Paginated<Problem>>("/problems/?ordering=-view_count&page_size=12", 300),
+  /** How many public problems exist in all (official and not): the guest hero's number. */
+  problemTotal: () => get<Paginated<Problem>>("/problems/?tier=all&page_size=1", 300),
+  /** The problem the guest hero shows. Every read counts a view, so it is cached for an
+   *  hour: the home page must not be the problem's busiest reader. */
+  heroProblem: (slug: string) => get<ProblemDetail>(`/problems/${slug}/`, 3600),
   /** Active members of the last 30 days; the home page draws the region map only when
    *  there are some. */
   regionActivity: () => get<{ days: number; total: number }>("/stats/regions/?days=30", 300),

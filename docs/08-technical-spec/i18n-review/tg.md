@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3557 strings.**
+**3568 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -409,6 +409,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.openRatingBody` | Har bir reytingning formulasi ochiq va har o'zgarishning sababi yozib boriladi. | Формулаи ҳар рейтинг кушода аст ва сабаби ҳар тағйирот сабт карда мешавад. |  |
 | `home.popularProblems` | Mashhur masalalar | Масъалаҳои машҳур |  |
 | `home.recentContests` | So'nggi musobaqalar | Мусобиқаҳои охирин |  |
+| `home.heroTagline` | Reyting xohlaganlar uchun | Барои онҳое, ки рейтинг мехоҳанд |  |
+| `home.heroHeadline` | Yeching. Musobaqalashing. Yuksaling. | Ҳал кун. Мусобиқа кун. Боло рав. |  |
+| `home.heroLead` | Masala yeching, musobaqada qatnashing, ochiq reytingda o'sing. | Масъала ҳал кунед, дар мусобиқа иштирок намоед, дар рейтинги кушод боло равед. |  |
+| `home.browseProblems` | Masalalarni ko'rish | Дидани масъалаҳо |  |
+| `home.statLanguages` | dasturlash tili | забони барномасозӣ |  |
+| `home.statProblems` | masala | масъала |  |
+| `home.statArticles` | o'quv maqolasi | мақолаи таълимӣ |  |
+| `home.statInterface` | interfeys tili | забони интерфейс |  |
+| `home.heroProblemLabel` | Namuna masala | Масъалаи намуна |  |
 | `site.title` | RankWant — reyting xohlaganlar uchun | RankWant — барои онҳое, ки рейтинг мехоҳанд |  |
 | `site.description` | Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, musobaqa va ochiq reyting. | Платформаи барномасозии варзишӣ ва олимпиадаҳои информатика: бойгонии масъалаҳо, мусобиқаҳо ва рейтинги кушод. |  |
 | `problems.name` | Masala | Масъала |  |
@@ -2005,6 +2014,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.ownerRepo` | owner/repo | соҳиб/репозиторий |  |
 | `admin.text.eventFormStarted` | Forma boshlandi | Форма оғоз шуд |  |
 | `admin.text.eventRegisterDone` | Ro'yxatdan o'tdi | Сабтином шуд |  |
+| `admin.text.eventHeroView` | Bosh sahifaning birinchi bloki ko'rildi | Блоки аввали саҳифаи асосӣ намоён шуд |  |
+| `admin.text.eventHeroCta` | Birinchi blokdagi tugma bosildi | Тугмаи блоки аввал пахш шуд |  |
 | `admin.text.eventSessions` | {name}: {sessions} sessiya, {share}% | {name}: {sessions} сессия, {share}% |  |
 | `admin.text.funnelDay` | {date}: {started} boshlandi, {done} tugadi | {date}: {started} оғоз карданд, {done} анҷом доданд |  |
 | `admin.text.reasonLoginTaken` | Login band | Номи корбар банд аст |  |

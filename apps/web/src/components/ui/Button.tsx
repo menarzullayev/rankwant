@@ -79,6 +79,7 @@ export function ButtonLink({
   className = "",
   children,
   intent = false,
+  onClick,
 }: {
   href: React.ComponentProps<typeof Link>["href"];
   variant?: Variant;
@@ -86,17 +87,19 @@ export function ButtonLink({
   children: React.ReactNode;
   /** Homepage hero: prefetch on hover/focus/touch only (2026-09-18). */
   intent?: boolean;
+  /** A client caller can measure the press (the home hero, 2026-11-15). */
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }) {
   const classNames = `${BASE} ${STYLES[variant]} ${className}`;
   if (intent) {
     return (
-      <IntentLink href={href} className={classNames}>
+      <IntentLink href={href} className={classNames} onClick={onClick}>
         {children}
       </IntentLink>
     );
   }
   return (
-    <Link href={href} className={classNames}>
+    <Link href={href} className={classNames} onClick={onClick}>
       {children}
     </Link>
   );

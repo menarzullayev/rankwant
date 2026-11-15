@@ -78,7 +78,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-09-18](docs/decisions/2026-09-18-user-parity-fields.md) · `User` ga 21 tenglik maydoni; «ishlatilmaydi» deb olib tashlanmaydi (ADR-0024) · `user_parity_fields_kept`
 - [2026-09-18](docs/decisions/2026-09-18-header-fits-320px.md) · Header 320 px ga sig'adi; til tanlagich endonimi `max-w-[3rem]` bilan · `mobile_header_fits_narrow_screen`
 - [2026-09-18](docs/decisions/2026-09-18-mobile-drawer-accessible.md) · Mobil panel e'lon qilinadi, fokuslanadi, `Esc` bilan yopiladi · `mobile_drawer_is_accessible`
-- [2026-09-18](docs/decisions/2026-09-18-home-kpi-four-up-at-lg.md) · Bosh sahifa KPI to'ri `lg` da 4 ustun, raqam 24 px · `kpi_grid_steps_at_lg`
+- [2026-09-18](docs/decisions/2026-09-18-home-kpi-four-up-at-lg.md) · Bosh sahifa KPI to'ri `lg` da 4 ustun (2026-11-15 da hero raqamlariga almashtirildi) · `guest_hero_is_honest_and_measured`
 - [2026-09-18](docs/decisions/2026-09-18-profile-kpi-four-up-at-xl.md) · Profil KPI to'ri `xl` da 4 ustun (2026-09-19 da almashtirildi) · `profile_sidebar_stacks_below_xl`
 - [2026-09-18](docs/decisions/2026-09-18-difficulty-range-one-filter.md) · Qiyinlik diapazoni filtr rozetkasida bitta filtr · `difficulty_range_counts_as_one_filter`
 - [2026-09-19](docs/decisions/2026-09-19-profile-stacks-below-xl.md) · Profil sahifasi `xl` gacha bir ustun; KPI `lg` dan 4 ustun · `profile_sidebar_stacks_below_xl`
@@ -277,6 +277,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-15](docs/decisions/2026-11-15-home-follows-browser-language.md) · Bosh sahifa mehmon uchun brauzer tilida, `Vary: Accept-Language` bilan 10 tilga keshlanadi (`/` endi `uz` majburiy emas) · `home_follows_browser_language`
 - [2026-11-15](docs/decisions/2026-11-15-site-head-follows-language.md) · Sayt `<title>`, tavsif va JSON-LD mehmon tilida (manifest ataylab o'zbekcha) · `site_head_follows_the_language`
 - [2026-11-15](docs/decisions/2026-11-15-graphify-removed.md) · Graphify va uning GitHub boti to'liq olib tashlandi (MCP, dastur, graf fayllari, repo havolalari) · `.gitignore`
+- [2026-11-15](docs/decisions/2026-11-15-guest-hero.md) · Mehmon heroi: «Yeching. Musobaqalashing. Yuksaling.», haqiqiy masala kartasi (muharririsiz), to'rt imkoniyat raqami (foydalanuvchi soni yo'q), ko'rdi→bosdi→forma→ro'yxat voronkasi, 10 tilda · `guest_hero_is_honest_and_measured`
 
 ## Tekshiruvlar
 

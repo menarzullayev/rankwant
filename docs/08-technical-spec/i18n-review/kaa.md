@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3557 strings.**
+**3568 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -409,6 +409,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.openRatingBody` | Har bir reytingning formulasi ochiq va har o'zgarishning sababi yozib boriladi. | Hár bir reytingtiń formulası ashıq hám hár ózgeristiń sebebi jazıp barıladı. |  |
 | `home.popularProblems` | Mashhur masalalar | Tanımal máseleler |  |
 | `home.recentContests` | So'nggi musobaqalar | Sońǵı jarıslar |  |
+| `home.heroTagline` | Reyting xohlaganlar uchun | Reyting qáleytuǵınlar ushın |  |
+| `home.heroHeadline` | Yeching. Musobaqalashing. Yuksaling. | Sheshiń. Jarısıń. Ósiń. |  |
+| `home.heroLead` | Masala yeching, musobaqada qatnashing, ochiq reytingda o'sing. | Másele sheshiń, jarısta qatnasıń, ashıq reytingde ósiń. |  |
+| `home.browseProblems` | Masalalarni ko'rish | Máselelerdi kóriw |  |
+| `home.statLanguages` | dasturlash tili | baǵdarlamalastırıw tili |  |
+| `home.statProblems` | masala | másele |  |
+| `home.statArticles` | o'quv maqolasi | oqıw maqalası |  |
+| `home.statInterface` | interfeys tili | interfeys tilleri |  |
+| `home.heroProblemLabel` | Namuna masala | Úlgi másele |  |
 | `site.title` | RankWant — reyting xohlaganlar uchun | RankWant — reyting qáleytuǵınlar ushın |  |
 | `site.description` | Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, musobaqa va ochiq reyting. | Sport baǵdarlamalastırıw hám informatika olimpiadaları platforması: máseleler arxivi, jarıslar hám ashıq reyting. |  |
 | `problems.name` | Masala | Mási |  |
@@ -2005,6 +2014,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.ownerRepo` | owner/repo | iyesi/repozitoriy |  |
 | `admin.text.eventFormStarted` | Forma boshlandi | Forma baslandı |  |
 | `admin.text.eventRegisterDone` | Ro'yxatdan o'tdi | Dizimnen ótti |  |
+| `admin.text.eventHeroView` | Bosh sahifaning birinchi bloki ko'rildi | Bas bettiń birinshi bloǵı kórsetildi |  |
+| `admin.text.eventHeroCta` | Birinchi blokdagi tugma bosildi | Birinshi blokdaǵı túyme basıldı |  |
 | `admin.text.eventSessions` | {name}: {sessions} sessiya, {share}% | {name}: {sessions} sessiya, {share}% |  |
 | `admin.text.funnelDay` | {date}: {started} boshlandi, {done} tugadi | {date}: {started} basladı, {done} tamamladı |  |
 | `admin.text.reasonLoginTaken` | Login band | Login bánt |  |

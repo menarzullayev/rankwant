@@ -47,6 +47,8 @@ type Data = {
  *  ko'rsatiladi — yangi hodisa qo'shilganda dashboard uni
  *  yashirmasligi kerak. */
 const EVENT_LABEL: Record<string, MessageKey> = {
+  "home.hero_view": "admin.text.eventHeroView",
+  "home.hero_cta": "admin.text.eventHeroCta",
   "auth.form_started": "admin.text.eventFormStarted",
   "auth.register_done": "admin.text.eventRegisterDone",
 };

@@ -2,14 +2,12 @@ import { inReaderAlphabet } from "@/i18n/alphabet";
 import type { Route } from "next";
 
 import { Badge } from "@/components/ui/Badge";
-import { ButtonLink } from "@/components/ui/Button";
 import { IntentLink } from "@/components/ui/IntentLink";
-import { Card, StatCard } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { UpdateKindBadge } from "@/features/updates";
 import { getLocale } from "@/i18n/server";
-import { date, dateTime, fill, t } from "@/i18n/messages";
-import { Icon } from "@/components/ui/Icon";
+import { LOCALES, date, dateTime, fill, t } from "@/i18n/messages";
 import {
   api,
   ApiError,
@@ -32,6 +30,8 @@ import {
   popularProblems,
   recentContests,
 } from "./_home/GuestContent";
+import { GuestHero } from "./_home/GuestHero";
+import { pickHeroProblem } from "./_home/hero-model";
 import { RegionMap } from "./_home/RegionMap";
 import { SignedInHome, type ResumeTarget } from "./_home/SignedInHome";
 
@@ -158,6 +158,23 @@ export default async function Home() {
     );
   }
 
+  // The numbers of the first block describe what the platform can do; they are read
+  // from the database, and none of them is the user count (decision 2026-11-15).
+  const [languageCount, problemCount, heroProblem] = await Promise.all([
+    api
+      .languages()
+      .then((page) => page.count)
+      .catch(() => 0),
+    api
+      .problemTotal()
+      .then((page) => page.count)
+      .catch(() => 0),
+    (async () => {
+      const pick = pickHeroProblem(popular);
+      return pick ? api.heroProblem(pick.slug).catch(() => null) : null;
+    })(),
+  ]);
+
   const soon = upcoming(contests.results);
   const last = recentContests(contests.results);
   const top = users.results.slice(0, 5);
@@ -166,57 +183,16 @@ export default async function Home() {
 
   return (
     <div className="space-y-6">
-      <section className="rw-radius border rw-line rw-surface px-6 py-10 rw-shadow">
-        <h1 className="text-title-sm font-bold rw-strong">
-          RankWant
-        </h1>
-        <p className="mt-3 max-w-2xl text-theme-sm rw-dim">
-          {t(locale, "home.ratingHint")}
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <ButtonLink intent href={"/login?tab=register" as Route}>
-            {t(locale, "home.start")}
-          </ButtonLink>
-          <ButtonLink intent href="/contests" variant="outline">
-            {t(locale, "nav.contests")}
-          </ButtonLink>
-        </div>
-        <p className="mt-4 text-theme-xs rw-faint">
-          {t(locale, "home.guestHint")}
-        </p>
-      </section>
-
-      {/* lg da 4 ustun: 1024–1279 px da 2+2 qolsa, 4 karta ikki qatorni
-          egallab, keyingi bo'limni pastga suradi (o'lchandi: 1024x768 da
-          faqat 38 px ko'rinardi, 4 ustunda 216 px). 3 ustunli pog'ona
-          qo'shilmadi — u vertikal yutuq bermaydi (4 karta baribir 2 qator)
-          va 4-kartani yolg'iz qoldiradi. */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label={t(locale, "nav.problems")}
-          value={stats.problems}
-          icon={<Icon name="nav.problems" />}
-          valueClassName="lg:text-2xl xl:text-title-sm"
-        />
-        <StatCard
-          label={t(locale, "nav.contests")}
-          value={stats.contests}
-          icon={<Icon name="ranking.trophy" />}
-          valueClassName="lg:text-2xl xl:text-title-sm"
-        />
-        <StatCard
-          label={t(locale, "home.users")}
-          value={stats.users}
-          icon={<Icon name="nav.leaderboard" />}
-          valueClassName="lg:text-2xl xl:text-title-sm"
-        />
-        <StatCard
-          label={t(locale, "home.attempts")}
-          value={stats.attempts}
-          icon={<Icon name="shop.coin" />}
-          valueClassName="lg:text-2xl xl:text-title-sm"
-        />
-      </section>
+      <GuestHero
+        locale={locale}
+        numbers={{
+          languages: languageCount,
+          problems: problemCount,
+          articles: articles.count,
+          interfaces: LOCALES.length,
+        }}
+        problem={heroProblem}
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
         {soon.length === 0 && last.length > 0 ? (

@@ -190,7 +190,10 @@ class StaffAnalyticsView(APIView):
     #: Voronka ketma-ketligi — ulushlar BIRINCHI qadamga nisbatan.
     #: `auth.step2_*` bu yerda YO'Q: ular ketma-ket qadam emas, tarmoq
     #: (saqlash yoki o'tkazib yuborish) — alohida ko'rsatiladi.
-    FUNNEL = ("auth.form_started", "auth.register_done")
+    #: 2026-11-15: bosh sahifaning birinchi bloki voronkaning boshi — ko'rdi,
+    #: tugmani bosdi, keyin forma va ro'yxatdan o'tish. Hammasi bir xil
+    #: varaq (tab) identifikatori bilan yoziladi.
+    FUNNEL = ("home.hero_view", "home.hero_cta", "auth.form_started", "auth.register_done")
 
     #: 2-qadamning ikki chiqishi.
     STEP2 = ("auth.step2_saved", "auth.step2_skipped")
