@@ -3584,6 +3584,26 @@ def neg_decisions_leaderboard_lists_smoke_accounts() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_home_forced_to_uz_again() -> tuple[bool, str]:
+    """`/` joins the Uzbek-only paths again (the state before 2026-11-15)."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        'if (pathname === "/terms" || pathname === "/privacy") {',
+        'if (pathname === "/" || pathname === "/terms" || pathname === "/privacy") {',
+        "yana `uz` majburiy",
+    )
+
+
+def neg_decisions_home_leaves_language_aware_cache() -> tuple[bool, str]:
+    """`/` is no longer cached per language: no Vary, so one copy serves every reader."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        "(pathname === HOME_CACHE_PATH || pathname === PROBLEMS_CACHE_PATH) &&",
+        "pathname === PROBLEMS_CACHE_PATH &&",
+        "tilga bog'liq kesh yo'lida emas",
+    )
+
+
 def neg_decisions_openapi_check_step_dropped() -> tuple[bool, str]:
     """The job wakes up but no longer compares the generated types."""
     return _decision_broken(
@@ -14491,6 +14511,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("web filtri sxemani unutsa tutilsin", neg_decisions_schema_filter_dropped),
             ("web filtri ildiz lockfile'ni unutsa tutilsin", neg_decisions_web_filter_forgets_root_lockfile),
             ("openapi:check qadami olib tashlansa tutilsin", neg_decisions_openapi_check_step_dropped),
+            ("bosh sahifa yana uz majburiy bo'lsa tutilsin", neg_decisions_home_forced_to_uz_again),
+            ("bosh sahifa tilga bog'liq keshdan chiqsa tutilsin", neg_decisions_home_leaves_language_aware_cache),
             ("bosh sahifada foydalanuvchilar «Reyting» deb yozilsa tutilsin", neg_decisions_home_users_label_reverts),
             ("hududlar xaritasi nollar bilan chizilsa tutilsin", neg_decisions_home_map_of_zeros),
             ("mehmon bosh sahifasi ommaviy mazmunni yo'qotsa tutilsin", neg_decisions_home_loses_public_content),

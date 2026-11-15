@@ -22,7 +22,7 @@ const guestHome = {
 } as const;
 
 describe("homeCacheDecision", () => {
-  it("lets a cookieless GET / be cached for 30s at the CDN", () => {
+  it("lets a cookieless GET / be cached for 30s at the CDN, in the visitor's language", () => {
     const d = homeCacheDecision(guestHome);
     expect(d).toEqual({
       isHomeDocument: true,
@@ -30,13 +30,28 @@ describe("homeCacheDecision", () => {
       cacheable: true,
       cacheControl: HOME_CACHE_GUEST,
       assignExperiments: false,
-      forceDefaultLocale: true,
+      forceDefaultLocale: false,
     });
     expect(HOME_CACHE_GUEST).toBe(
       "public, s-maxage=30, stale-while-revalidate=86400",
     );
+    // 2026-11-15: the home page varies on Accept-Language like /problems does.
+    expect(homeCacheMark(d)).toBe(HOME_CACHE_MARK_GUEST_LOCALE);
+  });
+
+  it("keeps the login and legal pages forced to Uzbek", () => {
     expect(HOME_CACHE_LOCALE).toBe("uz");
-    expect(homeCacheMark(d)).toBe(HOME_CACHE_MARK_GUEST);
+    for (const pathname of ["/login", "/register", "/terms", "/privacy"]) {
+      const d = homeCacheDecision({ ...guestHome, pathname });
+      expect(d.cacheable).toBe(true);
+      expect(d.forceDefaultLocale).toBe(true);
+      expect(homeCacheMark(d)).toBe(HOME_CACHE_MARK_GUEST);
+    }
+  });
+
+  it("does not cache a home page that carries a language cookie", () => {
+    const d = homeCacheDecision({ ...guestHome, cookieHeader: "rw_locale=ru" });
+    expect(d.cacheable).toBe(false);
   });
 
   it("treats HEAD the same as GET", () => {
