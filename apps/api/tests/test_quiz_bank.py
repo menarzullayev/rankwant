@@ -367,3 +367,22 @@ class TestStaffBankStaysApart:
             reverse("mine-question-detail", args=[number.pk]), {"text": "New text"}, format="json"
         )
         assert ok.status_code == 200
+
+
+@pytest.mark.django_db
+class TestQuizInvitation:
+    def test_students_hear_about_a_quiz_given_to_the_class(self, user, other_user) -> None:
+        from notifications.models import Notification
+
+        quiz = _quiz(user, [_question(user)])
+        room = Classroom.objects.create(owner=user, name="9-A", slug="9a")
+        ClassroomMember.objects.create(classroom=room, user=other_user)
+        res = _client(user).post(
+            reverse("classroom-assignments", args=[room.slug]),
+            {"title": "Test", "quiz": quiz.slug},
+            format="json",
+        )
+        assert res.status_code == 201, res.content
+        got = Notification.objects.get(user=other_user, code="quiz_invited")
+        assert got.ref_id == quiz.slug and got.params["user"] == user.username
+        assert not Notification.objects.filter(user=user, code="quiz_invited").exists()

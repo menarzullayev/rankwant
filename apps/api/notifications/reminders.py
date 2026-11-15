@@ -26,7 +26,7 @@ from django.utils import timezone
 
 from core.models import User
 from notifications.models import Notification, ReminderSent
-from notifications.services import notify
+from notifications.services import notify, notify_many
 
 log = logging.getLogger(__name__)
 
@@ -117,6 +117,33 @@ def streak_broken(now: datetime | None = None) -> int:
             days=str(user.streak_count),
         )
     return sent
+
+
+#: Someone who has not opened the site for this long is not told about a new contest.
+ACTIVE_DAYS = 60
+
+
+def announce_to_active(code: str, ref: str, ref_type: str, ref_id: str, **params: str) -> int:
+    """One notice to everybody active lately, once per `(code, ref)` however often it is asked.
+
+    Site channel only (`notify_many`): a contest announced to every account
+    would be ~974k rows, so it goes to people seen in the last `ACTIVE_DAYS`.
+    """
+    since = timezone.now() - timedelta(days=ACTIVE_DAYS)
+    already = set(ReminderSent.objects.filter(code=code, ref=ref).values_list("user_id", flat=True))
+    people = [
+        user
+        for user in User.objects.filter(is_active=True, last_seen_at__gte=since).iterator()
+        if user.pk not in already
+    ]
+    if not people:
+        return 0
+    ReminderSent.objects.bulk_create(
+        [ReminderSent(user=u, code=code, ref=ref) for u in people], ignore_conflicts=True
+    )
+    return notify_many(
+        people, Notification.Kind.SYSTEM, code=code, params=params, ref_type=ref_type, ref_id=ref_id
+    )
 
 
 def prune(now: datetime | None = None) -> int:

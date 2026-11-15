@@ -29,6 +29,19 @@ def finalize_due_contests() -> int:
     return total
 
 
+@shared_task(name="contests.announce_new")
+def announce_new(contest_id: int) -> int:
+    """A contest was just published: tell the people active lately, once."""
+    from notifications.reminders import announce_to_active
+
+    contest = Contest.objects.filter(pk=contest_id, is_public=True).first()
+    if contest is None:
+        return 0
+    return announce_to_active(
+        "contest_new", f"contest:{contest.pk}", "contest", contest.slug, contest=contest.title
+    )
+
+
 @shared_task(name="contests.run_reminders")
 def run_reminders() -> dict[str, int]:
     """A day / an hour before a contest, and its end, for hosts (beat, every 5 minutes)."""

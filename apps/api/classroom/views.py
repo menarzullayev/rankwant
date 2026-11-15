@@ -363,6 +363,20 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
                     role=ClassroomMember.Role.STUDENT
                 ).select_related("user")
                 teaching.enroll_members(course, [m.user for m in students])
+        if quiz is not None:
+            from notifications.services import notify
+
+            for member in classroom.members.filter(
+                role=ClassroomMember.Role.STUDENT
+            ).select_related("user"):
+                notify(
+                    member.user,
+                    "system",
+                    code="quiz_invited",
+                    params={"quiz": quiz.title, "user": classroom.owner.username},
+                    ref_type="quiz",
+                    ref_id=quiz.slug,
+                )
         return Response(
             AssignmentSerializer(assignment, context=context).data, status=status.HTTP_201_CREATED
         )

@@ -68,9 +68,39 @@ def contest_ended(now: datetime | None = None) -> int:
     return sent
 
 
+def plagiarism_found(now: datetime | None = None) -> int:
+    """Hosts: the contest is over and the editor signals flagged attempts."""
+    from contests import integrity
+
+    now = now or timezone.now()
+    sent = 0
+    ended = Contest.objects.filter(
+        is_virtual=False, is_public=True, end_at__lte=now, end_at__gte=now - timedelta(hours=6)
+    )
+    for contest in ended:
+        flagged = len({row["username"] for row in integrity.report(contest)})
+        if not flagged:
+            continue
+        for host in contest.organizers.all():
+            sent += send_once(
+                host,
+                "host_plagiarism_found",
+                f"contest:{contest.pk}",
+                "contest",
+                contest.slug,
+                contest=contest.title,
+                count=str(flagged),
+            )
+    return sent
+
+
 def run(now: datetime | None = None) -> dict[str, int]:
     result: dict[str, int] = {}
-    for name, part in (("contest_starts", contest_starts), ("contest_ended", contest_ended)):
+    for name, part in (
+        ("contest_starts", contest_starts),
+        ("contest_ended", contest_ended),
+        ("plagiarism_found", plagiarism_found),
+    ):
         try:
             result[name] = part(now)
         except Exception:

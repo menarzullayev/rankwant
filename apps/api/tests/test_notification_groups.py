@@ -39,7 +39,7 @@ class TestGroups:
 
     def test_a_group_with_only_dormant_codes_is_hidden(self) -> None:
         visible = groups.visible_groups()
-        assert "team_prizes" not in visible and "new_contests" not in visible
+        assert "team_prizes" not in visible
         assert "security" in visible and "plan_limits" in visible
 
     def test_unlisted_code_falls_back_to_its_kind(self) -> None:

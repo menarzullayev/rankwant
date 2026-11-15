@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
@@ -51,6 +51,24 @@ class StaffContestViewSet(StaffViewSet):
     # `-pk` — tiebreaker: bir xil `start_at` li musobaqalar tartibi aks holda
     # SQL ixtiyoriga qoladi va sahifalash beqaror bo'ladi.
     ordering: ClassVar[list[str]] = ["-start_at", "-pk"]
+
+    def perform_create(self, serializer: Any) -> None:
+        super().perform_create(serializer)
+        self._announce_if_new(serializer.instance, was_public=False)
+
+    def perform_update(self, serializer: Any) -> None:
+        was_public = bool(serializer.instance.is_public)
+        super().perform_update(serializer)
+        self._announce_if_new(serializer.instance, was_public=was_public)
+
+    @staticmethod
+    def _announce_if_new(contest: Contest, *, was_public: bool) -> None:
+        """Publishing (`is_public` False to True) announces the contest, once."""
+        if contest.is_public and not was_public and not contest.is_virtual:
+            from contests.tasks import announce_new
+            from core.tasks import queue
+
+            queue(announce_new, contest.pk)
 
     @extend_schema(
         request=StaffContestProblemListSerializer,
