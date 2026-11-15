@@ -195,6 +195,29 @@ def _notify(to: User, code: str, comment: Comment, place: Place, author: User) -
     )
 
 
+def _label(row: Any) -> str:
+    """A short name for what was reported: an entry's title or a comment's opening."""
+    text = getattr(row, "title", "") or hide_code(getattr(row, "body", ""))[0]
+    return " ".join(str(text).split())[:60] or "—"
+
+
+def _tell_author(row: Any, code: str) -> None:
+    from notifications.services import notify
+
+    notify(row.author, "system", code=code, params={"object": _label(row)})
+
+
+def _tell_reporters_and_author(row: Any, kind: str, object_id: int) -> None:
+    """Staff decided: reporters hear it was reviewed, the author that it is closed."""
+    from notifications.services import notify
+
+    for reporter in User.objects.filter(
+        community_reports__kind=kind, community_reports__object_id=object_id
+    ).distinct():
+        notify(reporter, "system", code="report_reviewed", params={"object": _label(row)})
+    _tell_author(row, "report_resolved")
+
+
 def _mentioned(text: str, author: User, skip: set[int]) -> list[User]:
     plain, _ = hide_code(text)
     names: list[str] = []
@@ -341,6 +364,10 @@ def report(user: User, kind: str, object_id: int, reason: str, note: str = "") -
         # ⑥: three different people — hidden now, staff decides later.
         fields["is_hidden"] = True
     type(row)._default_manager.filter(pk=row.pk).update(**fields)
+    if reporters == 1:
+        # The author hears about the FIRST report only: three people reporting
+        # one comment must not bury them in notices.
+        _tell_author(row, "report_on_my_content")
     return made
 
 
@@ -355,6 +382,7 @@ def moderate(staff: User, kind: str, object_id: int, *, hide: bool) -> Any:
         handled_by=staff,
         handled_at=timezone.now(),
     )
+    _tell_reporters_and_author(row, kind, object_id)
     return row
 
 

@@ -9010,6 +9010,10 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/classroom/services.py",
+    "apps/api/community/services.py",
+    "apps/api/contests/staff_views.py",
+    "apps/api/contests/reminders.py",
     "apps/api/notifications/groups.py",
     "apps/api/notifications/services.py",
     "apps/api/config/settings.py",
@@ -12958,6 +12962,36 @@ def neg_decisions_notify_dormant_group_listed() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_notify_student_left_silent() -> tuple[bool, str]:
+    """A student leaves a class and the teacher is no longer told."""
+    return _decision_broken(
+        "apps/api/classroom/services.py",
+        '"my_class_student_left"',
+        '"my_class_nobody"',
+        "o'quvchi chiqib ketdi",
+    )
+
+
+def neg_decisions_notify_report_silent() -> tuple[bool, str]:
+    """A report on a comment no longer reaches its author."""
+    return _decision_broken(
+        "apps/api/community/services.py",
+        '"report_on_my_content"',
+        '"report_on_nobody"',
+        "kontentga shikoyat",
+    )
+
+
+def neg_decisions_notify_publish_silent() -> tuple[bool, str]:
+    """Publishing a contest no longer announces it."""
+    return _decision_broken(
+        "apps/api/contests/staff_views.py",
+        "_announce_if_new(serializer.instance",
+        "_announce_never(serializer.instance",
+        "yangi musobaqa e'loni",
+    )
+
+
 def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
     """`Required checks` stops reading `web_static`."""
     return _decision_broken(
@@ -14368,6 +14402,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("beat musobaqa eslatmasini yuritmasa tutilsin", neg_decisions_notify_beat_dropped),
             ("yangi qurilma tekshirilmasa tutilsin", neg_decisions_notify_new_device_unchecked),
             ("uxlab yotgan guruh ko'rinsa tutilsin", neg_decisions_notify_dormant_group_listed),
+            ("o'quvchi chiqqani aytilmasa tutilsin", neg_decisions_notify_student_left_silent),
+            ("shikoyat muallifga yetmasa tutilsin", neg_decisions_notify_report_silent),
+            ("nashr e'lon qilinmasa tutilsin", neg_decisions_notify_publish_silent),
             ("muvaffaqiyatli deploy yozilmasa tutilsin", neg_decisions_deploy_record_success_dropped),
             ("GitHub xatosi deploy'ni buzsa tutilsin", neg_decisions_deploy_record_can_fail_the_deploy),
             ("GitHub chaqiruvi cheklanmasa tutilsin", neg_decisions_deploy_record_unbounded),

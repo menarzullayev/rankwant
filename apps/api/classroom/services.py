@@ -192,6 +192,7 @@ def leave(classroom: Classroom, user: User) -> None:
     if not deleted:
         raise ClassroomError("Not a member", error="not_a_member")
     ClassroomJoinRequest.objects.filter(classroom=classroom, user=user).delete()
+    _notify(_managers(classroom), "my_class_student_left", classroom, user=user.username)
 
 
 def set_role(classroom: Classroom, username: str, role: str) -> ClassroomMember:

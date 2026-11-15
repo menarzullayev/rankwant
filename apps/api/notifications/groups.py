@@ -154,9 +154,21 @@ CODE_GROUP: dict[str, str] = {
 DORMANT: frozenset[str] = frozenset(
     {
         "contest_prize",
-        # Sent in part 2 of the parity work; until then nothing emits it, so its
-        # group stays off the settings page.
-        "contest_new",
+        # No invitation flow, rating revert, rejudge, archive or public-quiz event
+        # exists yet (checked 2026-11-16): the codes wait for their feature.
+        "class_invited",
+        "class_invite_cancelled",
+        "my_class_invite_accepted",
+        "my_class_invite_declined",
+        "contest_invited",
+        "host_moderator_answered",
+        "contest_moderator_invited",
+        "contest_moderator_removed",
+        "contest_rating_reverted",
+        "contest_standing_changed",
+        "attempt_verdict_changed",
+        "problem_archived",
+        "quiz_published",
         "plan_ending",
         "plan_ended",
         "plan_activated",

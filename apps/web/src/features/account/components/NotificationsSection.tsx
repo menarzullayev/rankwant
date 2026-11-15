@@ -20,6 +20,7 @@ import { Hint, Status, useAction } from "./section-kit";
 const GROUPS = [
   "security",
   "contest",
+  "new_contests",
   "hosting",
   "moderation",
   "class",

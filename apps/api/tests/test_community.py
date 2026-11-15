@@ -264,3 +264,31 @@ class TestNotifications:
     def test_mention_in_code_does_not_notify(self, writer, reader, problem) -> None:
         _post(writer, problem, f"```\n@{reader.username}\n```")
         assert not Notification.objects.exists()
+
+
+@pytest.mark.django_db
+class TestReportNotices:
+    def _codes(self, user: User) -> list[str]:
+        return list(Notification.objects.filter(user=user).values_list("code", flat=True))
+
+    def test_the_author_hears_about_the_first_report_only(self, writer, reader, problem) -> None:
+        cid = _post(writer, problem, "Izoh").json()["id"]
+        url = reverse("comment-report", args=[cid])
+        _client(reader).post(url, {"reason": "spam"}, format="json")
+        second = _old(User.objects.create_user(username="r2", password="Parol!12345"))
+        _client(second).post(url, {"reason": "rude"}, format="json")
+        assert self._codes(writer).count("report_on_my_content") == 1
+
+    def test_staff_decision_reaches_the_reporter_and_the_author(
+        self, writer, reader, problem
+    ) -> None:
+        cid = _post(writer, problem, "Izoh").json()["id"]
+        _client(reader).post(
+            reverse("comment-report", args=[cid]), {"reason": "spam"}, format="json"
+        )
+        Comment.objects.filter(pk=cid).update(is_hidden=True)
+        staff = User.objects.create_user(username="mod", password="Parol!12345", is_staff=True)
+        res = _client(staff).post(reverse("staff-comment-unhide", args=[cid]))
+        assert res.status_code == 200, res.content
+        assert "report_reviewed" in self._codes(reader)
+        assert "report_resolved" in self._codes(writer)

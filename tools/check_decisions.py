@@ -3152,6 +3152,17 @@ def notifications_follow_the_groups_decision() -> str | None:
             return f"config/settings.py: beat `{task}` ni yuritmaydi — vaqt xabarlari ketmaydi"
     if "devices.note_sign_in" not in read("apps/api/core/sessions.py"):
         return "core/sessions.py: yangi qurilma kirishda tekshirilmaydi"
+    for path, needle, what in (
+        ("apps/api/classroom/services.py", '"my_class_student_left"', "o'quvchi chiqib ketdi"),
+        ("apps/api/community/services.py", '"report_on_my_content"', "kontentga shikoyat"),
+        ("apps/api/community/services.py", "_tell_reporters_and_author(row", "shikoyat hal etildi"),
+        ("apps/api/contests/staff_views.py", "_announce_if_new(serializer.instance", "yangi musobaqa e'loni"),
+        ("apps/api/contests/reminders.py", "plagiarism_found", "antiplagiat xabari"),
+    ):
+        # Publishing is announced from BOTH create and update, hence two calls.
+        wanted = 2 if path.endswith("staff_views.py") else 1
+        if read(path).count(needle) < wanted:
+            return f"{path}: «{what}» xabari ulanmagan"
     section = read("apps/web/src/features/account/components/NotificationsSection.tsx")
     listed = re.search(r"const GROUPS = \[(.*?)\] as const;", section, re.S)
     if not listed or '"security"' not in listed.group(1):
