@@ -396,6 +396,8 @@ export const en: Record<MessageKey, string> = {
   "home.openRatingBody": "The formula of every rating is open, and the reason for every change is recorded.",
   "home.popularProblems": "Popular problems",
   "home.recentContests": "Recent contests",
+  "site.title": "RankWant — for those who want a rating",
+  "site.description": "A competitive programming and informatics olympiad platform: problem archive, contests and an open rating.",
   "problems.name": "Problem",
   "home.attempts": "Attempts",
   "home.start": "Start for free",

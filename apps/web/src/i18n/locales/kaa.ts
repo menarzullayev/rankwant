@@ -396,6 +396,8 @@ export const kaa: Record<MessageKey, string> = {
   "home.openRatingBody": "Hár bir reytingtiń formulası ashıq hám hár ózgeristiń sebebi jazıp barıladı.",
   "home.popularProblems": "Tanımal máseleler",
   "home.recentContests": "Sońǵı jarıslar",
+  "site.title": "RankWant — reyting qáleytuǵınlar ushın",
+  "site.description": "Sport baǵdarlamalastırıw hám informatika olimpiadaları platforması: máseleler arxivi, jarıslar hám ashıq reyting.",
   "problems.name": "Mási",
   "home.attempts": "Urınıslar",
   "home.start": "Biypul baslaw",

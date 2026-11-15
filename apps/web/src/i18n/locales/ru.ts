@@ -396,6 +396,8 @@ export const ru: Record<MessageKey, string> = {
   "home.openRatingBody": "Формула каждого рейтинга открыта, а причина каждого изменения записывается.",
   "home.popularProblems": "Популярные задачи",
   "home.recentContests": "Недавние соревнования",
+  "site.title": "RankWant — для тех, кто хочет рейтинг",
+  "site.description": "Платформа спортивного программирования и олимпиад по информатике: архив задач, соревнования и открытый рейтинг.",
   "problems.name": "Задача",
   "home.attempts": "Попытки",
   "home.start": "Начать бесплатно",

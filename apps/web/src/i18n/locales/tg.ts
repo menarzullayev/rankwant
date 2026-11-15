@@ -396,6 +396,8 @@ export const tg: Record<MessageKey, string> = {
   "home.openRatingBody": "Формулаи ҳар рейтинг кушода аст ва сабаби ҳар тағйирот сабт карда мешавад.",
   "home.popularProblems": "Масъалаҳои машҳур",
   "home.recentContests": "Мусобиқаҳои охирин",
+  "site.title": "RankWant — барои онҳое, ки рейтинг мехоҳанд",
+  "site.description": "Платформаи барномасозии варзишӣ ва олимпиадаҳои информатика: бойгонии масъалаҳо, мусобиқаҳо ва рейтинги кушод.",
   "problems.name": "Масъала",
   "home.attempts": "Кӯшишҳо",
   "home.start": "Оғози ройгон",

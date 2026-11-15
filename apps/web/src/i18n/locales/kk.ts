@@ -396,6 +396,8 @@ export const kk: Record<MessageKey, string> = {
   "home.openRatingBody": "Әр рейтингтің формуласы ашық, әр өзгерістің себебі жазылып отырады.",
   "home.popularProblems": "Танымал есептер",
   "home.recentContests": "Соңғы жарыстар",
+  "site.title": "RankWant — рейтинг қалайтындар үшін",
+  "site.description": "Спорттық бағдарламалау және информатика олимпиадалары платформасы: есептер архиві, жарыстар және ашық рейтинг.",
   "problems.name": "Есеп",
   "home.attempts": "Талпыныстар",
   "home.start": "Тегін бастау",

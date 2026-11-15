@@ -400,6 +400,8 @@ export const uz = {
   "home.openRatingBody": "Har bir reytingning formulasi ochiq va har o'zgarishning sababi yozib boriladi.",
   "home.popularProblems": "Mashhur masalalar",
   "home.recentContests": "So'nggi musobaqalar",
+  "site.title": "RankWant — reyting xohlaganlar uchun",
+  "site.description": "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, musobaqa va ochiq reyting.",
   "problems.name": "Masala",
   "home.attempts": "Urinishlar",
   "home.start": "Bepul boshlash",

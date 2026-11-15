@@ -3604,6 +3604,26 @@ def neg_decisions_home_leaves_language_aware_cache() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_site_title_hardcoded_again() -> tuple[bool, str]:
+    """The site title goes back to one Uzbek constant."""
+    return _decision_broken(
+        "apps/web/src/app/layout.tsx",
+        'const title = t(locale, "site.title");',
+        'const title = "RankWant — reyting xohlaganlar uchun";',
+        "sarlavhasi tilga ergashmaydi",
+    )
+
+
+def neg_decisions_structured_data_description_uzbek() -> tuple[bool, str]:
+    """The JSON-LD description is fixed to Uzbek again."""
+    return _decision_broken(
+        "apps/web/src/app/layout.tsx",
+        'jsonLd(t(locale, "site.description"))',
+        'jsonLd("RankWant")',
+        "tuzilmaviy ma'lumot tavsifi",
+    )
+
+
 def neg_decisions_openapi_check_step_dropped() -> tuple[bool, str]:
     """The job wakes up but no longer compares the generated types."""
     return _decision_broken(
@@ -14511,6 +14531,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("web filtri sxemani unutsa tutilsin", neg_decisions_schema_filter_dropped),
             ("web filtri ildiz lockfile'ni unutsa tutilsin", neg_decisions_web_filter_forgets_root_lockfile),
             ("openapi:check qadami olib tashlansa tutilsin", neg_decisions_openapi_check_step_dropped),
+            ("sayt sarlavhasi yana qattiq yozilsa tutilsin", neg_decisions_site_title_hardcoded_again),
+            ("tuzilmaviy ma'lumot tavsifi o'zbekcha qolsa tutilsin", neg_decisions_structured_data_description_uzbek),
             ("bosh sahifa yana uz majburiy bo'lsa tutilsin", neg_decisions_home_forced_to_uz_again),
             ("bosh sahifa tilga bog'liq keshdan chiqsa tutilsin", neg_decisions_home_leaves_language_aware_cache),
             ("bosh sahifada foydalanuvchilar «Reyting» deb yozilsa tutilsin", neg_decisions_home_users_label_reverts),
