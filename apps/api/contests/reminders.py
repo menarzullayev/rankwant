@@ -29,7 +29,7 @@ def contest_starts(now: datetime | None = None) -> int:
         ("contest_starts_in_hour", "host_contest_starts_in_hour", timedelta(hours=1)),
     ):
         due = Contest.objects.filter(
-            is_virtual=False, start_at__gt=now, start_at__lte=now + ahead + SLACK
+            is_virtual=False, is_public=True, start_at__gt=now, start_at__lte=now + ahead + SLACK
         ).filter(start_at__gte=now + ahead - SLACK * 3)
         for contest in due:
             ref = f"contest:{contest.pk}"
@@ -51,7 +51,7 @@ def contest_ended(now: datetime | None = None) -> int:
     now = now or timezone.now()
     sent = 0
     ended = Contest.objects.filter(
-        is_virtual=False, end_at__lte=now, end_at__gte=now - timedelta(hours=6)
+        is_virtual=False, is_public=True, end_at__lte=now, end_at__gte=now - timedelta(hours=6)
     )
     for contest in ended:
         for host in contest.organizers.all():

@@ -17,8 +17,10 @@ back every five minutes because of that.
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from datetime import date, datetime, timedelta
 
+from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
@@ -124,16 +126,29 @@ def prune(now: datetime | None = None) -> int:
 
 
 def run(now: datetime | None = None) -> dict[str, int]:
-    """Everything the clock owes, once. Each part is isolated: one failing
-    must not stop the others."""
+    """The streak notices the clock owes, once per day each.
+
+    Both look at every user with a living streak, so the scan itself runs once
+    a day (a cache key), not every five minutes; `ReminderSent` still makes the
+    notices exactly-once if the cache is lost. Each part is isolated: one
+    failing must not stop the other. The contest reminders are
+    `contests.reminders.run`.
+    """
+    local = timezone.localtime(now or timezone.now())
+    day = local.date().isoformat()
+    parts: list[tuple[str, Callable[[datetime | None], int], str]] = [
+        ("streak_broken", streak_broken, f"notif:streak_broken:{day}"),
+    ]
+    if local.hour >= STREAK_WARN_HOUR:
+        parts.append(("streak_at_risk", streak_at_risk, f"notif:streak_at_risk:{day}"))
     result: dict[str, int] = {}
-    for name, part in (
-        ("streak_at_risk", streak_at_risk),
-        ("streak_broken", streak_broken),
-    ):
+    for name, part, key in parts:
+        if not cache.add(key, 1, 20 * 3600):
+            continue
         try:
             result[name] = part(now)
         except Exception:
             log.exception("vaqt xabari yiqildi: %s", name)
+            cache.delete(key)
             result[name] = -1
     return result

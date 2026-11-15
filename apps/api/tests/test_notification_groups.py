@@ -235,6 +235,30 @@ class TestReminders:
         assert reminders.prune() == 1
 
 
+class TestSchedulingGuards:
+    def test_a_draft_contest_notifies_nobody(self, person: User) -> None:
+        draft = _contest(timedelta(hours=1), hosts=[person], is_public=False)
+        ContestRegistration.objects.create(contest=draft, user=person)
+        contest_reminders.run()
+        assert _codes(person) == set()
+
+    def test_the_streak_scan_runs_once_a_day(self, person: User) -> None:
+        from django.core.cache import cache
+
+        cache.clear()
+        today = timezone.localdate()
+        User.objects.filter(pk=person.pk).update(
+            last_active_date=today - timedelta(days=1), streak_count=4
+        )
+        evening = _at(today, 20, 30)
+        assert reminders.run(evening)["streak_at_risk"] == 1
+        Notification.objects.filter(user=person).delete()
+        ReminderSent.objects.filter(user=person).delete()
+        assert "streak_at_risk" not in reminders.run(evening)  # the day's scan is done
+        cache.clear()
+        assert reminders.run(evening)["streak_at_risk"] == 1
+
+
 class TestDevicesAreAccountData:
     def test_anonymising_erases_and_the_export_lists_them(self, person: User) -> None:
         from core import account
