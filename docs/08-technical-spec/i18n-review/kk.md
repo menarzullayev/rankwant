@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3557 strings.**
+**3568 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -409,6 +409,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.openRatingBody` | Har bir reytingning formulasi ochiq va har o'zgarishning sababi yozib boriladi. | Әр рейтингтің формуласы ашық, әр өзгерістің себебі жазылып отырады. |  |
 | `home.popularProblems` | Mashhur masalalar | Танымал есептер |  |
 | `home.recentContests` | So'nggi musobaqalar | Соңғы жарыстар |  |
+| `home.heroTagline` | Reyting xohlaganlar uchun | Рейтинг қалайтындар үшін |  |
+| `home.heroHeadline` | Yeching. Musobaqalashing. Yuksaling. | Шеш. Жарыс. Өс. |  |
+| `home.heroLead` | Masala yeching, musobaqada qatnashing, ochiq reytingda o'sing. | Есеп шығарыңыз, жарысқа қатысыңыз, ашық рейтингте өсіңіз. |  |
+| `home.browseProblems` | Masalalarni ko'rish | Есептерді қарау |  |
+| `home.statLanguages` | dasturlash tili | бағдарламалау тілі |  |
+| `home.statProblems` | masala | есеп |  |
+| `home.statArticles` | o'quv maqolasi | оқу мақаласы |  |
+| `home.statInterface` | interfeys tili | интерфейс тілі |  |
+| `home.heroProblemLabel` | Namuna masala | Мысал есеп |  |
 | `site.title` | RankWant — reyting xohlaganlar uchun | RankWant — рейтинг қалайтындар үшін |  |
 | `site.description` | Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, musobaqa va ochiq reyting. | Спорттық бағдарламалау және информатика олимпиадалары платформасы: есептер архиві, жарыстар және ашық рейтинг. |  |
 | `problems.name` | Masala | Есеп |  |
@@ -2005,6 +2014,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.ownerRepo` | owner/repo | иесі/репозиторий |  |
 | `admin.text.eventFormStarted` | Forma boshlandi | Пішін басталды |  |
 | `admin.text.eventRegisterDone` | Ro'yxatdan o'tdi | Тіркелді |  |
+| `admin.text.eventHeroView` | Bosh sahifaning birinchi bloki ko'rildi | Басты беттің бірінші блогы көрсетілді |  |
+| `admin.text.eventHeroCta` | Birinchi blokdagi tugma bosildi | Бірінші блоктағы түймеге басылды |  |
 | `admin.text.eventSessions` | {name}: {sessions} sessiya, {share}% | {name}: {sessions} сессия, {share}% |  |
 | `admin.text.funnelDay` | {date}: {started} boshlandi, {done} tugadi | {date}: {started} бастады, {done} аяқтады |  |
 | `admin.text.reasonLoginTaken` | Login band | Логин бос емес |  |

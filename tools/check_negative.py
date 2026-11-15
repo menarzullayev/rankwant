@@ -3535,12 +3535,52 @@ def neg_decisions_web_filter_forgets_root_lockfile() -> tuple[bool, str]:
 
 
 def neg_decisions_home_users_label_reverts() -> tuple[bool, str]:
-    """The user count goes back under the «Reyting» label (found on the live page)."""
+    """The user count comes back to the guest page (it is mostly imported accounts)."""
     return _decision_broken(
         "apps/web/src/app/(site)/page.tsx",
-        'label={t(locale, "home.users")}',
-        'label={t(locale, "nav.leaderboard")}',
+        "articles: articles.count,",
+        "articles: stats.users,",
         "foydalanuvchilar soni",
+    )
+
+
+def neg_decisions_hero_loses_the_cta_measurement() -> tuple[bool, str]:
+    """The register button stops reporting its press."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/_home/HeroActions.tsx",
+        'onClick={() => track("home.hero_cta", { cta: "register" })}',
+        "onClick={() => undefined}",
+        "hero_cta",
+    )
+
+
+def neg_decisions_hero_loses_the_problem_card() -> tuple[bool, str]:
+    """The real problem card disappears from the hero."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/_home/GuestHero.tsx",
+        "{problem && <ProblemCard locale={locale} problem={problem} />}",
+        "{null}",
+        "masala kartasi",
+    )
+
+
+def neg_decisions_hero_shows_an_editor() -> tuple[bool, str]:
+    """A code editor appears in the guest hero (ADR-0054: guests do not see one)."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/_home/GuestHero.tsx",
+        'aria-label={t(locale, "home.heroProblemLabel")}',
+        'aria-label="x" data-demo="CodeEditor"',
+        "muharrir",
+    )
+
+
+def neg_decisions_funnel_forgets_the_hero() -> tuple[bool, str]:
+    """The staff funnel starts at the sign-up form again."""
+    return _decision_broken(
+        "apps/api/core/staff_views.py",
+        'FUNNEL = ("home.hero_view", "home.hero_cta", "auth.form_started", "auth.register_done")',
+        'FUNNEL = ("auth.form_started", "auth.register_done")',
+        "voronka bosh sahifa",
     )
 
 
@@ -9886,6 +9926,9 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/web/src/app/(site)/_home/GuestHero.tsx",
+    "apps/web/src/app/(site)/_home/HeroActions.tsx",
+    "apps/api/core/staff_views.py",
     "services/tts/server.py",
     "services/tts/supervisor.py",
     "services/tts/run.cmd",
@@ -10601,56 +10644,6 @@ def neg_decisions_topnav_drawer_unmounted() -> tuple[bool, str]:
         "        hidden={!isMobileOpen}",
         "        hidden={true}",
         "mobil panel foydalanishga yaroqli",
-    )
-
-
-# ── KPI grid: 4-up from `lg`, value steps down (owner decision 2026-09-18) ──
-
-_KPI_RULE = "KPI to'ri lg da 4 ustun"
-_VALUE_STEP = 'valueClassName="lg:text-2xl xl:text-title-sm"'
-
-
-def neg_decisions_kpi_grid_stuck_at_2up() -> tuple[bool, str]:
-    # Back to `xl` only: the measured 38 px above the fold, four cards on two
-    # rows across the whole 1024-1279 px laptop range.
-    return _decision_broken(
-        "apps/web/src/app/(site)/page.tsx",
-        "sm:grid-cols-2 lg:grid-cols-4",
-        "sm:grid-cols-2 xl:grid-cols-4",
-        _KPI_RULE,
-    )
-
-
-def neg_decisions_kpi_grid_3up_creeps_back() -> tuple[bool, str]:
-    # The measured-to-be-useless variant: four cards still take two rows, so
-    # it buys 0 px of vertical space and orphans the fourth card.
-    return _decision_broken(
-        "apps/web/src/app/(site)/page.tsx",
-        "sm:grid-cols-2 lg:grid-cols-4",
-        "sm:grid-cols-2 lg:grid-cols-3",
-        _KPI_RULE,
-    )
-
-
-def neg_decisions_kpi_card_value_step_lost() -> tuple[bool, str]:
-    # One card keeps a 30 px value in a 121 px column: an 8-digit counter
-    # overflows it. `replace(..., 1)` hits the first card only, leaving 3 of 4.
-    return _decision_broken(
-        "apps/web/src/app/(site)/page.tsx",
-        _VALUE_STEP,
-        "",
-        _KPI_RULE,
-    )
-
-
-def neg_decisions_kpi_value_prop_ignored() -> tuple[bool, str]:
-    # The prop is passed but never rendered — the kind of green that means
-    # nothing. Keep the template literal so the anchor still matches.
-    return _decision_broken(
-        "apps/web/src/components/ui/Card.tsx",
-        "`mt-1 text-title-sm font-bold rw-strong ${valueClassName}`",
-        "`mt-1 text-title-sm font-bold rw-strong`",
-        _KPI_RULE,
     )
 
 
@@ -14540,6 +14533,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("mehmon bosh sahifasi ommaviy mazmunni yo'qotsa tutilsin", neg_decisions_home_loses_public_content),
             ("yetakchilar test hisoblarni ko'rsatsa tutilsin", neg_decisions_leaderboard_lists_smoke_accounts),
             ("yetakchilar origin=demo hisoblarni ko'rsatsa tutilsin", neg_decisions_leaderboard_lists_demo_origin),
+            ("hero tugma bosilishini yozmasa tutilsin", neg_decisions_hero_loses_the_cta_measurement),
+            ("hero masala kartasini yo'qotsa tutilsin", neg_decisions_hero_loses_the_problem_card),
+            ("hero muharrir ko'rsatsa tutilsin", neg_decisions_hero_shows_an_editor),
+            ("voronka bosh sahifani unutsa tutilsin", neg_decisions_funnel_forgets_the_hero),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
             (
                 "runner compose'da rankwant label'i tushsa tutilsin",
@@ -14875,10 +14872,6 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("fon scroll'i qulflanmasa tutilsin", neg_decisions_drawer_scroll_lock_lost),
             ("scroll faqat sidenav bo'lsa tutilsin", neg_decisions_drawer_scroll_sidenav_only),
             ("topnav drawer unmount bo'lsa tutilsin", neg_decisions_topnav_drawer_unmounted),
-            ("KPI to'ri 2 ustunda qolsa tutilsin", neg_decisions_kpi_grid_stuck_at_2up),
-            ("KPI to'ri 3 ustunga qaytsa tutilsin", neg_decisions_kpi_grid_3up_creeps_back),
-            ("KPI raqami pog'onasi yo'qolsa tutilsin", neg_decisions_kpi_card_value_step_lost),
-            ("KPI raqam prop'i e'tiborsiz qolsa tutilsin", neg_decisions_kpi_value_prop_ignored),
             (
                 "profil `lg` da ikki ustunga qaytsa tutilsin",
                 neg_decisions_profile_two_columns_at_lg,

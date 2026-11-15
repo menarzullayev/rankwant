@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3557 strings.**
+**3568 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -409,6 +409,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.openRatingBody` | Har bir reytingning formulasi ochiq va har o'zgarishning sababi yozib boriladi. | Ар бир рейтингдин формуласы ачык, ар бир өзгөрүүнүн себеби жазылып турат. |  |
 | `home.popularProblems` | Mashhur masalalar | Популярдуу маселелер |  |
 | `home.recentContests` | So'nggi musobaqalar | Акыркы мелдештер |  |
+| `home.heroTagline` | Reyting xohlaganlar uchun | Рейтинг каалагандар үчүн |  |
+| `home.heroHeadline` | Yeching. Musobaqalashing. Yuksaling. | Чыгар. Мелдеш. Өс. |  |
+| `home.heroLead` | Masala yeching, musobaqada qatnashing, ochiq reytingda o'sing. | Маселе чыгарыңыз, мелдешке катышыңыз, ачык рейтингде өсүңүз. |  |
+| `home.browseProblems` | Masalalarni ko'rish | Маселелерди көрүү |  |
+| `home.statLanguages` | dasturlash tili | программалоо тили |  |
+| `home.statProblems` | masala | маселе |  |
+| `home.statArticles` | o'quv maqolasi | окуу макаласы |  |
+| `home.statInterface` | interfeys tili | интерфейс тили |  |
+| `home.heroProblemLabel` | Namuna masala | Үлгү маселе |  |
 | `site.title` | RankWant — reyting xohlaganlar uchun | RankWant — рейтинг каалагандар үчүн |  |
 | `site.description` | Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, musobaqa va ochiq reyting. | Спорттук программалоо жана информатика олимпиадаларынын платформасы: маселелер архиви, мелдештер жана ачык рейтинг. |  |
 | `problems.name` | Masala | Маселе |  |
@@ -2005,6 +2014,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.help.ownerRepo` | owner/repo | ээси/репозиторий |  |
 | `admin.text.eventFormStarted` | Forma boshlandi | Форма башталды |  |
 | `admin.text.eventRegisterDone` | Ro'yxatdan o'tdi | Катталды |  |
+| `admin.text.eventHeroView` | Bosh sahifaning birinchi bloki ko'rildi | Башкы беттин биринчи блогу көрсөтүлдү |  |
+| `admin.text.eventHeroCta` | Birinchi blokdagi tugma bosildi | Биринчи блоктогу баскыч басылды |  |
 | `admin.text.eventSessions` | {name}: {sessions} sessiya, {share}% | {name}: {sessions} сессия, {share}% |  |
 | `admin.text.funnelDay` | {date}: {started} boshlandi, {done} tugadi | {date}: {started} баштады, {done} бүтүрдү |  |
 | `admin.text.reasonLoginTaken` | Login band | Логин бош эмес |  |

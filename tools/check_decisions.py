@@ -930,71 +930,6 @@ def decisions_index_matches_files() -> str | None:
     return None
 
 
-def kpi_grid_steps_at_lg() -> str | None:
-    """The home KPI grid goes 4-up at `lg`, and its numbers shrink to match.
-
-    Measured in a live browser 2026-09-18 (1024x768, live origin): with
-    `sm:grid-cols-2 xl:grid-cols-4` the four cards stayed 2-up across
-    1024-1279 px, so the next section showed only 38 px above the fold. At
-    4-up it shows 216 px and the page is 178 px shorter.
-
-    A 3-up step was rejected BY MEASUREMENT, not by taste: four cards still
-    occupy two rows at 3 columns, so it buys exactly 0 px of vertical space
-    and leaves the fourth card alone on row two. Hence the explicit check that
-    no `lg:grid-cols-3` creeps back in as an "improvement".
-
-    The narrower card has a price. The value is `text-title-sm` (30 px bold,
-    ~17.2 px per digit) and a 4-up card is 121 px wide inside at 1024 px, so a
-    7-digit counter sits exactly on the edge (121/121) and 8 digits overflow.
-    The value therefore steps down to 24 px until `xl`. The last clause checks
-    that the component actually APPLIES the prop — a prop that is passed but
-    never rendered looks green while doing nothing.
-    """
-    grid = re.search(r'<section className="([^"]*sm:grid-cols-2[^"]*)"', read(HOME_MAIN))
-    if grid is None:
-        return f"{HOME_MAIN}: bosh sahifa KPI to'ri (`sm:grid-cols-2`) topilmadi"
-    classes = grid.group(1)
-    # Token bo'yicha tekshiriladi (sabab: `profil_kpi_grid_steps_at_xl` ga qarang).
-    tokens = classes.split()
-
-    if "lg:grid-cols-4" not in tokens:
-        return (
-            f"{HOME_MAIN}: KPI to'rida `lg:grid-cols-4` yo'q — 1024-1279 px da "
-            "kartalar 2 ustunda qolib, keyingi bo'limni pastga suradi"
-        )
-    if "lg:grid-cols-3" in tokens:
-        return (
-            f"{HOME_MAIN}: KPI to'rida `lg:grid-cols-3` bor — 4 karta baribir 2 "
-            "qatorni egallaydi (vertikal yutuq 0) va 4-karta yolg'iz qoladi"
-        )
-
-    # Every card in this section must opt in, otherwise the grid got denser
-    # while one number stayed 30 px and can now overflow.
-    section = read(HOME_MAIN).split('<section className="' + classes + '"', 1)[1]
-    section = section.split("</section>", 1)[0]
-    cards = section.count("<StatCard")
-    opted_in = section.count('valueClassName="lg:text-2xl xl:text-title-sm"')
-    if cards == 0:
-        return f"{HOME_MAIN}: KPI to'rida `StatCard` topilmadi"
-    if opted_in != cards:
-        return (
-            f"{HOME_MAIN}: KPI to'rining {cards} kartasidan {opted_in} tasida "
-            "`valueClassName` raqam pog'onasi bor — tor ustunda sanoq toshadi"
-        )
-
-    rendered = re.search(
-        r"<p className=\{`([^`]*)`\}>\{value\}</p>", read(STAT_CARD)
-    )
-    if rendered is None:
-        return f"{STAT_CARD}: `StatCard` raqami topilmadi"
-    if "valueClassName" not in rendered.group(1):
-        return (
-            f"{STAT_CARD}: `StatCard` `valueClassName` ni qo'llamaydi — prop "
-            "uzatiladi, lekin hech narsa qilmaydi"
-        )
-    return None
-
-
 def profile_sidebar_stacks_below_xl() -> str | None:
     """The profile stacks below `xl`; the 300 px sidebar returns at 1280.
 
@@ -1941,8 +1876,8 @@ def guest_home_is_honest_and_public() -> str | None:
     from a search engine: no problems, no algorithms.
     """
     page = read("apps/web/src/app/(site)/page.tsx")
-    if 'label={t(locale, "home.users")}' not in page:
-        return "bosh sahifa: foydalanuvchilar soni «Reyting» deb yozilgan — home.users yorlig'i kerak"
+    if "stats.users" in page or "<StatCard" in page:
+        return "bosh sahifa: foydalanuvchilar soni kartasi qaytgan — u asosan import qilingan hisoblar, halol emas"
     if "Har bir reytingning formulasi" in page or "qadam</Badge>" in page:
         return "bosh sahifa: matn sahifaga qattiq yozilgan — lug'atdan olinmasa alifbo aralashadi"
     for block in ("PopularProblems", "AlgorithmLibrary", "RecentContests"):
@@ -2000,6 +1935,37 @@ def site_head_follows_the_language() -> str | None:
         return "app/layout.tsx: o'zbekcha sarlavha yoki tavsif matni sahifaga qaytib yozilgan"
     if 'jsonLd(t(locale, "site.description"))' not in layout:
         return "app/layout.tsx: tuzilmaviy ma'lumot tavsifi tilga ergashmaydi"
+    return None
+
+
+def guest_hero_is_honest_and_measured() -> str | None:
+    """2026-11-15 (HITL, nine decisions): the guest hero, its card and its measurement.
+
+    Two columns from `lg`; the promise, two buttons and four capability numbers on the left
+    (never the user count), a REAL public problem on the right and NO code editor (ADR-0054).
+    The first block reports that it was seen and which button was pressed, so the staff funnel
+    starts there: seen, pressed, sign-up form, registered.
+    """
+    page = read("apps/web/src/app/(site)/page.tsx")
+    if "<GuestHero" not in page or "pickHeroProblem" not in page:
+        return "bosh sahifa: GuestHero yoki masala tanlovi yo'q — hero qaytadan eskirgan"
+    hero = read("apps/web/src/app/(site)/_home/GuestHero.tsx")
+    if "home.heroHeadline" not in hero or "<HeroActions" not in hero:
+        return "GuestHero.tsx: sarlavha yoki tugmalar yo'q"
+    if "<ProblemCard" not in hero:
+        return "GuestHero.tsx: haqiqiy masala kartasi yo'q — mahsulot ko'rinmaydi"
+    if "stats.users" in hero or "home.users" in hero:
+        return "GuestHero.tsx: foydalanuvchilar soni ko'rsatilmoqda — u halol emas"
+    if "CodeEditor" in hero or "<textarea" in hero or "monaco" in hero.lower():
+        return "GuestHero.tsx: mehmon heroda kod muharririni ko'radi — ADR-0054 buziladi"
+    actions = read("apps/web/src/app/(site)/_home/HeroActions.tsx")
+    if 'track("home.hero_view")' not in actions:
+        return "HeroActions.tsx: birinchi blok ko'rilgani yozilmaydi (hero_view)"
+    if actions.count('track("home.hero_cta"') < 2:
+        return "HeroActions.tsx: tugma bosilishi yozilmaydi (hero_cta, ikkala tugma)"
+    staff = read("apps/api/core/staff_views.py")
+    if '"home.hero_view", "home.hero_cta"' not in staff:
+        return "core/staff_views.py: voronka bosh sahifa qadamlaridan boshlanmaydi"
     return None
 
 
@@ -6032,7 +5998,6 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("vaqt tamg'alari bazadan", timestamps_come_from_bases),
     ("tor ekran 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
-    ("KPI to'ri lg da 4 ustun", kpi_grid_steps_at_lg),
     ("profil paneli xl gacha stekda", profile_sidebar_stacks_below_xl),
     ("diapazon bitta filtr", difficulty_range_counts_as_one_filter),
     ("brend headerda, footer uch ustun", brand_in_header_and_footer_columns),
@@ -6060,6 +6025,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("arxiv ro'yxat mehmon CDN keshi", problems_list_guest_cdn),
     ("bosh sahifa brauzer tiliga ergashadi", home_follows_browser_language),
     ("sayt sarlavhasi va tavsifi tilga ergashadi", site_head_follows_the_language),
+    ("mehmon heroi halol, ko'rinadigan va o'lchanadigan", guest_hero_is_honest_and_measured),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("qarorlar indeksi fayllarga mos", decisions_index_matches_files),

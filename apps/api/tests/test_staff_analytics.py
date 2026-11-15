@@ -33,6 +33,12 @@ def yoz(name: str, session: str, **props: object) -> AnalyticsEvent:
     return AnalyticsEvent.objects.create(name=name, session_key=session, props=props)
 
 
+def qadam(data: Any, name: str) -> Any:
+    """Voronkaning bitta qadami — nomi bilan: qadamlar tartibi o'zgarishi mumkin (2026-11-15
+    bosh sahifa hodisalari boshiga qo'shildi), nom esa o'zgarmaydi."""
+    return next(row for row in data["funnel"] if row["name"] == name)
+
+
 def sorov(staff: User, **params: str | int) -> Any:
     """Staff endpoint'iga so'rov.
 
@@ -75,8 +81,8 @@ class TestVoronka:
 
         data = sorov(staff).json()
 
-        started = data["funnel"][0]
-        done = data["funnel"][1]
+        started = qadam(data, "auth.form_started")
+        done = qadam(data, "auth.register_done")
         assert started["sessions"] == 1
         assert done["sessions"] == 1
 
@@ -87,25 +93,47 @@ class TestVoronka:
 
         data = sorov(staff).json()
 
-        assert data["funnel"][0]["sessions"] == 2
-        assert data["funnel"][1]["sessions"] == 1
+        assert qadam(data, "auth.form_started")["sessions"] == 2
+        assert qadam(data, "auth.register_done")["sessions"] == 1
 
     def test_ulush_birinchi_qadamga_nisbatan(self, staff: User) -> None:
         for i in range(4):
+            yoz("home.hero_view", f"s{i}")
+        for i in range(2):
             yoz("auth.form_started", f"s{i}")
         yoz("auth.register_done", "s0")
 
         data = sorov(staff).json()
 
-        assert data["funnel"][0]["share"] == 100.0
-        assert data["funnel"][1]["share"] == 25.0
+        # The first step is now the home hero's view (2026-11-15).
+        assert qadam(data, "home.hero_view")["share"] == 100.0
+        assert qadam(data, "auth.form_started")["share"] == 50.0
+        assert qadam(data, "auth.register_done")["share"] == 25.0
+
+    def test_bosh_sahifa_hodisalari_voronkaning_boshi(self, staff: User) -> None:
+        """Ko'rdi → tugmani bosdi → forma → ro'yxatdan o'tdi, bitta varaq identifikatori bilan."""
+        yoz("home.hero_view", "f:a")
+        yoz("home.hero_view", "f:b")
+        yoz("home.hero_cta", "f:a", cta="register")
+        yoz("home.hero_cta", "f:a", cta="browse")  # the same tab pressing twice counts once
+        yoz("auth.form_started", "f:a", mode="register")
+        yoz("auth.register_done", "f:a")
+
+        data = sorov(staff).json()
+
+        assert [row["name"] for row in data["funnel"]] == [
+            "home.hero_view",
+            "home.hero_cta",
+            "auth.form_started",
+            "auth.register_done",
+        ]
+        assert [row["sessions"] for row in data["funnel"]] == [2, 1, 1, 1]
 
     def test_bosh_hodisada_nolga_bolinmaydi(self, staff: User) -> None:
         """Hodisa bo'lmasa `share` 0 bo'lishi kerak — ZeroDivisionError emas."""
         data = sorov(staff).json()
 
-        assert data["funnel"][0]["sessions"] == 0
-        assert data["funnel"][0]["share"] == 0.0
+        assert all(row["sessions"] == 0 and row["share"] == 0.0 for row in data["funnel"])
         assert data["total_events"] == 0
 
     def test_oynadan_tashqari_hodisa_hisobga_olinmaydi(self, staff: User) -> None:
@@ -117,7 +145,7 @@ class TestVoronka:
 
         data = sorov(staff, days=30).json()
 
-        assert data["funnel"][0]["sessions"] == 1
+        assert qadam(data, "auth.form_started")["sessions"] == 1
 
 
 @pytest.mark.django_db
