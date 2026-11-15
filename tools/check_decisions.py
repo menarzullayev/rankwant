@@ -1984,6 +1984,25 @@ def home_follows_browser_language() -> str | None:
     return None
 
 
+def site_head_follows_the_language() -> str | None:
+    """2026-11-15: the site title, description and structured data follow the visitor's language.
+
+    Measured on the live site: after the home page began to follow the browser language,
+    `<title>`, `<meta name="description">`, `og:title` and the JSON-LD description stayed
+    Uzbek in every language, because `layout.tsx` held them as constants.
+    """
+    layout = read("apps/web/src/app/layout.tsx")
+    if 'const title = t(locale, "site.title");' not in layout:
+        return "app/layout.tsx: sayt sarlavhasi tilga ergashmaydi — qattiq yozilgan"
+    if 'const description = t(locale, "site.description");' not in layout:
+        return "app/layout.tsx: sayt tavsifi tilga ergashmaydi — qattiq yozilgan"
+    if "reyting xohlaganlar uchun" in layout or "Sport dasturlash va informatika" in layout:
+        return "app/layout.tsx: o'zbekcha sarlavha yoki tavsif matni sahifaga qaytib yozilgan"
+    if 'jsonLd(t(locale, "site.description"))' not in layout:
+        return "app/layout.tsx: tuzilmaviy ma'lumot tavsifi tilga ergashmaydi"
+    return None
+
+
 def sign_in_page_is_self_contained() -> str | None:
     """2026-10-04: `/login` is a two-column page without the site chrome.
 
@@ -6040,6 +6059,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("Vary Accept-Language chekkada", vary_accept_language_at_edge),
     ("arxiv ro'yxat mehmon CDN keshi", problems_list_guest_cdn),
     ("bosh sahifa brauzer tiliga ergashadi", home_follows_browser_language),
+    ("sayt sarlavhasi va tavsifi tilga ergashadi", site_head_follows_the_language),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("qarorlar indeksi fayllarga mos", decisions_index_matches_files),

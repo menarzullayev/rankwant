@@ -6,6 +6,7 @@ import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { getLocaleState } from "@/i18n/server";
 import { ALPHABET_COOKIE, alphabetFor, parseAlphabet } from "@/i18n/alphabet";
+import { t } from "@/i18n/messages";
 import { dictionaryUrl } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
 import { api, type AppearancePrefs } from "@/lib/api";
@@ -19,8 +20,6 @@ import { SITE_INDEXABLE, SITE_URL } from "@/lib/site";
 
 /** `theme.css` → `[data-style="clay"].dark[data-palette="graphite"]`. */
 const GRAPHITE_PALETTE = "graphite";
-
-const TITLE = "RankWant — reyting xohlaganlar uchun";
 
 /** Uslub shriftlari (`terminal`, `editorial`) va foydalanuvchi
  *  tanlaydigan shriftlar (`D13`) — ta'riflar `./fonts.ts` da.
@@ -39,10 +38,6 @@ const TITLE = "RankWant — reyting xohlaganlar uchun";
  *  uslublarga ta'sir qiladi, chunki `globals.css` da `[data-style]`
  *  bloklari `--rw-font` ni o'ziga yozadi va u ustun turadi.
  */
-const DESCRIPTION =
-  "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, " +
-  "musobaqa va ochiq reyting.";
-
 /** Ijtimoiy ulashish rasmi — `tools/og-image.py` bilan generatsiya
  *  qilinadi (1200×630). Statik: har sahifa uchun chekka render narxini
  *  to'lamaslik uchun zaxira qatlam bo'lib turadi, qimmatli marshrutlar
@@ -58,7 +53,7 @@ const OG_IMAGE = "/brand/og-default.png";
  *  Ataylab faqat `Organization` + `WebSite`: `Event` va
  *  `LearningResource` sahifa darajasida qo'shiladi, chunki ular
  *  sahifaning haqiqiy mazmunini bilishni talab qiladi. */
-const JSON_LD = {
+const jsonLd = (description: string) => ({
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -67,20 +62,25 @@ const JSON_LD = {
       name: "RankWant",
       url: SITE_URL,
       logo: `${SITE_URL}/brand/mark-512.png`,
-      description: DESCRIPTION,
+      description,
     },
     {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
       name: "RankWant",
-      description: DESCRIPTION,
+      description,
       publisher: { "@id": `${SITE_URL}/#organization` },
     },
   ],
-};
+});
 
 export async function generateMetadata(): Promise<Metadata> {
+  // Title and description follow the visitor's language (decision 2026-11-15): the
+  // home page is cached per language, so the head must be too.
+  const { locale } = await getLocaleState();
+  const title = t(locale, "site.title");
+  const description = t(locale, "site.description");
   // `metadataBase` bo'lmasa Next nisbiy `og:url` yozadi va Telegram
   // kabi mijozlar uni o'qiy olmaydi — ulashilgan havola yalang'och
   // manzil bo'lib chiqadi.
@@ -90,8 +90,8 @@ export async function generateMetadata(): Promise<Metadata> {
   // oladi, `LANG_PARAM_HEADER` esa faqat havola tilini qo'shadi.
   return {
     metadataBase: new URL(SITE_URL),
-    title: { default: TITLE, template: "%s · RankWant" },
-    description: DESCRIPTION,
+    title: { default: title, template: "%s · RankWant" },
+    description,
     // Until launch every page is noindex, nofollow (see SITE_INDEXABLE).
     robots: SITE_INDEXABLE ? undefined : { index: false, follow: false },
     alternates: await localeAlternatesFor("./"),
@@ -110,19 +110,19 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       siteName: "RankWant",
-      title: TITLE,
-      description: DESCRIPTION,
+      title,
+      description,
       url: "/",
       images: [
-        { url: OG_IMAGE, width: 1200, height: 630, alt: TITLE },
+        { url: OG_IMAGE, width: 1200, height: 630, alt: title },
       ],
     },
     // `summary_large_image` — rasm karta bo'ylab cho'ziladi. `summary`
     // bilan kichik kvadrat chiqadi va 1200×630 rasm mazmunsiz qolardi.
     twitter: {
       card: "summary_large_image",
-      title: TITLE,
-      description: DESCRIPTION,
+      title,
+      description,
       images: [OG_IMAGE],
     },
   };
@@ -294,7 +294,7 @@ export default async function RootLayout({
           // chiqarmaydi, shuning uchun qo'lda. `JSON.stringify` XSS
           // bermaydi: obyekt build paytida qurilgan, foydalanuvchi
           // kiritgan matn yo'q.
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(t(locale, "site.description"))) }}
         />
       </head>
       <body>

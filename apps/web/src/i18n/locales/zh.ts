@@ -396,6 +396,8 @@ export const zh: Record<MessageKey, string> = {
   "home.openRatingBody": "每项评分的公式都是公开的，每一次变动的原因都会记录下来。",
   "home.popularProblems": "热门题目",
   "home.recentContests": "最近的比赛",
+  "site.title": "RankWant — 为想要评分的人",
+  "site.description": "竞技编程与信息学奥林匹克平台：题库、比赛与公开评分。",
   "problems.name": "题目",
   "home.attempts": "提交",
   "home.start": "免费开始",

@@ -275,6 +275,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-15](docs/decisions/2026-11-15-language-variants.md) · Til variantlari: C++17/20, Java 8, C# 8/10, Rust 2024 qo'shildi (35 → 41), obrazga 0 MB; matritsa variantni katalogning o'z buyrug'i bilan isbotlaydi · `apps/api/problems/languages.py`
 - [2026-11-15](docs/decisions/2026-11-15-guest-home-honest-and-public.md) · Mehmon bosh sahifasi: yorliqlar halol, test hisoblar yetakchilarda yo'q, bo'sh bloklar yig'iladi, ommaviy mazmun (mashhur masalalar, algoritmlar, so'nggi musobaqalar) · `guest_home_is_honest_and_public`
 - [2026-11-15](docs/decisions/2026-11-15-home-follows-browser-language.md) · Bosh sahifa mehmon uchun brauzer tilida, `Vary: Accept-Language` bilan 10 tilga keshlanadi (`/` endi `uz` majburiy emas) · `home_follows_browser_language`
+- [2026-11-15](docs/decisions/2026-11-15-site-head-follows-language.md) · Sayt `<title>`, tavsif va JSON-LD mehmon tilida (manifest ataylab o'zbekcha) · `site_head_follows_the_language`
 
 ## Tekshiruvlar
 

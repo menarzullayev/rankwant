@@ -396,6 +396,8 @@ export const tr: Record<MessageKey, string> = {
   "home.openRatingBody": "Her puanlamanın formülü açıktır ve her değişikliğin nedeni kaydedilir.",
   "home.popularProblems": "Popüler problemler",
   "home.recentContests": "Son yarışmalar",
+  "site.title": "RankWant — reyting isteyenler için",
+  "site.description": "Yarışmalı programlama ve bilişim olimpiyatları platformu: problem arşivi, yarışmalar ve açık puanlama.",
   "problems.name": "Problem",
   "home.attempts": "Denemeler",
   "home.start": "Ücretsiz başla",
