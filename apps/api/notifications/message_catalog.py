@@ -8,9 +8,21 @@ and `settings.kind.*` for the kind names).
 
 CATALOG: dict[str, dict[str, dict[str, str]]] = {
     "en": {
+        "attempt_verdict_changed": {
+            "title": "Your attempt result changed — {problem}",
+            "body": "The new verdict is {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} wrote a new entry",
             "body": "@{user} published «{title}».",
+        },
+        "class_invite_cancelled": {
+            "title": "Invitation cancelled — “{classroom}”",
+            "body": "The invitation to the class was cancelled.",
+        },
+        "class_invited": {
+            "title": "Invitation to the class “{classroom}”",
+            "body": "@{user} invited you to join the class.",
         },
         "classroom_join_approved": {
             "title": "You joined {classroom}",
@@ -60,13 +72,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "“{contest}”: you were disqualified",
             "body": "Reason: {reason}",
         },
+        "contest_invited": {
+            "title": "Invitation to “{contest}”",
+            "body": "@{user} invited you to take part in the contest.",
+        },
+        "contest_moderator_invited": {
+            "title": "Moderator invitation — “{contest}”",
+            "body": "@{user} invited you to moderate the contest.",
+        },
+        "contest_moderator_removed": {
+            "title": "“{contest}”: you are no longer a moderator",
+            "body": "Your moderator role in this contest was removed.",
+        },
+        "contest_new": {
+            "title": "New contest: {contest}",
+            "body": "A new contest was announced. Registration is open.",
+        },
+        "contest_prize": {
+            "title": "“{contest}”: a prize for you",
+            "body": "You received a prize: {prize}.",
+        },
         "contest_question": {
             "title": "“{contest}”: a new question",
             "body": "Question: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "“{contest}”: the rating change was cancelled",
+            "body": "The rating change from this contest was taken back.",
+        },
         "contest_result": {
             "title": "{contest}: place {rank}, rating {delta}",
             "body": "Contests rating: {before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "“{contest}”: your participation changed",
+            "body": "The jury changed your participation status. Open the contest to see details.",
+        },
+        "contest_starts_in_day": {
+            "title": "“{contest}” starts tomorrow",
+            "body": "The contest you registered for starts in about a day.",
+        },
+        "contest_starts_in_hour": {
+            "title": "“{contest}” starts in an hour",
+            "body": "Be ready: the contest you registered for starts in about an hour.",
         },
         "contest_tester": {
             "title": "You were added as a tester of “{contest}”",
@@ -126,6 +174,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Hackathon score: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "Your contest “{contest}” is over",
+            "body": "The standings are final once the results are applied.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "Your contest “{contest}” starts in an hour",
+            "body": "Check the problems, the jury and the announcements before the start.",
+        },
+        "host_moderator_answered": {
+            "title": "“{contest}”: @{user} answered the invitation",
+            "body": "The moderator answered your invitation.",
+        },
+        "host_plagiarism_found": {
+            "title": "“{contest}”: {count} suspicious participations",
+            "body": "The anti-plagiarism check flagged {count} participations for review.",
+        },
+        "judge_access_ended": {
+            "title": "Judge access has ended",
+            "body": "Authoring and hosting tools are closed.",
+        },
+        "judge_access_ending": {
+            "title": "Judge access ends in {days} days",
+            "body": "Extend it to keep authoring and hosting.",
+        },
+        "judge_limit_reached": {
+            "title": "A judge limit is running out — {limit}",
+            "body": "Free up room or upgrade.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} joined “{classroom}”",
+            "body": "The student accepted your invitation.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} declined “{classroom}”",
+            "body": "The student declined your invitation.",
+        },
+        "my_class_student_left": {
+            "title": "@{user} left “{classroom}”",
+            "body": "The student left your class.",
+        },
+        "plan_activated": {
+            "title": "Plan activated — {plan}",
+            "body": "Thank you. The features of the plan are open.",
+        },
+        "plan_ended": {
+            "title": "Your plan has ended",
+            "body": "Paid features are switched off.",
+        },
+        "plan_ending": {
+            "title": "Your plan ends in {days} days",
+            "body": "Renew it to keep the paid features.",
+        },
+        "problem_archived": {
+            "title": "Your problem was archived — {problem}",
+            "body": "It is no longer in the public list.",
+        },
         "problem_rerated": {
             "title": "Your Skills rating changed by {delta}",
             "body": "A problem you solved was re-rated. Skills: {before} → {after}. This was not your action — the difficulty was updated from statistics.",
@@ -134,9 +238,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Review requested — {problem}",
             "body": "@{user} sent the draft “{problem}” for review.",
         },
+        "quiz_invited": {
+            "title": "Invitation to a test — {quiz}",
+            "body": "@{user} invited you to take the test.",
+        },
+        "quiz_published": {
+            "title": "Your test is public — {quiz}",
+            "body": "Anyone can open it now.",
+        },
+        "report_on_my_content": {
+            "title": "A report on your content — {object}",
+            "body": "Someone reported it. Staff will review it.",
+        },
+        "report_resolved": {
+            "title": "The report about your content was resolved — {object}",
+            "body": "Staff closed the report.",
+        },
+        "report_reviewed": {
+            "title": "Your report was reviewed — {object}",
+            "body": "Staff looked at your report.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Account deletion was cancelled",
+            "body": "Your account stays as it is.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Account deletion is scheduled",
+            "body": "Your account will be deleted on {date}. You can cancel before then.",
+        },
+        "security_email_changed": {
+            "title": "Your account email was changed",
+            "body": "The new address is {email}.",
+        },
+        "security_new_device": {
+            "title": "New sign-in to your account",
+            "body": "Signed in from a new device: {device}. If it was not you, change your password.",
+        },
+        "security_password_changed": {
+            "title": "Your password was changed",
+            "body": "If it was not you, reset your password right away.",
+        },
+        "security_password_reset": {
+            "title": "Your password was reset",
+            "body": "A new password was set with the reset link. If it was not you, contact us.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram was linked",
+            "body": "A Telegram account was linked to your profile.",
+        },
         "streak": {
             "title": "{days}-day streak!",
             "body": "Qvant was added for the streak milestone.",
+        },
+        "streak_at_risk": {
+            "title": "Your {days}-day streak is about to break",
+            "body": "Solve one problem today to keep it.",
+        },
+        "streak_broken": {
+            "title": "Your {days}-day streak ended",
+            "body": "Start a new one with a problem today.",
+        },
+        "team_captain": {
+            "title": "You are now the captain of “{team}”",
+            "body": "You can manage the team's roster.",
+        },
+        "team_invite_answered": {
+            "title": "@{user} answered the invitation to “{team}”",
+            "body": "Open the team to see the answer.",
+        },
+        "team_invite_cancelled": {
+            "title": "Invitation cancelled — “{team}”",
+            "body": "The invitation to the team was cancelled.",
+        },
+        "team_invited": {
+            "title": "Invitation to the team “{team}”",
+            "body": "@{user} invited you to join the team.",
         },
         "tutor_budget": {
             "title": "AI tutor budget: {percent} %",
@@ -144,9 +320,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "es": {
+        "attempt_verdict_changed": {
+            "title": "El resultado de tu intento cambió — {problem}",
+            "body": "El nuevo veredicto es {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} publicó una entrada",
             "body": "@{user} publicó «{title}».",
+        },
+        "class_invite_cancelled": {
+            "title": "Invitación cancelada — «{classroom}»",
+            "body": "Se canceló la invitación a la clase.",
+        },
+        "class_invited": {
+            "title": "Invitación a la clase «{classroom}»",
+            "body": "@{user} te invitó a unirte a la clase.",
         },
         "classroom_join_approved": {
             "title": "Ha entrado en la clase — {classroom}",
@@ -196,13 +384,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: fuiste descalificado",
             "body": "Motivo: {reason}",
         },
+        "contest_invited": {
+            "title": "Invitación a «{contest}»",
+            "body": "@{user} te invitó a participar en el concurso.",
+        },
+        "contest_moderator_invited": {
+            "title": "Invitación de moderador — «{contest}»",
+            "body": "@{user} te invitó a moderar el concurso.",
+        },
+        "contest_moderator_removed": {
+            "title": "«{contest}»: ya no eres moderador",
+            "body": "Se retiró tu rol de moderador en este concurso.",
+        },
+        "contest_new": {
+            "title": "Nuevo concurso: {contest}",
+            "body": "Se anunció un nuevo concurso. El registro está abierto.",
+        },
+        "contest_prize": {
+            "title": "«{contest}»: un premio para ti",
+            "body": "Recibiste un premio: {prize}.",
+        },
         "contest_question": {
             "title": "«{contest}»: nueva pregunta",
             "body": "Pregunta: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "«{contest}»: se canceló el cambio de rating",
+            "body": "Se revirtió el cambio de rating de este concurso.",
+        },
         "contest_result": {
             "title": "{contest}: puesto {rank}, rating {delta}",
             "body": "Rating de Contests: {before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "«{contest}»: tu participación cambió",
+            "body": "El jurado cambió el estado de tu participación. Abre el concurso para ver los detalles.",
+        },
+        "contest_starts_in_day": {
+            "title": "«{contest}» comienza mañana",
+            "body": "El concurso en el que te registraste comienza en aproximadamente un día.",
+        },
+        "contest_starts_in_hour": {
+            "title": "«{contest}» comienza en una hora",
+            "body": "Prepárate: el concurso en el que te registraste comienza en aproximadamente una hora.",
         },
         "contest_tester": {
             "title": "Te añadieron como probador de «{contest}»",
@@ -262,6 +486,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Puntuación del hackatón: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "Tu concurso «{contest}» terminó",
+            "body": "La clasificación será final una vez que se apliquen los resultados.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "Tu concurso «{contest}» comienza en una hora",
+            "body": "Revisa los problemas, el jurado y los anuncios antes del inicio.",
+        },
+        "host_moderator_answered": {
+            "title": "«{contest}»: @{user} respondió a la invitación",
+            "body": "El moderador respondió a tu invitación.",
+        },
+        "host_plagiarism_found": {
+            "title": "«{contest}»: {count} participaciones sospechosas",
+            "body": "La verificación antiplagio marcó {count} participaciones para revisión.",
+        },
+        "judge_access_ended": {
+            "title": "El acceso de juez terminó",
+            "body": "Las herramientas de autoría y organización están cerradas.",
+        },
+        "judge_access_ending": {
+            "title": "El acceso de juez termina en {days} días",
+            "body": "Amplíalo para seguir creando y organizando.",
+        },
+        "judge_limit_reached": {
+            "title": "Un límite de juez se está agotando — {limit}",
+            "body": "Libera espacio o mejora tu plan.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} se unió a «{classroom}»",
+            "body": "El estudiante aceptó tu invitación.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} rechazó «{classroom}»",
+            "body": "El estudiante rechazó tu invitación.",
+        },
+        "my_class_student_left": {
+            "title": "@{user} salió de «{classroom}»",
+            "body": "El estudiante salió de tu clase.",
+        },
+        "plan_activated": {
+            "title": "Plan activado — {plan}",
+            "body": "Gracias. Las funciones del plan están abiertas.",
+        },
+        "plan_ended": {
+            "title": "Tu plan terminó",
+            "body": "Las funciones de pago están desactivadas.",
+        },
+        "plan_ending": {
+            "title": "Tu plan termina en {days} días",
+            "body": "Renuévalo para conservar las funciones de pago.",
+        },
+        "problem_archived": {
+            "title": "Tu problema fue archivado — {problem}",
+            "body": "Ya no aparece en la lista pública.",
+        },
         "problem_rerated": {
             "title": "Tu rating de Skills cambió en {delta}",
             "body": "Un problema que resolviste fue reevaluado. Skills: {before} → {after}. No fue una acción tuya: la dificultad se actualizó según las estadísticas.",
@@ -270,9 +550,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Revisión solicitada: {problem}",
             "body": "@{user} envió el borrador «{problem}» a revisión.",
         },
+        "quiz_invited": {
+            "title": "Invitación a una prueba — {quiz}",
+            "body": "@{user} te invitó a hacer la prueba.",
+        },
+        "quiz_published": {
+            "title": "Tu prueba es pública — {quiz}",
+            "body": "Ahora cualquiera puede abrirla.",
+        },
+        "report_on_my_content": {
+            "title": "Un reporte sobre tu contenido — {object}",
+            "body": "Alguien lo reportó. El personal lo revisará.",
+        },
+        "report_resolved": {
+            "title": "El reporte sobre tu contenido fue resuelto — {object}",
+            "body": "El personal cerró el reporte.",
+        },
+        "report_reviewed": {
+            "title": "Tu reporte fue revisado — {object}",
+            "body": "El personal revisó tu reporte.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Eliminación de cuenta cancelada",
+            "body": "Tu cuenta permanece como estaba.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Eliminación de cuenta programada",
+            "body": "Tu cuenta se eliminará el {date}. Puedes cancelarlo antes de esa fecha.",
+        },
+        "security_email_changed": {
+            "title": "El correo de tu cuenta fue cambiado",
+            "body": "La nueva dirección es {email}.",
+        },
+        "security_new_device": {
+            "title": "Nuevo inicio de sesión en tu cuenta",
+            "body": "Iniciaron sesión desde un nuevo dispositivo: {device}. Si no fuiste tú, cambia tu contraseña.",
+        },
+        "security_password_changed": {
+            "title": "Tu contraseña fue cambiada",
+            "body": "Si no fuiste tú, restablece tu contraseña de inmediato.",
+        },
+        "security_password_reset": {
+            "title": "Tu contraseña fue restablecida",
+            "body": "Se estableció una nueva contraseña con el enlace de restablecimiento. Si no fuiste tú, contáctanos.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram vinculado",
+            "body": "Se vinculó una cuenta de Telegram a tu perfil.",
+        },
         "streak": {
             "title": "¡Racha de {days} días!",
             "body": "Se añadió Qvant por el logro de racha.",
+        },
+        "streak_at_risk": {
+            "title": "Tu racha de {days} días está a punto de romperse",
+            "body": "Resuelve un problema hoy para mantenerla.",
+        },
+        "streak_broken": {
+            "title": "Tu racha de {days} días terminó",
+            "body": "Empieza una nueva resolviendo un problema hoy.",
+        },
+        "team_captain": {
+            "title": "Ahora eres el capitán de «{team}»",
+            "body": "Puedes gestionar la plantilla del equipo.",
+        },
+        "team_invite_answered": {
+            "title": "@{user} respondió a la invitación a «{team}»",
+            "body": "Abre el equipo para ver la respuesta.",
+        },
+        "team_invite_cancelled": {
+            "title": "Invitación cancelada — «{team}»",
+            "body": "Se canceló la invitación al equipo.",
+        },
+        "team_invited": {
+            "title": "Invitación al equipo «{team}»",
+            "body": "@{user} te invitó a unirte al equipo.",
         },
         "tutor_budget": {
             "title": "Presupuesto del tutor IA: {percent} %",
@@ -280,9 +632,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kaa": {
+        "attempt_verdict_changed": {
+            "title": "Urınıwıńızdıń nátiyjesi ózgerdi — {problem}",
+            "body": "Jańa verdikt: {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} jańa post jazdı",
             "body": "@{user} «{title}» atlı jańa post jazdı.",
+        },
+        "class_invite_cancelled": {
+            "title": "Shaqırıw biykar etildi — «{classroom}»",
+            "body": "Klasqa shaqırıw biykar etildi.",
+        },
+        "class_invited": {
+            "title": "«{classroom}» klasına shaqırıw",
+            "body": "@{user} sizdi klasqa qosılıwǵa shaqırdı.",
         },
         "classroom_join_approved": {
             "title": "Klasqa qabıl etildińiz — {classroom}",
@@ -332,13 +696,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: siz shetletildińiz",
             "body": "Sebep: {reason}",
         },
+        "contest_invited": {
+            "title": "«{contest}» jarısına shaqırıw",
+            "body": "@{user} sizdi jarısta qatnasıwǵa shaqırdı.",
+        },
+        "contest_moderator_invited": {
+            "title": "Moderatorlıqqa shaqırıw — «{contest}»",
+            "body": "@{user} sizdi jarıs moderatorı bolıwǵa shaqırdı.",
+        },
+        "contest_moderator_removed": {
+            "title": "«{contest}»: siz endi moderator emessiz",
+            "body": "Bul jarıstaǵı moderatorlıq rolińiz alıp taslandı.",
+        },
+        "contest_new": {
+            "title": "Jańa jarıs: {contest}",
+            "body": "Jańa jarıs járiyalandı. Dizimnen ótiw ashıq.",
+        },
+        "contest_prize": {
+            "title": "«{contest}»: sizge sıylıq",
+            "body": "Siz sıylıq aldıńız: {prize}.",
+        },
         "contest_question": {
             "title": "«{contest}»: jańa soraw",
             "body": "Soraw: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "«{contest}»: reyting ózgeriwi biykar etildi",
+            "body": "Bul jarıstaǵı reyting ózgeriwi qaytarıp alındı.",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-orın, reyting {delta}",
             "body": "Contests reytingi: {before} → {after}.",
+        },
+        "contest_standing_changed": {
+            "title": "«{contest}»: qatnasıwıńız ózgerdi",
+            "body": "Tóreshiler qatnasıw jaǵdayıńızdı ózgertti. Tolıq maǵlıwmat jarıs betinde.",
+        },
+        "contest_starts_in_day": {
+            "title": "«{contest}» erteń baslanadı",
+            "body": "Dizimnen ótken jarısıńız shama menen bir kúnnen keyin baslanadı.",
+        },
+        "contest_starts_in_hour": {
+            "title": "«{contest}» bir saattan keyin baslanadı",
+            "body": "Tayın bolıń: dizimnen ótken jarısıńız shama menen bir saattan keyin baslanadı.",
         },
         "contest_tester": {
             "title": "Siz «{contest}» jarısına testlewshi bolıp qosıldıńız",
@@ -398,6 +798,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Xakaton bahası: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "«{contest}» jarısıńız tamamlandı",
+            "body": "Nátiyjeler qollanılǵannan keyin keste juwmaqlawshı boladı.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "«{contest}» jarısıńız bir saattan keyin baslanadı",
+            "body": "Baslanıwdan aldın másele, tóreshi hám daǵazalardı tekseriń.",
+        },
+        "host_moderator_answered": {
+            "title": "«{contest}»: @{user} shaqırıwǵa juwap berdi",
+            "body": "Moderator shaqırıwıńızǵa juwap berdi.",
+        },
+        "host_plagiarism_found": {
+            "title": "«{contest}»: {count} gúmanlı qatnasıw",
+            "body": "Antiplagiat tekseriwi {count} qatnasıwdı kórip shıǵıw ushın belgiledi.",
+        },
+        "judge_access_ended": {
+            "title": "Tóreshi ruxsatı tawsıldı",
+            "body": "Mualliflik hám shólkemlestiriwshilik quralları jabıldı.",
+        },
+        "judge_access_ending": {
+            "title": "Tóreshi ruxsatı tawsılıwına {days} kún qaldı",
+            "body": "Mualliflik hám shólkemlestiriwshilikti saqlaw ushın uzartıń.",
+        },
+        "judge_limit_reached": {
+            "title": "Tóreshi limiti tawsılıp atır — {limit}",
+            "body": "Orın bosatıń yamasa tarifti asırıń.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} «{classroom}» klasına qosıldı",
+            "body": "Oqıwshı shaqırıwıńızdı qabıllaw etti.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} «{classroom}» klasına qosılmadı",
+            "body": "Oqıwshı shaqırıwıńızdı biykarladı.",
+        },
+        "my_class_student_left": {
+            "title": "@{user} «{classroom}» klasınan shıqtı",
+            "body": "Oqıwshı klasıńızdan shıǵıp ketti.",
+        },
+        "plan_activated": {
+            "title": "Tarif rásmiylestirildi — {plan}",
+            "body": "Raxmet. Tarif imkaniyatları ashıldı.",
+        },
+        "plan_ended": {
+            "title": "Tarifińiz tawsıldı",
+            "body": "Pullı imkaniyatlar óshirildi.",
+        },
+        "plan_ending": {
+            "title": "Tarifińiz tawsılıwına {days} kún qaldı",
+            "body": "Pullı imkaniyatlardı saqlaw ushın jańalań.",
+        },
+        "problem_archived": {
+            "title": "Máseléńiz arxivke qoyıldı — {problem}",
+            "body": "Ol endi ulıwma dizimde kórinbeydi.",
+        },
         "problem_rerated": {
             "title": "Skills reytingińiz {delta} ge ózgerdi",
             "body": "Siz sheshken másele qayta bahalandı. Skills: {before} → {after}. Bul sizdiń háreketińiz emes — másele qıyınlıǵı statistika tiykarında jańalandı.",
@@ -406,9 +862,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Tekseriw soraldı — {problem}",
             "body": "@{user} «{problem}» jobasın tekseriwge jiberdi.",
         },
+        "quiz_invited": {
+            "title": "Testke shaqırıw — {quiz}",
+            "body": "@{user} sizdi testti tapsırıwǵa shaqırdı.",
+        },
+        "quiz_published": {
+            "title": "Testińiz ulıwma etildi — {quiz}",
+            "body": "Endi oni hárkim ashıwı múmkin.",
+        },
+        "report_on_my_content": {
+            "title": "Kontentińizge shaǵım — {object}",
+            "body": "Birew shaǵım etti. Xızmetkerler kórip shıǵadı.",
+        },
+        "report_resolved": {
+            "title": "Kontentińiz haqqındaǵı shaǵım sheshildi — {object}",
+            "body": "Xızmetkerler shaǵımdı jawdı.",
+        },
+        "report_reviewed": {
+            "title": "Shaǵımıńız kórip shıǵıldı — {object}",
+            "body": "Xızmetkerler shaǵımıńızdı kórip shıqtı.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Akkauntı óshiriw biykar etildi",
+            "body": "Akkauntıńız óz halında qaladı.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Akkauntı óshiriw josparlandı",
+            "body": "Akkauntıńız {date} kúni óshiriledi. Sol kúnge shekem biykar etiwińiz múmkin.",
+        },
+        "security_email_changed": {
+            "title": "Akkaunt e-poçtası ózgertildi",
+            "body": "Jańa mánzil: {email}.",
+        },
+        "security_new_device": {
+            "title": "Akkauntıńızǵa jańa qurılmadan kirildi",
+            "body": "Jańa qurılmadan kirildi: {device}. Bul siz bolmasańız, parolıńızdı ózgertiń.",
+        },
+        "security_password_changed": {
+            "title": "Parolıńız ózgertildi",
+            "body": "Bul siz bolmasańız, parolıńızdı derlew tiklep alıń.",
+        },
+        "security_password_reset": {
+            "title": "Parolıńız tiklendi",
+            "body": "Jańa parol tiklew siltemesi arqalı ornatıldı. Bul siz bolmasańız, biz benen baylanısıń.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram baylanıstırıldı",
+            "body": "Profilińizge Telegram akkaunt baylanıstırıldı.",
+        },
         "streak": {
             "title": "{days} kúnlik streak!",
             "body": "Streak jetiskenligi ushın Qvant qosıldı.",
+        },
+        "streak_at_risk": {
+            "title": "{days} kúnlik streakińiz úziliw aldında",
+            "body": "Saqlap qalıw ushın búgin bir másele sheshiń.",
+        },
+        "streak_broken": {
+            "title": "{days} kúnlik streakińiz úzildi",
+            "body": "Búgin másele sheship, jańasın baslań.",
+        },
+        "team_captain": {
+            "title": "Siz «{team}» komandasınıń kapitanısız",
+            "body": "Komanda quramın basqara alasız.",
+        },
+        "team_invite_answered": {
+            "title": "@{user} «{team}» shaqırıwına juwap berdi",
+            "body": "Juwaptı kóriw ushın komandanı ashıń.",
+        },
+        "team_invite_cancelled": {
+            "title": "Shaqırıw biykar etildi — «{team}»",
+            "body": "Komandaǵa shaqırıw biykar etildi.",
+        },
+        "team_invited": {
+            "title": "«{team}» komandasına shaqırıw",
+            "body": "@{user} sizdi komandaǵa qosılıwǵa shaqırdı.",
         },
         "tutor_budget": {
             "title": "AI ustaz byudjeti: {percent} %",
@@ -416,9 +944,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "kk": {
+        "attempt_verdict_changed": {
+            "title": "Әрекетіңіздің нәтижесі өзгерді — {problem}",
+            "body": "Жаңа вердикт: {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} жаңа жазба жазды",
             "body": "@{user} «{title}» жазбасын жариялады.",
+        },
+        "class_invite_cancelled": {
+            "title": "Шақыру тоқтатылды — «{classroom}»",
+            "body": "Сыныпқа шақыру тоқтатылды.",
+        },
+        "class_invited": {
+            "title": "«{classroom}» сыныбына шақыру",
+            "body": "@{user} сізді сыныпқа қосылуға шақырды.",
         },
         "classroom_join_approved": {
             "title": "Сыныпқа қабылдандыңыз — {classroom}",
@@ -468,13 +1008,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: сіз шеттетілдіңіз",
             "body": "Себеп: {reason}",
         },
+        "contest_invited": {
+            "title": "«{contest}» жарысына шақыру",
+            "body": "@{user} сізді жарысқа қатысуға шақырды.",
+        },
+        "contest_moderator_invited": {
+            "title": "Модераторлыққа шақыру — «{contest}»",
+            "body": "@{user} сізді жарыс модераторы болуға шақырды.",
+        },
+        "contest_moderator_removed": {
+            "title": "«{contest}»: сіз енді модератор емессіз",
+            "body": "Осы жарыстағы модераторлық рөліңіз алынып тасталды.",
+        },
+        "contest_new": {
+            "title": "Жаңа жарыс: {contest}",
+            "body": "Жаңа жарыс жарияланды. Тіркеу ашық.",
+        },
+        "contest_prize": {
+            "title": "«{contest}»: сізге сыйлық",
+            "body": "Сіз сыйлық алдыңыз: {prize}.",
+        },
         "contest_question": {
             "title": "«{contest}»: жаңа сұрақ",
             "body": "Сұрақ: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "«{contest}»: рейтинг өзгерісі күшін жойды",
+            "body": "Осы жарыстағы рейтинг өзгерісі кері қайтарылды.",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-орын, рейтинг {delta}",
             "body": "Contests рейтингі: {before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "«{contest}»: қатысуыңыз өзгерді",
+            "body": "Қазылар қатысу мәртебеңізді өзгертті. Толығырақ жарыс бетінде.",
+        },
+        "contest_starts_in_day": {
+            "title": "«{contest}» ертең басталады",
+            "body": "Тіркелген жарысыңыз шамамен бір күннен кейін басталады.",
+        },
+        "contest_starts_in_hour": {
+            "title": "«{contest}» бір сағаттан кейін басталады",
+            "body": "Дайын болыңыз: тіркелген жарысыңыз шамамен бір сағаттан кейін басталады.",
         },
         "contest_tester": {
             "title": "Сіз «{contest}» жарысына тестер ретінде қосылдыңыз",
@@ -534,6 +1110,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Хакатон бағасы: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "«{contest}» жарысыңыз аяқталды",
+            "body": "Нәтижелер қолданылғаннан кейін кесте түпкілікті болады.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "«{contest}» жарысыңыз бір сағаттан кейін басталады",
+            "body": "Басталмай тұрып есептерді, қазыларды және хабарландыруларды тексеріңіз.",
+        },
+        "host_moderator_answered": {
+            "title": "«{contest}»: @{user} шақыруға жауап берді",
+            "body": "Модератор шақыруыңызға жауап берді.",
+        },
+        "host_plagiarism_found": {
+            "title": "«{contest}»: {count} күмәнді қатысу",
+            "body": "Плагиатқа қарсы тексеру {count} қатысуды қарауға белгіледі.",
+        },
+        "judge_access_ended": {
+            "title": "Төреші рұқсаты аяқталды",
+            "body": "Авторлық және ұйымдастырушылық құралдары жабылды.",
+        },
+        "judge_access_ending": {
+            "title": "Төреші рұқсатының аяқталуына {days} күн қалды",
+            "body": "Авторлық пен ұйымдастырушылықты сақтау үшін ұзартыңыз.",
+        },
+        "judge_limit_reached": {
+            "title": "Төреші лимиті таусылып барады — {limit}",
+            "body": "Орын босатыңыз немесе тарифті жоғарылатыңыз.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} «{classroom}» сыныбына қосылды",
+            "body": "Оқушы шақыруыңызды қабылдады.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} «{classroom}» сыныбына қосылмады",
+            "body": "Оқушы шақыруыңызды қабылдамады.",
+        },
+        "my_class_student_left": {
+            "title": "@{user} «{classroom}» сыныбынан шықты",
+            "body": "Оқушы сыныбыңыздан шығып кетті.",
+        },
+        "plan_activated": {
+            "title": "Тариф рәсімделді — {plan}",
+            "body": "Рахмет. Тариф мүмкіндіктері ашылды.",
+        },
+        "plan_ended": {
+            "title": "Тарифіңіз аяқталды",
+            "body": "Ақылы мүмкіндіктер өшірілді.",
+        },
+        "plan_ending": {
+            "title": "Тарифіңіздің аяқталуына {days} күн қалды",
+            "body": "Ақылы мүмкіндіктерді сақтау үшін оны жаңартыңыз.",
+        },
+        "problem_archived": {
+            "title": "Есебіңіз мұрағатқа жіберілді — {problem}",
+            "body": "Ол енді жалпыға ортақ тізімде көрінбейді.",
+        },
         "problem_rerated": {
             "title": "Skills рейтингіңіз {delta} өзгерді",
             "body": "Сіз шешкен есеп қайта бағаланды. Skills: {before} → {after}. Бұл сіздің әрекетіңіз емес — есеп қиындығы статистика бойынша жаңартылды.",
@@ -542,9 +1174,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Тексеру сұралды — {problem}",
             "body": "@{user} «{problem}» жобасын тексеруге жіберді.",
         },
+        "quiz_invited": {
+            "title": "Тестке шақыру — {quiz}",
+            "body": "@{user} сізді тестті тапсыруға шақырды.",
+        },
+        "quiz_published": {
+            "title": "Тестіңіз жалпыға ортақ етілді — {quiz}",
+            "body": "Енді оны кез келген адам аша алады.",
+        },
+        "report_on_my_content": {
+            "title": "Контентіңізге шағым — {object}",
+            "body": "Біреу шағымданды. Қызметкерлер қарайды.",
+        },
+        "report_resolved": {
+            "title": "Контентіңіз туралы шағым шешілді — {object}",
+            "body": "Қызметкерлер шағымды жапты.",
+        },
+        "report_reviewed": {
+            "title": "Шағымыңыз қаралды — {object}",
+            "body": "Қызметкерлер шағымыңызды қарады.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Аккаунтты жою тоқтатылды",
+            "body": "Аккаунтыңыз бұрынғы қалпында қалады.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Аккаунтты жою жоспарланды",
+            "body": "Аккаунтыңыз {date} күні жойылады. Осы күнге дейін бас тартуға болады.",
+        },
+        "security_email_changed": {
+            "title": "Аккаунттың электрондық поштасы өзгертілді",
+            "body": "Жаңа мекенжай: {email}.",
+        },
+        "security_new_device": {
+            "title": "Аккаунтыңызға жаңа кіру",
+            "body": "Жаңа құрылғыдан кірілді: {device}. Бұл сіз болмасаңыз, құпиясөзді өзгертіңіз.",
+        },
+        "security_password_changed": {
+            "title": "Құпиясөзіңіз өзгертілді",
+            "body": "Бұл сіз болмасаңыз, құпиясөзді дереу қалпына келтіріңіз.",
+        },
+        "security_password_reset": {
+            "title": "Құпиясөзіңіз қалпына келтірілді",
+            "body": "Жаңа құпиясөз қалпына келтіру сілтемесі арқылы орнатылды. Бұл сіз болмасаңыз, бізбен хабарласыңыз.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram байланыстырылды",
+            "body": "Профиліңізге Telegram аккаунты байланыстырылды.",
+        },
         "streak": {
             "title": "{days} күндік серия!",
             "body": "Серия жетістігі үшін Qvant қосылды.",
+        },
+        "streak_at_risk": {
+            "title": "{days} күндік серияңыз үзілейін деп тұр",
+            "body": "Сақтап қалу үшін бүгін бір есеп шешіңіз.",
+        },
+        "streak_broken": {
+            "title": "{days} күндік серияңыз үзілді",
+            "body": "Бүгін есеп шешіп, жаңасын бастаңыз.",
+        },
+        "team_captain": {
+            "title": "Сіз «{team}» командасының капитанысыз",
+            "body": "Команда құрамын басқара аласыз.",
+        },
+        "team_invite_answered": {
+            "title": "@{user} «{team}» шақыруына жауап берді",
+            "body": "Жауапты көру үшін команданы ашыңыз.",
+        },
+        "team_invite_cancelled": {
+            "title": "Шақыру тоқтатылды — «{team}»",
+            "body": "Командаға шақыру тоқтатылды.",
+        },
+        "team_invited": {
+            "title": "«{team}» командасына шақыру",
+            "body": "@{user} сізді командаға қосылуға шақырды.",
         },
         "tutor_budget": {
             "title": "AI ұстаз бюджеті: {percent} %",
@@ -552,9 +1256,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ky": {
+        "attempt_verdict_changed": {
+            "title": "Аракетиңиздин жыйынтыгы өзгөрдү — {problem}",
+            "body": "Жаңы вердикт: {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} жаңы жазуу жазды",
             "body": "@{user} «{title}» жазуусун жарыялады.",
+        },
+        "class_invite_cancelled": {
+            "title": "Чакыруу жокко чыгарылды — «{classroom}»",
+            "body": "Класска чакыруу жокко чыгарылды.",
+        },
+        "class_invited": {
+            "title": "«{classroom}» классына чакыруу",
+            "body": "@{user} сизди класска кошулууга чакырды.",
         },
         "classroom_join_approved": {
             "title": "Класска кабыл алындыңыз — {classroom}",
@@ -604,13 +1320,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: сиз четтетилдиңиз",
             "body": "Себеп: {reason}",
         },
+        "contest_invited": {
+            "title": "«{contest}» мелдешине чакыруу",
+            "body": "@{user} сизди мелдешке катышууга чакырды.",
+        },
+        "contest_moderator_invited": {
+            "title": "Модераторлукка чакыруу — «{contest}»",
+            "body": "@{user} сизди мелдештин модератору болууга чакырды.",
+        },
+        "contest_moderator_removed": {
+            "title": "«{contest}»: сиз мындан ары модератор эмессиз",
+            "body": "Бул мелдештеги модераторлук ролуңуз алынып салынды.",
+        },
+        "contest_new": {
+            "title": "Жаңы мелдеш: {contest}",
+            "body": "Жаңы мелдеш жарыяланды. Каттоо ачык.",
+        },
+        "contest_prize": {
+            "title": "«{contest}»: сизге белек",
+            "body": "Сиз белек алдыңыз: {prize}.",
+        },
         "contest_question": {
             "title": "«{contest}»: жаңы суроо",
             "body": "Суроо: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "«{contest}»: рейтингдин өзгөрүшү жокко чыгарылды",
+            "body": "Бул мелдештеги рейтингдин өзгөрүшү кайтарып алынды.",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-орун, рейтинг {delta}",
             "body": "Contests рейтинги: {before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "«{contest}»: катышууңуз өзгөрдү",
+            "body": "Калыстар катышуу абалыңызды өзгөрттү. Кеңири маалымат мелдеш барагында.",
+        },
+        "contest_starts_in_day": {
+            "title": "«{contest}» эртең башталат",
+            "body": "Катталган мелдешиңиз болжолдуу бир күндөн кийин башталат.",
+        },
+        "contest_starts_in_hour": {
+            "title": "«{contest}» бир сааттан кийин башталат",
+            "body": "Даяр болуңуз: катталган мелдешиңиз болжолдуу бир сааттан кийин башталат.",
         },
         "contest_tester": {
             "title": "Сиз «{contest}» мелдешине тестер катары кошулдуңуз",
@@ -670,6 +1422,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Хакатон баасы: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "«{contest}» мелдешиңиз аяктады",
+            "body": "Жыйынтыктар колдонулгандан кийин таблица акыркы болот.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "«{contest}» мелдешиңиз бир сааттан кийин башталат",
+            "body": "Башталаардан мурун маселелерди, калыстарды жана жарыяларды текшериңиз.",
+        },
+        "host_moderator_answered": {
+            "title": "«{contest}»: @{user} чакырууга жооп берди",
+            "body": "Модератор чакырууңузга жооп берди.",
+        },
+        "host_plagiarism_found": {
+            "title": "«{contest}»: {count} шектүү катышуу",
+            "body": "Плагиатка каршы текшерүү {count} катышууну кароо үчүн белгиледи.",
+        },
+        "judge_access_ended": {
+            "title": "Калыс уруксаты бүттү",
+            "body": "Авторлук жана уюштуруучулук куралдары жабылды.",
+        },
+        "judge_access_ending": {
+            "title": "Калыс уруксатынын бүтүшүнө {days} күн калды",
+            "body": "Авторлукту жана уюштурууну сактоо үчүн узартыңыз.",
+        },
+        "judge_limit_reached": {
+            "title": "Калыс лимити түгөнүп баратат — {limit}",
+            "body": "Орун бошотуңуз же тарифти жогорулатыңыз.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} «{classroom}» классына кошулду",
+            "body": "Окуучу чакырууңузду кабыл алды.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} «{classroom}» классына кошулган жок",
+            "body": "Окуучу чакырууңузду четке какты.",
+        },
+        "my_class_student_left": {
+            "title": "@{user} «{classroom}» классынан чыгып кетти",
+            "body": "Окуучу классыңыздан чыгып кетти.",
+        },
+        "plan_activated": {
+            "title": "Тариф ишке кирди — {plan}",
+            "body": "Рахмат. Тарифтин мүмкүнчүлүктөрү ачылды.",
+        },
+        "plan_ended": {
+            "title": "Тарифиңиз бүттү",
+            "body": "Акы төлөнүүчү мүмкүнчүлүктөр өчүрүлдү.",
+        },
+        "plan_ending": {
+            "title": "Тарифиңиздин бүтүшүнө {days} күн калды",
+            "body": "Акы төлөнүүчү мүмкүнчүлүктөрдү сактоо үчүн аны жаңыртыңыз.",
+        },
+        "problem_archived": {
+            "title": "Маселеңиз архивге коюлду — {problem}",
+            "body": "Ал мындан ары жалпыга ачык тизмеде көрүнбөйт.",
+        },
         "problem_rerated": {
             "title": "Skills рейтингиңиз {delta} өзгөрдү",
             "body": "Сиз чечкен маселе кайра бааланды. Skills: {before} → {after}. Бул сиздин аракетиңиз эмес — маселенин татаалдыгы статистика боюнча жаңыланды.",
@@ -678,9 +1486,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Текшерүү суралды — {problem}",
             "body": "@{user} «{problem}» долбоорун текшерүүгө жөнөттү.",
         },
+        "quiz_invited": {
+            "title": "Тестке чакыруу — {quiz}",
+            "body": "@{user} сизди тестти тапшырууга чакырды.",
+        },
+        "quiz_published": {
+            "title": "Тестиңиз жалпыга ачык болду — {quiz}",
+            "body": "Эми аны каалаган адам ачса болот.",
+        },
+        "report_on_my_content": {
+            "title": "Контентиңизге арыз — {object}",
+            "body": "Кимдир арыз берди. Кызматкерлер карап чыгат.",
+        },
+        "report_resolved": {
+            "title": "Контентиңиз тууралуу арыз чечилди — {object}",
+            "body": "Кызматкерлер арызды жапты.",
+        },
+        "report_reviewed": {
+            "title": "Арызыңыз каралды — {object}",
+            "body": "Кызматкерлер арызыңызды карап чыкты.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Аккаунтту өчүрүү жокко чыгарылды",
+            "body": "Аккаунтуңуз мурдагы бойдон калат.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Аккаунтту өчүрүү пландалды",
+            "body": "Аккаунтуңуз {date} күнү өчүрүлөт. Ага чейин жокко чыгарсаңыз болот.",
+        },
+        "security_email_changed": {
+            "title": "Аккаунттун электрондук почтасы өзгөртүлдү",
+            "body": "Жаңы дарек: {email}.",
+        },
+        "security_new_device": {
+            "title": "Аккаунтуңузга жаңы кирүү",
+            "body": "Жаңы түзмөктөн кирилди: {device}. Бул сиз болбосоңуз, сырсөздү өзгөртүңүз.",
+        },
+        "security_password_changed": {
+            "title": "Сырсөзүңүз өзгөртүлдү",
+            "body": "Бул сиз болбосоңуз, сырсөздү дароо калыбына келтириңиз.",
+        },
+        "security_password_reset": {
+            "title": "Сырсөзүңүз калыбына келтирилди",
+            "body": "Жаңы сырсөз калыбына келтирүү шилтемеси аркылуу коюлду. Бул сиз болбосоңуз, биз менен байланышыңыз.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram байланыштырылды",
+            "body": "Профилиңизге Telegram аккаунту байланыштырылды.",
+        },
         "streak": {
             "title": "{days} күндүк серия!",
             "body": "Серия жетишкендиги үчүн Qvant кошулду.",
+        },
+        "streak_at_risk": {
+            "title": "{days} күндүк серияныз үзүлө жаздады",
+            "body": "Сактап калуу үчүн бүгүн бир маселе чечиңиз.",
+        },
+        "streak_broken": {
+            "title": "{days} күндүк серияныз үзүлдү",
+            "body": "Бүгүн маселе чечип, жаңысын баштаңыз.",
+        },
+        "team_captain": {
+            "title": "Сиз «{team}» командасынын капитанысыз",
+            "body": "Команданын курамын башкара аласыз.",
+        },
+        "team_invite_answered": {
+            "title": "@{user} «{team}» чакырууна жооп берди",
+            "body": "Жоопту көрүү үчүн команданы ачыңыз.",
+        },
+        "team_invite_cancelled": {
+            "title": "Чакыруу жокко чыгарылды — «{team}»",
+            "body": "Командага чакыруу жокко чыгарылды.",
+        },
+        "team_invited": {
+            "title": "«{team}» командасына чакыруу",
+            "body": "@{user} сизди командага кошулууга чакырды.",
         },
         "tutor_budget": {
             "title": "AI устат бюджети: {percent} %",
@@ -688,9 +1568,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "ru": {
+        "attempt_verdict_changed": {
+            "title": "Результат вашей попытки изменился — {problem}",
+            "body": "Новый вердикт: {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} опубликовал(а) запись",
             "body": "@{user} опубликовал(а) «{title}».",
+        },
+        "class_invite_cancelled": {
+            "title": "Приглашение отменено — «{classroom}»",
+            "body": "Приглашение в класс было отменено.",
+        },
+        "class_invited": {
+            "title": "Приглашение в класс «{classroom}»",
+            "body": "@{user} пригласил(а) вас присоединиться к классу.",
         },
         "classroom_join_approved": {
             "title": "Вы приняты в класс — {classroom}",
@@ -740,13 +1632,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: вы дисквалифицированы",
             "body": "Причина: {reason}",
         },
+        "contest_invited": {
+            "title": "Приглашение на «{contest}»",
+            "body": "@{user} пригласил(а) вас участвовать в соревновании.",
+        },
+        "contest_moderator_invited": {
+            "title": "Приглашение в модераторы — «{contest}»",
+            "body": "@{user} пригласил(а) вас модерировать соревнование.",
+        },
+        "contest_moderator_removed": {
+            "title": "«{contest}»: вы больше не модератор",
+            "body": "Ваша роль модератора в этом соревновании снята.",
+        },
+        "contest_new": {
+            "title": "Новое соревнование: {contest}",
+            "body": "Объявлено новое соревнование. Регистрация открыта.",
+        },
+        "contest_prize": {
+            "title": "«{contest}»: приз для вас",
+            "body": "Вы получили приз: {prize}.",
+        },
         "contest_question": {
             "title": "«{contest}»: новый вопрос",
             "body": "Вопрос: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "«{contest}»: изменение рейтинга отменено",
+            "body": "Изменение рейтинга за это соревнование было отменено.",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-е место, рейтинг {delta}",
             "body": "Рейтинг Contests: {before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "«{contest}»: ваше участие изменилось",
+            "body": "Жюри изменило статус вашего участия. Подробности — на странице соревнования.",
+        },
+        "contest_starts_in_day": {
+            "title": "«{contest}» начнётся завтра",
+            "body": "Соревнование, на которое вы зарегистрировались, начнётся примерно через сутки.",
+        },
+        "contest_starts_in_hour": {
+            "title": "«{contest}» начнётся через час",
+            "body": "Будьте готовы: соревнование, на которое вы зарегистрировались, начнётся примерно через час.",
         },
         "contest_tester": {
             "title": "Вас добавили тестером соревнования «{contest}»",
@@ -806,6 +1734,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Оценка хакатона: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "Ваше соревнование «{contest}» завершено",
+            "body": "Таблица станет окончательной после применения результатов.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "Ваше соревнование «{contest}» начнётся через час",
+            "body": "Перед стартом проверьте задачи, жюри и объявления.",
+        },
+        "host_moderator_answered": {
+            "title": "«{contest}»: @{user} ответил(а) на приглашение",
+            "body": "Модератор ответил на ваше приглашение.",
+        },
+        "host_plagiarism_found": {
+            "title": "«{contest}»: подозрительных участий — {count}",
+            "body": "Проверка на плагиат пометила для разбора участий: {count}.",
+        },
+        "judge_access_ended": {
+            "title": "Доступ судьи закончился",
+            "body": "Инструменты автора и организатора закрыты.",
+        },
+        "judge_access_ending": {
+            "title": "Доступ судьи закончится через {days} дн.",
+            "body": "Продлите его, чтобы сохранить авторство и организацию.",
+        },
+        "judge_limit_reached": {
+            "title": "Лимит судьи заканчивается — {limit}",
+            "body": "Освободите место или повысьте тариф.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} вступил(а) в «{classroom}»",
+            "body": "Ученик принял ваше приглашение.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} отклонил(а) «{classroom}»",
+            "body": "Ученик отклонил ваше приглашение.",
+        },
+        "my_class_student_left": {
+            "title": "@{user} покинул(а) «{classroom}»",
+            "body": "Ученик вышел из вашего класса.",
+        },
+        "plan_activated": {
+            "title": "Тариф подключён — {plan}",
+            "body": "Спасибо. Возможности тарифа открыты.",
+        },
+        "plan_ended": {
+            "title": "Ваш тариф закончился",
+            "body": "Платные возможности отключены.",
+        },
+        "plan_ending": {
+            "title": "Ваш тариф закончится через {days} дн.",
+            "body": "Продлите его, чтобы сохранить платные возможности.",
+        },
+        "problem_archived": {
+            "title": "Ваша задача отправлена в архив — {problem}",
+            "body": "Она больше не отображается в публичном списке.",
+        },
         "problem_rerated": {
             "title": "Ваш рейтинг Skills изменился на {delta}",
             "body": "Решённая вами задача переоценена. Skills: {before} → {after}. Это не ваше действие — сложность задачи обновлена по статистике.",
@@ -814,9 +1798,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Запрос на проверку — {problem}",
             "body": "@{user} отправил(а) черновик «{problem}» на проверку.",
         },
+        "quiz_invited": {
+            "title": "Приглашение на тест — {quiz}",
+            "body": "@{user} пригласил(а) вас пройти тест.",
+        },
+        "quiz_published": {
+            "title": "Ваш тест стал публичным — {quiz}",
+            "body": "Теперь его может открыть любой.",
+        },
+        "report_on_my_content": {
+            "title": "Жалоба на ваш контент — {object}",
+            "body": "Кто-то пожаловался. Сотрудники рассмотрят жалобу.",
+        },
+        "report_resolved": {
+            "title": "Жалоба на ваш контент решена — {object}",
+            "body": "Сотрудники закрыли жалобу.",
+        },
+        "report_reviewed": {
+            "title": "Ваша жалоба рассмотрена — {object}",
+            "body": "Сотрудники рассмотрели вашу жалобу.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Удаление аккаунта отменено",
+            "body": "Ваш аккаунт остаётся как есть.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Удаление аккаунта запланировано",
+            "body": "Ваш аккаунт будет удалён {date}. До этого срока удаление можно отменить.",
+        },
+        "security_email_changed": {
+            "title": "Email аккаунта изменён",
+            "body": "Новый адрес: {email}.",
+        },
+        "security_new_device": {
+            "title": "Новый вход в ваш аккаунт",
+            "body": "Выполнен вход с нового устройства: {device}. Если это были не вы, смените пароль.",
+        },
+        "security_password_changed": {
+            "title": "Ваш пароль изменён",
+            "body": "Если это были не вы, немедленно сбросьте пароль.",
+        },
+        "security_password_reset": {
+            "title": "Ваш пароль сброшен",
+            "body": "Новый пароль установлен по ссылке для сброса. Если это были не вы, свяжитесь с нами.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram подключён",
+            "body": "К вашему профилю подключён аккаунт Telegram.",
+        },
         "streak": {
             "title": "Серия {days} дней!",
             "body": "За достижение серии начислен Qvant.",
+        },
+        "streak_at_risk": {
+            "title": "Ваша серия в {days} дн. скоро прервётся",
+            "body": "Решите сегодня одну задачу, чтобы сохранить её.",
+        },
+        "streak_broken": {
+            "title": "Ваша серия в {days} дн. прервалась",
+            "body": "Начните новую, решив сегодня задачу.",
+        },
+        "team_captain": {
+            "title": "Теперь вы капитан команды «{team}»",
+            "body": "Вы можете управлять составом команды.",
+        },
+        "team_invite_answered": {
+            "title": "@{user} ответил(а) на приглашение в «{team}»",
+            "body": "Откройте команду, чтобы увидеть ответ.",
+        },
+        "team_invite_cancelled": {
+            "title": "Приглашение отменено — «{team}»",
+            "body": "Приглашение в команду было отменено.",
+        },
+        "team_invited": {
+            "title": "Приглашение в команду «{team}»",
+            "body": "@{user} пригласил(а) вас присоединиться к команде.",
         },
         "tutor_budget": {
             "title": "Бюджет AI-наставника: {percent} %",
@@ -824,9 +1880,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tg": {
+        "attempt_verdict_changed": {
+            "title": "Натиҷаи кӯшиши шумо тағйир ёфт — {problem}",
+            "body": "Вердикти нав: {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} навиштаи нав навишт",
             "body": "@{user} «{title}»-ро нашр кард.",
+        },
+        "class_invite_cancelled": {
+            "title": "Даъват бекор карда шуд — «{classroom}»",
+            "body": "Даъват ба синф бекор карда шуд.",
+        },
+        "class_invited": {
+            "title": "Даъват ба синфи «{classroom}»",
+            "body": "@{user} шуморо ба ҳамроҳ шудан ба синф даъват кард.",
         },
         "classroom_join_approved": {
             "title": "Шумо ба синф қабул шудед — {classroom}",
@@ -876,13 +1944,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: шумо хориҷ карда шудед",
             "body": "Сабаб: {reason}",
         },
+        "contest_invited": {
+            "title": "Даъват ба мусобиқаи «{contest}»",
+            "body": "@{user} шуморо ба иштирок дар мусобиқа даъват кард.",
+        },
+        "contest_moderator_invited": {
+            "title": "Даъват ба модератор — «{contest}»",
+            "body": "@{user} шуморо ба модератори мусобиқа шудан даъват кард.",
+        },
+        "contest_moderator_removed": {
+            "title": "«{contest}»: шумо дигар модератор нестед",
+            "body": "Нақши модератории шумо дар ин мусобиқа бекор карда шуд.",
+        },
+        "contest_new": {
+            "title": "Мусобиқаи нав: {contest}",
+            "body": "Мусобиқаи нав эълон шуд. Сабти ном кушода аст.",
+        },
+        "contest_prize": {
+            "title": "«{contest}»: ҷоиза барои шумо",
+            "body": "Шумо ҷоиза гирифтед: {prize}.",
+        },
         "contest_question": {
             "title": "«{contest}»: саволи нав",
             "body": "Савол: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "«{contest}»: тағйири рейтинг бекор карда шуд",
+            "body": "Тағйири рейтинг аз ин мусобиқа бозпас гирифта шуд.",
+        },
         "contest_result": {
             "title": "{contest}: ҷойи {rank}, рейтинг {delta}",
             "body": "Рейтинги Contests: {before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "«{contest}»: иштироки шумо тағйир ёфт",
+            "body": "Ҳакамон ҳолати иштироки шуморо тағйир доданд. Тафсилот дар саҳифаи мусобиқа аст.",
+        },
+        "contest_starts_in_day": {
+            "title": "«{contest}» фардо оғоз мешавад",
+            "body": "Мусобиқае, ки барои он сабти ном кардед, тақрибан баъд аз як рӯз оғоз мешавад.",
+        },
+        "contest_starts_in_hour": {
+            "title": "«{contest}» баъд аз як соат оғоз мешавад",
+            "body": "Омода бошед: мусобиқае, ки барои он сабти ном кардед, тақрибан баъд аз як соат оғоз мешавад.",
         },
         "contest_tester": {
             "title": "Шумо ба мусобиқаи «{contest}» ҳамчун санҷишгар илова шудед",
@@ -942,6 +2046,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Баҳои хакатон: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "Мусобиқаи шумо «{contest}» ба анҷом расид",
+            "body": "Пас аз татбиқи натиҷаҳо ҷадвал ниҳоӣ мешавад.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "Мусобиқаи шумо «{contest}» баъд аз як соат оғоз мешавад",
+            "body": "Пеш аз оғоз масъалаҳо, ҳакамон ва эъломҳоро санҷед.",
+        },
+        "host_moderator_answered": {
+            "title": "«{contest}»: @{user} ба даъват ҷавоб дод",
+            "body": "Модератор ба даъвати шумо ҷавоб дод.",
+        },
+        "host_plagiarism_found": {
+            "title": "«{contest}»: {count} иштироки шубҳанок",
+            "body": "Санҷиши зиддиинтиҳол {count} иштирокро барои дида баромадан қайд кард.",
+        },
+        "judge_access_ended": {
+            "title": "Иҷозати ҳакам ба анҷом расид",
+            "body": "Абзорҳои муаллифӣ ва ташкилотчигӣ баста шуданд.",
+        },
+        "judge_access_ending": {
+            "title": "То анҷоми иҷозати ҳакам {days} рӯз монд",
+            "body": "Барои нигоҳ доштани муаллифӣ ва ташкилотчигӣ онро тамдид кунед.",
+        },
+        "judge_limit_reached": {
+            "title": "Лимити ҳакам ба поён мерасад — {limit}",
+            "body": "Ҷой холӣ кунед ё тарифро боло баред.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} ба синфи «{classroom}» ҳамроҳ шуд",
+            "body": "Хонанда даъвати шуморо қабул кард.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} ба синфи «{classroom}» ҳамроҳ нашуд",
+            "body": "Хонанда даъвати шуморо рад кард.",
+        },
+        "my_class_student_left": {
+            "title": "@{user} аз синфи «{classroom}» баромад",
+            "body": "Хонанда аз синфи шумо баромад.",
+        },
+        "plan_activated": {
+            "title": "Тариф фаъол карда шуд — {plan}",
+            "body": "Ташаккур. Имкониятҳои тариф кушода шуданд.",
+        },
+        "plan_ended": {
+            "title": "Тарифи шумо ба анҷом расид",
+            "body": "Имкониятҳои пулакӣ хомӯш карда шуданд.",
+        },
+        "plan_ending": {
+            "title": "То анҷоми тарифи шумо {days} рӯз монд",
+            "body": "Барои нигоҳ доштани имкониятҳои пулакӣ онро тамдид кунед.",
+        },
+        "problem_archived": {
+            "title": "Масъалаи шумо ба бойгонӣ гузошта шуд — {problem}",
+            "body": "Он дигар дар рӯйхати оммавӣ намоён нест.",
+        },
         "problem_rerated": {
             "title": "Рейтинги Skills-и шумо {delta} тағйир ёфт",
             "body": "Масъалае, ки шумо ҳал кардед, аз нав баҳогузорӣ шуд. Skills: {before} → {after}. Ин амали шумо нест — душвории масъала аз рӯи омор нав шуд.",
@@ -950,9 +2110,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Дархости тафтиш — {problem}",
             "body": "@{user} сиёҳнависи «{problem}»-ро ба тафтиш фиристод.",
         },
+        "quiz_invited": {
+            "title": "Даъват ба тест — {quiz}",
+            "body": "@{user} шуморо ба супоридани тест даъват кард.",
+        },
+        "quiz_published": {
+            "title": "Тести шумо оммавӣ шуд — {quiz}",
+            "body": "Акнун онро ҳар кас кушода метавонад.",
+        },
+        "report_on_my_content": {
+            "title": "Шикоят дар бораи мундариҷаи шумо — {object}",
+            "body": "Касе шикоят кард. Кормандон онро баррасӣ мекунанд.",
+        },
+        "report_resolved": {
+            "title": "Шикоят дар бораи мундариҷаи шумо ҳал шуд — {object}",
+            "body": "Кормандон шикоятро пӯшиданд.",
+        },
+        "report_reviewed": {
+            "title": "Шикояти шумо баррасӣ шуд — {object}",
+            "body": "Кормандон шикояти шуморо дида баромаданд.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Нест кардани ҳисоб бекор карда шуд",
+            "body": "Ҳисоби шумо ҳамон тавр боқӣ мемонад.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Нест кардани ҳисоб ба нақша гирифта шуд",
+            "body": "Ҳисоби шумо дар санаи {date} нест карда мешавад. То он вақт онро бекор кардан мумкин аст.",
+        },
+        "security_email_changed": {
+            "title": "Почтаи электронии ҳисоб иваз карда шуд",
+            "body": "Суроғаи нав: {email}.",
+        },
+        "security_new_device": {
+            "title": "Ба ҳисоби шумо аз дастгоҳи нав ворид шуданд",
+            "body": "Аз дастгоҳи нав ворид шуданд: {device}. Агар шумо набудед, паролро иваз кунед.",
+        },
+        "security_password_changed": {
+            "title": "Пароли шумо иваз карда шуд",
+            "body": "Агар шумо набудед, паролро фавран барқарор кунед.",
+        },
+        "security_password_reset": {
+            "title": "Пароли шумо барқарор карда шуд",
+            "body": "Пароли нав тавассути истиноди барқарорсозӣ гузошта шуд. Агар шумо набудед, бо мо тамос гиред.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram пайваст карда шуд",
+            "body": "Ба профили шумо ҳисоби Telegram пайваст карда шуд.",
+        },
         "streak": {
             "title": "Силсилаи {days}-рӯза!",
             "body": "Барои дастоварди силсила Qvant илова шуд.",
+        },
+        "streak_at_risk": {
+            "title": "Силсилаи {days}-рӯзаи шумо наздик аст канда шавад",
+            "body": "Барои нигоҳ доштани он имрӯз як масъала ҳал кунед.",
+        },
+        "streak_broken": {
+            "title": "Силсилаи {days}-рӯзаи шумо канда шуд",
+            "body": "Имрӯз бо ҳалли масъала силсилаи наверо оғоз кунед.",
+        },
+        "team_captain": {
+            "title": "Шумо сардори дастаи «{team}» шудед",
+            "body": "Шумо метавонед таркиби дастаро идора кунед.",
+        },
+        "team_invite_answered": {
+            "title": "@{user} ба даъвати «{team}» ҷавоб дод",
+            "body": "Барои дидани ҷавоб дастаро кушоед.",
+        },
+        "team_invite_cancelled": {
+            "title": "Даъват бекор карда шуд — «{team}»",
+            "body": "Даъват ба даста бекор карда шуд.",
+        },
+        "team_invited": {
+            "title": "Даъват ба дастаи «{team}»",
+            "body": "@{user} шуморо ба ҳамроҳ шудан ба даста даъват кард.",
         },
         "tutor_budget": {
             "title": "Буҷаи устоди AI: {percent} %",
@@ -960,9 +2192,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "tr": {
+        "attempt_verdict_changed": {
+            "title": "Denemenizin sonucu değişti — {problem}",
+            "body": "Yeni sonuç: {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} yeni bir yazı yazdı",
             "body": "@{user}, «{title}» yazısını yayınladı.",
+        },
+        "class_invite_cancelled": {
+            "title": "Davet iptal edildi — “{classroom}”",
+            "body": "Sınıf daveti iptal edildi.",
+        },
+        "class_invited": {
+            "title": "“{classroom}” sınıfına davet",
+            "body": "@{user} sizi sınıfa katılmaya davet etti.",
         },
         "classroom_join_approved": {
             "title": "Sınıfa kabul edildiniz — {classroom}",
@@ -1012,13 +2256,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "“{contest}”: diskalifiye edildiniz",
             "body": "Gerekçe: {reason}",
         },
+        "contest_invited": {
+            "title": "“{contest}” yarışmasına davet",
+            "body": "@{user} sizi yarışmaya katılmaya davet etti.",
+        },
+        "contest_moderator_invited": {
+            "title": "Moderatör daveti — “{contest}”",
+            "body": "@{user} sizi yarışmanın moderatörü olmaya davet etti.",
+        },
+        "contest_moderator_removed": {
+            "title": "“{contest}”: artık moderatör değilsiniz",
+            "body": "Bu yarışmadaki moderatör rolünüz kaldırıldı.",
+        },
+        "contest_new": {
+            "title": "Yeni yarışma: {contest}",
+            "body": "Yeni bir yarışma duyuruldu. Kayıt açık.",
+        },
+        "contest_prize": {
+            "title": "“{contest}”: sizin için bir ödül",
+            "body": "Bir ödül kazandınız: {prize}.",
+        },
         "contest_question": {
             "title": "“{contest}”: yeni soru",
             "body": "Soru: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "“{contest}”: puan değişikliği iptal edildi",
+            "body": "Bu yarışmadan gelen puan değişikliği geri alındı.",
+        },
         "contest_result": {
             "title": "{contest}: {rank}. sıra, puan {delta}",
             "body": "Contests puanı: {before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "“{contest}”: katılım durumunuz değişti",
+            "body": "Jüri katılım durumunuzu değiştirdi. Ayrıntılar için yarışmayı açın.",
+        },
+        "contest_starts_in_day": {
+            "title": "“{contest}” yarın başlıyor",
+            "body": "Kayıt olduğunuz yarışma yaklaşık bir gün sonra başlıyor.",
+        },
+        "contest_starts_in_hour": {
+            "title": "“{contest}” bir saat sonra başlıyor",
+            "body": "Hazır olun: kayıt olduğunuz yarışma yaklaşık bir saat sonra başlıyor.",
         },
         "contest_tester": {
             "title": "“{contest}” yarışmasına test eden olarak eklendiniz",
@@ -1078,6 +2358,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Hackathon puanı: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "“{contest}” yarışmanız sona erdi",
+            "body": "Sonuçlar uygulandıktan sonra sıralama kesinleşir.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "“{contest}” yarışmanız bir saat sonra başlıyor",
+            "body": "Başlamadan önce problemleri, jüriyi ve duyuruları kontrol edin.",
+        },
+        "host_moderator_answered": {
+            "title": "“{contest}”: @{user} davete yanıt verdi",
+            "body": "Moderatör davetinize yanıt verdi.",
+        },
+        "host_plagiarism_found": {
+            "title": "“{contest}”: {count} şüpheli katılım",
+            "body": "İntihal denetimi {count} katılımı incelenmek üzere işaretledi.",
+        },
+        "judge_access_ended": {
+            "title": "Hakem erişimi sona erdi",
+            "body": "Hazırlayıcı ve düzenleyici araçları kapatıldı.",
+        },
+        "judge_access_ending": {
+            "title": "Hakem erişiminin bitmesine {days} gün kaldı",
+            "body": "Hazırlayıcılık ve düzenleyicilik için uzatın.",
+        },
+        "judge_limit_reached": {
+            "title": "Hakem limiti tükeniyor — {limit}",
+            "body": "Yer açın ya da planınızı yükseltin.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user}, “{classroom}” sınıfına katıldı",
+            "body": "Öğrenci davetinizi kabul etti.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user}, “{classroom}” davetini reddetti",
+            "body": "Öğrenci davetinizi reddetti.",
+        },
+        "my_class_student_left": {
+            "title": "@{user}, “{classroom}” sınıfından ayrıldı",
+            "body": "Öğrenci sınıfınızdan ayrıldı.",
+        },
+        "plan_activated": {
+            "title": "Plan etkinleştirildi — {plan}",
+            "body": "Teşekkürler. Planın özellikleri açıldı.",
+        },
+        "plan_ended": {
+            "title": "Planınız sona erdi",
+            "body": "Ücretli özellikler kapatıldı.",
+        },
+        "plan_ending": {
+            "title": "Planınızın bitmesine {days} gün kaldı",
+            "body": "Ücretli özellikleri korumak için yenileyin.",
+        },
+        "problem_archived": {
+            "title": "Probleminiz arşivlendi — {problem}",
+            "body": "Artık herkese açık listede görünmüyor.",
+        },
         "problem_rerated": {
             "title": "Skills puanınız {delta} değişti",
             "body": "Çözdüğünüz bir soru yeniden değerlendirildi. Skills: {before} → {after}. Bu sizin işleminiz değil — sorunun zorluğu istatistiklere göre güncellendi.",
@@ -1086,9 +2422,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "İnceleme istendi — {problem}",
             "body": "@{user}, “{problem}” taslağını incelemeye gönderdi.",
         },
+        "quiz_invited": {
+            "title": "Teste davet — {quiz}",
+            "body": "@{user} sizi testi çözmeye davet etti.",
+        },
+        "quiz_published": {
+            "title": "Testiniz herkese açık — {quiz}",
+            "body": "Artık herkes açabilir.",
+        },
+        "report_on_my_content": {
+            "title": "İçeriğiniz hakkında bir şikayet — {object}",
+            "body": "Birisi şikayet etti. Ekip inceleyecek.",
+        },
+        "report_resolved": {
+            "title": "İçeriğiniz hakkındaki şikayet çözüldü — {object}",
+            "body": "Ekip şikayeti kapattı.",
+        },
+        "report_reviewed": {
+            "title": "Şikayetiniz incelendi — {object}",
+            "body": "Ekip şikayetinizi inceledi.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Hesap silme iptal edildi",
+            "body": "Hesabınız olduğu gibi kalıyor.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Hesap silme planlandı",
+            "body": "Hesabınız {date} tarihinde silinecek. O tarihe kadar iptal edebilirsiniz.",
+        },
+        "security_email_changed": {
+            "title": "Hesap e-postanız değiştirildi",
+            "body": "Yeni adres: {email}.",
+        },
+        "security_new_device": {
+            "title": "Hesabınıza yeni giriş yapıldı",
+            "body": "Yeni bir cihazdan giriş yapıldı: {device}. Siz değilseniz parolanızı değiştirin.",
+        },
+        "security_password_changed": {
+            "title": "Parolanız değiştirildi",
+            "body": "Siz değilseniz parolanızı hemen sıfırlayın.",
+        },
+        "security_password_reset": {
+            "title": "Parolanız sıfırlandı",
+            "body": "Sıfırlama bağlantısıyla yeni bir parola belirlendi. Siz değilseniz bizimle iletişime geçin.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram bağlandı",
+            "body": "Profilinize bir Telegram hesabı bağlandı.",
+        },
         "streak": {
             "title": "{days} günlük seri!",
             "body": "Seri başarısı için Qvant eklendi.",
+        },
+        "streak_at_risk": {
+            "title": "{days} günlük seriniz bozulmak üzere",
+            "body": "Korumak için bugün bir problem çözün.",
+        },
+        "streak_broken": {
+            "title": "{days} günlük seriniz sona erdi",
+            "body": "Bugün bir problem çözerek yenisini başlatın.",
+        },
+        "team_captain": {
+            "title": "Artık “{team}” takımının kaptanısınız",
+            "body": "Takımın kadrosunu yönetebilirsiniz.",
+        },
+        "team_invite_answered": {
+            "title": "@{user}, “{team}” davetine yanıt verdi",
+            "body": "Yanıtı görmek için takımı açın.",
+        },
+        "team_invite_cancelled": {
+            "title": "Davet iptal edildi — “{team}”",
+            "body": "Takım daveti iptal edildi.",
+        },
+        "team_invited": {
+            "title": "“{team}” takımına davet",
+            "body": "@{user} sizi takıma katılmaya davet etti.",
         },
         "tutor_budget": {
             "title": "AI öğretmen bütçesi: %{percent}",
@@ -1096,9 +2504,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "uz": {
+        "attempt_verdict_changed": {
+            "title": "Urinishingiz natijasi o'zgardi — {problem}",
+            "body": "Yangi verdikt: {verdict}.",
+        },
         "blog_entry": {
             "title": "@{user} yangi post yozdi",
             "body": "@{user} «{title}» nomli yangi post yozdi.",
+        },
+        "class_invite_cancelled": {
+            "title": "Taklif bekor qilindi — «{classroom}»",
+            "body": "Sinfga taklif bekor qilindi.",
+        },
+        "class_invited": {
+            "title": "«{classroom}» sinfiga taklif",
+            "body": "@{user} sizni sinfga qo'shilishga taklif qildi.",
         },
         "classroom_join_approved": {
             "title": "Sinfga qabul qilindingiz — {classroom}",
@@ -1148,13 +2568,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "«{contest}»: siz musobaqadan chetlatildingiz",
             "body": "Sabab: {reason}",
         },
+        "contest_invited": {
+            "title": "«{contest}» musobaqasiga taklif",
+            "body": "@{user} sizni musobaqada qatnashishga taklif qildi.",
+        },
+        "contest_moderator_invited": {
+            "title": "Moderatorlikka taklif — «{contest}»",
+            "body": "@{user} sizni musobaqa moderatori bo'lishga taklif qildi.",
+        },
+        "contest_moderator_removed": {
+            "title": "«{contest}»: endi moderator emassiz",
+            "body": "Bu musobaqadagi moderatorlik rolingiz olib tashlandi.",
+        },
+        "contest_new": {
+            "title": "Yangi musobaqa: {contest}",
+            "body": "Yangi musobaqa e'lon qilindi. Ro'yxatdan o'tish ochiq.",
+        },
+        "contest_prize": {
+            "title": "«{contest}»: sizga sovrin",
+            "body": "Siz sovrin oldingiz: {prize}.",
+        },
         "contest_question": {
             "title": "«{contest}»: yangi savol",
             "body": "Savol: {text}",
         },
+        "contest_rating_reverted": {
+            "title": "«{contest}»: reyting o'zgarishi bekor qilindi",
+            "body": "Bu musobaqadagi reyting o'zgarishi qaytarib olindi.",
+        },
         "contest_result": {
             "title": "{contest}: {rank}-o'rin, reyting {delta}",
             "body": "Contests reytingi: {before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "«{contest}»: ishtirokingiz o'zgardi",
+            "body": "Hakamlar ishtirok holatingizni o'zgartirdi. Tafsilot musobaqa sahifasida.",
+        },
+        "contest_starts_in_day": {
+            "title": "«{contest}» ertaga boshlanadi",
+            "body": "Ro'yxatdan o'tgan musobaqangiz taxminan bir kundan keyin boshlanadi.",
+        },
+        "contest_starts_in_hour": {
+            "title": "«{contest}» bir soatdan keyin boshlanadi",
+            "body": "Tayyor bo'ling: ro'yxatdan o'tgan musobaqangiz taxminan bir soatdan keyin boshlanadi.",
         },
         "contest_tester": {
             "title": "Siz «{contest}» musobaqasiga sinovchi qilib qo'shildingiz",
@@ -1214,6 +2670,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "Xakaton bahosi: {score}/100",
         },
+        "host_contest_ended": {
+            "title": "Musobaqangiz «{contest}» tugadi",
+            "body": "Natijalar qo'llangach jadval yakuniy bo'ladi.",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "Musobaqangiz «{contest}» bir soatdan keyin boshlanadi",
+            "body": "Boshlanishdan oldin masalalar, hakamlar va e'lonlarni tekshiring.",
+        },
+        "host_moderator_answered": {
+            "title": "«{contest}»: @{user} taklifga javob berdi",
+            "body": "Moderator sizning taklifingizga javob berdi.",
+        },
+        "host_plagiarism_found": {
+            "title": "«{contest}»: {count} ta shubhali ishtirok",
+            "body": "Antiplagiat tekshiruvi {count} ta ishtirokni ko'rib chiqish uchun belgiladi.",
+        },
+        "judge_access_ended": {
+            "title": "Hakam ruxsati tugadi",
+            "body": "Mualliflik va tashkilotchilik vositalari yopildi.",
+        },
+        "judge_access_ending": {
+            "title": "Hakam ruxsati tugashiga {days} kun qoldi",
+            "body": "Muallifligi va tashkilotchiligini saqlash uchun uzaytiring.",
+        },
+        "judge_limit_reached": {
+            "title": "Hakam limiti tugayapti — {limit}",
+            "body": "Joy bo'shating yoki tarifni oshiring.",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} «{classroom}» sinfiga qo'shildi",
+            "body": "O'quvchi sizning taklifingizni qabul qildi.",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} «{classroom}» sinfiga qo'shilmadi",
+            "body": "O'quvchi sizning taklifingizni rad etdi.",
+        },
+        "my_class_student_left": {
+            "title": "@{user} «{classroom}» sinfidan chiqdi",
+            "body": "O'quvchi sinfingizdan chiqib ketdi.",
+        },
+        "plan_activated": {
+            "title": "Tarif rasmiylashtirildi — {plan}",
+            "body": "Rahmat. Tarif imkoniyatlari ochildi.",
+        },
+        "plan_ended": {
+            "title": "Tarifingiz tugadi",
+            "body": "Pullik imkoniyatlar o'chirildi.",
+        },
+        "plan_ending": {
+            "title": "Tarifingiz tugashiga {days} kun qoldi",
+            "body": "Pullik imkoniyatlarni saqlash uchun uni yangilang.",
+        },
+        "problem_archived": {
+            "title": "Masalangiz arxivga qo'yildi — {problem}",
+            "body": "U endi ommaviy ro'yxatda ko'rinmaydi.",
+        },
         "problem_rerated": {
             "title": "Skills reytingingiz {delta} ga o'zgardi",
             "body": "Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi.",
@@ -1222,9 +2734,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "Ko'rik so'raldi — {problem}",
             "body": "@{user} «{problem}» qoralamasini ko'rikka yubordi.",
         },
+        "quiz_invited": {
+            "title": "Testga taklif — {quiz}",
+            "body": "@{user} sizni testni topshirishga taklif qildi.",
+        },
+        "quiz_published": {
+            "title": "Testingiz ommaviy qilindi — {quiz}",
+            "body": "Endi uni hamma ochishi mumkin.",
+        },
+        "report_on_my_content": {
+            "title": "Kontentingizga shikoyat — {object}",
+            "body": "Kimdir shikoyat qildi. Xodimlar ko'rib chiqadi.",
+        },
+        "report_resolved": {
+            "title": "Kontentingiz haqidagi shikoyat hal etildi — {object}",
+            "body": "Xodimlar shikoyatni yopdi.",
+        },
+        "report_reviewed": {
+            "title": "Shikoyatingiz ko'rib chiqildi — {object}",
+            "body": "Xodimlar shikoyatingizni ko'rib chiqdi.",
+        },
+        "security_deletion_cancelled": {
+            "title": "Hisobni o'chirish bekor qilindi",
+            "body": "Hisobingiz o'z holicha qoladi.",
+        },
+        "security_deletion_scheduled": {
+            "title": "Hisobni o'chirish rejalashtirildi",
+            "body": "Hisobingiz {date} kuni o'chiriladi. Shu kungacha bekor qilishingiz mumkin.",
+        },
+        "security_email_changed": {
+            "title": "Hisob emaili o'zgartirildi",
+            "body": "Yangi manzil: {email}.",
+        },
+        "security_new_device": {
+            "title": "Hisobingizga yangi qurilmadan kirildi",
+            "body": "Yangi qurilmadan kirildi: {device}. Bu siz bo'lmasangiz, parolni o'zgartiring.",
+        },
+        "security_password_changed": {
+            "title": "Parolingiz o'zgartirildi",
+            "body": "Bu siz bo'lmasangiz, parolni darhol tiklang.",
+        },
+        "security_password_reset": {
+            "title": "Parolingiz tiklandi",
+            "body": "Yangi parol tiklash havolasi orqali o'rnatildi. Bu siz bo'lmasangiz, biz bilan bog'laning.",
+        },
+        "security_telegram_linked": {
+            "title": "Telegram ulandi",
+            "body": "Profilingizga Telegram hisobi ulandi.",
+        },
         "streak": {
             "title": "{days} kunlik streak!",
             "body": "Streak yutug'i uchun Qvant qo'shildi.",
+        },
+        "streak_at_risk": {
+            "title": "{days} kunlik seriyangiz uzilish arafasida",
+            "body": "Uni saqlab qolish uchun bugun bitta masala yeching.",
+        },
+        "streak_broken": {
+            "title": "{days} kunlik seriyangiz uzildi",
+            "body": "Bugun masala yechib yangisini boshlang.",
+        },
+        "team_captain": {
+            "title": "Siz «{team}» jamoasi sardorisiz",
+            "body": "Jamoa tarkibini boshqarishingiz mumkin.",
+        },
+        "team_invite_answered": {
+            "title": "@{user} «{team}» taklifiga javob berdi",
+            "body": "Javobni ko'rish uchun jamoani oching.",
+        },
+        "team_invite_cancelled": {
+            "title": "Taklif bekor qilindi — «{team}»",
+            "body": "Jamoaga taklif bekor qilindi.",
+        },
+        "team_invited": {
+            "title": "«{team}» jamoasiga taklif",
+            "body": "@{user} sizni jamoaga qo'shilishga taklif qildi.",
         },
         "tutor_budget": {
             "title": "AI ustoz byudjeti: {percent} %",
@@ -1232,9 +2816,21 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "zh": {
+        "attempt_verdict_changed": {
+            "title": "你的提交结果已变更 — {problem}",
+            "body": "新的判定结果:{verdict}。",
+        },
         "blog_entry": {
             "title": "@{user} 发布了新文章",
             "body": "@{user} 发布了《{title}》。",
+        },
+        "class_invite_cancelled": {
+            "title": "邀请已取消 — “{classroom}”",
+            "body": "加入该班级的邀请已被取消。",
+        },
+        "class_invited": {
+            "title": "加入班级“{classroom}”的邀请",
+            "body": "@{user} 邀请你加入该班级。",
         },
         "classroom_join_approved": {
             "title": "您已被批准加入 — {classroom}",
@@ -1284,13 +2880,49 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "“{contest}”：你已被取消资格",
             "body": "原因：{reason}",
         },
+        "contest_invited": {
+            "title": "“{contest}”的邀请",
+            "body": "@{user} 邀请你参加该比赛。",
+        },
+        "contest_moderator_invited": {
+            "title": "版主邀请 — “{contest}”",
+            "body": "@{user} 邀请你担任该比赛的版主。",
+        },
+        "contest_moderator_removed": {
+            "title": "“{contest}”:你不再是版主",
+            "body": "你在该比赛中的版主身份已被移除。",
+        },
+        "contest_new": {
+            "title": "新比赛:{contest}",
+            "body": "新比赛已发布,现在可以报名。",
+        },
+        "contest_prize": {
+            "title": "“{contest}”:你获得了奖品",
+            "body": "你获得了奖品:{prize}。",
+        },
         "contest_question": {
             "title": "“{contest}”：新问题",
             "body": "问题：{text}",
         },
+        "contest_rating_reverted": {
+            "title": "“{contest}”:积分变动已取消",
+            "body": "该比赛带来的积分变动已被撤销。",
+        },
         "contest_result": {
             "title": "{contest}:第 {rank} 名,评分 {delta}",
             "body": "Contests 评分:{before} → {after}",
+        },
+        "contest_standing_changed": {
+            "title": "“{contest}”:你的参赛状态已更改",
+            "body": "评委更改了你的参赛状态。打开比赛查看详情。",
+        },
+        "contest_starts_in_day": {
+            "title": "“{contest}”明天开始",
+            "body": "你报名的比赛将在大约一天后开始。",
+        },
+        "contest_starts_in_hour": {
+            "title": "“{contest}”将在一小时后开始",
+            "body": "请做好准备:你报名的比赛将在大约一小时后开始。",
         },
         "contest_tester": {
             "title": "你已被添加为“{contest}”的测试员",
@@ -1350,6 +2982,62 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
         "hackathon_scored": {
             "title": "黑客松得分:{score}/100",
         },
+        "host_contest_ended": {
+            "title": "你的比赛“{contest}”已结束",
+            "body": "结果生效后,排名将成为最终排名。",
+        },
+        "host_contest_starts_in_hour": {
+            "title": "你的比赛“{contest}”将在一小时后开始",
+            "body": "开赛前请检查题目、评委和公告。",
+        },
+        "host_moderator_answered": {
+            "title": "“{contest}”:@{user} 已回复邀请",
+            "body": "版主已回复你的邀请。",
+        },
+        "host_plagiarism_found": {
+            "title": "“{contest}”:{count} 个可疑参赛",
+            "body": "查重检测标记了 {count} 个参赛记录,待审核。",
+        },
+        "judge_access_ended": {
+            "title": "评委权限已到期",
+            "body": "出题和主办工具已关闭。",
+        },
+        "judge_access_ending": {
+            "title": "评委权限将在 {days} 天后到期",
+            "body": "请延期以继续出题和主办比赛。",
+        },
+        "judge_limit_reached": {
+            "title": "评委额度即将用完 — {limit}",
+            "body": "请释放空间或升级套餐。",
+        },
+        "my_class_invite_accepted": {
+            "title": "@{user} 加入了“{classroom}”",
+            "body": "该学生已接受你的邀请。",
+        },
+        "my_class_invite_declined": {
+            "title": "@{user} 拒绝了“{classroom}”",
+            "body": "该学生已拒绝你的邀请。",
+        },
+        "my_class_student_left": {
+            "title": "@{user} 离开了“{classroom}”",
+            "body": "该学生已退出你的班级。",
+        },
+        "plan_activated": {
+            "title": "套餐已开通 — {plan}",
+            "body": "谢谢。该套餐的功能已开放。",
+        },
+        "plan_ended": {
+            "title": "你的套餐已到期",
+            "body": "付费功能已关闭。",
+        },
+        "plan_ending": {
+            "title": "你的套餐将在 {days} 天后到期",
+            "body": "请续订以保留付费功能。",
+        },
+        "problem_archived": {
+            "title": "你的题目已归档 — {problem}",
+            "body": "它不再显示在公开列表中。",
+        },
         "problem_rerated": {
             "title": "你的 Skills 评分变化 {delta}",
             "body": "你解出的一道题被重新评级。Skills:{before} → {after}。这不是你的操作 — 题目难度根据统计数据更新。",
@@ -1358,9 +3046,81 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
             "title": "审核申请——{problem}",
             "body": "@{user} 提交了草稿“{problem}”以供审核。",
         },
+        "quiz_invited": {
+            "title": "测验邀请 — {quiz}",
+            "body": "@{user} 邀请你参加该测验。",
+        },
+        "quiz_published": {
+            "title": "你的测验已公开 — {quiz}",
+            "body": "现在任何人都可以打开它。",
+        },
+        "report_on_my_content": {
+            "title": "有人举报了你的内容 — {object}",
+            "body": "有人提交了举报,工作人员会进行审核。",
+        },
+        "report_resolved": {
+            "title": "针对你内容的举报已处理 — {object}",
+            "body": "工作人员已关闭该举报。",
+        },
+        "report_reviewed": {
+            "title": "你的举报已审核 — {object}",
+            "body": "工作人员已查看你的举报。",
+        },
+        "security_deletion_cancelled": {
+            "title": "已取消删除账号",
+            "body": "你的账号保持原样。",
+        },
+        "security_deletion_scheduled": {
+            "title": "已安排删除账号",
+            "body": "你的账号将于 {date} 删除。在此之前你可以取消。",
+        },
+        "security_email_changed": {
+            "title": "账号邮箱已更改",
+            "body": "新的邮箱地址是 {email}。",
+        },
+        "security_new_device": {
+            "title": "你的账号有新的登录",
+            "body": "已从新设备登录:{device}。如果不是你本人,请修改密码。",
+        },
+        "security_password_changed": {
+            "title": "你的密码已被修改",
+            "body": "如果不是你本人操作,请立即重置密码。",
+        },
+        "security_password_reset": {
+            "title": "你的密码已重置",
+            "body": "已通过重置链接设置了新密码。如果不是你本人操作,请联系我们。",
+        },
+        "security_telegram_linked": {
+            "title": "已绑定 Telegram",
+            "body": "你的个人资料已绑定一个 Telegram 账号。",
+        },
         "streak": {
             "title": "连续 {days} 天!",
             "body": "已为连续打卡成就发放 Qvant。",
+        },
+        "streak_at_risk": {
+            "title": "你连续 {days} 天的记录即将中断",
+            "body": "今天解一道题就能保住它。",
+        },
+        "streak_broken": {
+            "title": "你连续 {days} 天的记录已中断",
+            "body": "今天解一道题,开始新的记录吧。",
+        },
+        "team_captain": {
+            "title": "你现在是队伍“{team}”的队长",
+            "body": "你可以管理队伍成员名单。",
+        },
+        "team_invite_answered": {
+            "title": "@{user} 已回复“{team}”的邀请",
+            "body": "打开队伍查看回复。",
+        },
+        "team_invite_cancelled": {
+            "title": "邀请已取消 — “{team}”",
+            "body": "加入该队伍的邀请已被取消。",
+        },
+        "team_invited": {
+            "title": "加入队伍“{team}”的邀请",
+            "body": "@{user} 邀请你加入该队伍。",
         },
         "tutor_budget": {
             "title": "AI 导师预算：{percent}%",
@@ -1371,103 +3131,243 @@ CATALOG: dict[str, dict[str, dict[str, str]]] = {
 
 KIND_NAMES: dict[str, dict[str, str]] = {
     "en": {
+        "class": "My classes as a student",
+        "community": "Community, coaching and courses",
+        "competition": "Duels, hacks and hackathons",
+        "contest": "Contests I take part in",
         "contest_result": "Contest results",
         "duel": "Duels",
         "hack": "Hack result",
+        "hosting": "Contests I host",
+        "moderation": "Moderation",
+        "my_class": "Classes I teach",
+        "my_content": "My content and reports",
+        "new_contests": "New contests",
+        "plan_limits": "Plan and limits",
         "problem_rerated": "Problem re-rated",
         "quest_awarded": "Quest rewards",
         "rating_changed": "Rating changes",
+        "security": "Account security",
+        "streak": "Streak",
         "streak_milestone": "Streak milestones",
         "system": "System messages",
+        "team_prizes": "Teams and prizes",
+        "tests": "Tests and attempts",
     },
     "es": {
+        "class": "Mis clases como alumno",
+        "community": "Comunidad, mentoría y cursos",
+        "competition": "Duelos, hacks y hackatones",
+        "contest": "Concursos en los que participo",
         "contest_result": "Resultados de concursos",
         "duel": "Duelos",
         "hack": "Resultado del hack",
+        "hosting": "Concursos que organizo",
+        "moderation": "Moderación",
+        "my_class": "Clases que imparto",
+        "my_content": "Mi contenido y reportes",
+        "new_contests": "Concursos nuevos",
+        "plan_limits": "Plan y límites",
         "problem_rerated": "Problema re-evaluado",
         "quest_awarded": "Recompensas de misiones",
         "rating_changed": "Cambios de puntuación",
+        "security": "Seguridad de la cuenta",
+        "streak": "Racha",
         "streak_milestone": "Hitos de racha",
         "system": "Mensajes del sistema",
+        "team_prizes": "Equipos y premios",
+        "tests": "Pruebas e intentos",
     },
     "kaa": {
+        "class": "Sınıplarım (oqıwshı retinde)",
+        "community": "Jámiyet, murabbiylik hám kurslar",
+        "competition": "Duelder, hacklar hám xakatonlar",
+        "contest": "Qatnasıp atırǵan jarıslarım",
         "contest_result": "Jarıs nátiyjesi",
         "duel": "Duelder",
         "hack": "Hack nátiyjesi",
+        "hosting": "Ótkerip atırǵan jarıslarım",
+        "moderation": "Moderatsiya",
+        "my_class": "Men ótetuǵın sınıplar",
+        "my_content": "Kontentim hám shaqaylar",
+        "new_contests": "Jańa jarıslar",
+        "plan_limits": "Tarif hám limitler",
         "problem_rerated": "Másele qayta bahalandı",
         "quest_awarded": "Tapsırma sıylıǵı",
         "rating_changed": "Reyting ózgeriwi",
+        "security": "Akkaunt qáwipsizligi",
+        "streak": "Kún seriyası",
         "streak_milestone": "Streak jetiskenligi",
         "system": "Sistema xabarları",
+        "team_prizes": "Komandalar hám sıylıqlar",
+        "tests": "Testler hám urınıslar",
     },
     "kk": {
+        "class": "Сыныптарым (оқушы ретінде)",
+        "community": "Қауымдастық, жаттықтыру және курстар",
+        "competition": "Дуэльдер, хактар және хакатондар",
+        "contest": "Мен қатысатын жарыстар",
         "contest_result": "Жарыс нәтижесі",
         "duel": "Дуэльдер",
         "hack": "Бұзу нәтижесі",
+        "hosting": "Мен өткізетін жарыстар",
+        "moderation": "Модерация",
+        "my_class": "Мен жүргізетін сыныптар",
+        "my_content": "Менің контентім және шағымдар",
+        "new_contests": "Жаңа жарыстар",
+        "plan_limits": "Тариф және лимиттер",
         "problem_rerated": "Есеп қайта бағаланды",
         "quest_awarded": "Тапсырма сыйлығы",
         "rating_changed": "Рейтинг өзгерісі",
+        "security": "Аккаунт қауіпсіздігі",
+        "streak": "Серия",
         "streak_milestone": "Streak жетістігі",
         "system": "Жүйелік хабарлар",
+        "team_prizes": "Командалар және жүлделер",
+        "tests": "Тесттер мен талпыныстар",
     },
     "ky": {
+        "class": "Класстарым (окуучу катары)",
+        "community": "Коомчулук, машыктыруу жана курстар",
+        "competition": "Дуэлдер, хактар жана хакатондор",
+        "contest": "Мен катышкан мелдештер",
         "contest_result": "Мелдештин жыйынтыгы",
         "duel": "Дуэлдер",
         "hack": "Бузуу жыйынтыгы",
+        "hosting": "Мен өткөрүп жаткан мелдештер",
+        "moderation": "Модерация",
+        "my_class": "Мен окуткан класстар",
+        "my_content": "Менин контентим жана даттанууларым",
+        "new_contests": "Жаңы мелдештер",
+        "plan_limits": "Тариф жана лимиттер",
         "problem_rerated": "Маселе кайра бааланды",
         "quest_awarded": "Тапшырма сыйлыгы",
         "rating_changed": "Рейтингдин өзгөрүшү",
+        "security": "Аккаунттун коопсуздугу",
+        "streak": "Серия",
         "streak_milestone": "Streak жетишкендиги",
         "system": "Системалык билдирүүлөр",
+        "team_prizes": "Командалар жана сыйлыктар",
+        "tests": "Тесттер жана аракеттер",
     },
     "ru": {
+        "class": "Мои классы (как ученик)",
+        "community": "Сообщество, наставничество и курсы",
+        "competition": "Дуэли, взломы и хакатоны",
+        "contest": "Соревнования, в которых я участвую",
         "contest_result": "Итоги соревнования",
         "duel": "Дуэли",
         "hack": "Результат взлома",
+        "hosting": "Соревнования, которые я провожу",
+        "moderation": "Модерация",
+        "my_class": "Классы, которые я веду",
+        "my_content": "Мой контент и жалобы",
+        "new_contests": "Новые соревнования",
+        "plan_limits": "Тариф и лимиты",
         "problem_rerated": "Задача переоценена",
         "quest_awarded": "Награда за задание",
         "rating_changed": "Изменение рейтинга",
+        "security": "Безопасность аккаунта",
+        "streak": "Серия",
         "streak_milestone": "Достижения серии",
         "system": "Системные сообщения",
+        "team_prizes": "Команды и призы",
+        "tests": "Тесты и попытки",
     },
     "tg": {
+        "class": "Синфҳоям (ҳамчун хонанда)",
+        "community": "Ҷамоат, мураббигӣ ва курсҳо",
+        "competition": "Дуэлҳо, ҳакҳо ва хакатонҳо",
+        "contest": "Мусобиқаҳои иштирокам",
         "contest_result": "Натиҷаи мусобиқа",
         "duel": "Дуэлҳо",
         "hack": "Натиҷаи шикастан",
+        "hosting": "Мусобиқаҳои ман мегузаронам",
+        "moderation": "Модератсия",
+        "my_class": "Синфҳое, ки ман дарс медиҳам",
+        "my_content": "Мундариҷа ва шикоятҳои ман",
+        "new_contests": "Мусобиқаҳои нав",
+        "plan_limits": "Тариф ва лимитҳо",
         "problem_rerated": "Масъала аз нав баҳогузорӣ шуд",
         "quest_awarded": "Мукофоти супориш",
         "rating_changed": "Тағйири рейтинг",
+        "security": "Амнияти ҳисоб",
+        "streak": "Силсила",
         "streak_milestone": "Дастоварди streak",
         "system": "Паёмҳои система",
+        "team_prizes": "Дастаҳо ва ҷоизаҳо",
+        "tests": "Санҷишҳо ва кӯшишҳо",
     },
     "tr": {
+        "class": "Sınıflarım (öğrenci olarak)",
+        "community": "Topluluk, koçluk ve kurslar",
+        "competition": "Düellolar, hack'ler ve hackathonlar",
+        "contest": "Katıldığım yarışmalar",
         "contest_result": "Yarışma sonucu",
         "duel": "Düellolar",
         "hack": "Hack sonucu",
+        "hosting": "Düzenlediğim yarışmalar",
+        "moderation": "Moderasyon",
+        "my_class": "Verdiğim sınıflar",
+        "my_content": "İçeriğim ve şikayetler",
+        "new_contests": "Yeni yarışmalar",
+        "plan_limits": "Plan ve limitler",
         "problem_rerated": "Problem yeniden puanlandı",
         "quest_awarded": "Görev ödülleri",
         "rating_changed": "Puan değişiklikleri",
+        "security": "Hesap güvenliği",
+        "streak": "Seri",
         "streak_milestone": "Seri başarıları",
         "system": "Sistem mesajları",
+        "team_prizes": "Takımlar ve ödüller",
+        "tests": "Testler ve denemeler",
     },
     "uz": {
+        "class": "Sinflarim (o'quvchi sifatida)",
+        "community": "Hamjamiyat, ustozlik va kurslar",
+        "competition": "Duel, hack va hackathon",
+        "contest": "Qatnashadigan musobaqalarim",
         "contest_result": "Musobaqa natijasi",
         "duel": "Duellar",
         "hack": "Hack natijasi",
+        "hosting": "O'tkazayotgan musobaqalarim",
+        "moderation": "Moderatorlik",
+        "my_class": "Mening sinflarim (o'qituvchi sifatida)",
+        "my_content": "Kontentim va shikoyatlar",
+        "new_contests": "Yangi musobaqalar",
+        "plan_limits": "Tarif va limitlar",
         "problem_rerated": "Masala qayta baholandi",
         "quest_awarded": "Vazifa mukofoti",
         "rating_changed": "Reyting o'zgarishi",
+        "security": "Hisob xavfsizligi",
+        "streak": "Seriya",
         "streak_milestone": "Streak yutug'i",
         "system": "Tizim xabarlari",
+        "team_prizes": "Jamoa va sovrinlar",
+        "tests": "Testlar va urinishlar",
     },
     "zh": {
+        "class": "我的班级(学生身份)",
+        "community": "社区、辅导与课程",
+        "competition": "对决、Hack 与黑客松",
+        "contest": "我参加的比赛",
         "contest_result": "比赛结果",
         "duel": "对决",
         "hack": "Hack 结果",
+        "hosting": "我主办的比赛",
+        "moderation": "审核",
+        "my_class": "我任教的班级",
+        "my_content": "我的内容与举报",
+        "new_contests": "新比赛",
+        "plan_limits": "套餐与限额",
         "problem_rerated": "题目难度调整",
         "quest_awarded": "任务奖励",
         "rating_changed": "积分变化",
+        "security": "账号安全",
+        "streak": "连续记录",
         "streak_milestone": "连续记录里程碑",
         "system": "系统消息",
+        "team_prizes": "团队与奖品",
+        "tests": "测试与提交",
     },
 }

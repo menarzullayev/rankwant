@@ -12,6 +12,29 @@ from typing import ClassVar
 
 from django.db import models
 
+from core.bases import CreatedModel
+
+
+class ReminderSent(CreatedModel):
+    """One timed notification already sent: `(user, code, ref)` is sent once.
+
+    The site row alone cannot answer "was it sent": a person may have
+    switched the site channel off, or deleted the row. Without this table a
+    reminder would be re-sent every time the beat task looks again.
+    """
+
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="+")
+    code = models.CharField(max_length=48)
+    ref = models.CharField(max_length=64)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "code", "ref"], name="uniq_reminder_sent")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user_id}: {self.code} {self.ref}"
+
 
 class Notification(models.Model):
     class Kind(models.TextChoices):

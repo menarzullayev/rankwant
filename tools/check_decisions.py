@@ -3134,6 +3134,35 @@ def deploys_leave_a_github_record() -> str | None:
     return None
 
 
+def notifications_follow_the_groups_decision() -> str | None:
+    """2026-11-16 (HITL): bildirishnomalar guruhlarga bo'lingan, xavfsizlik saytda majburiy, vaqt xabarlari ishlaydi.
+
+    Sozlama 8 tur o'rniga 14 guruh; hisob xavfsizligida sayt kanali o'chmaydi;
+    funksiyasi yo'q turlar (`DORMANT`) sozlamada ko'rinmaydi; beat musobaqa va
+    seriya eslatmalarini yuritadi; yangi qurilma kirishda tekshiriladi.
+    """
+    groups = read("apps/api/notifications/groups.py")
+    if '"security": frozenset({"site"})' not in groups:
+        return "notifications/groups.py: hisob xavfsizligida sayt kanali majburiy emas"
+    if "groups.MANDATORY.get(group" not in read("apps/api/notifications/services.py"):
+        return "notifications/services.py: majburiy kanal `channels()` da qo'llanmaydi — xavfsizlik xabarini o'chirib bo'ladi"
+    settings_py = read("apps/api/config/settings.py")
+    for task in ("notifications.run_reminders", "contests.run_reminders"):
+        if f'"task": "{task}"' not in settings_py:
+            return f"config/settings.py: beat `{task}` ni yuritmaydi — vaqt xabarlari ketmaydi"
+    if "devices.note_sign_in" not in read("apps/api/core/sessions.py"):
+        return "core/sessions.py: yangi qurilma kirishda tekshirilmaydi"
+    section = read("apps/web/src/features/account/components/NotificationsSection.tsx")
+    listed = re.search(r"const GROUPS = \[(.*?)\] as const;", section, re.S)
+    if not listed or '"security"' not in listed.group(1):
+        return "NotificationsSection.tsx: guruhlar ro'yxati yo'q yoki xavfsizlik guruhi yo'q"
+    if '"team_prizes"' in listed.group(1):
+        return "NotificationsSection.tsx: funksiyasi yo'q `team_prizes` guruhi sozlamada ko'rinadi"
+    if 'MANDATORY: Record<string, readonly string[]> = { security: ["site"] }' not in section:
+        return "NotificationsSection.tsx: xavfsizlik uchun sayt tugmasi o'chirib qo'yilmaydi"
+    return None
+
+
 def negatives_run_one_rule() -> str | None:
     """2026-11-15 (HITL): qaror salbiy testi faqat o'z qoidasini yuritadi.
 
@@ -6296,6 +6325,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("PR qaror testlarini o'zgargan fayllar uchun yuritadi", pr_runs_decision_cases_for_changed_files),
     ("PR CI tez: salbiy testlar va build faqat main'da, statik tekshiruv alohida", pr_ci_is_fast_and_static),
     ("qaror salbiy testi faqat o'z qoidasini yuritadi", negatives_run_one_rule),
+    ("bildirishnomalar guruhlarga bo'lingan, xavfsizlik saytda majburiy", notifications_follow_the_groups_decision),
     ("har deploy GitHub'da iz qoldiradi, haftalik release notes", deploys_leave_a_github_record),
     ("Actions keshini faqat main yozadi", actions_cache_is_written_by_main_only),
     ("Dependabot minor/patch guruhi o'zi merge bo'ladi", dependabot_minor_patch_automerges),

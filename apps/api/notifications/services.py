@@ -11,7 +11,7 @@ from django.db.models import Count, Q
 from django.utils import timezone
 
 from core.models import User
-from notifications import messages
+from notifications import groups, messages
 from notifications.models import Notification
 
 log = logging.getLogger(__name__)
@@ -32,10 +32,26 @@ class Channels(NamedTuple):
     email: bool
 
 
-def channels(user: User, kind: str) -> Channels:
-    """Foydalanuvchining shu tur uchun tanlovi."""
-    prefs = (user.notify_prefs or {}).get(kind) or {}
-    return Channels(*(bool(prefs.get(name, DEFAULT_CHANNELS[name])) for name in CHANNEL_NAMES))
+def channels(user: User, kind: str, code: str = "") -> Channels:
+    """Foydalanuvchining shu xabar uchun tanlovi.
+
+    Guruh bo'yicha sozlama (`notifications.groups`) birinchi o'qiladi, so'ng
+    guruhlar bo'lmagan davrdagi tur bo'yicha sozlama, so'ng standart. Hisob
+    xavfsizligida sayt kanali o'chirilmaydi.
+    """
+    group = groups.group_of(code, kind)
+    stored = user.notify_prefs or {}
+    # Per channel: the group's own value, else what was saved under the kind
+    # (or under a pre-group kind of this group), else the default.
+    sources = [stored.get(group) or {}, stored.get(kind) or {}]
+    sources += [stored.get(legacy) or {} for legacy in groups.legacy_kinds(group)]
+    values = {
+        name: bool(next((s[name] for s in sources if name in s), DEFAULT_CHANNELS[name]))
+        for name in CHANNEL_NAMES
+    }
+    for name in groups.MANDATORY.get(group, ()):
+        values[name] = True
+    return Channels(*(values[name] for name in CHANNEL_NAMES))
 
 
 def _telegram_text(title: str, body: str) -> str:
@@ -139,7 +155,7 @@ def notify(
     (reyting, verdict) saqlanishi shart. Sayt kanali o'chirilgan bo'lsa
     `None` qaytadi — chaqiruvchi buni allaqachon ko'taradi.
     """
-    site, telegram, email = channels(user, kind)
+    site, telegram, email = channels(user, kind, code)
     try:
         draft = compose(
             user, kind, title, body=body, code=code, params=params, ref_type=ref_type, ref_id=ref_id
@@ -162,7 +178,12 @@ def notify(
             from notifications import email as email_channel
 
             email_channel.schedule(
-                user, kind, draft.title, draft.body, row.pk if row is not None else None
+                user,
+                kind,
+                draft.title,
+                draft.body,
+                row.pk if row is not None else None,
+                code=code,
             )
         except Exception:
             log.exception("email bildirishnomasi rejalashtirilmadi: %s / %s", user.pk, kind)
@@ -192,7 +213,7 @@ def notify_many(
             u, kind, title, body=body, code=code, params=params, ref_type=ref_type, ref_id=ref_id
         )
         for u in users
-        if channels(u, kind)[0]
+        if channels(u, kind, code)[0]
     ]
     if not rows:
         return 0

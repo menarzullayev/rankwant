@@ -42,15 +42,20 @@ def record(request: Any, *, force: bool = False) -> None:
     forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
     ip = (forwarded.split(",")[0].strip() if forwarded else "") or request.META.get("REMOTE_ADDR")
     now = timezone.now()
-    UserSession.objects.update_or_create(
+    agent = request.META.get("HTTP_USER_AGENT", "")[:200]
+    _, opened = UserSession.objects.update_or_create(
         session_key=key,
         defaults={
             "user": user,
-            "user_agent": request.META.get("HTTP_USER_AGENT", "")[:200],
+            "user_agent": agent,
             "ip": ip or None,
             "last_seen": now,
         },
     )
+    if opened:
+        from core import devices
+
+        devices.note_sign_in(user, agent)
     # The same moment on the user row (ADR-0024), so lists can read one column
     # instead of aggregating sessions per row.
     User.objects.filter(pk=user.pk).update(last_seen_at=now)

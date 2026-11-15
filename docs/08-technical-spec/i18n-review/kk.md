@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**3568 strings.**
+**3671 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1057,6 +1057,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.kind.rating_changed` | Reyting o'zgarishi | Рейтинг өзгерісі |  |
 | `settings.kind.streak_milestone` | Streak yutug'i | Streak жетістігі |  |
 | `settings.kind.system` | Tizim xabarlari | Жүйелік хабарлар |  |
+| `settings.kind.security` | Hisob xavfsizligi | Аккаунт қауіпсіздігі |  |
+| `settings.kind.contest` | Qatnashadigan musobaqalarim | Мен қатысатын жарыстар |  |
+| `settings.kind.new_contests` | Yangi musobaqalar | Жаңа жарыстар |  |
+| `settings.kind.hosting` | O'tkazayotgan musobaqalarim | Мен өткізетін жарыстар |  |
+| `settings.kind.moderation` | Moderatorlik | Модерация |  |
+| `settings.kind.class` | Sinflarim (o'quvchi sifatida) | Сыныптарым (оқушы ретінде) |  |
+| `settings.kind.my_class` | Mening sinflarim (o'qituvchi sifatida) | Мен жүргізетін сыныптар |  |
+| `settings.kind.tests` | Testlar va urinishlar | Тесттер мен талпыныстар |  |
+| `settings.kind.streak` | Seriya | Серия |  |
+| `settings.kind.my_content` | Kontentim va shikoyatlar | Менің контентім және шағымдар |  |
+| `settings.kind.competition` | Duel, hack va hackathon | Дуэльдер, хактар және хакатондар |  |
+| `settings.kind.community` | Hamjamiyat, ustozlik va kurslar | Қауымдастық, жаттықтыру және курстар |  |
+| `settings.kind.plan_limits` | Tarif va limitlar | Тариф және лимиттер |  |
+| `settings.kind.team_prizes` | Jamoa va sovrinlar | Командалар және жүлделер |  |
+| `settings.notifyAlwaysOn` | Doim yoqiq | Әрдайым қосулы |  |
 | `settings.kindColumn` | Tur | Түрі |  |
 | `settings.language` | Til | Тіл |  |
 | `settings.linkedinHint` | https://linkedin.com/in/… ko'rinishida | https://linkedin.com/in/… түрінде |  |
@@ -2841,6 +2856,94 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Contests рейтингі: {before} → {after} |  |
 | `notif.msg.problem_review_requested.title` | Ko'rik so'raldi — {problem} | Тексеру сұралды — {problem} |  |
 | `notif.msg.problem_review_requested.body` | @{user} «{problem}» qoralamasini ko'rikka yubordi. | @{user} «{problem}» жобасын тексеруге жіберді. |  |
+| `notif.msg.security_new_device.title` | Hisobingizga yangi qurilmadan kirildi | Аккаунтыңызға жаңа кіру |  |
+| `notif.msg.security_new_device.body` | Yangi qurilmadan kirildi: {device}. Bu siz bo'lmasangiz, parolni o'zgartiring. | Жаңа құрылғыдан кірілді: {device}. Бұл сіз болмасаңыз, құпиясөзді өзгертіңіз. |  |
+| `notif.msg.security_password_changed.title` | Parolingiz o'zgartirildi | Құпиясөзіңіз өзгертілді |  |
+| `notif.msg.security_password_changed.body` | Bu siz bo'lmasangiz, parolni darhol tiklang. | Бұл сіз болмасаңыз, құпиясөзді дереу қалпына келтіріңіз. |  |
+| `notif.msg.security_password_reset.title` | Parolingiz tiklandi | Құпиясөзіңіз қалпына келтірілді |  |
+| `notif.msg.security_password_reset.body` | Yangi parol tiklash havolasi orqali o'rnatildi. Bu siz bo'lmasangiz, biz bilan bog'laning. | Жаңа құпиясөз қалпына келтіру сілтемесі арқылы орнатылды. Бұл сіз болмасаңыз, бізбен хабарласыңыз. |  |
+| `notif.msg.security_email_changed.title` | Hisob emaili o'zgartirildi | Аккаунттың электрондық поштасы өзгертілді |  |
+| `notif.msg.security_email_changed.body` | Yangi manzil: {email}. | Жаңа мекенжай: {email}. |  |
+| `notif.msg.security_telegram_linked.title` | Telegram ulandi | Telegram байланыстырылды |  |
+| `notif.msg.security_telegram_linked.body` | Profilingizga Telegram hisobi ulandi. | Профиліңізге Telegram аккаунты байланыстырылды. |  |
+| `notif.msg.security_deletion_scheduled.title` | Hisobni o'chirish rejalashtirildi | Аккаунтты жою жоспарланды |  |
+| `notif.msg.security_deletion_scheduled.body` | Hisobingiz {date} kuni o'chiriladi. Shu kungacha bekor qilishingiz mumkin. | Аккаунтыңыз {date} күні жойылады. Осы күнге дейін бас тартуға болады. |  |
+| `notif.msg.security_deletion_cancelled.title` | Hisobni o'chirish bekor qilindi | Аккаунтты жою тоқтатылды |  |
+| `notif.msg.security_deletion_cancelled.body` | Hisobingiz o'z holicha qoladi. | Аккаунтыңыз бұрынғы қалпында қалады. |  |
+| `notif.msg.contest_starts_in_day.title` | «{contest}» ertaga boshlanadi | «{contest}» ертең басталады |  |
+| `notif.msg.contest_starts_in_day.body` | Ro'yxatdan o'tgan musobaqangiz taxminan bir kundan keyin boshlanadi. | Тіркелген жарысыңыз шамамен бір күннен кейін басталады. |  |
+| `notif.msg.contest_starts_in_hour.title` | «{contest}» bir soatdan keyin boshlanadi | «{contest}» бір сағаттан кейін басталады |  |
+| `notif.msg.contest_starts_in_hour.body` | Tayyor bo'ling: ro'yxatdan o'tgan musobaqangiz taxminan bir soatdan keyin boshlanadi. | Дайын болыңыз: тіркелген жарысыңыз шамамен бір сағаттан кейін басталады. |  |
+| `notif.msg.contest_standing_changed.title` | «{contest}»: ishtirokingiz o'zgardi | «{contest}»: қатысуыңыз өзгерді |  |
+| `notif.msg.contest_standing_changed.body` | Hakamlar ishtirok holatingizni o'zgartirdi. Tafsilot musobaqa sahifasida. | Қазылар қатысу мәртебеңізді өзгертті. Толығырақ жарыс бетінде. |  |
+| `notif.msg.contest_rating_reverted.title` | «{contest}»: reyting o'zgarishi bekor qilindi | «{contest}»: рейтинг өзгерісі күшін жойды |  |
+| `notif.msg.contest_rating_reverted.body` | Bu musobaqadagi reyting o'zgarishi qaytarib olindi. | Осы жарыстағы рейтинг өзгерісі кері қайтарылды. |  |
+| `notif.msg.contest_invited.title` | «{contest}» musobaqasiga taklif | «{contest}» жарысына шақыру |  |
+| `notif.msg.contest_invited.body` | @{user} sizni musobaqada qatnashishga taklif qildi. | @{user} сізді жарысқа қатысуға шақырды. |  |
+| `notif.msg.contest_new.title` | Yangi musobaqa: {contest} | Жаңа жарыс: {contest} |  |
+| `notif.msg.contest_new.body` | Yangi musobaqa e'lon qilindi. Ro'yxatdan o'tish ochiq. | Жаңа жарыс жарияланды. Тіркеу ашық. |  |
+| `notif.msg.contest_prize.title` | «{contest}»: sizga sovrin | «{contest}»: сізге сыйлық |  |
+| `notif.msg.contest_prize.body` | Siz sovrin oldingiz: {prize}. | Сіз сыйлық алдыңыз: {prize}. |  |
+| `notif.msg.contest_moderator_invited.title` | Moderatorlikka taklif — «{contest}» | Модераторлыққа шақыру — «{contest}» |  |
+| `notif.msg.contest_moderator_invited.body` | @{user} sizni musobaqa moderatori bo'lishga taklif qildi. | @{user} сізді жарыс модераторы болуға шақырды. |  |
+| `notif.msg.contest_moderator_removed.title` | «{contest}»: endi moderator emassiz | «{contest}»: сіз енді модератор емессіз |  |
+| `notif.msg.contest_moderator_removed.body` | Bu musobaqadagi moderatorlik rolingiz olib tashlandi. | Осы жарыстағы модераторлық рөліңіз алынып тасталды. |  |
+| `notif.msg.host_contest_starts_in_hour.title` | Musobaqangiz «{contest}» bir soatdan keyin boshlanadi | «{contest}» жарысыңыз бір сағаттан кейін басталады |  |
+| `notif.msg.host_contest_starts_in_hour.body` | Boshlanishdan oldin masalalar, hakamlar va e'lonlarni tekshiring. | Басталмай тұрып есептерді, қазыларды және хабарландыруларды тексеріңіз. |  |
+| `notif.msg.host_contest_ended.title` | Musobaqangiz «{contest}» tugadi | «{contest}» жарысыңыз аяқталды |  |
+| `notif.msg.host_contest_ended.body` | Natijalar qo'llangach jadval yakuniy bo'ladi. | Нәтижелер қолданылғаннан кейін кесте түпкілікті болады. |  |
+| `notif.msg.host_moderator_answered.title` | «{contest}»: @{user} taklifga javob berdi | «{contest}»: @{user} шақыруға жауап берді |  |
+| `notif.msg.host_moderator_answered.body` | Moderator sizning taklifingizga javob berdi. | Модератор шақыруыңызға жауап берді. |  |
+| `notif.msg.host_plagiarism_found.title` | «{contest}»: {count} ta shubhali ishtirok | «{contest}»: {count} күмәнді қатысу |  |
+| `notif.msg.host_plagiarism_found.body` | Antiplagiat tekshiruvi {count} ta ishtirokni ko'rib chiqish uchun belgiladi. | Плагиатқа қарсы тексеру {count} қатысуды қарауға белгіледі. |  |
+| `notif.msg.class_invited.title` | «{classroom}» sinfiga taklif | «{classroom}» сыныбына шақыру |  |
+| `notif.msg.class_invited.body` | @{user} sizni sinfga qo'shilishga taklif qildi. | @{user} сізді сыныпқа қосылуға шақырды. |  |
+| `notif.msg.class_invite_cancelled.title` | Taklif bekor qilindi — «{classroom}» | Шақыру тоқтатылды — «{classroom}» |  |
+| `notif.msg.class_invite_cancelled.body` | Sinfga taklif bekor qilindi. | Сыныпқа шақыру тоқтатылды. |  |
+| `notif.msg.my_class_invite_accepted.title` | @{user} «{classroom}» sinfiga qo'shildi | @{user} «{classroom}» сыныбына қосылды |  |
+| `notif.msg.my_class_invite_accepted.body` | O'quvchi sizning taklifingizni qabul qildi. | Оқушы шақыруыңызды қабылдады. |  |
+| `notif.msg.my_class_invite_declined.title` | @{user} «{classroom}» sinfiga qo'shilmadi | @{user} «{classroom}» сыныбына қосылмады |  |
+| `notif.msg.my_class_invite_declined.body` | O'quvchi sizning taklifingizni rad etdi. | Оқушы шақыруыңызды қабылдамады. |  |
+| `notif.msg.my_class_student_left.title` | @{user} «{classroom}» sinfidan chiqdi | @{user} «{classroom}» сыныбынан шықты |  |
+| `notif.msg.my_class_student_left.body` | O'quvchi sinfingizdan chiqib ketdi. | Оқушы сыныбыңыздан шығып кетті. |  |
+| `notif.msg.quiz_invited.title` | Testga taklif — {quiz} | Тестке шақыру — {quiz} |  |
+| `notif.msg.quiz_invited.body` | @{user} sizni testni topshirishga taklif qildi. | @{user} сізді тестті тапсыруға шақырды. |  |
+| `notif.msg.attempt_verdict_changed.title` | Urinishingiz natijasi o'zgardi — {problem} | Әрекетіңіздің нәтижесі өзгерді — {problem} |  |
+| `notif.msg.attempt_verdict_changed.body` | Yangi verdikt: {verdict}. | Жаңа вердикт: {verdict}. |  |
+| `notif.msg.streak_at_risk.title` | {days} kunlik seriyangiz uzilish arafasida | {days} күндік серияңыз үзілейін деп тұр |  |
+| `notif.msg.streak_at_risk.body` | Uni saqlab qolish uchun bugun bitta masala yeching. | Сақтап қалу үшін бүгін бір есеп шешіңіз. |  |
+| `notif.msg.streak_broken.title` | {days} kunlik seriyangiz uzildi | {days} күндік серияңыз үзілді |  |
+| `notif.msg.streak_broken.body` | Bugun masala yechib yangisini boshlang. | Бүгін есеп шешіп, жаңасын бастаңыз. |  |
+| `notif.msg.report_on_my_content.title` | Kontentingizga shikoyat — {object} | Контентіңізге шағым — {object} |  |
+| `notif.msg.report_on_my_content.body` | Kimdir shikoyat qildi. Xodimlar ko'rib chiqadi. | Біреу шағымданды. Қызметкерлер қарайды. |  |
+| `notif.msg.report_reviewed.title` | Shikoyatingiz ko'rib chiqildi — {object} | Шағымыңыз қаралды — {object} |  |
+| `notif.msg.report_reviewed.body` | Xodimlar shikoyatingizni ko'rib chiqdi. | Қызметкерлер шағымыңызды қарады. |  |
+| `notif.msg.report_resolved.title` | Kontentingiz haqidagi shikoyat hal etildi — {object} | Контентіңіз туралы шағым шешілді — {object} |  |
+| `notif.msg.report_resolved.body` | Xodimlar shikoyatni yopdi. | Қызметкерлер шағымды жапты. |  |
+| `notif.msg.problem_archived.title` | Masalangiz arxivga qo'yildi — {problem} | Есебіңіз мұрағатқа жіберілді — {problem} |  |
+| `notif.msg.problem_archived.body` | U endi ommaviy ro'yxatda ko'rinmaydi. | Ол енді жалпыға ортақ тізімде көрінбейді. |  |
+| `notif.msg.quiz_published.title` | Testingiz ommaviy qilindi — {quiz} | Тестіңіз жалпыға ортақ етілді — {quiz} |  |
+| `notif.msg.quiz_published.body` | Endi uni hamma ochishi mumkin. | Енді оны кез келген адам аша алады. |  |
+| `notif.msg.plan_ending.title` | Tarifingiz tugashiga {days} kun qoldi | Тарифіңіздің аяқталуына {days} күн қалды |  |
+| `notif.msg.plan_ending.body` | Pullik imkoniyatlarni saqlash uchun uni yangilang. | Ақылы мүмкіндіктерді сақтау үшін оны жаңартыңыз. |  |
+| `notif.msg.plan_ended.title` | Tarifingiz tugadi | Тарифіңіз аяқталды |  |
+| `notif.msg.plan_ended.body` | Pullik imkoniyatlar o'chirildi. | Ақылы мүмкіндіктер өшірілді. |  |
+| `notif.msg.plan_activated.title` | Tarif rasmiylashtirildi — {plan} | Тариф рәсімделді — {plan} |  |
+| `notif.msg.plan_activated.body` | Rahmat. Tarif imkoniyatlari ochildi. | Рахмет. Тариф мүмкіндіктері ашылды. |  |
+| `notif.msg.judge_access_ending.title` | Hakam ruxsati tugashiga {days} kun qoldi | Төреші рұқсатының аяқталуына {days} күн қалды |  |
+| `notif.msg.judge_access_ending.body` | Muallifligi va tashkilotchiligini saqlash uchun uzaytiring. | Авторлық пен ұйымдастырушылықты сақтау үшін ұзартыңыз. |  |
+| `notif.msg.judge_access_ended.title` | Hakam ruxsati tugadi | Төреші рұқсаты аяқталды |  |
+| `notif.msg.judge_access_ended.body` | Mualliflik va tashkilotchilik vositalari yopildi. | Авторлық және ұйымдастырушылық құралдары жабылды. |  |
+| `notif.msg.judge_limit_reached.title` | Hakam limiti tugayapti — {limit} | Төреші лимиті таусылып барады — {limit} |  |
+| `notif.msg.judge_limit_reached.body` | Joy bo'shating yoki tarifni oshiring. | Орын босатыңыз немесе тарифті жоғарылатыңыз. |  |
+| `notif.msg.team_invited.title` | «{team}» jamoasiga taklif | «{team}» командасына шақыру |  |
+| `notif.msg.team_invited.body` | @{user} sizni jamoaga qo'shilishga taklif qildi. | @{user} сізді командаға қосылуға шақырды. |  |
+| `notif.msg.team_invite_answered.title` | @{user} «{team}» taklifiga javob berdi | @{user} «{team}» шақыруына жауап берді |  |
+| `notif.msg.team_invite_answered.body` | Javobni ko'rish uchun jamoani oching. | Жауапты көру үшін команданы ашыңыз. |  |
+| `notif.msg.team_captain.title` | Siz «{team}» jamoasi sardorisiz | Сіз «{team}» командасының капитанысыз |  |
+| `notif.msg.team_captain.body` | Jamoa tarkibini boshqarishingiz mumkin. | Команда құрамын басқара аласыз. |  |
+| `notif.msg.team_invite_cancelled.title` | Taklif bekor qilindi — «{team}» | Шақыру тоқтатылды — «{team}» |  |
+| `notif.msg.team_invite_cancelled.body` | Jamoaga taklif bekor qilindi. | Командаға шақыру тоқтатылды. |  |
 | `search.type.shop` | Do'kon | Дүкен |  |
 | `search.top` | Eng mos natija | Ең сәйкес нәтиже |  |
 | `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Сұраулар тым көп. Сәлден соң қайталап көріңіз. |  |

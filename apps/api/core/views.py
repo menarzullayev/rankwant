@@ -1344,6 +1344,9 @@ class PasswordResetConfirmView(APIView):
         # Eski sessiyalar qoladi-yu, parol o'zgargani uchun ular
         # `AbstractBaseUser.get_session_auth_hash()` bilan bekor bo'ladi.
         log.info("parol tiklandi: %s", user.pk)
+        from notifications import security
+
+        security.password_reset(user)
         # Tiklashdan keyin odam shu qurilmada darhol kiradi (2026-10-26):
         # havola pochta egasini allaqachon isbotladi. Boshqa qurilmalardagi
         # sessiyalar parol o'zgargani uchun yuqorida bekor bo'ldi, bu yangi
@@ -1556,7 +1559,7 @@ class SocialCallbackView(APIView):
                 # Bitta provayder hisobi ikki joyda tura olmaydi —
                 # modeldagi `uniq_social_uid` shuni talab qiladi.
                 return redirect(f"{home}/settings/xavfsizlik?social=taken")
-            SocialAccount.objects.update_or_create(
+            _, linked_now = SocialAccount.objects.update_or_create(
                 user=owner,
                 provider=ident.provider,
                 defaults={
@@ -1566,6 +1569,10 @@ class SocialCallbackView(APIView):
                     "username": ident.handle,
                 },
             )
+            if linked_now and ident.provider == "telegram":
+                from notifications import security
+
+                security.telegram_linked(owner)
             if owner.email_verified_at is None and ident.email.lower() == owner.email.lower():
                 owner.email_verified_at = timezone.now()
                 owner.save(update_fields=["email_verified_at"])

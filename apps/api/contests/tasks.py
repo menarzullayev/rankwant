@@ -27,3 +27,11 @@ def finalize_due_contests() -> int:
         except Exception:
             log.exception("contest %s yakunlanmadi", contest.slug)
     return total
+
+
+@shared_task(name="contests.run_reminders")
+def run_reminders() -> dict[str, int]:
+    """A day / an hour before a contest, and its end, for hosts (beat, every 5 minutes)."""
+    from contests import reminders
+
+    return reminders.run()

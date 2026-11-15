@@ -77,6 +77,9 @@ class PasswordChangeView(APIView):
         # Joriy sessiya parol xeshiga bog'langan — yangilanmasa, odam
         # parolni almashtirgan zahoti o'zi ham tizimdan chiqib ketardi.
         update_session_auth_hash(request, user)
+        from notifications import security
+
+        security.password_changed(user)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

@@ -15,9 +15,9 @@
 #
 # Bugungi buzilishlar: assurance hisoboti 4 ta namuna ko'rsatgan
 # (arena/services.py:15, judging/serializers.py:8-9, ratings/services.py:12,284,371,
-# classroom/serializers.py:8), to'liq skan esa 111 ta topdi — hammasi shu yerda.
+# classroom/serializers.py:8), to'liq skan esa 110 ta topdi — hammasi shu yerda.
 #
-# jami: 111
+# jami: 110
 
 arena/services.py:quizzes.models
 arena/services.py:qvant.models
@@ -56,7 +56,6 @@ core/management/commands/seed_demo.py:tournaments.models
 core/management/commands/seed_stress.py:judging.models
 core/management/commands/seed_stress.py:problems.models
 core/management/commands/seed_stress.py:ratings.models
-core/serializers.py:notifications.models
 core/serializers.py:problems.models
 core/serializers.py:ratings.models
 core/staff_views.py:notifications.models
