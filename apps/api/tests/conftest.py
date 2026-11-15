@@ -21,6 +21,7 @@ from judging.verdicts import Verdict
 from problems.models import Language, Problem, ReferenceSolution, TestCase, Validator
 from ratings.models import UserSolvedProblem
 
+
 @pytest.fixture(autouse=True, scope="session")
 def _fast_password_hasher():
     """Hash passwords with MD5 in tests (owner decision 2026-11-15, CI speed).
