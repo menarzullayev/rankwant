@@ -9926,6 +9926,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/api/tests/conftest.py",
     "apps/web/src/app/(site)/_home/GuestHero.tsx",
     "apps/web/src/app/(site)/_home/HeroActions.tsx",
     "apps/api/core/staff_views.py",
@@ -13745,6 +13746,16 @@ def neg_decisions_ci_static_job_needs_node() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_ci_fast_hasher_dropped() -> tuple[bool, str]:
+    """The test session goes back to the slow default password hasher."""
+    return _decision_broken(
+        "apps/api/tests/conftest.py",
+        "def _fast_password_hasher():",
+        "def _tidied_away_hasher():",
+        "sekin PBKDF2",
+    )
+
+
 def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
     """`Required checks` stops reading `web_static`."""
     return _decision_broken(
@@ -15321,6 +15332,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("api job'i bazaga bog'lansa tutilsin", neg_decisions_ci_api_gets_a_database),
             ("web_static Node o'rnatsa tutilsin", neg_decisions_ci_static_job_needs_node),
             ("required web_static'ni o'qimasa tutilsin", neg_decisions_ci_required_ignores_static),
+            ("testlar sekin parol xeshiga qaytsa tutilsin", neg_decisions_ci_fast_hasher_dropped),
         ],
     ),
 ]

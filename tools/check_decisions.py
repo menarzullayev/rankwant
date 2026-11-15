@@ -809,7 +809,8 @@ def pr_skips_heavy_ci() -> str | None:
     tests = _workflow_job(ci, "api_tests")
     if not tests:
         return "ci.yml da `api_tests` job'i yo'q — API pytest PR'da yurmaydi (2026-11-08 qarori)"
-    if "needs.filter.outputs.api" not in tests:
+    # `api_shards` / `api_shard_count` also start with this prefix; the gate is the `==`.
+    if "needs.filter.outputs.api ==" not in tests:
         return "api_tests yo'l filtrisiz — har PR'da yuguradi (faqat apps/api o'zgarganda kerak)"
     if "pytest_shard.py" not in tests or "pytest -n 4" not in tests:
         return "api_tests shardlangan pytest yugurtirmaydi"
@@ -3067,6 +3068,8 @@ def pr_ci_is_fast_and_static() -> str | None:
         return "ci.yml: Postgres'ga migratsiya va North Star so'rovi `api_tests` da (faqat main) yo'q"
     if "fromJSON(needs.filter.outputs.api_shards)" not in tests:
         return "ci.yml: API testlari PR'da keng shardlanmaydi (api_shards)"
+    if "def _fast_password_hasher():" not in read("apps/api/tests/conftest.py"):
+        return "apps/api/tests/conftest.py: testlar sekin PBKDF2 bilan parol xeshlaydi — har foydalanuvchi ~0.3 s"
     static = _workflow_job(ci, "web_static")
     if not static:
         return "ci.yml: `web_static` job'i yo'q — statik tekshiruvlar `web` orqasida navbat kutadi"

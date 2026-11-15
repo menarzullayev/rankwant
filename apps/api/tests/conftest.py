@@ -21,6 +21,21 @@ from judging.verdicts import Verdict
 from problems.models import Language, Problem, ReferenceSolution, TestCase, Validator
 from ratings.models import UserSolvedProblem
 
+
+@pytest.fixture(autouse=True, scope="session")
+def _fast_password_hasher():
+    """Hash passwords with MD5 in tests (owner decision 2026-11-15, CI speed).
+
+    Django's default PBKDF2 runs over a million rounds on purpose; every test
+    that creates a user with a password paid that cost. Production keeps the
+    default: this only overrides the setting for the test session. Tests that
+    check a password still go through `check_password`, which reads whichever
+    hasher made the stored hash.
+    """
+    with override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"]):
+        yield
+
+
 # ── Rol guruhlari (ADR-0025) ────────────────────────────────────────────
 #
 # Production'da yangi xodimga guruhlarni superuser biriktiradi (bare
