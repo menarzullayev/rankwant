@@ -649,6 +649,12 @@ jobs:
       # checked with. Found 2026-11-14: five samples had drifted from those sources, and
       # every sample with a backslash was shown wrong (`/\s+/` as `/s+/`) because the
       # generator did not escape template literals. The self-test proves both failures.
+      # The deploy record and the weekly release notes (owner decision 2026-11-15)
+      # are pure functions around `gh`; their selftests pin the tag name and the grouping.
+      - name: Deploy record and release notes (selftests)
+        run: |
+          python3 tools/deploy_record.py --selftest
+          python3 tools/release_notes.py --selftest
       - name: Language samples (/about shows the judge-verified A+B sources)
         run: |
           python3 tools/check_language_samples.py --selftest

@@ -99,6 +99,16 @@ for arg in "$@"; do
 done
 
 log()  { printf '[%s] %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1"; }
+# A GitHub record of the deploy (Deployment status + tag). Best effort and
+# bounded: it runs AFTER the outcome is known and can never change it, so a
+# GitHub outage does not turn a finished deploy into a failed one
+# (owner decision 2026-11-15). stdin is /dev/null like every watcher child.
+github_record() {
+  command -v gh >/dev/null 2>&1 || return 0
+  [ -n "${GATE_PY:-}" ] || return 0
+  timeout 90 "$GATE_PY" tools/deploy_record.py "$1" "$2" </dev/null 2>&1     | while IFS= read -r line; do log "  github: $line"; done
+  return 0
+}
 # A state that repeats every minute is written once: the key is kept next
 # to the state file and the line is skipped while it stays the same. The
 # "no image change" line alone was ~1 440 lines a day (audit Q-16, L-05).
@@ -473,6 +483,7 @@ deploy_rc=$?
 if [ "$deploy_rc" -eq 0 ]; then
   log "deploy tugadi: ${TARGET:0:12}"
   rm -f "$STATE"
+  github_record success "$TARGET"
   case "$gate_out" in
     *PR_CI_SHORTCUT*)
       printf '%s\n' "$TARGET" >> "$VERIFY" 2>/dev/null || true
@@ -491,5 +502,6 @@ if [ "$deploy_rc" -eq 75 ]; then
   exit 0
 fi
 log "deploy YIQILDI (target ${TARGET:0:7}) — ${BACKOFF}s to'siq qo'yildi"
+github_record failure "$TARGET"
 printf '%s⚠ Kodni qaytarish: kerakli commit + bash tools/deploy.sh (SHA obraz tegi yo'\''q)%s\n' "$Y" "$N"
 exit 1

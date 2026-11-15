@@ -9010,6 +9010,8 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "tools/deploy_record.py",
+    ".github/workflows/release-notes.yml",
     ".github/workflows/cache-cleanup.yml",
     ".github/workflows/dependabot-automerge.yml",
     ".github/CODEOWNERS",
@@ -12871,6 +12873,46 @@ def neg_decisions_security_policy_public_issue() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_deploy_record_success_dropped() -> tuple[bool, str]:
+    """A finished deploy is no longer written to GitHub."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '  github_record success "$TARGET"\n',
+        "",
+        "muvaffaqiyatli deploy GitHub'ga yozilmaydi",
+    )
+
+
+def neg_decisions_deploy_record_can_fail_the_deploy() -> tuple[bool, str]:
+    """The helper loses its `return 0`: a GitHub error would leak into the deploy's exit path."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'log "  github: $line"; done\n  return 0\n}',
+        'log "  github: $line"; done\n}',
+        "`return 0` bilan tugamaydi",
+    )
+
+
+def neg_decisions_deploy_record_unbounded() -> tuple[bool, str]:
+    """The GitHub call loses its timeout: an unresponsive GitHub would hang the watcher."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '  timeout 90 "$GATE_PY" tools/deploy_record.py',
+        '  "$GATE_PY" tools/deploy_record.py',
+        "cheklanmagan",
+    )
+
+
+def neg_decisions_release_notes_never_scheduled() -> tuple[bool, str]:
+    """The weekly release workflow loses its schedule."""
+    return _decision_broken(
+        ".github/workflows/release-notes.yml",
+        "    - cron: '0 3 * * 1'\n",
+        "",
+        "haftalik jadval",
+    )
+
+
 def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
     """`Required checks` stops reading `web_static`."""
     return _decision_broken(
@@ -14277,6 +14319,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("api job'i bazaga bog'lansa tutilsin", neg_decisions_ci_api_gets_a_database),
             ("web_static Node o'rnatsa tutilsin", neg_decisions_ci_static_job_needs_node),
             ("required web_static'ni o'qimasa tutilsin", neg_decisions_ci_required_ignores_static),
+            ("muvaffaqiyatli deploy yozilmasa tutilsin", neg_decisions_deploy_record_success_dropped),
+            ("GitHub xatosi deploy'ni buzsa tutilsin", neg_decisions_deploy_record_can_fail_the_deploy),
+            ("GitHub chaqiruvi cheklanmasa tutilsin", neg_decisions_deploy_record_unbounded),
+            ("release notes jadvalsiz qolsa tutilsin", neg_decisions_release_notes_never_scheduled),
             ("PR mypy keshini yozsa tutilsin", neg_decisions_cache_pr_saves_mypy),
             ("main Next keshini yozmasa tutilsin", neg_decisions_cache_main_stops_saving_next),
             ("kesh tozalash ishga tushmasa tutilsin", neg_decisions_cache_cleanup_never_fires),
