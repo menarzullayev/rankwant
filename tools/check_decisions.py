@@ -1958,6 +1958,32 @@ def guest_home_is_honest_and_public() -> str | None:
     return None
 
 
+def home_follows_browser_language() -> str | None:
+    """2026-11-15 (HITL home-language): the guest home page is cached per language.
+
+    Measured on the live site: `/` was forced to Uzbek for every visitor while `/problems`
+    followed the browser, so an English reader got an Uzbek home page and an English archive.
+    `/` now takes the `Vary: Accept-Language` path of `/problems`; Cloudflare's Cache Rule
+    already covered `/` and normalizes the header to the ten languages, so the cache holds
+    ten copies, not one per header value. Login and the legal pages stay Uzbek.
+    """
+    src = read(HOME_CACHE)
+    forced = re.search(r"export function isUzForcedGuestCachePath\(.*?\n\}", src, re.S)
+    aware = re.search(r"export function isLocaleAwareGuestCachePath\(.*?\n\}", src, re.S)
+    if forced is None or aware is None:
+        return f"{HOME_CACHE}: kesh yo'li funksiyalari topilmadi"
+    if 'pathname === "/" ||' in forced.group(0):
+        return f"{HOME_CACHE}: `/` yana `uz` majburiy — boshqa tilli mehmon o'zbekcha bosh sahifa oladi"
+    if "pathname === HOME_CACHE_PATH" not in aware.group(0):
+        return f"{HOME_CACHE}: `/` tilga bog'liq kesh yo'lida emas — `Vary: Accept-Language` yo'q"
+    spec = read(CF_GUEST_CACHE_RULE)
+    if 'http.request.uri.path eq \\"/\\" and' not in spec:
+        return f"{CF_GUEST_CACHE_RULE}: `/` Cache Rule'da yo'q — CDN uni saqlamaydi"
+    if '"accept-language"' not in spec or '"normalize"' not in spec:
+        return f"{CF_GUEST_CACHE_RULE}: Accept-Language normalize emas — kesh har sarlavha qiymatiga bo'linadi"
+    return None
+
+
 def sign_in_page_is_self_contained() -> str | None:
     """2026-10-04: `/login` is a two-column page without the site chrome.
 
@@ -6013,6 +6039,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sitemap xhtml:link tillari", sitemap_locale_xhtml_alternates),
     ("Vary Accept-Language chekkada", vary_accept_language_at_edge),
     ("arxiv ro'yxat mehmon CDN keshi", problems_list_guest_cdn),
+    ("bosh sahifa brauzer tiliga ergashadi", home_follows_browser_language),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("qarorlar indeksi fayllarga mos", decisions_index_matches_files),

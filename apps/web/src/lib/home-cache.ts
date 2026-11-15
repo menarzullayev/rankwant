@@ -2,11 +2,14 @@ import { ALPHABET_COOKIE } from "@/i18n/alphabet";
 import { LOCALE_COOKIE } from "@/i18n/locale-params";
 
 /**
- * Mehmon HTML keshi — 50k qarorlari (2026-09-19): GET `/`, `/login`,
+ * Mehmon HTML keshi — 50k qarorlari (2026-09-19): GET `/login`,
  * `/register`, `/terms`, `/privacy` (`uz` majburiy). HITL problems-al
  * (2026-09-20): GET `/problems` query'siz ham, lekin til
- * `Accept-Language` bo'yicha (`uz` majburiy emas). `rw_exp` keshlangan
- * yo'lda yozilmaydi — Set-Cookie CDN ni o'ldiradi.
+ * `Accept-Language` bo'yicha (`uz` majburiy emas). HITL home-language
+ * (2026-11-15): GET `/` ham shunday — mehmon brauzer tilidagi bosh sahifani
+ * oladi, kesh 10 tilga bo'linadi (Cloudflare `Accept-Language` ni shu 10 tilga
+ * normallashtiradi). `rw_exp` keshlangan yo'lda yozilmaydi — Set-Cookie CDN ni
+ * o'ldiradi.
  *
  * Next.js layout `cookies()` o'qiydi va o'zi `private, no-store` yozadi.
  * Shu modul qarorni aytadi; `proxy.ts` va `instrumentation.ts` uni
@@ -19,7 +22,7 @@ export const SESSION_COOKIE = "sessionid";
 /** Markup HTML tuzilishini o'zgartiradi (`prefs.ts` dagi `MARKUP_COOKIE`). */
 export const HOME_MARKUP_COOKIE = "rw:markup";
 
-/** Keshlangan mehmon HTML doim shu tilda — `Accept-Language` zaharlamasligi uchun. */
+/** `uz` majburiy yo'llar (login, huquqiy) doim shu tilda — `Accept-Language` zaharlamasligi uchun. */
 export const HOME_CACHE_LOCALE = "uz";
 
 export const HOME_CACHE_PATH = "/";
@@ -99,7 +102,7 @@ export function isUzForcedGuestCachePath(
   pathname: string,
   search: string,
 ): boolean {
-  if (pathname === "/" || pathname === "/terms" || pathname === "/privacy") {
+  if (pathname === "/terms" || pathname === "/privacy") {
     return search === "";
   }
   if (pathname === "/register") return search === "";
@@ -111,7 +114,10 @@ export function isLocaleAwareGuestCachePath(
   pathname: string,
   search: string,
 ): boolean {
-  return pathname === PROBLEMS_CACHE_PATH && search === "";
+  return (
+    (pathname === HOME_CACHE_PATH || pathname === PROBLEMS_CACHE_PATH) &&
+    search === ""
+  );
 }
 
 export function isGuestCachePath(pathname: string, search: string): boolean {
