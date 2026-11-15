@@ -6201,10 +6201,20 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
 ]
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    args = sys.argv[1:] if argv is None else argv
+    # `--only LABEL` runs just the rule with that exact label. The negative
+    # suite breaks one file to prove ONE rule fires, so it asks for that rule
+    # alone instead of paying for all of them (owner decision 2026-11-15).
+    only = {args[i + 1] for i, a in enumerate(args[:-1]) if a == "--only"}
+    chosen = [(label, rule) for label, rule in RULES if not only or label in only]
+    if only and len(chosen) != len(only):
+        missing = sorted(only - {label for label, _ in chosen})
+        print(f"✗ --only: bunday qoida yo'q — {missing}")
+        return 2
     problems: list[str] = []
     try:
-        for label, rule in RULES:
+        for label, rule in chosen:
             problem = rule()
             if problem:
                 problems.append(f"{label}: {problem}")
@@ -6220,7 +6230,7 @@ def main() -> int:
             print(f"  - {problem}")
         print("  Qarorni o'zgartirish faqat Saidakbar akaning aniq tasdig'i bilan.")
         return 1
-    print(f"✓ {len(RULES)} ta qaror kodda amalda")
+    print(f"✓ {len(chosen)} ta qaror kodda amalda")
     return 0
 
 

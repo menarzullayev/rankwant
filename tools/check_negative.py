@@ -3466,6 +3466,45 @@ def _changed_files() -> set[str] | None:
     return result
 
 
+_RULE_MAP_PATH = Path(__file__).resolve().parent / "negative_rule_map.json"
+_rule_map_cache: dict[str, str] | None = None
+
+
+def _rule_label(test: str) -> str | None:
+    """The `check_decisions` rule a negative test exercises, or None for a full run.
+
+    `tools/negative_rule_map.json` is generated: `NEGATIVE_RECORD=<file> python
+    tools/check_negative.py decisions`, then `python tools/negative_rule_map.py
+    <file>`. A test without an entry (a new one) runs every rule — slower,
+    never wrong. `NEGATIVE_FULL_RULES=1` ignores the map (Nightly).
+    """
+    global _rule_map_cache
+    if os.environ.get("NEGATIVE_FULL_RULES") or os.environ.get("NEGATIVE_RECORD"):
+        return None
+    if _rule_map_cache is None:
+        try:
+            _rule_map_cache = json.loads(_RULE_MAP_PATH.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            _rule_map_cache = {}
+    return _rule_map_cache.get(test)
+
+
+def _record_rule_label(test: str, rule: str, out: str) -> None:
+    """Append `test<TAB>label` for the rule whose line carries `rule` (map generator input)."""
+    import check_decisions
+
+    labels = [label for label, _ in check_decisions.RULES]
+    for line in out.splitlines():
+        if not line.startswith("  - ") or rule not in line:
+            continue
+        found = [label for label in labels if line.startswith(f"  - {label}: ")]
+        if found:
+            with open(os.environ["NEGATIVE_RECORD"], "a", encoding="utf-8") as fh:
+                fh.write(f"{test}	{max(found, key=len)}
+")
+            return
+
+
 def _decision_broken(rel: str, old: str, new: str, rule: str) -> tuple[bool, str]:
     """Break one owner decision in `rel`; check_decisions must name that rule."""
     changed = _changed_files()
@@ -3476,8 +3515,19 @@ def _decision_broken(rel: str, old: str, new: str, rule: str) -> tuple[bool, str
     text = path.read_bytes().decode("utf-8")
     if old not in text:
         return False, f"decisions/{rule}: langar topilmadi ({rel})"
+    label = _rule_label(sys._getframe(1).f_code.co_name)
     with Mutation(path, old, new):
-        code, out = run_check("decisions")
+        if label:
+            # One rule instead of all of them (owner decision 2026-11-15). If
+            # the narrow run does not name the rule, the map may be stale, so
+            # the full run decides — a wrong map costs time, never a verdict.
+            code, out = run_check("decisions", "--only", label)
+            if code != 1 or rule not in out:
+                code, out = run_check("decisions")
+        else:
+            code, out = run_check("decisions")
+        if os.environ.get("NEGATIVE_RECORD"):
+            _record_rule_label(sys._getframe(1).f_code.co_name, rule, out)
     if code != 1:
         return False, f"decisions/{rule}: buzilgan qaror exit {code} berdi (1 kerak)"
     if rule not in out:
