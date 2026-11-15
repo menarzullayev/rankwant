@@ -9591,7 +9591,7 @@ def _decisions_sandbox(
         for rel in drop:
             (root / rel).unlink()
         workflows = root / ".github/workflows"
-        workflows.mkdir(parents=True)
+        workflows.mkdir(parents=True, exist_ok=True)
         for path in (ROOT / ".github/workflows").glob("*.yml"):
             (workflows / path.name).write_bytes(path.read_bytes())
         for name, text in extra_workflows.items():
