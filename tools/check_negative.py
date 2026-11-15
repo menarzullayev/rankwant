@@ -9010,6 +9010,7 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "tools/negative_rule_map.json",
     "apps/api/tests/conftest.py",
     "apps/web/src/app/(site)/_home/GuestHero.tsx",
     "apps/web/src/app/(site)/_home/HeroActions.tsx",
@@ -12784,6 +12785,16 @@ def neg_decisions_ci_postgres_waits_for_disk() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_negatives_run_every_rule() -> tuple[bool, str]:
+    """The decision tests go back to running all 177 rules each."""
+    return _decision_broken(
+        "tools/check_negative.py",
+        'run_check("decisions", "--only", label)',
+        'run_check("decisions")',
+        "bitta qoidani yuritmaydi",
+    )
+
+
 def neg_decisions_ci_required_ignores_static() -> tuple[bool, str]:
     """`Required checks` stops reading `web_static`."""
     return _decision_broken(
@@ -14192,6 +14203,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("required web_static'ni o'qimasa tutilsin", neg_decisions_ci_required_ignores_static),
             ("testlar sekin parol xeshiga qaytsa tutilsin", neg_decisions_ci_fast_hasher_dropped),
             ("test Postgres'i diskni kutsa tutilsin", neg_decisions_ci_postgres_waits_for_disk),
+            ("qaror testlari hamma qoidani yuritsa tutilsin", neg_decisions_negatives_run_every_rule),
         ],
     ),
 ]
