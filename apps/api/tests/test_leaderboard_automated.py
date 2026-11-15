@@ -44,6 +44,16 @@ class TestLeaderboardHidesAutomatedAccounts:
         User.objects.create_user(username=name, password="x", rating_skills=800)
         assert name in _usernames(APIClient())
 
+    def test_demo_origin_accounts_are_not_listed_but_imported_ones_are(self) -> None:
+        User.objects.create_user(username="seeded", password="x", origin=User.Origin.DEMO)
+        # A real person's handle that merely says "demo" (it exists on the live site).
+        User.objects.create_user(username="demo", password="x", origin=User.Origin.IMPORTED)
+
+        listed = _usernames(APIClient())
+
+        assert "seeded" not in listed
+        assert "demo" in listed
+
     def test_an_automated_profile_is_still_reachable_by_name(self) -> None:
         User.objects.create_user(username="smoke1790231924", password="x")
         response = APIClient().get(reverse("user-detail", args=["smoke1790231924"]))
