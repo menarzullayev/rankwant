@@ -9926,6 +9926,9 @@ _TRIAL_WORKFLOW = (
 # trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
 # `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
 _DECISIONS_SANDBOX_FILES = (
+    "apps/web/src/app/(site)/_home/GuestHero.tsx",
+    "apps/web/src/app/(site)/_home/HeroActions.tsx",
+    "apps/api/core/staff_views.py",
     "services/tts/server.py",
     "services/tts/supervisor.py",
     "services/tts/run.cmd",
