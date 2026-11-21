@@ -6,7 +6,10 @@ import { skipUnlessLocal } from "./guard";
 
 test("bosh sahifa ochiladi", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "RankWant" })).toBeVisible();
+  // Guest hero headline (2026-11-15 decision, `home.heroHeadline`, uz).
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Yeching. Musobaqalashing. Yuksaling." }),
+  ).toBeVisible();
 });
 
 test("masalalar arxivi serverda render bo'ladi", async ({ page }) => {
