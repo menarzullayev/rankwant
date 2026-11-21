@@ -5,3 +5,13 @@
 # bu qator faqat TARIXDAGI commit uchun, chunki soxta parol uchun ommaviy
 # tarixni qayta yozish nomutanosib.
 efbffa87ed0f8b92fa358573bac3c851854ba87d:tests/smoke/check.py:generic-api-key:81
+
+# 2026-11-22 triage (nightly run 44948991231, 3 findings, all false positives).
+# Fingerprints are stable: they pin immutable history commits.
+# 1) Hand-made test fixture (fixed upper/digit/lower cycle) used by the
+#    env_secrets negative check; fed only to a temp file, never a credential.
+48b9f78b41fb46526c9a121c6d18714683dbbb57:tools/check_negative.py:generic-api-key:3755
+# 2-3) Not secrets: a Uzbek UI-message word pair inside a return string of
+#    the ADR-0016 link check (letters and a slash only).
+12adc3b04c40058b4303452be8b74f37655603c6:tools/check_decisions.py:generic-api-key:1848
+c461f605fcb52da6da48bf10910fb08730fcbd61:tools/check_decisions.py:generic-api-key:1821
