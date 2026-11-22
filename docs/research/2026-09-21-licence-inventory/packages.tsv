@@ -731,8 +731,8 @@ python/api	anyio	4.16.0	runtime	MIT
 python/api	asgiref	3.13.0	runtime	BSD-3-Clause
 python/api	attrs	26.1.0	runtime	MIT
 python/api	billiard	4.3.2	runtime	BSD
-python/api	boto3	1.44.2	runtime	Apache-2.0
-python/api	botocore	1.44.2	runtime	Apache-2.0
+python/api	boto3	1.44.9	runtime	Apache-2.0
+python/api	botocore	1.44.9	runtime	Apache-2.0
 python/api	celery	5.7.0	runtime	BSD-3-Clause
 python/api	click	8.5.1	runtime	BSD-3-Clause
 python/api	click-didyoumean	0.3.1	runtime	MIT
@@ -795,8 +795,8 @@ python/api-dev	ast-serialize	0.13.1	dev	MIT
 python/api-dev	attrs	26.1.0	dev	MIT
 python/api-dev	billiard	4.3.2	dev	BSD
 python/api-dev	boolean-py	5.0	dev	BSD-2-Clause
-python/api-dev	boto3	1.44.2	dev	Apache-2.0
-python/api-dev	botocore	1.44.2	dev	Apache-2.0
+python/api-dev	boto3	1.44.9	dev	Apache-2.0
+python/api-dev	botocore	1.44.9	dev	Apache-2.0
 python/api-dev	cachecontrol	0.14.4	dev	Apache-2.0
 python/api-dev	celery	5.7.0	dev	BSD-3-Clause
 python/api-dev	certifi	2026.10.23	dev	MPL-2.0

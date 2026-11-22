@@ -950,8 +950,8 @@ new dependency cannot make this document quietly false.
 | `asgiref` | 3.13.0 | runtime | BSD-3-Clause |
 | `attrs` | 26.1.0 | runtime | MIT |
 | `billiard` | 4.3.2 | runtime | BSD |
-| `boto3` | 1.44.2 | runtime | Apache-2.0 |
-| `botocore` | 1.44.2 | runtime | Apache-2.0 |
+| `boto3` | 1.44.9 | runtime | Apache-2.0 |
+| `botocore` | 1.44.9 | runtime | Apache-2.0 |
 | `celery` | 5.7.0 | runtime | BSD-3-Clause |
 | `click` | 8.5.1 | runtime | BSD-3-Clause |
 | `click-didyoumean` | 0.3.1 | runtime | MIT |
@@ -1019,8 +1019,8 @@ new dependency cannot make this document quietly false.
 | `attrs` | 26.1.0 | dev | MIT |
 | `billiard` | 4.3.2 | dev | BSD |
 | `boolean-py` | 5.0 | dev | BSD-2-Clause |
-| `boto3` | 1.44.2 | dev | Apache-2.0 |
-| `botocore` | 1.44.2 | dev | Apache-2.0 |
+| `boto3` | 1.44.9 | dev | Apache-2.0 |
+| `botocore` | 1.44.9 | dev | Apache-2.0 |
 | `cachecontrol` | 0.14.4 | dev | Apache-2.0 |
 | `celery` | 5.7.0 | dev | BSD-3-Clause |
 | `certifi` | 2026.10.23 | dev | MPL-2.0 |
