@@ -37,7 +37,7 @@
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "server-only": "^0.0.1",
-    "simple-icons": "16.37.0",
+    "simple-icons": "16.38.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -46,14 +46,14 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@typescript/native": "npm:typescript@7.0.2",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "eslint-config-next": "^16.4.6",
     "openapi-typescript": "^7.13.0",
-    "postcss": "^8.5.28",
+    "postcss": "^8.5.33",
     "tailwindcss": "^4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
-    "typescript-eslint": "^8.72.2",
-    "vitest": "5.1.0"
+    "typescript-eslint": "^8.73.0",
+    "vitest": "5.1.1"
   },
   "#optionalDependencies": [
     "`tsc` in this package is the NATIVE TypeScript 7 binary, aliased as",
