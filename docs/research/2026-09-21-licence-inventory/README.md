@@ -949,7 +949,7 @@ new dependency cannot make this document quietly false.
 |---|---|---|---|
 | `amqp` | 5.4.2 | runtime | BSD |
 | `annotated-types` | 0.8.0 | runtime | MIT |
-| `anthropic` | 2.8.0 | runtime | Apache-2.0 |
+| `anthropic` | 2.12.0 | runtime | Apache-2.0 |
 | `anyio` | 4.16.0 | runtime | MIT |
 | `asgiref` | 3.13.0 | runtime | BSD-3-Clause |
 | `attrs` | 26.1.0 | runtime | MIT |
@@ -1016,7 +1016,7 @@ new dependency cannot make this document quietly false.
 |---|---|---|---|
 | `amqp` | 5.4.2 | dev | BSD |
 | `annotated-types` | 0.8.0 | dev | MIT |
-| `anthropic` | 2.8.0 | dev | Apache-2.0 |
+| `anthropic` | 2.12.0 | dev | Apache-2.0 |
 | `anyio` | 4.16.0 | dev | MIT |
 | `asgiref` | 3.13.0 | dev | BSD-3-Clause |
 | `ast-serialize` | 0.13.1 | dev | MIT |
