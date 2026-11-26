@@ -2345,7 +2345,7 @@ def dependabot_locks_are_recompiled() -> str | None:
         return "dependabot-locks.yml: `compile` PR branch'ini checkout qiladi — PR kodi `main` kesh huquqi bilan ishlaydi"
     if "git checkout FETCH_HEAD --" not in compile_job or "licence_inventory.py --inputs)" not in compile_job:
         return "dependabot-locks.yml: `compile` PR fayllarini ma'lumot sifatida olmaydi — inventar `main` fayllarini yozadi"
-    for line in re.findall(r"^\s+uv pip (?:compile|install) .*$", compile_job, re.M):
+    for line in re.findall(r"^(?!\s*(?:#|- name:)).*\buv\b.*\b(?:pip (?:compile|install)|export)\b.*$", compile_job, re.M):
         if "--no-build" not in line:
             return "dependabot-locks.yml: `uv pip` `--no-build` siz — paketning build kodi `main` kesh huquqi bilan ishlaydi"
     if workflow.count("--python-version 3.14") < 2:

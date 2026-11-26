@@ -4326,9 +4326,8 @@ def neg_decisions_deplocks_compile_checks_out_pr() -> tuple[bool, str]:
     """`compile` checks out the pull request's branch again (CodeQL alert 26)."""
     return _decision_broken(
         ".github/workflows/dependabot-locks.yml",
-        "      - uses: actions/checkout@v7\n        with:\n          persist-credentials: false\n",
-        "      - uses: actions/checkout@v7\n        with:\n          ref: ${{ steps.pr.outputs.branch }}\n"
-        "          persist-credentials: false\n",
+        "          ref: ${{ github.event.repository.default_branch }}\n          persist-credentials: false\n",
+        "          ref: ${{ steps.pr.outputs.branch }}\n          persist-credentials: false\n",
         "PR kodi `main` kesh huquqi bilan ishlaydi",
     )
 
