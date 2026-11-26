@@ -5493,6 +5493,26 @@ def neg_decisions_voice_service_listens_widely() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_codeql_scan_is_blind() -> tuple[bool, str]:
+    """CodeQL would report a clean result even when it extracted nothing."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        'if [ "$files" -lt "$MIN_FILES" ]; then',
+        "if false; then",
+        "ko'r bo'lsa ham yashil",
+    )
+
+
+def neg_decisions_codeql_left_out_of_nightly() -> tuple[bool, str]:
+    """Nightly would stop running CodeQL at all."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "      - uses: github/codeql-action/analyze@v4\n",
+        "",
+        "CodeQL hech qayerda yurmaydi",
+    )
+
+
 def neg_decisions_voice_keeps_another_voice() -> tuple[bool, str]:
     """Audio from another voice would be filed under this voice's name."""
     return _decision_broken(
@@ -13632,6 +13652,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ovozga belgi yetsa tutilsin", neg_decisions_voice_reads_symbols),
             ("ovoz servisi keng tinglasa tutilsin", neg_decisions_voice_service_listens_widely),
             ("boshqa ovoz saqlansa tutilsin", neg_decisions_voice_keeps_another_voice),
+            ("CodeQL ko'r bo'lsa tutilsin", neg_decisions_codeql_scan_is_blind),
+            ("CodeQL Nightly'dan tushsa tutilsin", neg_decisions_codeql_left_out_of_nightly),
             ("ovoz worker'i deploy ro'yxatidan tushsa tutilsin", neg_decisions_voice_worker_left_out_of_deploy),
             ("ovoz worker'i deploy'da ko'tarilmasa tutilsin", neg_decisions_voice_worker_never_recreated),
             ("ovoz kuzatuvchisi keng tinglasa tutilsin", neg_decisions_voice_supervisor_listens_widely),

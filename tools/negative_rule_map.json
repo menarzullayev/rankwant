@@ -102,6 +102,8 @@
 "neg_decisions_coach_reads_without_consent": "murabbiy: ≤3, ruxsat har biriga, musobaqada kod yopiq",
 "neg_decisions_coach_sets_consent": "murabbiy: ≤3, ruxsat har biriga, musobaqada kod yopiq",
 "neg_decisions_codeowners_star_returns": "repo xavfsizlik va xulq qoidalari bor",
+"neg_decisions_codeql_left_out_of_nightly": "CodeQL faqat Nightly'da, ko'r emas",
+"neg_decisions_codeql_scan_is_blind": "CodeQL faqat Nightly'da, ko'r emas",
 "neg_decisions_collectstatic_without_key": "SECRET_KEY standart qiymatsiz",
 "neg_decisions_compose_unlimited_logs": "docker disk chegaralangan",
 "neg_decisions_consent_checkbox_returns": "ro'yxatdan o'tish taxallus va ismni so'raydi",

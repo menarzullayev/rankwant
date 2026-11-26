@@ -702,6 +702,80 @@ jobs:
           done
           if [ "$total" -gt 0 ]; then echo "::warning::npm audit: $total vulnerable package(s) — see the run summary"; fi
 
+  #: CodeQL runs here and nowhere else (owner decision 2026-11-26): once a
+  #: day, report only — results go to the repository's code scanning alerts
+  #: and the run summary, nothing fails on a finding. Before this job it last
+  #: ran on 2026-09-29 (default setup, never scheduled).
+  codeql:
+    name: Scan — code (CodeQL ${{ matrix.language }}, report only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          #: `min_files` — fewer source files than this in the database means
+          #: the extractor saw almost nothing and a clean result would be
+          #: blind (the scanners' canary rule, 2026-11-10). Counted from the
+          #: database's source archive: `baselineLinesOfCode` was tried first
+          #: and counts only plain JavaScript in the JS/TS database (2 406
+          #: lines while 739 TypeScript files were scanned, 2026-11-26).
+          - { language: python, build: none, min_files: 300 }
+          - { language: javascript-typescript, build: none, min_files: 400 }
+          - { language: go, build: autobuild, min_files: 10 }
+          - { language: actions, build: none, min_files: 5 }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build }}
+          # Design prototypes and docs are never served by the site.
+          config: |
+            paths-ignore:
+              - prototypes
+              - docs
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}
+          output: ${{ runner.temp }}/codeql-sarif
+      - name: The scan saw the code and its findings are listed
+        env:
+          LANG_NAME: ${{ matrix.language }}
+          MIN_FILES: ${{ matrix.min_files }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # The database folder is the extractor's name, not the matrix one
+          # (`javascript`, not `javascript-typescript`); one per job.
+          src=$(ls "$RUNNER_TEMP"/codeql_databases/*/src.zip 2>/dev/null | head -1)
+          files=$( [ -n "$src" ] && python3 -c 'import sys, zipfile; print(len(zipfile.ZipFile(sys.argv[1]).namelist()))' "$src" || echo 0)
+          if [ "$files" -lt "$MIN_FILES" ]; then
+            echo "::error::CodeQL $LANG_NAME extracted $files source file(s) (at least $MIN_FILES expected) — a clean result would be blind"
+            exit 1
+          fi
+          n=$(jq '[.runs[].results[]] | length' "$RUNNER_TEMP"/codeql-sarif/*.sarif)
+          # The SARIF holds every result, also those reviewed and dismissed
+          # as false positives; only the alerts still open need a look.
+          # `analyze` waits for the upload to be processed, so they are current.
+          open=$(gh api --paginate "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=$GITHUB_REF&per_page=100" \
+            --jq ".[] | select(.most_recent_instance.category == \"/language:$LANG_NAME\") | \"| \(.rule.id) | \(.most_recent_instance.location.path):\(.most_recent_instance.location.start_line) | \(.html_url) |\"")
+          o=$(printf '%s' "$open" | grep -c . || true)
+          {
+            echo "### CodeQL $LANG_NAME — $o open alert(s), $n result(s), $files source files analysed"
+            if [ "$o" -gt 0 ]; then
+              echo
+              echo "| Rule | File | Alert |"
+              echo "| ---- | ---- | ----- |"
+              printf '%s\n' "$open"
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$o" -gt 0 ]; then echo "::warning::CodeQL $LANG_NAME: $o open alert(s) — see the run summary"; fi
+
   latency:
     name: Latency — judge budget
     runs-on: ubuntu-latest
