@@ -288,6 +288,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-26](docs/decisions/2026-11-26-auth-follows-browser-language.md) · Kirish va ro'yxatdan o'tish sahifasi ham mehmon tilida (2026-11-15 ning `/login` bandini almashtiradi) · `home_follows_browser_language`
 - [2026-11-26](docs/decisions/2026-11-26-codeql-in-nightly.md) · CodeQL faqat Nightly'da, faqat hisobot; ekstraktor ko'r bo'lsa yiqiladi · `codeql_runs_in_nightly`
 - [2026-11-26](docs/decisions/2026-11-26-launch-after-full-gate.md) · Haqiqiy foydalanuvchilar faqat to'liq launch gate'dan keyin; keyingi bosqich tartibi · `docs/09-development-plan/README.md`
+- [2026-11-26](docs/decisions/2026-11-26-dependabot-locks-run-no-pr-code.md) · Dependabot lock job'i PR kodini yurgizmaydi: `main` checkout, PR fayllari ma'lumot, `uv --no-build` · `dependabot_locks_are_recompiled`
 
 ## Tekshiruvlar
 

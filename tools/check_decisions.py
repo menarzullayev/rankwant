@@ -2327,7 +2327,9 @@ def dependabot_locks_are_recompiled() -> str | None:
     - lock'lar image bilan bir xil Python uchun (3.14) yasaladi — boshqa
       versiyada shartli bog'liqliklar (`typing-extensions`) tushib qoladi;
     - push'dan keyin CI ochiq ishga tushiriladi: workflow tokeni bilan
-      qilingan push CI'ni uyg'otmaydi va PR tekshiruvsiz qolardi.
+      qilingan push CI'ni uyg'otmaydi va PR tekshiruvsiz qolardi;
+    - (2026-11-26) `compile` PR kodini yurgizmaydi: checkout `main`, PR
+      fayllari faqat ma'lumot, `uv` faqat wheel (`--no-build`).
     """
     workflow = read(".github/workflows/dependabot-locks.yml")
     match = re.search(r"^  compile:\n(.*?)^  commit:\n", workflow, re.S | re.M)
@@ -2335,6 +2337,17 @@ def dependabot_locks_are_recompiled() -> str | None:
         return "dependabot-locks.yml: `compile` va `commit` job'lari topilmadi"
     if re.search(r"^\s+[a-z-]+: write\s*$", match.group(1), re.M):
         return "dependabot-locks.yml: `compile` job'ida yozish huquqi bor — begona kod token bilan ishlaydi"
+    # 2026-11-26 (CodeQL alert 26): under `pull_request_target` the job holds
+    # `main`'s Actions cache scope, so no code of the pull request may run in
+    # it — neither a script of its branch nor a package's build code.
+    compile_job = match.group(1)
+    if "ref: ${{ steps.pr.outputs.branch }}" in compile_job:
+        return "dependabot-locks.yml: `compile` PR branch'ini checkout qiladi — PR kodi `main` kesh huquqi bilan ishlaydi"
+    if "git checkout FETCH_HEAD --" not in compile_job or "licence_inventory.py --inputs)" not in compile_job:
+        return "dependabot-locks.yml: `compile` PR fayllarini ma'lumot sifatida olmaydi — inventar `main` fayllarini yozadi"
+    for line in re.findall(r"^\s+uv pip (?:compile|install) .*$", compile_job, re.M):
+        if "--no-build" not in line:
+            return "dependabot-locks.yml: `uv pip` `--no-build` siz — paketning build kodi `main` kesh huquqi bilan ishlaydi"
     if workflow.count("--python-version 3.14") < 2:
         return "dependabot-locks.yml: lock'lar Python 3.14 uchun yasalmaydi"
     if read(".github/workflows/ci.yml").count("&& inputs.run_all)") < 6:

@@ -47,6 +47,12 @@ a new dependency then cannot make the inventory silently false. It compares
 names, not versions — a version bump of an already-reviewed package does not
 fail it, and that limitation is stated in the generated document.
 
+`--inputs` prints every repository file the inventory reads (and the two it
+writes), one per line, and exits. `dependabot-locks.yml` runs this script from
+`main` and takes exactly these files from the pull request, so no code of the
+pull request runs under `pull_request_target` (CodeQL cache poisoning,
+2026-11-26).
+
 Exit codes: 0 fine, 1 drift (with `--check`), 2 a source could not be read or
 parsed — never treated as "fine".
 """
@@ -559,7 +565,25 @@ def check(rows: list[dict[str, str]]) -> int:
     return 1
 
 
+def inputs() -> list[str]:
+    """Every repository file `collect` reads, plus the two files `main` writes."""
+    return [
+        *(rel for rel, _scope in PY_PINS.values()),
+        *PY_UV.values(),
+        *NODE_LOCKS.values(),
+        GO_MOD,
+        *DOCKERFILES,
+        f"{RECORD_DIR}/go-licences.tsv",
+        f"{RECORD_DIR}/packages.tsv",
+        f"{RECORD_DIR}/README.md",
+    ]
+
+
 def main(argv: list[str]) -> int:
+    if "--inputs" in argv:
+        print("\n".join(inputs()))
+        return 0
+
     venv = ROOT / PY_VENV
     if "--venv" in argv:
         venv = Path(argv[argv.index("--venv") + 1]).resolve()
