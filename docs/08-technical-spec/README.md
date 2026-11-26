@@ -217,7 +217,7 @@ Judge host'da **DB credential bo'lmaydi** — u faqat Redis va S3 ni biladi.
 
 ## Xavfsizlik checklist (launch oldidan)
 
-- [x] Judge host izolyatsiyasi tekshirildi (kiruvchi port yo'q, DB credential yo'q) — 2026-11-10 o'lchandi: `rankwant-judge-1` nashr qilingan port `{}`, env'da DB/Django kaliti yo'q; Nightly «Security — static suite» yashil. ⚠️ Bu konteyner darajasi: judge hamon `privileged` va baza bilan bir hostda (threat model A-1, ADR-0046)
+- [x] Judge host izolyatsiyasi tekshirildi (kiruvchi port yo'q, DB credential yo'q) — 2026-11-10 o'lchandi: `rankwant-judge-1` nashr qilingan port `{}`, env'da DB/Django kaliti yo'q; Nightly «Security — static suite» yashil. ⚠️ Bu konteyner darajasi: judge baza bilan bir hostda (threat model A-1). 2026-11-26 o'lchandi: judge endi `privileged` emas (`Privileged=false`, faqat `SETFCAP`/`SETGID`/`SETUID`, ADR-0046), nashr qilingan port yo'q
 - [x] Sandbox escape testi: fork bomb, fayl yozish, tarmoq, `/proc` o'qish — Nightly «Bake-off — validator cases (real nsjail)» yashil (run 42716046958, 2026-11-09)
 - [x] PAT hash saqlanishi va bekor qilish oqimi — `ApiToken.token_hash` (sha256), bekor qilish `revoked_at`; Nightly statik to'plamida tekshiriladi
 - [x] Rate limit barcha auth endpointlarida — ro'yxatdan o'tish, email tasdiqlash va qayta yuborish, parolni tiklash (so'rov va tasdiq) — scoped throttle; kirish — `login_guard` (IP + hisob); qolganlari standart anon/user throttle

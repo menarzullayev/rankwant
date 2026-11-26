@@ -4323,6 +4323,27 @@ def required_checks_cover_every_gate() -> str | None:
     return None
 
 
+def codeql_runs_in_nightly() -> str | None:
+    """2026-11-26 (HITL: «Faqat Nightly'da»): CodeQL kuniga bir marta, faqat hisobot.
+
+    Oxirgi marta 2026-09-29 da yurgan (default setup, jadvalsiz). Endi Nightly'dagi
+    `codeql` job'i: topilma — code scanning alerti va run summary, job yiqilmaydi;
+    ekstraktor deyarli hech narsa ko'rmasa (qatorlar `min_loc` dan kam) — yiqiladi,
+    chunki toza natija ko'r bo'lardi. PR CI'da CodeQL yo'q (2026-11-15: PR ~1 daqiqa).
+    """
+    body = _workflow_job(read(".github/workflows/nightly.yml"), "codeql")
+    if "uses: github/codeql-action/analyze@" not in body:
+        return "nightly.yml: `codeql` job'i yo'q — CodeQL hech qayerda yurmaydi"
+    if "security-events: write" not in body:
+        return "nightly.yml: `codeql` natijani code scanning'ga yoza olmaydi"
+    if 'if [ "$files" -lt "$MIN_FILES" ]; then' not in body:
+        return "nightly.yml: CodeQL ko'r bo'lsa ham yashil chiqadi (fayllar soni tekshirilmaydi)"
+    for wf in sorted((ROOT / ".github/workflows").glob("*.yml")):
+        if wf.name != "nightly.yml" and "github/codeql-action" in wf.read_text(encoding="utf-8"):
+            return f"{wf.name}: CodeQL Nightly'dan tashqarida — qaror faqat Nightly"
+    return None
+
+
 def scanners_report_in_nightly() -> str | None:
     """2026-11-10 (HITL, audit Q-11): gitleaks, pip-audit, npm audit — Nightly'da, faqat hisobot.
 
@@ -6283,6 +6304,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("klient komponent sanani raqam bilan yozadi", client_dates_are_numeric),
     ("FormDate kalendari Intl siz yozadi", form_date_skips_intl),
     ("skanerlar Nightly'da hisobot beradi", scanners_report_in_nightly),
+    ("CodeQL faqat Nightly'da, ko'r emas", codeql_runs_in_nightly),
     ("main bitta umumlashtiruvchi tekshiruvni talab qiladi", required_checks_cover_every_gate),
     ("Nightly bake-off haqiqiy darvoza", nightly_bakeoff_is_a_gate),
     ("Nightly jonli darvozalar CI stack'ini o'lchaydi", nightly_live_gates_measure),
