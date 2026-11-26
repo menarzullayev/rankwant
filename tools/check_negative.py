@@ -4316,9 +4316,39 @@ def neg_decisions_deplocks_judge_py_not_installed() -> tuple[bool, str]:
     """The inventory is regenerated without the judge-py packages (the #586 state)."""
     return _decision_broken(
         ".github/workflows/dependabot-locks.yml",
-        '          uv pip install --no-deps -r "$RUNNER_TEMP/judge-py-packages.txt" --python .licence-venv --quiet\n',
+        '          uv pip install --no-build --no-deps -r "$RUNNER_TEMP/judge-py-packages.txt" --python .licence-venv --quiet\n',
         "",
         "judge-py paketlari o'rnatilmaydi",
+    )
+
+
+def neg_decisions_deplocks_compile_checks_out_pr() -> tuple[bool, str]:
+    """`compile` checks out the pull request's branch again (CodeQL alert 26)."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        "          ref: ${{ github.event.repository.default_branch }}\n          persist-credentials: false\n",
+        "          ref: ${{ steps.pr.outputs.branch }}\n          persist-credentials: false\n",
+        "PR kodi `main` kesh huquqi bilan ishlaydi",
+    )
+
+
+def neg_decisions_deplocks_inputs_not_taken() -> tuple[bool, str]:
+    """The inventory's inputs are no longer taken from the pull request."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        "          mapfile -t INVENTORY < <(python3 tools/licence_inventory.py --inputs)\n",
+        "          INVENTORY=()\n",
+        "inventar `main` fayllarini yozadi",
+    )
+
+
+def neg_decisions_deplocks_builds_sdists() -> tuple[bool, str]:
+    """A `uv pip` line may build a source distribution again."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        "uv pip install --no-build -r apps/api/requirements-dev.lock",
+        "uv pip install -r apps/api/requirements-dev.lock",
+        "paketning build kodi `main` kesh huquqi bilan ishlaydi",
     )
 
 
@@ -13783,6 +13813,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("inventar faqat pip uchun yasalsa tutilsin", neg_decisions_deplocks_inventory_gated_on_pip),
             ("inventar judge-py paketlarisiz yasalsa tutilsin", neg_decisions_deplocks_judge_py_not_installed),
             ("judge-py markerlari qolsa tutilsin", neg_decisions_deplocks_judge_py_markers_kept),
+            ("compile PR branch'ini checkout qilsa tutilsin", neg_decisions_deplocks_compile_checks_out_pr),
+            ("inventar kirishlari PR'dan olinmasa tutilsin", neg_decisions_deplocks_inputs_not_taken),
+            ("uv pip manba paketni qursa tutilsin", neg_decisions_deplocks_builds_sdists),
             ("CI run_all o'qilmasa tutilsin", neg_decisions_ci_run_all_ignored),
             ("lock commit'i rebase'ni to'ssa tutilsin", neg_decisions_deplocks_blocks_rebase),
             ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),
