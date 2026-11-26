@@ -13,6 +13,7 @@ import { t } from "@/i18n/messages";
 import { ApiError, postJson } from "@/lib/api";
 import { safeNext } from "@/lib/site";
 import { OtpInput } from "./OtpInput";
+import { leaveAuth } from "../leave-auth";
 
 /** Seconds before "send again" opens. The mail was just sent when the page
  *  opens; asking for another at once only burns the hourly quota. */
@@ -93,7 +94,7 @@ export function EmailVerify() {
     return (
       <div className="flex flex-col gap-4">
         <Status status="ok" variant="alert" live label={t(locale, "auth.verifyOk")} />
-        <Button type="button" onClick={() => router.push((next ?? "/") as Route)}>
+        <Button type="button" onClick={() => leaveAuth(next ?? "/")}>
           {t(locale, "auth.verifyContinue")}
         </Button>
       </div>

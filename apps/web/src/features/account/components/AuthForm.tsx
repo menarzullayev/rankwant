@@ -28,6 +28,7 @@ import { Turnstile } from "@/features/auth";
 import { safeNext } from "@/lib/site";
 import { useUsernameCheck } from "../useUsernameCheck";
 import { PasswordEye, PasswordRules, StrengthBar, passwordRefusalKey } from "./PasswordFields";
+import { leaveAuth } from "../leave-auth";
 
 type Mode = "login" | "register";
 
@@ -282,11 +283,13 @@ export function AuthForm({
       track(mode === "register" ? "auth.register_done" : "auth.login_done", { mode });
       // After sign-up, step 2 (`/onboarding`); `next` rides along so the
       // destination is not lost on the detour.
-      router.push(
-        (mode === "register"
-          ? `/onboarding?welcome=1${next ? `&next=${encodeURIComponent(next)}` : ""}`
-          : (next ?? "/")) as Route,
-      );
+      if (mode === "register") {
+        router.push(
+          `/onboarding?welcome=1${next ? `&next=${encodeURIComponent(next)}` : ""}` as Route,
+        );
+      } else {
+        leaveAuth(next ?? "/");
+      }
     } catch (err) {
       // Only the API code is sent, never the text: it may contain what the
       // person typed (an e-mail).
@@ -692,7 +695,7 @@ function LinkAccount({ provider }: { provider: string }) {
     try {
       await postJson("/auth/link/", { password });
       await reload();
-      router.push("/");
+      leaveAuth("/");
     } catch (err) {
       setError(
         err instanceof ApiError
