@@ -14,6 +14,7 @@ import { t, errorText } from "@/i18n/messages";
 import { ApiError, postJson } from "@/lib/api";
 import { fieldErrors, resetSchema } from "@rankwant/shared/validation";
 import { PasswordEye, PasswordRules, StrengthBar, passwordRefusalKey } from "./PasswordFields";
+import { leaveAuth } from "../leave-auth";
 
 const bad = (text: string | undefined): FieldStatus | undefined =>
   text ? { kind: "bad", text } : undefined;
@@ -132,7 +133,7 @@ function SetNew({ token }: { token: string }) {
       // the sessions on every other device. Reload the session and go home.
       await postJson("/auth/password-reset/confirm/", { token, password });
       await reload();
-      router.push("/");
+      leaveAuth("/");
     } catch (err) {
       if (err instanceof ApiError && err.code === "invalid_token") {
         setError(t(locale, "reset.invalid"));

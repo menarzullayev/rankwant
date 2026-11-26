@@ -10,7 +10,7 @@ import {
   AnswerPanel,
   SubmitPanel,
 } from "@/features/problems";
-import { SignInGate } from "@/components/auth/SignInGate";
+import { SignInBar, SignInGate } from "@/components/auth/SignInGate";
 import { TutorPanel } from "@/features/tutor";
 import { ContestGate } from "./_panels/ContestGate";
 import { ProblemAttemptsPanel } from "./_panels/ProblemAttemptsPanel";
@@ -200,7 +200,16 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               )}
             </div>
           }
-          gate={signedIn ? contestGate : <SignInGate reason="solve" centered />}
+          gate={
+            signedIn ? (
+              contestGate
+            ) : (
+              <>
+                <SignInGate reason="solve" centered />
+                <SignInBar reason="solve" />
+              </>
+            )
+          }
           tutor={signedIn && !contestGate ? <TutorPanel slug={slug} /> : null}
           editor={
             !signedIn ? null : // An answer problem takes files, not source (ADR-0053).

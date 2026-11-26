@@ -23,6 +23,7 @@ import {
 import { REGION_CODES, districtOptions, regionName } from "@rankwant/shared/regions";
 import { safeNext } from "@/lib/site";
 import { useUsernameCheck } from "../useUsernameCheck";
+import { leaveAuth } from "../leave-auth";
 
 /** Is this the TEMPORARY handle the server gave (`u` + 12 lowercase letters or
  *  digits)? The sign-up may leave the handle blank; showing the temporary one
@@ -195,7 +196,7 @@ export function OnboardingForm({ me }: { me: Me }) {
     }
     track(write ? EVENT_SAVED : EVENT_SKIPPED, { step: current });
     if (last) {
-      router.push(home);
+      leaveAuth(home);
       return;
     }
     setStep(step + 1);

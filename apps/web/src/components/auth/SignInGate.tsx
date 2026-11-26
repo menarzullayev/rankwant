@@ -69,6 +69,32 @@ export function SignInLinks({ next }: { next: string }) {
   );
 }
 
+/** The gate's title and two actions as a bar fixed to the bottom of the
+ *  screen, below `xl` only. The solve card stands after the statement there
+ *  and a phone reader met it 2.5 screens down (A+B at 375 px: 2 043 of 2 970
+ *  px, measured 2026-11-26); the bar keeps the way in on screen, like the
+ *  signed-in reader's editor sheet, and clears the side menu the same way
+ *  (`--rw-shell-inset`). The card itself stays. */
+export function SignInBar({ reason }: { reason: GateReason }) {
+  const locale = useLocale();
+  const next = useReturnTo();
+  return (
+    <>
+      {/* Room for the bar, so the page's end (the footer) is not covered. */}
+      <div aria-hidden className="h-28 xl:hidden" />
+      <div
+        data-gate-bar={reason}
+        className="fixed inset-x-0 bottom-0 z-30 border-t rw-divider rw-surface px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(0,0,0,.12)] lg:left-[var(--rw-shell-inset,0px)] xl:hidden"
+      >
+        <p className="mb-2 text-theme-sm font-semibold rw-strong">
+          {t(locale, gateTitle(reason))}
+        </p>
+        <SignInLinks next={next} />
+      </div>
+    </>
+  );
+}
+
 /** The card a guest sees where a signed-in block would be (ADR-0054).
  *
  *  One component for every such place, so the wording, the two actions and
