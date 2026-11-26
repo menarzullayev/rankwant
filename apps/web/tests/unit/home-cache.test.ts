@@ -39,13 +39,22 @@ describe("homeCacheDecision", () => {
     expect(homeCacheMark(d)).toBe(HOME_CACHE_MARK_GUEST_LOCALE);
   });
 
-  it("keeps the login and legal pages forced to Uzbek", () => {
+  it("keeps the legal pages forced to Uzbek", () => {
     expect(HOME_CACHE_LOCALE).toBe("uz");
-    for (const pathname of ["/login", "/register", "/terms", "/privacy"]) {
+    for (const pathname of ["/terms", "/privacy"]) {
       const d = homeCacheDecision({ ...guestHome, pathname });
       expect(d.cacheable).toBe(true);
       expect(d.forceDefaultLocale).toBe(true);
       expect(homeCacheMark(d)).toBe(HOME_CACHE_MARK_GUEST);
+    }
+  });
+
+  it("lets sign-in and sign-up follow the visitor's language (2026-11-26)", () => {
+    for (const pathname of ["/login", "/register"]) {
+      const d = homeCacheDecision({ ...guestHome, pathname });
+      expect(d.cacheable).toBe(true);
+      expect(d.forceDefaultLocale).toBe(false);
+      expect(homeCacheMark(d)).toBe(HOME_CACHE_MARK_GUEST_LOCALE);
     }
   });
 

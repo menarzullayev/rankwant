@@ -290,6 +290,7 @@
 "neg_decisions_locale_use_conditional": "lug'at hook tartibi barqaror",
 "neg_decisions_login_account_bucket_dropped": "noto'g'ri kirish urinishlari cheklangan",
 "neg_decisions_login_failures_not_counted": "noto'g'ri kirish urinishlari cheklangan",
+"neg_decisions_login_forced_uzbek_again": "bosh sahifa brauzer tiliga ergashadi",
 "neg_decisions_login_full_globals": "login yupqa auth.css",
 "neg_decisions_login_path_dropped": "login mehmon CDN keshi",
 "neg_decisions_login_worker_letter_restored": "login mehmon CDN keshi",
