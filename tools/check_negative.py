@@ -5493,6 +5493,16 @@ def neg_decisions_voice_service_listens_widely() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_login_forced_uzbek_again() -> tuple[bool, str]:
+    """Sign-in would leave the language-aware cache paths (Uzbek for every guest)."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        '  if (pathname === "/login") return isLoginTabSearch(search);\n',
+        "",
+        "`/login` yana `uz` majburiy",
+    )
+
+
 def neg_decisions_codeql_scan_is_blind() -> tuple[bool, str]:
     """CodeQL would report a clean result even when it extracted nothing."""
     return _decision_broken(
@@ -13679,6 +13689,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("ovozga belgi yetsa tutilsin", neg_decisions_voice_reads_symbols),
             ("ovoz servisi keng tinglasa tutilsin", neg_decisions_voice_service_listens_widely),
             ("boshqa ovoz saqlansa tutilsin", neg_decisions_voice_keeps_another_voice),
+            ("kirish sahifasi yana o'zbekcha majburiy bo'lsa tutilsin", neg_decisions_login_forced_uzbek_again),
             ("CodeQL ko'r bo'lsa tutilsin", neg_decisions_codeql_scan_is_blind),
             ("CodeQL Nightly'dan tushsa tutilsin", neg_decisions_codeql_left_out_of_nightly),
             ("ovoz worker'i deploy ro'yxatidan tushsa tutilsin", neg_decisions_voice_worker_left_out_of_deploy),

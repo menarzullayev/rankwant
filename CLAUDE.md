@@ -285,6 +285,7 @@ shu yerdan o'qiydi; manba — `docs/08-technical-spec/customization-contract.md`
 - [2026-11-15](docs/decisions/2026-11-15-graphify-removed.md) · Graphify va uning GitHub boti to'liq olib tashlandi (MCP, dastur, graf fayllari, repo havolalari) · `.gitignore`
 - [2026-11-15](docs/decisions/2026-11-15-guest-hero.md) · Mehmon heroi: «Yeching. Musobaqalashing. Yuksaling.», haqiqiy masala kartasi (muharririsiz), to'rt imkoniyat raqami (foydalanuvchi soni yo'q), ko'rdi→bosdi→forma→ro'yxat voronkasi, 10 tilda · `guest_hero_is_honest_and_measured`
 - [2026-11-16](docs/decisions/2026-11-16-notifications-parity.md) · Bildirishnomalar Robocontest bilan tenglashtiriladi: 49 tur, ~14 guruh, uxlab yotgan turlar, xavfsizlikda majburiy sayt, vaqt xabarlari · `notifications_follow_the_groups_decision`
+- [2026-11-26](docs/decisions/2026-11-26-auth-follows-browser-language.md) · Kirish va ro'yxatdan o'tish sahifasi ham mehmon tilida (2026-11-15 ning `/login` bandini almashtiradi) · `home_follows_browser_language`
 - [2026-11-26](docs/decisions/2026-11-26-codeql-in-nightly.md) · CodeQL faqat Nightly'da, faqat hisobot; ekstraktor ko'r bo'lsa yiqiladi · `codeql_runs_in_nightly`
 - [2026-11-26](docs/decisions/2026-11-26-launch-after-full-gate.md) · Haqiqiy foydalanuvchilar faqat to'liq launch gate'dan keyin; keyingi bosqich tartibi · `docs/09-development-plan/README.md`
 

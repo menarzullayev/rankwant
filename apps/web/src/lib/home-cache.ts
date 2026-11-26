@@ -105,8 +105,6 @@ export function isUzForcedGuestCachePath(
   if (pathname === "/terms" || pathname === "/privacy") {
     return search === "";
   }
-  if (pathname === "/register") return search === "";
-  if (pathname === "/login") return isLoginTabSearch(search);
   return false;
 }
 
@@ -114,6 +112,10 @@ export function isLocaleAwareGuestCachePath(
   pathname: string,
   search: string,
 ): boolean {
+  // Sign-in and sign-up follow the visitor's language like `/` (owner
+  // decision 2026-11-26): an English home page led to an Uzbek sign-up form.
+  if (pathname === "/register") return search === "";
+  if (pathname === "/login") return isLoginTabSearch(search);
   return (
     (pathname === HOME_CACHE_PATH || pathname === PROBLEMS_CACHE_PATH) &&
     search === ""

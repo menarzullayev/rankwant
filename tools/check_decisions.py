@@ -1910,6 +1910,9 @@ def home_follows_browser_language() -> str | None:
         return f"{HOME_CACHE}: kesh yo'li funksiyalari topilmadi"
     if 'pathname === "/" ||' in forced.group(0):
         return f"{HOME_CACHE}: `/` yana `uz` majburiy — boshqa tilli mehmon o'zbekcha bosh sahifa oladi"
+    # 2026-11-26: sign-in and sign-up follow the language too.
+    if '"/login"' in forced.group(0) or 'pathname === "/login"' not in aware.group(0):
+        return f"{HOME_CACHE}: `/login` yana `uz` majburiy — ingliz mehmon o'zbekcha ro'yxatdan o'tish formasini oladi"
     if "pathname === HOME_CACHE_PATH" not in aware.group(0):
         return f"{HOME_CACHE}: `/` tilga bog'liq kesh yo'lida emas — `Vary: Accept-Language` yo'q"
     spec = read(CF_GUEST_CACHE_RULE)
