@@ -6826,6 +6826,31 @@ def neg_notification_code_removed() -> tuple[bool, str]:
     return True, "bildirishnoma kodi: o'chirilgan kod tutildi (exit 1)"
 
 
+def _notification_lists_broken(old: str, new: str, label: str) -> tuple[bool, str]:
+    path = ROOT / "apps/web/src/features/account/components/NotificationsSection.tsx"
+    if path.read_bytes().decode("utf-8").count(old) != 1:
+        return False, f"{label}: langar topilmadi (NotificationsSection.tsx)"
+    with Mutation(path, old, new):
+        code, out = run([PY, "tools/check_notification_codes.py"])
+    if code != 1:
+        return False, f"{label}: exit {code} berdi (1 kerak)"
+    if "differs from notifications/groups.py" not in out:
+        return False, f"{label}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"{label}: tutildi (exit 1)"
+
+
+def neg_notification_group_dropped_on_web() -> tuple[bool, str]:
+    """The settings page would lose a group the server still sends in."""
+    return _notification_lists_broken('  "plan_limits",\n] as const;', "] as const;", "web guruhlari")
+
+
+def neg_notification_legacy_kind_dropped_on_web() -> tuple[bool, str]:
+    """A group would stop reading a kind its old saved switches live under."""
+    return _notification_lists_broken(
+        'competition: ["duel", "hack"],', 'competition: ["duel"],', "web meros turlari"
+    )
+
+
 def neg_openapi_path_removed() -> tuple[bool, str]:
     """A path of /api/v1/ is renamed away.
 
@@ -13403,6 +13428,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yashirin tab oqim ushlasa tutilsin", neg_decisions_notif_hidden_tab_holds_stream),
             ("bildirishnoma katalogi eskirsa tutilsin", neg_notification_catalogue_stale),
             ("bildirishnoma kodi o'chirilsa tutilsin", neg_notification_code_removed),
+            ("web guruh ro'yxati serverdan ajralsa tutilsin", neg_notification_group_dropped_on_web),
+            ("web meros turlari serverdan ajralsa tutilsin", neg_notification_legacy_kind_dropped_on_web),
             ("SSE nomi versiyasiz ketsa tutilsin", neg_decisions_wire_name_dropped),
             ("urg'u rang keshi rejimsiz qo'llansa tutilsin", neg_decisions_accent_cache_any_mode),
             ("zinapoya API bilan ajralsa tutilsin", neg_decisions_title_ladder_drifts),

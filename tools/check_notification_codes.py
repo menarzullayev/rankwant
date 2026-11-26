@@ -44,7 +44,48 @@ def current() -> dict[str, list[str]]:
     return {code: sorted(names) for code, names in sorted(found.items())}
 
 
+GROUPS_PY = ROOT / "apps/api/notifications/groups.py"
+SECTION_TS = ROOT / "apps/web/src/features/account/components/NotificationsSection.tsx"
+
+
+def web_lists_match() -> list[str]:
+    """The settings page's group and legacy lists equal `notifications.groups`.
+
+    The page writes both by hand (2026-11-16 review: "TS/Python group list
+    duplicated"); a group added, removed or reordered on one side only would
+    show a switch that saves nowhere, or hide one that works.
+    """
+    namespace: dict[str, object] = {"__name__": "groups"}
+    exec(compile(GROUPS_PY.read_text(encoding="utf-8"), str(GROUPS_PY), "exec"), namespace)  # noqa: S102
+    visible = list(namespace["visible_groups"]())  # type: ignore[operator]
+    legacy_of = namespace["legacy_kinds"]
+    src = SECTION_TS.read_text(encoding="utf-8")
+    problems: list[str] = []
+    block = re.search(r"^const GROUPS = \[(.*?)\] as const;", src, re.M | re.S)
+    web = re.findall(r'"(\w+)"', block.group(1)) if block else []
+    if web != visible:
+        problems.append(f"GROUPS {web} != visible_groups() {visible}")
+    legacy = re.search(r"^const LEGACY_KINDS[^=]*= \{(.*?)^\};", src, re.M | re.S)
+    web_legacy = (
+        {k: re.findall(r'"(\w+)"', v) for k, v in re.findall(r"^\s+(\w+): \[([^\]]*)\]", legacy.group(1), re.M)}
+        if legacy
+        else {}
+    )
+    for group in visible:
+        # A set: the page reads the kinds in any order.
+        want = sorted(legacy_of(group))  # type: ignore[operator]
+        if sorted(web_legacy.get(group, [])) != want:
+            problems.append(f"LEGACY_KINDS[{group}] {web_legacy.get(group, [])} != legacy_kinds() {want}")
+    return problems
+
+
 def main() -> int:
+    lists = web_lists_match()
+    if lists:
+        print(f"✗ {SECTION_TS.relative_to(ROOT).as_posix()} differs from notifications/groups.py:")
+        for item in lists:
+            print("   ", item)
+        return 1
     now = current()
     baseline: dict[str, list[str]] = (
         json.loads(BASELINE.read_text(encoding="utf-8")) if BASELINE.exists() else {}
